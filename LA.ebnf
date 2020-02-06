@@ -1,0 +1,145 @@
+@@grammar::LA
+@@whitespace :: /[\t]+/     #parse whitespace manually
+
+start
+    =
+    all_content $
+    ;
+
+
+all_content
+    #= {(single_line_statement {separator}+)} single_line_statement [separator]
+    =  {(single_line_statement {separator}+)} single_line_statement | {(single_line_statement {separator}+)}
+    ;
+
+
+single_line_statement
+    = {hspaces} expression {hspaces}
+    ;
+
+
+separator
+    = line | ';'
+    ;
+
+expression
+    =
+    | assignment
+    | addition
+    | subtraction
+    | term
+    ;
+
+assignment::Assignment
+    =
+    left:identifier {hspaces} '=' {hspaces} right:expression {hspaces}
+    ;
+
+
+addition::Add
+    =
+    left:term {hspaces} op:'+' ~ {hspaces} right:expression
+    ;
+
+
+subtraction::Subtract
+    =
+    left:term {hspaces} op:'-' ~ {hspaces} right:expression
+    ;
+
+
+term
+    =
+    | multiplication
+    | division
+    | factor
+    ;
+
+
+multiplication::Multiply
+    =
+    left:factor {hspaces} op:'*' ~ {hspaces} right:term
+    | left:factor {hspaces}+ right:term
+    #| left:identifier {hspaces}+ right:identifier
+    #| left:identifier {hspaces}+ right:factor
+    | left:factor {hspaces} right:subexpression    #bbb (aaa)
+    | left:subexpression {hspaces} right:factor    #(aaa) bbb
+    ;
+
+
+division::Divide
+    =
+    left:factor {hspaces} op:'/' ~ {hspaces} right:term
+    ;
+
+
+factor
+    =
+    | identifier
+    | number
+    | subexpression
+    ;
+
+hspace
+    = ' ' | '\t'
+    ;
+
+hspaces
+    = {hspace}+
+    ;
+
+line
+    = '\n' | '\r' | '\f'
+    ;
+
+lines
+    = {line}+
+    ;
+
+subexpression
+    =
+    '(' {hspaces} ~ @:expression {hspaces} ')'
+    ;
+
+
+identifier
+    = /[A-Za-z][_a-zA-z0-9]*/
+    ;
+
+
+# number definition
+digit
+    =
+    /\d/
+    ;
+
+integer
+    =
+    {digit}+
+    ;
+
+exponent
+    = /[DdEe][+-]?/ {digit}+
+    ;
+
+mantissa
+    = ({digit}* '.' {digit}+) | ({digit}+ '.')
+    ;
+
+floating_point
+    = mantissa [exponent]
+    ;
+
+double
+    = integer exponent
+    | floating_point
+    ;
+
+number
+    =
+    | double
+    | integer
+    ;
+
+
+
