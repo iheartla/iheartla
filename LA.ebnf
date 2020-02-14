@@ -1,5 +1,5 @@
 @@grammar::LA
-@@whitespace :: /[\t]+/     #parse whitespace manually
+@@whitespace :: /(?!.*)/     #parse whitespace manually
 
 start
     =
@@ -7,19 +7,24 @@ start
     ;
 
 
-all_content
-    #= {(single_line_statement {separator}+)} single_line_statement [separator]
-    =  {(single_line_statement {separator}+)} single_line_statement | {(single_line_statement {separator}+)}
+all_content::AllContent
+    = {left:single_line_separator} right:single_line_statement
+    | left:{single_line_separator}
     ;
 
 
-single_line_statement
-    = {hspaces} expression {hspaces}
+single_line_separator::SingleLineSeparator
+    = value:single_line_statement {separator}+
+    ;
+
+
+single_line_statement::SingleLineStatement
+    = {hspaces} value:expression {hspaces}
     ;
 
 
 separator
-    = line | ';'
+    = line | ';' {hspace}
     ;
 
 expression
@@ -28,6 +33,7 @@ expression
     | addition
     | subtraction
     | term
+    | {}
     ;
 
 assignment::Assignment
@@ -59,16 +65,28 @@ term
 multiplication::Multiply
     =
     left:factor {hspaces} op:'*' ~ {hspaces} right:term
+    | left:term {hspaces} op:'*' ~ {hspaces} right:term
     | left:factor {hspaces}+ right:term
-    #| left:identifier {hspaces}+ right:identifier
-    #| left:identifier {hspaces}+ right:factor
-    | left:factor {hspaces} right:subexpression    #bbb (aaa)
-    | left:subexpression {hspaces} right:factor    #(aaa) bbb
+    | left:term {hspaces}+ right:term
+    | left:left_subexpression_multiplication {hspaces} right:term    #a(b)c
+    | left_subexpression_multiplication
+    | right_subexpression_multiplication
+    | left:right_subexpression_multiplication {hspaces} right:term   #a(b)c
+
+    ;
+
+left_subexpression_multiplication::Multiply
+    = left:term {hspaces} right:subexpression    #bbb (aaa)
+    ;
+
+right_subexpression_multiplication::Multiply
+    = left:subexpression {hspaces} right:term    #(aaa) bbb
     ;
 
 
 division::Divide
     =
+    #left:term {hspaces} op:'/' ~ {hspaces} right:term
     left:factor {hspaces} op:'/' ~ {hspaces} right:term
     ;
 

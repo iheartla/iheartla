@@ -17,49 +17,53 @@ class PostfixCodeGenerator(CodeGenerator):
 
 class Number(ModelRenderer):
     template = '''\
-    PUSH {value}'''
+    {value}'''
 
 
 class Assignment(ModelRenderer):
     template = '''\
-    {left}
-    {right}
-    ASSIGNMENT'''
+    {left} = {right}'''
 
 
 class Add(ModelRenderer):
     template = '''\
-    {left}
-    {right}
-    ADD'''
+    {left} + {right}'''
 
 
 class Subtract(ModelRenderer):
     template = '''\
-    {left}
-    {right}
-    SUB'''
+    {left} - {right}'''
 
 
 class Multiply(ModelRenderer):
     template = '''\
-    {left}
-    {right}
-    MUL'''
+    {left} * {right}'''
 
 
 class Divide(ModelRenderer):
     template = '''\
-    {left}
-    {right}
-    DIV'''
+    {left} / {right}'''
+
+
+class SingleLineStatement(ModelRenderer):
+    template = '''\
+    {value}'''
+
+
+class SingleLineSeparator(ModelRenderer):
+    template = '''\
+    {value}'''
+
+
+class AllContent(ModelRenderer):
+    template = '''\
+    {left::\n:}\n{right}'''
 
 
 def parse_and_translate(content):
     grammar = open('LA.ebnf').read()
     parser = tatsu.compile(grammar, asmodel=True)
-    model = parser.parse(content)
+    model = parser.parse(content, parseinfo=True)
     postfix = PostfixCodeGenerator().render(model)
     return postfix
-
 
