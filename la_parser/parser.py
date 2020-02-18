@@ -6,6 +6,19 @@ from tatsu.codegen import CodeGenerator
 from tatsu.ast import AST
 import tatsu
 import sys
+from tatsu.exceptions import (
+    FailedCut,
+    FailedExpectingEndOfText,
+    FailedLeftRecursion,
+    FailedLookahead,
+    FailedParse,
+    FailedPattern,
+    FailedRef,
+    FailedSemantics,
+    FailedKeywordSemantics,
+    FailedToken,
+    OptionSucceeded
+)
 
 THIS_MODULE = sys.modules[__name__]
 
@@ -60,10 +73,33 @@ class AllContent(ModelRenderer):
     {left::\n:}\n{right}'''
 
 
-def parse_and_translate(content):
-    grammar = open('LA.ebnf').read()
-    parser = tatsu.compile(grammar, asmodel=True)
-    model = parser.parse(content, parseinfo=True)
-    postfix = PostfixCodeGenerator().render(model)
-    return postfix
+class Subexpression(ModelRenderer):
+    template = '''({value})'''
 
+
+def parse_and_translate(content):
+    try:
+        grammar = open('LA.ebnf').read()
+        parser = tatsu.compile(grammar, asmodel=True)
+        model = parser.parse(content, parseinfo=True)
+        print 'model:', isinstance(model, Node)
+        print 'cl:', model.__class__.__name__
+        print 'class:', isinstance(model.ast, AST)
+        print model.ast['left']
+        print model.ast['right']
+        postfix = PostfixCodeGenerator().render(model)
+        result = (postfix, 0)
+
+    except FailedParse as e:
+        postfix = str(e)
+        result = (postfix, 1)
+    except FailedCut as e:
+        postfix = str(e)
+        result = (postfix, 1)
+    except:
+        pass
+        postfix = str(sys.exc_info()[0])
+        result = (postfix, 1)
+    finally:
+        print postfix
+        return result

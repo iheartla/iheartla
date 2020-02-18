@@ -1,5 +1,6 @@
 @@grammar::LA
 @@whitespace :: /(?!.*)/     #parse whitespace manually
+@@left_recursion::True
 
 start
     =
@@ -19,7 +20,13 @@ single_line_separator::SingleLineSeparator
 
 
 single_line_statement::SingleLineStatement
-    = {hspaces} value:expression {hspaces}
+    = {hspaces} value:statement {hspaces}
+    ;
+
+statement
+    =
+    | assignment
+    | expression
     ;
 
 
@@ -29,7 +36,6 @@ separator
 
 expression
     =
-    | assignment
     | addition
     | subtraction
     | term
@@ -64,24 +70,12 @@ term
 
 multiplication::Multiply
     =
-    left:factor {hspaces} op:'*' ~ {hspaces} right:term
-    | left:term {hspaces} op:'*' ~ {hspaces} right:term
-    | left:factor {hspaces}+ right:term
-    | left:term {hspaces}+ right:term
-    | left:left_subexpression_multiplication {hspaces} right:term    #a(b)c
-    | left_subexpression_multiplication
-    | right_subexpression_multiplication
-    | left:right_subexpression_multiplication {hspaces} right:term   #a(b)c
-
+    left:term op:'*' right:term
+    | left:term {hspaces} right:term
     ;
 
-left_subexpression_multiplication::Multiply
-    = left:term {hspaces} right:subexpression    #bbb (aaa)
-    ;
 
-right_subexpression_multiplication::Multiply
-    = left:subexpression {hspaces} right:term    #(aaa) bbb
-    ;
+
 
 
 division::Divide
@@ -93,9 +87,10 @@ division::Divide
 
 factor
     =
+    | subexpression
     | identifier
     | number
-    | subexpression
+    | matrix
     ;
 
 hspace
@@ -114,15 +109,80 @@ lines
     = {line}+
     ;
 
-subexpression
+subexpression::Subexpression
     =
-    '(' {hspaces} ~ @:expression {hspaces} ')'
+    '(' {hspaces} ~ value:expression {hspaces} ')'
     ;
 
 
 identifier
-    = /[A-Za-z][_a-zA-z0-9]*/
+    = /[A-Za-z][_a-zA-Z0-9]*/
     ;
+
+#matrix
+matrix
+    = '[' {hspaces} rows {hspaces} ']'
+    ;
+
+rows
+    =
+    | rows {hspaces} separator {hspaces} row {hspaces}
+    | rows {hspaces} separator {hspaces}
+    | row {hspaces}
+    ;
+
+
+row
+    =
+    | row_with_commas {hspaces} expr_in_matrix
+    | row_with_commas
+    | expr_in_matrix
+    ;
+
+row_with_commas
+    =
+    | row_with_commas {hspaces} expr_in_matrix (',' | {hspaces}+)
+    | expr_in_matrix (',' | {hspaces}+)
+    ;
+
+expr_in_matrix
+    =
+    | addition_in_matrix
+    | subtraction_in_matrix
+    | term_in_matrix
+    | {}
+    ;
+
+addition_in_matrix
+    =
+    left:term_in_matrix {hspaces} op:'+' ~ {hspaces} right:expr_in_matrix
+    ;
+
+
+subtraction_in_matrix
+    =
+    left:term_in_matrix {hspaces} op:'-' ~ {hspaces} right:expr_in_matrix
+    ;
+
+
+term_in_matrix
+    =
+    | multiplication_in_matrix
+    | division_in_matrix
+    | factor
+    ;
+
+multiplication_in_matrix
+    =
+    factor {hspaces} '*' ~ {hspaces} term_in_matrix
+    ;
+
+division_in_matrix
+    =
+    left:factor {hspaces} op:'/' ~ {hspaces} right:term_in_matrix
+    ;
+
+
 
 
 # number definition

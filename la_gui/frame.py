@@ -1,6 +1,7 @@
 import wx
 import os
 import sys
+
 sys.path.append('../')
 from la_parser.parser import parse_and_translate
 
@@ -32,7 +33,10 @@ class MainWindow(wx.Frame):
         self.staticTxt = wx.StaticText(self, -1)
         self.staticTxt = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
         self.SetItemsPos()
-        self.control.SetValue('a+b-c; a*b+c; a*(b+c); a b+c; a (((b+c)))')
+        self.control.SetValue('a b(c(d(b+c)e)f)g')
+        # self.control.SetValue('a+b-c; a*b+c; a*(b+c); a b+c; a (((b+c)))')
+        # self.control.SetValue('[2;4]')
+
         self.Show()
 
     def SetItemsPos(self):
@@ -59,10 +63,12 @@ class MainWindow(wx.Frame):
     def OnTranslate(self, e):
         self.statusbar.SetStatusText("Compiling ...", 0)
         self.Update()
-        postfix = parse_and_translate(self.control.GetValue())
-        print postfix
-        self.staticTxt.SetValue(postfix)
-        self.statusbar.SetStatusText("Finished", 0)
+        result = parse_and_translate(self.control.GetValue())
+        self.staticTxt.SetValue(result[0])
+        if result[1] == 0:
+            self.statusbar.SetStatusText("Finished", 0)
+        else:
+            self.statusbar.SetStatusText("Error", 0)
 
     def OnOpen(self, e):
         dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", "*.*", wx.FD_OPEN)
