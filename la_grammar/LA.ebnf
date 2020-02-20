@@ -1,0 +1,69 @@
+@@grammar::LA
+@@whitespace :: /(?!.*)/     #parse whitespace manually
+@@left_recursion::True
+
+start
+    =
+    all_content $
+    ;
+
+#include :: "src/la_grammar/keywords.ebnf"
+#include :: "src/la_grammar/number.ebnf"
+#include :: "src/la_grammar/operators.ebnf"
+#include :: "src/la_grammar/matrix.ebnf"
+#include :: "src/la_grammar/base.ebnf"
+
+all_content::AllContent
+    = {left:single_line_separator} right:single_line_statement
+    | left:{single_line_separator}
+    ;
+
+
+single_line_separator::SingleLineSeparator
+    = value:single_line_statement {separator}+
+    ;
+
+
+single_line_statement::SingleLineStatement
+    = {hspaces} value:statement {hspaces}
+    ;
+
+statement
+    =
+    | assignment
+    | expression
+    ;
+
+expression
+    =
+    | addition
+    | subtraction
+    | term
+    | operations
+    | {}
+    ;
+
+assignment::Assignment
+    =
+    left:identifier {hspaces} '=' {hspaces} right:expression {hspaces}
+    ;
+
+term
+    =
+    | multiplication
+    | division
+    | factor
+    ;
+
+factor
+    =
+    | subexpression
+    | identifier
+    | number
+    | matrix
+    ;
+
+subexpression::Subexpression
+    =
+    '(' {hspaces} ~ value:expression {hspaces} ')'
+    ;

@@ -1,0 +1,49 @@
+#operators
+operations
+    =
+    | trace_operation
+    | eig_operation
+    | derivative_operation
+    ;
+
+addition::Add
+    =
+    left:term {hspaces} op:'+' ~ {hspaces} right:expression
+    ;
+
+
+subtraction::Subtract
+    =
+    left:term {hspaces} op:'-' ~ {hspaces} right:expression
+    ;
+
+
+multiplication::Multiply
+    =
+    left:term op:'*' right:term
+    | left:term {hspaces} right:term
+    ;
+
+
+division::Divide
+    =
+    #left:term {hspaces} op:'/' ~ {hspaces} right:term
+    left:factor {hspaces} op:'/' ~ {hspaces} right:term
+    ;
+
+
+dot_multiplication
+    = identifier '.*' identifier
+    ;
+
+trace_operation
+    = TRACE '(' {hspaces} identifier {hspaces} ')'
+    ;
+
+eig_operation
+    = EIG '(' {hspaces} identifier {hspaces} ')'
+    ;
+
+
+derivative_operation
+    = DERIVATIVE identifier;

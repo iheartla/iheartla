@@ -1,0 +1,24 @@
+#base
+hspace
+    = ' ' | '\t'
+    ;
+
+hspaces
+    = {hspace}+
+    ;
+
+line
+    = '\n' | '\r' | '\f'
+    ;
+
+lines
+    = {line}+
+    ;
+
+identifier
+    = !KEYWORDS /[A-Za-z]/
+    ;
+
+separator
+    = line | ';' {hspace}
+    ;

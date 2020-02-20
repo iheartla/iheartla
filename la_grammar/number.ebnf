@@ -1,0 +1,33 @@
+# number definition
+digit
+    =
+    /\d/
+    ;
+
+integer
+    =
+    {digit}+
+    ;
+
+exponent
+    = /[DdEe][+-]?/ {digit}+
+    ;
+
+mantissa
+    = ({digit}* '.' {digit}+) | ({digit}+ '.')
+    ;
+
+floating_point
+    = mantissa [exponent]
+    ;
+
+double
+    = integer exponent
+    | floating_point
+    ;
+
+number
+    =
+    | double
+    | integer
+    ;

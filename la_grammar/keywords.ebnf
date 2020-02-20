@@ -1,0 +1,41 @@
+KEYWORDS
+    = TRACE
+    | VEC
+    | DIAG
+    | ID
+    | EIG
+    | CONJ
+    | RE
+    | IM
+    | INV
+    | SQRT
+    | EXP
+    | LOG
+    | DET
+    | SVD
+    | RANK
+    | NULL
+    | ORTH
+    | QR
+    | DERIVATIVE
+    ;
+
+TRACE = 'trace';
+VEC = 'vec';
+DIAG = 'diag';
+ID = 'Id';
+EIG = 'eig';
+CONJ = 'conj';
+RE = 'Re';
+IM = 'Im';
+INV = 'inv';
+SQRT = 'sqrt';
+EXP = 'exp';
+LOG = 'log';
+DET = 'det';
+SVD = 'svd';
+RANK = 'rank';
+NULL = 'null';
+ORTH = 'orth';
+QR = 'qr';
+DERIVATIVE = '\u2202';
