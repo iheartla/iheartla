@@ -75,9 +75,6 @@ multiplication::Multiply
     ;
 
 
-
-
-
 division::Divide
     =
     #left:term {hspaces} op:'/' ~ {hspaces} right:term
@@ -116,7 +113,7 @@ subexpression::Subexpression
 
 
 identifier
-    = /[A-Za-z][_a-zA-Z0-9]*/
+    = /[A-Za-z]/
     ;
 
 #matrix
@@ -181,8 +178,6 @@ division_in_matrix
     =
     left:factor {hspaces} op:'/' ~ {hspaces} right:term_in_matrix
     ;
-
-
 
 
 # number definition
