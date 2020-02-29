@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*
 import wx
 import os
 import sys
@@ -33,7 +34,8 @@ class MainWindow(wx.Frame):
         self.staticTxt = wx.StaticText(self, -1)
         self.staticTxt = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
         self.SetItemsPos()
-        self.control.SetValue('a b(c(d(b+c)e)f)g')
+        # self.control.SetValue('a b(c(d(b+c)e)f)g')
+        self.control.SetValue(u'∂a')
         # self.control.SetValue('a+b-c; a*b+c; a*(b+c); a b+c; a (((b+c)))')
         # self.control.SetValue('[2;4]')
 

@@ -65,5 +65,5 @@ factor
 
 subexpression::Subexpression
     =
-    '(' {hspaces} ~ value:expression {hspaces} ')'
+    '(' {hspaces} value:expression {hspaces} ')'
     ;

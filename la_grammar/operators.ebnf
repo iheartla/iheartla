@@ -4,17 +4,18 @@ operations
     | trace_operation
     | eig_operation
     | derivative_operation
+    | inner_product
     ;
 
 addition::Add
     =
-    left:term {hspaces} op:'+' ~ {hspaces} right:expression
+    left:term {hspaces} op:'+' {hspaces} right:expression
     ;
 
 
 subtraction::Subtract
     =
-    left:term {hspaces} op:'-' ~ {hspaces} right:expression
+    left:term {hspaces} op:'-' {hspaces} right:expression
     ;
 
 
@@ -27,8 +28,8 @@ multiplication::Multiply
 
 division::Divide
     =
-    #left:term {hspaces} op:'/' ~ {hspaces} right:term
-    left:factor {hspaces} op:'/' ~ {hspaces} right:term
+    #left:term {hspaces} op:'/' {hspaces} right:term
+    left:factor {hspaces} op:'/' {hspaces} right:term
     ;
 
 
@@ -45,5 +46,8 @@ eig_operation
     ;
 
 
-derivative_operation
-    = DERIVATIVE identifier;
+derivative_operation::Derivative
+    = DERIVATIVE value:identifier;
+
+inner_product::InnerProduct
+    = '<' {hspaces} left:identifier {hspaces} ',' {hspaces}  right:identifier {hspaces} '>';

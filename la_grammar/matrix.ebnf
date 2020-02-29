@@ -1,6 +1,6 @@
 #matrix
-matrix
-    = '[' {hspaces} rows {hspaces} ']'
+matrix::Matrix
+    = '[' {hspaces} value:rows {hspaces} ']'
     ;
 
 rows
@@ -34,13 +34,13 @@ expr_in_matrix
 
 addition_in_matrix
     =
-    left:term_in_matrix {hspaces} op:'+' ~ {hspaces} right:expr_in_matrix
+    left:term_in_matrix {hspaces} op:'+' {hspaces} right:expr_in_matrix
     ;
 
 
 subtraction_in_matrix
     =
-    left:term_in_matrix {hspaces} op:'-' ~ {hspaces} right:expr_in_matrix
+    left:term_in_matrix {hspaces} op:'-' {hspaces} right:expr_in_matrix
     ;
 
 
@@ -53,12 +53,12 @@ term_in_matrix
 
 multiplication_in_matrix
     =
-    factor {hspaces} '*' ~ {hspaces} term_in_matrix
+    factor {hspaces} '*' {hspaces} term_in_matrix
     ;
 
 division_in_matrix
     =
-    left:factor {hspaces} op:'/' ~ {hspaces} right:term_in_matrix
+    left:factor {hspaces} op:'/' {hspaces} right:term_in_matrix
     ;
 
 
