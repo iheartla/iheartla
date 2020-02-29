@@ -20,6 +20,7 @@ from tatsu.exceptions import (
     OptionSucceeded
 )
 
+
 THIS_MODULE = sys.modules[__name__]
 
 
@@ -101,14 +102,14 @@ def parse_and_translate(content):
     parser = tatsu.compile(grammar, asmodel=True)
     # print content
     # print content.encode('utf-8')
-    model = parser.parse(content.encode('utf-8'), parseinfo=True)
-    print 'model:', isinstance(model, Node)
-    print 'cl:', model.__class__.__name__
-    print 'class:', isinstance(model.ast, AST)
-    print model.ast['left']
-    print model.ast['right']
+    model = parser.parse(content, parseinfo=True)
+    print('model:', isinstance(model, Node))
+    print('cl:', model.__class__.__name__)
+    print('class:', isinstance(model.ast, AST))
+    print(model.ast['left'])
+    print(model.ast['right'])
     postfix = PostfixCodeGenerator().render(model)
-    postfix = '''\documentclass[12pt]{article}\n\usepackage{mathtools}\n\\begin{document}\n\[''' + postfix + '''\]\n\end{document}'''
+    postfix = '''\\documentclass[12pt]{article}\n\\usepackage{mathtools}\n\\begin{document}\n\\[''' + postfix + '''\]\n\end{document}'''
     result = (postfix, 0)
     return result
     # except FailedParse as e:
