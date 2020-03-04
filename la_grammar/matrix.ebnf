@@ -11,29 +11,35 @@ rows::MatrixRows
     ;
 
 row::MatrixRow
-    = value:row_with_commas | value:expr_in_matrix
+    =
+    | value+:row_with_commas {hspaces} value+:expr_in_matrix
+    | value+:row_with_commas
+    | value+:expr_in_matrix
     ;
 
 row_with_commas::MatrixRowCommas
-    = ( left:row_with_commas | left:expr_in_matrix ) {hspaces} ',' {hspaces} value:expr_in_matrix
+    #= ( left+:row_with_commas | left+:expr_in_matrix ) {hspaces} ',' {hspaces} value+:expr_in_matrix
+    =
+    | value+:row_with_commas {hspaces} value+:expr_in_matrix ({hspaces} ',' | {hspaces}+)
+    | {hspaces} value+:expr_in_matrix ({hspaces} ',' | {hspaces}+)
     ;
 
-expr_in_matrix::SingleLineStatement
+expr_in_matrix::SingleValueModel
     =
     | value:addition_in_matrix
     | value:subtraction_in_matrix
     | value:term_in_matrix
-    | (vdots | cdots | iddots | ddots)
+    | value:(vdots | cdots | iddots | ddots)
     #| {}
     ;
 
-addition_in_matrix
+addition_in_matrix::Add
     =
     left:term_in_matrix {hspaces} op:'+' {hspaces} right:expr_in_matrix
     ;
 
 
-subtraction_in_matrix
+subtraction_in_matrix::Subtract
     =
     left:term_in_matrix {hspaces} op:'-' {hspaces} right:expr_in_matrix
     ;
@@ -53,7 +59,7 @@ multiplication_in_matrix
 
 division_in_matrix
     =
-    left:factor {hspaces} op:'/' {hspaces} right:term_in_matrix
+    factor {hspaces} '/' {hspaces} term_in_matrix
     ;
 
 vdots::MatrixVdots

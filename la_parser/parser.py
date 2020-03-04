@@ -58,6 +58,9 @@ class Divide(ModelRenderer):
     \\frac{{{left}}}{{{right}}}
     '''
 
+class SingleValueModel(ModelRenderer):
+    template = '''\
+    {value}'''
 
 class SingleLineStatement(ModelRenderer):
     template = '''\
@@ -95,12 +98,12 @@ class MatrixRows(ModelRenderer):
 
 class MatrixRow(ModelRenderer):
     template = '''\
-    {value:::}\\\\
+    {value::&:}\\\\
     '''
 
 
 class MatrixRowCommas(ModelRenderer):
-    template = "{left} & {value}"
+    template = "{value::&:}"
 
 
 class Derivative(ModelRenderer):
