@@ -19,6 +19,14 @@ identifier
     = !KEYWORDS /[A-Za-z]/
     ;
 
+desc_identifier
+    = !KEYWORDS '`' /[A-Za-z][[A-Za-z0-9]*/ '`';
+
+
 separator
-    = line | ';' {hspace}
+    =
+    line {hspaces} ';'
+    | ';' {hspaces} line
+    | line
+    | ';'
     ;

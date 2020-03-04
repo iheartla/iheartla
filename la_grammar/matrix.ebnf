@@ -3,25 +3,25 @@ matrix::Matrix
     = '[' {hspaces} value:rows {hspaces} ']'
     ;
 
-rows
+rows::MatrixRows
     =
-    | rows {hspaces} separator {hspaces} row {hspaces}
-    | rows {hspaces} separator {hspaces}
-    | row {hspaces}
+    | value+:rows {hspaces} {separator}+ {hspaces} value+:row {hspaces}
+    | value+:rows {hspaces} {separator}+ {hspaces}
+    | value+:row {hspaces}
     ;
 
 
-row
+row::MatrixRow
     =
-    | row_with_commas {hspaces} expr_in_matrix
-    | row_with_commas
-    | expr_in_matrix
+    | value+:row_with_commas {hspaces} value+:expr_in_matrix
+    | value+:row_with_commas
     ;
 
-row_with_commas
+row_with_commas::MatrixRowCommas
     =
-    | row_with_commas {hspaces} expr_in_matrix (',' | {hspaces}+)
-    | expr_in_matrix (',' | {hspaces}+)
+    | left+:row_with_commas {hspaces} value+:expr_in_matrix ({hspaces} ',' | {hspaces}+)
+    | {hspaces} value+:expr_in_matrix ({hspaces} ',' | {hspaces}+)
+    | value+:expr_in_matrix
     ;
 
 expr_in_matrix
@@ -29,7 +29,8 @@ expr_in_matrix
     | addition_in_matrix
     | subtraction_in_matrix
     | term_in_matrix
-    | {}
+    | (vdots | cdots | iddots | ddots)
+    #| {}
     ;
 
 addition_in_matrix
@@ -61,4 +62,14 @@ division_in_matrix
     left:factor {hspaces} op:'/' {hspaces} right:term_in_matrix
     ;
 
+vdots::MatrixVdots
+    = VDOTS;
 
+cdots::MatrixCdots
+    = CDOTS;
+
+iddots::MatrixIddots
+    = IDDOTS;
+
+ddots::MatrixDdots
+    = DDOTS;

@@ -18,6 +18,10 @@ KEYWORDS
     | ORTH
     | QR
     | DERIVATIVE
+    | VDOTS
+    | CDOTS
+    | IDDOTS
+    | DDOTS
     ;
 
 TRACE = 'trace';
@@ -39,3 +43,7 @@ NULL = 'null';
 ORTH = 'orth';
 QR = 'qr';
 DERIVATIVE = '\u2202';
+VDOTS = '\u22EE';   #⋮
+CDOTS = '\u22EF';   #⋯
+IDDOTS = '\u22F0';  #⋰
+DDOTS = '\u22F1';   #⋱

@@ -20,7 +20,7 @@ all_content::AllContent
 
 
 single_line_separator::SingleLineSeparator
-    = value:single_line_statement {separator}+
+    = value:single_line_statement {separator}+ {hspaces}
     ;
 
 
@@ -45,7 +45,8 @@ expression
 
 assignment::Assignment
     =
-    left:identifier {hspaces} '=' {hspaces} right:expression {hspaces}
+    | left:identifier {hspace} '=' {hspace} right:expression {hspace}
+    | left:identifier '=' right:expression {hspace}
     ;
 
 term

@@ -20,7 +20,6 @@ from tatsu.exceptions import (
     OptionSucceeded
 )
 
-
 THIS_MODULE = sys.modules[__name__]
 
 
@@ -79,27 +78,67 @@ class Subexpression(ModelRenderer):
     template = '''({value})'''
 
 
+# {value::&:}\n
 class Matrix(ModelRenderer):
     template = '''\
     \\begin{{bmatrix}}
-    {value::&:}\n
+    {value}
     \end{{bmatrix}}
     '''
+
+
+class MatrixRows(ModelRenderer):
+    template = '''\
+    {value:::}
+    '''
+
+
+class MatrixRow(ModelRenderer):
+    template = '''\
+    {value:::}\\\\
+    '''
+
+
+class MatrixRowCommas(ModelRenderer):
+    template = "{left} & {value::&:}"
+
 
 class Derivative(ModelRenderer):
     template = '''\
     \\partial {value}
     '''
 
+
 class InnerProduct(ModelRenderer):
     template = '''\
     {left}  {right} 
     '''
 
+
+class MatrixVdots(ModelRenderer):
+    template = '''\
+    \\vdots'''
+
+
+class MatrixCdots(ModelRenderer):
+    template = '''\
+    \\cdots'''
+
+
+class MatrixIddots(ModelRenderer):
+    template = '''\
+    \\iddots'''
+
+
+class MatrixDdots(ModelRenderer):
+    template = '''\
+    \\ddots'''
+
+
 def parse_and_translate(content):
     # try:
     grammar = open('la_grammar/LA.ebnf').read()
-    parser = tatsu.compile(grammar, asmodel=True)
+    parser = tatsu.compile(grammar, asmodel=True, trace= True)
     # print content
     # print content.encode('utf-8')
     model = parser.parse(content, parseinfo=True)
@@ -109,7 +148,7 @@ def parse_and_translate(content):
     print(model.ast['left'])
     print(model.ast['right'])
     postfix = PostfixCodeGenerator().render(model)
-    postfix = '''\\documentclass[12pt]{article}\n\\usepackage{mathtools}\n\\begin{document}\n\\[''' + postfix + '''\]\n\end{document}'''
+    postfix = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\begin{document}\n\\[''' + postfix + '''\]\n\end{document}'''
     result = (postfix, 0)
     return result
     # except FailedParse as e:

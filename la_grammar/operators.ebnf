@@ -5,6 +5,8 @@ operations
     | eig_operation
     | derivative_operation
     | inner_product
+    | matrix_operator
+    | power_operation
     ;
 
 addition::Add
@@ -49,5 +51,13 @@ eig_operation
 derivative_operation::Derivative
     = DERIVATIVE value:identifier;
 
+power_operation
+    = identifier {hspaces} '^' {hspaces} identifier
+    ;
+
 inner_product::InnerProduct
     = '<' {hspaces} left:identifier {hspaces} ',' {hspaces}  right:identifier {hspaces} '>';
+
+matrix_operator
+    = identifier '_' identifier
+    | identifier '_' desc_identifier;
