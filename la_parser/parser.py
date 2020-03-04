@@ -100,7 +100,7 @@ class MatrixRow(ModelRenderer):
 
 
 class MatrixRowCommas(ModelRenderer):
-    template = "{left} & {value::&:}"
+    template = "{left} & {value}"
 
 
 class Derivative(ModelRenderer):
@@ -138,7 +138,7 @@ class MatrixDdots(ModelRenderer):
 def parse_and_translate(content):
     # try:
     grammar = open('la_grammar/LA.ebnf').read()
-    parser = tatsu.compile(grammar, asmodel=True, trace= True)
+    parser = tatsu.compile(grammar, asmodel=True, trace= False)
     # print content
     # print content.encode('utf-8')
     model = parser.parse(content, parseinfo=True)

@@ -10,25 +10,19 @@ rows::MatrixRows
     | value+:row {hspaces}
     ;
 
-
 row::MatrixRow
-    =
-    | value+:row_with_commas {hspaces} value+:expr_in_matrix
-    | value+:row_with_commas
+    = value:row_with_commas | value:expr_in_matrix
     ;
 
 row_with_commas::MatrixRowCommas
-    =
-    | left+:row_with_commas {hspaces} value+:expr_in_matrix ({hspaces} ',' | {hspaces}+)
-    | {hspaces} value+:expr_in_matrix ({hspaces} ',' | {hspaces}+)
-    | value+:expr_in_matrix
+    = ( left:row_with_commas | left:expr_in_matrix ) {hspaces} ',' {hspaces} value:expr_in_matrix
     ;
 
-expr_in_matrix
+expr_in_matrix::SingleLineStatement
     =
-    | addition_in_matrix
-    | subtraction_in_matrix
-    | term_in_matrix
+    | value:addition_in_matrix
+    | value:subtraction_in_matrix
+    | value:term_in_matrix
     | (vdots | cdots | iddots | ddots)
     #| {}
     ;

@@ -7,11 +7,11 @@ start
     all_content $
     ;
 
-#include :: "src/la_grammar/keywords.ebnf"
-#include :: "src/la_grammar/number.ebnf"
-#include :: "src/la_grammar/operators.ebnf"
-#include :: "src/la_grammar/matrix.ebnf"
-#include :: "src/la_grammar/base.ebnf"
+#include :: "linear_algebra/la_grammar/keywords.ebnf"
+#include :: "linear_algebra/la_grammar/number.ebnf"
+#include :: "linear_algebra/la_grammar/operators.ebnf"
+#include :: "linear_algebra/la_grammar/matrix.ebnf"
+#include :: "linear_algebra/la_grammar/base.ebnf"
 
 all_content::AllContent
     = {left:single_line_separator} right:single_line_statement
