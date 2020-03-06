@@ -23,14 +23,19 @@ from tatsu.exceptions import (
 THIS_MODULE = sys.modules[__name__]
 
 
-class PostfixCodeGenerator(CodeGenerator):
+class LatexCodeGenerator(CodeGenerator):
     def __init__(self):
-        super(PostfixCodeGenerator, self).__init__(modules=[THIS_MODULE])
+        super(LatexCodeGenerator, self).__init__(modules=[THIS_MODULE])
 
 
 class Number(ModelRenderer):
     template = '''\
     {value}'''
+
+
+class Statements(ModelRenderer):
+    template = '''\
+    {value::\\]\n\\[\n:}'''
 
 
 class Assignment(ModelRenderer):
@@ -58,23 +63,10 @@ class Divide(ModelRenderer):
     \\frac{{{left}}}{{{right}}}
     '''
 
+
 class SingleValueModel(ModelRenderer):
     template = '''\
     {value}'''
-
-class SingleLineStatement(ModelRenderer):
-    template = '''\
-    {value}'''
-
-
-class SingleLineSeparator(ModelRenderer):
-    template = '''\
-    {value}'''
-
-
-class AllContent(ModelRenderer):
-    template = '''\
-    {left::\n:}\n{right}'''
 
 
 class Subexpression(ModelRenderer):
@@ -85,8 +77,7 @@ class Subexpression(ModelRenderer):
 class Matrix(ModelRenderer):
     template = '''\
     \\begin{{bmatrix}}
-    {value}
-    \end{{bmatrix}}
+    {value}\end{{bmatrix}}
     '''
 
 
@@ -141,29 +132,26 @@ class MatrixDdots(ModelRenderer):
 def parse_and_translate(content):
     # try:
     grammar = open('la_grammar/LA.ebnf').read()
-    parser = tatsu.compile(grammar, asmodel=True, trace= False)
-    # print content
-    # print content.encode('utf-8')
+    parser = tatsu.compile(grammar, asmodel=True, trace=False)
     model = parser.parse(content, parseinfo=True)
     print('model:', isinstance(model, Node))
     print('cl:', model.__class__.__name__)
     print('class:', isinstance(model.ast, AST))
-    print(model.ast['left'])
-    print(model.ast['right'])
-    postfix = PostfixCodeGenerator().render(model)
-    postfix = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\begin{document}\n\\[''' + postfix + '''\]\n\end{document}'''
-    result = (postfix, 0)
+    tex = LatexCodeGenerator().render(model)
+    tex = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\begin{document}\n\\[\n''' + tex + '''\n\]\n\end{document}'''
+    # tex = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\begin{document}\n$\n''' + tex + '''\n$\n\end{document}'''
+    result = (tex, 0)
     return result
     # except FailedParse as e:
-    #     postfix = str(e)
-    #     result = (postfix, 1)
+    #     tex = str(e)
+    #     result = (tex, 1)
     # except FailedCut as e:
-    #     postfix = str(e)
-    #     result = (postfix, 1)
+    #     tex = str(e)
+    #     result = (tex, 1)
     # except:
     #     pass
-    #     postfix = str(sys.exc_info()[0])
-    #     result = (postfix, 1)
+    #     tex = str(sys.exc_info()[0])
+    #     result = (tex, 1)
     # finally:
-    #     print postfix
+    #     print tex
     #     return result

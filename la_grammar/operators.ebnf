@@ -1,12 +1,12 @@
 #operators
 operations
     =
-    | trace_operation
-    | eig_operation
-    | derivative_operation
-    | inner_product
+    | trace_operator
+    | eig_operator
+    | derivative_operator
+    | inner_product_operator
     | matrix_operator
-    | power_operation
+    | power_operator
     ;
 
 addition::Add
@@ -39,24 +39,27 @@ dot_multiplication
     = identifier '.*' identifier
     ;
 
-trace_operation
+trace_operator
     = TRACE '(' {hspaces} identifier {hspaces} ')'
     ;
 
-eig_operation
+eig_operator
     = EIG '(' {hspaces} identifier {hspaces} ')'
     ;
 
 
-derivative_operation::Derivative
+derivative_operator::Derivative
     = DERIVATIVE value:identifier;
 
-power_operation
+
+power_operator
     = identifier {hspaces} '^' {hspaces} identifier
     ;
 
-inner_product::InnerProduct
+
+inner_product_operator::InnerProduct
     = '<' {hspaces} left:identifier {hspaces} ',' {hspaces}  right:identifier {hspaces} '>';
+
 
 matrix_operator
     = identifier '_' identifier

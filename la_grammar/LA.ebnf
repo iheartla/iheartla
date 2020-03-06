@@ -4,7 +4,7 @@
 
 start
     =
-    all_content $
+    statements $
     ;
 
 #include :: "linear_algebra/la_grammar/keywords.ebnf"
@@ -13,19 +13,13 @@ start
 #include :: "linear_algebra/la_grammar/matrix.ebnf"
 #include :: "linear_algebra/la_grammar/base.ebnf"
 
-all_content::AllContent
-    = {left:single_line_separator} right:single_line_statement
-    | left:{single_line_separator}
-    ;
 
 
-single_line_separator::SingleLineSeparator
-    = value:single_line_statement {separator}+ {hspaces}
-    ;
-
-
-single_line_statement::SingleLineStatement
-    = {hspaces} value:statement {hspaces}
+statements::Statements
+    =
+    | value+:statements {hspaces} {separator}+ {hspaces} value+:statement {hspaces}
+    | value+:statements {hspaces} {separator}+ {hspaces}
+    | value+:statement {hspaces}
     ;
 
 statement
@@ -39,20 +33,20 @@ expression
     | addition
     | subtraction
     | term
-    | operations
+    #| operations
     | {}
     ;
 
 assignment::Assignment
     =
-    | left:identifier {hspace} '=' {hspace} right:expression {hspace}
-    | left:identifier '=' right:expression {hspace}
+    left:identifier {hspace} '=' {hspace} right:expression {hspace}
     ;
 
 term
     =
     | multiplication
     | division
+    | operations
     | factor
     ;
 
