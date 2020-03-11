@@ -1,11 +1,8 @@
 from pprint import pprint
 from tatsu.objectmodel import Node
 from tatsu.semantics import ModelBuilderSemantics
-from tatsu.codegen import ModelRenderer
-from tatsu.codegen import CodeGenerator
 from tatsu.ast import AST
 import tatsu
-import sys
 from tatsu.exceptions import (
     FailedCut,
     FailedExpectingEndOfText,
@@ -19,128 +16,59 @@ from tatsu.exceptions import (
     FailedToken,
     OptionSucceeded
 )
-
-THIS_MODULE = sys.modules[__name__]
-
-
-class LatexCodeGenerator(CodeGenerator):
-    def __init__(self):
-        super(LatexCodeGenerator, self).__init__(modules=[THIS_MODULE])
-
-
-class Number(ModelRenderer):
-    template = '''\
-    {value}'''
+from enum import Enum
+from la_parser.latex_walker import LatexCodeGenerator
+from la_parser.numpy_walker import NumpyWalker
+from la_parser.eigen_walker import EigenWalker
+from la_parser.matlab_walker import MatlabWalker
+from la_parser.julia_walker import JuliaWalker
+from la_parser.pytorch_walker import PytorchWalker
+from la_parser.tensorflow_walker import TensorflowWalker
 
 
-class Statements(ModelRenderer):
-    template = '''\
-    {value::\\]\n\\[\n:}'''
+class ParserType(Enum):
+    LATEX = 1
+    NUMPY = 2
+    EIGEN = 3
+    MATLAB = 4
+    JULIA = 5
+    PYTORCH = 6
+    ARMADILLO = 7
+    TENSORFLOW = 8
 
 
-class Assignment(ModelRenderer):
-    template = '''\
-    {left} = {right}'''
-
-
-class Add(ModelRenderer):
-    template = '''\
-    {left} + {right}'''
-
-
-class Subtract(ModelRenderer):
-    template = '''\
-    {left} - {right}'''
-
-
-class Multiply(ModelRenderer):
-    template = '''\
-    {left} * {right}'''
-
-
-class Divide(ModelRenderer):
-    template = '''\
-    \\frac{{{left}}}{{{right}}}
-    '''
-
-
-class SingleValueModel(ModelRenderer):
-    template = '''\
-    {value}'''
-
-
-class Subexpression(ModelRenderer):
-    template = '''({value})'''
-
-
-# {value::&:}\n
-class Matrix(ModelRenderer):
-    template = '''\
-    \\begin{{bmatrix}}
-    {value}\end{{bmatrix}}
-    '''
-
-
-class MatrixRows(ModelRenderer):
-    template = '''\
-    {value:::}
-    '''
-
-
-class MatrixRow(ModelRenderer):
-    template = '''\
-    {value::&:}\\\\
-    '''
-
-
-class MatrixRowCommas(ModelRenderer):
-    template = "{value::&:}"
-
-
-class Derivative(ModelRenderer):
-    template = '''\
-    \\partial {value}
-    '''
-
-
-class InnerProduct(ModelRenderer):
-    template = '''\
-    {left}  {right} 
-    '''
-
-
-class MatrixVdots(ModelRenderer):
-    template = '''\
-    \\vdots'''
-
-
-class MatrixCdots(ModelRenderer):
-    template = '''\
-    \\cdots'''
-
-
-class MatrixIddots(ModelRenderer):
-    template = '''\
-    \\iddots'''
-
-
-class MatrixDdots(ModelRenderer):
-    template = '''\
-    \\ddots'''
+def walk_model(parser_type, model):
+    if parser_type == ParserType.NUMPY:
+        walker = NumpyWalker()
+    elif parser_type == ParserType.EIGEN:
+        walker = EigenWalker()
+    elif parser_type == ParserType.MATLAB:
+        walker = MatlabWalker()
+    elif parser_type == ParserType.JULIA:
+        walker = JuliaWalker()
+    elif parser_type == ParserType.PYTORCH:
+        walker = PytorchWalker()
+    elif parser_type == ParserType.ARMADILLO:
+        walker = ArmadilloWalker()
+    elif parser_type == ParserType.TENSORFLOW:
+        walker = TensorflowWalker()
+    return walker.walk_model(model)
 
 
 def parse_and_translate(content):
     # try:
     grammar = open('la_grammar/LA.ebnf').read()
-    parser = tatsu.compile(grammar, asmodel=True, trace=False)
+    parser_type = ParserType.NUMPY
+    result = ('', 0)
+    parser = tatsu.compile(grammar, asmodel=True)
     model = parser.parse(content, parseinfo=True)
-    print('model:', isinstance(model, Node))
-    print('cl:', model.__class__.__name__)
-    print('class:', isinstance(model.ast, AST))
-    tex = LatexCodeGenerator().render(model)
-    tex = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\begin{document}\n\\[\n''' + tex + '''\n\]\n\end{document}'''
-    # tex = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\begin{document}\n$\n''' + tex + '''\n$\n\end{document}'''
-    result = (tex, 0)
+    if parser_type == ParserType.LATEX:
+        tex = LatexCodeGenerator().render(model)
+        tex = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\begin{document}\n\\[\n''' + tex + '''\n\]\n\end{document}'''
+        result = (tex, 0)
+    else:
+        res = walk_model(parser_type, model)
+        result = (res, 0)
     return result
     # except FailedParse as e:
     #     tex = str(e)
