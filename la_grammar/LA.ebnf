@@ -17,15 +17,24 @@ start
 
 statements::Statements
     =
-    | value+:statements {hspaces} {separator}+ {hspaces} value+:statement {hspaces}
-    | value+:statements {hspaces} {separator}+ {hspaces}
-    | value+:statement {hspaces}
+    | {hspaces} value+:statements {hspaces} {separator}+ {hspaces} value+:statement {hspaces}
+    | {hspaces} value+:statements {hspaces} {separator}+ {hspaces}
+    | {hspaces} value+:statement {hspaces}
     ;
 
 statement
     =
+    | statement {hspace} {separator} WHERE {hspace} {separator} {hspace} {where_condition}+
     | assignment
     | expression
+    ;
+
+
+where_condition
+    = where_condition {hspace} {separator} {hspace} where_condition
+    | identifier {hspaces} ':' {hspaces} 'matrix' {hspaces} '(' {hspaces} integer {hspaces} ',' {hspaces} integer {hspaces}')'
+    | identifier {hspaces} ':' {hspaces} 'vector' {hspaces} '(' {hspaces} integer {hspaces}')'
+    | identifier {hspaces} ':' {hspaces} 'scalar'
     ;
 
 expression
@@ -33,7 +42,6 @@ expression
     | addition
     | subtraction
     | term
-    #| operations
     | {}
     ;
 
@@ -52,6 +60,8 @@ term
 
 factor
     =
+    | '+' factor
+    | '-' factor
     | subexpression
     | identifier
     | number
