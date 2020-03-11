@@ -35,13 +35,13 @@ expr_in_matrix::SingleValueModel
 
 addition_in_matrix::Add
     =
-    left:term_in_matrix {hspaces} op:'+' {hspaces} right:expr_in_matrix
+    left:term_in_matrix op:'+' right:expr_in_matrix
     ;
 
 
 subtraction_in_matrix::Subtract
     =
-    left:term_in_matrix {hspaces} op:'-' {hspaces} right:expr_in_matrix
+    left:term_in_matrix op:'-' right:expr_in_matrix
     ;
 
 
@@ -54,12 +54,12 @@ term_in_matrix
 
 multiplication_in_matrix
     =
-    factor {hspaces} '*' {hspaces} term_in_matrix
+    factor '*' term_in_matrix
     ;
 
 division_in_matrix
     =
-    factor {hspaces} '/' {hspaces} term_in_matrix
+    factor '/' term_in_matrix
     ;
 
 vdots::MatrixVdots
