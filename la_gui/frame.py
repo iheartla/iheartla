@@ -38,6 +38,10 @@ class MainWindow(wx.Frame):
         self.control.SetValue(u'∂a')
         # self.control.SetValue('a+b-c; a*b+c; a*(b+c); a b+c; a (((b+c)))')
         # self.control.SetValue('[2;4]')
+        newId = wx.NewId()
+        self.Bind(wx.EVT_MENU, self.OnKeyEnter, id=newId)
+        acc_tbl = wx.AcceleratorTable([(wx.ACCEL_CTRL, ord('R'), newId)])
+        self.SetAcceleratorTable(acc_tbl)
 
         self.Show()
 
@@ -61,6 +65,10 @@ class MainWindow(wx.Frame):
 
     def OnExit(self, e):
         self.Close(True)
+
+    def OnKeyEnter(self, e):
+        print('enter key') 
+        self.OnTranslate(e)
 
     def OnTranslate(self, e):
         self.statusbar.SetStatusText("Compiling ...", 0)
