@@ -14,12 +14,11 @@ start
 #include :: "linear_algebra/la_grammar/base.ebnf"
 
 
-
 statements::Statements
     =
-    | {hspaces} value+:statements {hspaces} {separator}+ {hspaces} value+:statement {hspaces}
-    | {hspaces} value+:statements {hspaces} {separator}+ {hspaces}
-    | {hspaces} value+:statement {hspaces}
+    | {hspace} value+:statements {separator_with_space}+ value+:statement {hspace}
+    | {hspace} value+:statements {separator_with_space}+
+    | {hspace} value+:statement {hspace}
     ;
 
 statement
@@ -31,11 +30,12 @@ statement
 
 
 where_condition
-    = where_condition {hspace} {separator} {hspace} where_condition
-    | identifier {hspaces} ':' {hspaces} 'matrix' {hspaces} '(' {hspaces} integer {hspaces} ',' {hspaces} integer {hspaces}')'
-    | identifier {hspaces} ':' {hspaces} 'vector' {hspaces} '(' {hspaces} integer {hspaces}')'
-    | identifier {hspaces} ':' {hspaces} 'scalar'
+    = where_condition {separator_with_space}+ where_condition
+    | identifier {hspace} ':' {hspace} 'matrix' {hspace} '(' {hspace} integer {hspace} ',' {hspace} integer {hspace}')' { {hspace} ':' {hspace} description}
+    | identifier {hspace} ':' {hspace} 'vector' {hspace} '(' {hspace} integer {hspace}')' { {hspace} ':' {hspace} description}
+    | identifier {hspace} ':' {hspace} 'scalar' { {hspace} ':' {hspace} description}
     ;
+
 
 expression
     =
@@ -70,5 +70,5 @@ factor
 
 subexpression::Subexpression
     =
-    '(' {hspaces} value:expression {hspaces} ')'
+    '(' {hspace} value:expression {hspace} ')'
     ;

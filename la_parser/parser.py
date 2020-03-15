@@ -58,7 +58,7 @@ def walk_model(parser_type, model):
 def parse_and_translate(content):
     # try:
     grammar = open('la_grammar/LA.ebnf').read()
-    parser_type = ParserType.NUMPY
+    parser_type = ParserType.LATEX
     result = ('', 0)
     parser = tatsu.compile(grammar, asmodel=True)
     model = parser.parse(content, parseinfo=True)

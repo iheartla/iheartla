@@ -1,27 +1,27 @@
 #matrix
 matrix::Matrix
-    = '[' {hspaces} value:rows {hspaces} ']'
+    = '[' {hspace} value:rows {hspace} ']'
     ;
 
 rows::MatrixRows
     =
-    | value+:rows {hspaces} {separator}+ {hspaces} value+:row {hspaces}
-    | value+:rows {hspaces} {separator}+ {hspaces}
-    | value+:row {hspaces}
+    | value+:rows {separator_with_space}+ value+:row {hspace}
+    | value+:rows {separator_with_space}+
+    | value+:row {hspace}
     ;
 
 row::MatrixRow
     =
-    | value+:row_with_commas {hspaces} value+:expr_in_matrix
+    | value+:row_with_commas {hspace} value+:expr_in_matrix
     | value+:row_with_commas
     | value+:expr_in_matrix
     ;
 
 row_with_commas::MatrixRowCommas
-    #= ( left+:row_with_commas | left+:expr_in_matrix ) {hspaces} ',' {hspaces} value+:expr_in_matrix
+    #= ( left+:row_with_commas | left+:expr_in_matrix ) {hspace} ',' {hspace} value+:expr_in_matrix
     =
-    | value+:row_with_commas {hspaces} value+:expr_in_matrix ({hspaces} ',' | {hspaces}+)
-    | {hspaces} value+:expr_in_matrix ({hspaces} ',' | {hspaces}+)
+    | value+:row_with_commas {hspace} value+:expr_in_matrix ({hspace} ',' | {hspace}+)
+    | {hspace} value+:expr_in_matrix ({hspace} ',' | {hspace}+)
     ;
 
 expr_in_matrix::SingleValueModel
@@ -63,13 +63,17 @@ division_in_matrix
     ;
 
 vdots::MatrixVdots
-    = VDOTS;
+    = VDOTS
+    ;
 
 cdots::MatrixCdots
-    = CDOTS;
+    = CDOTS
+    ;
 
 iddots::MatrixIddots
-    = IDDOTS;
+    = IDDOTS
+    ;
 
 ddots::MatrixDdots
-    = DDOTS;
+    = DDOTS
+    ;

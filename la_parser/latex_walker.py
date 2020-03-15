@@ -59,7 +59,6 @@ class Matrix(ModelRenderer):
     template = '''\
     \\begin{{bmatrix}}
     {value}\end{{bmatrix}}
-    {op}
     '''
 
 

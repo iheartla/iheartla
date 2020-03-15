@@ -67,7 +67,7 @@ class MainWindow(wx.Frame):
         self.Close(True)
 
     def OnKeyEnter(self, e):
-        print('enter key') 
+        print('enter key')
         self.OnTranslate(e)
 
     def OnTranslate(self, e):

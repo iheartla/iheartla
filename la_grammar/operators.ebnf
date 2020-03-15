@@ -7,31 +7,32 @@ operations
     | inner_product_operator
     | matrix_operator
     | power_operator
+    | sum_operator
     ;
 
 addition::Add
     =
-    left:term {hspaces} op:'+' {hspaces} right:expression
+    left:term {hspace} op:'+' {hspace} right:expression
     ;
 
 
 subtraction::Subtract
     =
-    left:term {hspaces} op:'-' {hspaces} right:expression
+    left:term {hspace} op:'-' {hspace} right:expression
     ;
 
 
 multiplication::Multiply
     =
     left:term op:'*' right:term
-    | left:term {hspaces} right:term
+    | left:term {hspace} right:term
     ;
 
 
 division::Divide
     =
-    #left:term {hspaces} op:'/' {hspaces} right:term
-    left:factor {hspaces} op:'/' {hspaces} right:term
+    #left:term {hspace} op:'/' {hspace} right:term
+    left:factor {hspace} op:'/' {hspace} right:term
     ;
 
 
@@ -39,28 +40,38 @@ dot_multiplication
     = identifier '.*' identifier
     ;
 
+
 trace_operator
-    = TRACE '(' {hspaces} identifier {hspaces} ')'
+    = TRACE '(' {hspace} identifier {hspace} ')'
     ;
 
+
 eig_operator
-    = EIG '(' {hspaces} identifier {hspaces} ')'
+    = EIG '(' {hspace} identifier {hspace} ')'
     ;
 
 
 derivative_operator::Derivative
-    = DERIVATIVE value:identifier;
+    = DERIVATIVE value:identifier
+    ;
 
 
 power_operator
-    = identifier {hspaces} '^' {hspaces} identifier
+    = identifier {hspace} '^' {hspace} identifier
+    ;
+
+
+sum_operator
+    = SUM '_' identifier {hspace}+ {identifier}+
     ;
 
 
 inner_product_operator::InnerProduct
-    = '<' {hspaces} left:identifier {hspaces} ',' {hspaces}  right:identifier {hspaces} '>';
+    = '<' {hspace} left:identifier {hspace} ',' {hspace}  right:identifier {hspace} '>'
+    ;
 
 
 matrix_operator
     = identifier '_' identifier
-    | identifier '_' desc_identifier;
+    | identifier '_' desc_identifier
+    ;

@@ -3,10 +3,6 @@ hspace
     = ' ' | '\t'
     ;
 
-hspaces
-    = {hspace}+
-    ;
-
 line
     = '\n' | '\r' | '\f'
     ;
@@ -16,17 +12,24 @@ lines
     ;
 
 identifier
-    = !KEYWORDS /[A-Za-z]/
+    = identifier '_' identifier {',' identifier}
+    | !KEYWORDS /[A-Za-z]/
+    ;
+
+description
+    = !KEYWORDS /[A-Za-z0-9][A-Za-z0-9\t ]*/
     ;
 
 desc_identifier
-    = !KEYWORDS '`' /[A-Za-z][[A-Za-z0-9]*/ '`';
-
+    = !KEYWORDS '`' /[A-Za-z][[A-Za-z0-9]*/ '`'
+    ;
 
 separator
     =
-    line {hspaces} ';'
-    | ';' {hspaces} line
     | line
     | ';'
+    ;
+
+separator_with_space
+    = {hspace} separator {hspace}
     ;

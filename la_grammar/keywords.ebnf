@@ -23,6 +23,7 @@ KEYWORDS
     | IDDOTS
     | DDOTS
     | WHERE
+    | SUM
     ;
 
 TRACE = 'trace';
@@ -49,3 +50,4 @@ CDOTS = '\u22EF';   #⋯
 IDDOTS = '\u22F0';  #⋰
 DDOTS = '\u22F1';   #⋱
 WHERE = 'where';
+SUM = 'sum';
