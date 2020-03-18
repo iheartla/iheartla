@@ -12,8 +12,12 @@ lines
     ;
 
 identifier
-    = identifier '_' identifier {',' identifier}
+    = identifier_with_subscript
     | !KEYWORDS /[A-Za-z]/
+    ;
+
+identifier_with_subscript::IdentifierSubscript
+    = left:identifier '_' right+:identifier {',' right+:identifier}
     ;
 
 description
@@ -32,4 +36,8 @@ separator
 
 separator_with_space
     = {hspace} separator {hspace}
+    ;
+
+blank
+    = {(hspace | separator)}
     ;

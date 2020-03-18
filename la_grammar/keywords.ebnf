@@ -50,4 +50,6 @@ CDOTS = '\u22EF';   #⋯
 IDDOTS = '\u22F0';  #⋰
 DDOTS = '\u22F1';   #⋱
 WHERE = 'where';
-SUM = 'sum';
+SUM = 'sum' | '∑';
+SYMMETRIC = 'symmetric';
+DIAGONAL = 'diagonal';

@@ -2,9 +2,9 @@
 @@whitespace :: /(?!.*)/     #parse whitespace manually
 @@left_recursion::True
 
-start
+start::Start
     =
-    statements $
+    stat:statements {separator_with_space}+ WHERE {separator_with_space}+ cond:where_conditions {blank} $
     ;
 
 #include :: "linear_algebra/la_grammar/keywords.ebnf"
@@ -14,35 +14,53 @@ start
 #include :: "linear_algebra/la_grammar/base.ebnf"
 
 
+
 statements::Statements
     =
     | {hspace} value+:statements {separator_with_space}+ value+:statement {hspace}
-    | {hspace} value+:statements {separator_with_space}+
     | {hspace} value+:statement {hspace}
     ;
 
 statement
     =
-    | statement {hspace} {separator} WHERE {hspace} {separator} {hspace} {where_condition}+
     | assignment
     | expression
     ;
 
-
-where_condition
-    = where_condition {separator_with_space}+ where_condition
-    | identifier {hspace} ':' {hspace} 'matrix' {hspace} '(' {hspace} integer {hspace} ',' {hspace} integer {hspace}')' { {hspace} ':' {hspace} description}
-    | identifier {hspace} ':' {hspace} 'vector' {hspace} '(' {hspace} integer {hspace}')' { {hspace} ':' {hspace} description}
-    | identifier {hspace} ':' {hspace} 'scalar' { {hspace} ':' {hspace} description}
+where_conditions::WhereConditions
+    = {hspace} value+:where_conditions {separator_with_space}+ value+:where_condition
+    | {hspace} value+:where_condition {hspace}
     ;
 
+where_condition
+    = matrix_condition
+    | vector_condition
+    | scalar_condition
+    ;
+
+matrix_condition::MatrixCondition
+    = id:identifier {hspace} ':' {hspace} 'matrix' {hspace} '(' {hspace} id1:(integer | identifier)  {hspace} ',' {hspace} id2:(integer | identifier) {hspace}')'  {{hspace}+ attr+:matrix_attribute}  { {hspace} ':' {hspace} desc:description}
+    ;
+
+matrix_attribute
+    = SYMMETRIC
+    | DIAGONAL
+    ;
+
+vector_condition::VectorCondition
+    = id:identifier {hspace} ':' {hspace} 'vector' {hspace} '(' {hspace} id1:(integer | identifier) {hspace}')' { {hspace} ':' {hspace} desc:description}
+    ;
+
+scalar_condition::ScalarCondition
+    = id:identifier {hspace} ':' {hspace} 'scalar' { {hspace} ':' {hspace} desc:description}
+    ;
 
 expression
     =
     | addition
     | subtraction
     | term
-    | {}
+    #| {}
     ;
 
 assignment::Assignment

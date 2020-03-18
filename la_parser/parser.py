@@ -64,7 +64,7 @@ def parse_and_translate(content):
     model = parser.parse(content, parseinfo=True)
     if parser_type == ParserType.LATEX:
         tex = LatexCodeGenerator().render(model)
-        tex = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\begin{document}\n\\[\n''' + tex + '''\n\]\n\end{document}'''
+        tex = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\begin{document}\n\\[\n''' + tex + '''\n\end{document}'''
         result = (tex, 0)
     else:
         res = walk_model(parser_type, model)

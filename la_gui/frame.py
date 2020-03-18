@@ -35,7 +35,13 @@ class MainWindow(wx.Frame):
         self.staticTxt = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
         self.SetItemsPos()
         # self.control.SetValue('a b(c(d(b+c)e)f)g')
-        self.control.SetValue(u'∂a')
+        self.control.SetValue('''sum_i w_i T_i x
+
+where
+
+w_i: scalar: a scalar
+T_i: matrix(4,4): a matrix
+x: vector(4): a vector''')
         # self.control.SetValue('a+b-c; a*b+c; a*(b+c); a b+c; a (((b+c)))')
         # self.control.SetValue('[2;4]')
         newId = wx.NewId()

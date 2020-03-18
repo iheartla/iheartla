@@ -14,9 +14,41 @@ class Number(ModelRenderer):
     {value}'''
 
 
+class IdentifierSubscript(ModelRenderer):
+    template = '''\
+    {left}_{right::,:}'''
+
+
+class Start(ModelRenderer):
+    template = '''\
+    {stat}\n\\]
+\\[where\\]
+{cond}'''
+
+
 class Statements(ModelRenderer):
     template = '''\
     {value::\\]\n\\[\n:}'''
+
+
+class WhereConditions(ModelRenderer):
+    template = '''\
+    {value::\n:}'''
+
+
+class MatrixCondition(ModelRenderer):
+    template = '''\
+    \n\\[\n{id}:matrix({id1},{id2}):{desc}\n\\]'''
+
+
+class VectorCondition(ModelRenderer):
+    template = '''\
+    \n\\[\n{id}:vector({id1}):{desc}\n\\]'''
+
+
+class ScalarCondition(ModelRenderer):
+    template = '''\
+    \n\\[\n{id}:scalar:{desc}\n\\]'''
 
 
 class Assignment(ModelRenderer):
@@ -45,6 +77,12 @@ class Divide(ModelRenderer):
     '''
 
 
+class Summation(ModelRenderer):
+    template = '''\
+    \\sum_{sub::,:} {exp}
+    '''
+
+
 class SingleValueModel(ModelRenderer):
     template = '''\
     {value}'''
@@ -58,7 +96,7 @@ class Subexpression(ModelRenderer):
 class Matrix(ModelRenderer):
     template = '''\
     \\begin{{bmatrix}}
-    {value}\end{{bmatrix}}
+    {value}\\end{{bmatrix}}
     '''
 
 

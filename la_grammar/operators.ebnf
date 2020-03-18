@@ -61,8 +61,8 @@ power_operator
     ;
 
 
-sum_operator
-    = SUM '_' identifier {hspace}+ {identifier}+
+sum_operator::Summation
+    = SUM '_' sub+:identifier {',' sub+:identifier} {hspace}+ exp:expression
     ;
 
 
