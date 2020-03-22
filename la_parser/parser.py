@@ -26,7 +26,7 @@ from la_parser.pytorch_walker import PytorchWalker
 from la_parser.tensorflow_walker import TensorflowWalker
 
 
-class ParserType(Enum):
+class ParserTypeEnum(Enum):
     LATEX = 1
     NUMPY = 2
     EIGEN = 3
@@ -38,19 +38,19 @@ class ParserType(Enum):
 
 
 def walk_model(parser_type, model):
-    if parser_type == ParserType.NUMPY:
+    if parser_type == ParserTypeEnum.NUMPY:
         walker = NumpyWalker()
-    elif parser_type == ParserType.EIGEN:
+    elif parser_type == ParserTypeEnum.EIGEN:
         walker = EigenWalker()
-    elif parser_type == ParserType.MATLAB:
+    elif parser_type == ParserTypeEnum.MATLAB:
         walker = MatlabWalker()
-    elif parser_type == ParserType.JULIA:
+    elif parser_type == ParserTypeEnum.JULIA:
         walker = JuliaWalker()
-    elif parser_type == ParserType.PYTORCH:
+    elif parser_type == ParserTypeEnum.PYTORCH:
         walker = PytorchWalker()
-    elif parser_type == ParserType.ARMADILLO:
+    elif parser_type == ParserTypeEnum.ARMADILLO:
         walker = ArmadilloWalker()
-    elif parser_type == ParserType.TENSORFLOW:
+    elif parser_type == ParserTypeEnum.TENSORFLOW:
         walker = TensorflowWalker()
     return walker.walk_model(model)
 
@@ -58,11 +58,11 @@ def walk_model(parser_type, model):
 def parse_and_translate(content):
     # try:
     grammar = open('la_grammar/LA.ebnf').read()
-    parser_type = ParserType.LATEX
+    parser_type = ParserTypeEnum.NUMPY
     result = ('', 0)
     parser = tatsu.compile(grammar, asmodel=True)
     model = parser.parse(content, parseinfo=True)
-    if parser_type == ParserType.LATEX:
+    if parser_type == ParserTypeEnum.LATEX:
         tex = LatexCodeGenerator().render(model)
         tex = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\begin{document}\n\\[\n''' + tex + '''\n\end{document}'''
         result = (tex, 0)

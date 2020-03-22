@@ -4,9 +4,9 @@ digit
     /\d/
     ;
 
-integer
+integer::Integer
     =
-    {digit}+
+    value:{digit}+
     ;
 
 exponent
@@ -26,8 +26,8 @@ double
     | floating_point
     ;
 
-number
+number::Number
     =
-    | double
-    | integer
+    | value:double
+    | value:integer
     ;

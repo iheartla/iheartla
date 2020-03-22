@@ -13,12 +13,18 @@ lines
 
 identifier
     = identifier_with_subscript
-    | !KEYWORDS /[A-Za-z]/
+    | identifier_alone
     ;
 
 identifier_with_subscript::IdentifierSubscript
     = left:identifier '_' right+:identifier {',' right+:identifier}
     ;
+
+
+identifier_alone::IdentifierAlone
+    = !KEYWORDS value:/[A-Za-z]/
+    ;
+
 
 description
     = !KEYWORDS /[A-Za-z0-9][A-Za-z0-9\t ]*/

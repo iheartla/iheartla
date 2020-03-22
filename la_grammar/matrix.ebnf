@@ -1,6 +1,7 @@
 #matrix
 matrix::Matrix
     = '[' {hspace} value:rows {hspace} ']'
+    | '⎡' {hspace} value:rows {hspace} '⎦'
     ;
 
 rows::MatrixRows
@@ -11,7 +12,7 @@ rows::MatrixRows
     ;
 
 row::MatrixRow
-    =
+    = '|' {hspace} value+:row {hspace} '|'
     | value+:row_with_commas {hspace} value+:expr_in_matrix
     | value+:row_with_commas
     | value+:expr_in_matrix

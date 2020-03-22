@@ -76,14 +76,14 @@ term
     | factor
     ;
 
-factor
+factor::Factor
     =
-    | '+' factor
-    | '-' factor
-    | subexpression
-    | identifier
-    | number
-    | matrix
+    | '+' f:factor
+    | '-' f:factor
+    | sub:subexpression
+    | id:identifier
+    | num:number
+    | m:matrix
     ;
 
 subexpression::Subexpression

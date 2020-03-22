@@ -13,11 +13,19 @@ class Number(ModelRenderer):
     template = '''\
     {value}'''
 
+class Integer(ModelRenderer):
+    template = '''\
+    {value}'''
+
 
 class IdentifierSubscript(ModelRenderer):
     template = '''\
     {left}_{right::,:}'''
 
+
+class IdentifierAlone(ModelRenderer):
+    template = '''\
+    {value}'''
 
 class Start(ModelRenderer):
     template = '''\
