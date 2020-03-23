@@ -17,7 +17,7 @@ from tatsu.exceptions import (
     OptionSucceeded
 )
 from enum import Enum
-from la_parser.latex_walker import LatexCodeGenerator
+from la_parser.latex_walker import LatexWalker
 from la_parser.numpy_walker import NumpyWalker
 from la_parser.eigen_walker import EigenWalker
 from la_parser.matlab_walker import MatlabWalker
@@ -38,7 +38,9 @@ class ParserTypeEnum(Enum):
 
 
 def walk_model(parser_type, model):
-    if parser_type == ParserTypeEnum.NUMPY:
+    if parser_type == ParserTypeEnum.LATEX:
+        walker = LatexWalker()
+    elif parser_type == ParserTypeEnum.NUMPY:
         walker = NumpyWalker()
     elif parser_type == ParserTypeEnum.EIGEN:
         walker = EigenWalker()
@@ -58,17 +60,17 @@ def walk_model(parser_type, model):
 def parse_and_translate(content):
     # try:
     grammar = open('la_grammar/LA.ebnf').read()
-    parser_type = ParserTypeEnum.NUMPY
+    parser_type = ParserTypeEnum.LATEX
     result = ('', 0)
     parser = tatsu.compile(grammar, asmodel=True)
     model = parser.parse(content, parseinfo=True)
-    if parser_type == ParserTypeEnum.LATEX:
-        tex = LatexCodeGenerator().render(model)
-        tex = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\begin{document}\n\\[\n''' + tex + '''\n\end{document}'''
-        result = (tex, 0)
-    else:
-        res = walk_model(parser_type, model)
-        result = (res, 0)
+    # if parser_type == ParserTypeEnum.LATEX:
+    #     tex = LatexCodeGenerator().render(model)
+    #     tex = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\begin{document}\n\\[\n''' + tex + '''\n\end{document}'''
+    #     result = (tex, 0)
+    # else:
+    res = walk_model(parser_type, model)
+    result = (res, 0)
     return result
     # except FailedParse as e:
     #     tex = str(e)

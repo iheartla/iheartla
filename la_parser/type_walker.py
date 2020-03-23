@@ -131,6 +131,17 @@ class TypeWalker(NodeWalker):
         value = ''.join(node.value)
         return LaVarType(VarTypeEnum.INTEGER, desc=node.value)
 
+    def walk_Matrix(self, node):
+        return LaVarType(VarTypeEnum.MATRIX)
+
+    def walk_MatrixRows(self, node):
+        pass
+
+    def walk_MatrixRow(self, node):
+        pass
+
+    def walk_MatrixRowCommas(self, node):
+        pass
     ###################################################################
     def containSubscript(self, identifier):
         return identifier.find("_") != -1

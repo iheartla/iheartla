@@ -35,7 +35,14 @@ class NumpyWalker(BaseNodeWalker):
         return content
 
     def walk_Summation(self, node):
+
         return self.walk(node.exp)
+
+    def walk_Add(self, node):
+        return self.walk(node.left) + '+' + self.walk(node.right)
+
+    def walk_Subtract(self, node):
+        return self.walk(node.left) + '-' + self.walk(node.right)
 
     def walk_Multiply(self, node):
         return self.walk(node.left) + '*' + self.walk(node.right)
@@ -48,7 +55,6 @@ class NumpyWalker(BaseNodeWalker):
         right = []
         for value in node.right:
             right.append(self.walk(value))
-        print(self.walk(node.left) + '_' + ','.join(right))
         return self.walk(node.left) + '_' + ','.join(right)
 
     def walk_IdentifierAlone(self, node):
