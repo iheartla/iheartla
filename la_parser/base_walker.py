@@ -4,6 +4,7 @@ from tatsu.symtables import *
 from la_parser.la_types import *
 from la_parser.la_symbol import *
 from la_parser.type_walker import *
+from la_tools.la_visualizer import LaVisualizer
 
 
 class BaseNodeWalker(NodeWalker):
@@ -14,6 +15,7 @@ class BaseNodeWalker(NodeWalker):
         self.symtable = {}
         self.parameters = set()
         self.subscripts = []
+        self.visualizer = LaVisualizer()
 
     def print_symbols(self):
         print("symtable:")
@@ -29,6 +31,7 @@ class BaseNodeWalker(NodeWalker):
         self.parameters = type_walker.parameters
         self.subscripts = type_walker.subscripts
         self.print_symbols()
+        self.visualizer.visualize(node)
         content = self.pre_str + self.walk(node) + self.post_str
         return content
 

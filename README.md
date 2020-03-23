@@ -12,4 +12,8 @@ To run the GUI:
 
 Python 3.x
 
-    pip3 install tatsu wxpython
+    pip3 install tatsu wxpython graphviz
+    
+Graphviz - Graph Visualization Software
+
+
