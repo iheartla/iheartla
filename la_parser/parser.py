@@ -60,15 +60,10 @@ def walk_model(parser_type, model):
 def parse_and_translate(content):
     # try:
     grammar = open('la_grammar/LA.ebnf').read()
-    parser_type = ParserTypeEnum.LATEX
+    parser_type = ParserTypeEnum.NUMPY
     result = ('', 0)
     parser = tatsu.compile(grammar, asmodel=True)
     model = parser.parse(content, parseinfo=True)
-    # if parser_type == ParserTypeEnum.LATEX:
-    #     tex = LatexCodeGenerator().render(model)
-    #     tex = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\begin{document}\n\\[\n''' + tex + '''\n\end{document}'''
-    #     result = (tex, 0)
-    # else:
     res = walk_model(parser_type, model)
     result = (res, 0)
     return result

@@ -16,16 +16,16 @@ class TypeWalker(NodeWalker):
     def walk_object(self, o):
         raise Exception('Unexpected type %s walked', type(o).__name__)
 
-    def walk_Start(self, node):
+    def walk_Start(self, node, **kwargs):
         self.walk(node.cond)
         self.walk(node.stat)
 
     ###################################################################
-    def walk_WhereConditions(self, node):
+    def walk_WhereConditions(self, node, **kwargs):
         for cond in node.value:
             self.walk(cond)
 
-    def walk_MatrixCondition(self, node):
+    def walk_MatrixCondition(self, node, **kwargs):
         id0 = self.walk(node.id)
         id1 = self.walk(node.id1)
         id2 = self.walk(node.id2)
@@ -37,7 +37,7 @@ class TypeWalker(NodeWalker):
         if isinstance(id2, str):
             self.symtable[id2] = LaVarType(VarTypeEnum.INTEGER)
 
-    def walk_VectorCondition(self, node):
+    def walk_VectorCondition(self, node, **kwargs):
         id0 = self.walk(node.id)
         id1 = self.walk(node.id1)
         self.symtable[id0] = LaVarType(VarTypeEnum.VECTOR, id1, desc=node.desc)
@@ -46,13 +46,13 @@ class TypeWalker(NodeWalker):
         if isinstance(id1, str):
             self.symtable[id1] = LaVarType(VarTypeEnum.INTEGER)
 
-    def walk_ScalarCondition(self, node):
+    def walk_ScalarCondition(self, node, **kwargs):
         id0 = self.walk(node.id)
         self.symtable[id0] = LaVarType(VarTypeEnum.SCALAR, desc=node.desc)
         self.handleIdentifier(id0, self.symtable[id0])
         self.update_parameters(id0)
 
-    def update_parameters(self, identifier):
+    def update_parameters(self, identifier, **kwargs):
         if self.containSubscript(identifier):
             arr = self.getSubscripts(identifier)
             self.parameters.append(arr[0])
@@ -60,25 +60,25 @@ class TypeWalker(NodeWalker):
             self.parameters.append(identifier)
 
     ###################################################################
-    def walk_Statements(self, node):
+    def walk_Statements(self, node, **kwargs):
         for stat in node.value:
             self.walk(stat)
 
-    def walk_Add(self, node):
+    def walk_Add(self, node, **kwargs):
         left_type = self.walk(node.left)
         right_type = self.walk(node.right)
         if left_type.var_type != right_type.var_type:
             print("error: walk_Add mismatch")
         return left_type
 
-    def walk_Subtract(self, node):
+    def walk_Subtract(self, node, **kwargs):
         left_type = self.walk(node.left)
         right_type = self.walk(node.right)
         if left_type.var_type != right_type.var_type:
             print("error: walk_Subtract mismatch")
         return left_type
 
-    def walk_Multiply(self, node):
+    def walk_Multiply(self, node, **kwargs):
         left_type = self.walk(node.left)
         right_type = self.walk(node.right)
         if left_type == VarTypeEnum.SCALAR:
@@ -91,25 +91,25 @@ class TypeWalker(NodeWalker):
             pass
         return right_type
 
-    def walk_Assignment(self, node):
+    def walk_Assignment(self, node, **kwargs):
         id0 = self.walk(node.left)
         right_type = self.walk(node.right)
         self.symtable[id0] = right_type
         return right_type
 
-    def walk_Summation(self, node):
+    def walk_Summation(self, node, **kwargs):
         return self.walk(node.exp)
 
-    def walk_IdentifierSubscript(self, node):
+    def walk_IdentifierSubscript(self, node, **kwargs):
         right = []
         for value in node.right:
             right.append(self.walk(value))
         return self.walk(node.left) + '_' + ','.join(right)
 
-    def walk_IdentifierAlone(self, node):
+    def walk_IdentifierAlone(self, node, **kwargs):
         return node.value
 
-    def walk_Factor(self, node):
+    def walk_Factor(self, node, **kwargs):
         if node.id:
             id0 = self.walk(node.id)
             if self.symtable.get(id0) is None:
@@ -124,23 +124,23 @@ class TypeWalker(NodeWalker):
         elif node.f:
             return self.walk(node.f)
 
-    def walk_Number(self, node):
+    def walk_Number(self, node, **kwargs):
         return LaVarType(VarTypeEnum.SCALAR, desc=node.value)
 
-    def walk_Integer(self, node):
+    def walk_Integer(self, node, **kwargs):
         value = ''.join(node.value)
         return LaVarType(VarTypeEnum.INTEGER, desc=node.value)
 
-    def walk_Matrix(self, node):
+    def walk_Matrix(self, node, **kwargs):
         return LaVarType(VarTypeEnum.MATRIX)
 
-    def walk_MatrixRows(self, node):
+    def walk_MatrixRows(self, node, **kwargs):
         pass
 
-    def walk_MatrixRow(self, node):
+    def walk_MatrixRow(self, node, **kwargs):
         pass
 
-    def walk_MatrixRowCommas(self, node):
+    def walk_MatrixRowCommas(self, node, **kwargs):
         pass
     ###################################################################
     def containSubscript(self, identifier):
