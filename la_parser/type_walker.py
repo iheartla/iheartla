@@ -40,7 +40,7 @@ class TypeWalker(NodeWalker):
     def walk_VectorCondition(self, node, **kwargs):
         id0 = self.walk(node.id)
         id1 = self.walk(node.id1)
-        self.symtable[id0] = LaVarType(VarTypeEnum.VECTOR, id1, desc=node.desc)
+        self.symtable[id0] = LaVarType(VarTypeEnum.VECTOR, [id1], desc=node.desc)
         self.handleIdentifier(id0, self.symtable[id0])
         self.update_parameters(id0)
         if isinstance(id1, str):
@@ -125,11 +125,11 @@ class TypeWalker(NodeWalker):
             return self.walk(node.f)
 
     def walk_Number(self, node, **kwargs):
-        return LaVarType(VarTypeEnum.SCALAR, desc=node.value)
+        return LaVarType(VarTypeEnum.SCALAR)
 
     def walk_Integer(self, node, **kwargs):
         value = ''.join(node.value)
-        return LaVarType(VarTypeEnum.INTEGER, desc=node.value)
+        return int(value)
 
     def walk_Matrix(self, node, **kwargs):
         return LaVarType(VarTypeEnum.MATRIX)
