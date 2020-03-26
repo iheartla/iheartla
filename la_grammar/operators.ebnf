@@ -32,7 +32,7 @@ multiplication::Multiply
 division::Divide
     =
     #left:term {hspace} op:'/' {hspace} right:term
-    left:factor {hspace} op:'/' {hspace} right:term
+    left:term {hspace} op:'/' {hspace} right:factor
     ;
 
 
