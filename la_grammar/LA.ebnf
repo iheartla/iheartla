@@ -72,7 +72,6 @@ term
     =
     | multiplication
     | division
-    | operations
     | factor
     ;
 
@@ -80,6 +79,7 @@ factor::Factor
     =
     | '+' f:factor
     | '-' f:factor
+    | op:operations
     | sub:subexpression
     | id:identifier
     | num:number

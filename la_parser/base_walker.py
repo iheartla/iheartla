@@ -43,3 +43,11 @@ class BaseNodeWalker(NodeWalker):
 
     def walk_object(self, o):
         raise Exception('Unexpected type %s walked', type(o).__name__)
+    ###################################################################
+
+    def contain_subscript(self, identifier):
+        return identifier.find("_") != -1
+
+    def get_all_ids(self, identifier):
+        res = identifier.split('_')
+        return [res[0], res[1].split(',')]

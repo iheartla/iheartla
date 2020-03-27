@@ -8,6 +8,7 @@ operations
     | matrix_operator
     | power_operator
     | sum_operator
+    | det_operator
     ;
 
 addition::Add
@@ -24,14 +25,13 @@ subtraction::Subtract
 
 multiplication::Multiply
     =
-    left:term op:'*' right:term
+    left:term {hspace} op:'*' {hspace} right:term
     | left:term {hspace} right:term
     ;
 
 
 division::Divide
     =
-    #left:term {hspace} op:'/' {hspace} right:term
     left:term {hspace} op:'/' {hspace} right:factor
     ;
 
@@ -65,6 +65,9 @@ sum_operator::Summation
     = SUM '_' sub+:identifier {',' sub+:identifier} {hspace}+ exp:expression
     ;
 
+det_operator::Determinant
+    = '|' {hspace} value:expression {hspace} '|'
+    ;
 
 inner_product_operator::InnerProduct
     = '<' {hspace} left:identifier {hspace} ',' {hspace}  right:identifier {hspace} '>'

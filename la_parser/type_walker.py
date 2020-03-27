@@ -30,7 +30,7 @@ class TypeWalker(NodeWalker):
         id1 = self.walk(node.id1)
         id2 = self.walk(node.id2)
         self.symtable[id0] = LaVarType(VarTypeEnum.MATRIX, [id1, id2], desc=node.desc)
-        self.handleIdentifier(id0, self.symtable[id0])
+        self.handle_identifier(id0, self.symtable[id0])
         self.update_parameters(id0)
         if isinstance(id1, str):
             self.symtable[id1] = LaVarType(VarTypeEnum.INTEGER)
@@ -41,7 +41,7 @@ class TypeWalker(NodeWalker):
         id0 = self.walk(node.id)
         id1 = self.walk(node.id1)
         self.symtable[id0] = LaVarType(VarTypeEnum.VECTOR, [id1], desc=node.desc)
-        self.handleIdentifier(id0, self.symtable[id0])
+        self.handle_identifier(id0, self.symtable[id0])
         self.update_parameters(id0)
         if isinstance(id1, str):
             self.symtable[id1] = LaVarType(VarTypeEnum.INTEGER)
@@ -49,12 +49,12 @@ class TypeWalker(NodeWalker):
     def walk_ScalarCondition(self, node, **kwargs):
         id0 = self.walk(node.id)
         self.symtable[id0] = LaVarType(VarTypeEnum.SCALAR, desc=node.desc)
-        self.handleIdentifier(id0, self.symtable[id0])
+        self.handle_identifier(id0, self.symtable[id0])
         self.update_parameters(id0)
 
     def update_parameters(self, identifier, **kwargs):
-        if self.containSubscript(identifier):
-            arr = self.getSubscripts(identifier)
+        if self.contain_subscript(identifier):
+            arr = self.get_all_ids(identifier)
             self.parameters.append(arr[0])
         else:
             self.parameters.append(identifier)
@@ -67,29 +67,54 @@ class TypeWalker(NodeWalker):
     def walk_Add(self, node, **kwargs):
         left_type = self.walk(node.left)
         right_type = self.walk(node.right)
-        if left_type.var_type != right_type.var_type:
-            print("error: walk_Add mismatch")
+        assert left_type.var_type == right_type.var_type, 'error: walk_Add mismatch'
         return left_type
 
     def walk_Subtract(self, node, **kwargs):
         left_type = self.walk(node.left)
         right_type = self.walk(node.right)
-        if left_type.var_type != right_type.var_type:
-            print("error: walk_Subtract mismatch")
+        assert left_type.var_type == right_type.var_type, 'error: walk_Subtract mismatch'
         return left_type
 
     def walk_Multiply(self, node, **kwargs):
         left_type = self.walk(node.left)
         right_type = self.walk(node.right)
-        if left_type == VarTypeEnum.SCALAR:
+        if left_type.var_type == VarTypeEnum.SCALAR:
             return right_type
-        elif left_type == VarTypeEnum.MATRIX:
-            pass
-        elif left_type == VarTypeEnum.VECTOR:
-            pass
-        elif left_type == VarTypeEnum.SEQUENCE:
+        elif left_type.var_type == VarTypeEnum.INTEGER:
+            return right_type
+        elif left_type.var_type == VarTypeEnum.MATRIX:
+            if right_type.var_type == VarTypeEnum.SCALAR:
+                return left_type
+            if right_type.var_type == VarTypeEnum.INTEGER:
+                return left_type
+            elif right_type.var_type == VarTypeEnum.MATRIX:
+                assert left_type.dimensions[1] == right_type.dimensions[0], 'error: dimension mismatch'
+                return LaVarType(VarTypeEnum.MATRIX, [left_type.dimensions[0], right_type.dimensions[1]])
+            elif right_type.var_type == VarTypeEnum.VECTOR:
+                assert left_type.dimensions[1] == right_type.dimensions[0], 'error: dimension mismatch'
+                return LaVarType(VarTypeEnum.MATRIX, [left_type.dimensions[0]])
+        elif left_type.var_type == VarTypeEnum.VECTOR:
+            if right_type.var_type == VarTypeEnum.SCALAR:
+                return left_type
+            if right_type.var_type == VarTypeEnum.INTEGER:
+                return left_type
+            elif right_type.var_type == VarTypeEnum.MATRIX:
+                assert 1 == right_type.dimensions[0], 'error: dimension mismatch'
+                return LaVarType(VarTypeEnum.MATRIX, [left_type.dimensions[0], right_type.dimensions[1]])
+            elif right_type.var_type == VarTypeEnum.VECTOR:
+                assert left_type.dimensions[1] == right_type.dimensions[0], 'error: dimension mismatch'
+                return LaVarType(VarTypeEnum.MATRIX, [left_type.dimensions[0]])
+        elif left_type.var_type == VarTypeEnum.SEQUENCE:
             pass
         return right_type
+
+    def walk_Divide(self, node, **kwargs):
+        left_type = self.walk(node.left)
+        right_type = self.walk(node.right)
+        assert (left_type.var_type == VarTypeEnum.SCALAR or left_type.var_type == VarTypeEnum.INTEGER), 'error: type mismatch'
+        assert (right_type.var_type == VarTypeEnum.SCALAR or right_type.var_type == VarTypeEnum.INTEGER), 'error: type mismatch'
+        return LaVarType(VarTypeEnum.SCALAR)
 
     def walk_Assignment(self, node, **kwargs):
         id0 = self.walk(node.left)
@@ -99,6 +124,9 @@ class TypeWalker(NodeWalker):
 
     def walk_Summation(self, node, **kwargs):
         return self.walk(node.exp)
+
+    def walk_Determinant(self, node, **kwargs):
+        return LaVarType(VarTypeEnum.SCALAR)
 
     def walk_IdentifierSubscript(self, node, **kwargs):
         right = []
@@ -112,8 +140,7 @@ class TypeWalker(NodeWalker):
     def walk_Factor(self, node, **kwargs):
         if node.id:
             id0 = self.walk(node.id)
-            if self.symtable.get(id0) is None:
-                print("error: no symbol" + id0)
+            assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
             return self.symtable[id0]
         elif node.num:
             return self.walk(node.num)
@@ -123,6 +150,8 @@ class TypeWalker(NodeWalker):
             return self.walk(node.m)
         elif node.f:
             return self.walk(node.f)
+        elif node.op:
+            return self.walk(node.op)
 
     def walk_Number(self, node, **kwargs):
         return LaVarType(VarTypeEnum.SCALAR)
@@ -143,16 +172,16 @@ class TypeWalker(NodeWalker):
     def walk_MatrixRowCommas(self, node, **kwargs):
         pass
     ###################################################################
-    def containSubscript(self, identifier):
+    def contain_subscript(self, identifier):
         return identifier.find("_") != -1
 
-    def getSubscripts(self, identifier):
+    def get_all_ids(self, identifier):
         res = identifier.split('_')
         return [res[0], res[1].split(',')]
 
-    def handleIdentifier(self, identifier, id_type):
-        if self.containSubscript(identifier):
-            arr = self.getSubscripts(identifier)
+    def handle_identifier(self, identifier, id_type):
+        if self.contain_subscript(identifier):
+            arr = self.get_all_ids(identifier)
             self.symtable[arr[0]] = LaVarType(VarTypeEnum.SEQUENCE, dimensions=arr[1], element_type=id_type,
                                               desc=id_type.desc)
             for val in arr[1]:

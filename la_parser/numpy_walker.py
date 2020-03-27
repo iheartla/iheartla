@@ -1,12 +1,21 @@
 from la_parser.base_walker import *
 
 
+class WalkTypeEnum(Enum):
+    RETRIEVE_VAR = 1
+
+
 class NumpyWalker(BaseNodeWalker):
     def __init__(self):
         super().__init__()
         self.pre_str = '''import numpy as np\n\n\n'''
         self.post_str = ''''''
         self.ret = 'ret'
+
+    def need_ret_vars(self, **kwargs):
+        if 'walk_type' in kwargs and kwargs['walk_type'] == WalkTypeEnum.RETRIEVE_VAR:
+            return True
+        return False
 
     def walk_Start(self, node, **kwargs):
         pars = []
@@ -69,56 +78,131 @@ class NumpyWalker(BaseNodeWalker):
                     if type(stat).__name__ != 'Assignment':
                         self.ret = 'ret'
                         content += self.ret + ' = '
-                content += self.walk(stat,**kwargs) + '\n'
+                content += self.walk(stat, **kwargs) + '\n'
             index += 1
         return content
 
     def walk_Summation(self, node, **kwargs):
+        if self.need_ret_vars(**kwargs):
+            return {self.walk(node.exp, **kwargs)}
         subs = []
         for sub in node.sub:
             subs.append(self.walk(sub))
+        vars = self.walk(node.exp, walk_type=WalkTypeEnum.RETRIEVE_VAR)
+        content = ""
+        target_var = ''
+        for sub in subs:
+            for var in vars:
+                same_sub = False
+                if self.contain_subscript(var):
+                    var_ids = self.get_all_ids(var)
+                    var_subs = var_ids[1]
+                    for var_sub in var_subs:
+                        if sub == var_sub:
+                            same_sub = True
+                            target_var = var_ids[0]
+                            break
+                    if same_sub:
+                        break
+            #only one sub for now
+            # content += "    for {} in range(len({})):\n".format(sub, target_var)
+            content = self.walk(node.exp)
+        return content
 
-        return self.walk(node.exp)
+    def walk_Determinant(self, node, **kwargs):
+        if self.need_ret_vars(**kwargs):
+            return self.walk(node.value, **kwargs)
+        value = self.walk(node.value)
+        return '|' + value + '|'
+
+    def walk_Matrix(self, node, **kwargs):
+        if self.need_ret_vars(**kwargs):
+            return {}
+        return ''
+
+    def walk_MatrixRows(self, node, **kwargs):
+        pass
+
+    def walk_MatrixRow(self, node, **kwargs):
+        pass
+
+    def walk_MatrixRowCommas(self, node, **kwargs):
+        pass
 
     def walk_Add(self, node, **kwargs):
-        return self.walk(node.left) + '+' + self.walk(node.right)
+        if self.need_ret_vars(**kwargs):
+            left_set = self.walk(node.left, **kwargs)
+            right_set = self.walk(node.right, **kwargs)
+            return left_set.union(right_set)
+        return self.walk(node.left, **kwargs) + '+' + self.walk(node.right, **kwargs)
 
     def walk_Subtract(self, node, **kwargs):
-        return self.walk(node.left) + '-' + self.walk(node.right)
+        if self.need_ret_vars(**kwargs):
+            left_set = self.walk(node.left, **kwargs)
+            right_set = self.walk(node.right, **kwargs)
+            return left_set.union(right_set)
+        return self.walk(node.left, **kwargs) + '-' + self.walk(node.right, **kwargs)
 
     def walk_Multiply(self, node, **kwargs):
-        return self.walk(node.left) + '*' + self.walk(node.right)
+        if self.need_ret_vars(**kwargs):
+            left_set = self.walk(node.left, **kwargs)
+            right_set = self.walk(node.right, **kwargs)
+            return left_set.union(right_set)
+        return self.walk(node.left, **kwargs) + '*' + self.walk(node.right, **kwargs)
+
+    def walk_Divide(self, node, **kwargs):
+        if self.need_ret_vars(**kwargs):
+            left_set = self.walk(node.left, **kwargs)
+            right_set = self.walk(node.right, **kwargs)
+            return left_set.union(right_set)
+        return self.walk(node.left, **kwargs) + '/' + self.walk(node.right, **kwargs)
 
     def walk_Assignment(self, node, **kwargs):
-        self.ret = self.walk(node.left)
-        return self.walk(node.left) + ' = ' + str(self.walk(node.right))
+        if self.need_ret_vars(**kwargs):
+            left_set = self.walk(node.left, **kwargs)
+            right_set = self.walk(node.right, **kwargs)
+            return left_set.union(right_set)
+        self.ret = self.walk(node.left, **kwargs)
+        return self.walk(node.left, **kwargs) + ' = ' + str(self.walk(node.right, **kwargs))
 
     def walk_IdentifierSubscript(self, node, **kwargs):
         right = []
         for value in node.right:
             right.append(self.walk(value))
-        return self.walk(node.left) + '_' + ','.join(right)
+        if self.need_ret_vars(**kwargs):
+            return {self.walk(node.left) + '_' + ','.join(right)}
+        return self.walk(node.left, **kwargs) + '_' + ','.join(right)
 
     def walk_IdentifierAlone(self, node, **kwargs):
+        if self.need_ret_vars(**kwargs):
+            return {node.value}
         return node.value
 
     def walk_Derivative(self, node, **kwargs):
+        if self.need_ret_vars(**kwargs):
+            return {}
         return ""
 
     def walk_Factor(self, node, **kwargs):
         if node.id:
-            return self.walk(node.id)
+            return self.walk(node.id, **kwargs)
         elif node.num:
-            return self.walk(node.num)
+            return self.walk(node.num, **kwargs)
         elif node.sub:
-            return self.walk(node.sub)
+            return self.walk(node.sub, **kwargs)
         elif node.m:
-            return self.walk(node.m)
+            return self.walk(node.m, **kwargs)
         elif node.f:
-            return self.walk(node.f)
+            return self.walk(node.f, **kwargs)
+        elif node.op:
+            return self.walk(node.op, **kwargs)
 
     def walk_Number(self, node, **kwargs):
-        return self.walk(node.value)
+        if self.need_ret_vars(**kwargs):
+            return {}
+        return self.walk(node.value, **kwargs)
 
     def walk_Integer(self, node, **kwargs):
+        if self.need_ret_vars(**kwargs):
+            return {}
         return ''.join(node.value)
