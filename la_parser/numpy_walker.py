@@ -109,24 +109,67 @@ class NumpyWalker(BaseNodeWalker):
         return '|' + value + '|'
 
     def walk_Matrix(self, node, **kwargs):
+        content = ""
+        lhs = kwargs[LHS]
+        cur_m_id = "{}_{}".format(lhs, self.matrix_index)
         if la_need_ret_vars(**kwargs):
             return {}
-        return ''
+        elif la_need_ret_matrix(**kwargs):
+            content += '{} = np.zeros(({},{}))\n'.format(cur_m_id, self.symtable[cur_m_id].dimensions[0],
+                                                      self.symtable[cur_m_id].dimensions[1])
+            ret = self.walk(node.value, **kwargs)
+            for i in range(len(ret)):
+                content += "    {}[{}] = [{}]\n".format(cur_m_id, i, ret[i])
+            self.matrix_index += 1
+            return content
+        self.matrix_index += 1
+        return cur_m_id
 
     def walk_MatrixRows(self, node, **kwargs):
-        pass
+        content = ""
+        lhs = kwargs[LHS]
+        cur_m_id = "{}_{}".format(lhs, self.matrix_index)
+        rows = self.symtable[cur_m_id].dimensions[0]
+        cols = self.symtable[cur_m_id].dimensions[1]
+        ret = []
+        if node.rs:
+            for r in node.rs:
+                ret = ret + self.walk(r, **kwargs)
+        if node.r:
+            for r in node.r:
+                ret.append(self.walk(r, **kwargs))
+        return ret
 
     def walk_MatrixRow(self, node, **kwargs):
-        pass
+        ret = []
+        if node.rc:
+            for rc in node.rc:
+                ret.append(self.walk(rc, **kwargs))
+        if node.exp:
+            for exp in node.exp:
+                ret.append(self.walk(exp, **kwargs))
+        return ','.join(ret)
 
     def walk_MatrixRowCommas(self, node, **kwargs):
-        pass
+        ret = []
+        if node.value:
+            for value in node.value:
+                ret.append(self.walk(value, **kwargs))
+        if node.exp:
+            for exp in node.exp:
+                ret.append(self.walk(exp, **kwargs))
+        return ','.join(ret)
+
+    def walk_ExpInMatrix(self, node, **kwargs):
+        return self.walk(node.value, **kwargs)
 
     def walk_Add(self, node, **kwargs):
         if la_need_ret_vars(**kwargs):
             left_set = self.walk(node.left, **kwargs)
             right_set = self.walk(node.right, **kwargs)
             return left_set.union(right_set)
+        elif la_need_ret_matrix(**kwargs):
+            return self.walk(node.left, **kwargs) + self.walk(node.right, **kwargs)
         return self.walk(node.left, **kwargs) + '+' + self.walk(node.right, **kwargs)
 
     def walk_Subtract(self, node, **kwargs):
@@ -134,6 +177,8 @@ class NumpyWalker(BaseNodeWalker):
             left_set = self.walk(node.left, **kwargs)
             right_set = self.walk(node.right, **kwargs)
             return left_set.union(right_set)
+        elif la_need_ret_matrix(**kwargs):
+            return self.walk(node.left, **kwargs) + self.walk(node.right, **kwargs)
         return self.walk(node.left, **kwargs) + '-' + self.walk(node.right, **kwargs)
 
     def walk_Multiply(self, node, **kwargs):
@@ -141,6 +186,8 @@ class NumpyWalker(BaseNodeWalker):
             left_set = self.walk(node.left, **kwargs)
             right_set = self.walk(node.right, **kwargs)
             return left_set.union(right_set)
+        elif la_need_ret_matrix(**kwargs):
+            return self.walk(node.left, **kwargs) + self.walk(node.right, **kwargs)
         return self.walk(node.left, **kwargs) + '*' + self.walk(node.right, **kwargs)
 
     def walk_Divide(self, node, **kwargs):
@@ -148,6 +195,8 @@ class NumpyWalker(BaseNodeWalker):
             left_set = self.walk(node.left, **kwargs)
             right_set = self.walk(node.right, **kwargs)
             return left_set.union(right_set)
+        elif la_need_ret_matrix(**kwargs):
+            return self.walk(node.left, **kwargs) + self.walk(node.right, **kwargs)
         return self.walk(node.left, **kwargs) + '/' + self.walk(node.right, **kwargs)
 
     def walk_Assignment(self, node, **kwargs):
@@ -155,19 +204,23 @@ class NumpyWalker(BaseNodeWalker):
             left_set = self.walk(node.left, **kwargs)
             right_set = self.walk(node.right, **kwargs)
             return left_set.union(right_set)
-        left_id = self.walk(node.left, **kwargs)
-        self.ret = left_id
-        # self left-hand-side symbol
-        kwargs[LHS] = left_id
+        # walk matrix first
         content = ""
+        left_id = self.walk(node.left, **kwargs)
+        kwargs[LHS] = left_id
+        self.matrix_index = 0
+        if left_id in self.m_dict:
+            kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_MATRIX_STAT
+            content += self.walk(node.right, **kwargs)
+            kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
+        self.ret = left_id
+        self.matrix_index = 0
+        # self left-hand-side symbol
         if self.symtable[left_id].var_type == VarTypeEnum.MATRIX:
-            print(left_id)
-            print(self.symtable[left_id].dimensions[0])
-            print(self.symtable[left_id].dimensions[1])
-            content = '{} = np.zeros({},{})\n'.format(left_id, self.symtable[left_id].dimensions[0], self.symtable[left_id].dimensions[1])
+            content += '    {} = np.zeros(({},{}))\n'.format(left_id, self.symtable[left_id].dimensions[0], self.symtable[left_id].dimensions[1])
         elif self.symtable[left_id].var_type == VarTypeEnum.VECTOR:
-            content = '{} = np.zeros({})\n'.format(left_id, self.symtable[left_id].dimensions[0])
-        content += left_id + ' = ' + str(self.walk(node.right, **kwargs))
+            content += '{} = np.zeros(({}))\n'.format(left_id, self.symtable[left_id].dimensions[0])
+        content += "    " + left_id + ' = ' + str(self.walk(node.right, **kwargs))
         la_remove_key(LHS, **kwargs)
         return content
 
