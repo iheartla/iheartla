@@ -3,6 +3,40 @@ from tatsu.objectmodel import Node
 from la_parser.la_types import *
 
 
+class WalkTypeEnum(Enum):
+    RETRIEVE_EXPRESSION = 0  # default
+    RETRIEVE_VAR = 1
+    RETRIEVE_ROW_COUNTS = 2  # type_walker
+    RETRIEVE_COL_COUNTS = 3  # type_walker
+
+
+WALK_TYPE = "walk_type"
+LHS = "left_hand_side"
+
+
+def la_need_ret_vars(**kwargs):
+    if WALK_TYPE in kwargs and kwargs[WALK_TYPE] == WalkTypeEnum.RETRIEVE_VAR:
+        return True
+    return False
+
+
+def la_need_ret_row_cnt(**kwargs):
+    if WALK_TYPE in kwargs and kwargs[WALK_TYPE] == WalkTypeEnum.RETRIEVE_ROW_COUNTS:
+        return True
+    return False
+
+
+def la_need_ret_col_cnt(**kwargs):
+    if WALK_TYPE in kwargs and kwargs[WALK_TYPE] == WalkTypeEnum.RETRIEVE_COL_COUNTS:
+        return True
+    return False
+
+
+def la_remove_key(key, **kwargs):
+    if key in kwargs:
+        del kwargs[key]
+
+
 class TypeWalker(NodeWalker):
     def __init__(self):
         super().__init__()
@@ -29,7 +63,13 @@ class TypeWalker(NodeWalker):
         id0 = self.walk(node.id)
         id1 = self.walk(node.id1)
         id2 = self.walk(node.id2)
-        self.symtable[id0] = LaVarType(VarTypeEnum.MATRIX, [id1, id2], desc=node.desc)
+        element_type = ''
+        if node.type:
+            if node.type == 'ℝ':
+                element_type = LaVarType(VarTypeEnum.SCALAR)
+            elif node.type == 'ℕ':
+                element_type = LaVarType(VarTypeEnum.INTEGER)
+        self.symtable[id0] = LaVarType(VarTypeEnum.MATRIX, [id1, id2], desc=node.desc, element_type=element_type)
         self.handle_identifier(id0, self.symtable[id0])
         self.update_parameters(id0)
         if isinstance(id1, str):
@@ -40,7 +80,13 @@ class TypeWalker(NodeWalker):
     def walk_VectorCondition(self, node, **kwargs):
         id0 = self.walk(node.id)
         id1 = self.walk(node.id1)
-        self.symtable[id0] = LaVarType(VarTypeEnum.VECTOR, [id1], desc=node.desc)
+        element_type = ''
+        if node.type:
+            if node.type == 'ℝ':
+                element_type = LaVarType(VarTypeEnum.SCALAR)
+            elif node.type == 'ℕ':
+                element_type = LaVarType(VarTypeEnum.INTEGER)
+        self.symtable[id0] = LaVarType(VarTypeEnum.VECTOR, [id1], desc=node.desc, element_type=element_type)
         self.handle_identifier(id0, self.symtable[id0])
         self.update_parameters(id0)
         if isinstance(id1, str):
@@ -79,6 +125,7 @@ class TypeWalker(NodeWalker):
     def walk_Multiply(self, node, **kwargs):
         left_type = self.walk(node.left)
         right_type = self.walk(node.right)
+        assert left_type.var_type is not VarTypeEnum.SEQUENCE and right_type.var_type is not VarTypeEnum.SEQUENCE, 'error: sequence can not be operated'
         if left_type.var_type == VarTypeEnum.SCALAR:
             return right_type
         elif left_type.var_type == VarTypeEnum.INTEGER:
@@ -93,7 +140,7 @@ class TypeWalker(NodeWalker):
                 return LaVarType(VarTypeEnum.MATRIX, [left_type.dimensions[0], right_type.dimensions[1]])
             elif right_type.var_type == VarTypeEnum.VECTOR:
                 assert left_type.dimensions[1] == right_type.dimensions[0], 'error: dimension mismatch'
-                return LaVarType(VarTypeEnum.MATRIX, [left_type.dimensions[0]])
+                return LaVarType(VarTypeEnum.VECTOR, [left_type.dimensions[0]])
         elif left_type.var_type == VarTypeEnum.VECTOR:
             if right_type.var_type == VarTypeEnum.SCALAR:
                 return left_type
@@ -105,8 +152,6 @@ class TypeWalker(NodeWalker):
             elif right_type.var_type == VarTypeEnum.VECTOR:
                 assert left_type.dimensions[1] == right_type.dimensions[0], 'error: dimension mismatch'
                 return LaVarType(VarTypeEnum.MATRIX, [left_type.dimensions[0]])
-        elif left_type.var_type == VarTypeEnum.SEQUENCE:
-            pass
         return right_type
 
     def walk_Divide(self, node, **kwargs):
@@ -161,16 +206,56 @@ class TypeWalker(NodeWalker):
         return int(value)
 
     def walk_Matrix(self, node, **kwargs):
-        return LaVarType(VarTypeEnum.MATRIX)
+        kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_ROW_COUNTS
+        rows = self.walk(node.value, **kwargs)
+        kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_COL_COUNTS
+        cols = self.walk(node.value, **kwargs)
+        return LaVarType(VarTypeEnum.MATRIX, dimensions=[rows, cols])
 
     def walk_MatrixRows(self, node, **kwargs):
-        pass
+        if la_need_ret_row_cnt(**kwargs):
+            cnt = 0
+            if node.r:
+                cnt += len(node.r)
+            if node.rs:
+                for r in node.rs:
+                    c = self.walk(r, **kwargs)
+                    cnt += c
+            return cnt
+        elif la_need_ret_col_cnt(**kwargs):
+            cnt = 0
+            if node.r:
+                for r in node.r:
+                    c = self.walk(r, **kwargs)
+                    if c > cnt:
+                        cnt = c
+            if node.rs:
+                for r in node.rs:
+                    c = self.walk(r, **kwargs)
+                    if c > cnt:
+                        cnt = c
+            return cnt
 
     def walk_MatrixRow(self, node, **kwargs):
-        pass
+        if la_need_ret_col_cnt(**kwargs):
+            cnt = 0
+            if node.exp:
+                cnt += len(node.exp)
+            if node.rc:
+                for rc in node.rc:
+                    cnt += self.walk(rc, **kwargs)
+            return cnt
 
     def walk_MatrixRowCommas(self, node, **kwargs):
-        pass
+        if la_need_ret_col_cnt(**kwargs):
+            cnt = 0
+            if node.exp:
+                cnt += len(node.exp)
+            if node.value:
+                for value in node.value:
+                    cnt += self.walk(value, **kwargs)
+            return cnt
+
     ###################################################################
     def contain_subscript(self, identifier):
         return identifier.find("_") != -1
@@ -188,4 +273,3 @@ class TypeWalker(NodeWalker):
                 self.subscripts.add(val)
                 if self.symtable.get(val) is None:
                     self.symtable[val] = LaVarType(VarTypeEnum.INTEGER)
-

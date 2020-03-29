@@ -6,26 +6,26 @@ matrix::Matrix
 
 rows::MatrixRows
     =
-    | value+:rows {separator_with_space}+ value+:row {hspace}
-    | value+:rows {separator_with_space}+
-    | value+:row {hspace}
+    | rs+:rows {separator_with_space}+ r+:row {hspace}
+    | rs+:rows {separator_with_space}+
+    | r+:row {hspace}
     ;
 
 row::MatrixRow
     = '|' {hspace} value+:row {hspace} '|'
-    | value+:row_with_commas {hspace} value+:expr_in_matrix
-    | value+:row_with_commas
-    | value+:expr_in_matrix
+    | rc+:row_with_commas {hspace} exp+:expr_in_matrix
+    | rc+:row_with_commas
+    | exp+:expr_in_matrix
     ;
 
 row_with_commas::MatrixRowCommas
     #= ( left+:row_with_commas | left+:expr_in_matrix ) {hspace} ',' {hspace} value+:expr_in_matrix
     =
-    | value+:row_with_commas {hspace} value+:expr_in_matrix ({hspace} ',' | {hspace}+)
-    | {hspace} value+:expr_in_matrix ({hspace} ',' | {hspace}+)
+    | value+:row_with_commas {hspace} exp+:expr_in_matrix ({hspace} ',' | {hspace}+)
+    | {hspace} exp+:expr_in_matrix ({hspace} ',' | {hspace}+)
     ;
 
-expr_in_matrix::SingleValueModel
+expr_in_matrix::ExpInMatrix
     =
     | value:addition_in_matrix
     | value:subtraction_in_matrix

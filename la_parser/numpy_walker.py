@@ -1,21 +1,12 @@
 from la_parser.base_walker import *
 
 
-class WalkTypeEnum(Enum):
-    RETRIEVE_VAR = 1
-
-
 class NumpyWalker(BaseNodeWalker):
     def __init__(self):
         super().__init__()
         self.pre_str = '''import numpy as np\n\n\n'''
         self.post_str = ''''''
         self.ret = 'ret'
-
-    def need_ret_vars(self, **kwargs):
-        if 'walk_type' in kwargs and kwargs['walk_type'] == WalkTypeEnum.RETRIEVE_VAR:
-            return True
-        return False
 
     def walk_Start(self, node, **kwargs):
         pars = []
@@ -83,12 +74,14 @@ class NumpyWalker(BaseNodeWalker):
         return content
 
     def walk_Summation(self, node, **kwargs):
-        if self.need_ret_vars(**kwargs):
+        if la_need_ret_vars(**kwargs):
             return {self.walk(node.exp, **kwargs)}
         subs = []
         for sub in node.sub:
             subs.append(self.walk(sub))
-        vars = self.walk(node.exp, walk_type=WalkTypeEnum.RETRIEVE_VAR)
+        kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_VAR
+        vars = self.walk(node.exp, **kwargs)
+        kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
         content = ""
         target_var = ''
         for sub in subs:
@@ -110,13 +103,13 @@ class NumpyWalker(BaseNodeWalker):
         return content
 
     def walk_Determinant(self, node, **kwargs):
-        if self.need_ret_vars(**kwargs):
+        if la_need_ret_vars(**kwargs):
             return self.walk(node.value, **kwargs)
         value = self.walk(node.value)
         return '|' + value + '|'
 
     def walk_Matrix(self, node, **kwargs):
-        if self.need_ret_vars(**kwargs):
+        if la_need_ret_vars(**kwargs):
             return {}
         return ''
 
@@ -130,56 +123,69 @@ class NumpyWalker(BaseNodeWalker):
         pass
 
     def walk_Add(self, node, **kwargs):
-        if self.need_ret_vars(**kwargs):
+        if la_need_ret_vars(**kwargs):
             left_set = self.walk(node.left, **kwargs)
             right_set = self.walk(node.right, **kwargs)
             return left_set.union(right_set)
         return self.walk(node.left, **kwargs) + '+' + self.walk(node.right, **kwargs)
 
     def walk_Subtract(self, node, **kwargs):
-        if self.need_ret_vars(**kwargs):
+        if la_need_ret_vars(**kwargs):
             left_set = self.walk(node.left, **kwargs)
             right_set = self.walk(node.right, **kwargs)
             return left_set.union(right_set)
         return self.walk(node.left, **kwargs) + '-' + self.walk(node.right, **kwargs)
 
     def walk_Multiply(self, node, **kwargs):
-        if self.need_ret_vars(**kwargs):
+        if la_need_ret_vars(**kwargs):
             left_set = self.walk(node.left, **kwargs)
             right_set = self.walk(node.right, **kwargs)
             return left_set.union(right_set)
         return self.walk(node.left, **kwargs) + '*' + self.walk(node.right, **kwargs)
 
     def walk_Divide(self, node, **kwargs):
-        if self.need_ret_vars(**kwargs):
+        if la_need_ret_vars(**kwargs):
             left_set = self.walk(node.left, **kwargs)
             right_set = self.walk(node.right, **kwargs)
             return left_set.union(right_set)
         return self.walk(node.left, **kwargs) + '/' + self.walk(node.right, **kwargs)
 
     def walk_Assignment(self, node, **kwargs):
-        if self.need_ret_vars(**kwargs):
+        if la_need_ret_vars(**kwargs):
             left_set = self.walk(node.left, **kwargs)
             right_set = self.walk(node.right, **kwargs)
             return left_set.union(right_set)
-        self.ret = self.walk(node.left, **kwargs)
-        return self.walk(node.left, **kwargs) + ' = ' + str(self.walk(node.right, **kwargs))
+        left_id = self.walk(node.left, **kwargs)
+        self.ret = left_id
+        # self left-hand-side symbol
+        kwargs[LHS] = left_id
+        content = ""
+        if self.symtable[left_id].var_type == VarTypeEnum.MATRIX:
+            print(left_id)
+            print(self.symtable[left_id].dimensions[0])
+            print(self.symtable[left_id].dimensions[1])
+            content = '{} = np.zeros({},{})\n'.format(left_id, self.symtable[left_id].dimensions[0], self.symtable[left_id].dimensions[1])
+        elif self.symtable[left_id].var_type == VarTypeEnum.VECTOR:
+            content = '{} = np.zeros({})\n'.format(left_id, self.symtable[left_id].dimensions[0])
+        content += left_id + ' = ' + str(self.walk(node.right, **kwargs))
+        la_remove_key(LHS, **kwargs)
+        return content
 
     def walk_IdentifierSubscript(self, node, **kwargs):
         right = []
         for value in node.right:
             right.append(self.walk(value))
-        if self.need_ret_vars(**kwargs):
+        if la_need_ret_vars(**kwargs):
             return {self.walk(node.left) + '_' + ','.join(right)}
         return self.walk(node.left, **kwargs) + '_' + ','.join(right)
 
     def walk_IdentifierAlone(self, node, **kwargs):
-        if self.need_ret_vars(**kwargs):
+        if la_need_ret_vars(**kwargs):
             return {node.value}
         return node.value
 
     def walk_Derivative(self, node, **kwargs):
-        if self.need_ret_vars(**kwargs):
+        if la_need_ret_vars(**kwargs):
             return {}
         return ""
 
@@ -198,11 +204,11 @@ class NumpyWalker(BaseNodeWalker):
             return self.walk(node.op, **kwargs)
 
     def walk_Number(self, node, **kwargs):
-        if self.need_ret_vars(**kwargs):
+        if la_need_ret_vars(**kwargs):
             return {}
         return self.walk(node.value, **kwargs)
 
     def walk_Integer(self, node, **kwargs):
-        if self.need_ret_vars(**kwargs):
+        if la_need_ret_vars(**kwargs):
             return {}
         return ''.join(node.value)
