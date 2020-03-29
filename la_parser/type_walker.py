@@ -77,13 +77,15 @@ class TypeWalker(NodeWalker):
         id0 = self.walk(node.id, **kwargs)
         id1 = self.walk(node.id1, **kwargs)
         id2 = self.walk(node.id2, **kwargs)
+        ret = node.text.split(':')
+        desc = ':'.join(ret[1:len(ret)])
         element_type = ''
         if node.type:
             if node.type == 'ℝ':
                 element_type = LaVarType(VarTypeEnum.SCALAR)
             elif node.type == 'ℕ':
                 element_type = LaVarType(VarTypeEnum.INTEGER)
-        self.symtable[id0] = LaVarType(VarTypeEnum.MATRIX, [id1, id2], desc=node.desc, element_type=element_type)
+        self.symtable[id0] = LaVarType(VarTypeEnum.MATRIX, [id1, id2], desc=desc, element_type=element_type)
         self.handle_identifier(id0, self.symtable[id0])
         self.update_parameters(id0)
         if isinstance(id1, str):
@@ -94,13 +96,15 @@ class TypeWalker(NodeWalker):
     def walk_VectorCondition(self, node, **kwargs):
         id0 = self.walk(node.id, **kwargs)
         id1 = self.walk(node.id1, **kwargs)
+        ret = node.text.split(':')
+        desc = ':'.join(ret[1:len(ret)])
         element_type = ''
         if node.type:
             if node.type == 'ℝ':
                 element_type = LaVarType(VarTypeEnum.SCALAR)
             elif node.type == 'ℕ':
                 element_type = LaVarType(VarTypeEnum.INTEGER)
-        self.symtable[id0] = LaVarType(VarTypeEnum.VECTOR, [id1], desc=node.desc, element_type=element_type)
+        self.symtable[id0] = LaVarType(VarTypeEnum.VECTOR, [id1], desc=desc, element_type=element_type)
         self.handle_identifier(id0, self.symtable[id0])
         self.update_parameters(id0)
         if isinstance(id1, str):
@@ -108,7 +112,9 @@ class TypeWalker(NodeWalker):
 
     def walk_ScalarCondition(self, node, **kwargs):
         id0 = self.walk(node.id, **kwargs)
-        self.symtable[id0] = LaVarType(VarTypeEnum.SCALAR, desc=node.desc)
+        ret = node.text.split(':')
+        desc = ':'.join(ret[1:len(ret)])
+        self.symtable[id0] = LaVarType(VarTypeEnum.SCALAR, desc=desc)
         self.handle_identifier(id0, self.symtable[id0])
         self.update_parameters(id0)
 
