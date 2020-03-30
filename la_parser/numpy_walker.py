@@ -133,32 +133,26 @@ class NumpyWalker(BaseNodeWalker):
         cols = self.symtable[cur_m_id].dimensions[1]
         ret = []
         if node.rs:
-            for r in node.rs:
-                ret = ret + self.walk(r, **kwargs)
+            ret = ret + self.walk(node.rs, **kwargs)
         if node.r:
-            for r in node.r:
-                ret.append(self.walk(r, **kwargs))
+            ret.append(self.walk(node.r, **kwargs))
         return ret
 
     def walk_MatrixRow(self, node, **kwargs):
         ret = []
         if node.rc:
-            for rc in node.rc:
-                ret.append(self.walk(rc, **kwargs))
+            ret.append(self.walk(node.rc, **kwargs))
         if node.exp:
-            for exp in node.exp:
-                ret.append(self.walk(exp, **kwargs))
-        return ','.join(ret)
+            ret.append(self.walk(node.exp, **kwargs))
+        return ', '.join(ret)
 
     def walk_MatrixRowCommas(self, node, **kwargs):
         ret = []
         if node.value:
-            for value in node.value:
-                ret.append(self.walk(value, **kwargs))
+            ret.append(self.walk(node.value, **kwargs))
         if node.exp:
-            for exp in node.exp:
-                ret.append(self.walk(exp, **kwargs))
-        return ','.join(ret)
+            ret.append(self.walk(node.exp, **kwargs))
+        return ', '.join(ret)
 
     def walk_ExpInMatrix(self, node, **kwargs):
         return self.walk(node.value, **kwargs)
@@ -204,6 +198,7 @@ class NumpyWalker(BaseNodeWalker):
             left_set = self.walk(node.left, **kwargs)
             right_set = self.walk(node.right, **kwargs)
             return left_set.union(right_set)
+
         # walk matrix first
         content = ""
         left_id = self.walk(node.left, **kwargs)

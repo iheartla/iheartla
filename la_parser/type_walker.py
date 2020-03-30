@@ -249,44 +249,39 @@ class TypeWalker(NodeWalker):
         if la_need_ret_row_cnt(**kwargs):
             cnt = 0
             if node.r:
-                cnt += len(node.r)
+                cnt += 1
             if node.rs:
-                for r in node.rs:
-                    c = self.walk(r, **kwargs)
-                    cnt += c
+                c = self.walk(node.rs, **kwargs)
+                cnt += c
             return cnt
         elif la_need_ret_col_cnt(**kwargs):
             cnt = 0
             if node.r:
-                for r in node.r:
-                    c = self.walk(r, **kwargs)
-                    if c > cnt:
-                        cnt = c
+                c = self.walk(node.r, **kwargs)
+                if c > cnt:
+                    cnt = c
             if node.rs:
-                for r in node.rs:
-                    c = self.walk(r, **kwargs)
-                    if c > cnt:
-                        cnt = c
+                c = self.walk(node.rs, **kwargs)
+                if c > cnt:
+                    cnt = c
             return cnt
 
     def walk_MatrixRow(self, node, **kwargs):
         if la_need_ret_col_cnt(**kwargs):
             cnt = 0
             if node.exp:
-                cnt += len(node.exp)
+                cnt += 1
             if node.rc:
-                for rc in node.rc:
-                    cnt += self.walk(rc, **kwargs)
+                cnt += self.walk(node.rc, **kwargs)
             return cnt
 
     def walk_MatrixRowCommas(self, node, **kwargs):
         if la_need_ret_col_cnt(**kwargs):
             cnt = 0
             if node.exp:
-                cnt += len(node.exp)
+                cnt += 1
             if node.value:
-                for value in node.value:
-                    cnt += self.walk(value, **kwargs)
+                cnt += self.walk(node.value, **kwargs)
             return cnt
 
     ###################################################################

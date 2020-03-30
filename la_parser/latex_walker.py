@@ -115,17 +115,32 @@ class LatexWalker(BaseNodeWalker):
             ret.append(self.walk(val))
         return ''.join(ret)
 
+    def walk_MatrixRows(self, node, **kwargs):
+        ret = []
+        if node.rs:
+            ret.append(self.walk(node.rs))
+        if node.r:
+            ret.append(self.walk(node.r))
+        return ''.join(ret)
+
     def walk_MatrixRow(self, node):
         ret = []
-        for val in node.value:
-            ret.append(self.walk(val))
-        return '&'.join(ret) + "\\\\\n"
+        if node.rc:
+            ret.append(self.walk(node.rc))
+        if node.exp:
+            ret.append(self.walk(node.exp))
+        return ' & '.join(ret) + "\\\\\n"
 
     def walk_MatrixRowCommas(self, node):
         ret = []
-        for val in node.value:
-            ret.append(self.walk(val))
-        return '&'.join(ret)
+        if node.value:
+            ret.append(self.walk(node.value))
+        if node.exp:
+            ret.append(self.walk(node.exp))
+        return ' & '.join(ret)
+
+    def walk_ExpInMatrix(self, node):
+        return self.walk(node.value)
 
     def walk_Derivative(self, node):
         return "\\partial" + self.walk(value)
