@@ -76,11 +76,11 @@ class NumpyWalker(BaseNodeWalker):
             if type(stat).__name__ == 'Statements':
                 content += self.walk(stat, **kwargs)
             else:
-                content += '    '
+                content += ''
                 if index == len(node.value) - 1:
                     if type(stat).__name__ != 'Assignment':
                         self.ret = 'ret'
-                        content += self.ret + ' = '
+                        content += "    " + self.ret + ' = '
                 content += self.walk(stat, **kwargs) + '\n'
             index += 1
         return content
@@ -121,7 +121,7 @@ class NumpyWalker(BaseNodeWalker):
         return '|' + value + '|'
 
     def walk_Matrix(self, node, **kwargs):
-        content = ""
+        content = "    "
         lhs = kwargs[LHS]
         cur_m_id = "{}_{}".format(lhs, self.matrix_index)
         if la_need_ret_vars(**kwargs):
@@ -213,6 +213,7 @@ class NumpyWalker(BaseNodeWalker):
 
         # walk matrix first
         content = ""
+        matrix_exp = []
         left_id = self.walk(node.left, **kwargs)
         kwargs[LHS] = left_id
         self.matrix_index = 0
@@ -223,11 +224,14 @@ class NumpyWalker(BaseNodeWalker):
         self.ret = left_id
         self.matrix_index = 0
         # self left-hand-side symbol
+        content += "    ".join(matrix_exp)
         if self.symtable[left_id].var_type == VarTypeEnum.MATRIX:
-            content += '    {} = np.zeros(({},{}))\n'.format(left_id, self.symtable[left_id].dimensions[0], self.symtable[left_id].dimensions[1])
+            pass
+            # content += '    {} = np.zeros(({},{}))\n'.format(left_id, self.symtable[left_id].dimensions[0], self.symtable[left_id].dimensions[1])
         elif self.symtable[left_id].var_type == VarTypeEnum.VECTOR:
-            content += '{} = np.zeros(({}))\n'.format(left_id, self.symtable[left_id].dimensions[0])
-        content += "    " + left_id + ' = ' + str(self.walk(node.right, **kwargs))
+            pass
+            # content += '    {} = np.zeros(({}))\n'.format(left_id, self.symtable[left_id].dimensions[0])
+        content += '    ' + left_id + ' = ' + str(self.walk(node.right, **kwargs))
         la_remove_key(LHS, **kwargs)
         return content
 
@@ -237,11 +241,15 @@ class NumpyWalker(BaseNodeWalker):
             right.append(self.walk(value))
         if la_need_ret_vars(**kwargs):
             return {self.walk(node.left) + '_' + ','.join(right)}
+        elif la_need_ret_matrix(**kwargs):
+            return ""
         return self.walk(node.left, **kwargs) + '_' + ','.join(right)
 
     def walk_IdentifierAlone(self, node, **kwargs):
         if la_need_ret_vars(**kwargs):
             return {node.value}
+        elif la_need_ret_matrix(**kwargs):
+            return ""
         return node.value
 
     def walk_Derivative(self, node, **kwargs):
