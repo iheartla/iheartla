@@ -8,6 +8,7 @@ class VarTypeEnum(Enum):
     VECTOR = 3
     SCALAR = 4
     INTEGER = 5
+    REAL = 6
 
 
 class MatrixAttrEnum(Enum):

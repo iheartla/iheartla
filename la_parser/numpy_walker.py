@@ -37,13 +37,25 @@ class NumpyWalker(BaseNodeWalker):
                 type_checks.append('    assert len(dim) == 2')
                 type_checks.append('    assert dim[0] == {}'.format(self.symtable[parameter].dimensions[0]))
                 type_checks.append('    assert dim[1] == {}'.format(self.symtable[parameter].dimensions[1]))
+                element_type = self.symtable[parameter].element_type
+                if isinstance(element_type, LaVarType):
+                    if element_type.var_type == VarTypeEnum.INTEGER:
+                        type_checks.append('    assert np.issubdtype({}.dtype, np.integer)'.format(parameter))
+                    elif element_type.var_type == VarTypeEnum.REAL:
+                        type_checks.append('    assert np.issubdtype({}, np.floating) or np.issubdtype({}, np.integer)'.format(parameter, parameter))
             elif self.symtable[parameter].var_type == VarTypeEnum.VECTOR:
                 type_checks.append('    assert isinstance({}, np.ndarray)'.format(parameter))
                 type_checks.append('    dim = {}.shape'.format(parameter))
                 type_checks.append('    assert len(dim) == 1')
                 type_checks.append('    assert dim[0] == {}'.format(self.symtable[parameter].dimensions[0]))
+                element_type = self.symtable[parameter].element_type
+                if isinstance(element_type, LaVarType):
+                    if element_type.var_type == VarTypeEnum.INTEGER:
+                        type_checks.append('    assert np.issubdtype({}.dtype, np.integer)'.format(parameter))
+                    elif element_type.var_type == VarTypeEnum.REAL:
+                        type_checks.append('    assert np.issubdtype({}, np.floating) or np.issubdtype({}, np.integer)'.format(parameter, parameter))
             elif self.symtable[parameter].var_type == VarTypeEnum.SCALAR:
-                pass
+                type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
             pars.append(par)
         content = 'def myExpression(' + ', '.join(pars) + '):\n'
         if show_doc:
@@ -99,7 +111,7 @@ class NumpyWalker(BaseNodeWalker):
                         break
             #only one sub for now
             # content += "    for {} in range(len({})):\n".format(sub, target_var)
-            content = self.walk(node.exp)
+            content += self.walk(node.exp)
         return content
 
     def walk_Determinant(self, node, **kwargs):
