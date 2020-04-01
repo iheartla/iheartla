@@ -14,7 +14,6 @@ start::Start
 #include :: "linear_algebra/la_grammar/base.ebnf"
 
 
-
 statements::Statements
     =
     | {hspace} value+:statements {separator_with_space}+ value+:statement {hspace}
@@ -40,7 +39,7 @@ where_condition
 
 matrix_condition::MatrixCondition
     = id:identifier {hspace} ':' {hspace} 'matrix' {hspace} '(' {hspace} id1:(integer | identifier)  {hspace} ',' {hspace} id2:(integer | identifier) {hspace}')'  {{hspace}+ attr+:matrix_attribute}  { {hspace} ':' {hspace} desc:description}
-    | id:identifier {hspace} ':' {hspace} type:('ℝ'|'ℕ') {hspace} '^' {hspace} '(' {hspace} id1:(integer | identifier)  {hspace} '✖' {hspace} id2:(integer | identifier) {hspace}')'  {{hspace}+ attr+:matrix_attribute}  { {hspace} ':' {hspace} desc:description}
+    | id:identifier {hspace} ':' {hspace} type:('ℝ'|'ℤ') {hspace} '^' {hspace} '(' {hspace} id1:(integer | identifier)  {hspace} '×' {hspace} id2:(integer | identifier) {hspace}')'  {{hspace}+ attr+:matrix_attribute}  { {hspace} ':' {hspace} desc:description}
     ;
 
 matrix_attribute
@@ -50,8 +49,8 @@ matrix_attribute
 
 vector_condition::VectorCondition
     = id:identifier {hspace} ':' {hspace} 'vector' {hspace} '(' {hspace} id1:(integer | identifier) {hspace}')' { {hspace} ':' {hspace} desc:description}
-    | id:identifier {hspace} ':' {hspace} type:('ℝ'|'ℕ') {hspace} '^' {hspace} '(' {hspace} id1:(integer | identifier) {hspace}')' { {hspace} ':' {hspace} desc:description}
-    | id:identifier {hspace} ':' {hspace} type:('ℝ'|'ℕ') {hspace} '^' {hspace} id1:(integer | identifier) { {hspace} ':' {hspace} desc:description}
+    | id:identifier {hspace} ':' {hspace} type:('ℝ'|'ℤ') {hspace} '^' {hspace} '(' {hspace} id1:(integer | identifier) {hspace}')' { {hspace} ':' {hspace} desc:description}
+    | id:identifier {hspace} ':' {hspace} type:('ℝ'|'ℤ') {hspace} '^' {hspace} id1:(integer | identifier) { {hspace} ':' {hspace} desc:description}
     ;
 
 scalar_condition::ScalarCondition

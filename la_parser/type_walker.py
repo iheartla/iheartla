@@ -83,7 +83,7 @@ class TypeWalker(NodeWalker):
         if node.type:
             if node.type == 'ℝ':
                 element_type = LaVarType(VarTypeEnum.REAL)
-            elif node.type == 'ℕ':
+            elif node.type == 'ℤ':
                 element_type = LaVarType(VarTypeEnum.INTEGER)
         self.symtable[id0] = LaVarType(VarTypeEnum.MATRIX, [id1, id2], desc=desc, element_type=element_type)
         self.handle_identifier(id0, self.symtable[id0])
@@ -102,7 +102,7 @@ class TypeWalker(NodeWalker):
         if node.type:
             if node.type == 'ℝ':
                 element_type = LaVarType(VarTypeEnum.REAL)
-            elif node.type == 'ℕ':
+            elif node.type == 'ℤ':
                 element_type = LaVarType(VarTypeEnum.INTEGER)
         self.symtable[id0] = LaVarType(VarTypeEnum.VECTOR, [id1], desc=desc, element_type=element_type)
         self.handle_identifier(id0, self.symtable[id0])
