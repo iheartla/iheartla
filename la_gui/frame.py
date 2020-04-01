@@ -13,6 +13,9 @@ class MainWindow(wx.Frame):
         w, h = wx.DisplaySize()
         wx.Frame.__init__(self, parent, title=title, pos=(w / 4, h / 4), size=(w / 2, h / 2))
         self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE)
+        # monospaced = wx.Font(10, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas')
+        monospaced = wx.Font( 14, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, faceName = u'Monaco' )
+        self.control.SetFont( monospaced )
         self.statusbar = self.CreateStatusBar()
         self.statusbar.SetFieldsCount(1)
 
@@ -33,6 +36,7 @@ class MainWindow(wx.Frame):
 
         self.staticTxt = wx.StaticText(self, -1)
         self.staticTxt = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        self.staticTxt.SetFont( monospaced )
         self.SetItemsPos()
         # self.control.SetValue('a b(c(d(b+c)e)f)g')
         self.control.SetValue('''sum_i w_i T_i x
