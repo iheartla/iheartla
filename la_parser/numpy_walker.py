@@ -76,16 +76,24 @@ class NumpyWalker(BaseNodeWalker):
             if type(stat).__name__ == 'Statements':
                 content += self.walk(stat, **kwargs)
             else:
+                ret_str = ''
                 content += ''
                 if index == len(node.value) - 1:
                     if type(stat).__name__ != 'Assignment':
                         self.ret = 'ret'
-                        content += "    " + self.ret + ' = '
-                content += self.walk(stat, **kwargs) + '\n'
+                        ret_str = "    " + self.ret + ' = '
+                stat_value = self.walk(stat, **kwargs)
+                if isinstance(stat_value, NodeInfo):
+                    if stat_value.pre_str:
+                        content += stat_value.pre_str
+                        content += ret_str + stat_value.content + '\n'
+                else:
+                    content += stat_value + '\n'
             index += 1
         return content
 
     def walk_Summation(self, node, **kwargs):
+        assign_id = self.node_dict[node]
         if la_need_ret_vars(**kwargs):
             return {self.walk(node.exp, **kwargs)}
         subs = []
@@ -94,25 +102,27 @@ class NumpyWalker(BaseNodeWalker):
         kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_VAR
         vars = self.walk(node.exp, **kwargs)
         kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
-        content = ""
-        target_var = ''
+        content = []
+        target_var = []
+        exp_str = self.walk(node.exp)
         for sub in subs:
             for var in vars:
-                same_sub = False
                 if self.contain_subscript(var):
                     var_ids = self.get_all_ids(var)
                     var_subs = var_ids[1]
                     for var_sub in var_subs:
                         if sub == var_sub:
-                            same_sub = True
-                            target_var = var_ids[0]
-                            break
-                    if same_sub:
-                        break
+                            target_var.append(var_ids[0])
+            content.append("    {} = np.zeros({})\n".format(assign_id, self.symtable[assign_id].dimensions[0]))
+            content.append("for {} in range(len({})):\n".format(sub, target_var[0]))
+            for var in target_var:
+                old = "{}_{}".format(var, sub)
+                new = "{}[{}]".format(var, sub)
+                exp_str = exp_str.replace(old, new)
             #only one sub for now
             # content += "    for {} in range(len({})):\n".format(sub, target_var)
-            content += self.walk(node.exp)
-        return content
+            content.append(str("    " + assign_id + " += " + exp_str + '\n'))
+        return NodeInfo(content=assign_id, pre_str="    ".join(content))
 
     def walk_Determinant(self, node, **kwargs):
         if la_need_ret_vars(**kwargs):
@@ -123,10 +133,11 @@ class NumpyWalker(BaseNodeWalker):
     def walk_Matrix(self, node, **kwargs):
         content = "    "
         lhs = kwargs[LHS]
-        cur_m_id = "{}_{}".format(lhs, self.matrix_index)
+        cur_m_id = self.node_dict[node]
         if la_need_ret_vars(**kwargs):
             return {}
         elif la_need_ret_matrix(**kwargs):
+            kwargs["cur_id"] = cur_m_id
             content += '{} = np.zeros(({},{}))\n'.format(cur_m_id, self.symtable[cur_m_id].dimensions[0],
                                                       self.symtable[cur_m_id].dimensions[1])
             ret = self.walk(node.value, **kwargs)
@@ -140,7 +151,7 @@ class NumpyWalker(BaseNodeWalker):
     def walk_MatrixRows(self, node, **kwargs):
         content = ""
         lhs = kwargs[LHS]
-        cur_m_id = "{}_{}".format(lhs, self.matrix_index)
+        cur_m_id = kwargs["cur_id"]
         rows = self.symtable[cur_m_id].dimensions[0]
         cols = self.symtable[cur_m_id].dimensions[1]
         ret = []
@@ -231,7 +242,12 @@ class NumpyWalker(BaseNodeWalker):
         elif self.symtable[left_id].var_type == VarTypeEnum.VECTOR:
             pass
             # content += '    {} = np.zeros(({}))\n'.format(left_id, self.symtable[left_id].dimensions[0])
-        content += '    ' + left_id + ' = ' + str(self.walk(node.right, **kwargs))
+        right_value = str(self.walk(node.right, **kwargs))
+        if isinstance(right_value, NodeInfo):
+            content += right_value.pre_str
+            content += '    ' + left_id + ' = ' + right_value.content
+        else:
+            content += '    ' + left_id + ' = ' + right_value
         la_remove_key(LHS, **kwargs)
         return content
 
