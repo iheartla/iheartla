@@ -74,6 +74,7 @@ class TypeWalker(NodeWalker):
         self.m_dict = {}         # lhs:count
         self.node_dict = {}      # node:var_name
         self.name_cnt_dict = {}
+        self.const_dim = {}      #
 
     def generate_var_name(self, base):
         index = -1
@@ -176,7 +177,10 @@ class TypeWalker(NodeWalker):
     def walk_Divide(self, node, **kwargs):
         left_type = self.walk(node.left, **kwargs)
         right_type = self.walk(node.right, **kwargs)
-        ret_type = self.type_inference(TypeInferenceEnum.INF_DIV, left_type, right_type)
+        if isinstance(left_type, NodeInfo):
+            ret_type = self.type_inference(TypeInferenceEnum.INF_DIV, left_type.la_type, right_type)
+        else:
+            ret_type = self.type_inference(TypeInferenceEnum.INF_DIV, left_type, right_type)
         return ret_type
 
     def walk_Assignment(self, node, **kwargs):
@@ -186,6 +190,11 @@ class TypeWalker(NodeWalker):
         right_type = self.walk(node.right, **kwargs)
         la_remove_key(LHS, **kwargs)
         self.symtable[id0] = right_type
+        if self.contain_subscript(id0):
+            left_ids = self.get_all_ids(id0)
+            left_subs = left_ids[1]
+            sequence = left_ids[0]    #y
+            self.symtable[sequence] = LaVarType(VarTypeEnum.SEQUENCE, dimensions=left_subs, element_type=right_type)
         return right_type
 
     def walk_Summation(self, node, **kwargs):
@@ -201,7 +210,9 @@ class TypeWalker(NodeWalker):
     def walk_IdentifierSubscript(self, node, **kwargs):
         right = []
         for value in node.right:
-            right.append(self.walk(value), **kwargs)
+            print(value)
+            print(self.walk(value))
+            right.append(self.walk(value))
         return self.walk(node.left, **kwargs) + '_' + ','.join(right)
 
     def walk_IdentifierAlone(self, node, **kwargs):

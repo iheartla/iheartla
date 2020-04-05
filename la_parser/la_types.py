@@ -35,6 +35,13 @@ class MatrixAttrs(object):
         self.sparse = sparse
 
 
+class SummationAttrs(object):
+    def __init__(self, subs=None, var_list=None):
+        super().__init__()
+        self.subs = subs
+        self.var_list = var_list
+
+
 class NodeInfo(object):
     def __init__(self, la_type=None, symbol=None, content=None, pre_str=None):
         super().__init__()

@@ -205,7 +205,12 @@ class NumpyWalker(BaseNodeWalker):
             return left_set.union(right_set)
         elif la_need_ret_matrix(**kwargs):
             return self.walk(node.left, **kwargs) + self.walk(node.right, **kwargs)
-        return self.walk(node.left, **kwargs) + '*' + self.walk(node.right, **kwargs)
+        left = self.walk(node.left, **kwargs)
+        right = self.walk(node.right, **kwargs)
+        if isinstance(right, NodeInfo):
+            right.content = left + '*' + right.content
+            return right
+        return left + '*' + right
 
     def walk_Divide(self, node, **kwargs):
         if la_need_ret_vars(**kwargs):
@@ -242,12 +247,24 @@ class NumpyWalker(BaseNodeWalker):
         elif self.symtable[left_id].var_type == VarTypeEnum.VECTOR:
             pass
             # content += '    {} = np.zeros(({}))\n'.format(left_id, self.symtable[left_id].dimensions[0])
-        right_value = str(self.walk(node.right, **kwargs))
+        right_value = self.walk(node.right, **kwargs)
+        right_exp = ""
         if isinstance(right_value, NodeInfo):
-            content += right_value.pre_str
-            content += '    ' + left_id + ' = ' + right_value.content
+            right_exp += right_value.pre_str
+            right_exp += '    ' + left_id + ' = ' + right_value.content
         else:
-            content += '    ' + left_id + ' = ' + right_value
+            right_exp += '    ' + left_id + ' = ' + right_value
+        #y_i
+        if self.contain_subscript(left_id):
+            left_ids = self.get_all_ids(left_id)
+            left_subs = left_ids[1]
+            sequence = left_ids[0]    #y
+            content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].dimensions[0])
+            content += "    for {} in range(len({})):\n".format(left_subs[0], sequence)
+            content += "    " + right_exp
+        #
+        else:
+            content += right_exp
         la_remove_key(LHS, **kwargs)
         return content
 
