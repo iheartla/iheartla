@@ -61,7 +61,8 @@ class NumpyWalker(BaseNodeWalker):
         if show_doc:
             content += '    \"\"\"\n' + '\n'.join(doc) + '\n    \"\"\"\n'
         content += '\n'.join(type_checks) + '\n\n'
-        content += self.walk(node.stat)
+        stat_info = self.walk(node.stat)
+        content += stat_info.content
         content += '    return ' + self.ret
         content += '\n'
         return content
@@ -74,7 +75,8 @@ class NumpyWalker(BaseNodeWalker):
         content = ''
         for stat in node.value:
             if type(stat).__name__ == 'Statements':
-                content += self.walk(stat, **kwargs)
+                stat_info = self.walk(stat, **kwargs)
+                content += stat_info.content
             else:
                 ret_str = ''
                 content += ''
@@ -82,15 +84,16 @@ class NumpyWalker(BaseNodeWalker):
                     if type(stat).__name__ != 'Assignment':
                         self.ret = 'ret'
                         ret_str = "    " + self.ret + ' = '
-                stat_value = self.walk(stat, **kwargs)
-                if isinstance(stat_value, NodeInfo):
-                    if stat_value.pre_str:
-                        content += stat_value.pre_str
+                stat_info = self.walk(stat, **kwargs)
+                stat_value = stat_info.content
+                if isinstance(stat_value, CodeNodeInfo):
+                    if stat_value.pre_list:
+                        content += "".join(stat_value.pre_list)
                         content += ret_str + stat_value.content + '\n'
                 else:
                     content += stat_value + '\n'
             index += 1
-        return content
+        return CodeNodeInfo(content)
 
     def walk_Summation(self, node, **kwargs):
         assign_id = self.node_dict[node]
@@ -98,13 +101,16 @@ class NumpyWalker(BaseNodeWalker):
             return {self.walk(node.exp, **kwargs)}
         subs = []
         for sub in node.sub:
-            subs.append(self.walk(sub))
+            sub_info = self.walk(sub)
+            subs.append(sub_info.content)
         kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_VAR
-        vars = self.walk(node.exp, **kwargs)
+        exp_info = self.walk(node.exp, **kwargs)
+        vars = exp_info.content
         kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
         content = []
         target_var = []
-        exp_str = self.walk(node.exp)
+        exp_info = self.walk(node.exp)
+        exp_str = exp_info.content
         for sub in subs:
             for var in vars:
                 if self.contain_subscript(var):
@@ -119,15 +125,16 @@ class NumpyWalker(BaseNodeWalker):
                 old = "{}_{}".format(var, sub)
                 new = "{}[{}]".format(var, sub)
                 exp_str = exp_str.replace(old, new)
-            #only one sub for now
+            # only one sub for now
             # content += "    for {} in range(len({})):\n".format(sub, target_var)
             content.append(str("    " + assign_id + " += " + exp_str + '\n'))
-        return NodeInfo(content=assign_id, pre_str="    ".join(content))
+        return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
     def walk_Determinant(self, node, **kwargs):
         if la_need_ret_vars(**kwargs):
             return self.walk(node.value, **kwargs)
-        value = self.walk(node.value)
+        value_info = self.walk(node.value)
+        value = value_info.content
         return '|' + value + '|'
 
     def walk_Matrix(self, node, **kwargs):
@@ -139,14 +146,15 @@ class NumpyWalker(BaseNodeWalker):
         elif la_need_ret_matrix(**kwargs):
             kwargs["cur_id"] = cur_m_id
             content += '{} = np.zeros(({},{}))\n'.format(cur_m_id, self.symtable[cur_m_id].dimensions[0],
-                                                      self.symtable[cur_m_id].dimensions[1])
-            ret = self.walk(node.value, **kwargs)
+                                                         self.symtable[cur_m_id].dimensions[1])
+            ret_info = self.walk(node.value, **kwargs)
+            ret = ret_info.content
             for i in range(len(ret)):
                 content += "    {}[{}] = [{}]\n".format(cur_m_id, i, ret[i])
             self.matrix_index += 1
-            return content
+            return CodeNodeInfo(content)
         self.matrix_index += 1
-        return cur_m_id
+        return CodeNodeInfo(cur_m_id)
 
     def walk_MatrixRows(self, node, **kwargs):
         content = ""
@@ -156,86 +164,106 @@ class NumpyWalker(BaseNodeWalker):
         cols = self.symtable[cur_m_id].dimensions[1]
         ret = []
         if node.rs:
-            ret = ret + self.walk(node.rs, **kwargs)
+            rs_info = self.walk(node.rs, **kwargs)
+            ret = ret + rs_info.content
         if node.r:
-            ret.append(self.walk(node.r, **kwargs))
-        return ret
+            r_info = self.walk(node.r, **kwargs)
+            ret.append(r_info.content)
+        return CodeNodeInfo(ret)
 
     def walk_MatrixRow(self, node, **kwargs):
         ret = []
         if node.rc:
-            ret.append(self.walk(node.rc, **kwargs))
+            rc_info = self.walk(node.rc, **kwargs)
+            ret.append(rc_info.content)
         if node.exp:
-            ret.append(self.walk(node.exp, **kwargs))
-        return ', '.join(ret)
+            exp_info = self.walk(node.exp, **kwargs)
+            ret.append(exp_info.content)
+        return CodeNodeInfo(', '.join(ret))
 
     def walk_MatrixRowCommas(self, node, **kwargs):
         ret = []
         if node.value:
-            ret.append(self.walk(node.value, **kwargs))
+            value_info = self.walk(node.value, **kwargs)
+            ret.append(value_info.content)
         if node.exp:
-            ret.append(self.walk(node.exp, **kwargs))
-        return ', '.join(ret)
+            exp_info = self.walk(node.exp, **kwargs)
+            ret.append(exp_info.content)
+        return CodeNodeInfo(', '.join(ret))
 
     def walk_ExpInMatrix(self, node, **kwargs):
         return self.walk(node.value, **kwargs)
 
     def walk_Add(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        left_set = left_info.content
+        right_info = self.walk(node.right, **kwargs)
+        right_set = right_info.content
         if la_need_ret_vars(**kwargs):
-            left_set = self.walk(node.left, **kwargs)
-            right_set = self.walk(node.right, **kwargs)
-            return left_set.union(right_set)
+            return CodeNodeInfo(left_set.union(right_set))
         elif la_need_ret_matrix(**kwargs):
-            return self.walk(node.left, **kwargs) + self.walk(node.right, **kwargs)
-        return self.walk(node.left, **kwargs) + '+' + self.walk(node.right, **kwargs)
+            left_info.content += right_info.content
+            return left_info
+        left_info.content = left_info.content + '+' + right_info.content
+        return left_info
 
     def walk_Subtract(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        left_set = left_info.content
+        right_info = self.walk(node.right, **kwargs)
+        right_set = right_info.content
         if la_need_ret_vars(**kwargs):
-            left_set = self.walk(node.left, **kwargs)
-            right_set = self.walk(node.right, **kwargs)
-            return left_set.union(right_set)
+            return CodeNodeInfo(left_set.union(right_set))
         elif la_need_ret_matrix(**kwargs):
-            return self.walk(node.left, **kwargs) + self.walk(node.right, **kwargs)
-        return self.walk(node.left, **kwargs) + '-' + self.walk(node.right, **kwargs)
+            left_info.content += right_info.content
+            return left_info
+        left_info.content = left_info.content + '-' + right_info.content
+        return left_info
 
     def walk_Multiply(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        left_set = left_info.content
+        right_info = self.walk(node.right, **kwargs)
+        right_set = right_info.content
         if la_need_ret_vars(**kwargs):
-            left_set = self.walk(node.left, **kwargs)
-            right_set = self.walk(node.right, **kwargs)
-            return left_set.union(right_set)
+            return CodeNodeInfo(left_set.union(right_set))
         elif la_need_ret_matrix(**kwargs):
-            return self.walk(node.left, **kwargs) + self.walk(node.right, **kwargs)
-        left = self.walk(node.left, **kwargs)
-        right = self.walk(node.right, **kwargs)
-        if isinstance(right, NodeInfo):
-            right.content = left + '*' + right.content
-            return right
-        return left + '*' + right
+            left_info.content += right_info.content
+            return left_info
+        left_info.content = left_info.content + '*' + right_info.content
+        return left_info
 
     def walk_Divide(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        left_set = left_info.content
+        right_info = self.walk(node.right, **kwargs)
+        right_set = right_info.content
         if la_need_ret_vars(**kwargs):
-            left_set = self.walk(node.left, **kwargs)
-            right_set = self.walk(node.right, **kwargs)
-            return left_set.union(right_set)
+            return CodeNodeInfo(left_set.union(right_set))
         elif la_need_ret_matrix(**kwargs):
-            return self.walk(node.left, **kwargs) + self.walk(node.right, **kwargs)
-        return self.walk(node.left, **kwargs) + '/' + self.walk(node.right, **kwargs)
+            left_info.content += right_info.content
+            return left_info
+        left_info.content = left_info.content + '/' + right_info.content
+        return left_info
 
     def walk_Assignment(self, node, **kwargs):
         if la_need_ret_vars(**kwargs):
-            left_set = self.walk(node.left, **kwargs)
-            right_set = self.walk(node.right, **kwargs)
-            return left_set.union(right_set)
-
+            left_info = self.walk(node.left, **kwargs)
+            left_set = left_info.content
+            right_info = self.walk(node.right, **kwargs)
+            right_set = right_info.content
+            return CodeNodeInfo(left_set.union(right_set))
         # walk matrix first
         content = ""
         matrix_exp = []
-        left_id = self.walk(node.left, **kwargs)
+        left_info = self.walk(node.left, **kwargs)
+        left_id = left_info.content
         kwargs[LHS] = left_id
         self.matrix_index = 0
         if left_id in self.m_dict:
             kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_MATRIX_STAT
-            content += self.walk(node.right, **kwargs)
+            right_info = self.walk(node.right, **kwargs)
+            content += right_info.content
             kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
         self.ret = left_id
         self.matrix_index = 0
@@ -247,18 +275,17 @@ class NumpyWalker(BaseNodeWalker):
         elif self.symtable[left_id].var_type == VarTypeEnum.VECTOR:
             pass
             # content += '    {} = np.zeros(({}))\n'.format(left_id, self.symtable[left_id].dimensions[0])
-        right_value = self.walk(node.right, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        right_value = right_info.content
         right_exp = ""
-        if isinstance(right_value, NodeInfo):
-            right_exp += right_value.pre_str
-            right_exp += '    ' + left_id + ' = ' + right_value.content
-        else:
-            right_exp += '    ' + left_id + ' = ' + right_value
-        #y_i
+        if right_info.pre_list:
+            right_exp += "".join(right_info.pre_list)
+        right_exp += '    ' + left_id + ' = ' + right_info.content
+        # y_i
         if self.contain_subscript(left_id):
             left_ids = self.get_all_ids(left_id)
             left_subs = left_ids[1]
-            sequence = left_ids[0]    #y
+            sequence = left_ids[0]  # y
             content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].dimensions[0])
             content += "    for {} in range(len({})):\n".format(left_subs[0], sequence)
             content += "    " + right_exp
@@ -266,29 +293,33 @@ class NumpyWalker(BaseNodeWalker):
         else:
             content += right_exp
         la_remove_key(LHS, **kwargs)
-        return content
+        return CodeNodeInfo(content)
 
     def walk_IdentifierSubscript(self, node, **kwargs):
         right = []
         for value in node.right:
-            right.append(self.walk(value))
+            value_info = self.walk(value)
+            right.append(value_info.content)
         if la_need_ret_vars(**kwargs):
-            return {self.walk(node.left) + '_' + ','.join(right)}
+            left_info = self.walk(node.left)
+            return CodeNodeInfo({left_info.content + '_' + ','.join(right)})
         elif la_need_ret_matrix(**kwargs):
-            return ""
-        return self.walk(node.left, **kwargs) + '_' + ','.join(right)
+            return CodeNodeInfo("")
+        left_info = self.walk(node.left)
+        content = left_info.content + '_' + ','.join(right)
+        return CodeNodeInfo(content)
 
     def walk_IdentifierAlone(self, node, **kwargs):
         if la_need_ret_vars(**kwargs):
-            return {node.value}
+            return CodeNodeInfo({node.value})
         elif la_need_ret_matrix(**kwargs):
-            return ""
-        return node.value
+            return CodeNodeInfo("")
+        return CodeNodeInfo(node.value)
 
     def walk_Derivative(self, node, **kwargs):
         if la_need_ret_vars(**kwargs):
-            return {}
-        return ""
+            return CodeNodeInfo({})
+        return CodeNodeInfo("")
 
     def walk_Factor(self, node, **kwargs):
         if node.id:
@@ -306,10 +337,22 @@ class NumpyWalker(BaseNodeWalker):
 
     def walk_Number(self, node, **kwargs):
         if la_need_ret_vars(**kwargs):
-            return {}
+            return CodeNodeInfo({})
         return self.walk(node.value, **kwargs)
 
     def walk_Integer(self, node, **kwargs):
         if la_need_ret_vars(**kwargs):
-            return {}
-        return ''.join(node.value)
+            return CodeNodeInfo({})
+        content = ''.join(node.value)
+        return CodeNodeInfo(content)
+
+    ###################################################################
+    def merge_pre_list(self, left_info, right_info):
+        ret = left_info.pre_list
+        if right_info.pre_list is not None:
+            if ret is None:
+                ret = right_info.pre_list
+            else:
+                ret = ret + right_info.pre_list
+        return ret
+

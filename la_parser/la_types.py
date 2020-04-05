@@ -43,9 +43,16 @@ class SummationAttrs(object):
 
 
 class NodeInfo(object):
-    def __init__(self, la_type=None, content=None, symbol=None,  pre_str=None):
+    def __init__(self, la_type=None, content=None, symbol=None,  pre_list=None):
         super().__init__()
         self.content = content
         self.la_type = la_type
         self.symbol = symbol
-        self.pre_str = pre_str
+        self.pre_list = pre_list
+
+
+class CodeNodeInfo(object):
+    def __init__(self, content=None, pre_list=None):
+        super().__init__()
+        self.content = content
+        self.pre_list = pre_list
