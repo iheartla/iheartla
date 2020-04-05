@@ -74,7 +74,7 @@ class TypeWalker(NodeWalker):
         self.m_dict = {}         # lhs:count
         self.node_dict = {}      # node:var_name
         self.name_cnt_dict = {}
-        self.const_dim = {}      #
+        self.const_dim = {}      # h:w_i
 
     def generate_var_name(self, base):
         index = -1
@@ -100,9 +100,12 @@ class TypeWalker(NodeWalker):
             self.walk(cond, **kwargs)
 
     def walk_MatrixCondition(self, node, **kwargs):
-        id0 = self.walk(node.id, **kwargs)
-        id1 = self.walk(node.id1, **kwargs)
-        id2 = self.walk(node.id2, **kwargs)
+        id0_info = self.walk(node.id, **kwargs)
+        id0 = id0_info.content
+        id1_info = self.walk(node.id1, **kwargs)
+        id1 = id1_info.content
+        id2_info = self.walk(node.id2, **kwargs)
+        id2 = id2_info.content
         ret = node.text.split(':')
         desc = ':'.join(ret[1:len(ret)])
         element_type = ''
@@ -120,8 +123,10 @@ class TypeWalker(NodeWalker):
             self.symtable[id2] = LaVarType(VarTypeEnum.INTEGER)
 
     def walk_VectorCondition(self, node, **kwargs):
-        id0 = self.walk(node.id, **kwargs)
-        id1 = self.walk(node.id1, **kwargs)
+        id0_info = self.walk(node.id, **kwargs)
+        id0 = id0_info.content
+        id1_info = self.walk(node.id1, **kwargs)
+        id1 = id1_info.content
         ret = node.text.split(':')
         desc = ':'.join(ret[1:len(ret)])
         element_type = ''
@@ -137,7 +142,8 @@ class TypeWalker(NodeWalker):
             self.symtable[id1] = LaVarType(VarTypeEnum.INTEGER)
 
     def walk_ScalarCondition(self, node, **kwargs):
-        id0 = self.walk(node.id, **kwargs)
+        id0_info = self.walk(node.id, **kwargs)
+        id0 = id0_info.content
         ret = node.text.split(':')
         desc = ':'.join(ret[1:len(ret)])
         self.symtable[id0] = LaVarType(VarTypeEnum.SCALAR, desc=desc)
@@ -157,37 +163,42 @@ class TypeWalker(NodeWalker):
             self.walk(stat, **kwargs)
 
     def walk_Add(self, node, **kwargs):
-        left_type = self.walk(node.left, **kwargs)
-        right_type = self.walk(node.right, **kwargs)
+        left_info = self.walk(node.left, **kwargs)
+        left_type = left_info.la_type
+        right_info = self.walk(node.right, **kwargs)
+        right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_ADD, left_type, right_type)
-        return ret_type
+        return NodeInfo(ret_type)
 
     def walk_Subtract(self, node, **kwargs):
-        left_type = self.walk(node.left, **kwargs)
-        right_type = self.walk(node.right, **kwargs)
+        left_info = self.walk(node.left, **kwargs)
+        left_type = left_info.la_type
+        right_info = self.walk(node.right, **kwargs)
+        right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_SUB, left_type, right_type)
-        return ret_type
+        return NodeInfo(ret_type)
 
     def walk_Multiply(self, node, **kwargs):
-        left_type = self.walk(node.left, **kwargs)
-        right_type = self.walk(node.right, **kwargs)
+        left_info = self.walk(node.left, **kwargs)
+        left_type = left_info.la_type
+        right_info = self.walk(node.right, **kwargs)
+        right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_MUL, left_type, right_type)
-        return ret_type
+        return NodeInfo(ret_type)
 
     def walk_Divide(self, node, **kwargs):
-        left_type = self.walk(node.left, **kwargs)
-        right_type = self.walk(node.right, **kwargs)
-        if isinstance(left_type, NodeInfo):
-            ret_type = self.type_inference(TypeInferenceEnum.INF_DIV, left_type.la_type, right_type)
-        else:
-            ret_type = self.type_inference(TypeInferenceEnum.INF_DIV, left_type, right_type)
-        return ret_type
+        left_info = self.walk(node.left, **kwargs)
+        left_type = left_info.la_type
+        ret_type = self.type_inference(TypeInferenceEnum.INF_DIV, left_type, right_type)
+        return NodeInfo(ret_type)
 
     def walk_Assignment(self, node, **kwargs):
-        id0 = self.walk(node.left, **kwargs)
+        id0_info = self.walk(node.left, **kwargs)
+        id0 = id0_info.content
         kwargs[LHS] = id0
         self.matrix_index = 0
-        right_type = self.walk(node.right, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        right_type = right_info.la_type
         la_remove_key(LHS, **kwargs)
         self.symtable[id0] = right_type
         if self.contain_subscript(id0):
@@ -195,37 +206,44 @@ class TypeWalker(NodeWalker):
             left_subs = left_ids[1]
             sequence = left_ids[0]    #y
             self.symtable[sequence] = LaVarType(VarTypeEnum.SEQUENCE, dimensions=left_subs, element_type=right_type)
-        return right_type
+        return right_info
 
     def walk_Summation(self, node, **kwargs):
         new_id = self.generate_var_name("sum")
-        ret_type = self.walk(node.exp, **kwargs)
+        ret_info = self.walk(node.exp, **kwargs)
+        ret_type = ret_info.la_type
         self.symtable[new_id] = ret_type
         self.node_dict[node] = new_id
-        return self.walk(node.exp, **kwargs)
+        return ret_info
 
     def walk_Determinant(self, node, **kwargs):
-        return LaVarType(VarTypeEnum.SCALAR)
+        ret_type = LaVarType(VarTypeEnum.SCALAR)
+        return NodeInfo(ret_type)
 
     def walk_IdentifierSubscript(self, node, **kwargs):
+        node_type = LaVarType(VarTypeEnum.INVALID)
         right = []
         for value in node.right:
-            print(value)
-            print(self.walk(value))
-            right.append(self.walk(value))
-        return self.walk(node.left, **kwargs) + '_' + ','.join(right)
+            v_info = self.walk(value)
+            right.append(v_info.content)
+        left_info = self.walk(node.left, **kwargs)
+        content = left_info.content + '_' + ','.join(right)
+        if content in self.symtable:
+            node_type = self.symtable[content]
+        return NodeInfo(node_type, content)
 
     def walk_IdentifierAlone(self, node, **kwargs):
-        return node.value
+        node_type = LaVarType(VarTypeEnum.INVALID)
+        if node.value in self.symtable:
+            node_type = self.symtable[node.value]
+        return NodeInfo(node_type, node.value)
 
     def walk_Factor(self, node, **kwargs):
         if node.id:
-            id0 = self.walk(node.id, **kwargs)
+            id0_info = self.walk(node.id, **kwargs)
+            id0 = id0_info.content
             assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
-            if la_is_inside_matrix(**kwargs):
-                return NodeInfo(self.symtable[id0], content=id0)
-            else:
-                return self.symtable[id0]
+            return NodeInfo(self.symtable[id0], content=id0)
         elif node.num:
             return self.walk(node.num, **kwargs)
         elif node.sub:
@@ -239,12 +257,12 @@ class TypeWalker(NodeWalker):
 
     def walk_Number(self, node, **kwargs):
         node_value = self.walk(node.value, **kwargs)
-        ret = NodeInfo(LaVarType(VarTypeEnum.SCALAR), content=node_value)
-        return ret
+        return NodeInfo(LaVarType(VarTypeEnum.SCALAR), content=node_value)
 
     def walk_Integer(self, node, **kwargs):
         value = ''.join(node.value)
-        return int(value)
+        node_type = LaVarType(VarTypeEnum.INTEGER)
+        return NodeInfo(node_type, content=int(value))
 
     def walk_Matrix(self, node, **kwargs):
         kwargs[INSIDE_MATRIX] = True
@@ -266,7 +284,8 @@ class TypeWalker(NodeWalker):
                 self.m_dict[lhs] = cnt + 1
             else:
                 self.m_dict[lhs] = 1
-        return LaVarType(VarTypeEnum.MATRIX, dimensions=[rows, cols])
+        node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[rows, cols])
+        return NodeInfo(node_type)
 
     def walk_MatrixRows(self, node, **kwargs):
         ret_info = None
