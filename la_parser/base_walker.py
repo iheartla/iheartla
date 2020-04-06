@@ -18,6 +18,7 @@ class BaseNodeWalker(NodeWalker):
         self.matrix_index = 0    # index of matrix in a single assignment statement
         self.m_dict = {}
         self.node_dict = {}
+        self.dim_dict = {}
         self.visualizer = LaVisualizer()
 
     def print_symbols(self):
@@ -26,7 +27,8 @@ class BaseNodeWalker(NodeWalker):
             print(k + ':' + str(v.var_type) + ', dimension:' + str(v.dimensions))
         print("subscripts:\n" + str(self.subscripts))
         print("parameters:\n" + str(self.parameters))
-        print("m_dict:\n" + str(self.m_dict)+ '\n')
+        print("m_dict:\n" + str(self.m_dict))
+        print("dim_dict:\n" + str(self.dim_dict) + '\n')
         # print("node_dict:\n" + str(self.node_dict) + '\n')
 
     def walk_model(self, node):
@@ -37,6 +39,7 @@ class BaseNodeWalker(NodeWalker):
         self.subscripts = type_walker.subscripts
         self.m_dict = type_walker.m_dict
         self.node_dict = type_walker.node_dict
+        self.dim_dict = type_walker.dim_dict
         self.print_symbols()
         self.visualizer.visualize(node)
         content = self.pre_str + self.walk(node) + self.post_str
@@ -58,3 +61,9 @@ class BaseNodeWalker(NodeWalker):
     def get_all_ids(self, identifier):
         res = identifier.split('_')
         return [res[0], res[1].split(',')]
+
+    def get_main_id(self, identifier):
+        if self.contain_subscript(identifier):
+            ret = self.get_all_ids(identifier)
+            return ret[0]
+        return identifier

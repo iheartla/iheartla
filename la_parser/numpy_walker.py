@@ -20,6 +20,7 @@ class NumpyWalker(BaseNodeWalker):
                 doc.append('    :param :{} :{}'.format(parameter, self.symtable[parameter].desc))
             if self.symtable[parameter].var_type == VarTypeEnum.SEQUENCE:
                 ele_type = self.symtable[parameter].element_type
+                data_type = ele_type.element_type
                 type_checks.append('    assert isinstance({}, np.ndarray)'.format(parameter))
                 type_checks.append('    dim = {}.shape'.format(parameter))
                 if ele_type.var_type == VarTypeEnum.MATRIX:
@@ -57,10 +58,21 @@ class NumpyWalker(BaseNodeWalker):
             elif self.symtable[parameter].var_type == VarTypeEnum.SCALAR:
                 type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
             pars.append(par)
+
         content = 'def myExpression(' + ', '.join(pars) + '):\n'
         if show_doc:
             content += '    \"\"\"\n' + '\n'.join(doc) + '\n    \"\"\"\n'
+        dim_content = ""
+        if self.dim_dict:
+            for key, value in self.dim_dict.items():
+                if self.contain_subscript(value[0]):
+                    main_id = self.get_main_id(value[0])
+                    dim_content += "    {} == {}.shape[{}]\n".format(key, main_id, value[1]+1)
+                else:
+                    dim_content += "    {} == {}.shape[{}]\n".format(key, value[0], value[1])
+        content += dim_content
         content += '\n'.join(type_checks) + '\n\n'
+        #statements
         stat_info = self.walk(node.stat)
         content += stat_info.content
         content += '    return ' + self.ret

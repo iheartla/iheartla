@@ -74,7 +74,7 @@ class TypeWalker(NodeWalker):
         self.m_dict = {}         # lhs:count
         self.node_dict = {}      # node:var_name
         self.name_cnt_dict = {}
-        self.const_dim = {}      # h:w_i
+        self.dim_dict = {}      # h:w_i
 
     def generate_var_name(self, base):
         index = -1
@@ -119,8 +119,10 @@ class TypeWalker(NodeWalker):
         self.update_parameters(id0)
         if isinstance(id1, str):
             self.symtable[id1] = LaVarType(VarTypeEnum.INTEGER)
+            self.dim_dict[id1] = [id0, 0]
         if isinstance(id2, str):
             self.symtable[id2] = LaVarType(VarTypeEnum.INTEGER)
+            self.dim_dict[id2] = [id0, 1]
 
     def walk_VectorCondition(self, node, **kwargs):
         id0_info = self.walk(node.id, **kwargs)
@@ -140,6 +142,7 @@ class TypeWalker(NodeWalker):
         self.update_parameters(id0)
         if isinstance(id1, str):
             self.symtable[id1] = LaVarType(VarTypeEnum.INTEGER)
+            self.dim_dict[id1] = [id0, 0]
 
     def walk_ScalarCondition(self, node, **kwargs):
         id0_info = self.walk(node.id, **kwargs)
