@@ -11,6 +11,7 @@ class NumpyWalker(BaseNodeWalker):
     def walk_Start(self, node, **kwargs):
         pars = []
         type_checks = []
+        type_declare = []
         show_doc = False
         doc = []
         for parameter in self.parameters:
@@ -21,40 +22,39 @@ class NumpyWalker(BaseNodeWalker):
             if self.symtable[parameter].var_type == VarTypeEnum.SEQUENCE:
                 ele_type = self.symtable[parameter].element_type
                 data_type = ele_type.element_type
-                type_checks.append('    assert isinstance({}, np.ndarray)'.format(parameter))
-                type_checks.append('    dim = {}.shape'.format(parameter))
+                if isinstance(data_type, LaVarType):
+                    if data_type.var_type == VarTypeEnum.INTEGER:
+                        type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
+                    elif data_type.var_type == VarTypeEnum.REAL:
+                        type_declare.append('    {} = np.asarray({}, dtype=np.floating)'.format(parameter, parameter))
+                else:
+                    type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
                 if ele_type.var_type == VarTypeEnum.MATRIX:
-                    type_checks.append('    assert len(dim) == 3')
-                    type_checks.append('    assert dim[1] == {}'.format(ele_type.dimensions[0]))
-                    type_checks.append('    assert dim[2] == {}'.format(ele_type.dimensions[1]))
+                    type_checks.append('    assert {}.shape == ({}, {}, {})'.format(parameter, self.symtable[parameter].dimensions[0], ele_type.dimensions[0], ele_type.dimensions[1]))
                 elif ele_type.var_type == VarTypeEnum.VECTOR:
-                    type_checks.append('    assert len(dim) == 2')
-                    type_checks.append('    assert dim[1] == {}'.format(ele_type.dimensions[0]))
+                    type_checks.append('    assert {}.shape == ({}, {})'.format(parameter, self.symtable[parameter].dimensions[0], ele_type.dimensions[0]))
                 elif ele_type.var_type == VarTypeEnum.SCALAR:
-                    type_checks.append('    assert len(dim) == 1')
+                    type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].dimensions[0]))
             elif self.symtable[parameter].var_type == VarTypeEnum.MATRIX:
-                type_checks.append('    assert isinstance({}, np.ndarray)'.format(parameter))
-                type_checks.append('    dim = {}.shape'.format(parameter))
-                type_checks.append('    assert len(dim) == 2')
-                type_checks.append('    assert dim[0] == {}'.format(self.symtable[parameter].dimensions[0]))
-                type_checks.append('    assert dim[1] == {}'.format(self.symtable[parameter].dimensions[1]))
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
                     if element_type.var_type == VarTypeEnum.INTEGER:
-                        type_checks.append('    assert np.issubdtype({}.dtype, np.integer)'.format(parameter))
+                        type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
                     elif element_type.var_type == VarTypeEnum.REAL:
-                        type_checks.append('    assert np.issubdtype({}, np.floating) or np.issubdtype({}, np.integer)'.format(parameter, parameter))
+                        type_declare.append('    {} = np.asarray({}, dtype=np.floating)'.format(parameter, parameter))
+                else:
+                    type_checks.append('    {} = np.asarray({})'.format(parameter, parameter))
+                type_checks.append('    assert {}.shape = ({}, {})'.format(parameter, self.symtable[parameter].dimensions[0], self.symtable[parameter].dimensions[1]))
             elif self.symtable[parameter].var_type == VarTypeEnum.VECTOR:
-                type_checks.append('    assert isinstance({}, np.ndarray)'.format(parameter))
-                type_checks.append('    dim = {}.shape'.format(parameter))
-                type_checks.append('    assert len(dim) == 1')
-                type_checks.append('    assert dim[0] == {}'.format(self.symtable[parameter].dimensions[0]))
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
                     if element_type.var_type == VarTypeEnum.INTEGER:
-                        type_checks.append('    assert np.issubdtype({}.dtype, np.integer)'.format(parameter))
+                        type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
                     elif element_type.var_type == VarTypeEnum.REAL:
-                        type_checks.append('    assert np.issubdtype({}, np.floating) or np.issubdtype({}, np.integer)'.format(parameter, parameter))
+                        type_declare.append('    {} = np.asarray({}, dtype=np.floating)'.format(parameter, parameter))
+                else:
+                    type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
+                type_checks.append('    assert {}.shape = ({},)'.format(parameter, self.symtable[parameter].dimensions[0]))
             elif self.symtable[parameter].var_type == VarTypeEnum.SCALAR:
                 type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
             pars.append(par)
@@ -67,12 +67,14 @@ class NumpyWalker(BaseNodeWalker):
             for key, value in self.dim_dict.items():
                 if self.contain_subscript(value[0]):
                     main_id = self.get_main_id(value[0])
-                    dim_content += "    {} == {}.shape[{}]\n".format(key, main_id, value[1]+1)
+                    dim_content += "    {} = {}.shape[{}]\n".format(key, main_id, value[1]+1)
                 else:
-                    dim_content += "    {} == {}.shape[{}]\n".format(key, value[0], value[1])
+                    dim_content += "    {} = {}.shape[{}]\n".format(key, value[0], value[1])
+        # merge content
+        content += '\n'.join(type_declare) + '\n\n'
         content += dim_content
         content += '\n'.join(type_checks) + '\n\n'
-        #statements
+        # statements
         stat_info = self.walk(node.stat)
         content += stat_info.content
         content += '    return ' + self.ret

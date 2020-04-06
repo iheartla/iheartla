@@ -14,11 +14,12 @@ class BaseNodeWalker(NodeWalker):
         self.post_str = ''
         self.symtable = {}
         self.parameters = set()
-        self.subscripts = []
+        self.subscripts = {}
         self.matrix_index = 0    # index of matrix in a single assignment statement
         self.m_dict = {}
         self.node_dict = {}
         self.dim_dict = {}
+        self.sub_name_dict = {}
         self.visualizer = LaVisualizer()
 
     def print_symbols(self):
@@ -28,7 +29,8 @@ class BaseNodeWalker(NodeWalker):
         print("subscripts:\n" + str(self.subscripts))
         print("parameters:\n" + str(self.parameters))
         print("m_dict:\n" + str(self.m_dict))
-        print("dim_dict:\n" + str(self.dim_dict) + '\n')
+        print("dim_dict:\n" + str(self.dim_dict))
+        print("sub_name_dict:\n" + str(self.sub_name_dict) + '\n')
         # print("node_dict:\n" + str(self.node_dict) + '\n')
 
     def walk_model(self, node):
@@ -40,6 +42,7 @@ class BaseNodeWalker(NodeWalker):
         self.m_dict = type_walker.m_dict
         self.node_dict = type_walker.node_dict
         self.dim_dict = type_walker.dim_dict
+        self.sub_name_dict = type_walker.sub_name_dict
         self.print_symbols()
         self.visualizer.visualize(node)
         content = self.pre_str + self.walk(node) + self.post_str

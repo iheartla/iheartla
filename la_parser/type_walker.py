@@ -69,20 +69,28 @@ class TypeWalker(NodeWalker):
         super().__init__()
         self.symtable = {}
         self.parameters = []
-        self.subscripts = set()
+        self.subscripts = {}
+        self.sub_name_dict = {}
         self.matrix_index = 0    # index of matrix in a single assignment statement
         self.m_dict = {}         # lhs:count
         self.node_dict = {}      # node:var_name
         self.name_cnt_dict = {}
-        self.dim_dict = {}      # h:w_i
+        self.dim_dict = {}       # h:w_i
 
     def generate_var_name(self, base):
         index = -1
         if base in self.name_cnt_dict:
             index = self.name_cnt_dict[base]
         index += 1
+        valid = False
+        ret = ""
+        while not valid:
+            ret = "_{}_{}".format(base, index)
+            if ret not in self.symtable:
+                valid = True
+            index += 1
         self.name_cnt_dict[base] = index
-        return "_{}_{}".format(base, index)
+        return ret
 
     def walk_Node(self, node):
         print('Reached Node: ', node)
@@ -119,10 +127,10 @@ class TypeWalker(NodeWalker):
         self.update_parameters(id0)
         if isinstance(id1, str):
             self.symtable[id1] = LaVarType(VarTypeEnum.INTEGER)
-            self.dim_dict[id1] = [id0, 0]
+            self.dim_dict[id1] = [self.get_main_id(id0), 0]
         if isinstance(id2, str):
             self.symtable[id2] = LaVarType(VarTypeEnum.INTEGER)
-            self.dim_dict[id2] = [id0, 1]
+            self.dim_dict[id2] = [self.get_main_id(id0), 1]
 
     def walk_VectorCondition(self, node, **kwargs):
         id0_info = self.walk(node.id, **kwargs)
@@ -142,7 +150,7 @@ class TypeWalker(NodeWalker):
         self.update_parameters(id0)
         if isinstance(id1, str):
             self.symtable[id1] = LaVarType(VarTypeEnum.INTEGER)
-            self.dim_dict[id1] = [id0, 0]
+            self.dim_dict[id1] = [self.get_main_id(id0), 0]
 
     def walk_ScalarCondition(self, node, **kwargs):
         id0_info = self.walk(node.id, **kwargs)
@@ -430,12 +438,31 @@ class TypeWalker(NodeWalker):
         res = identifier.split('_')
         return [res[0], res[1].split(',')]
 
+    def get_main_id(self, identifier):
+        if self.contain_subscript(identifier):
+            ret = self.get_all_ids(identifier)
+            return ret[0]
+        return identifier
+    # handle subscripts only (where block)
     def handle_identifier(self, identifier, id_type):
         if self.contain_subscript(identifier):
             arr = self.get_all_ids(identifier)
-            self.symtable[arr[0]] = LaVarType(VarTypeEnum.SEQUENCE, dimensions=arr[1], element_type=id_type,
-                                              desc=id_type.desc)
+            new_var_name = None
             for val in arr[1]:
-                self.subscripts.add(val)
+                if val in self.sub_name_dict:
+                    new_var_name = self.sub_name_dict[val]
+                else:
+                    new_var_name = self.generate_var_name("dim")
+                    self.sub_name_dict[val] = new_var_name
+                    self.dim_dict[new_var_name] = [arr[0], 0]
+                if val in self.subscripts:
+                    var_list = self.subscripts[val]
+                    var_list.append(arr[0])
+                    self.subscripts[val] = var_list
+                else:
+                    # first sequence
+                    self.subscripts[val] = [arr[0]]
                 if self.symtable.get(val) is None:
                     self.symtable[val] = LaVarType(VarTypeEnum.INTEGER)
+            self.symtable[arr[0]] = LaVarType(VarTypeEnum.SEQUENCE, dimensions=[new_var_name], element_type=id_type,
+                                              desc=id_type.desc)
