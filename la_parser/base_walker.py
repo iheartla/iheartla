@@ -26,8 +26,8 @@ class BaseNodeWalker(NodeWalker):
             print(k + ':' + str(v.var_type) + ', dimension:' + str(v.dimensions))
         print("subscripts:\n" + str(self.subscripts))
         print("parameters:\n" + str(self.parameters))
-        print("m_dict:\n" + str(self.m_dict))
-        print("node_dict:\n" + str(self.node_dict) + '\n')
+        print("m_dict:\n" + str(self.m_dict)+ '\n')
+        # print("node_dict:\n" + str(self.node_dict) + '\n')
 
     def walk_model(self, node):
         type_walker = TypeWalker()

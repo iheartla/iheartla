@@ -96,7 +96,8 @@ class NumpyWalker(BaseNodeWalker):
         return CodeNodeInfo(content)
 
     def walk_Summation(self, node, **kwargs):
-        assign_id = self.node_dict[node]
+        type_info = self.node_dict[node]
+        assign_id = type_info.symbol
         if la_need_ret_vars(**kwargs):
             return {self.walk(node.exp, **kwargs)}
         subs = []
@@ -140,7 +141,8 @@ class NumpyWalker(BaseNodeWalker):
     def walk_Matrix(self, node, **kwargs):
         content = "    "
         lhs = kwargs[LHS]
-        cur_m_id = self.node_dict[node]
+        type_info = self.node_dict[node]
+        cur_m_id = type_info.symbol
         if la_need_ret_vars(**kwargs):
             return {}
         elif la_need_ret_matrix(**kwargs):
@@ -230,7 +232,13 @@ class NumpyWalker(BaseNodeWalker):
         elif la_need_ret_matrix(**kwargs):
             left_info.content += right_info.content
             return left_info
-        left_info.content = left_info.content + '*' + right_info.content
+        l_info = self.node_dict[node.left]
+        r_info = self.node_dict[node.right]
+        mul = ' * '
+        if l_info.la_type.var_type == VarTypeEnum.MATRIX or l_info.la_type.var_type == VarTypeEnum.VECTOR:
+            if r_info.la_type.var_type == VarTypeEnum.MATRIX or r_info.la_type.var_type == VarTypeEnum.VECTOR:
+                mul = ' @ '
+        left_info.content = left_info.content + mul + right_info.content
         return left_info
 
     def walk_Divide(self, node, **kwargs):
