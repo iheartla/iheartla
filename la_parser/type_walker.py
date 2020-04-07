@@ -89,7 +89,7 @@ class TypeWalker(NodeWalker):
             if ret not in self.symtable:
                 valid = True
             index += 1
-        self.name_cnt_dict[base] = index
+        self.name_cnt_dict[base] = index - 1
         return ret
 
     def walk_Node(self, node):
@@ -206,6 +206,8 @@ class TypeWalker(NodeWalker):
     def walk_Divide(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         left_type = left_info.la_type
+        right_info = self.walk(node.right, **kwargs)
+        right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_DIV, left_type, right_type)
         ret_info = NodeInfo(ret_type)
         self.node_dict[node] = ret_info
@@ -240,6 +242,7 @@ class TypeWalker(NodeWalker):
         return ret_info
 
     def walk_Determinant(self, node, **kwargs):
+        value_info = self.walk(node.value, **kwargs)
         ret_type = LaVarType(VarTypeEnum.SCALAR)
         node_info = NodeInfo(ret_type)
         self.node_dict[node] = node_info
