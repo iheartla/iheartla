@@ -44,7 +44,7 @@ class NumpyWalker(BaseNodeWalker):
                         type_declare.append('    {} = np.asarray({}, dtype=np.floating)'.format(parameter, parameter))
                 else:
                     type_checks.append('    {} = np.asarray({})'.format(parameter, parameter))
-                type_checks.append('    assert {}.shape = ({}, {})'.format(parameter, self.symtable[parameter].dimensions[0], self.symtable[parameter].dimensions[1]))
+                type_checks.append('    assert {}.shape == ({}, {})'.format(parameter, self.symtable[parameter].dimensions[0], self.symtable[parameter].dimensions[1]))
             elif self.symtable[parameter].var_type == VarTypeEnum.VECTOR:
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
@@ -54,7 +54,7 @@ class NumpyWalker(BaseNodeWalker):
                         type_declare.append('    {} = np.asarray({}, dtype=np.floating)'.format(parameter, parameter))
                 else:
                     type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
-                type_checks.append('    assert {}.shape = ({},)'.format(parameter, self.symtable[parameter].dimensions[0]))
+                type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].dimensions[0]))
             elif self.symtable[parameter].var_type == VarTypeEnum.SCALAR:
                 type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
             pars.append(par)
@@ -100,10 +100,10 @@ class NumpyWalker(BaseNodeWalker):
                         ret_str = "    " + self.ret + ' = '
                 stat_info = self.walk(stat, **kwargs)
                 stat_value = stat_info.content
-                if isinstance(stat_value, CodeNodeInfo):
-                    if stat_value.pre_list:
-                        content += "".join(stat_value.pre_list)
-                        content += ret_str + stat_value.content + '\n'
+                if isinstance(stat_info, CodeNodeInfo):
+                    if stat_info.pre_list:
+                        content += "".join(stat_info.pre_list)
+                    content += ret_str + stat_info.content + '\n'
                 else:
                     content += stat_value + '\n'
             index += 1
@@ -158,7 +158,7 @@ class NumpyWalker(BaseNodeWalker):
         type_info = self.node_dict[node]
         cur_m_id = type_info.symbol
         if la_need_ret_vars(**kwargs):
-            return {}
+            return CodeNodeInfo(set())
         elif la_need_ret_matrix(**kwargs):
             kwargs["cur_id"] = cur_m_id
             content += '{} = np.zeros(({},{}))\n'.format(cur_m_id, self.symtable[cur_m_id].dimensions[0],
@@ -220,7 +220,7 @@ class NumpyWalker(BaseNodeWalker):
         elif la_need_ret_matrix(**kwargs):
             left_info.content += right_info.content
             return left_info
-        left_info.content = left_info.content + '+' + right_info.content
+        left_info.content = left_info.content + ' + ' + right_info.content
         return left_info
 
     def walk_Subtract(self, node, **kwargs):
@@ -233,7 +233,7 @@ class NumpyWalker(BaseNodeWalker):
         elif la_need_ret_matrix(**kwargs):
             left_info.content += right_info.content
             return left_info
-        left_info.content = left_info.content + '-' + right_info.content
+        left_info.content = left_info.content + ' - ' + right_info.content
         return left_info
 
     def walk_Multiply(self, node, **kwargs):
@@ -265,7 +265,7 @@ class NumpyWalker(BaseNodeWalker):
         elif la_need_ret_matrix(**kwargs):
             left_info.content += right_info.content
             return left_info
-        left_info.content = left_info.content + '/' + right_info.content
+        left_info.content = left_info.content + ' / ' + right_info.content
         return left_info
 
     def walk_Assignment(self, node, **kwargs):
@@ -287,8 +287,12 @@ class NumpyWalker(BaseNodeWalker):
             right_info = self.walk(node.right, **kwargs)
             content += right_info.content
             kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
-        self.ret = left_id
+        self.ret = self.get_main_id(left_id)
         self.matrix_index = 0
+        #
+        kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_VAR
+        exp_info = self.walk(node.right, **kwargs)
+        kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
         # self left-hand-side symbol
         content += "    ".join(matrix_exp)
         if self.symtable[left_id].var_type == VarTypeEnum.MATRIX:
@@ -302,17 +306,30 @@ class NumpyWalker(BaseNodeWalker):
         right_exp = ""
         if right_info.pre_list:
             right_exp += "".join(right_info.pre_list)
-        right_exp += '    ' + left_id + ' = ' + right_info.content
-        # y_i
+        # y_i = stat
         if self.contain_subscript(left_id):
             left_ids = self.get_all_ids(left_id)
             left_subs = left_ids[1]
-            sequence = left_ids[0]  # y
-            content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].dimensions[0])
-            content += "    for {} in range(len({})):\n".format(left_subs[0], sequence)
+            sequence = left_ids[0]  # y left_subs[0]
+            # replace sequence
+            for right_var in exp_info.content:
+                if self.contain_subscript(right_var):
+                    var_ids = self.get_all_ids(right_var)
+                    right_info.content = right_info.content.replace(right_var, "{}[{}]".format(var_ids[0], var_ids[1][0]))
+
+            right_exp += "    {}[{}] = {}".format(self.get_main_id(left_id), left_subs[0], right_info.content)
+            ele_type = self.symtable[sequence].element_type
+            if ele_type.var_type == VarTypeEnum.MATRIX:
+                content += "    {} = np.zeros(({}, {}, {}))\n".format(sequence, self.symtable[sequence].dimensions[0], ele_type.dimensions[0], ele_type.dimensions[1])
+            elif ele_type.var_type == VarTypeEnum.VECTOR:
+                content += "    {} = np.zeros(({}, {}))\n".format(sequence, self.symtable[sequence].dimensions[0], ele_type.dimensions[0])
+            else:
+                content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].dimensions[0])
+            content += "    for {} in range({}):\n".format(left_subs[0], self.symtable[sequence].dimensions[0])
             content += "    " + right_exp
         #
         else:
+            right_exp += '    ' + self.get_main_id(left_id) + ' = ' + right_info.content
             content += right_exp
         la_remove_key(LHS, **kwargs)
         return CodeNodeInfo(content)

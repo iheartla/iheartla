@@ -220,11 +220,13 @@ class TypeWalker(NodeWalker):
         right_type = right_info.la_type
         la_remove_key(LHS, **kwargs)
         self.symtable[id0] = right_type
+        # y_i = stat
         if self.contain_subscript(id0):
             left_ids = self.get_all_ids(id0)
             left_subs = left_ids[1]
             sequence = left_ids[0]    #y
-            self.symtable[sequence] = LaVarType(VarTypeEnum.SEQUENCE, dimensions=left_subs, element_type=right_type)
+            dim = self.sub_name_dict[left_subs[0]]
+            self.symtable[sequence] = LaVarType(VarTypeEnum.SEQUENCE, dimensions=[dim], element_type=right_type)
         self.node_dict[node] = right_info
         return right_info
 
