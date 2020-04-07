@@ -248,6 +248,13 @@ class TypeWalker(NodeWalker):
         self.node_dict[node] = node_info
         return node_info
 
+    def walk_Transpose(self, node, **kwargs):
+        f_info = self.walk(node.f, **kwargs)
+        assert f_info.la_type.var_type == VarTypeEnum.MATRIX
+        node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[f_info.la_type.dimensions[1], f_info.la_type.dimensions[0]])
+        node_info = NodeInfo(node_type)
+        return node_info
+
     def walk_IdentifierSubscript(self, node, **kwargs):
         node_type = LaVarType(VarTypeEnum.INVALID)
         right = []

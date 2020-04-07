@@ -9,6 +9,7 @@ operations
     | power_operator
     | sum_operator
     | det_operator
+    | trans_operator
     ;
 
 addition::Add
@@ -77,4 +78,8 @@ inner_product_operator::InnerProduct
 matrix_operator
     = identifier '_' identifier
     | identifier '_' desc_identifier
+    ;
+
+trans_operator::Transpose
+    = f:factor 'ᵀ'
     ;

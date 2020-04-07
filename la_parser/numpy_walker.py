@@ -163,6 +163,13 @@ class NumpyWalker(BaseNodeWalker):
             return CodeNodeInfo('(' + value + ').shape[0]')
         return CodeNodeInfo('np.absolute(' + value + ')')
 
+    def walk_Transpose(self, node, **kwargs):
+        if la_need_ret_vars(**kwargs) or la_need_ret_matrix(**kwargs):
+            return self.walk(node.f, **kwargs)
+        f_info = self.walk(node.f, **kwargs)
+        f_info.content = "np.transpose({})".format(f_info.content)
+        return f_info
+
     def walk_Matrix(self, node, **kwargs):
         content = "    "
         # lhs = kwargs[LHS]
