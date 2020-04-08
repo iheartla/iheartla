@@ -51,7 +51,7 @@ class NodeInfo(object):
 
 
 class CodeNodeInfo(object):
-    def __init__(self, content=None, pre_list=None):
+    def __init__(self, content=None, pre_list=[]):
         super().__init__()
         self.content = content
         self.pre_list = pre_list

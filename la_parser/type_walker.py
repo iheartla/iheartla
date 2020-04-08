@@ -14,9 +14,6 @@ class TypeInferenceEnum(Enum):
 class WalkTypeEnum(Enum):
     RETRIEVE_EXPRESSION = 0   # default
     RETRIEVE_VAR = 1
-    RETRIEVE_ROW_COUNTS = 2   # type_walker
-    RETRIEVE_COL_COUNTS = 3   # type_walker
-    RETRIEVE_MATRIX_STAT = 4  # code_walker: matrix statement
 
 
 WALK_TYPE = "walk_type"
@@ -27,24 +24,6 @@ INSIDE_MATRIX = "inside_matrix"
 
 def la_need_ret_vars(**kwargs):
     if WALK_TYPE in kwargs and kwargs[WALK_TYPE] == WalkTypeEnum.RETRIEVE_VAR:
-        return True
-    return False
-
-
-def la_need_ret_row_cnt(**kwargs):
-    if WALK_TYPE in kwargs and kwargs[WALK_TYPE] == WalkTypeEnum.RETRIEVE_ROW_COUNTS:
-        return True
-    return False
-
-
-def la_need_ret_col_cnt(**kwargs):
-    if WALK_TYPE in kwargs and kwargs[WALK_TYPE] == WalkTypeEnum.RETRIEVE_COL_COUNTS:
-        return True
-    return False
-
-
-def la_need_ret_matrix(**kwargs):
-    if WALK_TYPE in kwargs and kwargs[WALK_TYPE] == WalkTypeEnum.RETRIEVE_MATRIX_STAT:
         return True
     return False
 
