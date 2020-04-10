@@ -106,10 +106,16 @@ class TypeWalker(NodeWalker):
         self.update_parameters(id0)
         if isinstance(id1, str):
             self.symtable[id1] = LaVarType(VarTypeEnum.INTEGER)
-            self.dim_dict[id1] = [self.get_main_id(id0), 0]
+            if self.contain_subscript(id0):
+                self.dim_dict[id1] = [self.get_main_id(id0), 1]
+            else:
+                self.dim_dict[id1] = [self.get_main_id(id0), 0]
         if isinstance(id2, str):
             self.symtable[id2] = LaVarType(VarTypeEnum.INTEGER)
-            self.dim_dict[id2] = [self.get_main_id(id0), 1]
+            if self.contain_subscript(id0):
+                self.dim_dict[id2] = [self.get_main_id(id0), 2]
+            else:
+                self.dim_dict[id2] = [self.get_main_id(id0), 1]
 
     def walk_VectorCondition(self, node, **kwargs):
         id0_info = self.walk(node.id, **kwargs)
