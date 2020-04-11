@@ -22,12 +22,6 @@ CUR_INDENT = "cur_indent"
 INSIDE_MATRIX = "inside_matrix"
 
 
-def la_need_ret_vars(**kwargs):
-    if WALK_TYPE in kwargs and kwargs[WALK_TYPE] == WalkTypeEnum.RETRIEVE_VAR:
-        return True
-    return False
-
-
 def la_is_inside_matrix(**kwargs):
     if INSIDE_MATRIX in kwargs and kwargs[INSIDE_MATRIX] is True:
         return True
@@ -167,7 +161,7 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_ADD, left_type, right_type)
-        ret_info = NodeInfo(ret_type)
+        ret_info = NodeInfo(ret_type, symbols=left_info.symbols+right_info.symbols)
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -177,7 +171,7 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_SUB, left_type, right_type)
-        ret_info = NodeInfo(ret_type)
+        ret_info = NodeInfo(ret_type, symbols=left_info.symbols+right_info.symbols)
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -187,7 +181,7 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_MUL, left_type, right_type)
-        ret_info = NodeInfo(ret_type)
+        ret_info = NodeInfo(ret_type, symbols=left_info.symbols+right_info.symbols)
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -197,7 +191,7 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_DIV, left_type, right_type)
-        ret_info = NodeInfo(ret_type)
+        ret_info = NodeInfo(ret_type, symbols=left_info.symbols+right_info.symbols)
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -232,12 +226,13 @@ class TypeWalker(NodeWalker):
     def walk_Determinant(self, node, **kwargs):
         value_info = self.walk(node.value, **kwargs)
         ret_type = LaVarType(VarTypeEnum.SCALAR)
-        node_info = NodeInfo(ret_type)
+        node_info = NodeInfo(ret_type, symbols=value_info.symbols)
         self.node_dict[node] = node_info
         return node_info
 
     def walk_Power(self, node, **kwargs):
         base_info = self.walk(node.base, **kwargs)
+        symbols = base_info.symbols
         if node.t:
             assert base_info.la_type.var_type == VarTypeEnum.MATRIX
             node_type = LaVarType(VarTypeEnum.MATRIX,
@@ -249,8 +244,9 @@ class TypeWalker(NodeWalker):
                                   dimensions=[base_info.la_type.dimensions[1], base_info.la_type.dimensions[0]])
         else:
             power_info = self.walk(node.power, **kwargs)
+            symbols += power_info.symbols
             node_type = power_info.la_type
-        return NodeInfo(node_type)
+        return NodeInfo(node_type, symbols=symbols)
 
     def walk_Solver(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
@@ -266,13 +262,13 @@ class TypeWalker(NodeWalker):
             elif right_info.la_type.var_type == VarTypeEnum.VECTOR:
                 node_type = LaVarType(VarTypeEnum.VECTOR,
                                       dimensions=[left_info.la_type.dimensions[1]])
-        return NodeInfo(node_type)
+        return NodeInfo(node_type, symbols=left_info.symbols+right_info.symbols)
 
     def walk_Transpose(self, node, **kwargs):
         f_info = self.walk(node.f, **kwargs)
         assert f_info.la_type.var_type == VarTypeEnum.MATRIX
         node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[f_info.la_type.dimensions[1], f_info.la_type.dimensions[0]])
-        node_info = NodeInfo(node_type)
+        node_info = NodeInfo(node_type, symbols=f_info.symbols)
         return node_info
 
     def walk_IdentifierSubscript(self, node, **kwargs):
@@ -285,7 +281,7 @@ class TypeWalker(NodeWalker):
         content = left_info.content + '_' + ','.join(right)
         if content in self.symtable:
             node_type = self.symtable[content]
-        node_info = NodeInfo(node_type, content)
+        node_info = NodeInfo(node_type, content, {content})
         self.node_dict[node] = node_info
         return node_info
 
@@ -293,7 +289,7 @@ class TypeWalker(NodeWalker):
         node_type = LaVarType(VarTypeEnum.INVALID)
         if node.value in self.symtable:
             node_type = self.symtable[node.value]
-        node_info = NodeInfo(node_type, node.value)
+        node_info = NodeInfo(node_type, node.value, {node.value})
         self.node_dict[node] = node_info
         return node_info
 
@@ -303,7 +299,7 @@ class TypeWalker(NodeWalker):
             id0_info = self.walk(node.id, **kwargs)
             id0 = id0_info.content
             assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
-            node_info = NodeInfo(self.symtable[id0], content=id0)
+            node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
         elif node.num:
             node_info = self.walk(node.num, **kwargs)
         elif node.sub:
@@ -338,7 +334,7 @@ class TypeWalker(NodeWalker):
     def walk_Matrix(self, node, **kwargs):
         kwargs[INSIDE_MATRIX] = True
         node_info = self.walk(node.value, **kwargs)
-        #check matrix validity
+        # check matrix validity
         rows = len(node_info.content)
         cols = 0
         for row in node_info.content:
@@ -364,9 +360,11 @@ class TypeWalker(NodeWalker):
     def walk_MatrixRows(self, node, **kwargs):
         ret_info = None
         rows = []
+        symbols = set()
         if node.rs:
             ret_info = self.walk(node.rs, **kwargs)
             rows = rows + ret_info.content
+            symbols = ret_info.symbols
         if node.r:
             r_info = self.walk(node.r, **kwargs)
             if ret_info is None:
@@ -375,44 +373,51 @@ class TypeWalker(NodeWalker):
             else:
                 rows.append(r_info.content)
                 ret_info.content = rows
+            ret_info.symbols = symbols.union(r_info.symbols)
         self.node_dict[node] = ret_info
         return ret_info
 
     def walk_MatrixRow(self, node, **kwargs):
         ret_info = None
         items = []
+        symbols = set()
         if node.rc:
             ret_info = self.walk(node.rc, **kwargs)
             items = items + ret_info.content
+            symbols = ret_info.symbols
         if node.exp:
             exp_info = self.walk(node.exp, **kwargs)
             if ret_info is None:
                 ret_info = exp_info
-                ret_info.content = [ret_info.content]
+                ret_info.content = [exp_info.content]
             else:
                 new_type = self.type_inference(TypeInferenceEnum.INF_MATRIX_ROW, ret_info.la_type, exp_info.la_type)
                 ret_info.la_type = new_type
                 items.append(exp_info.content)
                 ret_info.content = items
+            ret_info.symbols = symbols.union(exp_info.symbols)
         self.node_dict[node] = ret_info
         return ret_info
 
     def walk_MatrixRowCommas(self, node, **kwargs):
         ret_info = None
         items = []
+        symbols = set()
         if node.value:
             ret_info = self.walk(node.value, **kwargs)
             items = items + ret_info.content
+            symbols = ret_info.symbols
         if node.exp:
             exp_info = self.walk(node.exp, **kwargs)
             if ret_info is None:
                 ret_info = exp_info
-                ret_info.content = [ret_info.content]
+                ret_info.content = [exp_info.content]
             else:
                 new_type = self.type_inference(TypeInferenceEnum.INF_MATRIX_ROW, ret_info.la_type, exp_info.la_type)
                 ret_info.la_type = new_type
                 items.append(exp_info.content)
                 ret_info.content = items
+            ret_info.symbols = symbols.union(exp_info.symbols)
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -464,7 +469,7 @@ class TypeWalker(NodeWalker):
             assert (right_type.var_type == VarTypeEnum.SCALAR or right_type.var_type == VarTypeEnum.INTEGER), 'error: type mismatch'
             ret_type = LaVarType(VarTypeEnum.SCALAR)
         elif op == TypeInferenceEnum.INF_MATRIX_ROW:
-            assert left_type.var_type == right_type.var_type
+            # assert left_type.var_type == right_type.var_type
             ret_type = left_type
         return ret_type
 
