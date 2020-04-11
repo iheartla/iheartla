@@ -14,6 +14,7 @@ start::Start
 #include :: "linear_algebra/la_grammar/base.ebnf"
 
 
+
 statements::Statements
     =
     | {hspace} value+:statements {separator_with_space}+ value+:statement {hspace}
@@ -35,6 +36,7 @@ where_condition
     = matrix_condition
     | vector_condition
     | scalar_condition
+    | set_condition
     ;
 
 matrix_condition::MatrixCondition
@@ -55,6 +57,10 @@ vector_condition::VectorCondition
 
 scalar_condition::ScalarCondition
     = id:identifier {hspace} ':' {hspace} 'scalar' { {hspace} ':' {hspace} desc:description}
+    ;
+
+set_condition::SetCondition
+    = id:identifier {hspace} ':' {hspace} '{' {hspace} type1:('ℝ'|'ℤ') {hspace} '×' {hspace} type2:('ℝ'|'ℤ') {hspace} '}'
     ;
 
 expression
@@ -86,6 +92,7 @@ factor::Factor
     | id:identifier
     | num:number
     | m:matrix
+    | s:sparse_matrix
     ;
 
 subexpression::Subexpression

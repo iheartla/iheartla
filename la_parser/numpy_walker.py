@@ -167,8 +167,25 @@ class NumpyWalker(BaseNodeWalker):
         if la_need_ret_vars(**kwargs):
             return self.walk(node.f, **kwargs)
         f_info = self.walk(node.f, **kwargs)
-        f_info.content = "np.transpose({})".format(f_info.content)
+        f_info.content = "{}.T".format(f_info.content)
         return f_info
+
+    def walk_Power(self, node, **kwargs):
+        base_info = self.walk(node.base, **kwargs)
+        if node.t:
+            base_info.content = "{}.T".format(base_info.content)
+        elif node.r:
+            base_info.content = "np.linalg.inv({})".format(base_info.content)
+        else:
+            power_info = self.walk(node.power, **kwargs)
+            base_info.content = base_info.content + '^' + power_info.content
+        return base_info
+
+    def walk_Solver(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.left, **kwargs)
+        left_info.content = "np.linalg.solve({}, {})".format(left_info.content, right_info.content)
+        return left_info
 
     def walk_Matrix(self, node, **kwargs):
         content = "    "

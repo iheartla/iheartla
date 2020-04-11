@@ -34,6 +34,7 @@ class BaseNodeWalker(NodeWalker):
         # print("node_dict:\n" + str(self.node_dict) + '\n')
 
     def walk_model(self, node):
+        self.visualizer.visualize(node)
         type_walker = TypeWalker()
         type_walker.walk(node)
         self.symtable = type_walker.symtable
@@ -44,7 +45,6 @@ class BaseNodeWalker(NodeWalker):
         self.dim_dict = type_walker.dim_dict
         self.sub_name_dict = type_walker.sub_name_dict
         self.print_symbols()
-        self.visualizer.visualize(node)
         content = self.pre_str + self.walk(node) + self.post_str
         return content
 

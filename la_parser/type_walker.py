@@ -146,6 +146,9 @@ class TypeWalker(NodeWalker):
         self.handle_identifier(id0, self.symtable[id0])
         self.update_parameters(id0)
 
+    def walk_SetCondition(self, node, **kwargs):
+        pass
+
     def update_parameters(self, identifier, **kwargs):
         if self.contain_subscript(identifier):
             arr = self.get_all_ids(identifier)
@@ -233,6 +236,38 @@ class TypeWalker(NodeWalker):
         self.node_dict[node] = node_info
         return node_info
 
+    def walk_Power(self, node, **kwargs):
+        base_info = self.walk(node.base, **kwargs)
+        if node.t:
+            assert base_info.la_type.var_type == VarTypeEnum.MATRIX
+            node_type = LaVarType(VarTypeEnum.MATRIX,
+                                  dimensions=[base_info.la_type.dimensions[1], base_info.la_type.dimensions[0]])
+        elif node.r:
+            assert base_info.la_type.var_type == VarTypeEnum.MATRIX
+            assert base_info.la_type.dimensions[0] == base_info.la_type.dimensions[1]
+            node_type = LaVarType(VarTypeEnum.MATRIX,
+                                  dimensions=[base_info.la_type.dimensions[1], base_info.la_type.dimensions[0]])
+        else:
+            power_info = self.walk(node.power, **kwargs)
+            node_type = power_info.la_type
+        return NodeInfo(node_type)
+
+    def walk_Solver(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        assert left_info.la_type.var_type == VarTypeEnum.MATRIX
+        assert right_info.la_type.var_type == VarTypeEnum.MATRIX or right_info.la_type.var_type == VarTypeEnum.VECTOR
+        node_type = None
+        if left_info.la_type.var_type == VarTypeEnum.MATRIX:
+            assert left_info.la_type.dimensions[0] == right_info.la_type.dimensions[0]
+            if right_info.la_type.var_type == VarTypeEnum.MATRIX:
+                node_type = LaVarType(VarTypeEnum.MATRIX,
+                                      dimensions=[left_info.la_type.dimensions[1], right_info.la_type.dimensions[1]])
+            elif right_info.la_type.var_type == VarTypeEnum.VECTOR:
+                node_type = LaVarType(VarTypeEnum.VECTOR,
+                                      dimensions=[left_info.la_type.dimensions[1]])
+        return NodeInfo(node_type)
+
     def walk_Transpose(self, node, **kwargs):
         f_info = self.walk(node.f, **kwargs)
         assert f_info.la_type.var_type == VarTypeEnum.MATRIX
@@ -279,6 +314,8 @@ class TypeWalker(NodeWalker):
             node_info = self.walk(node.f, **kwargs)
         elif node.op:
             node_info = self.walk(node.op, **kwargs)
+        elif node.s:
+            node_info = self.walk(node.s, **kwargs)
         self.node_dict[node] = node_info
         return node_info
 
@@ -294,6 +331,9 @@ class TypeWalker(NodeWalker):
         node_info = NodeInfo(node_type, content=int(value))
         self.node_dict[node] = node_info
         return node_info
+
+    def walk_SparseMatrix(self, node, **kwargs):
+        return NodeInfo(LaVarType(VarTypeEnum.MATRIX, dimensions=[2, 2]))
 
     def walk_Matrix(self, node, **kwargs):
         kwargs[INSIDE_MATRIX] = True

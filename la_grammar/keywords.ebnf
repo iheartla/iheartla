@@ -24,6 +24,9 @@ KEYWORDS
     | DDOTS
     | WHERE
     | SUM
+    | IF
+    | OTHERWISE
+    | IS
     ;
 
 TRACE = 'trace';
@@ -53,3 +56,6 @@ WHERE = 'where';
 SUM = 'sum' | '∑';
 SYMMETRIC = 'symmetric';
 DIAGONAL = 'diagonal';
+IF = 'if';
+OTHERWISE = 'otherwise';
+IS = 'is';

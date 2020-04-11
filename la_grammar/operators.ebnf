@@ -10,6 +10,7 @@ operations
     | sum_operator
     | det_operator
     | trans_operator
+    | solver_operator
     ;
 
 addition::Add
@@ -57,10 +58,15 @@ derivative_operator::Derivative
     ;
 
 
-power_operator
-    = identifier {hspace} '^' {hspace} identifier
+power_operator::Power
+    = base:identifier {hspace} t:'^T'
+    | base:identifier {hspace} r:'^(-1)'
+    | base:identifier {hspace} '^' {hspace} power:factor
     ;
 
+solver_operator::Solver
+    = left:identifier {hspace} '\' {hspace} right:identifier
+    ;
 
 sum_operator::Summation
     = SUM '_' sub+:identifier {',' sub+:identifier} {hspace}+ exp:expression
