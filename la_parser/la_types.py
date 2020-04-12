@@ -9,6 +9,7 @@ class VarTypeEnum(Enum):
     SCALAR = 4
     INTEGER = 5
     REAL = 6
+    SET = 7
 
 
 class MatrixAttrEnum(Enum):
@@ -28,11 +29,14 @@ class LaVarType(object):
 
 
 class MatrixAttrs(object):
-    def __init__(self, need_exp=False, diagonal=False, sparse=False):
+    def __init__(self, need_exp=False, diagonal=False, sparse=False, subs=[], index_var=None, value_var=None):
         super().__init__()
         self.need_exp = need_exp  # need expression
         self.diagonal = diagonal
         self.sparse = sparse
+        self.subs = subs
+        self.index_var = index_var
+        self.value_var = value_var
 
 
 class SummationAttrs(object):

@@ -4,7 +4,7 @@ from la_parser.base_walker import *
 class NumpyWalker(BaseNodeWalker):
     def __init__(self):
         super().__init__()
-        self.pre_str = '''import numpy as np\n\n\n'''
+        self.pre_str = '''import numpy as np\nimport scipy\nfrom scipy import sparse\n\n'''
         self.post_str = ''''''
         self.ret = 'ret'
 
@@ -178,6 +178,43 @@ class NumpyWalker(BaseNodeWalker):
         right_info = self.walk(node.left, **kwargs)
         left_info.content = "np.linalg.solve({}, {})".format(left_info.content, right_info.content)
         return left_info
+
+    def walk_SparseMatrix(self, node, **kwargs):
+        type_info = self.node_dict[node]
+        cur_m_id = type_info.symbol
+        pre_list = []
+        index_var = type_info.la_type.attrs.index_var
+        value_var = type_info.la_type.attrs.value_var
+        pre_list.append("    {} = []\n".format(index_var))
+        pre_list.append("    {} = []\n".format(value_var))
+        for if_stat in node.ifs:
+            if_info = self.walk(if_stat, **kwargs)
+            pre_list.append(if_info.content)
+        # assignment
+        pre_list.append("    {} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(cur_m_id, value_var, index_var, self.symtable[cur_m_id].dimensions[0],
+                                                          self.symtable[cur_m_id].dimensions[1]))
+        return CodeNodeInfo(cur_m_id, pre_list)
+
+    def walk_SparseIf(self, node, **kwargs):
+        type_info = self.node_dict[node.parent]
+        id0_info = self.walk(node.id0, **kwargs)
+        id0 = id0_info.content
+        id1_info = self.walk(node.id1, **kwargs)
+        id1 = id1_info.content
+        id2_info = self.walk(node.id2, **kwargs)
+        id2 = id2_info.content
+        stat_info = self.walk(node.stat, **kwargs)
+        content = []
+        content.append('    for {},{} in {}:\n'.format(id0, id1, id2))
+        content.append('    {}.append(({}, {}))\n'.format(type_info.la_type.attrs.index_var, id0, id1))
+        stat_content = stat_info.content
+        stat_content = stat_content.replace('_{}{}'.format(id0, id1), '({},{})'.format(id0, id1))
+        content.append('    {}.append({})\n'.format(type_info.la_type.attrs.value_var, stat_content))
+        return CodeNodeInfo('    '.join(content))
+
+    def walk_SparseOther(self, node, **kwargs):
+        content = ''
+        return CodeNodeInfo('    '.join(content))
 
     def walk_Matrix(self, node, **kwargs):
         content = "    "
@@ -388,6 +425,8 @@ class NumpyWalker(BaseNodeWalker):
             return self.walk(node.f, **kwargs)
         elif node.op:
             return self.walk(node.op, **kwargs)
+        elif node.s:
+            return self.walk(node.s, **kwargs)
 
     def walk_Number(self, node, **kwargs):
         return self.walk(node.value, **kwargs)

@@ -141,7 +141,13 @@ class TypeWalker(NodeWalker):
         self.update_parameters(id0)
 
     def walk_SetCondition(self, node, **kwargs):
-        pass
+        id0_info = self.walk(node.id, **kwargs)
+        id0 = id0_info.content
+        ret = node.text.split(':')
+        desc = ':'.join(ret[1:len(ret)])
+        self.symtable[id0] = LaVarType(VarTypeEnum.SET, desc=desc)
+        self.handle_identifier(id0, self.symtable[id0])
+        self.update_parameters(id0)
 
     def update_parameters(self, identifier, **kwargs):
         if self.contain_subscript(identifier):
@@ -329,7 +335,22 @@ class TypeWalker(NodeWalker):
         return node_info
 
     def walk_SparseMatrix(self, node, **kwargs):
-        return NodeInfo(LaVarType(VarTypeEnum.MATRIX, dimensions=[2, 2]))
+        if LHS in kwargs:
+            lhs = kwargs[LHS]
+        id1_info = self.walk(node.id1, **kwargs)
+        id1 = id1_info.content
+        id2_info = self.walk(node.id2, **kwargs)
+        id2 = id2_info.content
+        matrix_attrs = MatrixAttrs(sparse=True)
+        matrix_attrs.index_var = self.generate_var_name("{}ij".format(lhs))
+        matrix_attrs.value_var = self.generate_var_name("{}vals".format(lhs))
+        new_id = self.generate_var_name('sparse')
+        la_type = LaVarType(VarTypeEnum.MATRIX, attrs=matrix_attrs, dimensions=[id1, id2])
+        self.symtable[new_id] = la_type
+        node_info = NodeInfo(la_type)
+        node_info.symbol = new_id
+        self.node_dict[node] = node_info
+        return node_info
 
     def walk_Matrix(self, node, **kwargs):
         kwargs[INSIDE_MATRIX] = True

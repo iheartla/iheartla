@@ -60,7 +60,7 @@ scalar_condition::ScalarCondition
     ;
 
 set_condition::SetCondition
-    = id:identifier {hspace} ':' {hspace} '{' {hspace} type1:('ℝ'|'ℤ') {hspace} '×' {hspace} type2:('ℝ'|'ℤ') {hspace} '}'
+    = id:identifier {hspace} ':' {hspace} '{' {hspace} type1:('ℝ'|'ℤ') {hspace} '×' {hspace} type2:('ℝ'|'ℤ') {hspace} '}' { {hspace} ':' {hspace} desc:description}
     ;
 
 expression

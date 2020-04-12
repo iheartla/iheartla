@@ -5,9 +5,17 @@ matrix::Matrix
     ;
 
 sparse_matrix::SparseMatrix
-    = '{' {{hspace} statement {hspace} IF {hspace} '(' {hspace} identifier {hspace} ',' {hspace} identifier {hspace} ')' {hspace} '∈' {hspace} identifier {separator_with_space}+}+
-    {hspace} statement {hspace} OTHERWISE {separator_with_space}+
+    = '{' {ifs+:sparse_if_condition}+
+    {hspace} other:statement {hspace} OTHERWISE {separator_with_space}+
     {hspace} IS {hspace} id1:(integer | identifier) {hspace} '×' {hspace} id2:(integer | identifier);
+
+sparse_if_condition::SparseIf
+    = {hspace} stat:statement {hspace} IF {hspace} '(' {hspace} id0:identifier {hspace} ',' {hspace} id1:identifier {hspace} ')' {hspace} '∈' {hspace} id2:identifier {separator_with_space}+
+    ;
+
+sparse_other_condition::SparseOther
+    = {hspace} stat:statement {hspace} IF {hspace} '(' {hspace} identifier {hspace} ',' {hspace} identifier {hspace} ')' {hspace} '∈' {hspace} identifier {separator_with_space}+
+    ;
 
 rows::MatrixRows
     =
