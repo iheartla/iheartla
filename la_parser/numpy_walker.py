@@ -186,12 +186,33 @@ class NumpyWalker(BaseNodeWalker):
         cur_m_id = type_info.symbol
         self.matrix_index += 1
         kwargs["cur_id"] = cur_m_id
-        content += '{} = np.zeros(({}, {}))\n'.format(cur_m_id, self.symtable[cur_m_id].dimensions[0],
-                                                      self.symtable[cur_m_id].dimensions[1])
+        matrix_attr = type_info.la_type.attrs
+        sparse = False
+        if matrix_attr:
+            sparse = matrix_attr.sparse
         ret_info = self.walk(node.value, **kwargs)
         ret = ret_info.content
-        for i in range(len(ret)):
-            content += "    {}[{}] = [{}]\n".format(cur_m_id, i, ret[i])
+        if sparse:
+            all_rows = []
+            m_content = ""
+            if type_info.la_type.dimensions[0] > 1 and type_info.la_type.dimensions[1] > 1:
+                for i in range(len(ret)):
+                    all_rows.append('[' + ret[i] + ']')
+                m_content += 'np.bmat([{}])'.format(', '.join(all_rows))
+                content += '{} = {}\n'.format(cur_m_id, m_content)
+            elif type_info.la_type.dimensions[0] == 1:
+                # single row
+                content += '{} = np.hstack(({}))\n'.format(cur_m_id, ''.join(ret))
+            else:
+                # single col
+                content += '{} = np.vstack(({}))\n'.format(cur_m_id, ', '.join(ret))
+        else:
+            # dense
+            content += '{} = np.zeros(({}, {}))\n'.format(cur_m_id, self.symtable[cur_m_id].dimensions[0],
+                                                          self.symtable[cur_m_id].dimensions[1])
+            for i in range(len(ret)):
+                content += "    {}[{}] = [{}]\n".format(cur_m_id, i, ret[i])
+        #####################
         pre_list = [content]
         if ret_info.pre_list:
             pre_list = ret_info.pre_list + pre_list

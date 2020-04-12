@@ -337,10 +337,15 @@ class TypeWalker(NodeWalker):
         # check matrix validity
         rows = len(node_info.content)
         cols = 0
+        sparse = False
         for row in node_info.content:
+            for col in row:
+                if col.var_type == VarTypeEnum.MATRIX or col.var_type == VarTypeEnum.VECTOR:
+                    sparse = True
             if len(row) > cols:
                 cols = len(row)
-        node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[rows, cols])
+        m_attr = MatrixAttrs(sparse=sparse)
+        node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[rows, cols], attrs=m_attr)
         node_info = NodeInfo(node_type)
         if LHS in kwargs:
             lhs = kwargs[LHS]
@@ -389,11 +394,11 @@ class TypeWalker(NodeWalker):
             exp_info = self.walk(node.exp, **kwargs)
             if ret_info is None:
                 ret_info = exp_info
-                ret_info.content = [exp_info.content]
+                ret_info.content = [exp_info.la_type]
             else:
                 new_type = self.type_inference(TypeInferenceEnum.INF_MATRIX_ROW, ret_info.la_type, exp_info.la_type)
                 ret_info.la_type = new_type
-                items.append(exp_info.content)
+                items.append(exp_info.la_type)
                 ret_info.content = items
             ret_info.symbols = symbols.union(exp_info.symbols)
         self.node_dict[node] = ret_info
@@ -411,11 +416,11 @@ class TypeWalker(NodeWalker):
             exp_info = self.walk(node.exp, **kwargs)
             if ret_info is None:
                 ret_info = exp_info
-                ret_info.content = [exp_info.content]
+                ret_info.content = [exp_info.la_type]
             else:
                 new_type = self.type_inference(TypeInferenceEnum.INF_MATRIX_ROW, ret_info.la_type, exp_info.la_type)
                 ret_info.la_type = new_type
-                items.append(exp_info.content)
+                items.append(exp_info.la_type)
                 ret_info.content = items
             ret_info.symbols = symbols.union(exp_info.symbols)
         self.node_dict[node] = ret_info
@@ -469,6 +474,7 @@ class TypeWalker(NodeWalker):
             assert (right_type.var_type == VarTypeEnum.SCALAR or right_type.var_type == VarTypeEnum.INTEGER), 'error: type mismatch'
             ret_type = LaVarType(VarTypeEnum.SCALAR)
         elif op == TypeInferenceEnum.INF_MATRIX_ROW:
+
             # assert left_type.var_type == right_type.var_type
             ret_type = left_type
         return ret_type
