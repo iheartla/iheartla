@@ -137,6 +137,8 @@ class NumpyWalker(BaseNodeWalker):
             elif self.symtable[assign_id].var_type == VarTypeEnum.SEQUENCE:
                 ele_type = self.symtable[assign_id].element_type
                 content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].dimensions[0], ele_type.dimensions[0], ele_type.dimensions[1]))
+            else:
+                content.append("{} = 0\n".format(assign_id))
             content.append("for {} in range(len({})):\n".format(sub, target_var[0]))
             for var in target_var:
                 old = "{}_{}".format(var, sub)
