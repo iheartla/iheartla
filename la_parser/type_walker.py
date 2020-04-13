@@ -44,7 +44,6 @@ class TypeWalker(NodeWalker):
         self.parameters = []
         self.subscripts = {}
         self.sub_name_dict = {}  # only for parameter checker
-        self.matrix_index = 0    # index of matrix in a single assignment statement
         self.node_dict = {}      # node:var_name
         self.name_cnt_dict = {}
         self.dim_dict = {}       # parameter used. h:w_i
@@ -204,7 +203,6 @@ class TypeWalker(NodeWalker):
         id0_info = self.walk(node.left, **kwargs)
         id0 = id0_info.content
         kwargs[LHS] = id0
-        self.matrix_index = 0
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         la_remove_key(LHS, **kwargs)
@@ -380,7 +378,6 @@ class TypeWalker(NodeWalker):
         if LHS in kwargs:
             lhs = kwargs[LHS]
             new_id = self.generate_var_name(lhs)
-            self.matrix_index += 1
             self.symtable[new_id] = LaVarType(VarTypeEnum.MATRIX, dimensions=[rows, cols])
             node_info.symbol = new_id
             self.node_dict[node] = node_info

@@ -15,7 +15,6 @@ class BaseNodeWalker(NodeWalker):
         self.symtable = {}
         self.parameters = set()
         self.subscripts = {}
-        self.matrix_index = 0    # index of matrix in a single assignment statement
         self.node_dict = {}
         self.dim_dict = {}
         self.sub_name_dict = {}

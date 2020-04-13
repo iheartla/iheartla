@@ -131,25 +131,30 @@ class NumpyWalker(BaseNodeWalker):
                         if sub == var_sub:
                             target_var.append(var_ids[0])
             if self.symtable[assign_id].var_type == VarTypeEnum.MATRIX:
-                content.append("    {} = np.zeros(({}, {}))\n".format(assign_id, self.symtable[assign_id].dimensions[0], self.symtable[assign_id].dimensions[1]))
+                content.append("{} = np.zeros(({}, {}))\n".format(assign_id, self.symtable[assign_id].dimensions[0], self.symtable[assign_id].dimensions[1]))
             elif self.symtable[assign_id].var_type == VarTypeEnum.VECTOR:
-                content.append("    {} = np.zeros({})\n".format(assign_id, self.symtable[assign_id].dimensions[0]))
+                content.append("{} = np.zeros({})\n".format(assign_id, self.symtable[assign_id].dimensions[0]))
             elif self.symtable[assign_id].var_type == VarTypeEnum.SEQUENCE:
                 ele_type = self.symtable[assign_id].element_type
-                content.append("    {} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].dimensions[0], ele_type.dimensions[0], ele_type.dimensions[1]))
+                content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].dimensions[0], ele_type.dimensions[0], ele_type.dimensions[1]))
             content.append("for {} in range(len({})):\n".format(sub, target_var[0]))
-            if exp_info.pre_list:   # catch pre_list
-                list_content = "".join(exp_info.pre_list)
-                list_content = list_content.split('\n')
-                for line in list_content:
-                    content.append(line + '\n')
             for var in target_var:
                 old = "{}_{}".format(var, sub)
                 new = "{}[{}]".format(var, sub)
                 exp_str = exp_str.replace(old, new)
+                if exp_info.pre_list:
+                    for index in range(len(exp_info.pre_list)):
+                        exp_info.pre_list[index] = exp_info.pre_list[index].replace(old, new)
+            if exp_info.pre_list:   # catch pre_list
+                list_content = "".join(exp_info.pre_list)
+                # content += exp_info.pre_list
+                list_content = list_content.split('\n')
+                for index in range(len(list_content)):
+                    if index != len(list_content)-1:
+                        content.append(list_content[index] + '\n')
             # only one sub for now
-            # content += "    for {} in range(len({})):\n".format(sub, target_var)
-            content.append(str("    " + assign_id + " += " + exp_str + '\n\n'))
+            content.append(str("    " + assign_id + " += " + exp_str + '\n'))
+            content[0] = "    " + content[0]
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
     def walk_Determinant(self, node, **kwargs):
@@ -229,7 +234,6 @@ class NumpyWalker(BaseNodeWalker):
         # lhs = kwargs[LHS]
         type_info = self.node_dict[node]
         cur_m_id = type_info.symbol
-        self.matrix_index += 1
         kwargs["cur_id"] = cur_m_id
         matrix_attr = type_info.la_type.attrs
         sparse = False
@@ -356,20 +360,16 @@ class NumpyWalker(BaseNodeWalker):
         type_info = self.node_dict[node]
         # walk matrix first
         content = ""
-        matrix_exp = []
         left_info = self.walk(node.left, **kwargs)
         left_id = left_info.content
         kwargs[LHS] = left_id
-        self.matrix_index = 0
         self.ret = self.get_main_id(left_id)
-        self.matrix_index = 0
         # self left-hand-side symbol
-        content += "    ".join(matrix_exp)
         right_info = self.walk(node.right, **kwargs)
         right_value = right_info.content
         right_exp = ""
         if right_info.pre_list:
-            content += "".join(right_info.pre_list)
+            content += "".join(right_info.pre_list) + "\n"
         # y_i = stat
         if self.contain_subscript(left_id):
             left_ids = self.get_all_ids(left_id)
