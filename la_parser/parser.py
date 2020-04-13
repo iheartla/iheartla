@@ -1,4 +1,5 @@
 from pprint import pprint
+import time
 from tatsu.objectmodel import Node
 from tatsu.semantics import ModelBuilderSemantics
 from tatsu.ast import AST
@@ -59,13 +60,14 @@ def walk_model(parser_type, model):
 
 def parse_and_translate(content):
     # try:
+    start_time = time.time()
     grammar = open('la_grammar/LA.ebnf').read()
     parser_type = ParserTypeEnum.NUMPY
-    result = ('', 0)
     parser = tatsu.compile(grammar, asmodel=True)
     model = parser.parse(content, parseinfo=True)
     res = walk_model(parser_type, model)
     result = (res, 0)
+    print("------------ %.2f seconds ------------" % (time.time() - start_time))
     return result
     # except FailedParse as e:
     #     tex = str(e)
