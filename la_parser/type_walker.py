@@ -43,12 +43,11 @@ class TypeWalker(NodeWalker):
         self.symtable = {}
         self.parameters = []
         self.subscripts = {}
-        self.sub_name_dict = {}
+        self.sub_name_dict = {}  # only for parameter checker
         self.matrix_index = 0    # index of matrix in a single assignment statement
-        self.m_dict = {}         # lhs:count
         self.node_dict = {}      # node:var_name
         self.name_cnt_dict = {}
-        self.dim_dict = {}       # h:w_i
+        self.dim_dict = {}       # parameter used. h:w_i
 
     def generate_var_name(self, base):
         index = -1
@@ -95,8 +94,8 @@ class TypeWalker(NodeWalker):
                 element_type = LaVarType(VarTypeEnum.REAL)
             elif node.type == 'ℤ':
                 element_type = LaVarType(VarTypeEnum.INTEGER)
-        self.symtable[id0] = LaVarType(VarTypeEnum.MATRIX, [id1, id2], desc=desc, element_type=element_type)
-        self.handle_identifier(id0, self.symtable[id0])
+        la_type = LaVarType(VarTypeEnum.MATRIX, [id1, id2], desc=desc, element_type=element_type)
+        self.handle_identifier(id0, la_type)
         self.update_parameters(id0)
         if isinstance(id1, str):
             self.symtable[id1] = LaVarType(VarTypeEnum.INTEGER)
@@ -124,8 +123,8 @@ class TypeWalker(NodeWalker):
                 element_type = LaVarType(VarTypeEnum.REAL)
             elif node.type == 'ℤ':
                 element_type = LaVarType(VarTypeEnum.INTEGER)
-        self.symtable[id0] = LaVarType(VarTypeEnum.VECTOR, [id1], desc=desc, element_type=element_type)
-        self.handle_identifier(id0, self.symtable[id0])
+        la_type = LaVarType(VarTypeEnum.VECTOR, [id1], desc=desc, element_type=element_type)
+        self.handle_identifier(id0, la_type)
         self.update_parameters(id0)
         if isinstance(id1, str):
             self.symtable[id1] = LaVarType(VarTypeEnum.INTEGER)
@@ -136,8 +135,8 @@ class TypeWalker(NodeWalker):
         id0 = id0_info.content
         ret = node.text.split(':')
         desc = ':'.join(ret[1:len(ret)])
-        self.symtable[id0] = LaVarType(VarTypeEnum.SCALAR, desc=desc)
-        self.handle_identifier(id0, self.symtable[id0])
+        la_type = LaVarType(VarTypeEnum.SCALAR, desc=desc)
+        self.handle_identifier(id0, la_type)
         self.update_parameters(id0)
 
     def walk_SetCondition(self, node, **kwargs):
@@ -167,7 +166,7 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_ADD, left_type, right_type)
-        ret_info = NodeInfo(ret_type, symbols=left_info.symbols+right_info.symbols)
+        ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -177,7 +176,7 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_SUB, left_type, right_type)
-        ret_info = NodeInfo(ret_type, symbols=left_info.symbols+right_info.symbols)
+        ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -187,7 +186,7 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_MUL, left_type, right_type)
-        ret_info = NodeInfo(ret_type, symbols=left_info.symbols+right_info.symbols)
+        ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -197,7 +196,7 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_DIV, left_type, right_type)
-        ret_info = NodeInfo(ret_type, symbols=left_info.symbols+right_info.symbols)
+        ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -209,14 +208,22 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         la_remove_key(LHS, **kwargs)
-        self.symtable[id0] = right_type
         # y_i = stat
         if self.contain_subscript(id0):
             left_ids = self.get_all_ids(id0)
             left_subs = left_ids[1]
             sequence = left_ids[0]    #y
-            dim = self.sub_name_dict[left_subs[0]]
-            self.symtable[sequence] = LaVarType(VarTypeEnum.SEQUENCE, dimensions=[dim], element_type=right_type)
+            if len(left_subs) == 2: #matrix
+                pass
+            elif len(left_subs) == 1: #matrix
+                for symbol in right_info.symbols:
+                    if left_subs[0] in symbol:
+                        main_id = self.get_main_id(symbol)
+                        dim = self.symtable[main_id].dimensions[0]
+                self.symtable[sequence] = LaVarType(VarTypeEnum.SEQUENCE, dimensions=[dim], element_type=right_type)
+        else:
+            self.symtable[id0] = right_type
+
         self.node_dict[node] = right_info
         return right_info
 
@@ -285,8 +292,8 @@ class TypeWalker(NodeWalker):
             right.append(v_info.content)
         left_info = self.walk(node.left, **kwargs)
         content = left_info.content + '_' + ','.join(right)
-        if content in self.symtable:
-            node_type = self.symtable[content]
+        if left_info.content in self.symtable:
+            node_type = self.symtable[left_info.content].element_type
         node_info = NodeInfo(node_type, content, {content})
         self.node_dict[node] = node_info
         return node_info
@@ -304,8 +311,10 @@ class TypeWalker(NodeWalker):
         if node.id:
             id0_info = self.walk(node.id, **kwargs)
             id0 = id0_info.content
+            id0 = self.get_main_id(id0)
             assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
-            node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
+            node_info = NodeInfo(id0_info.la_type, id0, id0_info.symbols)
+            # node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
         elif node.num:
             node_info = self.walk(node.num, **kwargs)
         elif node.sub:
@@ -375,11 +384,6 @@ class TypeWalker(NodeWalker):
             self.symtable[new_id] = LaVarType(VarTypeEnum.MATRIX, dimensions=[rows, cols])
             node_info.symbol = new_id
             self.node_dict[node] = node_info
-            if lhs in self.m_dict:
-                cnt = self.m_dict[lhs]
-                self.m_dict[lhs] = cnt + 1
-            else:
-                self.m_dict[lhs] = 1
         self.node_dict[node] = node_info
         return node_info
 
@@ -531,7 +535,9 @@ class TypeWalker(NodeWalker):
                 else:
                     # first sequence
                     self.subscripts[val] = [arr[0]]
-                if self.symtable.get(val) is None:
-                    self.symtable[val] = LaVarType(VarTypeEnum.INTEGER)
+                # if self.symtable.get(val) is None:
+                #     self.symtable[val] = LaVarType(VarTypeEnum.INTEGER)
             self.symtable[arr[0]] = LaVarType(VarTypeEnum.SEQUENCE, dimensions=[new_var_name], element_type=id_type,
                                               desc=id_type.desc)
+        else:
+            self.symtable[identifier] = id_type

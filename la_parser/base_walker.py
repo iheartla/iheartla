@@ -16,7 +16,6 @@ class BaseNodeWalker(NodeWalker):
         self.parameters = set()
         self.subscripts = {}
         self.matrix_index = 0    # index of matrix in a single assignment statement
-        self.m_dict = {}
         self.node_dict = {}
         self.dim_dict = {}
         self.sub_name_dict = {}
@@ -26,9 +25,8 @@ class BaseNodeWalker(NodeWalker):
         print("symtable:")
         for (k, v) in self.symtable.items():
             print(k + ':' + str(v.var_type) + ', dimension:' + str(v.dimensions))
-        print("subscripts:\n" + str(self.subscripts))
         print("parameters:\n" + str(self.parameters))
-        print("m_dict:\n" + str(self.m_dict))
+        print("subscripts:\n" + str(self.subscripts))
         print("dim_dict:\n" + str(self.dim_dict))
         print("sub_name_dict:\n" + str(self.sub_name_dict) + '\n')
         # print("node_dict:\n" + str(self.node_dict) + '\n')
@@ -40,7 +38,6 @@ class BaseNodeWalker(NodeWalker):
         self.symtable = type_walker.symtable
         self.parameters = type_walker.parameters
         self.subscripts = type_walker.subscripts
-        self.m_dict = type_walker.m_dict
         self.node_dict = type_walker.node_dict
         self.dim_dict = type_walker.dim_dict
         self.sub_name_dict = type_walker.sub_name_dict
