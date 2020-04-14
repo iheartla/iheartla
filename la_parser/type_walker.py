@@ -211,13 +211,19 @@ class TypeWalker(NodeWalker):
             left_ids = self.get_all_ids(id0)
             left_subs = left_ids[1]
             sequence = left_ids[0]    #y
-            if len(left_subs) == 2: #matrix
-                pass
-            elif len(left_subs) == 1: #matrix
+            if len(left_subs) == 2: # matrix
+                for symbol in right_info.symbols:
+                    if left_subs[0] in symbol and left_subs[1] in symbol:
+                        main_id = self.get_main_id(symbol)
+                        dim = self.symtable[main_id].dimensions
+                        break
+                self.symtable[sequence] = LaVarType(VarTypeEnum.MATRIX, dimensions=dim, element_type=right_type)
+            elif len(left_subs) == 1: # sequence
                 for symbol in right_info.symbols:
                     if left_subs[0] in symbol:
                         main_id = self.get_main_id(symbol)
                         dim = self.symtable[main_id].dimensions[0]
+                        break
                 self.symtable[sequence] = LaVarType(VarTypeEnum.SEQUENCE, dimensions=[dim], element_type=right_type)
         else:
             self.symtable[id0] = right_type
@@ -226,6 +232,10 @@ class TypeWalker(NodeWalker):
         return right_info
 
     def walk_Summation(self, node, **kwargs):
+        subs = []
+        for sub in node.sub:
+            sub_info = self.walk(sub)
+            subs.append(sub_info.content)
         new_id = self.generate_var_name("sum")
         ret_info = self.walk(node.exp, **kwargs)
         ret_type = ret_info.la_type
@@ -289,7 +299,7 @@ class TypeWalker(NodeWalker):
             v_info = self.walk(value)
             right.append(v_info.content)
         left_info = self.walk(node.left, **kwargs)
-        content = left_info.content + '_' + ','.join(right)
+        content = left_info.content + '_' + ''.join(right)
         if left_info.content in self.symtable:
             node_type = self.symtable[left_info.content].element_type
         node_info = NodeInfo(node_type, content, {content})
@@ -496,7 +506,6 @@ class TypeWalker(NodeWalker):
             assert (right_type.var_type == VarTypeEnum.SCALAR or right_type.var_type == VarTypeEnum.INTEGER), 'error: type mismatch'
             ret_type = LaVarType(VarTypeEnum.SCALAR)
         elif op == TypeInferenceEnum.INF_MATRIX_ROW:
-
             # assert left_type.var_type == right_type.var_type
             ret_type = left_type
         return ret_type
@@ -506,13 +515,17 @@ class TypeWalker(NodeWalker):
 
     def get_all_ids(self, identifier):
         res = identifier.split('_')
-        return [res[0], res[1].split(',')]
+        subs = []
+        for index in range(len(res[1])):
+            subs.append(res[1][index])
+        return [res[0], subs]
 
     def get_main_id(self, identifier):
         if self.contain_subscript(identifier):
             ret = self.get_all_ids(identifier)
             return ret[0]
         return identifier
+
     # handle subscripts only (where block)
     def handle_identifier(self, identifier, id_type):
         if self.contain_subscript(identifier):
@@ -532,8 +545,6 @@ class TypeWalker(NodeWalker):
                 else:
                     # first sequence
                     self.subscripts[val] = [arr[0]]
-                # if self.symtable.get(val) is None:
-                #     self.symtable[val] = LaVarType(VarTypeEnum.INTEGER)
             self.symtable[arr[0]] = LaVarType(VarTypeEnum.SEQUENCE, dimensions=[new_var_name], element_type=id_type,
                                               desc=id_type.desc)
         else:

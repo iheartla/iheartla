@@ -59,7 +59,10 @@ class BaseNodeWalker(NodeWalker):
 
     def get_all_ids(self, identifier):
         res = identifier.split('_')
-        return [res[0], res[1].split(',')]
+        subs = []
+        for index in range(len(res[1])):
+            subs.append(res[1][index])
+        return [res[0], subs]
 
     def get_main_id(self, identifier):
         if self.contain_subscript(identifier):
