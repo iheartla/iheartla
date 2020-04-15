@@ -190,7 +190,7 @@ class NumpyWalker(BaseNodeWalker):
 
     def walk_Solver(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
-        right_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
         left_info.content = "np.linalg.solve({}, {})".format(left_info.content, right_info.content)
         return left_info
 
@@ -358,7 +358,7 @@ class NumpyWalker(BaseNodeWalker):
         right_info = self.walk(node.right, **kwargs)
         right_exp = ""
         if right_info.pre_list:
-            content += "".join(right_info.pre_list) + "\n"
+            content += "".join(right_info.pre_list)
         # y_i = stat
         if self.contain_subscript(left_id):
             left_ids = self.get_all_ids(left_id)
@@ -378,7 +378,7 @@ class NumpyWalker(BaseNodeWalker):
                 content += "    for {} in range({}):\n".format(left_subs[0], self.symtable[sequence].dimensions[0])
                 content += "        for {} in range({}):\n".format(left_subs[1], self.symtable[sequence].dimensions[1])
                 content += "        " + right_exp
-                content += '\n'
+                # content += '\n'
             elif len(left_subs) == 1: # sequence only
                 sequence = left_ids[0]  # y left_subs[0]
                 # replace sequence
@@ -397,11 +397,12 @@ class NumpyWalker(BaseNodeWalker):
                     content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].dimensions[0])
                 content += "    for {} in range({}):\n".format(left_subs[0], self.symtable[sequence].dimensions[0])
                 content += "    " + right_exp
-                content += '\n'
+                # content += '\n'
         #
         else:
             right_exp += '    ' + self.get_main_id(left_id) + ' = ' + right_info.content
             content += right_exp
+        content += '\n'
         la_remove_key(LHS, **kwargs)
         return CodeNodeInfo(content)
 

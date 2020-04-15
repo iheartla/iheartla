@@ -47,7 +47,7 @@ class SummationAttrs(object):
 
 
 class NodeInfo(object):
-    def __init__(self, la_type=None, content=None, symbols=[]):
+    def __init__(self, la_type=None, content=None, symbols=set()):
         super().__init__()
         self.la_type = la_type
         self.content = content

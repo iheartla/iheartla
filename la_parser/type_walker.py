@@ -283,7 +283,7 @@ class TypeWalker(NodeWalker):
             elif right_info.la_type.var_type == VarTypeEnum.VECTOR:
                 node_type = LaVarType(VarTypeEnum.VECTOR,
                                       dimensions=[left_info.la_type.dimensions[1]])
-        return NodeInfo(node_type, symbols=left_info.symbols+right_info.symbols)
+        return NodeInfo(node_type, symbols=left_info.symbols.union(right_info.symbols))
 
     def walk_Transpose(self, node, **kwargs):
         f_info = self.walk(node.f, **kwargs)
