@@ -65,9 +65,9 @@ term_in_matrix
     | factor
     ;
 
-multiplication_in_matrix
-    =
-    factor '*' term_in_matrix
+multiplication_in_matrix::Multiply
+    = left:term_in_matrix '*' right:term_in_matrix
+    | left:term_in_matrix right:term_in_matrix
     ;
 
 division_in_matrix
