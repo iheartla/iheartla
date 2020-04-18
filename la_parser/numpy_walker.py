@@ -312,6 +312,29 @@ class NumpyWalker(BaseNodeWalker):
     def walk_ExpInMatrix(self, node, **kwargs):
         return self.walk(node.value, **kwargs)
 
+    def walk_NumMatrix(self, node, **kwargs):
+        type_info = self.node_dict[node]
+        post_s = ''
+        if node.id:
+            func_name = "np.identity"
+        else:
+            left_info = self.walk(node.left, **kwargs)
+            if left_info.content == 0:
+                func_name = "np.zeros"
+            elif left_info.content == 1:
+                func_name = "np.ones"
+            else:
+                func_name = "({} * np.ones".format(left_info.content)
+                post_s = ')'
+        id1_info = self.walk(node.id1, **kwargs)
+        if node.id2:
+            id2_info = self.walk(node.id2, **kwargs)
+            content = "{}(({}, {}))".format(func_name, id1_info.content, id2_info.content)
+        else:
+            content = "{}({})".format(func_name, id1_info.content)
+        node_info = CodeNodeInfo(content+post_s)
+        return node_info
+
     def walk_Add(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
@@ -430,6 +453,8 @@ class NumpyWalker(BaseNodeWalker):
             return self.walk(node.sub, **kwargs)
         elif node.m:
             return self.walk(node.m, **kwargs)
+        elif node.nm:
+            return self.walk(node.nm, **kwargs)
         elif node.f:
             return self.walk(node.f, **kwargs)
         elif node.op:

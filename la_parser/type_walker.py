@@ -329,6 +329,8 @@ class TypeWalker(NodeWalker):
             node_info = self.walk(node.sub, **kwargs)
         elif node.m:
             node_info = self.walk(node.m, **kwargs)
+        elif node.nm:
+            node_info = self.walk(node.nm, **kwargs)
         elif node.f:
             node_info = self.walk(node.f, **kwargs)
         elif node.op:
@@ -462,6 +464,26 @@ class TypeWalker(NodeWalker):
         ret_info = self.walk(node.value, **kwargs)
         self.node_dict[node] = ret_info
         return ret_info
+
+    def walk_NumMatrix(self, node, **kwargs):
+        id1_info = self.walk(node.id1, **kwargs)
+        id1 = id1_info.content
+        if isinstance(id1, str):
+            assert id1 in self.symtable, "{} unknown".format(id1)
+        if node.id2:
+            id2_info = self.walk(node.id2, **kwargs)
+            id2 = id2_info.content
+            if isinstance(id2, str):
+                assert id2 in self.symtable, "{} unknown".format(id2)
+            node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[id1, id2])
+        else:
+            if node.id:
+                node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[id1, id1])
+            else:
+                node_type = LaVarType(VarTypeEnum.VECTOR, dimensions=[id1])
+        node_info = NodeInfo(node_type)
+        self.node_dict[node] = node_type
+        return node_info
 
     ###################################################################
     def type_inference(self, op, left_type, right_type):

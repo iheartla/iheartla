@@ -90,6 +90,7 @@ factor::Factor
     | op:operations
     | sub:subexpression
     | id:identifier
+    | nm:number_matrix
     | num:number
     | m:matrix
     | s:sparse_matrix

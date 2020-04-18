@@ -90,3 +90,9 @@ iddots::MatrixIddots
 ddots::MatrixDdots
     = DDOTS
     ;
+
+number_matrix::NumMatrix
+    = left:number '_' id1:(integer | identifier) {',' id2:(integer | identifier)}
+    | left:number '_' '(' {hspace}  id1:(integer | identifier) { {hspace} (','|'×') {hspace} id2:(integer | identifier)} {hspace} ')'
+    | id:'I' '_' id1:(integer | identifier)
+    ;
