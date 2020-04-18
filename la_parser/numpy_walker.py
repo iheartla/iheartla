@@ -4,72 +4,90 @@ from la_parser.base_walker import *
 class NumpyWalker(BaseNodeWalker):
     def __init__(self):
         super().__init__()
-        self.pre_str = '''import numpy as np\nimport scipy\nfrom scipy import sparse\n\n'''
+        self.pre_str = '''import numpy as np\nimport scipy\nfrom scipy import sparse\n\n\n'''
         self.post_str = ''''''
         self.ret = 'ret'
 
     def walk_Start(self, node, **kwargs):
-        pars = []
         type_checks = []
         type_declare = []
-        show_doc = False
         doc = []
+        show_doc = False
+        func_name = "myExpression"
+        rand_func_name = "generateRandomData"
+        test_content = ["def " + rand_func_name + "():"]
+        rand_int_max = 10
+        main_content = ["if __name__ == '__main__':",
+                        "    {} = {}()".format(', '.join(self.parameters), rand_func_name)]
+        dim_content = ""
+        if self.dim_dict:
+            for key, value in self.dim_dict.items():
+                test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
+                if self.contain_subscript(value[0]):
+                    main_id = self.get_main_id(value[0])
+                    dim_content += "    {} = {}.shape[{}]\n".format(key, main_id, value[1]+1)
+                else:
+                    dim_content += "    {} = {}.shape[{}]\n".format(key, value[0], value[1])
         for parameter in self.parameters:
-            par = parameter
             if self.symtable[parameter].desc:
                 show_doc = True
                 doc.append('    :param :{} :{}'.format(parameter, self.symtable[parameter].desc))
             if self.symtable[parameter].var_type == VarTypeEnum.SEQUENCE:
                 ele_type = self.symtable[parameter].element_type
                 data_type = ele_type.element_type
+                size_str = ""
+                if ele_type.var_type == VarTypeEnum.MATRIX:
+                    type_checks.append('    assert {}.shape == ({}, {}, {})'.format(parameter, self.symtable[parameter].dimensions[0], ele_type.dimensions[0], ele_type.dimensions[1]))
+                    size_str = '{}, {}, {}'.format(self.symtable[parameter].dimensions[0], ele_type.dimensions[0], ele_type.dimensions[1])
+                elif ele_type.var_type == VarTypeEnum.VECTOR:
+                    type_checks.append('    assert {}.shape == ({}, {})'.format(parameter, self.symtable[parameter].dimensions[0], ele_type.dimensions[0]))
+                    size_str = '{}, {}'.format(self.symtable[parameter].dimensions[0], ele_type.dimensions[0])
+                elif ele_type.var_type == VarTypeEnum.SCALAR:
+                    type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].dimensions[0]))
+                    size_str = '{}'.format(self.symtable[parameter].dimensions[0])
                 if isinstance(data_type, LaVarType):
                     if data_type.var_type == VarTypeEnum.INTEGER:
                         type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
+                        test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, size_str))
                     elif data_type.var_type == VarTypeEnum.REAL:
                         type_declare.append('    {} = np.asarray({}, dtype=np.floating)'.format(parameter, parameter))
+                        test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
                 else:
                     type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
-                if ele_type.var_type == VarTypeEnum.MATRIX:
-                    type_checks.append('    assert {}.shape == ({}, {}, {})'.format(parameter, self.symtable[parameter].dimensions[0], ele_type.dimensions[0], ele_type.dimensions[1]))
-                elif ele_type.var_type == VarTypeEnum.VECTOR:
-                    type_checks.append('    assert {}.shape == ({}, {})'.format(parameter, self.symtable[parameter].dimensions[0], ele_type.dimensions[0]))
-                elif ele_type.var_type == VarTypeEnum.SCALAR:
-                    type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].dimensions[0]))
+                    test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
             elif self.symtable[parameter].var_type == VarTypeEnum.MATRIX:
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
                     if element_type.var_type == VarTypeEnum.INTEGER:
                         type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
+                        test_content.append('    {} = np.random.randint({}, size=({}, {}))'.format(parameter, rand_int_max, self.symtable[parameter].dimensions[0], self.symtable[parameter].dimensions[1]))
                     elif element_type.var_type == VarTypeEnum.REAL:
                         type_declare.append('    {} = np.asarray({}, dtype=np.floating)'.format(parameter, parameter))
+                        test_content.append('    {} = np.random.randn({}, {})'.format(parameter, self.symtable[parameter].dimensions[0], self.symtable[parameter].dimensions[1]))
                 else:
                     type_checks.append('    {} = np.asarray({})'.format(parameter, parameter))
+                    test_content.append('    {} = np.random.randn({}, {})'.format(parameter, self.symtable[parameter].dimensions[0], self.symtable[parameter].dimensions[1]))
                 type_checks.append('    assert {}.shape == ({}, {})'.format(parameter, self.symtable[parameter].dimensions[0], self.symtable[parameter].dimensions[1]))
             elif self.symtable[parameter].var_type == VarTypeEnum.VECTOR:
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
                     if element_type.var_type == VarTypeEnum.INTEGER:
                         type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
+                        test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, self.symtable[parameter].dimensions[0]))
                     elif element_type.var_type == VarTypeEnum.REAL:
                         type_declare.append('    {} = np.asarray({}, dtype=np.floating)'.format(parameter, parameter))
+                        test_content.append('    {} = np.random.randn({})'.format(parameter, self.symtable[parameter].dimensions[0]))
                 else:
                     type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
+                    test_content.append('    {} = np.random.randn({})'.format(parameter, self.symtable[parameter].dimensions[0]))
                 type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].dimensions[0]))
             elif self.symtable[parameter].var_type == VarTypeEnum.SCALAR:
                 type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
-            pars.append(par)
-
-        content = 'def myExpression(' + ', '.join(pars) + '):\n'
+                test_content.append('    {} = np.random.randn()'.format(parameter))
+            main_content.append('    print("{}:", {})'.format(parameter, parameter))
+        content = 'def ' + func_name + '(' + ', '.join(self.parameters) + '):\n'
         if show_doc:
             content += '    \"\"\"\n' + '\n'.join(doc) + '\n    \"\"\"\n'
-        dim_content = ""
-        if self.dim_dict:
-            for key, value in self.dim_dict.items():
-                if self.contain_subscript(value[0]):
-                    main_id = self.get_main_id(value[0])
-                    dim_content += "    {} = {}.shape[{}]\n".format(key, main_id, value[1]+1)
-                else:
-                    dim_content += "    {} = {}.shape[{}]\n".format(key, value[0], value[1])
         # merge content
         content += '\n'.join(type_declare) + '\n\n'
         content += dim_content
@@ -79,6 +97,11 @@ class NumpyWalker(BaseNodeWalker):
         content += stat_info.content
         content += '    return ' + self.ret
         content += '\n'
+        # test
+        test_content.append('    return {}'.format(', '.join(self.parameters)))
+        main_content.append("    func_value = {}({})".format(func_name, ', '.join(self.parameters)))
+        main_content.append('    print("func_value: ", func_value)')
+        content += '\n\n' + '\n'.join(test_content) + '\n\n\n' + '\n'.join(main_content)
         return content
 
     def walk_WhereConditions(self, node, **kwargs):
