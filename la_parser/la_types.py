@@ -29,14 +29,16 @@ class LaVarType(object):
 
 
 class MatrixAttrs(object):
-    def __init__(self, need_exp=False, diagonal=False, sparse=False, subs=[], index_var=None, value_var=None):
+    def __init__(self, need_exp=False, diagonal=False, sparse=False, block=False, subs=[], list_dim=None, index_var=None, value_var=None):
         super().__init__()
-        self.need_exp = need_exp  # need expression
+        self.need_exp = need_exp    # need expression
         self.diagonal = diagonal
         self.sparse = sparse
+        self.block = block
         self.subs = subs
-        self.index_var = index_var
-        self.value_var = value_var
+        self.list_dim = list_dim    # used by block mat
+        self.index_var = index_var  # used by sparse mat
+        self.value_var = value_var  # used by sparse mat
 
 
 class SummationAttrs(object):

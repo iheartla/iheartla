@@ -122,7 +122,7 @@ class TypeWalker(NodeWalker):
                 element_type = LaVarType(VarTypeEnum.REAL)
             elif node.type == 'ℤ':
                 element_type = LaVarType(VarTypeEnum.INTEGER)
-        la_type = LaVarType(VarTypeEnum.VECTOR, [id1], desc=desc, element_type=element_type)
+        la_type = LaVarType(VarTypeEnum.VECTOR, [id1, 1], desc=desc, element_type=element_type)
         self.handle_identifier(id0, la_type)
         self.update_parameters(id0)
         if isinstance(id1, str):
@@ -377,16 +377,26 @@ class TypeWalker(NodeWalker):
         # check matrix validity
         rows = len(node_info.content)
         cols = 0
-        sparse = False
+        block = False
         for row in node_info.content:
             for col in row:
                 if col.var_type == VarTypeEnum.MATRIX or col.var_type == VarTypeEnum.VECTOR:
-                    sparse = True
+                    block = True
             if len(row) > cols:
                 cols = len(row)
-        valid, undef_list, type_array = self.check_bmat_validity(node_info.content, None)
-        assert valid, "block matrix: invalid dimensions"
-        m_attr = MatrixAttrs(sparse=sparse)
+        list_dim = None
+        if block:
+            # check block mat
+            valid, undef_list, type_array, real_dims = self.check_bmat_validity(node_info.content, None)
+            assert valid, "block matrix: invalid dimensions"
+            rows = real_dims[0]
+            cols = real_dims[1]
+            if len(undef_list) > 0:
+                # need change dimension
+                list_dim = {}
+                for i, j in undef_list:
+                    list_dim[(i, j)] = type_array[i][j].dimensions
+        m_attr = MatrixAttrs(block=block, list_dim=list_dim)
         node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[rows, cols], attrs=m_attr)
         node_info = NodeInfo(node_type)
         if LHS in kwargs:
@@ -493,7 +503,7 @@ class TypeWalker(NodeWalker):
         check the validity of block matrix
         :param type_array: 2d array containing element types
         :param mat_size: the dimensions of the block matrix may be given in future
-        :return: valid, index to be changed, modified type_array
+        :return: valid, index to be changed, modified type_array, dims
         """
         valid = True
         rows = len(type_array)
@@ -568,10 +578,15 @@ class TypeWalker(NodeWalker):
                 else:
                     valid = False
         # check total dimensions bound
-        if valid and mat_size is not None:
-            if sum(row_dim) != mat_size[0] or sum(col_dim) != mat_size[1]:
-                valid = False
-        return valid, undef_list, type_array
+        real_dims = (0, 0)
+        if valid:
+            row_sum = sum(row_dim)
+            col_sum = sum(col_dim)
+            real_dims = (row_sum, col_sum)
+            if mat_size is not None:
+                if row_sum != mat_size[0] or col_sum != mat_size[1]:
+                    valid = False
+        return valid, undef_list, type_array, real_dims
 
     def type_inference(self, op, left_type, right_type):
         ret_type = None

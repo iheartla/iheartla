@@ -262,31 +262,48 @@ class NumpyWalker(BaseNodeWalker):
         cur_m_id = type_info.symbol
         kwargs["cur_id"] = cur_m_id
         matrix_attr = type_info.la_type.attrs
-        sparse = False
+        block = False
         if matrix_attr:
-            sparse = matrix_attr.sparse
+            block = matrix_attr.block
         ret_info = self.walk(node.value, **kwargs)
         ret = ret_info.content
-        if sparse:
+        if block:
             all_rows = []
             m_content = ""
-            if type_info.la_type.dimensions[0] > 1 and type_info.la_type.dimensions[1] > 1:
+            if len(ret) > 1 and len(ret[0]) > 1:
                 for i in range(len(ret)):
-                    all_rows.append('[' + ret[i] + ']')
+                    if matrix_attr.list_dim:
+                        for j in range(len(ret[i])):
+                            if (i, j) in matrix_attr.list_dim:
+                                dims = matrix_attr.list_dim[(i, j)]
+                                if ret[i][j] == '0':
+                                    func_name = 'np.zeros'
+                                elif ret[i][j] == '1':
+                                    func_name = 'np.ones'
+                                else:
+                                    func_name = ret[i][j] + ' * np.ones'
+                                if dims[1] == 1:
+                                    # vector
+                                    ret[i][j] = '{}({})'.format(func_name, dims[0])
+                                else:
+                                    ret[i][j] = '{}(({}, {}))'.format(func_name, dims[0], dims[1])
+                    all_rows.append('[' + ', '.join(ret[i]) + ']')
                 m_content += 'np.bmat([{}])'.format(', '.join(all_rows))
                 content += '{} = {}\n'.format(cur_m_id, m_content)
-            elif type_info.la_type.dimensions[0] == 1:
+            elif len(ret) == 1:
                 # single row
-                content += '{} = np.hstack(({}))\n'.format(cur_m_id, ''.join(ret))
+                content += '{} = np.hstack(({}))\n'.format(cur_m_id, ', '.join(ret[0]))
             else:
                 # single col
+                for i in range(len(ret)):
+                    ret[i] = ''.join(ret[i])
                 content += '{} = np.vstack(({}))\n'.format(cur_m_id, ', '.join(ret))
         else:
             # dense
             content += '{} = np.zeros(({}, {}))\n'.format(cur_m_id, self.symtable[cur_m_id].dimensions[0],
                                                           self.symtable[cur_m_id].dimensions[1])
             for i in range(len(ret)):
-                content += "    {}[{}] = [{}]\n".format(cur_m_id, i, ret[i])
+                content += "    {}[{}] = [{}]\n".format(cur_m_id, i, ', '.join(ret[i]))
         #####################
         pre_list = [content]
         if ret_info.pre_list:
@@ -311,26 +328,26 @@ class NumpyWalker(BaseNodeWalker):
         pre_list = []
         if node.rc:
             rc_info = self.walk(node.rc, **kwargs)
-            ret.append(rc_info.content)
+            ret += rc_info.content
             pre_list += rc_info.pre_list
         if node.exp:
             exp_info = self.walk(node.exp, **kwargs)
             ret.append(exp_info.content)
             pre_list += exp_info.pre_list
-        return CodeNodeInfo(', '.join(ret), pre_list)
+        return CodeNodeInfo(ret, pre_list)
 
     def walk_MatrixRowCommas(self, node, **kwargs):
         ret = []
         pre_list = []
         if node.value:
             value_info = self.walk(node.value, **kwargs)
-            ret.append(value_info.content)
+            ret += value_info.content
             pre_list += value_info.pre_list
         if node.exp:
             exp_info = self.walk(node.exp, **kwargs)
             ret.append(exp_info.content)
             pre_list += exp_info.pre_list
-        return CodeNodeInfo(', '.join(ret), pre_list)
+        return CodeNodeInfo(ret, pre_list)
 
     def walk_ExpInMatrix(self, node, **kwargs):
         return self.walk(node.value, **kwargs)
