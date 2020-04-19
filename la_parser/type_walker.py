@@ -384,6 +384,8 @@ class TypeWalker(NodeWalker):
                     sparse = True
             if len(row) > cols:
                 cols = len(row)
+        valid, undef_list, type_array = self.check_bmat_validity(node_info.content, None)
+        assert valid, "block matrix: invalid dimensions"
         m_attr = MatrixAttrs(sparse=sparse)
         node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[rows, cols], attrs=m_attr)
         node_info = NodeInfo(node_type)
@@ -486,6 +488,91 @@ class TypeWalker(NodeWalker):
         return node_info
 
     ###################################################################
+    def check_bmat_validity(self, type_array, mat_size):
+        """
+        check the validity of block matrix
+        :param type_array: 2d array containing element types
+        :param mat_size: the dimensions of the block matrix may be given in future
+        :return: valid, index to be changed, modified type_array
+        """
+        valid = True
+        rows = len(type_array)
+        cols = len(type_array[0])
+        row_dim = [None] * rows  # row numbers for mat in each row
+        col_dim = [None] * cols  # col numbers for mat in each col
+        undef_list = []          # scalar index, dimensions need to be changed
+        for i in range(rows):
+            for j in range(cols):
+                if type_array[i][j].var_type == VarTypeEnum.MATRIX or type_array[i][j].var_type == VarTypeEnum.VECTOR:
+                    if row_dim[i] is None:
+                        row_dim[i] = type_array[i][j].dimensions[0]
+                    elif row_dim[i] != type_array[i][j].dimensions[0]:
+                        valid = False
+                        break
+                    if col_dim[j] is None:
+                        col_dim[j] = type_array[i][j].dimensions[1]
+                    elif col_dim[j] != type_array[i][j].dimensions[1]:
+                        valid = False
+                        break
+                else:
+                    undef_list.append((i, j))
+            if not valid:
+                break
+        # print("undef_list: ", undef_list)
+        # print("row_dim: ", row_dim)
+        # print("col_dim: ", col_dim)
+        if len(undef_list) > 0:
+            remain_list = []
+            remain_row_set = set()
+            remain_col_set = set()
+            for (i, j) in undef_list:
+                if row_dim[i] is not None and col_dim[j] is not None:
+                    # modify dimensions
+                    type_array[i][j].dimensions = [row_dim[i], col_dim[j]]
+                    type_array[i][j].var_type = VarTypeEnum.MATRIX
+                else:
+                    remain_list.append((i, j))
+                    if row_dim[i] is None:
+                        remain_row_set.add(i)
+                    if col_dim[j] is None:
+                        remain_col_set.add(j)
+            if len(remain_list) > 0:
+                # print("remain_list: ", remain_list)
+                # print("remain_row_set: ", remain_row_set)
+                # print("remain_col_set: ", remain_col_set)
+                if mat_size is not None and len(remain_row_set) <= 1 and len(remain_col_set) <= 1:
+                    if len(remain_row_set) == 1:
+                        current_sum = 0
+                        set_index = remain_row_set.pop()
+                        for value in row_dim:
+                            if value is not None:
+                                current_sum += value
+                        if mat_size[0] - current_sum <= 0:
+                            valid = False
+                        else:
+                            row_dim[set_index] = mat_size[0] - current_sum
+                    if len(remain_col_set) == 1:
+                        current_sum = 0
+                        set_index = remain_col_set.pop()
+                        for value in col_dim:
+                            if value is not None:
+                                current_sum += value
+                        if mat_size[1] - current_sum <= 0:
+                            valid = False
+                        else:
+                            col_dim[set_index] = mat_size[1] - current_sum
+                    # still valid
+                    for (i, j) in remain_list:
+                        type_array[i][j].dimensions = [row_dim[i], col_dim[j]]
+                        type_array[i][j].var_type = VarTypeEnum.MATRIX
+                else:
+                    valid = False
+        # check total dimensions bound
+        if valid and mat_size is not None:
+            if sum(row_dim) != mat_size[0] or sum(col_dim) != mat_size[1]:
+                valid = False
+        return valid, undef_list, type_array
+
     def type_inference(self, op, left_type, right_type):
         ret_type = None
         if op == TypeInferenceEnum.INF_ADD or op == TypeInferenceEnum.INF_SUB:
