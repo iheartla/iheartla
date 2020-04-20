@@ -143,7 +143,30 @@ class TypeWalker(NodeWalker):
         id0 = id0_info.content
         ret = node.text.split(':')
         desc = ':'.join(ret[1:len(ret)])
-        self.symtable[id0] = LaVarType(VarTypeEnum.SET, desc=desc)
+        int_list = []
+        cnt = 1
+        if node.type:
+            cnt = len(node.type)
+            for t in node.type:
+                if t == 'ℤ':
+                    int_list.append(True)
+                else:
+                    int_list.append(False)
+        elif node.type1:
+            cnt_info = self.walk(node.cnt, **kwargs)
+            if isinstance(cnt_info.content, int):
+                cnt = cnt_info.content
+            if node.type1 == 'ℤ':
+                int_list = [True] * cnt
+            else:
+                int_list = [False] * cnt
+        elif node.type2:
+            cnt = 2
+            if node.type2 == 'ℤ²':
+                int_list = [True] * cnt
+            else:
+                int_list = [False] * cnt
+        self.symtable[id0] = LaVarType(VarTypeEnum.SET, desc=desc, dimensions=[cnt], attrs=int_list)
         self.handle_identifier(id0, self.symtable[id0])
         self.update_parameters(id0)
 

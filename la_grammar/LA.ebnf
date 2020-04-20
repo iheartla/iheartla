@@ -60,7 +60,9 @@ scalar_condition::ScalarCondition
     ;
 
 set_condition::SetCondition
-    = id:identifier {hspace} ':' {hspace} '{' {hspace} type1:('ℝ'|'ℤ') {hspace} '×' {hspace} type2:('ℝ'|'ℤ') {hspace} '}' { {hspace} ':' {hspace} desc:description}
+    = id:identifier {hspace} ':' {hspace} '{' {hspace} type+:('ℝ'|'ℤ') {hspace} {'×' {hspace} type+:('ℝ'|'ℤ') {hspace} }'}' { {hspace} ':' {hspace} desc:description}
+    | id:identifier {hspace} ':' {hspace} '{' {hspace} type1:('ℝ'|'ℤ') {hspace} '^' {hspace} cnt:(integer) {hspace} '}' { {hspace} ':' {hspace} desc:description}
+    | id:identifier {hspace} ':' {hspace} '{' {hspace} type2:('ℝ²'|'ℤ²') {hspace} '}' { {hspace} ':' {hspace} desc:description}
     ;
 
 expression

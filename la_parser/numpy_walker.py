@@ -84,6 +84,20 @@ class NumpyWalker(BaseNodeWalker):
             elif self.symtable[parameter].var_type == VarTypeEnum.SCALAR:
                 type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
                 test_content.append('    {} = np.random.randn()'.format(parameter))
+            elif self.symtable[parameter].var_type == VarTypeEnum.SET:
+                type_checks.append('    assert isinstance({}, list) and len({}) > 0'.format(parameter, parameter))
+                type_checks.append('    assert len({}[0]) == {}'.format(parameter, self.symtable[parameter].dimensions[0]))
+                test_content.append('    {} = []'.format(parameter))
+                test_content.append('    {}_0 = np.random.randint(1, {})'.format(parameter, rand_int_max))
+                test_content.append('    for i in range({}_0):'.format(parameter))
+                gen_list = []
+                for i in range(self.symtable[parameter].dimensions[0]):
+                    if self.symtable[parameter].attrs[i]:
+                        gen_list.append('np.random.randint({})'.format(rand_int_max))
+                    else:
+                        gen_list.append('np.random.randn()')
+                test_content.append('        {}.append(('.format(parameter) + ', '.join(gen_list) + '))')
+
             main_content.append('    print("{}:", {})'.format(parameter, parameter))
         content = 'def ' + func_name + '(' + ', '.join(self.parameters) + '):\n'
         if show_doc:
