@@ -2,7 +2,6 @@ from tatsu.model import NodeWalker
 from tatsu.objectmodel import Node
 from tatsu.symtables import *
 from la_parser.la_types import *
-from la_parser.la_symbol import *
 from la_parser.type_walker import *
 from la_tools.la_visualizer import LaVisualizer
 

@@ -20,12 +20,8 @@ from tatsu.exceptions import (
 from enum import Enum
 from la_parser.latex_walker import LatexWalker
 from la_parser.numpy_walker import NumpyWalker
-from la_parser.eigen_walker import EigenWalker
-from la_parser.matlab_walker import MatlabWalker
-from la_parser.julia_walker import JuliaWalker
-from la_parser.pytorch_walker import PytorchWalker
-from la_parser.tensorflow_walker import TensorflowWalker
-
+from la_parser.ir import *
+from la_parser.ir_visitor import *
 
 class ParserTypeEnum(Enum):
     LATEX = 1
@@ -43,18 +39,6 @@ def walk_model(parser_type, model):
         walker = LatexWalker()
     elif parser_type == ParserTypeEnum.NUMPY:
         walker = NumpyWalker()
-    elif parser_type == ParserTypeEnum.EIGEN:
-        walker = EigenWalker()
-    elif parser_type == ParserTypeEnum.MATLAB:
-        walker = MatlabWalker()
-    elif parser_type == ParserTypeEnum.JULIA:
-        walker = JuliaWalker()
-    elif parser_type == ParserTypeEnum.PYTORCH:
-        walker = PytorchWalker()
-    elif parser_type == ParserTypeEnum.ARMADILLO:
-        walker = ArmadilloWalker()
-    elif parser_type == ParserTypeEnum.TENSORFLOW:
-        walker = TensorflowWalker()
     return walker.walk_model(model)
 
 
