@@ -75,7 +75,8 @@ expression
 
 assignment::Assignment
     =
-    left:identifier {hspace} '=' {hspace} {separator_with_space} right:expression {hspace}
+    left:identifier {hspace} op:'=' {hspace} {separator_with_space} right:expression {hspace}
+    | left:identifier {hspace} op:'+=' {hspace} {separator_with_space} right:expression {hspace}
     ;
 
 term

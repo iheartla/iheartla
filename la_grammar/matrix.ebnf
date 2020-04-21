@@ -5,12 +5,19 @@ matrix::Matrix
     ;
 
 sparse_matrix::SparseMatrix
-    = '{' {ifs+:sparse_if_condition}+
-    {hspace} other:statement {hspace} OTHERWISE {separator_with_space}+
-    {hspace} IS {hspace} id1:(integer | identifier) {hspace} '×' {hspace} id2:(integer | identifier);
+    = '{' ifs:sparse_if_conditions
+    {{separator_with_space}+ {hspace} other:statement {hspace} OTHERWISE }
+    {{separator_with_space}+ {hspace} IS {hspace} id1:(integer | identifier) {hspace} '×' {hspace} id2:(integer | identifier)}
+    ;
+
+sparse_if_conditions::SparseIfs
+    = {hspace} ifs:sparse_if_conditions {separator_with_space}+ value:sparse_if_condition
+    | {hspace} value:sparse_if_condition {hspace}
+    ;
 
 sparse_if_condition::SparseIf
-    = {hspace} stat:statement {hspace} IF {hspace} '(' {hspace} id0:identifier {hspace} ',' {hspace} id1:identifier {hspace} ')' {hspace} '∈' {hspace} id2:identifier {separator_with_space}+
+    = stat:statement {hspace} IF {hspace} '(' {hspace} id0:identifier {hspace} ',' {hspace} id1:identifier {hspace} ')' {hspace} '∈' {hspace} id2:identifier
+    | '(' {hspace} id0:identifier {hspace} ',' {hspace} id1:identifier {hspace} ')' {hspace} '∈' {hspace} id2:identifier  {hspace} ':' {hspace} stat:statement
     ;
 
 sparse_other_condition::SparseOther

@@ -192,7 +192,7 @@ class NumpyWalker(BaseNodeWalker):
                     if index != len(list_content)-1:
                         content.append(list_content[index] + '\n')
             # only one sub for now
-            content.append(str("    " + assign_id + " += " + exp_str + '\n'))
+            content.append(str("    " + assign_id + " = " + exp_str + '\n'))
             content[0] = "    " + content[0]
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
@@ -232,6 +232,8 @@ class NumpyWalker(BaseNodeWalker):
         return left_info
 
     def walk_SparseMatrix(self, node, **kwargs):
+        op_type = kwargs[ASSIGN_TYPE]
+        lhs = kwargs[LHS]
         type_info = self.node_dict[node]
         cur_m_id = type_info.symbol
         pre_list = []
@@ -239,16 +241,42 @@ class NumpyWalker(BaseNodeWalker):
         value_var = type_info.la_type.attrs.value_var
         pre_list.append("    {} = []\n".format(index_var))
         pre_list.append("    {} = []\n".format(value_var))
-        for if_stat in node.ifs:
-            if_info = self.walk(if_stat, **kwargs)
-            pre_list.append(if_info.content)
+        if_info = self.walk(node.ifs, **kwargs)
+        pre_list += if_info.content
         # assignment
-        pre_list.append("    {} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(cur_m_id, value_var, index_var, self.symtable[cur_m_id].dimensions[0],
+        if op_type == '=':
+            pre_list.append("    {} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(cur_m_id, value_var, index_var, self.symtable[cur_m_id].dimensions[0],
                                                           self.symtable[cur_m_id].dimensions[1]))
+        elif op_type == '+=':
+            # left_ids = self.get_all_ids(lhs)
+            # left_subs = left_ids[1]
+            pre_list.append(
+                "    {} = scipy.sparse.coo_matrix(({}+{}.data.tolist(), np.hstack((np.asarray({}).T, np.asarray(({}.row, {}.col))))), shape=({}, {}))\n".format(cur_m_id, value_var, lhs,
+                                                                                                    index_var, lhs, lhs,
+                                                                                                    self.symtable[
+                                                                                                        cur_m_id].dimensions[
+                                                                                                        0],
+                                                                                                    self.symtable[
+                                                                                                        cur_m_id].dimensions[
+                                                                                                        1]))
+
         return CodeNodeInfo(cur_m_id, pre_list)
 
+    def walk_SparseIfs(self, node, **kwargs):
+        ret = []
+        pre_list = []
+        if node.ifs:
+            ifs_info = self.walk(node.ifs, **kwargs)
+            ret += ifs_info.content
+            pre_list += ifs_info.pre_list
+        if node.value:
+            value_info = self.walk(node.value, **kwargs)
+            ret += value_info.content
+            pre_list += value_info.pre_list
+        return CodeNodeInfo(ret, pre_list)
+
     def walk_SparseIf(self, node, **kwargs):
-        type_info = self.node_dict[node.parent]
+        type_info = self.node_dict[node.parent.parent]
         id0_info = self.walk(node.id0, **kwargs)
         id0 = id0_info.content
         id1_info = self.walk(node.id1, **kwargs)
@@ -258,12 +286,12 @@ class NumpyWalker(BaseNodeWalker):
         stat_info = self.walk(node.stat, **kwargs)
         content = []
         content.append('    for {}, {} in {}:\n'.format(id0, id1, id2))
-        content.append('    {}.append(({}, {}))\n'.format(type_info.la_type.attrs.index_var, id0, id1))
+        content.append('        {}.append(({}, {}))\n'.format(type_info.la_type.attrs.index_var, id0, id1))
         stat_content = stat_info.content
         # replace '_ij' with '(i,j)'
         stat_content = stat_content.replace('_{}{}'.format(id0, id1), '[{}][{}]'.format(id0, id1))
-        content.append('    {}.append({})\n'.format(type_info.la_type.attrs.value_var, stat_content))
-        return CodeNodeInfo('    '.join(content))
+        content.append('        {}.append({})\n'.format(type_info.la_type.attrs.value_var, stat_content))
+        return CodeNodeInfo(content)
 
     def walk_SparseOther(self, node, **kwargs):
         content = ''
@@ -430,6 +458,7 @@ class NumpyWalker(BaseNodeWalker):
         left_info = self.walk(node.left, **kwargs)
         left_id = left_info.content
         kwargs[LHS] = left_id
+        kwargs[ASSIGN_TYPE] = node.op
         self.ret = self.get_main_id(left_id)
         # self left-hand-side symbol
         right_info = self.walk(node.right, **kwargs)
@@ -449,7 +478,9 @@ class NumpyWalker(BaseNodeWalker):
                         right_info.content = right_info.content.replace(right_var, "{}[{}][{}]".format(var_ids[0], sub_strs[0], sub_strs[1]))
                 right_exp += "    {}[{}][{}] = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
                 if self.symtable[sequence].var_type == VarTypeEnum.MATRIX:
-                    content += "    {} = np.zeros(({}, {}))\n".format(sequence,
+                    if node.op == '=':
+                        # declare
+                        content += "    {} = np.zeros(({}, {}))\n".format(sequence,
                                                                           self.symtable[sequence].dimensions[0],
                                                                           self.symtable[sequence].dimensions[1])
                 content += "    for {} in range({}):\n".format(left_subs[0], self.symtable[sequence].dimensions[0])
@@ -477,7 +508,10 @@ class NumpyWalker(BaseNodeWalker):
                 # content += '\n'
         #
         else:
-            right_exp += '    ' + self.get_main_id(left_id) + ' = ' + right_info.content
+            op = ' = '
+            if node.op == '+=':
+                op = ' += '
+            right_exp += '    ' + self.get_main_id(left_id) + op + right_info.content
             content += right_exp
         content += '\n'
         la_remove_key(LHS, **kwargs)

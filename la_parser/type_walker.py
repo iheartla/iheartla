@@ -20,6 +20,7 @@ WALK_TYPE = "walk_type"
 LHS = "left_hand_side"
 CUR_INDENT = "cur_indent"
 INSIDE_MATRIX = "inside_matrix"
+ASSIGN_TYPE = "assign_type"
 
 
 def la_is_inside_matrix(**kwargs):
@@ -234,6 +235,8 @@ class TypeWalker(NodeWalker):
             left_ids = self.get_all_ids(id0)
             left_subs = left_ids[1]
             sequence = left_ids[0]    #y
+            if node.op != '=':
+                assert sequence in self.symtable, "lhs should exist"
             if len(left_subs) == 2: # matrix
                 for symbol in right_info.symbols:
                     if left_subs[0] in symbol and left_subs[1] in symbol:
@@ -249,8 +252,10 @@ class TypeWalker(NodeWalker):
                         break
                 self.symtable[sequence] = LaVarType(VarTypeEnum.SEQUENCE, dimensions=[dim], element_type=right_type)
         else:
-            self.symtable[id0] = right_type
-
+            if node.op != '=':
+                assert id0 in self.symtable, "lhs should exist"
+            else:
+                self.symtable[id0] = right_type
         self.node_dict[node] = right_info
         return right_info
 
@@ -393,6 +398,12 @@ class TypeWalker(NodeWalker):
         node_info.symbol = new_id
         self.node_dict[node] = node_info
         return node_info
+
+    def walk_SparseIfs(self, node, **kwargs):
+        if node.value:
+            self.walk(node.value, **kwargs)
+        if node.ifs:
+            self.walk(node.ifs, **kwargs)
 
     def walk_Matrix(self, node, **kwargs):
         kwargs[INSIDE_MATRIX] = True
