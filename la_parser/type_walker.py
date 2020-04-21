@@ -238,12 +238,18 @@ class TypeWalker(NodeWalker):
             if node.op != '=':
                 assert sequence in self.symtable, "lhs should exist"
             if len(left_subs) == 2: # matrix
-                for symbol in right_info.symbols:
-                    if left_subs[0] in symbol and left_subs[1] in symbol:
-                        main_id = self.get_main_id(symbol)
-                        dim = self.symtable[main_id].dimensions
-                        break
-                self.symtable[sequence] = LaVarType(VarTypeEnum.MATRIX, dimensions=dim, element_type=right_type)
+                if right_info.la_type.var_type == VarTypeEnum.MATRIX:
+                    # sparse mat assign
+                    attrs = right_info.la_type.attrs
+                    if attrs.sparse:
+                        self.symtable[sequence] = right_type
+                if sequence not in self.symtable:
+                    for symbol in right_info.symbols:
+                        if left_subs[0] in symbol and left_subs[1] in symbol:
+                            main_id = self.get_main_id(symbol)
+                            dim = self.symtable[main_id].dimensions
+                            break
+                    self.symtable[sequence] = LaVarType(VarTypeEnum.MATRIX, dimensions=dim, element_type=right_type)
             elif len(left_subs) == 1: # sequence
                 for symbol in right_info.symbols:
                     if left_subs[0] in symbol:
@@ -359,8 +365,6 @@ class TypeWalker(NodeWalker):
             node_info = self.walk(node.m, **kwargs)
         elif node.nm:
             node_info = self.walk(node.nm, **kwargs)
-        elif node.f:
-            node_info = self.walk(node.f, **kwargs)
         elif node.op:
             node_info = self.walk(node.op, **kwargs)
         elif node.s:
@@ -384,13 +388,15 @@ class TypeWalker(NodeWalker):
     def walk_SparseMatrix(self, node, **kwargs):
         if LHS in kwargs:
             lhs = kwargs[LHS]
+        all_ids = self.get_all_ids(lhs)
         id1_info = self.walk(node.id1, **kwargs)
         id1 = id1_info.content
         id2_info = self.walk(node.id2, **kwargs)
         id2 = id2_info.content
+        self.walk(node.ifs, **kwargs)
         matrix_attrs = MatrixAttrs(sparse=True)
-        matrix_attrs.index_var = self.generate_var_name("{}ij".format(lhs))
-        matrix_attrs.value_var = self.generate_var_name("{}vals".format(lhs))
+        matrix_attrs.index_var = self.generate_var_name("{}{}{}".format(all_ids[0], all_ids[1][0], all_ids[1][1]))
+        matrix_attrs.value_var = self.generate_var_name("{}vals".format(all_ids[0]))
         new_id = self.generate_var_name('sparse')
         la_type = LaVarType(VarTypeEnum.MATRIX, attrs=matrix_attrs, dimensions=[id1, id2])
         self.symtable[new_id] = la_type
@@ -404,6 +410,23 @@ class TypeWalker(NodeWalker):
             self.walk(node.value, **kwargs)
         if node.ifs:
             self.walk(node.ifs, **kwargs)
+
+    def walk_SparseIf(self, node, **kwargs):
+        lhs = kwargs[LHS]
+        all_ids = self.get_all_ids(lhs)
+        id0_info = self.walk(node.id0, **kwargs)
+        id0 = id0_info.content
+        assert id0 in all_ids[1], "subscripts mismatch"
+        id1_info = self.walk(node.id1, **kwargs)
+        id1 = id1_info.content
+        assert id1 in all_ids[1], "subscripts mismatch"
+        id2_info = self.walk(node.id2, **kwargs)
+        id2 = id2_info.content
+        stat_info = self.walk(node.stat, **kwargs)
+        for symbol in stat_info.symbols:
+            if self.contain_subscript(symbol):
+                sym_ids = self.get_all_ids(symbol)
+                assert sym_ids[1] == all_ids[1], "subscripts mismatch"
 
     def walk_Matrix(self, node, **kwargs):
         kwargs[INSIDE_MATRIX] = True

@@ -472,21 +472,26 @@ class NumpyWalker(BaseNodeWalker):
             if len(left_subs) == 2: # matrix only
                 sequence = left_ids[0]  # y left_subs[0]
                 sub_strs = left_subs[0] + left_subs[1]
-                for right_var in type_info.symbols:
-                    if sub_strs in right_var:
-                        var_ids = self.get_all_ids(right_var)
-                        right_info.content = right_info.content.replace(right_var, "{}[{}][{}]".format(var_ids[0], sub_strs[0], sub_strs[1]))
-                right_exp += "    {}[{}][{}] = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
-                if self.symtable[sequence].var_type == VarTypeEnum.MATRIX:
-                    if node.op == '=':
-                        # declare
-                        content += "    {} = np.zeros(({}, {}))\n".format(sequence,
-                                                                          self.symtable[sequence].dimensions[0],
-                                                                          self.symtable[sequence].dimensions[1])
-                content += "    for {} in range({}):\n".format(left_subs[0], self.symtable[sequence].dimensions[0])
-                content += "        for {} in range({}):\n".format(left_subs[1], self.symtable[sequence].dimensions[1])
-                content += "        " + right_exp
-                # content += '\n'
+                if self.symtable[sequence].var_type == VarTypeEnum.MATRIX and self.symtable[sequence].attrs is not None and self.symtable[sequence].attrs.sparse:
+                    # sparse mat assign
+                    right_exp += '    ' + sequence + ' = ' + right_info.content
+                    content += right_exp
+                else:
+                    for right_var in type_info.symbols:
+                        if sub_strs in right_var:
+                            var_ids = self.get_all_ids(right_var)
+                            right_info.content = right_info.content.replace(right_var, "{}[{}][{}]".format(var_ids[0], sub_strs[0], sub_strs[1]))
+                    right_exp += "    {}[{}][{}] = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
+                    if self.symtable[sequence].var_type == VarTypeEnum.MATRIX:
+                        if node.op == '=':
+                            # declare
+                            content += "    {} = np.zeros(({}, {}))\n".format(sequence,
+                                                                              self.symtable[sequence].dimensions[0],
+                                                                              self.symtable[sequence].dimensions[1])
+                    content += "    for {} in range({}):\n".format(left_subs[0], self.symtable[sequence].dimensions[0])
+                    content += "        for {} in range({}):\n".format(left_subs[1], self.symtable[sequence].dimensions[1])
+                    content += "        " + right_exp
+                    # content += '\n'
             elif len(left_subs) == 1: # sequence only
                 sequence = left_ids[0]  # y left_subs[0]
                 # replace sequence
@@ -543,8 +548,6 @@ class NumpyWalker(BaseNodeWalker):
             return self.walk(node.m, **kwargs)
         elif node.nm:
             return self.walk(node.nm, **kwargs)
-        elif node.f:
-            return self.walk(node.f, **kwargs)
         elif node.op:
             return self.walk(node.op, **kwargs)
         elif node.s:
