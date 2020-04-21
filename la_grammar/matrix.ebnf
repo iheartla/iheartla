@@ -20,6 +20,7 @@ sparse_if_condition::SparseIf
     | '(' {hspace} id0:identifier {hspace} ',' {hspace} id1:identifier {hspace} ')' {hspace} '∈' {hspace} id2:identifier  {hspace} ':' {hspace} stat:statement
     ;
 
+
 sparse_other_condition::SparseOther
     = {hspace} stat:statement {hspace} IF {hspace} '(' {hspace} identifier {hspace} ',' {hspace} identifier {hspace} ')' {hspace} '∈' {hspace} identifier {separator_with_space}+
     ;
@@ -55,13 +56,13 @@ expr_in_matrix::ExpInMatrix
 
 addition_in_matrix::Add
     =
-    left:term_in_matrix op:'+' right:expr_in_matrix
+    left:expr_in_matrix op:'+' right:term_in_matrix
     ;
 
 
 subtraction_in_matrix::Subtract
     =
-    left:term_in_matrix op:'-' right:expr_in_matrix
+    left:expr_in_matrix op:'-' right:term_in_matrix
     ;
 
 
@@ -73,13 +74,13 @@ term_in_matrix
     ;
 
 multiplication_in_matrix::Multiply
-    = left:term_in_matrix '*' right:term_in_matrix
-    | left:term_in_matrix right:term_in_matrix
+    = left:term_in_matrix '*' right:factor
+    | left:term_in_matrix right:factor
     ;
 
-division_in_matrix
+division_in_matrix::Divide
     =
-    factor '/' term_in_matrix
+    left:term_in_matrix  '/' right:factor
     ;
 
 vdots::MatrixVdots

@@ -15,20 +15,20 @@ operations
 
 addition::Add
     =
-    left:term {hspace} op:'+' {hspace} right:expression
+    left:expression {hspace} op:'+' {hspace} right:term
     ;
 
 
 subtraction::Subtract
     =
-    left:term {hspace} op:'-' {hspace} right:expression
+    left:expression {hspace} op:'-' {hspace} right:term
     ;
 
 
 multiplication::Multiply
     =
-    left:term {hspace} op:'*' {hspace} right:term
-    | left:term {hspace} right:term
+    left:term {hspace} op:'*' {hspace} right:factor
+    | left:term {hspace} right:factor
     ;
 
 
