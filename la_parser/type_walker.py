@@ -21,10 +21,17 @@ LHS = "left_hand_side"
 CUR_INDENT = "cur_indent"
 INSIDE_MATRIX = "inside_matrix"
 ASSIGN_TYPE = "assign_type"
+INSIDE_SUMMATION = "inside_summation"
 
 
 def la_is_inside_matrix(**kwargs):
     if INSIDE_MATRIX in kwargs and kwargs[INSIDE_MATRIX] is True:
+        return True
+    return False
+
+
+def la_is_inside_sum(**kwargs):
+    if INSIDE_SUMMATION in kwargs and kwargs[INSIDE_SUMMATION] is True:
         return True
     return False
 
@@ -266,15 +273,28 @@ class TypeWalker(NodeWalker):
         return right_info
 
     def walk_Summation(self, node, **kwargs):
+        lhs = kwargs[LHS]
+        kwargs[INSIDE_SUMMATION] = True
         subs = []
-        for sub in node.sub:
-            sub_info = self.walk(sub)
-            subs.append(sub_info.content)
+        if self.contain_subscript(lhs):
+            lhs_ids = self.get_all_ids(lhs)
+            if node.cond:
+                assert lhs_ids[1][0] == lhs_ids[1][1], "multiple subscripts for sum"
+                cond_info = self.walk(node.cond, **kwargs)
+                for sym in cond_info.symbols:
+                    if sym != lhs_ids[1][0]:
+                        subs = [sym]
+                        break
+        else:
+            for sub in node.sub:
+                sub_info = self.walk(sub)
+                subs.append(sub_info.content)
         new_id = self.generate_var_name("sum")
         ret_info = self.walk(node.exp, **kwargs)
         ret_type = ret_info.la_type
         self.symtable[new_id] = ret_type
         ret_info.symbol = new_id
+        ret_info.content = subs
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -326,6 +346,29 @@ class TypeWalker(NodeWalker):
         node_info = NodeInfo(node_type, symbols=f_info.symbols)
         return node_info
 
+    def walk_IfConditions(self, node, **kwargs):
+        return self.walk(node.cond, **kwargs)
+
+    def walk_NeCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        left_type = left_info.la_type
+        right_info = self.walk(node.right, **kwargs)
+        right_type = right_info.la_type
+        assert left_type.var_type == right_type.var_type, "different type "
+        ret_info = NodeInfo(left_type, symbols=left_info.symbols.union(right_info.symbols))
+        self.node_dict[node] = ret_info
+        return ret_info
+
+    def walk_EqCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        left_type = left_info.la_type
+        right_info = self.walk(node.right, **kwargs)
+        right_type = right_info.la_type
+        assert left_type.var_type == right_type.var_type, "different type "
+        ret_info = NodeInfo(left_type, symbols=left_info.symbols.union(right_info.symbols))
+        self.node_dict[node] = ret_info
+        return ret_info
+
     def walk_IdentifierSubscript(self, node, **kwargs):
         node_type = LaVarType(VarTypeEnum.INVALID)
         right = []
@@ -354,7 +397,8 @@ class TypeWalker(NodeWalker):
             id0_info = self.walk(node.id, **kwargs)
             id0 = id0_info.content
             id0 = self.get_main_id(id0)
-            assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
+            if not la_is_inside_sum(**kwargs):
+                assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
             node_info = NodeInfo(id0_info.la_type, id0, id0_info.symbols)
             # node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
         elif node.num:

@@ -147,12 +147,22 @@ class NumpyWalker(BaseNodeWalker):
         return CodeNodeInfo(content)
 
     def walk_Summation(self, node, **kwargs):
+        lhs = kwargs[LHS]
         type_info = self.node_dict[node]
         assign_id = type_info.symbol
         subs = []
-        for sub in node.sub:
-            sub_info = self.walk(sub)
-            subs.append(sub_info.content)
+        cond_content = ""
+        if self.contain_subscript(lhs):
+            lhs_ids = self.get_all_ids(lhs)
+            if node.cond:
+                assert lhs_ids[1][0] == lhs_ids[1][1], "multiple subscripts for sum"
+                subs = type_info.content
+                cond_info = self.walk(node.cond, **kwargs)
+                cond_content = cond_info.content
+        else:
+            for sub in node.sub:
+                sub_info = self.walk(sub)
+                subs.append(sub_info.content)
         vars = type_info.symbols
         kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
         content = []
@@ -177,13 +187,22 @@ class NumpyWalker(BaseNodeWalker):
             else:
                 content.append("{} = 0\n".format(assign_id))
             content.append("for {} in range(len({})):\n".format(sub, target_var[0]))
-            for var in target_var:
-                old = "{}_{}".format(var, sub)
-                new = "{}[{}]".format(var, sub)
-                exp_str = exp_str.replace(old, new)
-                if exp_info.pre_list:
-                    for index in range(len(exp_info.pre_list)):
-                        exp_info.pre_list[index] = exp_info.pre_list[index].replace(old, new)
+            if node.cond:
+                for right_var in type_info.symbols:
+                    if self.contain_subscript(right_var):
+                        var_ids = self.get_all_ids(right_var)
+                        exp_str = exp_str.replace(right_var, "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
+                        if exp_info.pre_list:
+                            for index in range(len(exp_info.pre_list)):
+                                exp_info.pre_list[index] = exp_info.pre_list[index].replace(old, new)
+            else:
+                for var in target_var:
+                    old = "{}_{}".format(var, sub)
+                    new = "{}[{}]".format(var, sub)
+                    exp_str = exp_str.replace(old, new)
+                    if exp_info.pre_list:
+                        for index in range(len(exp_info.pre_list)):
+                            exp_info.pre_list[index] = exp_info.pre_list[index].replace(old, new)
             if exp_info.pre_list:   # catch pre_list
                 list_content = "".join(exp_info.pre_list)
                 # content += exp_info.pre_list
@@ -192,7 +211,11 @@ class NumpyWalker(BaseNodeWalker):
                     if index != len(list_content)-1:
                         content.append(list_content[index] + '\n')
             # only one sub for now
-            content.append(str("    " + assign_id + " = " + exp_str + '\n'))
+            if node.cond:
+                content.append("    " + cond_content)
+                content.append(str("        " + assign_id + " += " + exp_str + '\n'))
+            else:
+                content.append(str("    " + assign_id + " = " + exp_str + '\n'))
             content[0] = "    " + content[0]
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
@@ -476,6 +499,15 @@ class NumpyWalker(BaseNodeWalker):
                     # sparse mat assign
                     right_exp += '    ' + sequence + ' = ' + right_info.content
                     content += right_exp
+                elif left_subs[0] == left_subs[1]:
+                    # L_ii
+                    content = ""
+                    content += "    for {} in range({}):\n".format(left_subs[0], self.symtable[sequence].dimensions[0])
+                    if right_info.pre_list:
+                        for list in right_info.pre_list:
+                            lines = list.split('\n')
+                            content += "    " + "\n    ".join(lines)
+                    content += "    {}[{}][{}] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
                 else:
                     for right_var in type_info.symbols:
                         if sub_strs in right_var:
@@ -521,6 +553,25 @@ class NumpyWalker(BaseNodeWalker):
         content += '\n'
         la_remove_key(LHS, **kwargs)
         return CodeNodeInfo(content)
+
+    def walk_IfConditions(self, node, **kwargs):
+        ret_info = self.walk(node.cond)
+        ret_info.content = "if " + ret_info.content + ":\n"
+        return ret_info
+
+    def walk_NeCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + ' != ' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
+
+    def walk_EqCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + ' == ' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
 
     def walk_IdentifierSubscript(self, node, **kwargs):
         right = []

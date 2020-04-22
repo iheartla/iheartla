@@ -103,3 +103,17 @@ subexpression::Subexpression
     =
     '(' {hspace} value:expression {hspace} ')'
     ;
+
+if_conditions::IfConditions
+    =
+    | cond:not_equal
+    | cond:equal
+    ;
+
+not_equal::NeCondition
+    = left:expression {hspace} '≠' {hspace} right:expression
+    ;
+
+equal::EqCondition
+    = left:expression {hspace} '=' {hspace} right:expression
+    ;
