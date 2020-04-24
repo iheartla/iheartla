@@ -593,7 +593,7 @@ class TypeWalker(NodeWalker):
             if node.id:
                 node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[id1, id1])
             else:
-                node_type = LaVarType(VarTypeEnum.VECTOR, dimensions=[id1])
+                node_type = LaVarType(VarTypeEnum.VECTOR, dimensions=[id1, 1])
         node_info = NodeInfo(node_type)
         self.node_dict[node] = node_type
         return node_info

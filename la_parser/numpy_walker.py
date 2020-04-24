@@ -274,8 +274,8 @@ class NumpyWalker(BaseNodeWalker):
             # left_ids = self.get_all_ids(lhs)
             # left_subs = left_ids[1]
             pre_list.append(
-                "    {} = scipy.sparse.coo_matrix(({}+{}.data.tolist(), np.hstack((np.asarray({}).T, np.asarray(({}.row, {}.col))))), shape=({}, {}))\n".format(cur_m_id, value_var, lhs,
-                                                                                                    index_var, lhs, lhs,
+                "    {} = scipy.sparse.coo_matrix(({}+{}.data.tolist(), np.hstack((np.asarray({}).T, np.asarray(({}.row, {}.col))))), shape=({}, {}))\n".format(cur_m_id, value_var, self.get_main_id(lhs),
+                                                                                                    index_var, self.get_main_id(lhs), self.get_main_id(lhs),
                                                                                                     self.symtable[
                                                                                                         cur_m_id].dimensions[
                                                                                                         0],
