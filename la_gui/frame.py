@@ -5,55 +5,57 @@ import sys
 
 sys.path.append('../')
 from la_parser.parser import parse_and_translate
-from la_gui.text_ctrl import LaTextControl
+from la_gui.la_ctrl import LaTextControl
+from la_gui.python_ctrl import PyTextControl
+from la_gui.latex_panel import LatexPanel
 
 
 class MainWindow(wx.Frame):
     def __init__(self, parent, title):
-        self.dirname = ''
         w, h = wx.DisplaySize()
-        wx.Frame.__init__(self, parent, title=title, pos=(w / 4, h / 4), size=(w / 2, h / 2))
-        self.control = LaTextControl(self)
-        monospaced = wx.Font(14, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, faceName=u'Monaco')
+        wx.Frame.__init__(self, parent, title=title, pos=(w / 4, h / 4))
+        # status
         self.statusbar = self.CreateStatusBar()
         self.statusbar.SetFieldsCount(1)
-
-        # Setting up the menu.
-        filemenu = wx.Menu()
-        menuOpen = filemenu.Append(wx.ID_OPEN, "&Open", " Open a file to edit")
-        menuAbout = filemenu.Append(wx.ID_ABOUT, "&About", " Information about this program")
-        menuBar = wx.MenuBar()
-        menuBar.Append(filemenu, "&File")
-        self.SetMenuBar(menuBar)
-        self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)
-        self.Bind(wx.EVT_MENU, self.OnAbout, menuAbout)
+        # Menu
+        menu_file = wx.Menu()
+        item_open = menu_file.Append(wx.ID_OPEN, "&Open", " Open a file to edit")
+        item_about = menu_file.Append(wx.ID_ABOUT, "&About", " Information about this program")
+        menu_run = wx.Menu()
+        item_run = menu_run.Append(wx.NewId(), "&Run program", " Information about this program")
+        menu_bar = wx.MenuBar()
+        menu_bar.Append(menu_file, "&File")
+        menu_bar.Append(menu_run, "&Run")
+        self.SetMenuBar(menu_bar)
+        self.Bind(wx.EVT_MENU, self.OnOpen, item_open)
+        self.Bind(wx.EVT_MENU, self.OnAbout, item_about)
+        self.Bind(wx.EVT_MENU, self.OnKeyEnter, item_run)
         self.Bind(wx.EVT_SIZE, self.OnSize)
+        # panel
+        self.control = LaTextControl(self)
+        self.pyPanel = PyTextControl(self)
+        self.latexPanel = LatexPanel(self)
+        # sizer
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(self.control, 1, wx.EXPAND)
+        sizer.Add(self.pyPanel, 1, wx.EXPAND)
+        sizer.Add(self.latexPanel, 1, wx.EXPAND)
+        self.SetSizer(sizer)
+        sizer.Fit(self)
+        # hot key
+        r_new_id = wx.NewId()
+        self.Bind(wx.EVT_MENU, self.OnKeyEnter, id=r_new_id)
+        acc_tbl = wx.AcceleratorTable([(wx.ACCEL_CTRL, ord('R'), r_new_id)])
+        self.SetAcceleratorTable(acc_tbl)
+        self.Show()
+        self.SetSize((1000, 600))
+        self.control.SetValue('''B = [ A C ]
 
-        self.sizer2 = wx.BoxSizer(wx.HORIZONTAL)
-        self.translateBtn = wx.Button(self, -1, "Compile")
-        self.Bind(wx.EVT_BUTTON, self.OnTranslate, self.translateBtn)
-
-        self.staticTxt = wx.StaticText(self, -1)
-        self.staticTxt = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
-        self.staticTxt.SetFont(monospaced)
-
-        self.SetItemsPos()
-        # self.control.SetValue('a b(c(d(b+c)e)f)g')
-
-
-        self.control.SetValue('''sum_i w_i T_i x
 where
 
-w_i: scalar: a scalar
-T_i: matrix(4,4): a matrix
-x: vector(4): a vector''')
-
-        newId = wx.NewId()
-        self.Bind(wx.EVT_MENU, self.OnKeyEnter, id=newId)
-        acc_tbl = wx.AcceleratorTable([(wx.ACCEL_CTRL, ord('R'), newId)])
-        self.SetAcceleratorTable(acc_tbl)
-
-        self.Show()
+A: ℝ ^ (4 × 4): a matrix
+C: ℝ ^ (4 × 4): a matrix
+E: { ℤ × ℤ }''')
 
     def SetItemsPos(self):
         w, h = self.GetSize()
@@ -62,11 +64,14 @@ x: vector(4): a vector''')
         self.control.SetSize((w - transW) / 2, h - sH)
         self.control.SetPosition((0, 0))
         self.translateBtn.SetPosition(((w - transW) / 2, h / 2 - transH / 2))
-        self.staticTxt.SetSize((w - transW) / 2, h - sH)
-        self.staticTxt.SetPosition(((w + transW) / 2, 0))
+        # self.latexPanel.SetSize((w - transW) / 2, h - sH)
+        # self.latexPanel.SetPosition(((w + transW) / 2, 0))
+        self.pyPanel.SetSize((w - transW) / 2, h - sH)
+        self.pyPanel.SetPosition(((w + transW) / 2, 0))
 
     def OnSize(self, e):
-        self.SetItemsPos()
+        self.Layout()
+        # self.SetItemsPos()
 
     def OnAbout(self, e):
         dlg = wx.MessageDialog(self, "LA editor in wxPython", "About LA Editor", wx.OK)
@@ -77,25 +82,26 @@ x: vector(4): a vector''')
         self.Close(True)
 
     def OnKeyEnter(self, e):
-        print('enter key')
+        print('Start compilingr')
         self.OnTranslate(e)
 
     def OnTranslate(self, e):
         self.statusbar.SetStatusText("Compiling ...", 0)
         self.Update()
         result = parse_and_translate(self.control.GetValue())
-        self.staticTxt.SetValue(result[0])
+        # self.latexPanel.render_content(result[0])
+        self.pyPanel.SetText(result[0])
         if result[1] == 0:
             self.statusbar.SetStatusText("Finished", 0)
         else:
             self.statusbar.SetStatusText("Error", 0)
 
     def OnOpen(self, e):
-        dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", "*.*", wx.FD_OPEN)
+        dlg = wx.FileDialog(self, "Choose a file", "", "", "*.*", wx.FD_OPEN)
         if dlg.ShowModal() == wx.ID_OK:
-            self.filename = dlg.GetFilename()
-            self.dirname = dlg.GetDirectory()
-            f = open(os.path.join(self.dirname, self.filename), 'r')
+            filename = dlg.GetFilename()
+            dirname = dlg.GetDirectory()
+            f = open(os.path.join(dirname, filename), 'r')
             self.control.SetValue(f.read())
             f.close()
         dlg.Destroy()

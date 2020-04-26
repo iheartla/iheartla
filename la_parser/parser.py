@@ -22,6 +22,7 @@ from la_parser.latex_walker import LatexWalker
 from la_parser.numpy_walker import NumpyWalker
 from la_parser.ir import *
 from la_parser.ir_visitor import *
+import subprocess
 
 class ParserTypeEnum(Enum):
     LATEX = 1
@@ -77,6 +78,22 @@ def parse_and_translate(content):
     model = parser.parse(content, parseinfo=True)
     parser_type = ParserTypeEnum.NUMPY
     res = walk_model(parser_type, model)
+    try:
+        show_pdf = False
+        tex_content = walk_model(ParserTypeEnum.LATEX, model)
+        tex_file_name = "la.tex"
+        tex_file = open(tex_file_name, 'w')
+        tex_file.write(tex_content)
+        tex_file.close()
+        ret = subprocess.run(["pdflatex", "-interaction=nonstopmode", tex_file_name], capture_output=False)
+        if ret.returncode == 0:
+            show_pdf = True
+    except subprocess.SubprocessError:
+        show_pdf = False
+    finally:
+        if show_pdf:
+            pass
+
     result = (res, 0)
     print("------------ %.2f seconds ------------" % (time.time() - start_time))
     return result
