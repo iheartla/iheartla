@@ -5,6 +5,7 @@ import sys
 
 sys.path.append('../')
 from la_parser.parser import parse_and_translate
+from la_gui.text_ctrl import LaTextControl
 
 
 class MainWindow(wx.Frame):
@@ -12,10 +13,8 @@ class MainWindow(wx.Frame):
         self.dirname = ''
         w, h = wx.DisplaySize()
         wx.Frame.__init__(self, parent, title=title, pos=(w / 4, h / 4), size=(w / 2, h / 2))
-        self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE)
-        # monospaced = wx.Font(10, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas')
-        monospaced = wx.Font( 14, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, faceName = u'Monaco' )
-        self.control.SetFont( monospaced )
+        self.control = LaTextControl(self)
+        monospaced = wx.Font(14, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, faceName=u'Monaco')
         self.statusbar = self.CreateStatusBar()
         self.statusbar.SetFieldsCount(1)
 
@@ -36,18 +35,19 @@ class MainWindow(wx.Frame):
 
         self.staticTxt = wx.StaticText(self, -1)
         self.staticTxt = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
-        self.staticTxt.SetFont( monospaced )
+        self.staticTxt.SetFont(monospaced)
+
         self.SetItemsPos()
         # self.control.SetValue('a b(c(d(b+c)e)f)g')
-        self.control.SetValue('''sum_i w_i T_i x
 
+
+        self.control.SetValue('''sum_i w_i T_i x
 where
 
 w_i: scalar: a scalar
 T_i: matrix(4,4): a matrix
 x: vector(4): a vector''')
-        # self.control.SetValue('a+b-c; a*b+c; a*(b+c); a b+c; a (((b+c)))')
-        # self.control.SetValue('[2;4]')
+
         newId = wx.NewId()
         self.Bind(wx.EVT_MENU, self.OnKeyEnter, id=newId)
         acc_tbl = wx.AcceleratorTable([(wx.ACCEL_CTRL, ord('R'), newId)])
