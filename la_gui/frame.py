@@ -22,7 +22,7 @@ class MainWindow(wx.Frame):
         item_open = menu_file.Append(wx.ID_OPEN, "&Open", " Open a file to edit")
         item_about = menu_file.Append(wx.ID_ABOUT, "&About", " Information about this program")
         menu_run = wx.Menu()
-        item_run = menu_run.Append(wx.NewId(), "&Run program", " Information about this program")
+        item_run = menu_run.Append(wx.NewId(), "&Run program", "Let's run LA code")
         menu_bar = wx.MenuBar()
         menu_bar.Append(menu_file, "&File")
         menu_bar.Append(menu_run, "&Run")
@@ -53,7 +53,8 @@ class MainWindow(wx.Frame):
         self.SetAcceleratorTable(acc_zoom_out)
 
         self.Show()
-        self.SetSize((1000, 600))
+        self.SetPosition((200, 200))
+        self.SetSize((1300, 600))
         self.control.SetValue('''B = [ A C ]
 
 where
