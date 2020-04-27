@@ -37,16 +37,21 @@ class MainWindow(wx.Frame):
         self.latexPanel = LatexPanel(self)
         # sizer
         sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(self.control, 1, wx.EXPAND)
-        sizer.Add(self.pyPanel, 1, wx.EXPAND)
-        sizer.Add(self.latexPanel, 1, wx.EXPAND)
+        sizer.Add(self.control, 1, wx.EXPAND, 100)
+        sizer.Add(self.pyPanel, 1, wx.EXPAND, 100)
+        sizer.Add(self.latexPanel, 1, wx.EXPAND, 100)
         self.SetSizer(sizer)
         sizer.Fit(self)
         # hot key
         r_new_id = wx.NewId()
         self.Bind(wx.EVT_MENU, self.OnKeyEnter, id=r_new_id)
-        acc_tbl = wx.AcceleratorTable([(wx.ACCEL_CTRL, ord('R'), r_new_id)])
-        self.SetAcceleratorTable(acc_tbl)
+        zoom_in_id = wx.NewId()
+        self.Bind(wx.EVT_MENU, self.OnZoomIn, id=zoom_in_id)
+        zoom_out_id = wx.NewId()
+        self.Bind(wx.EVT_MENU, self.OnZoomOut, id=zoom_out_id)
+        acc_zoom_out = wx.AcceleratorTable([(wx.ACCEL_CTRL, ord('R'), r_new_id), (wx.ACCEL_CTRL, ord('='), zoom_in_id), (wx.ACCEL_CTRL, ord('-'), zoom_out_id)])
+        self.SetAcceleratorTable(acc_zoom_out)
+
         self.Show()
         self.SetSize((1000, 600))
         self.control.SetValue('''B = [ A C ]
@@ -56,6 +61,10 @@ where
 A: ℝ ^ (4 × 4): a matrix
 C: ℝ ^ (4 × 4): a matrix
 E: { ℤ × ℤ }''')
+        self.Bind(wx.EVT_BUTTON, self.OnButtonClicked)
+
+    def OnButtonClicked(self, e):
+        print('frame clicked')
 
     def SetItemsPos(self):
         w, h = self.GetSize()
@@ -84,6 +93,12 @@ E: { ℤ × ℤ }''')
     def OnKeyEnter(self, e):
         print('Start compilingr')
         self.OnTranslate(e)
+
+    def OnZoomIn(self, e):
+        self.latexPanel.OnZoomIn(e)
+
+    def OnZoomOut(self, e):
+        self.latexPanel.OnZoomOut(e)
 
     def OnTranslate(self, e):
         self.statusbar.SetStatusText("Compiling ...", 0)
