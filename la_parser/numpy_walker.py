@@ -147,76 +147,74 @@ class NumpyWalker(BaseNodeWalker):
         return CodeNodeInfo(content)
 
     def walk_Summation(self, node, **kwargs):
-        lhs = kwargs[LHS]
         type_info = self.node_dict[node]
         assign_id = type_info.symbol
-        subs = []
         cond_content = ""
-        if self.contain_subscript(lhs):
-            lhs_ids = self.get_all_ids(lhs)
-            if node.cond:
-                assert lhs_ids[1][0] == lhs_ids[1][1], "multiple subscripts for sum"
-                subs = type_info.content
-                cond_info = self.walk(node.cond, **kwargs)
-                cond_content = cond_info.content
+        if node.cond:
+            if LHS in kwargs:
+                lhs = kwargs[LHS]
+                if self.contain_subscript(lhs):
+                    lhs_ids = self.get_all_ids(lhs)
+                    assert lhs_ids[1][0] == lhs_ids[1][1], "multiple subscripts for sum"
+                    sub = type_info.content
+                    cond_info = self.walk(node.cond, **kwargs)
+                    cond_content = cond_info.content
         else:
-            for sub in node.sub:
-                sub_info = self.walk(sub)
-                subs.append(sub_info.content)
+            sub_info = self.walk(node.sub)
+            sub = sub_info.content
         vars = type_info.symbols
         kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
         content = []
         target_var = []
         exp_info = self.walk(node.exp)
         exp_str = exp_info.content
-        for sub in subs:
-            for var in vars:
-                if self.contain_subscript(var):
-                    var_ids = self.get_all_ids(var)
-                    var_subs = var_ids[1]
-                    for var_sub in var_subs:
-                        if sub == var_sub:
-                            target_var.append(var_ids[0])
-            if self.symtable[assign_id].var_type == VarTypeEnum.MATRIX:
-                content.append("{} = np.zeros(({}, {}))\n".format(assign_id, self.symtable[assign_id].dimensions[0], self.symtable[assign_id].dimensions[1]))
-            elif self.symtable[assign_id].var_type == VarTypeEnum.VECTOR:
-                content.append("{} = np.zeros({})\n".format(assign_id, self.symtable[assign_id].dimensions[0]))
-            elif self.symtable[assign_id].var_type == VarTypeEnum.SEQUENCE:
-                ele_type = self.symtable[assign_id].element_type
-                content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].dimensions[0], ele_type.dimensions[0], ele_type.dimensions[1]))
-            else:
-                content.append("{} = 0\n".format(assign_id))
-            content.append("for {} in range(len({})):\n".format(sub, target_var[0]))
-            if node.cond:
-                for right_var in type_info.symbols:
-                    if self.contain_subscript(right_var):
-                        var_ids = self.get_all_ids(right_var)
-                        exp_str = exp_str.replace(right_var, "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
-                        if exp_info.pre_list:
-                            for index in range(len(exp_info.pre_list)):
-                                exp_info.pre_list[index] = exp_info.pre_list[index].replace(old, new)
-            else:
-                for var in target_var:
-                    old = "{}_{}".format(var, sub)
-                    new = "{}[{}]".format(var, sub)
-                    exp_str = exp_str.replace(old, new)
+        for var in vars:
+            if self.contain_subscript(var):
+                var_ids = self.get_all_ids(var)
+                var_subs = var_ids[1]
+                for var_sub in var_subs:
+                    if sub == var_sub:
+                        target_var.append(var_ids[0])
+        if self.symtable[assign_id].var_type == VarTypeEnum.MATRIX:
+            content.append("{} = np.zeros(({}, {}))\n".format(assign_id, self.symtable[assign_id].dimensions[0], self.symtable[assign_id].dimensions[1]))
+        elif self.symtable[assign_id].var_type == VarTypeEnum.VECTOR:
+            content.append("{} = np.zeros({})\n".format(assign_id, self.symtable[assign_id].dimensions[0]))
+        elif self.symtable[assign_id].var_type == VarTypeEnum.SEQUENCE:
+            ele_type = self.symtable[assign_id].element_type
+            content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].dimensions[0], ele_type.dimensions[0], ele_type.dimensions[1]))
+        else:
+            content.append("{} = 0\n".format(assign_id))
+        content.append("for {} in range(len({})):\n".format(sub, target_var[0]))
+        if node.cond:
+            for right_var in type_info.symbols:
+                if self.contain_subscript(right_var):
+                    var_ids = self.get_all_ids(right_var)
+                    exp_str = exp_str.replace(right_var, "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
                     if exp_info.pre_list:
                         for index in range(len(exp_info.pre_list)):
                             exp_info.pre_list[index] = exp_info.pre_list[index].replace(old, new)
-            if exp_info.pre_list:   # catch pre_list
-                list_content = "".join(exp_info.pre_list)
-                # content += exp_info.pre_list
-                list_content = list_content.split('\n')
-                for index in range(len(list_content)):
-                    if index != len(list_content)-1:
-                        content.append(list_content[index] + '\n')
-            # only one sub for now
-            if node.cond:
-                content.append("    " + cond_content)
-                content.append(str("        " + assign_id + " += " + exp_str + '\n'))
-            else:
-                content.append(str("    " + assign_id + " = " + exp_str + '\n'))
-            content[0] = "    " + content[0]
+        else:
+            for var in target_var:
+                old = "{}_{}".format(var, sub)
+                new = "{}[{}]".format(var, sub)
+                exp_str = exp_str.replace(old, new)
+                if exp_info.pre_list:
+                    for index in range(len(exp_info.pre_list)):
+                        exp_info.pre_list[index] = exp_info.pre_list[index].replace(old, new)
+        if exp_info.pre_list:   # catch pre_list
+            list_content = "".join(exp_info.pre_list)
+            # content += exp_info.pre_list
+            list_content = list_content.split('\n')
+            for index in range(len(list_content)):
+                if index != len(list_content)-1:
+                    content.append(list_content[index] + '\n')
+        # only one sub for now
+        if node.cond:
+            content.append("    " + cond_content)
+            content.append(str("        " + assign_id + " += " + exp_str + '\n'))
+        else:
+            content.append(str("    " + assign_id + " = " + exp_str + '\n'))
+        content[0] = "    " + content[0]
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
     def walk_Determinant(self, node, **kwargs):

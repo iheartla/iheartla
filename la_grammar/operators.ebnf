@@ -69,8 +69,8 @@ solver_operator::Solver
     ;
 
 sum_operator::Summation
-    = SUM '_' sub+:identifier {sub+:identifier} {hspace}+ exp:expression
-    | SUM '_{' {hspace} cond:if_conditions {hspace} '}' {hspace}+ exp:expression
+    = SUM '_' sub:identifier_alone {hspace}+ exp:expression
+    | SUM '_{' {hspace} id:identifier_alone {hspace} 'for' {hspace} cond:if_conditions {hspace} '}' {hspace}+ exp:expression
     ;
 
 det_operator::Determinant

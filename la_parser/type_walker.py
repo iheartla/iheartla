@@ -273,22 +273,18 @@ class TypeWalker(NodeWalker):
         return right_info
 
     def walk_Summation(self, node, **kwargs):
-        lhs = kwargs[LHS]
         kwargs[INSIDE_SUMMATION] = True
-        subs = []
-        if self.contain_subscript(lhs):
-            lhs_ids = self.get_all_ids(lhs)
-            if node.cond:
+        if node.cond:
+            id_info = self.walk(node.id, **kwargs)
+            subs = id_info.content
+            if LHS in kwargs:
+                lhs = kwargs[LHS]
+                lhs_ids = self.get_all_ids(lhs)
                 assert lhs_ids[1][0] == lhs_ids[1][1], "multiple subscripts for sum"
                 cond_info = self.walk(node.cond, **kwargs)
-                for sym in cond_info.symbols:
-                    if sym != lhs_ids[1][0]:
-                        subs = [sym]
-                        break
         else:
-            for sub in node.sub:
-                sub_info = self.walk(sub)
-                subs.append(sub_info.content)
+            sub_info = self.walk(node.sub)
+            subs = sub_info.content
         new_id = self.generate_var_name("sum")
         ret_info = self.walk(node.exp, **kwargs)
         ret_type = ret_info.la_type

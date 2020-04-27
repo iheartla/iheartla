@@ -3,3 +3,8 @@
 .venv
 /AST
 /AST.pdf
+*.aux
+*.log
+*.pdf
+*.ps
+*.tex
