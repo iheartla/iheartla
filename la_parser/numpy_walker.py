@@ -343,6 +343,8 @@ class NumpyWalker(BaseNodeWalker):
                                     func_name = 'np.zeros'
                                 elif ret[i][j] == '1':
                                     func_name = 'np.ones'
+                                elif 'I' in ret[i][j]:
+                                    func_name = ret[i][j].replace('I', 'np.identity')
                                 else:
                                     func_name = ret[i][j] + ' * np.ones'
                                 if dims[1] == 1:

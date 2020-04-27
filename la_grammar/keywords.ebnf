@@ -27,7 +27,6 @@ KEYWORDS
     | IF
     | OTHERWISE
     | IS
-    | 'I'
     ;
 
 TRACE = 'trace';

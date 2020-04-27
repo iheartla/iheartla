@@ -394,7 +394,8 @@ class TypeWalker(NodeWalker):
             id0 = id0_info.content
             id0 = self.get_main_id(id0)
             if not la_is_inside_sum(**kwargs):
-                assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
+                if id0 != 'I':  # special case
+                    assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
             node_info = NodeInfo(id0_info.la_type, id0, id0_info.symbols)
             # node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
         elif node.num:
