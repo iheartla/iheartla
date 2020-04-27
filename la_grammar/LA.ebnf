@@ -65,11 +65,11 @@ set_condition::SetCondition
     | id:identifier {hspace} ':' {hspace} '{' {hspace} type2:('ℝ²'|'ℤ²') {hspace} '}' { {hspace} ':' {hspace} desc:description}
     ;
 
-expression
+expression::Expression
     =
-    | addition
-    | subtraction
-    | term
+    | value:addition
+    | value:subtraction
+    | sign:['-'] value:term
     #| {}
     ;
 
@@ -88,12 +88,10 @@ term
 
 factor::Factor
     =
-    #| '+' f:factor
-    #| '-' f:factor
     | op:operations
     | sub:subexpression
-    | id:identifier
     | nm:number_matrix
+    | id:identifier
     | num:number
     | m:matrix
     | s:sparse_matrix

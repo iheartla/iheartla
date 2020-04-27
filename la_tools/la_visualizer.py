@@ -30,9 +30,11 @@ class LaVisualizer(object):
                     children = getattr(cur_node, k)
                     if isinstance(children, list):
                         for child in children:
-                            self.handleChild(child, cur_index, k)
+                            if child is not None:
+                                self.handleChild(child, cur_index, k)
                     else:
-                        self.handleChild(children, cur_index, k)
+                        if children is not None:
+                            self.handleChild(children, cur_index, k)
         src = Source(self.ps.source)
         src.render('AST', view=False)
 

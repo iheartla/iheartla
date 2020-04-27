@@ -190,6 +190,9 @@ class TypeWalker(NodeWalker):
         for stat in node.value:
             self.walk(stat, **kwargs)
 
+    def walk_Expression(self, node, **kwargs):
+        return self.walk(node.value, **kwargs)
+
     def walk_Add(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         left_type = left_info.la_type
@@ -229,6 +232,9 @@ class TypeWalker(NodeWalker):
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         self.node_dict[node] = ret_info
         return ret_info
+
+    def walk_Subexpression(self, node, **kwargs):
+        return self.walk(node.value, **kwargs)
 
     def walk_Assignment(self, node, **kwargs):
         id0_info = self.walk(node.left, **kwargs)

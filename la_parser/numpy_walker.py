@@ -146,6 +146,12 @@ class NumpyWalker(BaseNodeWalker):
             index += 1
         return CodeNodeInfo(content)
 
+    def walk_Expression(self, node, **kwargs):
+        exp_info = self.walk(node.value, **kwargs)
+        if node.sign:
+            exp_info.content = '-' + exp_info.content
+        return exp_info
+
     def walk_Summation(self, node, **kwargs):
         type_info = self.node_dict[node]
         assign_id = type_info.symbol
@@ -415,7 +421,10 @@ class NumpyWalker(BaseNodeWalker):
         return CodeNodeInfo(ret, pre_list)
 
     def walk_ExpInMatrix(self, node, **kwargs):
-        return self.walk(node.value, **kwargs)
+        exp_info = self.walk(node.value, **kwargs)
+        if node.sign:
+            exp_info.content = '-' + exp_info.content
+        return exp_info
 
     def walk_NumMatrix(self, node, **kwargs):
         type_info = self.node_dict[node]
@@ -473,6 +482,11 @@ class NumpyWalker(BaseNodeWalker):
         left_info.content = left_info.content + ' / ' + right_info.content
         left_info.pre_list = self.merge_pre_list(left_info, right_info)
         return left_info
+
+    def walk_Subexpression(self, node, **kwargs):
+        value_info = self.walk(node.value, **kwargs)
+        value_info.content = '(' + value_info.content + ')'
+        return value_info
 
     def walk_Assignment(self, node, **kwargs):
         type_info = self.node_dict[node]

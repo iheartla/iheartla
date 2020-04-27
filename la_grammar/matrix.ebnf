@@ -49,7 +49,7 @@ expr_in_matrix::ExpInMatrix
     =
     | value:addition_in_matrix
     | value:subtraction_in_matrix
-    | value:term_in_matrix
+    | sign:['-'] value:term_in_matrix
     | value:(vdots | cdots | iddots | ddots)
     #| {}
     ;
