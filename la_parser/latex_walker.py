@@ -4,7 +4,7 @@ from la_parser.base_walker import *
 class LatexWalker(BaseNodeWalker):
     def __init__(self):
         super().__init__()
-        self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\begin{document}\n\\[\n'''
+        self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\begin{document}\n\\[\n'''
         self.post_str = '''\n\end{document}'''
 
     def walk_MatrixVdots(self, node, **kwargs):
@@ -51,7 +51,7 @@ class LatexWalker(BaseNodeWalker):
         return node.value
 
     def walk_Start(self, node, **kwargs):
-        return self.walk(node.stat, **kwargs) + "\n\\]\n\\[where\\]\n" + self.walk(node.cond, **kwargs)
+        return self.walk(node.stat, **kwargs) + "\n\\]\n\nwhere\n\n\\begin{itemize}\n" + self.walk(node.cond, **kwargs) + '\\end{itemize}\n'
 
     def walk_Statements(self, node, **kwargs):
         ret = []
@@ -63,34 +63,86 @@ class LatexWalker(BaseNodeWalker):
         ret = []
         for val in node.value:
             ret.append(self.walk(val, **kwargs))
-        return '\n'.join(ret)
+        return ''.join(ret)
 
     def walk_MatrixCondition(self, node, **kwargs):
-        id = self.walk(node.id, **kwargs)
+        id0 = self.walk(node.id, **kwargs)
         id1 = self.walk(node.id1, **kwargs)
         id2 = self.walk(node.id2, **kwargs)
-        desc = self.walk(node.desc, **kwargs)
-        return "\n\\[\n{id}:matrix({id1},{id2}):{desc}\n\\]".format(id=id, id1=id1, id2=id2, desc=desc)
+        type_str = '\\mathbb{R}'
+        if node.type == 'ℤ':
+            type_str = '\\mathbb{Z}'
+        content = "\\item ${}:{}^{{ {} \\cdot {} }}".format(id0, type_str, id1, id2)
+        if node.desc:
+            desc = self.walk(node.desc, **kwargs)
+            content += ":${}\n".format(desc)
+        else:
+            content += "$\n"
+        return content
 
     def walk_VectorCondition(self, node, **kwargs):
-        id = self.walk(node.id, **kwargs)
+        id0 = self.walk(node.id, **kwargs)
         id1 = self.walk(node.id1, **kwargs)
-        desc = self.walk(node.desc, **kwargs)
-        return "\n\\[\n{id}:vector({id1}):{desc}\n\\]".format(id=id, id1=id1, desc=desc)
+        type_str = '\\mathbb{R}'
+        if node.type == 'ℤ':
+            type_str = '\\mathbb{Z}'
+        content = "\\item ${}:{}^{{ {}}}".format(id0, type_str, id1)
+        if node.desc:
+            desc = self.walk(node.desc, **kwargs)
+            content += ":${}\n".format(desc)
+        else:
+            content += "$\n"
+        return content
 
     def walk_ScalarCondition(self, node, **kwargs):
-        id = self.walk(node.id, **kwargs)
-        desc = self.walk(node.desc, **kwargs)
-        return "\n\\[\n{id}:scalar:{desc}\n\\]".format(id=id, desc=desc)
+        id0 = self.walk(node.id, **kwargs)
+        content = "\\item ${}:\\mathbb{{R}}".format(id0)
+        if node.desc:
+            desc = self.walk(node.desc, **kwargs)
+            content += ":${}\n".format(desc)
+        else:
+            content += "$\n"
+        return content
 
     def walk_SetCondition(self, node, **kwargs):
-        id0_info = self.walk(node.id, **kwargs)
-        ret = node.text.split(':')
-        desc = ':'.join(ret[1:len(ret)])
-        return desc
+        id0 = self.walk(node.id, **kwargs)
+        content = "\\item ${}:".format(id0)
+        int_list = []
+        cnt = 1
+        if node.type:
+            for t in node.type:
+                if t == 'ℤ':
+                    int_list.append('\\mathbb{Z}')
+                else:
+                    int_list.append('\\mathbb{R}')
+            content += " \\times ".join(int_list)
+        elif node.type1:
+            cnt = self.walk(node.cnt, **kwargs)
+            if node.type1 == 'ℤ':
+                content += '\\mathbb{{Z}}^{{ {} }}'.format(cnt)
+            else:
+                content += '\\mathbb{{Z}}^{{ {} }}'.format(cnt)
+        elif node.type2:
+            cnt = 2
+            if node.type2 == 'ℤ²':
+                content += '\\mathbb{{Z}}^{{2}}'
+            else:
+                content += '\\mathbb{{Z}}^{{2}}'
+        if node.desc:
+            desc = self.walk(node.desc, **kwargs)
+            content += ":${}\n".format(desc)
+        else:
+            content += "$\n"
+        return content
 
     def walk_Assignment(self, node, **kwargs):
         return self.walk(node.left, **kwargs) + " = " + self.walk(node.right, **kwargs)
+
+    def walk_Expression(self, node, **kwargs):
+        value = self.walk(node.value, **kwargs)
+        if node.sign:
+            value = node.sign + value
+        return value
 
     def walk_Add(self, node, **kwargs):
         return self.walk(node.left, **kwargs) + " + " + self.walk(node.right, **kwargs)
@@ -150,7 +202,29 @@ class LatexWalker(BaseNodeWalker):
         return ' & '.join(ret)
 
     def walk_ExpInMatrix(self, node, **kwargs):
-        return self.walk(node.value, **kwargs)
+        value = self.walk(node.value, **kwargs)
+        if node.sign:
+            value = node.sign + value
+        return value
+
+    def walk_Power(self, node, **kwargs):
+        base_info = self.walk(node.base, **kwargs)
+        if node.t:
+            base_info = "{}^T".format(base_info)
+        elif node.r:
+            base_info = base_info + "^{-1}"
+        else:
+            power_info = self.walk(node.power, **kwargs)
+            base_info = base_info + '^' + power_info
+        return base_info
+
+    def walk_Solver(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + ' \setminus ' + right_info
+
+    def walk_Transpose(self, node, **kwargs):
+        return self.walk(node.f, **kwargs)
 
     def walk_Derivative(self, node, **kwargs):
         return "\\partial" + self.walk(value, **kwargs)
