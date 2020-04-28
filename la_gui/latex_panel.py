@@ -3,11 +3,29 @@ import wx.lib.sized_controls as sc
 from wx.lib.pdfviewer import pdfViewer, pdfButtonPanel
 from wx.lib.pdfviewer import images
 import wx.lib.agw.buttonpanel as bp
+import wx.stc as stc
+import la_gui.base_ctrl as bc
 
 
-class LatexControl(wx.stc.StyledTextCtrl):
+class LatexControl(bc.BaseTextControl):
     def __init__(self, parent):
         super().__init__(parent)
+        self.SetLexer(wx.stc.STC_LEX_TEX)
+        # background
+        self.StyleSetBackground(wx.stc.STC_TEX_DEFAULT, bc.BACKGROUND_COLOR)
+        self.StyleSetBackground(wx.stc.STC_TEX_SPECIAL, bc.BACKGROUND_COLOR)
+        self.StyleSetBackground(wx.stc.STC_TEX_GROUP, bc.BACKGROUND_COLOR)
+        self.StyleSetBackground(wx.stc.STC_TEX_SYMBOL, bc.BACKGROUND_COLOR)
+        self.StyleSetBackground(wx.stc.STC_TEX_COMMAND, bc.BACKGROUND_COLOR)
+        self.StyleSetBackground(wx.stc.STC_TEX_TEXT, bc.BACKGROUND_COLOR)
+
+        # foreground
+        self.StyleSetSpec(stc.STC_TEX_DEFAULT, "fore:#808080," + self.fonts)
+        self.StyleSetSpec(stc.STC_TEX_SPECIAL, "fore:#ED7600," + self.fonts)
+        self.StyleSetSpec(stc.STC_TEX_GROUP, "fore:#365A71," + self.fonts)  # {}
+        self.StyleSetSpec(stc.STC_TEX_SYMBOL, "fore:#6A8759," + self.fonts)
+        self.StyleSetSpec(stc.STC_TEX_COMMAND, "fore:#ED7600," + self.fonts)
+        self.StyleSetSpec(stc.STC_TEX_TEXT, "fore:#668AA1,bold," + self.fonts)  # bmatrix
 
 
 class LatexPanel(wx.Panel):
