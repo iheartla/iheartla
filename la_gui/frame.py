@@ -2,9 +2,10 @@
 import wx
 import os
 import sys
+import threading
 
 sys.path.append('../')
-from la_parser.parser import parse_and_translate
+from la_parser.parser import create_parser_background, parse_in_background
 from la_gui.la_ctrl import LaTextControl
 from la_gui.python_ctrl import PyTextControl
 from la_gui.latex_panel import LatexPanel
@@ -63,6 +64,8 @@ A: ℝ ^ (4 × 4): a matrix
 C: ℝ ^ (4 × 4): a matrix
 E: { ℤ × ℤ }''')
         self.Bind(wx.EVT_BUTTON, self.OnButtonClicked)
+        self.Bind(wx.EVT_IDLE, self.OnIdle)
+        create_parser_background()
 
     def OnButtonClicked(self, e):
         print('frame clicked')
@@ -79,9 +82,21 @@ E: { ℤ × ℤ }''')
         self.pyPanel.SetSize((w - transW) / 2, h - sH)
         self.pyPanel.SetPosition(((w + transW) / 2, 0))
 
+    def UpdateTexPanel(self, tex):
+        self.latexPanel.render_content(tex)
+
+    def UpdateMidPanel(self, result):
+        self.pyPanel.SetText(result[0])
+        if result[1] == 0:
+            self.statusbar.SetStatusText("Finished", 0)
+        else:
+            self.statusbar.SetStatusText("Error", 0)
+
+    def OnIdle(self, e):
+        pass
+
     def OnSize(self, e):
         self.Layout()
-        # self.SetItemsPos()
 
     def OnAbout(self, e):
         dlg = wx.MessageDialog(self, "LA editor in wxPython", "About LA Editor", wx.OK)
@@ -104,13 +119,7 @@ E: { ℤ × ℤ }''')
     def OnTranslate(self, e):
         self.statusbar.SetStatusText("Compiling ...", 0)
         self.Update()
-        result = parse_and_translate(self.control.GetValue())
-        # self.latexPanel.render_content(result[0])
-        self.pyPanel.SetText(result[0])
-        if result[1] == 0:
-            self.statusbar.SetStatusText("Finished", 0)
-        else:
-            self.statusbar.SetStatusText("Error", 0)
+        parse_in_background(self.control.GetValue(), self)
 
     def OnOpen(self, e):
         dlg = wx.FileDialog(self, "Choose a file", "", "", "*.*", wx.FD_OPEN)

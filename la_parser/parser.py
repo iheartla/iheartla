@@ -23,6 +23,11 @@ from la_parser.numpy_walker import NumpyWalker
 from la_parser.ir import *
 from la_parser.ir_visitor import *
 import subprocess
+import threading
+import wx
+import sys
+import traceback
+
 
 class ParserTypeEnum(Enum):
     LATEX = 1
@@ -42,13 +47,17 @@ def walk_model(parser_type, model):
         walker = NumpyWalker()
     return walker.walk_model(model)
 
+
 def create_parser():
     grammar = open('la_grammar/LA.ebnf').read()
     parser = tatsu.compile(grammar, asmodel=True)
     return parser
 
+
 _last_parser = None
 _last_parser_mtime = None
+
+
 def get_parser():
     '''
     Equivalent to create_parser(), but stores the result for immediate access in the future.
@@ -59,27 +68,22 @@ def get_parser():
     from pathlib import Path
     import os
     # print( 'grammar paths:', [ str(f) for f in Path('la_grammar').glob('*.ebnf') ] )
-    mtimes = [ os.path.getmtime(path) for path in Path('la_grammar').glob('*.ebnf') ]
+    mtimes = [os.path.getmtime(path) for path in Path('la_grammar').glob('*.ebnf')]
     # print( 'mtimes:', mtimes )
     ## If the parser hasn't been created or a file has changed, re-create it.
-    if _last_parser is None or any([ t >= _last_parser_mtime for t in mtimes ]):
-        print( "Creating parser..." )
+    if _last_parser is None or any([t >= _last_parser_mtime for t in mtimes]):
+        print("Creating parser...")
         start_time = time.time()
         _last_parser = create_parser()
         _last_parser_mtime = time.time()
         print("------------ %.2f seconds ------------" % (time.time() - start_time))
-    
+
     return _last_parser
 
-def parse_and_translate(content):
-    # try:
-    start_time = time.time()
-    parser = get_parser()
-    model = parser.parse(content, parseinfo=True)
-    parser_type = ParserTypeEnum.NUMPY
-    res = walk_model(parser_type, model)
+
+def generate_latex_code(model, frame):
+    tex_content = ''
     try:
-        show_pdf = False
         tex_content = walk_model(ParserTypeEnum.LATEX, model)
         tex_file_name = "la.tex"
         tex_file = open(tex_file_name, 'w')
@@ -87,14 +91,35 @@ def parse_and_translate(content):
         tex_file.close()
         ret = subprocess.run(["pdflatex", "-interaction=nonstopmode", tex_file_name], capture_output=False)
         if ret.returncode == 0:
-            show_pdf = True
-    except subprocess.SubprocessError:
-        show_pdf = False
+            tex_content = None
+    except subprocess.SubprocessError as e:
+        tex_content = str(e)
+    except FailedParse as e:
+        tex_content = str(e)
+    except FailedCut as e:
+        tex_content = str(e)
+    except Exception as e:
+        tex_content = str(e)
+        exc_info = sys.exc_info()
+        traceback.print_exc()
+        tex_content = str(exc_info[2])
     finally:
-        if show_pdf:
-            pass
+        wx.CallAfter(frame.UpdateTexPanel, tex_content)
 
+
+def parse_and_translate(content, frame):
+    # try:
+    start_time = time.time()
+    parser = get_parser()
+    model = parser.parse(content, parseinfo=True)
+    # parsing Latex at the same time
+    latex_thread = threading.Thread(target=generate_latex_code, args=(model, frame,))
+    latex_thread.start()
+    # other type
+    parser_type = ParserTypeEnum.NUMPY
+    res = walk_model(parser_type, model)
     result = (res, 0)
+    wx.CallAfter(frame.UpdateMidPanel, result)
     print("------------ %.2f seconds ------------" % (time.time() - start_time))
     return result
     # except FailedParse as e:
@@ -110,3 +135,13 @@ def parse_and_translate(content):
     # finally:
     #     print tex
     #     return result
+
+
+def parse_in_background(content, frame):
+    latex_thread = threading.Thread(target=parse_and_translate, args=(content, frame,))
+    latex_thread.start()
+
+
+def create_parser_background():
+    create_thread = threading.Thread(target=get_parser)
+    create_thread.start()
