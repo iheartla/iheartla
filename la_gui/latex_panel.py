@@ -35,8 +35,8 @@ class LatexPanel(wx.Panel):
         self.tex_panel = wx.Panel(self)
         self.tex_panel.SetPosition((0, 0))
         self.tex_panel.SetSize((self.GetSize().width, self.GetSize().height))
-        self.zoomIn = wx.Button(self.tex_panel, -1, "Zoom In")
-        self.zoomOut = wx.Button(self.tex_panel, -1, "Zoom Out")
+        self.zoomIn = wx.BitmapButton(self.tex_panel, -1, images.ZoomIn.GetBitmap())
+        self.zoomOut = wx.BitmapButton(self.tex_panel, -1, images.ZoomOut.GetBitmap())
         self.Bind(wx.EVT_BUTTON, self.OnZoomIn, self.zoomIn)
         self.Bind(wx.EVT_BUTTON, self.OnZoomOut, self.zoomOut)
         self.viewer = pdfViewer(self.tex_panel, wx.NewId(), wx.DefaultPosition, wx.DefaultSize,
