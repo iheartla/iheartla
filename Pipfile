@@ -9,6 +9,7 @@ verify_ssl = true
 tatsu = "*"
 graphviz = "*"
 wxpython = "*"
+PyMuPDF = "*"
 
 [requires]
 python_version = "3.7"
