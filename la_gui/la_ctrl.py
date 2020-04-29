@@ -10,7 +10,7 @@ class LaTextControl(bc.BaseTextControl):
 
     def __init__(self, parent):
         super().__init__(parent)
-        self.keywords = [ord(char) for char in "i"]
+        self.keywords = [ord(char) for char in "ijk"]
         self.SetKeyWords(0, "if")
 
         style = self.STC_STYLE_LA_DEFAULT

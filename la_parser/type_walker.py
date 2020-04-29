@@ -254,7 +254,7 @@ class TypeWalker(NodeWalker):
                 if right_info.la_type is not None and right_info.la_type.var_type == VarTypeEnum.MATRIX:
                     # sparse mat assign
                     attrs = right_info.la_type.attrs
-                    if attrs.sparse:
+                    if attrs is not None and attrs.sparse:
                         self.symtable[sequence] = right_type
                 if sequence not in self.symtable:
                     for symbol in right_info.symbols:

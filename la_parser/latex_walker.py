@@ -45,7 +45,7 @@ class LatexWalker(BaseNodeWalker):
         right = []
         for value in node.right:
             right.append(self.walk(value, **kwargs))
-        return self.walk(node.left, **kwargs) + '_' + ','.join(right)
+        return self.walk(node.left, **kwargs) + '_{' + ','.join(right) + '}'
 
     def walk_IdentifierAlone(self, node, **kwargs):
         return node.value
@@ -157,16 +157,45 @@ class LatexWalker(BaseNodeWalker):
         return "\\frac{" + self.walk(node.left, **kwargs) + "}{" + self.walk(node.right, **kwargs) + "}"
 
     def walk_Summation(self, node, **kwargs):
-        ret = []
-        for val in node.sub:
-            ret.append(self.walk(val, **kwargs))
-        return "\\sum_" + ','.join(ret) + " " + self.walk(node.exp, **kwargs)
+        if node.cond:
+            sub = self.walk(node.id, **kwargs)
+        else:
+            sub = self.walk(node.sub)
+        return "\\sum_" + sub + " " + self.walk(node.exp, **kwargs)
 
     def walk_SingleValueModel(self, node, **kwargs):
         return self.walk(node.value, **kwargs)
 
     def walk_Subexpression(self, node, **kwargs):
         return '(' + self.walk(node.value, **kwargs) + ')'
+
+    def walk_SparseMatrix(self, node, **kwargs):
+        id1_info = self.walk(node.id1, **kwargs)
+        id2_info = self.walk(node.id2, **kwargs)
+        ifs = self.walk(node.ifs, **kwargs)
+        return ifs
+
+    def walk_SparseIfs(self, node, **kwargs):
+        content = ''
+        if node.ifs:
+            content += self.walk(node.ifs, **kwargs)
+        if node.value:
+            content += self.walk(node.value, **kwargs)
+        return content
+
+    def walk_SparseIf(self, node, **kwargs):
+        id0_info = self.walk(node.id0, **kwargs)
+        id1_info = self.walk(node.id1, **kwargs)
+        id2_info = self.walk(node.id2, **kwargs)
+        stat_info = self.walk(node.stat, **kwargs)
+        return '{}, if ({}, {}) \\in {}'.format(stat_info, id0_info, id1_info, id2_info)
+
+    def walk_SparseOther(self, node, **kwargs):
+        content = ''
+        return CodeNodeInfo('    '.join(content))
+
+    def walk_NumMatrix(self, node, **kwargs):
+        return ''
 
     def walk_Matrix(self, node, **kwargs):
         return '\\begin{bmatrix}\n' + self.walk(node.value, **kwargs) + '\\end{bmatrix}'
