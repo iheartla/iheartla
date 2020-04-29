@@ -251,7 +251,7 @@ class TypeWalker(NodeWalker):
             if node.op != '=':
                 assert sequence in self.symtable, "lhs should exist"
             if len(left_subs) == 2: # matrix
-                if right_info.la_type.var_type == VarTypeEnum.MATRIX:
+                if right_info.la_type is not None and right_info.la_type.var_type == VarTypeEnum.MATRIX:
                     # sparse mat assign
                     attrs = right_info.la_type.attrs
                     if attrs.sparse:
