@@ -430,9 +430,13 @@ class TypeWalker(NodeWalker):
             id0_info = self.walk(node.id, **kwargs)
             id0 = id0_info.content
             id0 = self.get_main_id(id0)
-            if not la_is_inside_sum(**kwargs):
+            if not la_is_inside_sum(**kwargs):  # symbols in sum don't need to be defined before
                 if id0 != 'I':  # special case
                     assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
+                else:
+                    # I
+                    if 'I' not in self.symtable:
+                        assert la_is_inside_matrix(**kwargs), "I must be used inside matrix if not defined"
             node_info = NodeInfo(id0_info.la_type, id0, id0_info.symbols)
             # node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
         elif node.num:
@@ -617,15 +621,19 @@ class TypeWalker(NodeWalker):
         id1 = id1_info.content
         if isinstance(id1, str):
             assert id1 in self.symtable, "{} unknown".format(id1)
-        if node.id2:
-            id2_info = self.walk(node.id2, **kwargs)
-            id2 = id2_info.content
-            if isinstance(id2, str):
-                assert id2 in self.symtable, "{} unknown".format(id2)
-            node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[id1, id2])
+        if node.id:
+            # 'I' symbol
+            assert 'I' not in self.symtable, "You can't use 'I' with subscript since it has been defined before"
+            node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[id1, id1])
         else:
-            if node.id:
-                node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[id1, id1])
+            if node.left == '0':
+                assert la_is_inside_matrix(**kwargs), "Zero matrix can only be used inside matrix"
+            if node.id2:
+                id2_info = self.walk(node.id2, **kwargs)
+                id2 = id2_info.content
+                if isinstance(id2, str):
+                    assert id2 in self.symtable, "{} unknown".format(id2)
+                node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[id1, id2])
             else:
                 node_type = LaVarType(VarTypeEnum.VECTOR, dimensions=[id1, 1])
         node_info = NodeInfo(node_type)

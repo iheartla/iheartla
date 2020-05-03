@@ -350,7 +350,11 @@ class NumpyWalker(BaseNodeWalker):
                                 elif ret[i][j] == '1':
                                     func_name = 'np.ones'
                                 elif 'I' in ret[i][j]:
+                                    # todo: assert in type checker
+                                    assert dims[0] == dims[1], "I must be square matrix"
                                     func_name = ret[i][j].replace('I', 'np.identity')
+                                    ret[i][j] = '{}({})'.format(func_name, dims[0])
+                                    continue
                                 else:
                                     func_name = ret[i][j] + ' * np.ones'
                                 if dims[1] == 1:
@@ -432,10 +436,9 @@ class NumpyWalker(BaseNodeWalker):
         if node.id:
             func_name = "np.identity"
         else:
-            left_info = self.walk(node.left, **kwargs)
-            if left_info.content == 0:
+            if node.left == '0':
                 func_name = "np.zeros"
-            elif left_info.content == 1:
+            elif node.left == '1':
                 func_name = "np.ones"
             else:
                 func_name = "({} * np.ones".format(left_info.content)
