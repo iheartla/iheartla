@@ -1,30 +1,37 @@
 import unittest
 import sys
+import importlib
 from importlib import reload
 sys.path.append('./')
 from la_parser.parser import parse_la, ParserTypeEnum
 import subprocess
 from time import sleep
+import numpy as np
 
 
 class BasePythonTest(unittest.TestCase):
+    cnt = 0
+
     def __init__(self, *args, **kwargs):
         super(BasePythonTest, self).__init__(*args, **kwargs)
-        self.cnt = 0
 
     def set_up(self, parse_str, parse_type):
         if parse_type is None:
             parse_type = ParserTypeEnum.NUMPY
         content = parse_la(parse_str, parse_type)
+        module_name = 'la_test.generated_code{}'.format(BasePythonTest.cnt)
+        file_name = 'la_test/generated_code{}.py'.format(BasePythonTest.cnt)
         try:
-            file = open('la_test/generated_code.py', 'w')
+            file = open(file_name, 'w')
             file.write(content)
             file.close()
         except IOError:
             print("IO Error!")
-        self.cnt += 1
-        # subprocess.run(["rm", "la_test/generated_code.py"], capture_output=False)
-        import la_test.generated_code
-        from la_test.generated_code import myExpression
-        sleep(0.8)
-        return reload(la_test.generated_code).myExpression
+        BasePythonTest.cnt += 1
+        module = importlib.import_module(module_name)
+        subprocess.run(["rm", file_name], capture_output=False)
+        return module.myExpression
+
+    def assertDMatrixEqual(self, A, B):
+        assert A.shape == B.shape
+        assert (A==B).all()
