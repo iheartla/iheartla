@@ -49,8 +49,14 @@ def walk_model(parser_type, model):
 
 
 def create_parser():
-    grammar = open('la_grammar/LA.ebnf').read()
-    parser = tatsu.compile(grammar, asmodel=True)
+    parser = None
+    try:
+        file = open('la_grammar/LA.ebnf')
+        grammar = file.read()
+        parser = tatsu.compile(grammar, asmodel=True)
+        file.close()
+    except IOError:
+        print("IO Error!")
     return parser
 
 
@@ -135,6 +141,13 @@ def parse_and_translate(content, frame):
     # finally:
     #     print tex
     #     return result
+
+
+def parse_la(content, parser_type):
+    parser = get_parser()
+    model = parser.parse(content, parseinfo=True)
+    res = walk_model(parser_type, model)
+    return res
 
 
 def parse_in_background(content, frame):
