@@ -150,6 +150,9 @@ class LatexWalker(BaseNodeWalker):
     def walk_Subtract(self, node, **kwargs):
         return self.walk(node.left, **kwargs) + " - " + self.walk(node.right, **kwargs)
 
+    def walk_AddSub(self, node, **kwargs):
+        return self.walk(node.left, **kwargs) + " \\pm " + self.walk(node.right, **kwargs)
+
     def walk_Multiply(self, node, **kwargs):
         return self.walk(node.left, **kwargs) + " \\cdot " + self.walk(node.right, **kwargs)
 

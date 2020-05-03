@@ -463,6 +463,13 @@ class NumpyWalker(BaseNodeWalker):
         left_info.pre_list = self.merge_pre_list(left_info, right_info)
         return left_info
 
+    def walk_AddSub(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + ' +- ' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
+
     def walk_Multiply(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
@@ -568,7 +575,7 @@ class NumpyWalker(BaseNodeWalker):
         la_remove_key(LHS, **kwargs)
         return CodeNodeInfo(content)
 
-    def walk_IfConditions(self, node, **kwargs):
+    def walk_IfCondition(self, node, **kwargs):
         ret_info = self.walk(node.cond)
         ret_info.content = "if " + ret_info.content + ":\n"
         return ret_info
@@ -584,6 +591,48 @@ class NumpyWalker(BaseNodeWalker):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
         left_info.content = left_info.content + ' == ' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
+
+    def walk_InCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + ' in ' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
+
+    def walk_NotInCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + 'not in' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
+
+    def walk_GreaterCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + ' > ' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
+
+    def walk_GreaterEqualCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + ' >= ' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
+
+    def walk_LessCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + ' < ' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
+
+    def walk_LessEqualCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + ' <= ' + right_info.content
         left_info.pre_list = self.merge_pre_list(left_info, right_info)
         return left_info
 
