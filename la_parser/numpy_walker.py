@@ -219,7 +219,7 @@ class NumpyWalker(BaseNodeWalker):
             content.append("    " + cond_content)
             content.append(str("        " + assign_id + " += " + exp_str + '\n'))
         else:
-            content.append(str("    " + assign_id + " = " + exp_str + '\n'))
+            content.append(str("    " + assign_id + " += " + exp_str + '\n'))
         content[0] = "    " + content[0]
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
