@@ -32,6 +32,19 @@ class TestExpr(BasePythonTest):
         B = np.array([[2, 4], [6, 8]])
         self.assertDMatrixEqual(fun_name(2, A), B)
 
+    def test_solver(self):
+        # matrix
+        la_str = """y = A \ C 
+        where
+        A: ℝ ^ (2 × 2): a matrix
+        C: ℝ ^ (2 × 2): a matrix """
+        fun_name = self.set_up(la_str, None)
+        A = np.array([[1, 2], [3, 4]])
+        C = np.array([[19, 22], [43, 50]])
+        B = np.array([[5., 6.], [7., 8.]])
+        B = np.asarray(B, dtype=np.floating)
+        self.assertDMatrixEqual(fun_name(A, C), np.linalg.solve(A, C))
+
     def test_unary_scalar(self):
         la_str = """b = -2a
         where

@@ -33,5 +33,13 @@ class BasePythonTest(unittest.TestCase):
         return module.myExpression
 
     def assertDMatrixEqual(self, A, B):
+        # dense matrix comparision
         assert A.shape == B.shape
-        assert (A==B).all()
+        assert (A == B).all()
+
+    def assertSMatrixEqual(self, A, B):
+        # coo matrix comparision
+        assert A.shape == B.shape
+        assert (A.data == B.data).all()
+        assert (A.row == B.row).all()
+        assert (A.col == B.col).all()
