@@ -221,12 +221,14 @@ class LatexWalker(BaseNodeWalker):
         id1_info = self.walk(node.id1, **kwargs)
         id2_info = self.walk(node.id2, **kwargs)
         ifs = self.walk(node.ifs, **kwargs)
-        return ifs
+        other = self.walk(node.other, **kwargs)
+        content = '{} {} \\\\ {} & otherwise {}'.format("\\begin{cases}", ifs, other, "\\end{cases}")
+        return content
 
     def walk_SparseIfs(self, node, **kwargs):
         content = ''
         if node.ifs:
-            content += self.walk(node.ifs, **kwargs)
+            content += self.walk(node.ifs, **kwargs) + "\\\\"
         if node.value:
             content += self.walk(node.value, **kwargs)
         return content
@@ -236,7 +238,7 @@ class LatexWalker(BaseNodeWalker):
         id1_info = self.walk(node.id1, **kwargs)
         id2_info = self.walk(node.id2, **kwargs)
         stat_info = self.walk(node.stat, **kwargs)
-        return '{} {} & \\text{{if}} ({}, {}) \\in {} {}'.format("\\begin{cases}", stat_info, id0_info, id1_info, id2_info, "\\end{cases}")
+        return '{} & \\text{{if}} ({}, {}) \\in {} '.format(stat_info, id0_info, id1_info, id2_info)
 
     def walk_SparseOther(self, node, **kwargs):
         content = ''

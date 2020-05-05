@@ -21,10 +21,6 @@ sparse_if_condition::SparseIf
     ;
 
 
-sparse_other_condition::SparseOther
-    = {hspace} stat:statement {hspace} IF {hspace} '(' {hspace} identifier {hspace} ',' {hspace} identifier {hspace} ')' {hspace} '∈' {hspace} identifier {separator_with_space}+
-    ;
-
 rows::MatrixRows
     =
     | rs:rows {separator_with_space}+ r:row {hspace}
