@@ -161,10 +161,55 @@ class LatexWalker(BaseNodeWalker):
 
     def walk_Summation(self, node, **kwargs):
         if node.cond:
-            sub = self.walk(node.id, **kwargs)
+            sub = '{' + self.walk(node.cond, **kwargs) + '}'
         else:
             sub = self.walk(node.sub)
         return "\\sum_" + sub + " " + self.walk(node.exp, **kwargs)
+
+    def walk_IfCondition(self, node, **kwargs):
+        ret_info = self.walk(node.cond)
+        # ret_info = "if " + ret_info + ":\n"
+        return ret_info
+
+    def walk_NeCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + ' != ' + right_info
+
+    def walk_EqCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + ' == ' + right_info
+
+    def walk_InCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + ' in ' + right_info
+
+    def walk_NotInCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + 'not in' + right_info
+
+    def walk_GreaterCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + ' > ' + right_info
+
+    def walk_GreaterEqualCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + ' >= ' + right_info
+
+    def walk_LessCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + ' < ' + right_info
+
+    def walk_LessEqualCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + ' <= ' + right_info
 
     def walk_SingleValueModel(self, node, **kwargs):
         return self.walk(node.value, **kwargs)
