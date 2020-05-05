@@ -3,7 +3,7 @@ from la_parser.base_walker import *
 
 class LatexWalker(BaseNodeWalker):
     def __init__(self):
-        super().__init__()
+        super().__init__(ParserTypeEnum.LATEX)
         self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{bbm}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\begin{document}\n\\[\n'''
         self.post_str = '''\n\end{document}'''
 

@@ -18,6 +18,7 @@ from tatsu.exceptions import (
     OptionSucceeded
 )
 from enum import Enum
+from la_parser.base_walker import ParserTypeEnum
 from la_parser.latex_walker import LatexWalker
 from la_parser.numpy_walker import NumpyWalker
 from la_parser.ir import *
@@ -28,16 +29,6 @@ import wx
 import sys
 import traceback
 
-
-class ParserTypeEnum(Enum):
-    LATEX = 1
-    NUMPY = 2
-    EIGEN = 3
-    MATLAB = 4
-    JULIA = 5
-    PYTORCH = 6
-    ARMADILLO = 7
-    TENSORFLOW = 8
 
 
 def walk_model(parser_type, model):

@@ -7,6 +7,8 @@ from la_parser.parser import parse_la, ParserTypeEnum
 import subprocess
 from time import sleep
 import numpy as np
+import logging
+from la_tools.la_logger import LaLogger, LoggerTypeEnum
 
 
 class BasePythonTest(unittest.TestCase):
@@ -14,6 +16,8 @@ class BasePythonTest(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super(BasePythonTest, self).__init__(*args, **kwargs)
+        if BasePythonTest.cnt == 0:
+            LaLogger.getInstance().set_level(logging.WARNING)
 
     def set_up(self, parse_str, parse_type):
         if parse_type is None:

@@ -3,7 +3,7 @@ from la_parser.base_walker import *
 
 class NumpyWalker(BaseNodeWalker):
     def __init__(self):
-        super().__init__()
+        super().__init__(ParserTypeEnum.LATEX)
         self.pre_str = '''import numpy as np\nimport scipy\nfrom scipy import sparse\n\n\n'''
         self.post_str = ''''''
         self.ret = 'ret'

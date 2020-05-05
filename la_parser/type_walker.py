@@ -1,6 +1,7 @@
 from tatsu.model import NodeWalker
 from tatsu.objectmodel import Node
 from la_parser.la_types import *
+from la_tools.la_logger import *
 
 
 class TypeInferenceEnum(Enum):
@@ -56,6 +57,7 @@ class TypeWalker(NodeWalker):
         self.node_dict = {}      # node:var_name
         self.name_cnt_dict = {}
         self.dim_dict = {}       # parameter used. h:w_i
+        self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
 
     def generate_var_name(self, base):
         index = -1
@@ -671,9 +673,9 @@ class TypeWalker(NodeWalker):
                     undef_list.append((i, j))
             if not valid:
                 break
-        # print("undef_list: ", undef_list)
-        # print("row_dim: ", row_dim)
-        # print("col_dim: ", col_dim)
+        self.logger.debug("undef_list: {}".format(undef_list))
+        self.logger.debug("row_dim: {}".format(row_dim))
+        self.logger.debug("col_dim: {}".format(col_dim))
         if len(undef_list) > 0:
             remain_list = []
             remain_row_set = set()
@@ -690,9 +692,9 @@ class TypeWalker(NodeWalker):
                     if col_dim[j] is None:
                         remain_col_set.add(j)
             if len(remain_list) > 0:
-                # print("remain_list: ", remain_list)
-                # print("remain_row_set: ", remain_row_set)
-                # print("remain_col_set: ", remain_col_set)
+                self.logger.debug("remain_list: {}".format(remain_list))
+                self.logger.debug("remain_row_set: {}".format(remain_row_set))
+                self.logger.debug("remain_col_set: {}".format(remain_col_set))
                 if mat_size is not None and len(remain_row_set) <= 1 and len(remain_col_set) <= 1:
                     if len(remain_row_set) == 1:
                         current_sum = 0
