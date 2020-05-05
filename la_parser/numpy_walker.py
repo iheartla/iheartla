@@ -303,7 +303,10 @@ class NumpyWalker(BaseNodeWalker):
         return CodeNodeInfo(ret, pre_list)
 
     def walk_SparseIf(self, node, **kwargs):
-        type_info = self.node_dict[node.parent.parent]
+        sparse_node = node.parent
+        while type(sparse_node).__name__ != 'SparseMatrix':
+            sparse_node = sparse_node.parent
+        type_info = self.node_dict[sparse_node]
         id0_info = self.walk(node.id0, **kwargs)
         id0 = id0_info.content
         id1_info = self.walk(node.id1, **kwargs)
