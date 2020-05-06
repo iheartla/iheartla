@@ -21,6 +21,7 @@ from enum import Enum
 from la_parser.base_walker import ParserTypeEnum
 from la_parser.latex_walker import LatexWalker
 from la_parser.numpy_walker import NumpyWalker
+from la_parser.eigen_walker import EigenWalker
 from la_parser.ir import *
 from la_parser.ir_visitor import *
 import subprocess
@@ -36,6 +37,8 @@ def walk_model(parser_type, model):
         walker = LatexWalker()
     elif parser_type == ParserTypeEnum.NUMPY:
         walker = NumpyWalker()
+    elif parser_type == ParserTypeEnum.EIGEN:
+        walker = EigenWalker()
     return walker.walk_model(model)
 
 
@@ -104,7 +107,7 @@ def generate_latex_code(model, frame):
         wx.CallAfter(frame.UpdateTexPanel, tex_content)
 
 
-def parse_and_translate(content, frame):
+def parse_and_translate(content, frame, parser_type=None):
     # try:
     start_time = time.time()
     parser = get_parser()
@@ -113,7 +116,8 @@ def parse_and_translate(content, frame):
     latex_thread = threading.Thread(target=generate_latex_code, args=(model, frame,))
     latex_thread.start()
     # other type
-    parser_type = ParserTypeEnum.NUMPY
+    if parser_type is None:
+        parser_type = ParserTypeEnum.NUMPY
     res = walk_model(parser_type, model)
     result = (res, 0)
     wx.CallAfter(frame.UpdateMidPanel, result)
@@ -141,8 +145,8 @@ def parse_la(content, parser_type):
     return res
 
 
-def parse_in_background(content, frame):
-    latex_thread = threading.Thread(target=parse_and_translate, args=(content, frame,))
+def parse_in_background(content, frame, parse_type):
+    latex_thread = threading.Thread(target=parse_and_translate, args=(content, frame, parse_type,))
     latex_thread.start()
 
 

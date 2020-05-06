@@ -5,14 +5,17 @@ import sys
 import threading
 
 sys.path.append('../')
-from la_parser.parser import create_parser_background, parse_in_background
+from la_parser.parser import create_parser_background, parse_in_background, ParserTypeEnum
 from la_gui.la_ctrl import LaTextControl
 from la_gui.python_ctrl import PyTextControl
+from la_gui.cpp_ctrl import CppTextControl
 from la_gui.latex_panel import LatexPanel
+from la_gui.mid_panel import MidPanel, MidPanelEnum
 
 
 class MainWindow(wx.Frame):
     def __init__(self, parent, title):
+        self.parser_type = ParserTypeEnum.NUMPY
         w, h = wx.DisplaySize()
         wx.Frame.__init__(self, parent, title=title, pos=(w / 4, h / 4))
         # status
@@ -25,21 +28,30 @@ class MainWindow(wx.Frame):
         menu_run = wx.Menu()
         item_run = menu_run.Append(wx.NewId(), "&Run program", "Let's run LA code")
         menu_bar = wx.MenuBar()
+        # languages
+        menu_language = wx.Menu()
+        py_lang = menu_language.AppendRadioItem(wx.NewId(), "&Python with Numpy")
+        py_lang.Check(True)
+        cpp_lang = menu_language.AppendRadioItem(wx.NewId(), "&C++ with Eigen")
+        # line
         menu_bar.Append(menu_file, "&File")
         menu_bar.Append(menu_run, "&Run")
+        menu_bar.Append(menu_language, "&Languages")
         self.SetMenuBar(menu_bar)
         self.Bind(wx.EVT_MENU, self.OnOpen, item_open)
         self.Bind(wx.EVT_MENU, self.OnAbout, item_about)
         self.Bind(wx.EVT_MENU, self.OnKeyEnter, item_run)
+        self.Bind(wx.EVT_MENU, self.OnClickNumpy, py_lang)
+        self.Bind(wx.EVT_MENU, self.OnClickEigen, cpp_lang)
         self.Bind(wx.EVT_SIZE, self.OnSize)
         # panel
         self.control = LaTextControl(self)
-        self.pyPanel = PyTextControl(self)
+        self.midPanel = MidPanel(self)
         self.latexPanel = LatexPanel(self)
         # sizer
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(self.control, 1, wx.EXPAND, 100)
-        sizer.Add(self.pyPanel, 1, wx.EXPAND, 100)
+        sizer.Add(self.midPanel, 1, wx.EXPAND, 100)
         sizer.Add(self.latexPanel, 1, wx.EXPAND, 100)
         self.SetSizer(sizer)
         sizer.Fit(self)
@@ -86,7 +98,7 @@ E: { ℤ × ℤ }''')
         self.latexPanel.render_content(tex)
 
     def UpdateMidPanel(self, result):
-        self.pyPanel.SetText(result[0])
+        self.midPanel.set_value(result[0])
         if result[1] == 0:
             self.statusbar.SetStatusText("Finished", 0)
         else:
@@ -110,6 +122,14 @@ E: { ℤ × ℤ }''')
         print('Start compilingr')
         self.OnTranslate(e)
 
+    def OnClickNumpy(self, e):
+        self.midPanel.set_panel(MidPanelEnum.PYTHON)
+        self.parser_type = ParserTypeEnum.NUMPY
+
+    def OnClickEigen(self, e):
+        self.midPanel.set_panel(MidPanelEnum.CPP)
+        self.parser_type = ParserTypeEnum.EIGEN
+
     def OnZoomIn(self, e):
         self.latexPanel.OnZoomIn(e)
 
@@ -119,7 +139,7 @@ E: { ℤ × ℤ }''')
     def OnTranslate(self, e):
         self.statusbar.SetStatusText("Compiling ...", 0)
         self.Update()
-        parse_in_background(self.control.GetValue(), self)
+        parse_in_background(self.control.GetValue(), self, self.parser_type)
 
     def OnOpen(self, e):
         dlg = wx.FileDialog(self, "Choose a file", "", "", "*.*", wx.FD_OPEN)
