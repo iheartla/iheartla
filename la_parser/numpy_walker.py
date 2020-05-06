@@ -3,7 +3,7 @@ from la_parser.base_walker import *
 
 class NumpyWalker(BaseNodeWalker):
     def __init__(self):
-        super().__init__()
+        super().__init__(ParserTypeEnum.LATEX)
         self.pre_str = '''import numpy as np\nimport scipy\nfrom scipy import sparse\n\n\n'''
         self.post_str = ''''''
         self.ret = 'ret'
@@ -219,7 +219,7 @@ class NumpyWalker(BaseNodeWalker):
             content.append("    " + cond_content)
             content.append(str("        " + assign_id + " += " + exp_str + '\n'))
         else:
-            content.append(str("    " + assign_id + " = " + exp_str + '\n'))
+            content.append(str("    " + assign_id + " += " + exp_str + '\n'))
         content[0] = "    " + content[0]
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
@@ -303,7 +303,10 @@ class NumpyWalker(BaseNodeWalker):
         return CodeNodeInfo(ret, pre_list)
 
     def walk_SparseIf(self, node, **kwargs):
-        type_info = self.node_dict[node.parent.parent]
+        sparse_node = node.parent
+        while type(sparse_node).__name__ != 'SparseMatrix':
+            sparse_node = sparse_node.parent
+        type_info = self.node_dict[sparse_node]
         id0_info = self.walk(node.id0, **kwargs)
         id0 = id0_info.content
         id1_info = self.walk(node.id1, **kwargs)
@@ -350,7 +353,11 @@ class NumpyWalker(BaseNodeWalker):
                                 elif ret[i][j] == '1':
                                     func_name = 'np.ones'
                                 elif 'I' in ret[i][j]:
+                                    # todo: assert in type checker
+                                    assert dims[0] == dims[1], "I must be square matrix"
                                     func_name = ret[i][j].replace('I', 'np.identity')
+                                    ret[i][j] = '{}({})'.format(func_name, dims[0])
+                                    continue
                                 else:
                                     func_name = ret[i][j] + ' * np.ones'
                                 if dims[1] == 1:
@@ -432,10 +439,9 @@ class NumpyWalker(BaseNodeWalker):
         if node.id:
             func_name = "np.identity"
         else:
-            left_info = self.walk(node.left, **kwargs)
-            if left_info.content == 0:
+            if node.left == '0':
                 func_name = "np.zeros"
-            elif left_info.content == 1:
+            elif node.left == '1':
                 func_name = "np.ones"
             else:
                 func_name = "({} * np.ones".format(left_info.content)
@@ -460,6 +466,13 @@ class NumpyWalker(BaseNodeWalker):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
         left_info.content = left_info.content + ' - ' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
+
+    def walk_AddSub(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + ' +- ' + right_info.content
         left_info.pre_list = self.merge_pre_list(left_info, right_info)
         return left_info
 
@@ -568,7 +581,7 @@ class NumpyWalker(BaseNodeWalker):
         la_remove_key(LHS, **kwargs)
         return CodeNodeInfo(content)
 
-    def walk_IfConditions(self, node, **kwargs):
+    def walk_IfCondition(self, node, **kwargs):
         ret_info = self.walk(node.cond)
         ret_info.content = "if " + ret_info.content + ":\n"
         return ret_info
@@ -584,6 +597,48 @@ class NumpyWalker(BaseNodeWalker):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
         left_info.content = left_info.content + ' == ' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
+
+    def walk_InCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + ' in ' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
+
+    def walk_NotInCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + 'not in' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
+
+    def walk_GreaterCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + ' > ' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
+
+    def walk_GreaterEqualCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + ' >= ' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
+
+    def walk_LessCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + ' < ' + right_info.content
+        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        return left_info
+
+    def walk_LessEqualCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        left_info.content = left_info.content + ' <= ' + right_info.content
         left_info.pre_list = self.merge_pre_list(left_info, right_info)
         return left_info
 

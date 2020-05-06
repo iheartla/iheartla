@@ -5,14 +5,14 @@ matrix::Matrix
     ;
 
 sparse_matrix::SparseMatrix
-    = '{' ifs:sparse_if_conditions
+    = '{' {hspace} ifs:sparse_if_conditions
     {{separator_with_space}+ {hspace} other:statement {hspace} OTHERWISE }
     {{separator_with_space}+ {hspace} IS {hspace} id1:(integer | identifier) {hspace} '×' {hspace} id2:(integer | identifier)}
     ;
 
 sparse_if_conditions::SparseIfs
-    = {hspace} ifs:sparse_if_conditions {separator_with_space}+ value:sparse_if_condition
-    | {hspace} value:sparse_if_condition {hspace}
+    = ifs:sparse_if_conditions {separator_with_space}+ value:sparse_if_condition
+    | value:sparse_if_condition
     ;
 
 sparse_if_condition::SparseIf
@@ -20,10 +20,6 @@ sparse_if_condition::SparseIf
     | '(' {hspace} id0:identifier {hspace} ',' {hspace} id1:identifier {hspace} ')' {hspace} '∈' {hspace} id2:identifier  {hspace} ':' {hspace} stat:statement
     ;
 
-
-sparse_other_condition::SparseOther
-    = {hspace} stat:statement {hspace} IF {hspace} '(' {hspace} identifier {hspace} ',' {hspace} identifier {hspace} ')' {hspace} '∈' {hspace} identifier {separator_with_space}+
-    ;
 
 rows::MatrixRows
     =
@@ -100,7 +96,7 @@ ddots::MatrixDdots
     ;
 
 number_matrix::NumMatrix
-    = left:number '_' id1:(integer | identifier) {',' id2:(integer | identifier)}
-    | left:number '_' '(' {hspace}  id1:(integer | identifier) { {hspace} (','|'×') {hspace} id2:(integer | identifier)} {hspace} ')'
+    = left:('0' | '1') '_' id1:(integer | identifier) {',' id2:(integer | identifier)}
+    | left:('0' | '1') '_' '(' {hspace}  id1:(integer | identifier) { {hspace} (','|'×') {hspace} id2:(integer | identifier)} {hspace} ')'
     | id:'I' '_' id1:(integer | identifier)
     ;

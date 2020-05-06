@@ -3,8 +3,8 @@ from la_parser.base_walker import *
 
 class LatexWalker(BaseNodeWalker):
     def __init__(self):
-        super().__init__()
-        self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\begin{document}\n\\[\n'''
+        super().__init__(ParserTypeEnum.LATEX)
+        self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{bbm}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\begin{document}\n\\[\n'''
         self.post_str = '''\n\end{document}'''
 
     def walk_MatrixVdots(self, node, **kwargs):
@@ -72,7 +72,7 @@ class LatexWalker(BaseNodeWalker):
         type_str = '\\mathbb{R}'
         if node.type == 'ℤ':
             type_str = '\\mathbb{Z}'
-        content = "\\item ${}:{}^{{ {} \\cdot {} }}".format(id0, type_str, id1, id2)
+        content = "\\item ${} \\in {}^{{ {} \\times {} }}".format(id0, type_str, id1, id2)
         if node.desc:
             desc = self.walk(node.desc, **kwargs)
             content += ":${}\n".format(desc)
@@ -86,7 +86,7 @@ class LatexWalker(BaseNodeWalker):
         type_str = '\\mathbb{R}'
         if node.type == 'ℤ':
             type_str = '\\mathbb{Z}'
-        content = "\\item ${}:{}^{{ {}}}".format(id0, type_str, id1)
+        content = "\\item ${} \\in {}^{{ {}}}".format(id0, type_str, id1)
         if node.desc:
             desc = self.walk(node.desc, **kwargs)
             content += ":${}\n".format(desc)
@@ -96,7 +96,7 @@ class LatexWalker(BaseNodeWalker):
 
     def walk_ScalarCondition(self, node, **kwargs):
         id0 = self.walk(node.id, **kwargs)
-        content = "\\item ${}:\\mathbb{{R}}".format(id0)
+        content = "\\item ${} \\in \\mathbb{{R}}".format(id0)
         if node.desc:
             desc = self.walk(node.desc, **kwargs)
             content += ":${}\n".format(desc)
@@ -106,7 +106,7 @@ class LatexWalker(BaseNodeWalker):
 
     def walk_SetCondition(self, node, **kwargs):
         id0 = self.walk(node.id, **kwargs)
-        content = "\\item ${}:".format(id0)
+        content = "\\item ${} \\in".format(id0)
         int_list = []
         cnt = 1
         if node.type:
@@ -150,18 +150,66 @@ class LatexWalker(BaseNodeWalker):
     def walk_Subtract(self, node, **kwargs):
         return self.walk(node.left, **kwargs) + " - " + self.walk(node.right, **kwargs)
 
+    def walk_AddSub(self, node, **kwargs):
+        return self.walk(node.left, **kwargs) + " \\pm " + self.walk(node.right, **kwargs)
+
     def walk_Multiply(self, node, **kwargs):
-        return self.walk(node.left, **kwargs) + " * " + self.walk(node.right, **kwargs)
+        return self.walk(node.left, **kwargs) + " \\cdot " + self.walk(node.right, **kwargs)
 
     def walk_Divide(self, node, **kwargs):
         return "\\frac{" + self.walk(node.left, **kwargs) + "}{" + self.walk(node.right, **kwargs) + "}"
 
     def walk_Summation(self, node, **kwargs):
         if node.cond:
-            sub = self.walk(node.id, **kwargs)
+            sub = '{' + self.walk(node.cond, **kwargs) + '}'
         else:
             sub = self.walk(node.sub)
         return "\\sum_" + sub + " " + self.walk(node.exp, **kwargs)
+
+    def walk_IfCondition(self, node, **kwargs):
+        ret_info = self.walk(node.cond)
+        # ret_info = "if " + ret_info + ":\n"
+        return ret_info
+
+    def walk_NeCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + ' != ' + right_info
+
+    def walk_EqCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + ' == ' + right_info
+
+    def walk_InCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + ' in ' + right_info
+
+    def walk_NotInCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + 'not in' + right_info
+
+    def walk_GreaterCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + ' > ' + right_info
+
+    def walk_GreaterEqualCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + ' >= ' + right_info
+
+    def walk_LessCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + ' < ' + right_info
+
+    def walk_LessEqualCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return left_info + ' <= ' + right_info
 
     def walk_SingleValueModel(self, node, **kwargs):
         return self.walk(node.value, **kwargs)
@@ -173,12 +221,14 @@ class LatexWalker(BaseNodeWalker):
         id1_info = self.walk(node.id1, **kwargs)
         id2_info = self.walk(node.id2, **kwargs)
         ifs = self.walk(node.ifs, **kwargs)
-        return ifs
+        other = self.walk(node.other, **kwargs)
+        content = '{} {} \\\\ {} & otherwise {}'.format("\\begin{cases}", ifs, other, "\\end{cases}")
+        return content
 
     def walk_SparseIfs(self, node, **kwargs):
         content = ''
         if node.ifs:
-            content += self.walk(node.ifs, **kwargs)
+            content += self.walk(node.ifs, **kwargs) + "\\\\"
         if node.value:
             content += self.walk(node.value, **kwargs)
         return content
@@ -188,14 +238,27 @@ class LatexWalker(BaseNodeWalker):
         id1_info = self.walk(node.id1, **kwargs)
         id2_info = self.walk(node.id2, **kwargs)
         stat_info = self.walk(node.stat, **kwargs)
-        return '{}, if ({}, {}) \\in {}'.format(stat_info, id0_info, id1_info, id2_info)
+        return '{} & \\text{{if}} ({}, {}) \\in {} '.format(stat_info, id0_info, id1_info, id2_info)
 
     def walk_SparseOther(self, node, **kwargs):
         content = ''
         return CodeNodeInfo('    '.join(content))
 
     def walk_NumMatrix(self, node, **kwargs):
-        return ''
+        id1_info = self.walk(node.id1, **kwargs)
+        if node.id:
+            content = "\\mathbb{{I}}_{{ {} }}".format(id1_info)
+        else:
+            if node.left == '1':
+                content = "\\mathbbm{{ {} }}".format(node.left)
+            else:
+                content = node.left
+            if node.id2:
+                id2_info = self.walk(node.id2, **kwargs)
+                content = "{}_{{ {},{} }}".format(content, id1_info, id2_info)
+            else:
+                content = "{}_{{ {} }}".format(content, id1_info)
+        return content
 
     def walk_Matrix(self, node, **kwargs):
         return '\\begin{bmatrix}\n' + self.walk(node.value, **kwargs) + '\\end{bmatrix}'

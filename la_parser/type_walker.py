@@ -1,6 +1,7 @@
 from tatsu.model import NodeWalker
 from tatsu.objectmodel import Node
 from la_parser.la_types import *
+from la_tools.la_logger import *
 
 
 class TypeInferenceEnum(Enum):
@@ -22,6 +23,7 @@ CUR_INDENT = "cur_indent"
 INSIDE_MATRIX = "inside_matrix"
 ASSIGN_TYPE = "assign_type"
 INSIDE_SUMMATION = "inside_summation"
+IF_COND = "if_condition"
 
 
 def la_is_inside_matrix(**kwargs):
@@ -55,6 +57,7 @@ class TypeWalker(NodeWalker):
         self.node_dict = {}      # node:var_name
         self.name_cnt_dict = {}
         self.dim_dict = {}       # parameter used. h:w_i
+        self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
 
     def generate_var_name(self, base):
         index = -1
@@ -213,6 +216,17 @@ class TypeWalker(NodeWalker):
         self.node_dict[node] = ret_info
         return ret_info
 
+    def walk_AddSub(self, node, **kwargs):
+        assert IF_COND in kwargs, "must be used inside if codition"
+        left_info = self.walk(node.left, **kwargs)
+        left_type = left_info.la_type
+        right_info = self.walk(node.right, **kwargs)
+        right_type = right_info.la_type
+        ret_type = self.type_inference(TypeInferenceEnum.INF_ADD, left_type, right_type)
+        ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
+        self.node_dict[node] = ret_info
+        return ret_info
+
     def walk_Multiply(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         left_type = left_info.la_type
@@ -348,7 +362,8 @@ class TypeWalker(NodeWalker):
         node_info = NodeInfo(node_type, symbols=f_info.symbols)
         return node_info
 
-    def walk_IfConditions(self, node, **kwargs):
+    def walk_IfCondition(self, node, **kwargs):
+        kwargs[IF_COND] = True
         return self.walk(node.cond, **kwargs)
 
     def walk_NeCondition(self, node, **kwargs):
@@ -370,6 +385,24 @@ class TypeWalker(NodeWalker):
         ret_info = NodeInfo(left_type, symbols=left_info.symbols.union(right_info.symbols))
         self.node_dict[node] = ret_info
         return ret_info
+
+    def walk_InCondition(self, node, **kwargs):
+        return NodeInfo(VarTypeEnum.SCALAR)
+
+    def walk_NotInCondition(self, node, **kwargs):
+        return NodeInfo(VarTypeEnum.SCALAR)
+
+    def walk_GreaterCondition(self, node, **kwargs):
+        return NodeInfo(VarTypeEnum.SCALAR)
+
+    def walk_GreaterEqualCondition(self, node, **kwargs):
+        return NodeInfo(VarTypeEnum.SCALAR)
+
+    def walk_LessCondition(self, node, **kwargs):
+        return NodeInfo(VarTypeEnum.SCALAR)
+
+    def walk_LessEqualCondition(self, node, **kwargs):
+        return NodeInfo(VarTypeEnum.SCALAR)
 
     def walk_IdentifierSubscript(self, node, **kwargs):
         node_type = LaVarType(VarTypeEnum.INVALID)
@@ -399,9 +432,13 @@ class TypeWalker(NodeWalker):
             id0_info = self.walk(node.id, **kwargs)
             id0 = id0_info.content
             id0 = self.get_main_id(id0)
-            if not la_is_inside_sum(**kwargs):
+            if not la_is_inside_sum(**kwargs):  # symbols in sum don't need to be defined before
                 if id0 != 'I':  # special case
                     assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
+                else:
+                    # I
+                    if 'I' not in self.symtable:
+                        assert la_is_inside_matrix(**kwargs), "I must be used inside matrix if not defined"
             node_info = NodeInfo(id0_info.la_type, id0, id0_info.symbols)
             # node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
         elif node.num:
@@ -586,15 +623,19 @@ class TypeWalker(NodeWalker):
         id1 = id1_info.content
         if isinstance(id1, str):
             assert id1 in self.symtable, "{} unknown".format(id1)
-        if node.id2:
-            id2_info = self.walk(node.id2, **kwargs)
-            id2 = id2_info.content
-            if isinstance(id2, str):
-                assert id2 in self.symtable, "{} unknown".format(id2)
-            node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[id1, id2])
+        if node.id:
+            # 'I' symbol
+            assert 'I' not in self.symtable, "You can't use 'I' with subscript since it has been defined before"
+            node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[id1, id1])
         else:
-            if node.id:
-                node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[id1, id1])
+            if node.left == '0':
+                assert la_is_inside_matrix(**kwargs), "Zero matrix can only be used inside matrix"
+            if node.id2:
+                id2_info = self.walk(node.id2, **kwargs)
+                id2 = id2_info.content
+                if isinstance(id2, str):
+                    assert id2 in self.symtable, "{} unknown".format(id2)
+                node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[id1, id2])
             else:
                 node_type = LaVarType(VarTypeEnum.VECTOR, dimensions=[id1, 1])
         node_info = NodeInfo(node_type)
@@ -632,9 +673,9 @@ class TypeWalker(NodeWalker):
                     undef_list.append((i, j))
             if not valid:
                 break
-        # print("undef_list: ", undef_list)
-        # print("row_dim: ", row_dim)
-        # print("col_dim: ", col_dim)
+        self.logger.debug("undef_list: {}".format(undef_list))
+        self.logger.debug("row_dim: {}".format(row_dim))
+        self.logger.debug("col_dim: {}".format(col_dim))
         if len(undef_list) > 0:
             remain_list = []
             remain_row_set = set()
@@ -651,9 +692,9 @@ class TypeWalker(NodeWalker):
                     if col_dim[j] is None:
                         remain_col_set.add(j)
             if len(remain_list) > 0:
-                # print("remain_list: ", remain_list)
-                # print("remain_row_set: ", remain_row_set)
-                # print("remain_col_set: ", remain_col_set)
+                self.logger.debug("remain_list: {}".format(remain_list))
+                self.logger.debug("remain_row_set: {}".format(remain_row_set))
+                self.logger.debug("remain_col_set: {}".format(remain_col_set))
                 if mat_size is not None and len(remain_row_set) <= 1 and len(remain_col_set) <= 1:
                     if len(remain_row_set) == 1:
                         current_sum = 0
@@ -693,9 +734,15 @@ class TypeWalker(NodeWalker):
         return valid, undef_list, type_array, real_dims
 
     def type_inference(self, op, left_type, right_type):
+        # todo:delete
+        if left_type.var_type == VarTypeEnum.INVALID:
+            left_type.var_type = VarTypeEnum.SCALAR
+        if right_type.var_type == VarTypeEnum.INVALID:
+            right_type.var_type = VarTypeEnum.SCALAR
+        #
         ret_type = None
         if op == TypeInferenceEnum.INF_ADD or op == TypeInferenceEnum.INF_SUB:
-            assert left_type.var_type == right_type.var_type
+            assert left_type.var_type == right_type.var_type, 'left:{}, right:{}'.format(left_type.var_type, right_type.var_type)
             if left_type.var_type == VarTypeEnum.MATRIX:
                 assert left_type.dimensions[0] == right_type.dimensions[0] and left_type.dimensions[1] == right_type.dimensions[1], 'error: dimension mismatch'
             elif left_type.var_type == VarTypeEnum.VECTOR:

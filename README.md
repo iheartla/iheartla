@@ -16,7 +16,7 @@ or
 
 Python 3.x and some modules:
 
-    pip3 install tatsu wxpython graphviz
+    pip3 install tatsu wxpython graphviz PyMuPDF
 
 or
 

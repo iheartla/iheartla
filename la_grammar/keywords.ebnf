@@ -27,6 +27,7 @@ KEYWORDS
     | IF
     | OTHERWISE
     | IS
+    | IN
     ;
 
 TRACE = 'trace';
@@ -59,3 +60,4 @@ DIAGONAL = 'diagonal';
 IF = 'if';
 OTHERWISE = 'otherwise';
 IS = 'is';
+IN = 'in';

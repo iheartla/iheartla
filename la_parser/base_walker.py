@@ -4,10 +4,22 @@ from tatsu.symtables import *
 from la_parser.la_types import *
 from la_parser.type_walker import *
 from la_tools.la_visualizer import LaVisualizer
+from la_tools.la_logger import *
+
+
+class ParserTypeEnum(Enum):
+    LATEX = 1
+    NUMPY = 2
+    EIGEN = 3
+    MATLAB = 4
+    JULIA = 5
+    PYTORCH = 6
+    ARMADILLO = 7
+    TENSORFLOW = 8
 
 
 class BaseNodeWalker(NodeWalker):
-    def __init__(self):
+    def __init__(self, parse_type):
         super().__init__()
         self.pre_str = ''
         self.post_str = ''
@@ -18,19 +30,21 @@ class BaseNodeWalker(NodeWalker):
         self.dim_dict = {}
         self.sub_name_dict = {}
         self.visualizer = LaVisualizer()
+        self.parse_type = parse_type
+        self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
 
     def print_symbols(self):
-        print("symtable:")
+        self.logger.info("symtable:")
         for (k, v) in self.symtable.items():
-            print(k + ':' + str(v.var_type) + ', dimension:' + str(v.dimensions))
-        print("parameters:\n" + str(self.parameters))
-        print("subscripts:\n" + str(self.subscripts))
-        print("dim_dict:\n" + str(self.dim_dict))
-        print("sub_name_dict:\n" + str(self.sub_name_dict) + '\n')
+            self.logger.info(k + ':' + str(v.var_type) + ', dimension:' + str(v.dimensions))
+        self.logger.info("parameters:\n" + str(self.parameters))
+        self.logger.info("subscripts:\n" + str(self.subscripts))
+        self.logger.info("dim_dict:\n" + str(self.dim_dict))
+        self.logger.info("sub_name_dict:\n" + str(self.sub_name_dict) + '\n')
         # print("node_dict:\n" + str(self.node_dict) + '\n')
 
     def walk_model(self, node):
-        self.visualizer.visualize(node)
+        # self.visualizer.visualize(node)
         type_walker = TypeWalker()
         type_walker.walk(node)
         self.symtable = type_walker.symtable
