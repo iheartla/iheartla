@@ -51,7 +51,6 @@ class LatexPanel(wx.Panel):
         self.tex_panel.SetSizer(self.pdf_sizer)
         self.pdf_sizer.Fit(self)
         #
-        self.viewer.LoadFile("la.pdf")
         self.viewer.Bind(wx.EVT_BUTTON, self.OnButtonClicked)
         self.Bind(wx.EVT_SIZE, self.OnSize)
         self.latex_ctrl = LatexControl(self)
