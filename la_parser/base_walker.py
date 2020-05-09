@@ -29,6 +29,8 @@ class BaseNodeWalker(NodeWalker):
         self.node_dict = {}
         self.dim_dict = {}
         self.sub_name_dict = {}
+        self.ret_symbol = None
+        self.stat_list = None
         self.visualizer = LaVisualizer()
         self.parse_type = parse_type
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
@@ -53,6 +55,8 @@ class BaseNodeWalker(NodeWalker):
         self.node_dict = type_walker.node_dict
         self.dim_dict = type_walker.dim_dict
         self.sub_name_dict = type_walker.sub_name_dict
+        self.ret_symbol = type_walker.ret_symbol
+        self.stat_list = type_walker.stat_list
         self.print_symbols()
         content = self.pre_str + self.walk(node) + self.post_str
         return content

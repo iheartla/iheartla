@@ -6,7 +6,6 @@ class NumpyWalker(BaseNodeWalker):
         super().__init__(ParserTypeEnum.LATEX)
         self.pre_str = '''import numpy as np\nimport scipy\nfrom scipy import sparse\n\n\n'''
         self.post_str = ''''''
-        self.ret = 'ret'
 
     def walk_Start(self, node, **kwargs):
         type_checks = []
@@ -107,9 +106,24 @@ class NumpyWalker(BaseNodeWalker):
         content += dim_content
         content += '\n'.join(type_checks) + '\n\n'
         # statements
-        stat_info = self.walk(node.stat)
-        content += stat_info.content
-        content += '    return ' + self.ret
+        stats_content = ""
+        for index in range(len(self.stat_list)):
+            ret_str = ''
+            if index == len(self.stat_list) - 1:
+                if type(self.stat_list[index]).__name__ != 'Assignment':
+                    kwargs[LHS] = self.ret_symbol
+                    ret_str = "    " + self.ret_symbol + ' = '
+            else:
+                if type(self.stat_list[index]).__name__ != 'Assignment':
+                    # meaningless
+                    continue
+            stat_info = self.walk(self.stat_list[index], **kwargs)
+            if stat_info.pre_list:
+                stats_content += "".join(stat_info.pre_list)
+            stats_content += ret_str + stat_info.content + '\n'
+        #
+        content += stats_content
+        content += '    return ' + self.ret_symbol
         content += '\n'
         # test
         test_content.append('    return {}'.format(', '.join(self.parameters)))
@@ -124,26 +138,22 @@ class NumpyWalker(BaseNodeWalker):
     def walk_Statements(self, node, **kwargs):
         index = 0
         content = ''
-        for stat in node.value:
-            if type(stat).__name__ == 'Statements':
-                stat_info = self.walk(stat, **kwargs)
-                content += stat_info.content
+        if node.stats:
+            stat_info = self.walk(node.stats, **kwargs)
+            content += stat_info.content
+        else:
+            ret_str = ''
+            content += ''
+            if type(node.stat).__name__ != 'Assignment':
+                ret_str = "    " + self.ret_symbol + ' = '
+            stat_info = self.walk(node.stat, **kwargs)
+            stat_value = stat_info.content
+            if isinstance(stat_info, CodeNodeInfo):
+                if stat_info.pre_list:
+                    content += "".join(stat_info.pre_list)
+                content += ret_str + stat_info.content + '\n'
             else:
-                ret_str = ''
-                content += ''
-                if index == len(node.value) - 1:
-                    if type(stat).__name__ != 'Assignment':
-                        self.ret = 'ret'
-                        ret_str = "    " + self.ret + ' = '
-                stat_info = self.walk(stat, **kwargs)
-                stat_value = stat_info.content
-                if isinstance(stat_info, CodeNodeInfo):
-                    if stat_info.pre_list:
-                        content += "".join(stat_info.pre_list)
-                    content += ret_str + stat_info.content + '\n'
-                else:
-                    content += stat_value + '\n'
-            index += 1
+                content += stat_value + '\n'
         return CodeNodeInfo(content)
 
     def walk_Expression(self, node, **kwargs):
@@ -509,7 +519,6 @@ class NumpyWalker(BaseNodeWalker):
         left_id = left_info.content
         kwargs[LHS] = left_id
         kwargs[ASSIGN_TYPE] = node.op
-        self.ret = self.get_main_id(left_id)
         # self left-hand-side symbol
         right_info = self.walk(node.right, **kwargs)
         right_exp = ""

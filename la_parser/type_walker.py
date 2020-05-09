@@ -24,6 +24,7 @@ INSIDE_MATRIX = "inside_matrix"
 ASSIGN_TYPE = "assign_type"
 INSIDE_SUMMATION = "inside_summation"
 IF_COND = "if_condition"
+SET_RET_SYMBOL = "set_ret_symbol"
 
 
 def la_is_inside_matrix(**kwargs):
@@ -58,6 +59,8 @@ class TypeWalker(NodeWalker):
         self.name_cnt_dict = {}
         self.dim_dict = {}       # parameter used. h:w_i
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
+        self.ret_symbol = None
+        self.stat_list = None
 
     def generate_var_name(self, base):
         index = -1
@@ -82,7 +85,20 @@ class TypeWalker(NodeWalker):
 
     def walk_Start(self, node, **kwargs):
         self.walk(node.cond, **kwargs)
-        self.walk(node.stat, **kwargs)
+        self.stat_list = self.walk(node.stat, **kwargs)
+        for index in range(len(self.stat_list)):
+            update_ret_type = False
+            if index == len(self.stat_list) - 1:
+                if type(self.stat_list[index]).__name__ == 'Assignment':
+                    kwargs[SET_RET_SYMBOL] = True
+                else:
+                    # new symbol for return value
+                    self.ret_symbol = "ret"
+                    update_ret_type = True
+                    kwargs[LHS] = self.ret_symbol
+            type_info = self.walk(self.stat_list[index], **kwargs)
+            if update_ret_type:
+                self.symtable[self.ret_symbol] = type_info.la_type
 
     ###################################################################
     def walk_WhereConditions(self, node, **kwargs):
@@ -190,8 +206,11 @@ class TypeWalker(NodeWalker):
 
     ###################################################################
     def walk_Statements(self, node, **kwargs):
-        for stat in node.value:
-            self.walk(stat, **kwargs)
+        stat_list = []
+        if node.stats:
+            stat_list = self.walk(node.stats, **kwargs)
+        stat_list.append(node.stat)
+        return stat_list
 
     def walk_Expression(self, node, **kwargs):
         return self.walk(node.value, **kwargs)
@@ -253,6 +272,8 @@ class TypeWalker(NodeWalker):
     def walk_Assignment(self, node, **kwargs):
         id0_info = self.walk(node.left, **kwargs)
         id0 = id0_info.content
+        if SET_RET_SYMBOL in kwargs:
+            self.ret_symbol = self.get_main_id(id0)
         kwargs[LHS] = id0
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type

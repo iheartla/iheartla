@@ -17,8 +17,8 @@ start::Start
 
 statements::Statements
     =
-    | {hspace} value+:statements {separator_with_space}+ value+:statement {hspace}
-    | {hspace} value+:statement {hspace}
+    | {hspace} stats:statements {separator_with_space}+ stat:statement {hspace}
+    | {hspace} stat:statement {hspace}
     ;
 
 statement

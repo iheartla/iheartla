@@ -55,8 +55,9 @@ class LatexWalker(BaseNodeWalker):
 
     def walk_Statements(self, node, **kwargs):
         ret = []
-        for val in node.value:
-            ret.append(self.walk(val, **kwargs))
+        if node.stats:
+            ret.append(self.walk(node.stats, **kwargs))
+        ret.append(self.walk(node.stat, **kwargs))
         return '\\]\n\\[\n'.join(ret)
 
     def walk_WhereConditions(self, node, **kwargs):
