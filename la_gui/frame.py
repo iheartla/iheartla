@@ -31,18 +31,23 @@ class MainWindow(wx.Frame):
         # languages
         menu_language = wx.Menu()
         py_lang = menu_language.AppendRadioItem(wx.NewId(), "&Python with Numpy")
-        py_lang.Check(True)
         cpp_lang = menu_language.AppendRadioItem(wx.NewId(), "&C++ with Eigen")
+        cpp_lang.Check(True)
+        # view
+        menu_view = wx.Menu()
+        item_reset = menu_view.Append(wx.NewId(), "&Reset", "Reset all panels")
         # line
         menu_bar.Append(menu_file, "&File")
         menu_bar.Append(menu_run, "&Run")
         menu_bar.Append(menu_language, "&Languages")
+        menu_bar.Append(menu_view, "&View")
         self.SetMenuBar(menu_bar)
         self.Bind(wx.EVT_MENU, self.OnOpen, item_open)
         self.Bind(wx.EVT_MENU, self.OnAbout, item_about)
         self.Bind(wx.EVT_MENU, self.OnKeyEnter, item_run)
         self.Bind(wx.EVT_MENU, self.OnClickNumpy, py_lang)
         self.Bind(wx.EVT_MENU, self.OnClickEigen, cpp_lang)
+        self.Bind(wx.EVT_MENU, self.OnResetPanel, item_reset)
         self.Bind(wx.EVT_SIZE, self.OnSize)
         # panel
         self.control = LaTextControl(self)
@@ -75,6 +80,7 @@ where
 A: ℝ ^ (4 × 4): a matrix
 C: ℝ ^ (4 × 4): a matrix
 E: { ℤ × ℤ }''')
+
         self.Bind(wx.EVT_BUTTON, self.OnButtonClicked)
         self.Bind(wx.EVT_IDLE, self.OnIdle)
         create_parser_background()
@@ -129,6 +135,9 @@ E: { ℤ × ℤ }''')
     def OnClickEigen(self, e):
         self.midPanel.set_panel(MidPanelEnum.CPP)
         self.parser_type = ParserTypeEnum.EIGEN
+
+    def OnResetPanel(self, e):
+        print("reset panel")
 
     def OnZoomIn(self, e):
         self.latexPanel.OnZoomIn(e)
