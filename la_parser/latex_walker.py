@@ -4,7 +4,7 @@ from la_parser.base_walker import *
 class LatexWalker(BaseNodeWalker):
     def __init__(self):
         super().__init__(ParserTypeEnum.LATEX)
-        self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage{bbm}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\begin{document}\n\\[\n'''
+        self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\begin{document}\n\\[\n'''
         self.post_str = '''\n\end{document}'''
 
     def walk_MatrixVdots(self, node, **kwargs):
@@ -247,12 +247,9 @@ class LatexWalker(BaseNodeWalker):
     def walk_NumMatrix(self, node, **kwargs):
         id1_info = self.walk(node.id1, **kwargs)
         if node.id:
-            content = "\\mathbb{{I}}_{{ {} }}".format(id1_info)
+            content = "I_{{ {} }}".format(id1_info)
         else:
-            if node.left == '1':
-                content = "\\mathbbm{{ {} }}".format(node.left)
-            else:
-                content = node.left
+            content = "\\mathbb{{ {} }}".format(node.left)
             if node.id2:
                 id2_info = self.walk(node.id2, **kwargs)
                 content = "{}_{{ {},{} }}".format(content, id1_info, id2_info)

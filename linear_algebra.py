@@ -5,5 +5,5 @@ import logging
 if __name__ == '__main__':
     LaLogger.getInstance().set_level(logging.INFO)
     app = wx.App(False)
-    frame = MainWindow(None, "Linear algebra example")
+    frame = MainWindow(None, "I heart LA")
     app.MainLoop()
