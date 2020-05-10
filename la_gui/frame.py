@@ -3,6 +3,7 @@ import wx
 import os
 import sys
 import threading
+import wx.lib.agw.aui as aui
 
 sys.path.append('../')
 from la_parser.parser import create_parser_background, parse_in_background, ParserTypeEnum
@@ -18,6 +19,8 @@ class MainWindow(wx.Frame):
         self.parser_type = ParserTypeEnum.NUMPY
         w, h = wx.DisplaySize()
         wx.Frame.__init__(self, parent, title=title, pos=(w / 4, h / 4))
+        self.SetPosition((200, 200))
+        self.SetSize((1300, 600))
         # status
         self.statusbar = self.CreateStatusBar()
         self.statusbar.SetFieldsCount(1)
@@ -53,13 +56,28 @@ class MainWindow(wx.Frame):
         self.control = LaTextControl(self)
         self.midPanel = MidPanel(self)
         self.latexPanel = LatexPanel(self)
+        #
+        self.mgr = aui.AuiManager(self)
+        self.mgr.SetManagedWindow(self)
+        self.aui_info1 = aui.framemanager.AuiPaneInfo().CaptionVisible(False).PaneBorder(False).CloseButton(False).Left()
+        self.aui_info1.BestSize(wx.Size(self.GetSize().width/3, self.GetSize().height))
+        self.mgr.AddPane(self.control, self.aui_info1)
+
+        self.aui_info2 = aui.framemanager.AuiPaneInfo().CaptionVisible(False).PaneBorder(False).CloseButton(False).Center()
+        self.aui_info2.BestSize(wx.Size(self.GetSize().width/3, self.GetSize().height))
+        self.mgr.AddPane(self.midPanel, self.aui_info2)
+
+        self.aui_info3 = aui.framemanager.AuiPaneInfo().CaptionVisible(False).PaneBorder(False).CloseButton(False).Right()
+        self.aui_info3.BestSize(wx.Size(self.GetSize().width/3, self.GetSize().height))
+        self.mgr.AddPane(self.latexPanel, self.aui_info3)
+        self.mgr.Update()
         # sizer
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(self.control, 1, wx.EXPAND, 100)
-        sizer.Add(self.midPanel, 1, wx.EXPAND, 100)
-        sizer.Add(self.latexPanel, 1, wx.EXPAND, 100)
-        self.SetSizer(sizer)
-        sizer.Fit(self)
+        # sizer = wx.BoxSizer(wx.HORIZONTAL)
+        # sizer.Add(self.control, 1, wx.EXPAND, 100)
+        # sizer.Add(self.midPanel, 1, wx.EXPAND, 100)
+        # sizer.Add(self.latexPanel, 1, wx.EXPAND, 100)
+        # self.SetSizer(sizer)
+        # sizer.Fit(self)
         # hot key
         r_new_id = wx.NewId()
         self.Bind(wx.EVT_MENU, self.OnKeyEnter, id=r_new_id)
@@ -71,8 +89,6 @@ class MainWindow(wx.Frame):
         self.SetAcceleratorTable(acc_zoom_out)
 
         self.Show()
-        self.SetPosition((200, 200))
-        self.SetSize((1300, 600))
         self.control.SetValue('''B = [ A C ]
 
 where
@@ -137,7 +153,13 @@ E: { ℤ × ℤ }''')
         self.parser_type = ParserTypeEnum.EIGEN
 
     def OnResetPanel(self, e):
-        print("reset panel")
+        self.control.SetSize(self.GetSize().width/3, self.GetSize().height)
+        self.midPanel.SetSize(self.GetSize().width/3, self.GetSize().height)
+        self.midPanel.Move(self.GetSize().width/3, self.GetSize().height)
+        self.latexPanel.SetSize(self.GetSize().width/3, self.GetSize().height)
+        self.latexPanel.Move(self.GetSize().width*2/3, self.GetSize().height)
+        self.mgr.Update()
+        self.Layout()
 
     def OnZoomIn(self, e):
         self.latexPanel.OnZoomIn(e)
