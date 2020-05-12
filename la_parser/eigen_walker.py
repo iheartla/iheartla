@@ -4,14 +4,19 @@ from la_parser.base_walker import *
 class EigenWalker(BaseNodeWalker):
     def __init__(self):
         super().__init__(ParserTypeEnum.EIGEN)
-        self.pre_str = '''#include <Eigen/Core>\n#include <string>\n#include <iostream>\n\n'''
+        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n\n'''
         self.post_str = ''''''
         self.ret = 'ret'
 
     def get_ctype(self, la_type):
         type_str = ""
         if la_type.var_type == VarTypeEnum.SEQUENCE:
-            pass
+            if la_type.element_type.var_type == VarTypeEnum.MATRIX:
+                type_str = "std::vector<Eigen::MatrixXd>"
+            elif la_type.element_type.var_type == VarTypeEnum.VECTOR:
+                type_str = "std::vector<Eigen::VectorXd>"
+            elif la_type.element_type.var_type == VarTypeEnum.SCALAR:
+                type_str = "std::vector<double>"
         elif la_type.var_type == VarTypeEnum.MATRIX:
             type_str = "Eigen::MatrixXd"
         elif la_type.var_type == VarTypeEnum.VECTOR:
@@ -27,10 +32,14 @@ class EigenWalker(BaseNodeWalker):
         show_doc = False
         func_name = "myExpression"
         rand_func_name = "generateRandomData"
-        test_content = ["def " + rand_func_name + "():"]
+        test_content = ["void " + rand_func_name + "()",
+                        '{']
         rand_int_max = 10
-        main_content = ["if __name__ == '__main__':",
-                        "    {} = {}()".format(', '.join(self.parameters), rand_func_name)]
+        # main
+        main_declaration = []
+        main_print = []
+        main_content = ["int main(int argc, char *argv[])",
+                        "{"]
         dim_content = ""
         if self.dim_dict:
             for key, value in self.dim_dict.items():
@@ -40,7 +49,12 @@ class EigenWalker(BaseNodeWalker):
                     dim_content += "    {} = {}.shape[{}]\n".format(key, main_id, value[1]+1)
                 else:
                     dim_content += "    {} = {}.shape[{}]\n".format(key, value[0], value[1])
+        par_des_list = []
+        test_par_list = []
         for parameter in self.parameters:
+            main_declaration.append("    {} {};".format(self.get_ctype(self.symtable[parameter]), parameter))
+            par_des_list.append("const {} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
+            test_par_list.append("{} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
             if self.symtable[parameter].desc:
                 show_doc = True
                 doc.append('@param {} {}'.format(parameter, self.symtable[parameter].desc))
@@ -110,12 +124,15 @@ class EigenWalker(BaseNodeWalker):
                         gen_list.append('np.random.randn()')
                 test_content.append('        {}.append(('.format(parameter) + ', '.join(gen_list) + '))')
 
-            main_content.append('    print("{}:", {})'.format(parameter, parameter))
+            main_print.append('    std::cout<<"{}:\\n"<<{}<<std::endl;'.format(parameter, parameter))
         content = ""
         if show_doc:
             content += '/**\n * ' + func_name + '\n *\n * ' + '\n * '.join(doc) + '\n * @return {}\n */\n'.format(self.ret_symbol)
         ret_type = self.get_ctype(self.symtable[self.ret_symbol])
-        content += ret_type + ' ' + func_name + '(' + ', '.join(self.parameters) + '):\n'    # func name
+        if len(self.parameters) == 1:
+            content += ret_type + ' ' + func_name + '(' + ', '.join(par_des_list) + ')\n{\n'    # func name
+        else:
+            content += ret_type + ' ' + func_name + '(\n    ' + ',\n    '.join(par_des_list) + ')\n{\n'  # func name
         # merge content
         content += '\n'.join(type_declare) + '\n\n'
         content += dim_content
@@ -139,11 +156,18 @@ class EigenWalker(BaseNodeWalker):
         #
         content += stats_content
         content += '    return ' + self.ret_symbol
-        content += '\n'
+        content += '\n}\n'
         # test
         test_content.append('    return {}'.format(', '.join(self.parameters)))
-        main_content.append("    func_value = {}({})".format(func_name, ', '.join(self.parameters)))
-        main_content.append('    print("func_value: ", func_value)')
+        test_content.append('}')
+        # main
+        main_content += main_declaration
+        main_content.append("    {}({});".format(rand_func_name, ', '.join(self.parameters)))
+        main_content += main_print
+        main_content.append("    func_value = {}({});".format(func_name, ', '.join(self.parameters)))
+        main_content.append('    std::cout<<"func_value:\\n"<<func_value<<std::endl;')
+        main_content.append('    return 0;')
+        main_content.append('}')
         content += '\n\n' + '\n'.join(test_content) + '\n\n\n' + '\n'.join(main_content)
         return content
 
