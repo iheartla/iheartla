@@ -4,7 +4,7 @@ from la_parser.base_walker import *
 class EigenWalker(BaseNodeWalker):
     def __init__(self):
         super().__init__(ParserTypeEnum.EIGEN)
-        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n\n'''
+        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <unordered_set>\n\n'''
         self.post_str = ''''''
         self.ret = 'ret'
 
@@ -29,6 +29,14 @@ class EigenWalker(BaseNodeWalker):
                 type_str = "Eigen::VectorXd"
         elif la_type.var_type == VarTypeEnum.SCALAR:
             type_str = "double"
+        elif la_type.var_type == VarTypeEnum.SET:
+            type_list = []
+            for t in la_type.attrs:
+                if t:
+                    type_list.append('int')
+                else:
+                    type_list.append('double')
+            type_str = "std::unordered_set< std::tuple< {} > >".format(", ".join(type_list))
         return type_str
 
     def walk_Start(self, node, **kwargs):
@@ -134,18 +142,18 @@ class EigenWalker(BaseNodeWalker):
                 # type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
                 test_content.append('    {} = rand() % {};'.format(parameter, rand_int_max))
             elif self.symtable[parameter].var_type == VarTypeEnum.SET:
-                type_checks.append('    assert isinstance({}, list) and len({}) > 0'.format(parameter, parameter))
-                type_checks.append('    assert len({}[0]) == {}'.format(parameter, self.symtable[parameter].dimensions[0]))
-                test_content.append('    {} = []'.format(parameter))
-                test_content.append('    {}_0 = np.random.randint(1, {})'.format(parameter, rand_int_max))
-                test_content.append('    for i in range({}_0):'.format(parameter))
+                type_checks.append('    assert ( {}.size() = {});'.format(parameter, self.symtable[parameter].dimensions[0]))
+                test_content.append('    const int {}_0 = rand()%10;'.format(parameter, rand_int_max))
+                test_content.append('    for(int i=0; i<{}_0; i++)'.format(parameter))
+                test_content.append('    {')
                 gen_list = []
                 for i in range(self.symtable[parameter].dimensions[0]):
                     if self.symtable[parameter].attrs[i]:
-                        gen_list.append('np.random.randint({})'.format(rand_int_max))
+                        gen_list.append('rand()%{}'.format(rand_int_max))
                     else:
-                        gen_list.append('np.random.randn()')
-                test_content.append('        {}.append(('.format(parameter) + ', '.join(gen_list) + '))')
+                        gen_list.append('rand()%10')
+                test_content.append('        {}.insert(('.format(parameter) + ', '.join(gen_list) + '))')
+                test_content.append('    }')
 
             # main_print.append('    std::cout<<"{}:\\n"<<{}<<std::endl;'.format(parameter, parameter))
         content = ""
