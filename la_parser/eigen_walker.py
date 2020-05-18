@@ -12,21 +12,51 @@ class EigenWalker(BaseNodeWalker):
         type_str = ""
         if la_type.var_type == VarTypeEnum.SEQUENCE:
             if la_type.element_type.var_type == VarTypeEnum.MATRIX:
-                type_str = "std::vector<Eigen::MatrixXd>"
+                if isinstance(la_type.element_type.dimensions[0], int) and isinstance(la_type.element_type.dimensions[1], int):
+                    if la_type.element_type.element_type is not None and la_type.element_type.element_type.var_type == VarTypeEnum.INTEGER:
+                        type_str = "std::vector<Eigen::Matrix<int, {}, {}> >".format(la_type.element_type.dimensions[0], la_type.element_type.dimensions[1])
+                    else:
+                        type_str = "std::vector<Eigen::Matrix<double, {}, {}> >".format(la_type.element_type.dimensions[0], la_type.element_type.dimensions[1])
+                else:
+                    if la_type.element_type.element_type is not None and la_type.element_type.element_type.var_type == VarTypeEnum.INTEGER:
+                        type_str = "std::vector<Eigen::MatrixXi>"
+                    else:
+                        type_str = "std::vector<Eigen::MatrixXd>"
             elif la_type.element_type.var_type == VarTypeEnum.VECTOR:
-                type_str = "std::vector<Eigen::VectorXd>"
+                if isinstance(la_type.element_type.dimensions[0], int):
+                    if la_type.element_type.element_type is not None and la_type.element_type.element_type.var_type == VarTypeEnum.INTEGER:
+                        type_str = "std::vector<Eigen::Matrix<int, {}, 1> >".format(la_type.element_type.dimensions[0])
+                    else:
+                        type_str = "std::vector<Eigen::Matrix<double, {}, 1> >".format(la_type.element_type.dimensions[0])
+                else:
+                    if la_type.element_type.element_type is not None and la_type.element_type.element_type.var_type == VarTypeEnum.INTEGER:
+                        type_str = "std::vector<Eigen::VectorXi>"
+                    else:
+                        type_str = "std::vector<Eigen::VectorXd>"
             elif la_type.element_type.var_type == VarTypeEnum.SCALAR:
                 type_str = "std::vector<double>"
         elif la_type.var_type == VarTypeEnum.MATRIX:
-            if la_type.element_type is not None and la_type.element_type.var_type == VarTypeEnum.INTEGER:
-                type_str = "Eigen::MatrixXi"
+            if isinstance(la_type.dimensions[0], int) and isinstance(la_type.dimensions[1], int):
+                if la_type.element_type is not None and la_type.element_type.var_type == VarTypeEnum.INTEGER:
+                    type_str = "Eigen::Matrix<int, {}, {}>".format(la_type.dimensions[0], la_type.dimensions[1])
+                else:
+                    type_str = "Eigen::Matrix<double, {}, {}>".format(la_type.dimensions[0], la_type.dimensions[1])
             else:
-                type_str = "Eigen::MatrixXd"
+                if la_type.element_type is not None and la_type.element_type.var_type == VarTypeEnum.INTEGER:
+                    type_str = "Eigen::MatrixXi"
+                else:
+                    type_str = "Eigen::MatrixXd"
         elif la_type.var_type == VarTypeEnum.VECTOR:
-            if la_type.element_type is not None and la_type.element_type.var_type == VarTypeEnum.INTEGER:
-                type_str = "Eigen::VectorXi"
+            if isinstance(la_type.dimensions[0], int):
+                if la_type.element_type is not None and la_type.element_type.var_type == VarTypeEnum.INTEGER:
+                    type_str = "Eigen::Matrix<int, {}, 1>".format(la_type.dimensions[0])
+                else:
+                    type_str = "Eigen::Matrix<double, {}, 1>".format(la_type.dimensions[0])
             else:
-                type_str = "Eigen::VectorXd"
+                if la_type.element_type is not None and la_type.element_type.var_type == VarTypeEnum.INTEGER:
+                    type_str = "Eigen::VectorXi"
+                else:
+                    type_str = "Eigen::VectorXd"
         elif la_type.var_type == VarTypeEnum.SCALAR:
             type_str = "double"
         elif la_type.var_type == VarTypeEnum.SET:
@@ -142,7 +172,7 @@ class EigenWalker(BaseNodeWalker):
                 # type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
                 test_content.append('    {} = rand() % {};'.format(parameter, rand_int_max))
             elif self.symtable[parameter].var_type == VarTypeEnum.SET:
-                type_checks.append('    assert ( {}.size() = {});'.format(parameter, self.symtable[parameter].dimensions[0]))
+                # type_checks.append('    assert ( {}.size() = {});'.format(parameter, self.symtable[parameter].dimensions[0]))
                 test_content.append('    const int {}_0 = rand()%10;'.format(parameter, rand_int_max))
                 test_content.append('    for(int i=0; i<{}_0; i++)'.format(parameter))
                 test_content.append('    {')
@@ -421,6 +451,7 @@ class EigenWalker(BaseNodeWalker):
             block = matrix_attr.block
         ret_info = self.walk(node.value, **kwargs)
         ret = ret_info.content
+        content += 'Eigen::Matrix<double, {}, {}> {};\n'.format(self.symtable[cur_m_id].dimensions[0], self.symtable[cur_m_id].dimensions[1], cur_m_id)
         if block:
             all_rows = []
             m_content = ""
@@ -447,9 +478,9 @@ class EigenWalker(BaseNodeWalker):
                                     ret[i][j] = '{}({})'.format(func_name, dims[0])
                                 else:
                                     ret[i][j] = '{}(({}, {}))'.format(func_name, dims[0], dims[1])
-                    all_rows.append('[' + ', '.join(ret[i]) + ']')
-                m_content += 'np.bmat([{}])'.format(', '.join(all_rows))
-                content += '{} = {}\n'.format(cur_m_id, m_content)
+                    all_rows.append(', '.join(ret[i]) )
+                m_content += '{};'.format('\n    '.join(all_rows))
+                content += '    {} << {}\n'.format(cur_m_id, m_content)
             elif len(ret) == 1:
                 # single row
                 content += '{} = np.hstack(({}))\n'.format(cur_m_id, ', '.join(ret[0]))
