@@ -479,46 +479,37 @@ class EigenWalker(BaseNodeWalker):
         if block:
             all_rows = []
             m_content = ""
-            if len(ret) > 1 and len(ret[0]) > 1:
-                for i in range(len(ret)):
-                    if matrix_attr.list_dim:
-                        for j in range(len(ret[i])):
-                            if (i, j) in matrix_attr.list_dim:
-                                dims = matrix_attr.list_dim[(i, j)]
-                                if ret[i][j] == '0':
-                                    func_name = 'np.zeros'
-                                elif ret[i][j] == '1':
-                                    func_name = 'np.ones'
-                                elif 'I' in ret[i][j]:
-                                    # todo: assert in type checker
-                                    assert dims[0] == dims[1], "I must be square matrix"
-                                    func_name = ret[i][j].replace('I', 'np.identity')
-                                    ret[i][j] = '{}({})'.format(func_name, dims[0])
-                                    continue
-                                else:
-                                    func_name = ret[i][j] + ' * np.ones'
-                                if dims[1] == 1:
-                                    # vector
-                                    ret[i][j] = '{}({})'.format(func_name, dims[0])
-                                else:
-                                    ret[i][j] = '{}(({}, {}))'.format(func_name, dims[0], dims[1])
-                    all_rows.append(', '.join(ret[i]) )
-                m_content += '{};'.format('\n    '.join(all_rows))
-                content += '    {} << {}\n'.format(cur_m_id, m_content)
-            elif len(ret) == 1:
-                # single row
-                content += '{} = np.hstack(({}))\n'.format(cur_m_id, ', '.join(ret[0]))
-            else:
-                # single col
-                for i in range(len(ret)):
-                    ret[i] = ''.join(ret[i])
-                content += '{} = np.vstack(({}))\n'.format(cur_m_id, ', '.join(ret))
+            for i in range(len(ret)):
+                if matrix_attr.list_dim:
+                    for j in range(len(ret[i])):
+                        if (i, j) in matrix_attr.list_dim:
+                            dims = matrix_attr.list_dim[(i, j)]
+                            if ret[i][j] == '0':
+                                func_name = 'Eigen::MatrixXd::Zero'
+                            elif ret[i][j] == '1':
+                                func_name = 'Eigen::MatrixXd::Ones'
+                            elif 'I' in ret[i][j]:
+                                # todo: assert in type checker
+                                assert dims[0] == dims[1], "I must be square matrix"
+                                func_name = ret[i][j].replace('I', 'Eigen::MatrixXd::Identity')
+                                ret[i][j] = '{}({}, {})'.format(func_name, dims[0], dims[0])
+                                continue
+                            else:
+                                func_name = ret[i][j] + ' * Eigen::MatrixXd::Ones'
+                            if dims[1] == 1:
+                                # vector
+                                ret[i][j] = '{}({})'.format(func_name, dims[0])
+                            else:
+                                ret[i][j] = '{}(({}, {}))'.format(func_name, dims[0], dims[1])
+                all_rows.append(', '.join(ret[i]) )
+            m_content += '{};'.format(',\n    '.join(all_rows))
+            content += '    {} << {}\n'.format(cur_m_id, m_content)
         else:
             # dense
-            content += '{} = np.zeros(({}, {}))\n'.format(cur_m_id, self.symtable[cur_m_id].dimensions[0],
-                                                          self.symtable[cur_m_id].dimensions[1])
+            m_list = []
             for i in range(len(ret)):
-                content += "    {}[{}] = [{}]\n".format(cur_m_id, i, ', '.join(ret[i]))
+                m_list.append(', '.join(ret[i]))
+            content += '    {} << {};\n'.format(cur_m_id, ",\n    ".join(m_list))
         #####################
         pre_list = [content]
         if ret_info.pre_list:
@@ -574,21 +565,21 @@ class EigenWalker(BaseNodeWalker):
         type_info = self.node_dict[node]
         post_s = ''
         if node.id:
-            func_name = "np.identity"
+            func_name = "Eigen::MatrixXd::Identity"
         else:
             if node.left == '0':
-                func_name = "np.zeros"
+                func_name = "Eigen::MatrixXd::Zero"
             elif node.left == '1':
-                func_name = "np.ones"
+                func_name = "Eigen::MatrixXd::Ones"
             else:
                 func_name = "({} * np.ones".format(left_info.content)
                 post_s = ')'
         id1_info = self.walk(node.id1, **kwargs)
         if node.id2:
             id2_info = self.walk(node.id2, **kwargs)
-            content = "{}(({}, {}))".format(func_name, id1_info.content, id2_info.content)
+            content = "{}({}, {})".format(func_name, id1_info.content, id2_info.content)
         else:
-            content = "{}({})".format(func_name, id1_info.content)
+            content = "{}({}, {})".format(func_name, id1_info.content, id1_info.content)
         node_info = CodeNodeInfo(content+post_s)
         return node_info
 
