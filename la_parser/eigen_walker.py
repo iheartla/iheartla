@@ -7,6 +7,7 @@ class EigenWalker(BaseNodeWalker):
         self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <unordered_set>\n\n'''
         self.post_str = ''''''
         self.ret = 'ret'
+        self.set_hash_dict = {}
 
     def get_ctype(self, la_type):
         type_str = ""
@@ -61,12 +62,33 @@ class EigenWalker(BaseNodeWalker):
             type_str = "double"
         elif la_type.var_type == VarTypeEnum.SET:
             type_list = []
-            for t in la_type.attrs:
-                if t:
+            get_list = []
+            for index in range(len(la_type.attrs)):
+                get_list.append("std::get<{}>(k)".format(index))
+                if la_type.attrs[index]:
                     type_list.append('int')
                 else:
                     type_list.append('double')
-            type_str = "std::unordered_set< std::tuple< {} > >".format(", ".join(type_list))
+            hash_value = hash(",".join(type_list))
+            if hash_value in self.set_hash_dict:
+                hash_name, hash_func = self.set_hash_dict[hash_value]
+            else:
+                size = len(self.set_hash_dict)
+                if size == 0:
+                    hash_name = 'key_hash'
+                else:
+                    hash_name = 'key_hash{}'.format(size)
+                hash_list = []
+                hash_list.append("struct {} : public std::unary_function<std::tuple<{}>, std::size_t>".format(hash_name, ", ".join(type_list)))
+                hash_list.append("{")
+                hash_list.append("    std::size_t operator()(const std::tuple<{}>& k) const".format(", ".join(type_list)))
+                hash_list.append("    {")
+                hash_list.append("        return {};".format(" * ".join(get_list)))
+                hash_list.append("    }")
+                hash_list.append("};\n\n")
+                hash_func = '\n'.join(hash_list)
+                self.set_hash_dict[hash_value] = [hash_name, hash_func]
+            type_str = "std::unordered_set< std::tuple< {} >, {}>".format(", ".join(type_list), hash_name)
         return type_str
 
     def walk_Start(self, node, **kwargs):
@@ -182,11 +204,13 @@ class EigenWalker(BaseNodeWalker):
                         gen_list.append('rand()%{}'.format(rand_int_max))
                     else:
                         gen_list.append('rand()%10')
-                test_content.append('        {}.insert(('.format(parameter) + ', '.join(gen_list) + '))')
+                test_content.append('        {}.insert(std::make_tuple('.format(parameter) + ', '.join(gen_list) + '));')
                 test_content.append('    }')
 
             # main_print.append('    std::cout<<"{}:\\n"<<{}<<std::endl;'.format(parameter, parameter))
         content = ""
+        for k, v in self.set_hash_dict.items():
+            content += v[1]
         if show_doc:
             content += '/**\n * ' + func_name + '\n *\n * ' + '\n * '.join(doc) + '\n * @return {}\n */\n'.format(self.ret_symbol)
         ret_type = self.get_ctype(self.symtable[self.ret_symbol])
