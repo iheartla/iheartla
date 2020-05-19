@@ -133,8 +133,7 @@ class EigenWalker(BaseNodeWalker):
                 size_str = ""
                 integer_type = False
                 test_content.append('    {}.resize({});'.format(parameter, self.symtable[parameter].dimensions[0]))
-                test_content.append('    for(int i=0; i<{}; i++)'.format(self.symtable[parameter].dimensions[0]))
-                test_content.append('    {')
+                test_content.append('    for(int i=0; i<{}; i++){{'.format(self.symtable[parameter].dimensions[0]))
                 if isinstance(data_type, LaVarType):
                     if data_type.var_type == VarTypeEnum.INTEGER:
                         integer_type = True
@@ -196,8 +195,7 @@ class EigenWalker(BaseNodeWalker):
             elif self.symtable[parameter].var_type == VarTypeEnum.SET:
                 # type_checks.append('    assert ( {}.size() = {});'.format(parameter, self.symtable[parameter].dimensions[0]))
                 test_content.append('    const int {}_0 = rand()%10;'.format(parameter, rand_int_max))
-                test_content.append('    for(int i=0; i<{}_0; i++)'.format(parameter))
-                test_content.append('    {')
+                test_content.append('    for(int i=0; i<{}_0; i++){{'.format(parameter))
                 gen_list = []
                 for i in range(self.symtable[parameter].dimensions[0]):
                     if self.symtable[parameter].attrs[i]:
@@ -395,34 +393,13 @@ class EigenWalker(BaseNodeWalker):
         return left_info
 
     def walk_SparseMatrix(self, node, **kwargs):
-        op_type = kwargs[ASSIGN_TYPE]
         lhs = kwargs[LHS]
         type_info = self.node_dict[node]
         cur_m_id = type_info.symbol
         pre_list = []
-        index_var = type_info.la_type.attrs.index_var
-        value_var = type_info.la_type.attrs.value_var
-        pre_list.append("    {} = []\n".format(index_var))
-        pre_list.append("    {} = []\n".format(value_var))
         if_info = self.walk(node.ifs, **kwargs)
         pre_list += if_info.content
-        # assignment
-        if op_type == '=':
-            pre_list.append("    {} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(cur_m_id, value_var, index_var, self.symtable[cur_m_id].dimensions[0],
-                                                          self.symtable[cur_m_id].dimensions[1]))
-        elif op_type == '+=':
-            # left_ids = self.get_all_ids(lhs)
-            # left_subs = left_ids[1]
-            pre_list.append(
-                "    {} = scipy.sparse.coo_matrix(({}+{}.data.tolist(), np.hstack((np.asarray({}).T, np.asarray(({}.row, {}.col))))), shape=({}, {}))\n".format(cur_m_id, value_var, self.get_main_id(lhs),
-                                                                                                    index_var, self.get_main_id(lhs), self.get_main_id(lhs),
-                                                                                                    self.symtable[
-                                                                                                        cur_m_id].dimensions[
-                                                                                                        0],
-                                                                                                    self.symtable[
-                                                                                                        cur_m_id].dimensions[
-                                                                                                        1]))
-
+        pre_list.append('    {}.setFromTriplets(tripletList_{}.begin(), tripletList_{}.end());\n'.format(self.get_main_id(lhs), self.get_main_id(lhs), self.get_main_id(lhs)))
         return CodeNodeInfo(cur_m_id, pre_list)
 
     def walk_SparseIfs(self, node, **kwargs):
@@ -439,6 +416,7 @@ class EigenWalker(BaseNodeWalker):
         return CodeNodeInfo(ret, pre_list)
 
     def walk_SparseIf(self, node, **kwargs):
+        lhs = kwargs[LHS]
         sparse_node = node.parent
         while type(sparse_node).__name__ != 'SparseMatrix':
             sparse_node = sparse_node.parent
@@ -450,13 +428,15 @@ class EigenWalker(BaseNodeWalker):
         id2_info = self.walk(node.id2, **kwargs)
         id2 = id2_info.content
         stat_info = self.walk(node.stat, **kwargs)
-        content = []
-        content.append('    for {}, {} in {}:\n'.format(id0, id1, id2))
-        content.append('        {}.append(({}, {}))\n'.format(type_info.la_type.attrs.index_var, id0, id1))
         stat_content = stat_info.content
         # replace '_ij' with '(i,j)'
-        stat_content = stat_content.replace('_{}{}'.format(id0, id1), '[{}][{}]'.format(id0, id1))
-        content.append('        {}.append({})\n'.format(type_info.la_type.attrs.value_var, stat_content))
+        stat_content = stat_content.replace('_{}{}'.format(id0, id1), '({}, {})'.format(id0, id1))
+        content = []
+        content.append('    for (auto& tuple : {}) {{\n'.format(id2))
+        content.append('        double {} = std::get<0>(tuple);\n'.format(id0))
+        content.append('        double {} = std::get<1>(tuple);\n'.format(id1))
+        content.append('        tripletList_{}.push_back(Eigen::Triplet<double>({}, {}, {}));\n'.format(self.get_main_id(lhs), id0, id1, stat_content))
+        content.append('    }\n')
         return CodeNodeInfo(content)
 
     def walk_SparseOther(self, node, **kwargs):
@@ -651,8 +631,19 @@ class EigenWalker(BaseNodeWalker):
                 sub_strs = left_subs[0] + left_subs[1]
                 if self.symtable[sequence].var_type == VarTypeEnum.MATRIX and self.symtable[sequence].attrs is not None and self.symtable[sequence].attrs.sparse:
                     # sparse mat assign
-                    right_exp += '    ' + sequence + ' = ' + right_info.content
-                    content += right_exp
+                    # right_exp += '    ' + sequence + ' = ' + right_info.content
+                    # content += right_info.content
+                    def_str = ""
+                    if node.op != '+=':
+                        def_str = "    Eigen::SparseMatrix<double> {}({}, {});\n".format(self.get_main_id(left_id), self.symtable[
+                                self.get_main_id(left_id)].dimensions[
+                                0],
+                                                                                   self.symtable[
+                                                                                       self.get_main_id(left_id)].dimensions[
+                                                                                       1])
+                        def_str += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(self.get_main_id(left_id))
+                    content = def_str + content
+                    pass
                 elif left_subs[0] == left_subs[1]:
                     # L_ii
                     content = ""
@@ -699,11 +690,14 @@ class EigenWalker(BaseNodeWalker):
                 # content += '\n'
         #
         else:
-            op = ' = '
-            if node.op == '+=':
-                op = ' += '
-            right_exp += '    ' + self.get_ctype(self.symtable[self.get_main_id(left_id)]) + ' ' + self.get_main_id(left_id) + op + right_info.content + ';'
-            content += right_exp
+            if type(node.right).__name__ == 'SparseMatrix':
+                content = right_info.content
+            else:
+                op = ' = '
+                if node.op == '+=':
+                    op = ' += '
+                right_exp += '    ' + self.get_ctype(self.symtable[self.get_main_id(left_id)]) + ' ' + self.get_main_id(left_id) + op + right_info.content + ';'
+                content += right_exp
         content += '\n'
         la_remove_key(LHS, **kwargs)
         return CodeNodeInfo(content)
