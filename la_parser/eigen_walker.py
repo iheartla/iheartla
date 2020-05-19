@@ -316,15 +316,15 @@ class EigenWalker(BaseNodeWalker):
                     if sub == var_sub:
                         target_var.append(var_ids[0])
         if self.symtable[assign_id].var_type == VarTypeEnum.MATRIX:
-            content.append("{} = np.zeros(({}, {}))\n".format(assign_id, self.symtable[assign_id].dimensions[0], self.symtable[assign_id].dimensions[1]))
+            content.append("Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".format(assign_id, self.symtable[assign_id].dimensions[0], self.symtable[assign_id].dimensions[1]))
         elif self.symtable[assign_id].var_type == VarTypeEnum.VECTOR:
-            content.append("{} = np.zeros({})\n".format(assign_id, self.symtable[assign_id].dimensions[0]))
+            content.append("Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, 1);\n".format(assign_id, self.symtable[assign_id].dimensions[0]))
         elif self.symtable[assign_id].var_type == VarTypeEnum.SEQUENCE:
             ele_type = self.symtable[assign_id].element_type
-            content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].dimensions[0], ele_type.dimensions[0], ele_type.dimensions[1]))
+            content.append("Eigen::MatrixXd {} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].dimensions[0], ele_type.dimensions[0], ele_type.dimensions[1]))
         else:
             content.append("{} = 0\n".format(assign_id))
-        content.append("for {} in range(len({})):\n".format(sub, target_var[0]))
+        content.append("for(int {}=0; {}<{}.size(); {}++){{\n".format(sub, sub, target_var[0], sub))
         if node.cond:
             for right_var in type_info.symbols:
                 if self.contain_subscript(right_var):
@@ -351,10 +351,12 @@ class EigenWalker(BaseNodeWalker):
         # only one sub for now
         if node.cond:
             content.append("    " + cond_content)
-            content.append(str("        " + assign_id + " += " + exp_str + '\n'))
+            content.append(str("        " + assign_id + " += " + exp_str + ';\n'))
         else:
-            content.append(str("    " + assign_id + " += " + exp_str + '\n'))
+            content.append(str("    " + assign_id + " += " + exp_str + ';\n'))
         content[0] = "    " + content[0]
+
+        content.append("}\n")
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
     def walk_Determinant(self, node, **kwargs):
@@ -372,13 +374,13 @@ class EigenWalker(BaseNodeWalker):
 
     def walk_Transpose(self, node, **kwargs):
         f_info = self.walk(node.f, **kwargs)
-        f_info.content = "{}.T".format(f_info.content)
+        f_info.content = "{}.transpose()".format(f_info.content)
         return f_info
 
     def walk_Power(self, node, **kwargs):
         base_info = self.walk(node.base, **kwargs)
         if node.t:
-            base_info.content = "{}.T".format(base_info.content)
+            base_info.content = "{}.transpose()".format(base_info.content)
         elif node.r:
             base_info.content = "np.linalg.inv({})".format(base_info.content)
         else:
@@ -657,17 +659,19 @@ class EigenWalker(BaseNodeWalker):
                     for right_var in type_info.symbols:
                         if sub_strs in right_var:
                             var_ids = self.get_all_ids(right_var)
-                            right_info.content = right_info.content.replace(right_var, "{}[{}][{}]".format(var_ids[0], sub_strs[0], sub_strs[1]))
-                    right_exp += "    {}[{}][{}] = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
+                            right_info.content = right_info.content.replace(right_var, "{}({}, {})".format(var_ids[0], sub_strs[0], sub_strs[1]))
+                    right_exp += "    {}({}, {}) = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
                     if self.symtable[sequence].var_type == VarTypeEnum.MATRIX:
                         if node.op == '=':
                             # declare
-                            content += "    {} = np.zeros(({}, {}))\n".format(sequence,
+                            content += "    Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".format(sequence,
                                                                               self.symtable[sequence].dimensions[0],
                                                                               self.symtable[sequence].dimensions[1])
-                    content += "    for {} in range({}):\n".format(left_subs[0], self.symtable[sequence].dimensions[0])
-                    content += "        for {} in range({}):\n".format(left_subs[1], self.symtable[sequence].dimensions[1])
-                    content += "        " + right_exp
+                    content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0], self.symtable[sequence].dimensions[0], left_subs[0])
+                    content += "        for( int {}=0; {}<{}; {}++){{\n".format(left_subs[1], left_subs[1], self.symtable[sequence].dimensions[1], left_subs[1])
+                    content += "        " + right_exp + ";\n"
+                    content += "        }\n"
+                    content += "    }\n"
                     # content += '\n'
             elif len(left_subs) == 1: # sequence only
                 sequence = left_ids[0]  # y left_subs[0]
@@ -680,14 +684,14 @@ class EigenWalker(BaseNodeWalker):
                 right_exp += "    {}[{}] = {}".format(self.get_main_id(left_id), left_subs[0], right_info.content)
                 ele_type = self.symtable[sequence].element_type
                 if ele_type.var_type == VarTypeEnum.MATRIX:
-                    content += "    {} = np.zeros(({}, {}, {}))\n".format(sequence, self.symtable[sequence].dimensions[0], ele_type.dimensions[0], ele_type.dimensions[1])
+                    content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence, self.symtable[sequence].dimensions[0])
                 elif ele_type.var_type == VarTypeEnum.VECTOR:
-                    content += "    {} = np.zeros(({}, {}))\n".format(sequence, self.symtable[sequence].dimensions[0], ele_type.dimensions[0])
+                    content += "    Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {})\n".format(sequence, self.symtable[sequence].dimensions[0], ele_type.dimensions[0])
                 else:
                     content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].dimensions[0])
-                content += "    for {} in range({}):\n".format(left_subs[0], self.symtable[sequence].dimensions[0])
-                content += "    " + right_exp
-                # content += '\n'
+                content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0], self.symtable[sequence].dimensions[0], left_subs[0])
+                content += "    " + right_exp + ";\n"
+                content += '    }\n'
         #
         else:
             if type(node.right).__name__ == 'SparseMatrix':
