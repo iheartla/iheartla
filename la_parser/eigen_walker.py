@@ -4,10 +4,9 @@ from la_parser.base_walker import *
 class EigenWalker(BaseNodeWalker):
     def __init__(self):
         super().__init__(ParserTypeEnum.EIGEN)
-        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <unordered_set>\n\n'''
+        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n\n'''
         self.post_str = ''''''
         self.ret = 'ret'
-        self.set_hash_dict = {}
 
     def get_ctype(self, la_type):
         type_str = ""
@@ -69,26 +68,7 @@ class EigenWalker(BaseNodeWalker):
                     type_list.append('int')
                 else:
                     type_list.append('double')
-            hash_value = hash(",".join(type_list))
-            if hash_value in self.set_hash_dict:
-                hash_name, hash_func = self.set_hash_dict[hash_value]
-            else:
-                size = len(self.set_hash_dict)
-                if size == 0:
-                    hash_name = 'key_hash'
-                else:
-                    hash_name = 'key_hash{}'.format(size)
-                hash_list = []
-                hash_list.append("struct {} : public std::unary_function<std::tuple<{}>, std::size_t>".format(hash_name, ", ".join(type_list)))
-                hash_list.append("{")
-                hash_list.append("    std::size_t operator()(const std::tuple<{}>& k) const".format(", ".join(type_list)))
-                hash_list.append("    {")
-                hash_list.append("        return {};".format(" * ".join(get_list)))
-                hash_list.append("    }")
-                hash_list.append("};\n\n")
-                hash_func = '\n'.join(hash_list)
-                self.set_hash_dict[hash_value] = [hash_name, hash_func]
-            type_str = "std::unordered_set< std::tuple< {} >, {}>".format(", ".join(type_list), hash_name)
+            type_str = "std::set<std::tuple< {} > >".format(", ".join(type_list))
         return type_str
 
     def walk_Start(self, node, **kwargs):
@@ -207,8 +187,6 @@ class EigenWalker(BaseNodeWalker):
 
             # main_print.append('    std::cout<<"{}:\\n"<<{}<<std::endl;'.format(parameter, parameter))
         content = ""
-        for k, v in self.set_hash_dict.items():
-            content += v[1]
         if show_doc:
             content += '/**\n * ' + func_name + '\n *\n * ' + '\n * '.join(doc) + '\n * @return {}\n */\n'.format(self.ret_symbol)
         ret_type = self.get_ctype(self.symtable[self.ret_symbol])
@@ -482,7 +460,7 @@ class EigenWalker(BaseNodeWalker):
                                 # vector
                                 ret[i][j] = '{}({})'.format(func_name, dims[0])
                             else:
-                                ret[i][j] = '{}(({}, {}))'.format(func_name, dims[0], dims[1])
+                                ret[i][j] = '{}({}, {})'.format(func_name, dims[0], dims[1])
                 all_rows.append(', '.join(ret[i]) )
             m_content += '{};'.format(',\n    '.join(all_rows))
             content += '    {} << {}\n'.format(cur_m_id, m_content)
@@ -554,7 +532,7 @@ class EigenWalker(BaseNodeWalker):
             elif node.left == '1':
                 func_name = "Eigen::MatrixXd::Ones"
             else:
-                func_name = "({} * np.ones".format(left_info.content)
+                func_name = "({} * Eigen::MatrixXd::Ones".format(left_info.content)
                 post_s = ')'
         id1_info = self.walk(node.id1, **kwargs)
         if node.id2:
