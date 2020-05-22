@@ -28,6 +28,23 @@ class LaVarType(object):
         self.element_subscript = element_subscript
 
 
+class SequenceType(LaVarType):
+    def __init__(self, var_type, dimensions=0, desc=None, attrs=None, element_type=None, element_subscript=[]):
+        LaVarType.__init__(self, var_type=VarTypeEnum.SEQUENCE, dimensions=dimensions, desc=None, attrs=None, element_type=None, element_subscript=element_subscript)
+        self.size = 0
+
+class MatrixType(LaVarType):
+    def __init__(self, var_type, dimensions=0, desc=None, attrs=None, element_type=None, element_subscript=[]):
+        LaVarType.__init__(self, var_type=VarTypeEnum.MATRIX, dimensions=dimensions, desc=None, attrs=None, element_type=None, element_subscript=element_subscript)
+        self.rows = 0
+        self.cols = 0
+
+class VectorType(LaVarType):
+    def __init__(self, var_type, dimensions=0, desc=None, attrs=None, element_type=None, element_subscript=[]):
+        LaVarType.__init__(self, var_type=VarTypeEnum.VECTOR, dimensions=dimensions, desc=None, attrs=None, element_type=None, element_subscript=element_subscript)
+        self.rows = 0
+
+
 class MatrixAttrs(object):
     def __init__(self, need_exp=False, diagonal=False, sparse=False, block=False, subs=[], list_dim=None, index_var=None, value_var=None):
         super().__init__()
