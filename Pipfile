@@ -10,6 +10,7 @@ tatsu = "*"
 graphviz = "*"
 wxpython = "*"
 PyMuPDF = "*"
+cppyy = "*"
 
 [requires]
 python_version = "3.7"

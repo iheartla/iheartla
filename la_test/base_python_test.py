@@ -9,6 +9,18 @@ from time import sleep
 import numpy as np
 import logging
 from la_tools.la_logger import LaLogger, LoggerTypeEnum
+eigen_path = "/usr/local/Cellar/eigen/3.3.7/include/eigen3"       # required
+
+
+class TestFuncInfo(object):
+    def __init__(self, numpy_func=None, eig_file_name=None, eig_test_name=None, eig_func_name=None):
+        super().__init__()
+        # Numpy
+        self.numpy_func = numpy_func  # func content
+        # Eigen
+        self.eig_file_name = eig_file_name   # generated cpp file name
+        self.eig_func_name = eig_func_name   # func name
+        self.eig_test_name = eig_test_name   # test func name
 
 
 class BasePythonTest(unittest.TestCase):
@@ -19,9 +31,10 @@ class BasePythonTest(unittest.TestCase):
         if BasePythonTest.cnt == 0:
             LaLogger.getInstance().set_level(logging.WARNING)
 
-    def set_up(self, parse_str, parse_type):
-        if parse_type is None:
-            parse_type = ParserTypeEnum.NUMPY
+    def gen_func_info(self, parse_str):
+        func_name = "myExpression"   # can use different name in future
+        # Numpy
+        parse_type = ParserTypeEnum.NUMPY
         content = parse_la(parse_str, parse_type)
         module_name = 'la_test.generated_code{}'.format(BasePythonTest.cnt)
         file_name = 'la_test/generated_code{}.py'.format(BasePythonTest.cnt)
@@ -31,10 +44,29 @@ class BasePythonTest(unittest.TestCase):
             file.close()
         except IOError:
             print("IO Error!")
-        BasePythonTest.cnt += 1
         module = importlib.import_module(module_name)
         subprocess.run(["rm", file_name], capture_output=False)
-        return module.myExpression
+        # Eigen
+        parse_type = ParserTypeEnum.EIGEN
+        content = parse_la(parse_str, parse_type)
+        # add namespace
+        namespace = "eigen_code{}".format(BasePythonTest.cnt)
+        pos = content.rfind("#include")
+        sub_content = content[pos:]
+        pos += sub_content.find('\n')
+        content = content[:pos+1] + 'namespace {}{{\n'.format(namespace) + content[pos+1:] + '\n}'
+        try:
+            eig_file_name = 'la_test/generated_code{}.cpp'.format(BasePythonTest.cnt)
+            file = open(eig_file_name, 'w')
+            file.write(content)
+            file.close()
+        except IOError:
+            print("IO Error!")
+        eig_test_name = "test_eigen{}".format(BasePythonTest.cnt)
+        eig_func_name = "{}::{}".format(namespace, func_name)
+        # update cnt
+        BasePythonTest.cnt += 1
+        return TestFuncInfo(getattr(module, func_name), eig_file_name, eig_test_name, eig_func_name)
 
     def assertDMatrixEqual(self, A, B):
         # dense matrix comparision
