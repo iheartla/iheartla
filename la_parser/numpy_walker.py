@@ -376,7 +376,7 @@ class NumpyWalker(BaseNodeWalker):
                                 else:
                                     ret[i][j] = '{}(({}, {}))'.format(func_name, dims[0], dims[1])
                     all_rows.append('[' + ', '.join(ret[i]) + ']')
-                m_content += 'np.bmat([{}])'.format(', '.join(all_rows))
+                m_content += 'np.block([{}])'.format(', '.join(all_rows))
                 content += '{} = {}\n'.format(cur_m_id, m_content)
             elif len(ret) == 1:
                 # single row
