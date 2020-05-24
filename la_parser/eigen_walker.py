@@ -233,7 +233,7 @@ class EigenWalker(BaseNodeWalker):
         main_content.append("    {}({});".format(rand_func_name, ', '.join(self.parameters)))
         main_content += main_print
         main_content.append("    {} func_value = {}({});".format(self.get_ctype(self.symtable[self.ret_symbol]), func_name, ', '.join(self.parameters)))
-        main_content.append('    std::cout<<"func_value:\\n"<<func_value<<std::endl;')
+        # main_content.append('    std::cout<<"func_value:\\n"<<func_value<<std::endl;')
         main_content.append('    return 0;')
         main_content.append('}')
         content += '\n\n' + '\n'.join(test_content) + '\n\n\n' + '\n'.join(main_content)
@@ -306,13 +306,16 @@ class EigenWalker(BaseNodeWalker):
             ele_type = self.symtable[assign_id].element_type
             content.append("Eigen::MatrixXd {} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].dimensions[0], ele_type.dimensions[0], ele_type.dimensions[1]))
         else:
-            content.append("{} = 0\n".format(assign_id))
-        content.append("for(int {}=0; {}<{}.size(); {}++){{\n".format(sub, sub, target_var[0], sub))
+            content.append("double {} = 0;\n".format(assign_id))
+        if self.symtable[target_var[0]].var_type == VarTypeEnum.MATRIX:  # todo
+            content.append("for(int {}=0; {}<{}.rows(); {}++){{\n".format(sub, sub, target_var[0], sub))
+        else:
+            content.append("for(int {}=0; {}<{}.size(); {}++){{\n".format(sub, sub, target_var[0], sub))
         if node.cond:
             for right_var in type_info.symbols:
                 if self.contain_subscript(right_var):
                     var_ids = self.get_all_ids(right_var)
-                    exp_str = exp_str.replace(right_var, "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
+                    exp_str = exp_str.replace(right_var, "{}({}, {})".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
                     if exp_info.pre_list:
                         for index in range(len(exp_info.pre_list)):
                             exp_info.pre_list[index] = exp_info.pre_list[index].replace(old, new)
@@ -620,30 +623,26 @@ class EigenWalker(BaseNodeWalker):
                     # content += right_info.content
                     def_str = ""
                     if node.op != '+=':
-                        def_str = "    Eigen::SparseMatrix<double> {}({}, {});\n".format(self.get_main_id(left_id), self.symtable[
-                                self.get_main_id(left_id)].dimensions[
-                                0],
-                                                                                   self.symtable[
-                                                                                       self.get_main_id(left_id)].dimensions[
-                                                                                       1])
+                        def_str = "    Eigen::SparseMatrix<double> {}({}, {});\n".format(self.get_main_id(left_id), self.symtable[self.get_main_id(left_id)].dimensions[0], self.symtable[self.get_main_id(left_id)].dimensions[1])
                         def_str += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(self.get_main_id(left_id))
                     content = def_str + content
                     pass
                 elif left_subs[0] == left_subs[1]:
                     # L_ii
                     content = ""
-                    content += "    for {} in range({}):\n".format(left_subs[0], self.symtable[sequence].dimensions[0])
+                    content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0], self.symtable[sequence].dimensions[0], left_subs[0])
                     if right_info.pre_list:
                         for list in right_info.pre_list:
                             lines = list.split('\n')
                             content += "    " + "\n    ".join(lines)
-                    content += "    {}[{}][{}] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
+                    content += "    {}({}, {}) = {};\n".format(sequence, left_subs[0], left_subs[0], right_info.content)
+                    content += "    }"
                 else:
                     for right_var in type_info.symbols:
                         if sub_strs in right_var:
                             var_ids = self.get_all_ids(right_var)
                             right_info.content = right_info.content.replace(right_var, "{}({}, {})".format(var_ids[0], sub_strs[0], sub_strs[1]))
-                    right_exp += "    {}({}, {}) = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
+                    right_exp += "    {}({}, {}) = {};".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
                     if self.symtable[sequence].var_type == VarTypeEnum.MATRIX:
                         if node.op == '=':
                             # declare
@@ -691,7 +690,7 @@ class EigenWalker(BaseNodeWalker):
 
     def walk_IfCondition(self, node, **kwargs):
         ret_info = self.walk(node.cond)
-        ret_info.content = "if " + ret_info.content + ":\n"
+        ret_info.content = "if(" + ret_info.content + ")\n"
         return ret_info
 
     def walk_NeCondition(self, node, **kwargs):

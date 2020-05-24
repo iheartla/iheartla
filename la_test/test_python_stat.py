@@ -16,3 +16,13 @@ class TestStat(BasePythonTest):
         b: scalar"""
         func_info = self.gen_func_info(la_str)
         self.assertEqual(func_info.numpy_func(3, 2), 6)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    if({}(3, 2) == 6){{".format(func_info.eig_func_name),
+                     "        return true;",
+                     "    }",
+                     "    return false;",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
