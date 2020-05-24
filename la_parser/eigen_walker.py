@@ -204,10 +204,12 @@ class EigenWalker(BaseNodeWalker):
         stats_content = ""
         for index in range(len(self.stat_list)):
             ret_str = ''
+            need_semicolon = False
             if index == len(self.stat_list) - 1:
                 if type(self.stat_list[index]).__name__ != 'Assignment':
                     kwargs[LHS] = self.ret_symbol
-                    ret_str = "    " + self.ret_symbol + ' = '
+                    ret_str = "    " + ret_type + " " + self.ret_symbol + ' = '
+                    need_semicolon = True
             else:
                 if type(self.stat_list[index]).__name__ != 'Assignment':
                     # meaningless
@@ -215,7 +217,10 @@ class EigenWalker(BaseNodeWalker):
             stat_info = self.walk(self.stat_list[index], **kwargs)
             if stat_info.pre_list:
                 stats_content += "".join(stat_info.pre_list)
-            stats_content += ret_str + stat_info.content + '\n'
+            if need_semicolon:
+                stats_content += ret_str + stat_info.content + ';\n'
+            else:
+                stats_content += ret_str + stat_info.content + '\n'
         #
         content += stats_content
         content += '    return ' + self.ret_symbol + ';'
