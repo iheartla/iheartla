@@ -115,7 +115,6 @@ class EigenWalker(BaseNodeWalker):
             if self.symtable[parameter].var_type == VarTypeEnum.SEQUENCE:
                 ele_type = self.symtable[parameter].element_type
                 data_type = ele_type.element_type
-                size_str = ""
                 integer_type = False
                 test_content.append('    {}.resize({});'.format(parameter, self.symtable[parameter].size))
                 test_content.append('    for(int i=0; i<{}; i++){{'.format(self.symtable[parameter].size))
@@ -124,19 +123,21 @@ class EigenWalker(BaseNodeWalker):
                         integer_type = True
                 if ele_type.var_type == VarTypeEnum.MATRIX:
                     type_checks.append('    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
-                    type_checks.append('    for( const auto& el : {} ) {{'.format(parameter))
-                    type_checks.append('        assert( el.rows() == {} );'.format(ele_type.rows))
-                    type_checks.append('        assert( el.cols() == {} );'.format(ele_type.cols))
-                    type_checks.append('    }')
+                    if not ele_type.is_dim_constant():
+                        type_checks.append('    for( const auto& el : {} ) {{'.format(parameter))
+                        type_checks.append('        assert( el.rows() == {} );'.format(ele_type.rows))
+                        type_checks.append('        assert( el.cols() == {} );'.format(ele_type.cols))
+                        type_checks.append('    }')
                     if integer_type:
                         test_content.append('        {}[i] = Eigen::MatrixXi::Random({}, {});'.format(parameter, ele_type.rows, ele_type.cols))
                     else:
                         test_content.append('        {}[i] = Eigen::MatrixXd::Random({}, {});'.format(parameter, ele_type.rows, ele_type.cols))
                 elif ele_type.var_type == VarTypeEnum.VECTOR:
-                    type_checks.append('    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
-                    type_checks.append('    for( const auto& el : {} ) {{'.format(parameter))
-                    type_checks.append('        assert( el.size() == {} );'.format(ele_type.rows))
-                    type_checks.append('    }')
+                    if not ele_type.is_dim_constant():
+                        type_checks.append('    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
+                        type_checks.append('    for( const auto& el : {} ) {{'.format(parameter))
+                        type_checks.append('        assert( el.size() == {} );'.format(ele_type.rows))
+                        type_checks.append('    }')
                     if integer_type:
                         test_content.append('        {}[i] = Eigen::VectorXi::Random({});'.format(parameter, ele_type.rows))
                     else:
@@ -153,8 +154,9 @@ class EigenWalker(BaseNodeWalker):
                         test_content.append('    {} = Eigen::MatrixXd::Random({}, {});'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
                 else:
                     test_content.append('    {} = Eigen::MatrixXd::Random({}, {});'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
-                type_checks.append('    assert( {}.rows() == {} );'.format(parameter, self.symtable[parameter].rows))
-                type_checks.append('    assert( {}.cols() == {} );'.format(parameter, self.symtable[parameter].cols))
+                if not self.symtable[parameter].is_dim_constant():
+                    type_checks.append('    assert( {}.rows() == {} );'.format(parameter, self.symtable[parameter].rows))
+                    type_checks.append('    assert( {}.cols() == {} );'.format(parameter, self.symtable[parameter].cols))
             elif self.symtable[parameter].var_type == VarTypeEnum.VECTOR:
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
@@ -164,7 +166,8 @@ class EigenWalker(BaseNodeWalker):
                         test_content.append('    {} = Eigen::VectorXd::Random({});'.format(parameter, self.symtable[parameter].rows))
                 else:
                     test_content.append('    {} = Eigen::VectorXd::Random({});'.format(parameter, self.symtable[parameter].rows))
-                type_checks.append('    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].rows))
+                if not self.symtable[parameter].is_dim_constant():
+                    type_checks.append('    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].rows))
             elif self.symtable[parameter].var_type == VarTypeEnum.SCALAR:
                 test_content.append('    {} = rand() % {};'.format(parameter, rand_int_max))
             elif self.symtable[parameter].var_type == VarTypeEnum.SET:
