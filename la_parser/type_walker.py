@@ -120,7 +120,7 @@ class TypeWalker(NodeWalker):
                 element_type = LaVarType(VarTypeEnum.REAL)
             elif node.type == 'ℤ':
                 element_type = LaVarType(VarTypeEnum.INTEGER)
-        la_type = LaVarType(VarTypeEnum.MATRIX, [id1, id2], desc=desc, element_type=element_type)
+        la_type = MatrixType(rows=id1, cols=id2, desc=desc, element_type=element_type)
         self.handle_identifier(id0, la_type)
         self.update_parameters(id0)
         if isinstance(id1, str):
@@ -149,7 +149,7 @@ class TypeWalker(NodeWalker):
                 element_type = LaVarType(VarTypeEnum.REAL)
             elif node.type == 'ℤ':
                 element_type = LaVarType(VarTypeEnum.INTEGER)
-        la_type = LaVarType(VarTypeEnum.VECTOR, [id1, 1], desc=desc, element_type=element_type)
+        la_type = VectorType(rows=id1, desc=desc, element_type=element_type)
         self.handle_identifier(id0, la_type)
         self.update_parameters(id0)
         if isinstance(id1, str):
@@ -193,7 +193,7 @@ class TypeWalker(NodeWalker):
                 int_list = [True] * cnt
             else:
                 int_list = [False] * cnt
-        self.symtable[id0] = LaVarType(VarTypeEnum.SET, desc=desc, dimensions=[cnt], attrs=int_list)
+        self.symtable[id0] = SetType(desc=desc, size=cnt, int_list=int_list)
         self.handle_identifier(id0, self.symtable[id0])
         self.update_parameters(id0)
 
@@ -288,23 +288,23 @@ class TypeWalker(NodeWalker):
             if len(left_subs) == 2: # matrix
                 if right_info.la_type is not None and right_info.la_type.var_type == VarTypeEnum.MATRIX:
                     # sparse mat assign
-                    attrs = right_info.la_type.attrs
-                    if attrs is not None and attrs.sparse:
+                    if right_info.la_type.sparse:
                         self.symtable[sequence] = right_type
                 if sequence not in self.symtable:
                     for symbol in right_info.symbols:
                         if left_subs[0] in symbol and left_subs[1] in symbol:
                             main_id = self.get_main_id(symbol)
-                            dim = self.symtable[main_id].dimensions
+                            rows = self.symtable[main_id].rows
+                            cols = self.symtable[main_id].cols
                             break
-                    self.symtable[sequence] = LaVarType(VarTypeEnum.MATRIX, dimensions=dim, element_type=right_type)
+                    self.symtable[sequence] = MatrixType(rows=rows, cols=cols, element_type=right_type)
             elif len(left_subs) == 1: # sequence
                 for symbol in right_info.symbols:
                     if left_subs[0] in symbol:
                         main_id = self.get_main_id(symbol)
-                        dim = self.symtable[main_id].dimensions[0]
+                        dim = self.symtable[main_id].size
                         break
-                self.symtable[sequence] = LaVarType(VarTypeEnum.SEQUENCE, dimensions=[dim], element_type=right_type)
+                self.symtable[sequence] = SequenceType(size=dim, element_type=right_type)
         else:
             if node.op != '=':
                 assert id0 in self.symtable, "lhs should exist"
@@ -347,13 +347,11 @@ class TypeWalker(NodeWalker):
         symbols = base_info.symbols
         if node.t:
             assert base_info.la_type.var_type == VarTypeEnum.MATRIX
-            node_type = LaVarType(VarTypeEnum.MATRIX,
-                                  dimensions=[base_info.la_type.dimensions[1], base_info.la_type.dimensions[0]])
+            node_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows)
         elif node.r:
             assert base_info.la_type.var_type == VarTypeEnum.MATRIX
-            assert base_info.la_type.dimensions[0] == base_info.la_type.dimensions[1]
-            node_type = LaVarType(VarTypeEnum.MATRIX,
-                                  dimensions=[base_info.la_type.dimensions[1], base_info.la_type.dimensions[0]])
+            assert base_info.la_type.rows == base_info.la_type.cols
+            node_type = MatrixType(rows=base_info.la_type.rows, cols=base_info.la_type.rows)
         else:
             power_info = self.walk(node.power, **kwargs)
             symbols += power_info.symbols
@@ -367,19 +365,17 @@ class TypeWalker(NodeWalker):
         assert right_info.la_type.var_type == VarTypeEnum.MATRIX or right_info.la_type.var_type == VarTypeEnum.VECTOR
         node_type = None
         if left_info.la_type.var_type == VarTypeEnum.MATRIX:
-            assert left_info.la_type.dimensions[0] == right_info.la_type.dimensions[0]
+            assert left_info.la_type.rows == right_info.la_type.rows
             if right_info.la_type.var_type == VarTypeEnum.MATRIX:
-                node_type = LaVarType(VarTypeEnum.MATRIX,
-                                      dimensions=[left_info.la_type.dimensions[1], right_info.la_type.dimensions[1]])
+                node_type = MatrixType(rows=left_info.la_type.cols, cols=left_info.la_type.cols)
             elif right_info.la_type.var_type == VarTypeEnum.VECTOR:
-                node_type = LaVarType(VarTypeEnum.VECTOR,
-                                      dimensions=[left_info.la_type.dimensions[1]])
+                node_type = VectorType(rows=left_info.la_type.cols)
         return NodeInfo(node_type, symbols=left_info.symbols.union(right_info.symbols))
 
     def walk_Transpose(self, node, **kwargs):
         f_info = self.walk(node.f, **kwargs)
         assert f_info.la_type.var_type == VarTypeEnum.MATRIX
-        node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[f_info.la_type.dimensions[1], f_info.la_type.dimensions[0]])
+        node_type = MatrixType(rows=f_info.la_type.cols, cols=f_info.la_type.rows)
         node_info = NodeInfo(node_type, symbols=f_info.symbols)
         return node_info
 
@@ -499,11 +495,11 @@ class TypeWalker(NodeWalker):
         id2_info = self.walk(node.id2, **kwargs)
         id2 = id2_info.content
         self.walk(node.ifs, **kwargs)
-        matrix_attrs = MatrixAttrs(sparse=True)
-        matrix_attrs.index_var = self.generate_var_name("{}{}{}".format(all_ids[0], all_ids[1][0], all_ids[1][1]))
-        matrix_attrs.value_var = self.generate_var_name("{}vals".format(all_ids[0]))
         new_id = self.generate_var_name('sparse')
-        la_type = LaVarType(VarTypeEnum.MATRIX, attrs=matrix_attrs, dimensions=[id1, id2])
+        # definition
+        index_var = self.generate_var_name("{}{}{}".format(all_ids[0], all_ids[1][0], all_ids[1][1]))
+        value_var = self.generate_var_name("{}vals".format(all_ids[0]))
+        la_type = MatrixType(rows=id1, cols=id2, sparse=True, index_var=index_var, value_var=value_var)
         self.symtable[new_id] = la_type
         node_info = NodeInfo(la_type)
         node_info.symbol = new_id
@@ -557,14 +553,13 @@ class TypeWalker(NodeWalker):
                 # need change dimension
                 list_dim = {}
                 for i, j in undef_list:
-                    list_dim[(i, j)] = type_array[i][j].dimensions
-        m_attr = MatrixAttrs(block=block, list_dim=list_dim)
-        node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[rows, cols], attrs=m_attr)
+                    list_dim[(i, j)] = [type_array[i][j].rows, type_array[i][j].cols]
+        node_type = MatrixType(rows=rows, cols=cols, block=block, list_dim=list_dim)
         node_info = NodeInfo(node_type)
         if LHS in kwargs:
             lhs = kwargs[LHS]
             new_id = self.generate_var_name(lhs)
-            self.symtable[new_id] = LaVarType(VarTypeEnum.MATRIX, dimensions=[rows, cols])
+            self.symtable[new_id] = MatrixType(rows=rows, cols=cols)
             node_info.symbol = new_id
             self.node_dict[node] = node_info
         self.node_dict[node] = node_info
@@ -647,7 +642,7 @@ class TypeWalker(NodeWalker):
         if node.id:
             # 'I' symbol
             assert 'I' not in self.symtable, "You can't use 'I' with subscript since it has been defined before"
-            node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[id1, id1])
+            node_type = MatrixType(rows=id1, cols=id1)
         else:
             if node.left == '0':
                 assert la_is_inside_matrix(**kwargs), "Zero matrix can only be used inside matrix"
@@ -656,9 +651,9 @@ class TypeWalker(NodeWalker):
                 id2 = id2_info.content
                 if isinstance(id2, str):
                     assert id2 in self.symtable, "{} unknown".format(id2)
-                node_type = LaVarType(VarTypeEnum.MATRIX, dimensions=[id1, id2])
+                node_type = MatrixType(rows=id1, cols=id2)
             else:
-                node_type = LaVarType(VarTypeEnum.VECTOR, dimensions=[id1, 1])
+                node_type = VectorType(rows=id1)
         node_info = NodeInfo(node_type)
         self.node_dict[node] = node_type
         return node_info
@@ -681,13 +676,13 @@ class TypeWalker(NodeWalker):
             for j in range(cols):
                 if type_array[i][j].var_type == VarTypeEnum.MATRIX or type_array[i][j].var_type == VarTypeEnum.VECTOR:
                     if row_dim[i] is None:
-                        row_dim[i] = type_array[i][j].dimensions[0]
-                    elif row_dim[i] != type_array[i][j].dimensions[0]:
+                        row_dim[i] = type_array[i][j].rows
+                    elif row_dim[i] != type_array[i][j].rows:
                         valid = False
                         break
                     if col_dim[j] is None:
-                        col_dim[j] = type_array[i][j].dimensions[1]
-                    elif col_dim[j] != type_array[i][j].dimensions[1]:
+                        col_dim[j] = type_array[i][j].cols
+                    elif col_dim[j] != type_array[i][j].cols:
                         valid = False
                         break
                 else:
@@ -704,8 +699,7 @@ class TypeWalker(NodeWalker):
             for (i, j) in undef_list:
                 if row_dim[i] is not None and col_dim[j] is not None:
                     # modify dimensions
-                    type_array[i][j].dimensions = [row_dim[i], col_dim[j]]
-                    type_array[i][j].var_type = VarTypeEnum.MATRIX
+                    type_array[i][j] = MatrixType(rows=row_dim[i], cols=col_dim[j])
                 else:
                     remain_list.append((i, j))
                     if row_dim[i] is None:
@@ -739,8 +733,7 @@ class TypeWalker(NodeWalker):
                             col_dim[set_index] = mat_size[1] - current_sum
                     # still valid
                     for (i, j) in remain_list:
-                        type_array[i][j].dimensions = [row_dim[i], col_dim[j]]
-                        type_array[i][j].var_type = VarTypeEnum.MATRIX
+                        type_array[i][j] = MatrixType(rows=row_dim[i], cols=col_dim[j])
                 else:
                     valid = False
         # check total dimensions bound
@@ -765,9 +758,9 @@ class TypeWalker(NodeWalker):
         if op == TypeInferenceEnum.INF_ADD or op == TypeInferenceEnum.INF_SUB:
             assert left_type.var_type == right_type.var_type, 'left:{}, right:{}'.format(left_type.var_type, right_type.var_type)
             if left_type.var_type == VarTypeEnum.MATRIX:
-                assert left_type.dimensions[0] == right_type.dimensions[0] and left_type.dimensions[1] == right_type.dimensions[1], 'error: dimension mismatch'
+                assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, 'error: dimension mismatch'
             elif left_type.var_type == VarTypeEnum.VECTOR:
-                assert left_type.dimensions[0] == right_type.dimensions[0], 'error: dimension mismatch'
+                assert left_type.rows == right_type.rows, 'error: dimension mismatch'
             ret_type = left_type
         elif op == TypeInferenceEnum.INF_MUL:
             assert left_type.var_type is not VarTypeEnum.SEQUENCE and right_type.var_type is not VarTypeEnum.SEQUENCE, 'error: sequence can not be operated'
@@ -781,22 +774,21 @@ class TypeWalker(NodeWalker):
                 if right_type.var_type == VarTypeEnum.INTEGER:
                     ret_type = left_type
                 elif right_type.var_type == VarTypeEnum.MATRIX:
-                    assert left_type.dimensions[1] == right_type.dimensions[0], 'error: dimension mismatch'
-                    ret_type = LaVarType(VarTypeEnum.MATRIX, [left_type.dimensions[0], right_type.dimensions[1]])
+                    assert left_type.cols == right_type.rows, 'error: dimension mismatch'
+                    ret_type = MatrixType(rows=left_type.rows, cols=right_type.cols)
                 elif right_type.var_type == VarTypeEnum.VECTOR:
-                    assert left_type.dimensions[1] == right_type.dimensions[0], 'error: dimension mismatch'
-                    ret_type = LaVarType(VarTypeEnum.VECTOR, [left_type.dimensions[0]])
+                    assert left_type.cols == right_type.rows, 'error: dimension mismatch'
+                    ret_type = VectorType(rows=left_type.rows)
             elif left_type.var_type == VarTypeEnum.VECTOR:
                 if right_type.var_type == VarTypeEnum.SCALAR:
                     ret_type = left_type
                 if right_type.var_type == VarTypeEnum.INTEGER:
                     ret_type = left_type
                 elif right_type.var_type == VarTypeEnum.MATRIX:
-                    assert 1 == right_type.dimensions[0], 'error: dimension mismatch'
-                    ret_type = LaVarType(VarTypeEnum.MATRIX, [left_type.dimensions[0], right_type.dimensions[1]])
+                    assert 1 == right_type.rows, 'error: dimension mismatch'
+                    ret_type = MatrixType(rows=left_type.rows, cols=right_type.cols)
                 elif right_type.var_type == VarTypeEnum.VECTOR:
-                    assert left_type.dimensions[1] == right_type.dimensions[0], 'error: dimension mismatch'
-                    ret_type = LaVarType(VarTypeEnum.MATRIX, [left_type.dimensions[0]])
+                    assert left_type.cols == right_type.rows, 'error: dimension mismatch'
         elif op == TypeInferenceEnum.INF_DIV:
             assert (left_type.var_type == VarTypeEnum.SCALAR or left_type.var_type == VarTypeEnum.INTEGER), 'error: type mismatch'
             assert (right_type.var_type == VarTypeEnum.SCALAR or right_type.var_type == VarTypeEnum.INTEGER), 'error: type mismatch'
@@ -841,7 +833,6 @@ class TypeWalker(NodeWalker):
                 else:
                     # first sequence
                     self.subscripts[val] = [arr[0]]
-            self.symtable[arr[0]] = LaVarType(VarTypeEnum.SEQUENCE, dimensions=[new_var_name], element_type=id_type,
-                                              desc=id_type.desc)
+            self.symtable[arr[0]] = SequenceType(size=new_var_name, element_type=id_type, desc=id_type.desc)
         else:
             self.symtable[identifier] = id_type

@@ -38,7 +38,14 @@ class BaseNodeWalker(NodeWalker):
     def print_symbols(self):
         self.logger.info("symtable:")
         for (k, v) in self.symtable.items():
-            self.logger.info(k + ':' + str(v.var_type) + ', dimension:' + str(v.dimensions))
+            dims = ""
+            if v.var_type == VarTypeEnum.MATRIX:
+                dims = ", rows:{}, cols:{}".format(v.rows, v.cols)
+            elif v.var_type == VarTypeEnum.VECTOR:
+                dims = ", rows:{}".format(v.rows)
+            elif v.var_type == VarTypeEnum.SEQUENCE or v.var_type == VarTypeEnum.SET:
+                dims = ", size:{}".format(v.size)
+            self.logger.info(k + ':' + str(v.var_type) + dims)
         self.logger.info("parameters:\n" + str(self.parameters))
         self.logger.info("subscripts:\n" + str(self.subscripts))
         self.logger.info("dim_dict:\n" + str(self.dim_dict))
@@ -68,7 +75,7 @@ class BaseNodeWalker(NodeWalker):
         return s
 
     def walk_object(self, o):
-        raise Exception('Unexpected type %s walked', type(o).__name__)
+        raise Exception('Unexpected type %s walked: %s', type(o).__name__, o)
     ###################################################################
 
     def contain_subscript(self, identifier):

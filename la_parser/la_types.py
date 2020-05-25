@@ -3,59 +3,75 @@ from enum import Enum
 
 class VarTypeEnum(Enum):
     INVALID = 0
+    # LA types
     SEQUENCE = 1
     MATRIX = 2
     VECTOR = 3
-    SCALAR = 4
-    INTEGER = 5
-    REAL = 6
-    SET = 7
-
-
-class MatrixAttrEnum(Enum):
-    SYMMETRIC = 1
-    DIAGONAL = 2
+    SET = 4
+    SCALAR = 5
+    #
+    INTEGER = 6
+    REAL = 7
 
 
 class LaVarType(object):
-    def __init__(self, var_type, dimensions=0, desc=None, attrs=None, element_type=None, element_subscript=[]):
+    def __init__(self, var_type, desc=None, element_type=None):
         super().__init__()
         self.var_type = var_type
-        self.dimensions = dimensions
-        self.desc = desc
-        self.attrs = attrs
+        self.desc = desc   # only parameters need description
         self.element_type = element_type
-        self.element_subscript = element_subscript
+
+    def is_dim_constant(self):
+        constant = False
+        if self.var_type == VarTypeEnum.SEQUENCE:
+            if isinstance(self.size, int):
+                constant = True
+        elif self.var_type == VarTypeEnum.MATRIX:
+            if isinstance(self.rows, int) and isinstance(self.cols, int):
+                constant = True
+        elif self.var_type == VarTypeEnum.VECTOR:
+            if isinstance(self.rows, int):
+                constant = True
+        else:
+            constant = True
+        return constant
 
 
 class SequenceType(LaVarType):
-    def __init__(self, var_type, dimensions=0, desc=None, attrs=None, element_type=None, element_subscript=[]):
-        LaVarType.__init__(self, var_type=VarTypeEnum.SEQUENCE, dimensions=dimensions, desc=None, attrs=None, element_type=None, element_subscript=element_subscript)
-        self.size = 0
+    def __init__(self, size=0, desc=None, element_type=None):
+        LaVarType.__init__(self, VarTypeEnum.SEQUENCE, desc, element_type)
+        self.size = size
+
 
 class MatrixType(LaVarType):
-    def __init__(self, var_type, dimensions=0, desc=None, attrs=None, element_type=None, element_subscript=[]):
-        LaVarType.__init__(self, var_type=VarTypeEnum.MATRIX, dimensions=dimensions, desc=None, attrs=None, element_type=None, element_subscript=element_subscript)
-        self.rows = 0
-        self.cols = 0
-
-class VectorType(LaVarType):
-    def __init__(self, var_type, dimensions=0, desc=None, attrs=None, element_type=None, element_subscript=[]):
-        LaVarType.__init__(self, var_type=VarTypeEnum.VECTOR, dimensions=dimensions, desc=None, attrs=None, element_type=None, element_subscript=element_subscript)
-        self.rows = 0
-
-
-class MatrixAttrs(object):
-    def __init__(self, need_exp=False, diagonal=False, sparse=False, block=False, subs=[], list_dim=None, index_var=None, value_var=None):
-        super().__init__()
+    def __init__(self, rows=0, cols=0, desc=None, element_type=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=[], list_dim=None, index_var=None, value_var=None):
+        LaVarType.__init__(self, VarTypeEnum.MATRIX, desc, element_type)
+        self.rows = rows
+        self.cols = cols
+        # attributes
         self.need_exp = need_exp    # need expression
         self.diagonal = diagonal
-        self.sparse = sparse
-        self.block = block
         self.subs = subs
+        # block matrix
+        self.block = block
         self.list_dim = list_dim    # used by block mat
+        # sparse matrix
+        self.sparse = sparse
         self.index_var = index_var  # used by sparse mat
         self.value_var = value_var  # used by sparse mat
+
+
+class VectorType(LaVarType):
+    def __init__(self, rows=0, desc=None, element_type=None):
+        LaVarType.__init__(self, VarTypeEnum.VECTOR, desc, element_type)
+        self.rows = rows
+
+
+class SetType(LaVarType):
+    def __init__(self, size=0, desc=None, element_type=None, int_list=None):
+        LaVarType.__init__(self, VarTypeEnum.SET, desc, element_type)
+        self.size = size
+        self.int_list = int_list     # whether the element is real number or integer
 
 
 class SummationAttrs(object):
