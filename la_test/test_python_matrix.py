@@ -283,8 +283,18 @@ class TestMatrix(BasePythonTest):
                      "    E.insert(std::make_tuple(3, 1));",
                      "    E.insert(std::make_tuple(0, 2));",
                      "    E.insert(std::make_tuple(2, 0));",
-                     "    {}(P, J, E);".format(func_info.eig_func_name),
-                     "    return true;",
+                     "    std::vector<Eigen::Triplet<double> > t1;",
+                     "    t1.push_back(Eigen::Triplet<double>(3, 0, 7));",
+                     "    t1.push_back(Eigen::Triplet<double>(1, 2, 0));",
+                     "    t1.push_back(Eigen::Triplet<double>(3, 2, -2));",
+                     "    t1.push_back(Eigen::Triplet<double>(0, 1, 3));",
+                     "    t1.push_back(Eigen::Triplet<double>(3, 1, 0));",
+                     "    t1.push_back(Eigen::Triplet<double>(0, 2, -1));",
+                     "    t1.push_back(Eigen::Triplet<double>(2, 0, -8));",
+                     "    Eigen::SparseMatrix<double> A(10, 10);",
+                     "    A.setFromTriplets(t1.begin(), t1.end());"
+                     "    Eigen::SparseMatrix<double> B = {}(P, J, E);".format(func_info.eig_func_name),
+                     "    return A.isApprox(B);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
@@ -331,8 +341,21 @@ class TestMatrix(BasePythonTest):
                      "    F.insert(std::make_tuple(1, 1));",
                      "    F.insert(std::make_tuple(2, 2));",
                      "    F.insert(std::make_tuple(3, 3));",
-                     "    {}(P, J, E, F);".format(func_info.eig_func_name),
-                     "    return true;",
+                     "    std::vector<Eigen::Triplet<double> > t1;",
+                     "    t1.push_back(Eigen::Triplet<double>(3, 0, 7));",
+                     "    t1.push_back(Eigen::Triplet<double>(1, 2, 0));",
+                     "    t1.push_back(Eigen::Triplet<double>(3, 2, -2));",
+                     "    t1.push_back(Eigen::Triplet<double>(0, 1, 3));",
+                     "    t1.push_back(Eigen::Triplet<double>(3, 1, 0));",
+                     "    t1.push_back(Eigen::Triplet<double>(0, 2, -1));",
+                     "    t1.push_back(Eigen::Triplet<double>(2, 0, -8));",
+                     "    t1.push_back(Eigen::Triplet<double>(1, 1, 24));",
+                     "    t1.push_back(Eigen::Triplet<double>(2, 2, 21));",
+                     "    t1.push_back(Eigen::Triplet<double>(3, 3, -19));",
+                     "    Eigen::SparseMatrix<double> A(10, 10);",
+                     "    A.setFromTriplets(t1.begin(), t1.end());"
+                     "    Eigen::SparseMatrix<double> B = {}(P, J, E, F);".format(func_info.eig_func_name),
+                     "    return A.isApprox(B);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())

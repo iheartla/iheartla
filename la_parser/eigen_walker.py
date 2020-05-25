@@ -12,16 +12,19 @@ class EigenWalker(BaseNodeWalker):
         type_str = ""
         if la_type.var_type == VarTypeEnum.SEQUENCE:
             if la_type.element_type.var_type == VarTypeEnum.MATRIX:
-                if la_type.element_type.is_dim_constant():
-                    if la_type.element_type.element_type is not None and la_type.element_type.element_type.var_type == VarTypeEnum.INTEGER:
-                        type_str = "std::vector<Eigen::Matrix<int, {}, {}> >".format(la_type.element_type.rows, la_type.element_type.cols)
-                    else:
-                        type_str = "std::vector<Eigen::Matrix<double, {}, {}> >".format(la_type.element_type.rows, la_type.element_type.cols)
+                if la_type.element_type.sparse:
+                    type_str = "std::vector<Eigen::SparseMatrix<double> >"
                 else:
-                    if la_type.element_type.element_type is not None and la_type.element_type.element_type.var_type == VarTypeEnum.INTEGER:
-                        type_str = "std::vector<Eigen::MatrixXi>"
+                    if la_type.element_type.is_dim_constant():
+                        if la_type.element_type.element_type is not None and la_type.element_type.element_type.var_type == VarTypeEnum.INTEGER:
+                            type_str = "std::vector<Eigen::Matrix<int, {}, {}> >".format(la_type.element_type.rows, la_type.element_type.cols)
+                        else:
+                            type_str = "std::vector<Eigen::Matrix<double, {}, {}> >".format(la_type.element_type.rows, la_type.element_type.cols)
                     else:
-                        type_str = "std::vector<Eigen::MatrixXd>"
+                        if la_type.element_type.element_type is not None and la_type.element_type.element_type.var_type == VarTypeEnum.INTEGER:
+                            type_str = "std::vector<Eigen::MatrixXi>"
+                        else:
+                            type_str = "std::vector<Eigen::MatrixXd>"
             elif la_type.element_type.var_type == VarTypeEnum.VECTOR:
                 if la_type.element_type.is_dim_constant():
                     if la_type.element_type.element_type is not None and la_type.element_type.element_type.var_type == VarTypeEnum.INTEGER:
@@ -36,16 +39,19 @@ class EigenWalker(BaseNodeWalker):
             elif la_type.element_type.var_type == VarTypeEnum.SCALAR:
                 type_str = "std::vector<double>"
         elif la_type.var_type == VarTypeEnum.MATRIX:
-            if la_type.is_dim_constant():
-                if la_type.element_type is not None and la_type.element_type.var_type == VarTypeEnum.INTEGER:
-                    type_str = "Eigen::Matrix<int, {}, {}>".format(la_type.rows, la_type.cols)
-                else:
-                    type_str = "Eigen::Matrix<double, {}, {}>".format(la_type.rows, la_type.cols)
+            if la_type.sparse:
+                type_str = "Eigen::SparseMatrix<double>"
             else:
-                if la_type.element_type is not None and la_type.element_type.var_type == VarTypeEnum.INTEGER:
-                    type_str = "Eigen::MatrixXi"
+                if la_type.is_dim_constant():
+                    if la_type.element_type is not None and la_type.element_type.var_type == VarTypeEnum.INTEGER:
+                        type_str = "Eigen::Matrix<int, {}, {}>".format(la_type.rows, la_type.cols)
+                    else:
+                        type_str = "Eigen::Matrix<double, {}, {}>".format(la_type.rows, la_type.cols)
                 else:
-                    type_str = "Eigen::MatrixXd"
+                    if la_type.element_type is not None and la_type.element_type.var_type == VarTypeEnum.INTEGER:
+                        type_str = "Eigen::MatrixXi"
+                    else:
+                        type_str = "Eigen::MatrixXd"
         elif la_type.var_type == VarTypeEnum.VECTOR:
             if la_type.is_dim_constant():
                 if la_type.element_type is not None and la_type.element_type.var_type == VarTypeEnum.INTEGER:
