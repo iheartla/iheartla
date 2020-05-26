@@ -24,6 +24,7 @@ class BaseNodeWalker(NodeWalker):
         self.pre_str = ''
         self.post_str = ''
         self.symtable = {}
+        self.def_dict = {}
         self.parameters = set()
         self.subscripts = {}
         self.node_dict = {}
@@ -57,6 +58,8 @@ class BaseNodeWalker(NodeWalker):
         type_walker = TypeWalker()
         type_walker.walk(node)
         self.symtable = type_walker.symtable
+        for key in self.symtable.keys():
+            self.def_dict[key] = False
         self.parameters = type_walker.parameters
         self.subscripts = type_walker.subscripts
         self.node_dict = type_walker.node_dict

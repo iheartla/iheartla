@@ -679,7 +679,11 @@ class EigenWalker(BaseNodeWalker):
                 op = ' = '
                 if node.op == '+=':
                     op = ' += '
-                right_exp += '    ' + self.get_ctype(self.symtable[self.get_main_id(left_id)]) + ' ' + self.get_main_id(left_id) + op + right_info.content + ';'
+                type_def = ""
+                if not self.def_dict[self.get_main_id(left_id)]:
+                    type_def = self.get_ctype(self.symtable[self.get_main_id(left_id)]) + ' '
+                    self.def_dict[self.get_main_id(left_id)] = True
+                right_exp += '    ' + type_def + self.get_main_id(left_id) + op + right_info.content + ';'
                 content += right_exp
         content += '\n'
         la_remove_key(LHS, **kwargs)
