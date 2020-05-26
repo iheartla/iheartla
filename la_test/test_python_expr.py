@@ -81,6 +81,20 @@ class TestExpr(BasePythonTest):
         B = np.array([[5., 6.], [7., 8.]])
         B = np.asarray(B, dtype=np.floating)
         self.assertDMatrixEqual(func_info.numpy_func(A, C), np.linalg.solve(A, C))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> A;",
+                     "    A << 1, 2, 3, 4;",
+                     "    Eigen::Matrix<double, 2, 2> B;",
+                     "    B << 5, 6, 7, 8;",
+                     "    Eigen::Matrix<double, 2, 2> C;",
+                     "    C << 19, 22, 43, 50;",
+                     "    Eigen::Matrix<double, 2, 2> D = {}(A, C);".format(func_info.eig_func_name),
+                     "    return ((A.colPivHouseholderQr().solve(C) - D).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
     def test_unary_scalar_0(self):
         la_str = """b = -2a

@@ -369,7 +369,7 @@ class EigenWalker(BaseNodeWalker):
         if node.t:
             base_info.content = "{}.transpose()".format(base_info.content)
         elif node.r:
-            base_info.content = "np.linalg.inv({})".format(base_info.content)
+            base_info.content = "{}.inverse()".format(base_info.content)
         else:
             power_info = self.walk(node.power, **kwargs)
             base_info.content = base_info.content + '^' + power_info.content
@@ -378,7 +378,7 @@ class EigenWalker(BaseNodeWalker):
     def walk_Solver(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
-        left_info.content = "np.linalg.solve({}, {})".format(left_info.content, right_info.content)
+        left_info.content = "{}.colPivHouseholderQr().solve({});".format(left_info.content, right_info.content)
         return left_info
 
     def walk_SparseMatrix(self, node, **kwargs):

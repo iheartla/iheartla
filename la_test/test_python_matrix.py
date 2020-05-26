@@ -84,6 +84,18 @@ class TestMatrix(BasePythonTest):
         A = np.array([[4, 0], [0, 0.5]])
         B = np.array([[0.25, 0], [0, 2]])
         self.assertDMatrixEqual(func_info.numpy_func(A), B)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> A;",
+                     "    A << 4, 0, 0, 0.5;",
+                     "    Eigen::Matrix<double, 2, 2> B;",
+                     "    B << 0.25, 0, 0, 2;",
+                     "    Eigen::Matrix<double, 2, 2> C = {}(A);".format(func_info.eig_func_name),
+                     "    return ((B - C).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
     def test_block_matrix_0(self):
         # normal block
