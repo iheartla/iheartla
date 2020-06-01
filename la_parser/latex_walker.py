@@ -219,11 +219,15 @@ class LatexWalker(BaseNodeWalker):
         return '(' + self.walk(node.value, **kwargs) + ')'
 
     def walk_SparseMatrix(self, node, **kwargs):
-        id1_info = self.walk(node.id1, **kwargs)
-        id2_info = self.walk(node.id2, **kwargs)
+        if node.id1:
+            id1_info = self.walk(node.id1, **kwargs)
+            id2_info = self.walk(node.id2, **kwargs)
         ifs = self.walk(node.ifs, **kwargs)
-        other = self.walk(node.other, **kwargs)
-        content = '{} {} \\\\ {} & otherwise {}'.format("\\begin{cases}", ifs, other, "\\end{cases}")
+        if node.other:
+            other = self.walk(node.other, **kwargs)
+            content = '{} {} \\\\ {} & otherwise {}'.format("\\begin{cases}", ifs, other, "\\end{cases}")
+        else:
+            content = '{} {} \\\\ {} '.format("\\begin{cases}", ifs, "\\end{cases}")
         return content
 
     def walk_SparseIfs(self, node, **kwargs):

@@ -19,6 +19,7 @@ class WalkTypeEnum(Enum):
 
 WALK_TYPE = "walk_type"
 LHS = "left_hand_side"
+ASSIGN_OP = "assign_op"
 CUR_INDENT = "cur_indent"
 INSIDE_MATRIX = "inside_matrix"
 ASSIGN_TYPE = "assign_type"
@@ -281,9 +282,11 @@ class TypeWalker(NodeWalker):
         if SET_RET_SYMBOL in kwargs:
             self.ret_symbol = self.get_main_id(id0)
         kwargs[LHS] = id0
+        kwargs[ASSIGN_OP] = node.op
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         la_remove_key(LHS, **kwargs)
+        la_remove_key(ASSIGN_OP, **kwargs)
         # y_i = stat
         if self.contain_subscript(id0):
             left_ids = self.get_all_ids(id0)
@@ -496,20 +499,37 @@ class TypeWalker(NodeWalker):
     def walk_SparseMatrix(self, node, **kwargs):
         if LHS in kwargs:
             lhs = kwargs[LHS]
+        if ASSIGN_OP in kwargs:
+            op = kwargs[ASSIGN_OP]
         all_ids = self.get_all_ids(lhs)
-        id1_info = self.walk(node.id1, **kwargs)
-        id1 = id1_info.content
-        id2_info = self.walk(node.id2, **kwargs)
-        id2 = id2_info.content
+
         self.walk(node.ifs, **kwargs)
-        new_id = self.generate_var_name('sparse')
         # definition
         index_var = self.generate_var_name("{}{}{}".format(all_ids[0], all_ids[1][0], all_ids[1][1]))
         value_var = self.generate_var_name("{}vals".format(all_ids[0]))
-        la_type = MatrixType(rows=id1, cols=id2, sparse=True, index_var=index_var, value_var=value_var)
-        self.symtable[new_id] = la_type
+        if op == '=':  # require dims
+            new_id = self.generate_var_name('sparse')
+            id_name = new_id
+            assert node.id1 and node.id2, "sparse matrix: need dim"
+            id1_info = self.walk(node.id1, **kwargs)
+            id1 = id1_info.content
+            id2_info = self.walk(node.id2, **kwargs)
+            id2 = id2_info.content
+            la_type = MatrixType(rows=id1, cols=id2, sparse=True, index_var=index_var, value_var=value_var)
+            self.symtable[new_id] = la_type
+        elif op == '+=':
+            assert all_ids[0] in self.symtable, "{} is not defined".format(all_ids[0])
+            la_type = self.symtable[all_ids[0]]
+            id_name = all_ids[0]
+            if node.id1:
+                id1_info = self.walk(node.id1, **kwargs)
+                id1 = id1_info.content
+                id2_info = self.walk(node.id2, **kwargs)
+                id2 = id2_info.content
+                assert id1 == la_type.rows and id2 == la_type.cols, "sparse matrix: dim mismatch"
+
         node_info = NodeInfo(la_type)
-        node_info.symbol = new_id
+        node_info.symbol = id_name
         self.node_dict[node] = node_info
         return node_info
 
