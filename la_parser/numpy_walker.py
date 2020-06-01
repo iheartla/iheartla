@@ -350,31 +350,30 @@ class NumpyWalker(BaseNodeWalker):
         if type_info.la_type.block:
             all_rows = []
             m_content = ""
+            for i in range(len(ret)):
+                if type_info.la_type.list_dim:
+                    for j in range(len(ret[i])):
+                        if (i, j) in type_info.la_type.list_dim:
+                            dims = type_info.la_type.list_dim[(i, j)]
+                            if ret[i][j] == '0':
+                                func_name = 'np.zeros'
+                            elif ret[i][j] == '1':
+                                func_name = 'np.ones'
+                            elif 'I' in ret[i][j] and 'I' not in self.symtable:
+                                # todo: assert in type checker
+                                assert dims[0] == dims[1], "I must be square matrix"
+                                ret[i][j] = ret[i][j].replace('I', 'np.identity({})'.format(dims[0]))
+                                continue
+                            else:
+                                func_name = ret[i][j] + ' * np.ones'
+                            if dims[1] == 1:
+                                # vector
+                                ret[i][j] = '{}({})'.format(func_name, dims[0])
+                            else:
+                                ret[i][j] = '{}(({}, {}))'.format(func_name, dims[0], dims[1])
+                all_rows.append('[' + ', '.join(ret[i]) + ']')
+            m_content += 'np.block([{}])'.format(', '.join(all_rows))
             if len(ret) > 1 and len(ret[0]) > 1:
-                for i in range(len(ret)):
-                    if type_info.la_type.list_dim:
-                        for j in range(len(ret[i])):
-                            if (i, j) in type_info.la_type.list_dim:
-                                dims = type_info.la_type.list_dim[(i, j)]
-                                if ret[i][j] == '0':
-                                    func_name = 'np.zeros'
-                                elif ret[i][j] == '1':
-                                    func_name = 'np.ones'
-                                elif 'I' in ret[i][j]:
-                                    # todo: assert in type checker
-                                    assert dims[0] == dims[1], "I must be square matrix"
-                                    func_name = ret[i][j].replace('I', 'np.identity')
-                                    ret[i][j] = '{}({})'.format(func_name, dims[0])
-                                    continue
-                                else:
-                                    func_name = ret[i][j] + ' * np.ones'
-                                if dims[1] == 1:
-                                    # vector
-                                    ret[i][j] = '{}({})'.format(func_name, dims[0])
-                                else:
-                                    ret[i][j] = '{}(({}, {}))'.format(func_name, dims[0], dims[1])
-                    all_rows.append('[' + ', '.join(ret[i]) + ']')
-                m_content += 'np.block([{}])'.format(', '.join(all_rows))
                 content += '{} = {}\n'.format(cur_m_id, m_content)
             elif len(ret) == 1:
                 # single row

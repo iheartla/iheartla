@@ -252,7 +252,13 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_MUL, left_type, right_type)
-        ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
+        sym_set = left_info.symbols.union(right_info.symbols)
+        # I in block matrix
+        if ret_type is not None:
+            ret_type.symbol = ""
+            for sym in sym_set:
+                ret_type.symbol += sym
+        ret_info = NodeInfo(ret_type, symbols=sym_set)
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -422,13 +428,13 @@ class TypeWalker(NodeWalker):
         return NodeInfo(VarTypeEnum.SCALAR)
 
     def walk_IdentifierSubscript(self, node, **kwargs):
-        node_type = LaVarType(VarTypeEnum.INVALID)
         right = []
         for value in node.right:
             v_info = self.walk(value)
             right.append(v_info.content)
         left_info = self.walk(node.left, **kwargs)
         content = left_info.content + '_' + ''.join(right)
+        node_type = LaVarType(VarTypeEnum.INVALID, symbol = content)
         if left_info.content in self.symtable:
             node_type = self.symtable[left_info.content].element_type
         node_info = NodeInfo(node_type, content, {content})
@@ -439,6 +445,7 @@ class TypeWalker(NodeWalker):
         node_type = LaVarType(VarTypeEnum.INVALID)
         if node.value in self.symtable:
             node_type = self.symtable[node.value]
+        node_type.symbol = node.value
         node_info = NodeInfo(node_type, node.value, {node.value})
         self.node_dict[node] = node_info
         return node_info
@@ -672,23 +679,46 @@ class TypeWalker(NodeWalker):
         row_dim = [None] * rows  # row numbers for mat in each row
         col_dim = [None] * cols  # col numbers for mat in each col
         undef_list = []          # scalar index, dimensions need to be changed
+        identity_list = []       # identity matrix without dims
+        # fill dim array, check mismatch
         for i in range(rows):
             for j in range(cols):
                 if type_array[i][j].var_type == VarTypeEnum.MATRIX or type_array[i][j].var_type == VarTypeEnum.VECTOR:
+                    if type_array[i][j].var_type == VarTypeEnum.MATRIX:
+                        cur_cols = type_array[i][j].cols
+                    else:
+                        cur_cols = 1  # vector
                     if row_dim[i] is None:
                         row_dim[i] = type_array[i][j].rows
                     elif row_dim[i] != type_array[i][j].rows:
                         valid = False
                         break
                     if col_dim[j] is None:
-                        col_dim[j] = type_array[i][j].cols
-                    elif col_dim[j] != type_array[i][j].cols:
+                        col_dim[j] = cur_cols
+                    elif col_dim[j] != cur_cols:
                         valid = False
                         break
                 else:
+                    if type_array[i][j].symbol is not None and 'I' in type_array[i][j].symbol:
+                        if 'I' not in self.symtable:  # identity matrix
+                            identity_list.append((i, j))
                     undef_list.append((i, j))
             if not valid:
                 break
+        # check Identity, fills dim if possible
+        self.logger.debug("identity_list: {}".format(identity_list))
+        if len(identity_list) > 0:
+            for (i, j) in identity_list:
+                if row_dim[i] is None:
+                    if col_dim[j] is not None:
+                        row_dim[i] = col_dim[j]
+                else:
+                    if col_dim[j] is None:
+                        col_dim[j] = row_dim[i]
+                    else:
+                        if row_dim[i] != col_dim[j]:
+                            valid = False
+                            break
         self.logger.debug("undef_list: {}".format(undef_list))
         self.logger.debug("row_dim: {}".format(row_dim))
         self.logger.debug("col_dim: {}".format(col_dim))
@@ -833,6 +863,7 @@ class TypeWalker(NodeWalker):
                 else:
                     # first sequence
                     self.subscripts[val] = [arr[0]]
-            self.symtable[arr[0]] = SequenceType(size=new_var_name, element_type=id_type, desc=id_type.desc)
+            self.symtable[arr[0]] = SequenceType(size=new_var_name, element_type=id_type, desc=id_type.desc, symbol=arr[0])
         else:
+            id_type.symbol = identifier
             self.symtable[identifier] = id_type

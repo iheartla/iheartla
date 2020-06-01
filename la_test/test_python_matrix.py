@@ -218,6 +218,29 @@ class TestMatrix(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_block_matrix_5(self):
+        # I identity matrix
+        la_str = """B = [ A C I ]
+        where
+        A: ℝ ^ (2 × 2): a matrix
+        C: ℝ ^ (2 × 2): a matrix """
+        func_info = self.gen_func_info(la_str)
+        A = np.array([[1, 2], [3, 4]])
+        B = np.array([[1, 2, 1, 2, 1, 0], [3, 4, 3, 4, 0, 1]])
+        self.assertDMatrixEqual(func_info.numpy_func(A, A), B)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> A;",
+                     "    A << 1, 2, 3, 4;",
+                     "    Eigen::Matrix<double, 2, 6> B;",
+                     "    B << 1, 2, 1, 2, 1, 0, 3, 4, 3, 4, 0, 1;",
+                     "    Eigen::Matrix<double, 2, 6> C = {}(A, A);".format(func_info.eig_func_name),
+                     "    return ((B - C).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_identity_matrix_0(self):
         # outside matrix
         la_str = """C = I_2 + A

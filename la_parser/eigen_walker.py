@@ -453,17 +453,16 @@ class EigenWalker(BaseNodeWalker):
                                 func_name = 'Eigen::MatrixXd::Zero'
                             elif ret[i][j] == '1':
                                 func_name = 'Eigen::MatrixXd::Ones'
-                            elif 'I' in ret[i][j]:
+                            elif 'I' in ret[i][j] and 'I' not in self.symtable:
                                 # todo: assert in type checker
                                 assert dims[0] == dims[1], "I must be square matrix"
-                                func_name = ret[i][j].replace('I', 'Eigen::MatrixXd::Identity')
-                                ret[i][j] = '{}({}, {})'.format(func_name, dims[0], dims[0])
+                                ret[i][j] = ret[i][j].replace('I', 'Eigen::MatrixXd::Identity({}, {})'.format(dims[0], dims[0]))
                                 continue
                             else:
                                 func_name = ret[i][j] + ' * Eigen::MatrixXd::Ones'
                             if dims[1] == 1:
                                 # vector
-                                ret[i][j] = '{}({})'.format(func_name, dims[0])
+                                ret[i][j] = '{}({}, 1)'.format(func_name, dims[0])
                             else:
                                 ret[i][j] = '{}({}, {})'.format(func_name, dims[0], dims[1])
                 all_rows.append(', '.join(ret[i]) )
