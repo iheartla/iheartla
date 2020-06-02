@@ -37,6 +37,15 @@ class LaVarType(object):
             constant = True
         return constant
 
+    def is_matrix(self):
+        return self.var_type == VarTypeEnum.MATRIX
+
+    def is_sequence(self):
+        return self.var_type == VarTypeEnum.SEQUENCE
+
+    def is_vector(self):
+        return self.var_type == VarTypeEnum.VECTOR
+
 
 class SequenceType(LaVarType):
     def __init__(self, size=0, desc=None, element_type=None, symbol=None):
@@ -45,21 +54,22 @@ class SequenceType(LaVarType):
 
 
 class MatrixType(LaVarType):
-    def __init__(self, rows=0, cols=0, desc=None, element_type=None, symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=[], list_dim=None, index_var=None, value_var=None):
+    def __init__(self, rows=0, cols=0, desc=None, element_type=None, symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=[], list_dim=None, index_var=None, value_var=None, item_types = None):
         LaVarType.__init__(self, VarTypeEnum.MATRIX, desc, element_type, symbol)
         self.rows = rows
         self.cols = cols
         # attributes
-        self.need_exp = need_exp    # need expression
+        self.need_exp = need_exp      # need expression
         self.diagonal = diagonal
         self.subs = subs
         # block matrix
         self.block = block
-        self.list_dim = list_dim    # used by block mat
+        self.list_dim = list_dim      # used by block mat
+        self.item_types = item_types  # type array
         # sparse matrix
         self.sparse = sparse
-        self.index_var = index_var  # used by sparse mat
-        self.value_var = value_var  # used by sparse mat
+        self.index_var = index_var    # used by sparse mat
+        self.value_var = value_var    # used by sparse mat
 
 
 class VectorType(LaVarType):

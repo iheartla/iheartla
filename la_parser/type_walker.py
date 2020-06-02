@@ -563,9 +563,14 @@ class TypeWalker(NodeWalker):
         rows = len(node_info.content)
         cols = 0
         block = False
+        sparse = False
         for row in node_info.content:
             for col in row:
-                if col.var_type == VarTypeEnum.MATRIX or col.var_type == VarTypeEnum.VECTOR:
+                if col.var_type == VarTypeEnum.MATRIX:
+                    if col.sparse:
+                        sparse = True
+                    block = True
+                elif col.var_type == VarTypeEnum.VECTOR:
                     block = True
             if len(row) > cols:
                 cols = len(row)
@@ -581,12 +586,12 @@ class TypeWalker(NodeWalker):
                 list_dim = {}
                 for i, j in undef_list:
                     list_dim[(i, j)] = [type_array[i][j].rows, type_array[i][j].cols]
-        node_type = MatrixType(rows=rows, cols=cols, block=block, list_dim=list_dim)
+        node_type = MatrixType(rows=rows, cols=cols, block=block, sparse=sparse, list_dim=list_dim, item_types=node_info.content)
         node_info = NodeInfo(node_type)
         if LHS in kwargs:
             lhs = kwargs[LHS]
             new_id = self.generate_var_name(lhs)
-            self.symtable[new_id] = MatrixType(rows=rows, cols=cols)
+            self.symtable[new_id] = MatrixType(rows=rows, cols=cols, block=block, sparse=sparse, list_dim=list_dim, item_types=node_info.content)
             node_info.symbol = new_id
             self.node_dict[node] = node_info
         self.node_dict[node] = node_info

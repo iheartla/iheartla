@@ -230,7 +230,8 @@ class EigenWalker(BaseNodeWalker):
         main_content.append("    {}({});".format(rand_func_name, ', '.join(self.parameters)))
         main_content += main_print
         main_content.append("    {} func_value = {}({});".format(self.get_ctype(self.symtable[self.ret_symbol]), func_name, ', '.join(self.parameters)))
-        # main_content.append('    std::cout<<"func_value:\\n"<<func_value<<std::endl;')
+        if self.symtable[self.ret_symbol].is_matrix():
+            main_content.append('    std::cout<<"func_value:\\n"<<func_value<<std::endl;')
         main_content.append('    return 0;')
         main_content.append('}')
         content += '\n\n' + '\n'.join(test_content) + '\n\n\n' + '\n'.join(main_content)
@@ -440,40 +441,98 @@ class EigenWalker(BaseNodeWalker):
         kwargs["cur_id"] = cur_m_id
         ret_info = self.walk(node.value, **kwargs)
         ret = ret_info.content
-        content += 'Eigen::Matrix<double, {}, {}> {};\n'.format(self.symtable[cur_m_id].rows, self.symtable[cur_m_id].cols, cur_m_id)
-        if type_info.la_type:
+        # preprocess
+        if type_info.la_type.list_dim:
+            for i in range(len(ret)):
+                for j in range(len(ret[i])):
+                    if (i, j) in type_info.la_type.list_dim:
+                        dims = type_info.la_type.list_dim[(i, j)]
+                        if ret[i][j] == '0':
+                            func_name = 'Eigen::MatrixXd::Zero'
+                        elif ret[i][j] == '1':
+                            func_name = 'Eigen::MatrixXd::Ones'
+                        elif 'I' in ret[i][j] and 'I' not in self.symtable:
+                            # todo: assert in type checker
+                            assert dims[0] == dims[1], "I must be square matrix"
+                            ret[i][j] = ret[i][j].replace('I',
+                                                          'Eigen::MatrixXd::Identity({}, {})'.format(dims[0], dims[0]))
+                            continue
+                        else:
+                            func_name = ret[i][j] + ' * Eigen::MatrixXd::Ones'
+                        if dims[1] == 1:
+                            # vector
+                            ret[i][j] = '{}({}, 1)'.format(func_name, dims[0])
+                        else:
+                            ret[i][j] = '{}({}, {})'.format(func_name, dims[0], dims[1])
+        # matrix
+        if self.symtable[cur_m_id].sparse and self.symtable[cur_m_id].block:
             all_rows = []
             m_content = ""
+            sparse_index = []
+            sparse_exp = []
+            row_index = 0
+            col_index = 0
             for i in range(len(ret)):
-                if type_info.la_type.list_dim:
-                    for j in range(len(ret[i])):
-                        if (i, j) in type_info.la_type.list_dim:
-                            dims = type_info.la_type.list_dim[(i, j)]
-                            if ret[i][j] == '0':
-                                func_name = 'Eigen::MatrixXd::Zero'
-                            elif ret[i][j] == '1':
-                                func_name = 'Eigen::MatrixXd::Ones'
-                            elif 'I' in ret[i][j] and 'I' not in self.symtable:
-                                # todo: assert in type checker
-                                assert dims[0] == dims[1], "I must be square matrix"
-                                ret[i][j] = ret[i][j].replace('I', 'Eigen::MatrixXd::Identity({}, {})'.format(dims[0], dims[0]))
-                                continue
-                            else:
-                                func_name = ret[i][j] + ' * Eigen::MatrixXd::Ones'
-                            if dims[1] == 1:
-                                # vector
-                                ret[i][j] = '{}({}, 1)'.format(func_name, dims[0])
-                            else:
-                                ret[i][j] = '{}({}, {})'.format(func_name, dims[0], dims[1])
-                all_rows.append(', '.join(ret[i]) )
+                for j in range(len(ret[i])):
+                    if type_info.la_type.item_types[i][j].is_matrix() and type_info.la_type.item_types[i][j].sparse:
+                        sparse_index.append((row_index, col_index))
+                        sparse_exp.append(ret[i][j])
+                        ret[i][j] = "Eigen::MatrixXd::Zero({}, {})".format(type_info.la_type.item_types[i][j].rows, type_info.la_type.item_types[i][j].cols)
+                    col_index += type_info.la_type.item_types[i][j].cols
+                row_index += type_info.la_type.item_types[i][j].rows
+                all_rows.append(', '.join(ret[i]))
             m_content += '{};'.format(',\n    '.join(all_rows))
+            content += 'Eigen::Matrix<double, {}, {}> {};\n'.format(self.symtable[cur_m_id].rows,
+                                                                    self.symtable[cur_m_id].cols, cur_m_id)
             content += '    {} << {}\n'.format(cur_m_id, m_content)
+            # convert to sparse matrix
+            sparse_id = "{}_S".format(cur_m_id)
+            sparse_triplet = "tripletList_{}".format(cur_m_id)
+            # preserve original sparse matrix
+            content += '    Eigen::SparseMatrix<double> {} = {}.sparseView();\n'.format(sparse_id, cur_m_id)
+            content += '    std::vector<Eigen::Triplet<double> > {};\n'.format(sparse_triplet)
+            content += '    for (int k=0; k < {}.outerSize(); ++k){{\n'.format(sparse_id)
+            content += '        for (Eigen::SparseMatrix<double>::InnerIterator it({},k); it; ++it){{\n'.format(sparse_id)
+            content += '            {}.push_back(Eigen::Triplet<double>((int)it.row(), (int)it.col(), it.value()));\n'.format(sparse_triplet)
+            content += '        }\n'
+            content += '    }\n'
+            # add new elements
+            for index in range(len(sparse_index)):
+                (i, j) = sparse_index[index]
+                if index == 0:
+                    content += '    Eigen::SparseMatrix<double> tmp = {};\n'.format(sparse_exp[index])
+                else:
+                    content += '    tmp = {};\n'.format(sparse_exp[index])
+                content += '    for (int k=0; k < tmp.outerSize(); ++k){\n'
+                content += '        for (Eigen::SparseMatrix<double>::InnerIterator it(tmp,k); it; ++it){\n'
+                row_str = ''
+                if i > 0:
+                    row_str = "+{}".format(i)
+                col_str = ''
+                if j > 0:
+                    col_str = "+{}".format(j)
+                content += '            {}.push_back(Eigen::Triplet<double>((int)it.row(){}, (int)it.col(){}, it.value()));\n'.format(sparse_triplet, row_str, col_str)
+                content += '        }\n'
+                content += '    }\n'
+            # set triplets
+            content += '    {}.setFromTriplets({}.begin(), {}.end());\n'.format(sparse_id, sparse_triplet, sparse_triplet)
+            cur_m_id = sparse_id
         else:
             # dense
-            m_list = []
-            for i in range(len(ret)):
-                m_list.append(', '.join(ret[i]))
-            content += '    {} << {};\n'.format(cur_m_id, ",\n    ".join(m_list))
+            content += 'Eigen::Matrix<double, {}, {}> {};\n'.format(self.symtable[cur_m_id].rows, self.symtable[cur_m_id].cols, cur_m_id)
+            if type_info.la_type:
+                all_rows = []
+                m_content = ""
+                for i in range(len(ret)):
+                    all_rows.append(', '.join(ret[i]) )
+                m_content += '{};'.format(',\n    '.join(all_rows))
+                content += '    {} << {}\n'.format(cur_m_id, m_content)
+            else:
+                # dense
+                m_list = []
+                for i in range(len(ret)):
+                    m_list.append(', '.join(ret[i]))
+                content += '    {} << {};\n'.format(cur_m_id, ",\n    ".join(m_list))
         #####################
         pre_list = [content]
         if ret_info.pre_list:
