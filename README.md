@@ -10,6 +10,10 @@ To run the GUI:
 
 or
 
+    poetry run python linear_algebra.py
+
+or
+
     pipenv run python linear_algebra.py
 
 ## Dependencies
@@ -17,6 +21,10 @@ or
 Python 3.x and some modules:
 
     pip3 install tatsu wxpython graphviz PyMuPDF cppyy
+
+or
+
+    poetry install --no-root
 
 or
 
