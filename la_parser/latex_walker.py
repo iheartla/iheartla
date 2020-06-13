@@ -51,7 +51,7 @@ class LatexWalker(BaseNodeWalker):
         if node.value:
             value = node.value
         else:
-            value = '`' + node.id + '`'
+            value = '{}^{\\backprime}' + node.id + '{}^{\\backprime}'
         return value
 
     def walk_Start(self, node, **kwargs):
