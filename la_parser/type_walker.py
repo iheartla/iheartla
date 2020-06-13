@@ -816,11 +816,13 @@ class TypeWalker(NodeWalker):
         ret_type = None
         if op == TypeInferenceEnum.INF_ADD or op == TypeInferenceEnum.INF_SUB:
             assert left_type.var_type == right_type.var_type, 'left:{}, right:{}'.format(left_type.var_type, right_type.var_type)
+            ret_type = left_type
             if left_type.var_type == VarTypeEnum.MATRIX:
                 assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, 'error: dimension mismatch'
+                if left_type.sparse or right_type.sparse:
+                    ret_type.sparse = True
             elif left_type.var_type == VarTypeEnum.VECTOR:
                 assert left_type.rows == right_type.rows, 'error: dimension mismatch'
-            ret_type = left_type
         elif op == TypeInferenceEnum.INF_MUL:
             assert left_type.var_type is not VarTypeEnum.SEQUENCE and right_type.var_type is not VarTypeEnum.SEQUENCE, 'error: sequence can not be operated'
             if left_type.var_type == VarTypeEnum.SCALAR:
@@ -835,6 +837,8 @@ class TypeWalker(NodeWalker):
                 elif right_type.var_type == VarTypeEnum.MATRIX:
                     assert left_type.cols == right_type.rows, 'error: dimension mismatch'
                     ret_type = MatrixType(rows=left_type.rows, cols=right_type.cols)
+                    if left_type.sparse and right_type.sparse:
+                        ret_type.sparse = True
                 elif right_type.var_type == VarTypeEnum.VECTOR:
                     assert left_type.cols == right_type.rows, 'error: dimension mismatch'
                     ret_type = VectorType(rows=left_type.rows)

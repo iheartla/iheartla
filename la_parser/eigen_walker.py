@@ -17,9 +17,11 @@ class EigenWalker(BaseNodeWalker):
                 else:
                     if la_type.element_type.is_dim_constant():
                         if la_type.element_type.element_type is not None and la_type.element_type.element_type.var_type == VarTypeEnum.INTEGER:
-                            type_str = "std::vector<Eigen::Matrix<int, {}, {}> >".format(la_type.element_type.rows, la_type.element_type.cols)
+                            type_str = "std::vector<Eigen::Matrix<int, {}, {}> >".format(la_type.element_type.rows,
+                                                                                         la_type.element_type.cols)
                         else:
-                            type_str = "std::vector<Eigen::Matrix<double, {}, {}> >".format(la_type.element_type.rows, la_type.element_type.cols)
+                            type_str = "std::vector<Eigen::Matrix<double, {}, {}> >".format(la_type.element_type.rows,
+                                                                                            la_type.element_type.cols)
                     else:
                         if la_type.element_type.element_type is not None and la_type.element_type.element_type.var_type == VarTypeEnum.INTEGER:
                             type_str = "std::vector<Eigen::MatrixXi>"
@@ -122,52 +124,73 @@ class EigenWalker(BaseNodeWalker):
                     if data_type.var_type == VarTypeEnum.INTEGER:
                         integer_type = True
                 if ele_type.var_type == VarTypeEnum.MATRIX:
-                    type_checks.append('    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
+                    type_checks.append(
+                        '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
                     if not ele_type.is_dim_constant():
                         type_checks.append('    for( const auto& el : {} ) {{'.format(parameter))
                         type_checks.append('        assert( el.rows() == {} );'.format(ele_type.rows))
                         type_checks.append('        assert( el.cols() == {} );'.format(ele_type.cols))
                         type_checks.append('    }')
                     if integer_type:
-                        test_content.append('        {}[i] = Eigen::MatrixXi::Random({}, {});'.format(parameter, ele_type.rows, ele_type.cols))
+                        test_content.append(
+                            '        {}[i] = Eigen::MatrixXi::Random({}, {});'.format(parameter, ele_type.rows,
+                                                                                      ele_type.cols))
                     else:
-                        test_content.append('        {}[i] = Eigen::MatrixXd::Random({}, {});'.format(parameter, ele_type.rows, ele_type.cols))
+                        test_content.append(
+                            '        {}[i] = Eigen::MatrixXd::Random({}, {});'.format(parameter, ele_type.rows,
+                                                                                      ele_type.cols))
                 elif ele_type.var_type == VarTypeEnum.VECTOR:
                     if not ele_type.is_dim_constant():
-                        type_checks.append('    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
+                        type_checks.append(
+                            '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
                         type_checks.append('    for( const auto& el : {} ) {{'.format(parameter))
                         type_checks.append('        assert( el.size() == {} );'.format(ele_type.rows))
                         type_checks.append('    }')
                     if integer_type:
-                        test_content.append('        {}[i] = Eigen::VectorXi::Random({});'.format(parameter, ele_type.rows))
+                        test_content.append(
+                            '        {}[i] = Eigen::VectorXi::Random({});'.format(parameter, ele_type.rows))
                     else:
-                        test_content.append('        {}[i] = Eigen::VectorXd::Random({});'.format(parameter, ele_type.rows))
+                        test_content.append(
+                            '        {}[i] = Eigen::VectorXd::Random({});'.format(parameter, ele_type.rows))
                 elif ele_type.var_type == VarTypeEnum.SCALAR:
-                    type_checks.append('    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
+                    type_checks.append(
+                        '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
                 test_content.append('    }')
             elif self.symtable[parameter].var_type == VarTypeEnum.MATRIX:
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
                     if element_type.var_type == VarTypeEnum.INTEGER:
-                        test_content.append('    {} = Eigen::MatrixXi::Random({}, {});'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
+                        test_content.append(
+                            '    {} = Eigen::MatrixXi::Random({}, {});'.format(parameter, self.symtable[parameter].rows,
+                                                                               self.symtable[parameter].cols))
                     elif element_type.var_type == VarTypeEnum.REAL:
-                        test_content.append('    {} = Eigen::MatrixXd::Random({}, {});'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
+                        test_content.append(
+                            '    {} = Eigen::MatrixXd::Random({}, {});'.format(parameter, self.symtable[parameter].rows,
+                                                                               self.symtable[parameter].cols))
                 else:
-                    test_content.append('    {} = Eigen::MatrixXd::Random({}, {});'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
+                    test_content.append(
+                        '    {} = Eigen::MatrixXd::Random({}, {});'.format(parameter, self.symtable[parameter].rows,
+                                                                           self.symtable[parameter].cols))
                 if not self.symtable[parameter].is_dim_constant():
-                    type_checks.append('    assert( {}.rows() == {} );'.format(parameter, self.symtable[parameter].rows))
-                    type_checks.append('    assert( {}.cols() == {} );'.format(parameter, self.symtable[parameter].cols))
+                    type_checks.append(
+                        '    assert( {}.rows() == {} );'.format(parameter, self.symtable[parameter].rows))
+                    type_checks.append(
+                        '    assert( {}.cols() == {} );'.format(parameter, self.symtable[parameter].cols))
             elif self.symtable[parameter].var_type == VarTypeEnum.VECTOR:
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
                     if element_type.var_type == VarTypeEnum.INTEGER:
-                        test_content.append('    {} = Eigen::VectorXi::Random({});'.format(parameter, self.symtable[parameter].rows))
+                        test_content.append(
+                            '    {} = Eigen::VectorXi::Random({});'.format(parameter, self.symtable[parameter].rows))
                     elif element_type.var_type == VarTypeEnum.REAL:
-                        test_content.append('    {} = Eigen::VectorXd::Random({});'.format(parameter, self.symtable[parameter].rows))
+                        test_content.append(
+                            '    {} = Eigen::VectorXd::Random({});'.format(parameter, self.symtable[parameter].rows))
                 else:
-                    test_content.append('    {} = Eigen::VectorXd::Random({});'.format(parameter, self.symtable[parameter].rows))
+                    test_content.append(
+                        '    {} = Eigen::VectorXd::Random({});'.format(parameter, self.symtable[parameter].rows))
                 if not self.symtable[parameter].is_dim_constant():
-                    type_checks.append('    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].rows))
+                    type_checks.append(
+                        '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].rows))
             elif self.symtable[parameter].var_type == VarTypeEnum.SCALAR:
                 test_content.append('    {} = rand() % {};'.format(parameter, rand_int_max))
             elif self.symtable[parameter].var_type == VarTypeEnum.SET:
@@ -179,16 +202,18 @@ class EigenWalker(BaseNodeWalker):
                         gen_list.append('rand()%{}'.format(rand_int_max))
                     else:
                         gen_list.append('rand()%10')
-                test_content.append('        {}.insert(std::make_tuple('.format(parameter) + ', '.join(gen_list) + '));')
+                test_content.append(
+                    '        {}.insert(std::make_tuple('.format(parameter) + ', '.join(gen_list) + '));')
                 test_content.append('    }')
 
             # main_print.append('    std::cout<<"{}:\\n"<<{}<<std::endl;'.format(parameter, parameter))
         content = ""
         if show_doc:
-            content += '/**\n * ' + func_name + '\n *\n * ' + '\n * '.join(doc) + '\n * @return {}\n */\n'.format(self.ret_symbol)
+            content += '/**\n * ' + func_name + '\n *\n * ' + '\n * '.join(doc) + '\n * @return {}\n */\n'.format(
+                self.ret_symbol)
         ret_type = self.get_ctype(self.symtable[self.ret_symbol])
         if len(self.parameters) == 1:
-            content += ret_type + ' ' + func_name + '(' + ', '.join(par_des_list) + ')\n{\n'    # func name
+            content += ret_type + ' ' + func_name + '(' + ', '.join(par_des_list) + ')\n{\n'  # func name
             test_content.insert(0, "void {}({})".format(rand_func_name, ', '.join(test_par_list)))
         else:
             content += ret_type + ' ' + func_name + '(\n    ' + ',\n    '.join(par_des_list) + ')\n{\n'  # func name
@@ -229,7 +254,9 @@ class EigenWalker(BaseNodeWalker):
         main_content += main_declaration
         main_content.append("    {}({});".format(rand_func_name, ', '.join(self.parameters)))
         main_content += main_print
-        main_content.append("    {} func_value = {}({});".format(self.get_ctype(self.symtable[self.ret_symbol]), func_name, ', '.join(self.parameters)))
+        main_content.append(
+            "    {} func_value = {}({});".format(self.get_ctype(self.symtable[self.ret_symbol]), func_name,
+                                                 ', '.join(self.parameters)))
         if self.symtable[self.ret_symbol].is_matrix():
             main_content.append('    std::cout<<"func_value:\\n"<<func_value<<std::endl;')
         main_content.append('    return 0;')
@@ -297,12 +324,17 @@ class EigenWalker(BaseNodeWalker):
                     if sub == var_sub:
                         target_var.append(var_ids[0])
         if self.symtable[assign_id].var_type == VarTypeEnum.MATRIX:
-            content.append("Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".format(assign_id, self.symtable[assign_id].rows, self.symtable[assign_id].cols))
+            content.append(
+                "Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".format(assign_id, self.symtable[assign_id].rows,
+                                                                               self.symtable[assign_id].cols))
         elif self.symtable[assign_id].var_type == VarTypeEnum.VECTOR:
-            content.append("Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, 1);\n".format(assign_id, self.symtable[assign_id].rows))
+            content.append(
+                "Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, 1);\n".format(assign_id, self.symtable[assign_id].rows))
         elif self.symtable[assign_id].var_type == VarTypeEnum.SEQUENCE:
             ele_type = self.symtable[assign_id].element_type
-            content.append("Eigen::MatrixXd {} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].size, ele_type.rows, ele_type.cols))
+            content.append(
+                "Eigen::MatrixXd {} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].size,
+                                                                       ele_type.rows, ele_type.cols))
         else:
             content.append("double {} = 0;\n".format(assign_id))
         if self.symtable[target_var[0]].var_type == VarTypeEnum.MATRIX:  # todo
@@ -325,12 +357,12 @@ class EigenWalker(BaseNodeWalker):
                 if exp_info.pre_list:
                     for index in range(len(exp_info.pre_list)):
                         exp_info.pre_list[index] = exp_info.pre_list[index].replace(old, new)
-        if exp_info.pre_list:   # catch pre_list
+        if exp_info.pre_list:  # catch pre_list
             list_content = "".join(exp_info.pre_list)
             # content += exp_info.pre_list
             list_content = list_content.split('\n')
             for index in range(len(list_content)):
-                if index != len(list_content)-1:
+                if index != len(list_content) - 1:
                     content.append(list_content[index] + '\n')
         # only one sub for now
         if node.cond:
@@ -389,7 +421,10 @@ class EigenWalker(BaseNodeWalker):
         pre_list = []
         if_info = self.walk(node.ifs, **kwargs)
         pre_list += if_info.content
-        pre_list.append('    {}.setFromTriplets(tripletList_{}.begin(), tripletList_{}.end());\n'.format(self.get_main_id(lhs), self.get_main_id(lhs), self.get_main_id(lhs)))
+        pre_list.append(
+            '    {}.setFromTriplets(tripletList_{}.begin(), tripletList_{}.end());\n'.format(self.get_main_id(lhs),
+                                                                                             self.get_main_id(lhs),
+                                                                                             self.get_main_id(lhs)))
         return CodeNodeInfo(cur_m_id, pre_list)
 
     def walk_SparseIfs(self, node, **kwargs):
@@ -425,7 +460,9 @@ class EigenWalker(BaseNodeWalker):
         content.append('    for (auto& tuple : {}) {{\n'.format(id2))
         content.append('        double {} = std::get<0>(tuple);\n'.format(id0))
         content.append('        double {} = std::get<1>(tuple);\n'.format(id1))
-        content.append('        tripletList_{}.push_back(Eigen::Triplet<double>({}, {}, {}));\n'.format(self.get_main_id(lhs), id0, id1, stat_content))
+        content.append(
+            '        tripletList_{}.push_back(Eigen::Triplet<double>({}, {}, {}));\n'.format(self.get_main_id(lhs), id0,
+                                                                                             id1, stat_content))
         content.append('    }\n')
         return CodeNodeInfo(content)
 
@@ -471,32 +508,24 @@ class EigenWalker(BaseNodeWalker):
             sparse_index = []
             sparse_exp = []
             row_index = 0
-            col_index = 0
+
+            # convert to sparse matrix
+            sparse_id = "{}".format(cur_m_id)
+            sparse_triplet = "tripletList{}".format(cur_m_id)
             for i in range(len(ret)):
+                col_index = 0
                 for j in range(len(ret[i])):
+                    sparse_index.append((row_index, col_index))
                     if type_info.la_type.item_types[i][j].is_matrix() and type_info.la_type.item_types[i][j].sparse:
-                        sparse_index.append((row_index, col_index))
                         sparse_exp.append(ret[i][j])
-                        ret[i][j] = "Eigen::MatrixXd::Zero({}, {})".format(type_info.la_type.item_types[i][j].rows, type_info.la_type.item_types[i][j].cols)
+                    else:
+                        sparse_exp.append('{}.sparseView()'.format(ret[i][j]))
                     col_index += type_info.la_type.item_types[i][j].cols
                 row_index += type_info.la_type.item_types[i][j].rows
                 all_rows.append(', '.join(ret[i]))
-            m_content += '{};'.format(',\n    '.join(all_rows))
-            content += 'Eigen::Matrix<double, {}, {}> {};\n'.format(self.symtable[cur_m_id].rows,
-                                                                    self.symtable[cur_m_id].cols, cur_m_id)
-            content += '    {} << {}\n'.format(cur_m_id, m_content)
-            # convert to sparse matrix
-            sparse_id = "{}_S".format(cur_m_id)
-            sparse_triplet = "tripletList_{}".format(cur_m_id)
-            # preserve original sparse matrix
-            content += '    Eigen::SparseMatrix<double> {} = {}.sparseView();\n'.format(sparse_id, cur_m_id)
+            content += 'Eigen::SparseMatrix<double> {}({}, {});\n'.format(cur_m_id, self.symtable[cur_m_id].rows, self.symtable[cur_m_id].cols)
             content += '    std::vector<Eigen::Triplet<double> > {};\n'.format(sparse_triplet)
-            content += '    for (int k=0; k < {}.outerSize(); ++k){{\n'.format(sparse_id)
-            content += '        for (Eigen::SparseMatrix<double>::InnerIterator it({},k); it; ++it){{\n'.format(sparse_id)
-            content += '            {}.push_back(Eigen::Triplet<double>((int)it.row(), (int)it.col(), it.value()));\n'.format(sparse_triplet)
-            content += '        }\n'
-            content += '    }\n'
-            # add new elements
+            # add all elements
             for index in range(len(sparse_index)):
                 (i, j) = sparse_index[index]
                 if index == 0:
@@ -511,20 +540,23 @@ class EigenWalker(BaseNodeWalker):
                 col_str = ''
                 if j > 0:
                     col_str = "+{}".format(j)
-                content += '            {}.push_back(Eigen::Triplet<double>((int)it.row(){}, (int)it.col(){}, it.value()));\n'.format(sparse_triplet, row_str, col_str)
+                content += '            {}.push_back(Eigen::Triplet<double>((int)it.row(){}, (int)it.col(){}, it.value()));\n'.format(
+                    sparse_triplet, row_str, col_str)
                 content += '        }\n'
                 content += '    }\n'
             # set triplets
-            content += '    {}.setFromTriplets({}.begin(), {}.end());\n'.format(sparse_id, sparse_triplet, sparse_triplet)
+            content += '    {}.setFromTriplets({}.begin(), {}.end());\n'.format(sparse_id, sparse_triplet,
+                                                                                sparse_triplet)
             cur_m_id = sparse_id
         else:
             # dense
-            content += 'Eigen::Matrix<double, {}, {}> {};\n'.format(self.symtable[cur_m_id].rows, self.symtable[cur_m_id].cols, cur_m_id)
+            content += 'Eigen::Matrix<double, {}, {}> {};\n'.format(self.symtable[cur_m_id].rows,
+                                                                    self.symtable[cur_m_id].cols, cur_m_id)
             if type_info.la_type:
                 all_rows = []
                 m_content = ""
                 for i in range(len(ret)):
-                    all_rows.append(', '.join(ret[i]) )
+                    all_rows.append(', '.join(ret[i]))
                 m_content += '{};'.format(',\n    '.join(all_rows))
                 content += '    {} << {}\n'.format(cur_m_id, m_content)
             else:
@@ -603,7 +635,7 @@ class EigenWalker(BaseNodeWalker):
             content = "{}({}, {})".format(func_name, id1_info.content, id2_info.content)
         else:
             content = "{}({}, {})".format(func_name, id1_info.content, id1_info.content)
-        node_info = CodeNodeInfo(content+post_s)
+        node_info = CodeNodeInfo(content + post_s)
         return node_info
 
     def walk_Add(self, node, **kwargs):
@@ -669,7 +701,7 @@ class EigenWalker(BaseNodeWalker):
         if self.contain_subscript(left_id):
             left_ids = self.get_all_ids(left_id)
             left_subs = left_ids[1]
-            if len(left_subs) == 2: # matrix only
+            if len(left_subs) == 2:  # matrix only
                 sequence = left_ids[0]  # y left_subs[0]
                 sub_strs = left_subs[0] + left_subs[1]
                 if self.symtable[sequence].var_type == VarTypeEnum.MATRIX and self.symtable[sequence].sparse:
@@ -678,14 +710,20 @@ class EigenWalker(BaseNodeWalker):
                     # content += right_info.content
                     def_str = ""
                     if node.op != '+=':
-                        def_str = "    Eigen::SparseMatrix<double> {}({}, {});\n".format(self.get_main_id(left_id), self.symtable[self.get_main_id(left_id)].rows, self.symtable[self.get_main_id(left_id)].cols)
-                        def_str += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(self.get_main_id(left_id))
+                        def_str = "    Eigen::SparseMatrix<double> {}({}, {});\n".format(self.get_main_id(left_id),
+                                                                                         self.symtable[self.get_main_id(
+                                                                                             left_id)].rows,
+                                                                                         self.symtable[self.get_main_id(
+                                                                                             left_id)].cols)
+                        def_str += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(
+                            self.get_main_id(left_id))
                     content = def_str + content
                     pass
                 elif left_subs[0] == left_subs[1]:
                     # L_ii
                     content = ""
-                    content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0], self.symtable[sequence].rows, left_subs[0])
+                    content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0],
+                                                                            self.symtable[sequence].rows, left_subs[0])
                     if right_info.pre_list:
                         for list in right_info.pre_list:
                             lines = list.split('\n')
@@ -696,37 +734,51 @@ class EigenWalker(BaseNodeWalker):
                     for right_var in type_info.symbols:
                         if sub_strs in right_var:
                             var_ids = self.get_all_ids(right_var)
-                            right_info.content = right_info.content.replace(right_var, "{}({}, {})".format(var_ids[0], sub_strs[0], sub_strs[1]))
-                    right_exp += "    {}({}, {}) = {};".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
+                            right_info.content = right_info.content.replace(right_var,
+                                                                            "{}({}, {})".format(var_ids[0], sub_strs[0],
+                                                                                                sub_strs[1]))
+                    right_exp += "    {}({}, {}) = {};".format(self.get_main_id(left_id), left_subs[0], left_subs[1],
+                                                               right_info.content)
                     if self.symtable[sequence].var_type == VarTypeEnum.MATRIX:
                         if node.op == '=':
                             # declare
                             content += "    Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".format(sequence,
-                                                                              self.symtable[sequence].rows,
-                                                                              self.symtable[sequence].cols)
-                    content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0], self.symtable[sequence].rows, left_subs[0])
-                    content += "        for( int {}=0; {}<{}; {}++){{\n".format(left_subs[1], left_subs[1], self.symtable[sequence].cols, left_subs[1])
+                                                                                                          self.symtable[
+                                                                                                              sequence].rows,
+                                                                                                          self.symtable[
+                                                                                                              sequence].cols)
+                    content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0],
+                                                                            self.symtable[sequence].rows, left_subs[0])
+                    content += "        for( int {}=0; {}<{}; {}++){{\n".format(left_subs[1], left_subs[1],
+                                                                                self.symtable[sequence].cols,
+                                                                                left_subs[1])
                     content += "        " + right_exp + ";\n"
                     content += "        }\n"
                     content += "    }\n"
                     # content += '\n'
-            elif len(left_subs) == 1: # sequence only
+            elif len(left_subs) == 1:  # sequence only
                 sequence = left_ids[0]  # y left_subs[0]
                 # replace sequence
                 for right_var in type_info.symbols:
                     if self.contain_subscript(right_var):
                         var_ids = self.get_all_ids(right_var)
-                        right_info.content = right_info.content.replace(right_var, "{}[{}]".format(var_ids[0], var_ids[1][0]))
+                        right_info.content = right_info.content.replace(right_var,
+                                                                        "{}[{}]".format(var_ids[0], var_ids[1][0]))
 
                 right_exp += "    {}[{}] = {}".format(self.get_main_id(left_id), left_subs[0], right_info.content)
                 ele_type = self.symtable[sequence].element_type
                 if ele_type.var_type == VarTypeEnum.MATRIX:
-                    content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence, self.symtable[sequence].size)
+                    content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
+                                                         self.symtable[sequence].size)
                 elif ele_type.var_type == VarTypeEnum.VECTOR:
-                    content += "    Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {})\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
+                    content += "    Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {})\n".format(sequence,
+                                                                                                 self.symtable[
+                                                                                                     sequence].size,
+                                                                                                 ele_type.rows)
                 else:
                     content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].size)
-                content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0], self.symtable[sequence].size, left_subs[0])
+                content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0],
+                                                                        self.symtable[sequence].size, left_subs[0])
                 content += "    " + right_exp + ";\n"
                 content += '    }\n'
         #
@@ -859,4 +911,3 @@ class EigenWalker(BaseNodeWalker):
             else:
                 ret = ret + right_info.pre_list
         return ret
-
