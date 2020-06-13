@@ -446,10 +446,14 @@ class TypeWalker(NodeWalker):
 
     def walk_IdentifierAlone(self, node, **kwargs):
         node_type = LaVarType(VarTypeEnum.INVALID)
-        if node.value in self.symtable:
-            node_type = self.symtable[node.value]
-        node_type.symbol = node.value
-        node_info = NodeInfo(node_type, node.value, {node.value})
+        if node.value:
+            value = node.value
+        else:
+            value = '`' + node.id + '`'
+        if value in self.symtable:
+            node_type = self.symtable[value]
+        node_type.symbol = value
+        node_info = NodeInfo(node_type, value, {value})
         self.node_dict[node] = node_info
         return node_info
 

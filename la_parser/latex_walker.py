@@ -48,7 +48,11 @@ class LatexWalker(BaseNodeWalker):
         return self.walk(node.left, **kwargs) + '_{' + ','.join(right) + '}'
 
     def walk_IdentifierAlone(self, node, **kwargs):
-        return node.value
+        if node.value:
+            value = node.value
+        else:
+            value = '`' + node.id + '`'
+        return value
 
     def walk_Start(self, node, **kwargs):
         return self.walk(node.stat, **kwargs) + "\n\\]\n\nwhere\n\n\\begin{itemize}\n" + self.walk(node.cond, **kwargs) + '\\end{itemize}\n'

@@ -818,7 +818,11 @@ class EigenWalker(BaseNodeWalker):
         return CodeNodeInfo(content)
 
     def walk_IdentifierAlone(self, node, **kwargs):
-        return CodeNodeInfo(node.value)
+        if node.value:
+            value = node.value
+        else:
+            value = '`' + node.id + '`'
+        return CodeNodeInfo(value)
 
     def walk_Derivative(self, node, **kwargs):
         return CodeNodeInfo("")
