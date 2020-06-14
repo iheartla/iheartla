@@ -82,6 +82,25 @@ class BaseNodeWalker(NodeWalker):
     def walk_object(self, o):
         raise Exception('Unexpected type %s walked: %s', type(o).__name__, o)
     ###################################################################
+    def is_keyword(self, name):
+        return False
+
+    def trim_content(self, content):
+        # convert special string in identifiers
+        res = content
+        names_dict = []
+        for special in self.symtable.keys():
+            if '`' not in special:
+                continue
+            new_str = ''.join(e for e in special if e.isalnum() or e is '_')
+            if new_str is '' or new_str[0].isnumeric():
+                new_str = '_' + new_str
+            if new_str is not special:
+                while new_str in names_dict or new_str in self.symtable.keys() or self.is_keyword(new_str):
+                    new_str = '_' + new_str
+                names_dict.append(new_str)
+                res = res.replace(special, new_str)
+        return res
 
     def contain_subscript(self, identifier):
         if identifier in self.ids_dict:

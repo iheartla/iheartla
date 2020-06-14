@@ -1,4 +1,5 @@
 from la_parser.base_walker import *
+import keyword
 
 
 class NumpyWalker(BaseNodeWalker):
@@ -125,6 +126,8 @@ class NumpyWalker(BaseNodeWalker):
         content += stats_content
         content += '    return ' + self.ret_symbol
         content += '\n'
+        # convert special string in identifiers
+        content = self.trim_content(content)
         # test
         test_content.append('    return {}'.format(', '.join(self.parameters)))
         main_content.append("    func_value = {}({})".format(func_name, ', '.join(self.parameters)))
@@ -699,4 +702,7 @@ class NumpyWalker(BaseNodeWalker):
             else:
                 ret = ret + right_info.pre_list
         return ret
+
+    def is_keyword(self, name):
+        return keyword.iskeyword(name)
 

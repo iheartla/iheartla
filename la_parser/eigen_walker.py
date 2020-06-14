@@ -243,10 +243,12 @@ class EigenWalker(BaseNodeWalker):
                 stats_content += ret_str + stat_info.content + ';\n'
             else:
                 stats_content += ret_str + stat_info.content + '\n'
-        #
+
         content += stats_content
         content += '    return ' + self.ret_symbol + ';'
         content += '\n}\n'
+        # convert special string in identifiers
+        content = self.trim_content(content)
         # test
         # test_content.append('    return {}'.format(', '.join(self.parameters)))
         test_content.append('}')
@@ -911,3 +913,12 @@ class EigenWalker(BaseNodeWalker):
             else:
                 ret = ret + right_info.pre_list
         return ret
+
+    def is_keyword(self, name):
+        kwlist = u"Asm auto bool break case catch char class const_cast	continue default delete	do double else " \
+                 u"enum	dynamic_cast extern	false float for	union unsigned using friend goto if	" \
+                 u"inline int long mutable virtual namespace new operator private protected	public " \
+                 u"register	void reinterpret_cast return short signed sizeof static	static_cast	volatile " \
+                 u"struct switch template this throw true try typedef typeid unsigned wchar_t while "
+        keywords = kwlist.split(' ')
+        return name in keywords
