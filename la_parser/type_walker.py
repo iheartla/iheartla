@@ -59,6 +59,7 @@ class TypeWalker(NodeWalker):
         self.node_dict = {}      # node:var_name
         self.name_cnt_dict = {}
         self.dim_dict = {}       # parameter used. h:w_i
+        self.ids_dict = {}    # identifiers with subscripts
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
         self.ret_symbol = None
         self.stat_list = None
@@ -441,6 +442,7 @@ class TypeWalker(NodeWalker):
         if left_info.content in self.symtable:
             node_type = self.symtable[left_info.content].element_type
         node_info = NodeInfo(node_type, content, {content})
+        self.ids_dict[content] = Identifier(left_info.content, right)
         self.node_dict[node] = node_info
         return node_info
 
@@ -862,9 +864,13 @@ class TypeWalker(NodeWalker):
         return ret_type
 
     def contain_subscript(self, identifier):
-        return identifier.find("_") != -1
+        if identifier in self.ids_dict:
+            return self.ids_dict[identifier].contain_subscript()
+        return False
 
     def get_all_ids(self, identifier):
+        if identifier in self.ids_dict:
+            return self.ids_dict[identifier].get_all_ids()
         res = identifier.split('_')
         subs = []
         for index in range(len(res[1])):
@@ -872,9 +878,8 @@ class TypeWalker(NodeWalker):
         return [res[0], subs]
 
     def get_main_id(self, identifier):
-        if self.contain_subscript(identifier):
-            ret = self.get_all_ids(identifier)
-            return ret[0]
+        if identifier in self.ids_dict:
+            return self.ids_dict[identifier].get_main_id()
         return identifier
 
     # handle subscripts only (where block)

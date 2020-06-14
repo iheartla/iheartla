@@ -30,6 +30,7 @@ class BaseNodeWalker(NodeWalker):
         self.node_dict = {}
         self.dim_dict = {}
         self.sub_name_dict = {}
+        self.ids_dict = {}    # identifiers with subscripts
         self.ret_symbol = None
         self.stat_list = None
         self.visualizer = LaVisualizer()
@@ -64,6 +65,7 @@ class BaseNodeWalker(NodeWalker):
         self.subscripts = type_walker.subscripts
         self.node_dict = type_walker.node_dict
         self.dim_dict = type_walker.dim_dict
+        self.ids_dict = type_walker.ids_dict
         self.sub_name_dict = type_walker.sub_name_dict
         self.ret_symbol = type_walker.ret_symbol
         self.stat_list = type_walker.stat_list
@@ -82,9 +84,13 @@ class BaseNodeWalker(NodeWalker):
     ###################################################################
 
     def contain_subscript(self, identifier):
-        return identifier.find("_") != -1
+        if identifier in self.ids_dict:
+            return self.ids_dict[identifier].contain_subscript()
+        return False
 
     def get_all_ids(self, identifier):
+        if identifier in self.ids_dict:
+            return self.ids_dict[identifier].get_all_ids()
         res = identifier.split('_')
         subs = []
         for index in range(len(res[1])):
@@ -92,6 +98,8 @@ class BaseNodeWalker(NodeWalker):
         return [res[0], subs]
 
     def get_main_id(self, identifier):
+        if identifier in self.ids_dict:
+            return self.ids_dict[identifier].get_main_id()
         if self.contain_subscript(identifier):
             ret = self.get_all_ids(identifier)
             return ret[0]

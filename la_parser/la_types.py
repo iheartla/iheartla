@@ -105,3 +105,19 @@ class CodeNodeInfo(object):
         super().__init__()
         self.content = content
         self.pre_list = pre_list
+
+
+class Identifier(object):
+    def __init__(self, main_id='', subs=[]):
+        super().__init__()
+        self.main_id = main_id
+        self.subs = subs
+
+    def contain_subscript(self):
+        return len(self.subs) > 0
+
+    def get_all_ids(self):
+        return [self.main_id, self.subs]
+
+    def get_main_id(self):
+        return self.main_id
