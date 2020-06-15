@@ -88,8 +88,12 @@ class BaseNodeWalker(NodeWalker):
     def trim_content(self, content):
         # convert special string in identifiers
         res = content
+        ids_list = list(self.symtable.keys())
+        for ids in self.ids_dict.keys():
+            all_ids = self.get_all_ids(ids)
+            ids_list += all_ids[1]
         names_dict = []
-        for special in self.symtable.keys():
+        for special in ids_list:
             if '`' not in special:
                 continue
             new_str = ''.join(e for e in special if e.isalnum() or e is '_')
