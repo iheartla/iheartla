@@ -11,6 +11,7 @@ from la_gui.la_ctrl import LaTextControl
 from la_gui.python_ctrl import PyTextControl
 from la_gui.cpp_ctrl import CppTextControl
 from la_gui.latex_panel import LatexPanel
+from la_gui.msg_panel import MsgControl
 from la_gui.mid_panel import MidPanel, MidPanelEnum
 
 
@@ -56,6 +57,7 @@ class MainWindow(wx.Frame):
         self.control = LaTextControl(self)
         self.midPanel = MidPanel(self)
         self.latexPanel = LatexPanel(self)
+        self.msgPanel = MsgControl(self)
         #
         self.mgr = aui.AuiManager(self)
         self.mgr.SetManagedWindow(self)
@@ -70,7 +72,14 @@ class MainWindow(wx.Frame):
         self.aui_info3 = aui.framemanager.AuiPaneInfo().CaptionVisible(False).PaneBorder(False).CloseButton(False).Right()
         self.aui_info3.BestSize(wx.Size(self.GetSize().width/3, self.GetSize().height))
         self.mgr.AddPane(self.latexPanel, self.aui_info3)
+        #
+        self.aui_info4 = aui.framemanager.AuiPaneInfo().CaptionVisible(False).PaneBorder(False).CloseButton(
+            False).Bottom()
+        self.aui_info4.BestSize(wx.Size(self.GetSize().width, self.GetSize().height/4))
+        self.mgr.AddPane(self.msgPanel, self.aui_info4)
+
         self.mgr.Update()
+        self.msgPanel.Hide()
         # sizer
         # sizer = wx.BoxSizer(wx.HORIZONTAL)
         # sizer.Add(self.control, 1, wx.EXPAND, 100)
@@ -100,6 +109,7 @@ E: { ℤ × ℤ }''')
         self.Bind(wx.EVT_BUTTON, self.OnButtonClicked)
         self.Bind(wx.EVT_IDLE, self.OnIdle)
         create_parser_background()
+        self.OnClickEigen(None)  # Eigen default
 
     def OnButtonClicked(self, e):
         print('frame clicked')
