@@ -2,6 +2,7 @@ from tatsu.model import NodeWalker
 from tatsu.objectmodel import Node
 from la_parser.la_types import *
 from la_tools.la_logger import *
+from la_parser.ir import *
 
 
 class TypeInferenceEnum(Enum):
@@ -88,6 +89,7 @@ class TypeWalker(NodeWalker):
     def walk_Start(self, node, **kwargs):
         self.walk(node.cond, **kwargs)
         self.stat_list = self.walk(node.stat, **kwargs)
+        block_nodes = BlockNode()
         for index in range(len(self.stat_list)):
             update_ret_type = False
             if index == len(self.stat_list) - 1:
@@ -99,8 +101,11 @@ class TypeWalker(NodeWalker):
                     update_ret_type = True
                     kwargs[LHS] = self.ret_symbol
             type_info = self.walk(self.stat_list[index], **kwargs)
+            block_nodes.add_stmt(type_info.ir)
             if update_ret_type:
                 self.symtable[self.ret_symbol] = type_info.la_type
+        return block_nodes
+        return self.stat_list
 
     ###################################################################
     def walk_WhereConditions(self, node, **kwargs):
@@ -208,14 +213,25 @@ class TypeWalker(NodeWalker):
 
     ###################################################################
     def walk_Statements(self, node, **kwargs):
+        block_node = BlockNode()
         stat_list = []
         if node.stats:
             stat_list = self.walk(node.stats, **kwargs)
+            block_node.add_stmt(stat_list)
         stat_list.append(node.stat)
+        block_node.add_stmt(self.walk(node.stat, **kwargs).ir)
         return stat_list
+        # return block_node
 
     def walk_Expression(self, node, **kwargs):
-        return self.walk(node.value, **kwargs)
+        value_info = self.walk(node.value, **kwargs)
+        ir_node = ExpressionNode()
+        value_info.ir.set_parent(ir_node)
+        ir_node.la_type = value_info.la_type
+        ir_node.value = value_info.ir
+        ir_node.sign = node.sign
+        value_info.ir = ir_node
+        return value_info
 
     def walk_Add(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
@@ -224,6 +240,11 @@ class TypeWalker(NodeWalker):
         right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_ADD, left_type, right_type)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
+        ir_node = AddNode(left_info.ir, right_info.ir)
+        ir_node.la_type = ret_type
+        left_info.ir.set_parent(ir_node)
+        right_info.ir.set_parent(ir_node)
+        ret_info.ir = ir_node
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -234,6 +255,11 @@ class TypeWalker(NodeWalker):
         right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_SUB, left_type, right_type)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
+        ir_node = SubNode(left_info.ir, right_info.ir)
+        ir_node.la_type = ret_type
+        left_info.ir.set_parent(ir_node)
+        right_info.ir.set_parent(ir_node)
+        ret_info.ir = ir_node
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -245,6 +271,11 @@ class TypeWalker(NodeWalker):
         right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_ADD, left_type, right_type)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
+        ir_node = AddSubNode(left_info.ir, right_info.ir)
+        ir_node.la_type = ret_type
+        left_info.ir.set_parent(ir_node)
+        right_info.ir.set_parent(ir_node)
+        ret_info.ir = ir_node
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -261,6 +292,11 @@ class TypeWalker(NodeWalker):
             for sym in sym_set:
                 ret_type.symbol += sym
         ret_info = NodeInfo(ret_type, symbols=sym_set)
+        ir_node = MulNode(left_info.ir, right_info.ir)
+        ir_node.la_type = ret_type
+        left_info.ir.set_parent(ir_node)
+        right_info.ir.set_parent(ir_node)
+        ret_info.ir = ir_node
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -271,11 +307,21 @@ class TypeWalker(NodeWalker):
         right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_DIV, left_type, right_type)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
+        ir_node = DivNode(left_info.ir, right_info.ir)
+        ir_node.la_type = ret_type
+        left_info.ir.set_parent(ir_node)
+        right_info.ir.set_parent(ir_node)
+        ret_info.ir = ir_node
         self.node_dict[node] = ret_info
         return ret_info
 
     def walk_Subexpression(self, node, **kwargs):
-        return self.walk(node.value, **kwargs)
+        value_info = self.walk(node.value, **kwargs)
+        ir_node = SubexpressionNode()
+        ir_node.value = value_info.ir
+        ir_node.la_type = value_info.la_type
+        value_info.ir = ir_node
+        return value_info
 
     def walk_Assignment(self, node, **kwargs):
         id0_info = self.walk(node.left, **kwargs)
@@ -286,6 +332,13 @@ class TypeWalker(NodeWalker):
         kwargs[ASSIGN_OP] = node.op
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
+
+        assign_node = AssignNode(id0_info.ir, right_info.ir)
+        assign_node.op = node.op
+        right_info.ir.set_parent(assign_node)
+        id0_info.ir.set_parent(assign_node)
+
+
         la_remove_key(LHS, **kwargs)
         la_remove_key(ASSIGN_OP, **kwargs)
         # y_i = stat
@@ -321,27 +374,44 @@ class TypeWalker(NodeWalker):
             else:
                 self.symtable[id0] = right_type
         self.node_dict[node] = right_info
+        assign_node.symbols = right_info.symbols
+        right_info.ir = assign_node
         return right_info
 
     def walk_Summation(self, node, **kwargs):
         kwargs[INSIDE_SUMMATION] = True
+        #
+        ir_node = SummationNode()
         if node.cond:
             id_info = self.walk(node.id, **kwargs)
+            ir_node.id = id_info.ir
+            ir_node.cond = self.walk(node.cond, **kwargs).ir
+            id_info.ir.set_parent(ir_node)
             subs = id_info.content
             if LHS in kwargs:
                 lhs = kwargs[LHS]
                 lhs_ids = self.get_all_ids(lhs)
                 assert lhs_ids[1][0] == lhs_ids[1][1], "multiple subscripts for sum"
                 cond_info = self.walk(node.cond, **kwargs)
+                cond_info.ir.set_parent(ir_node)
         else:
             sub_info = self.walk(node.sub)
+            ir_node.sub = sub_info.ir
+            sub_info.ir.set_parent(ir_node)
             subs = sub_info.content
         new_id = self.generate_var_name("sum")
         ret_info = self.walk(node.exp, **kwargs)
+        ir_node.exp = ret_info.ir
+        ret_info.ir.set_parent(ir_node)
         ret_type = ret_info.la_type
         self.symtable[new_id] = ret_type
         ret_info.symbol = new_id
         ret_info.content = subs
+        ir_node.la_type = ret_info.la_type
+        ir_node.symbols = ret_info.symbols
+        ir_node.symbol = ret_info.symbol
+        ir_node.content = ret_info.content
+        ret_info.ir = ir_node
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -353,24 +423,35 @@ class TypeWalker(NodeWalker):
         return node_info
 
     def walk_Power(self, node, **kwargs):
+        ir_node = PowerNode()
         base_info = self.walk(node.base, **kwargs)
+        ir_node.base = base_info.ir
         symbols = base_info.symbols
         if node.t:
+            ir_node.t = node.t
             assert base_info.la_type.var_type == VarTypeEnum.MATRIX
             node_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows)
         elif node.r:
+            ir_node.r = node.r
             assert base_info.la_type.var_type == VarTypeEnum.MATRIX
             assert base_info.la_type.rows == base_info.la_type.cols
             node_type = MatrixType(rows=base_info.la_type.rows, cols=base_info.la_type.rows)
         else:
             power_info = self.walk(node.power, **kwargs)
+            ir_node.power = power_info.ir
             symbols += power_info.symbols
             node_type = power_info.la_type
-        return NodeInfo(node_type, symbols=symbols)
+        ir_node.la_type = node_type
+        node_info = NodeInfo(node_type, symbols=symbols)
+        node_info.ir = ir_node
+        return node_info
 
     def walk_Solver(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
+        ir_node = SolverNode()
+        ir_node.left = left_info.ir
+        ir_node.right = right_info.ir
         assert left_info.la_type.var_type == VarTypeEnum.MATRIX
         assert right_info.la_type.var_type == VarTypeEnum.MATRIX or right_info.la_type.var_type == VarTypeEnum.VECTOR
         node_type = None
@@ -380,26 +461,43 @@ class TypeWalker(NodeWalker):
                 node_type = MatrixType(rows=left_info.la_type.cols, cols=left_info.la_type.cols)
             elif right_info.la_type.var_type == VarTypeEnum.VECTOR:
                 node_type = VectorType(rows=left_info.la_type.cols)
-        return NodeInfo(node_type, symbols=left_info.symbols.union(right_info.symbols))
+        ir_node.la_type = node_type
+        node_info = NodeInfo(node_type, symbols=left_info.symbols.union(right_info.symbols))
+        node_info.ir = ir_node
+        return node_info
 
     def walk_Transpose(self, node, **kwargs):
+        ir_node = TransposeNode()
         f_info = self.walk(node.f, **kwargs)
+        ir_node.f = f_info.ir
         assert f_info.la_type.var_type == VarTypeEnum.MATRIX
         node_type = MatrixType(rows=f_info.la_type.cols, cols=f_info.la_type.rows)
         node_info = NodeInfo(node_type, symbols=f_info.symbols)
+        node_info.ir = ir_node
+        node_info.la_type = node_type
         return node_info
 
     def walk_IfCondition(self, node, **kwargs):
+        ir_node = IfNode()
         kwargs[IF_COND] = True
-        return self.walk(node.cond, **kwargs)
+        node_info = self.walk(node.cond, **kwargs)
+        ir_node.cond = node_info.ir
+        ir_node.la_type = node_info.la_type
+        node_info.ir = ir_node
+        return node_info
 
     def walk_NeCondition(self, node, **kwargs):
+        ir_node = NeNode()
         left_info = self.walk(node.left, **kwargs)
+        ir_node.left = left_info.ir
         left_type = left_info.la_type
         right_info = self.walk(node.right, **kwargs)
+        ir_node.right = right_info.ir
         right_type = right_info.la_type
         assert left_type.var_type == right_type.var_type, "different type "
         ret_info = NodeInfo(left_type, symbols=left_info.symbols.union(right_info.symbols))
+        ir_node.la_type = ret_info.la_type
+        ret_info.ir = ir_node
         self.node_dict[node] = ret_info
         return ret_info
 
@@ -441,7 +539,10 @@ class TypeWalker(NodeWalker):
         node_type = LaVarType(VarTypeEnum.INVALID, symbol = content)
         if left_info.content in self.symtable:
             node_type = self.symtable[left_info.content].element_type
-        node_info = NodeInfo(node_type, content, {content})
+        #
+        ir_node = IdNode(left_info.content, right)
+        ir_node.la_type = node_type
+        node_info = NodeInfo(node_type, content, {content}, ir_node)
         self.ids_dict[content] = Identifier(left_info.content, right)
         self.node_dict[node] = node_info
         return node_info
@@ -452,15 +553,19 @@ class TypeWalker(NodeWalker):
             value = node.value
         else:
             value = '`' + node.id + '`'
+        #
+        ir_node = IdNode(value)
         if value in self.symtable:
             node_type = self.symtable[value]
         node_type.symbol = value
-        node_info = NodeInfo(node_type, value, {value})
+        ir_node.la_type = node_type
+        node_info = NodeInfo(node_type, value, {value}, ir_node)
         self.node_dict[node] = node_info
         return node_info
 
     def walk_Factor(self, node, **kwargs):
         node_info = None
+        ir_node = FactorNode()
         if node.id:
             id0_info = self.walk(node.id, **kwargs)
             id0 = id0_info.content
@@ -472,26 +577,41 @@ class TypeWalker(NodeWalker):
                     # I
                     if 'I' not in self.symtable:
                         assert la_is_inside_matrix(**kwargs), "I must be used inside matrix if not defined"
-            node_info = NodeInfo(id0_info.la_type, id0, id0_info.symbols)
+            node_info = NodeInfo(id0_info.la_type, id0, id0_info.symbols, id0_info.ir)
             # node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
+            ir_node.id = node_info.ir
         elif node.num:
             node_info = self.walk(node.num, **kwargs)
+            ir_node.num = node_info.ir
         elif node.sub:
             node_info = self.walk(node.sub, **kwargs)
+            ir_node.sub = node_info.ir
         elif node.m:
             node_info = self.walk(node.m, **kwargs)
+            ir_node.m = node_info.ir
         elif node.nm:
             node_info = self.walk(node.nm, **kwargs)
+            ir_node.nm = node_info.ir
         elif node.op:
             node_info = self.walk(node.op, **kwargs)
+            ir_node.op = node_info.ir
         elif node.s:
             node_info = self.walk(node.s, **kwargs)
+            ir_node.s = node_info.ir
+        #
+        ir_node.la_type = node_info.la_type
+        node_info.ir = ir_node
         self.node_dict[node] = node_info
         return node_info
 
     def walk_Number(self, node, **kwargs):
         node_value = self.walk(node.value, **kwargs)
         node_info = NodeInfo(LaVarType(VarTypeEnum.SCALAR), content=node_value)
+        #
+        ir_node = NumberNode()
+        ir_node.value = node_value.ir
+        ir_node.la_type = node_info.la_type
+        node_info.ir = ir_node
         self.node_dict[node] = node_info
         return node_info
 
@@ -499,17 +619,25 @@ class TypeWalker(NodeWalker):
         value = ''.join(node.value)
         node_type = LaVarType(VarTypeEnum.INTEGER)
         node_info = NodeInfo(node_type, content=int(value))
+        #
+        ir_node = IntegerNode()
+        ir_node.value = int(value)
+        ir_node.la_type = node_info.la_type
+        node_info.ir = ir_node
         self.node_dict[node] = node_info
         return node_info
 
     def walk_SparseMatrix(self, node, **kwargs):
+        ir_node = SparseMatrixNode()
         if LHS in kwargs:
             lhs = kwargs[LHS]
         if ASSIGN_OP in kwargs:
             op = kwargs[ASSIGN_OP]
         all_ids = self.get_all_ids(lhs)
 
-        self.walk(node.ifs, **kwargs)
+        ifs_info = self.walk(node.ifs, **kwargs)
+        ifs_info.ir.set_parent(ir_node)
+        ir_node.ifs = ifs_info.ir
         # definition
         index_var = self.generate_var_name("{}{}{}".format(all_ids[0], all_ids[1][0], all_ids[1][1]))
         value_var = self.generate_var_name("{}vals".format(all_ids[0]))
@@ -519,8 +647,10 @@ class TypeWalker(NodeWalker):
             assert node.id1 and node.id2, "sparse matrix: need dim"
             id1_info = self.walk(node.id1, **kwargs)
             id1 = id1_info.content
+            ir_node.id1 = id1_info.ir
             id2_info = self.walk(node.id2, **kwargs)
             id2 = id2_info.content
+            ir_node.id2 = id2_info.ir
             la_type = MatrixType(rows=id1, cols=id2, sparse=True, index_var=index_var, value_var=value_var)
             self.symtable[new_id] = la_type
         elif op == '+=':
@@ -530,41 +660,61 @@ class TypeWalker(NodeWalker):
             if node.id1:
                 id1_info = self.walk(node.id1, **kwargs)
                 id1 = id1_info.content
+                ir_node.id1 = id1_info.ir
                 id2_info = self.walk(node.id2, **kwargs)
                 id2 = id2_info.content
+                ir_node.id2 = id2_info.ir
                 assert id1 == la_type.rows and id2 == la_type.cols, "sparse matrix: dim mismatch"
 
         node_info = NodeInfo(la_type)
         node_info.symbol = id_name
+        ir_node.la_type = la_type
+        ir_node.symbol = node_info.symbol
+        node_info.ir = ir_node
         self.node_dict[node] = node_info
         return node_info
 
     def walk_SparseIfs(self, node, **kwargs):
+        ir_node = SparseIfsNode()
         if node.value:
-            self.walk(node.value, **kwargs)
+            node_info = self.walk(node.value, **kwargs)
+            node_info.ir.set_parent(ir_node)
+            ir_node.value = node_info.ir
         if node.ifs:
-            self.walk(node.ifs, **kwargs)
+            node_info = self.walk(node.ifs, **kwargs)
+            node_info.ir.set_parent(ir_node)
+            ir_node.ifs = node_info.ir
+        ret_info = NodeInfo(ir=ir_node)
+        return ret_info
 
     def walk_SparseIf(self, node, **kwargs):
+        ir_node = SparseIfNode()
         lhs = kwargs[LHS]
         all_ids = self.get_all_ids(lhs)
         id0_info = self.walk(node.id0, **kwargs)
+        ir_node.id0 = id0_info.ir
         id0 = id0_info.content
         assert id0 in all_ids[1], "subscripts mismatch"
         id1_info = self.walk(node.id1, **kwargs)
+        ir_node.id1 = id1_info.ir
         id1 = id1_info.content
         assert id1 in all_ids[1], "subscripts mismatch"
         id2_info = self.walk(node.id2, **kwargs)
+        ir_node.id2 = id2_info.ir
         id2 = id2_info.content
         stat_info = self.walk(node.stat, **kwargs)
+        ir_node.stat = stat_info.ir
         for symbol in stat_info.symbols:
             if self.contain_subscript(symbol):
                 sym_ids = self.get_all_ids(symbol)
                 assert sym_ids[1] == all_ids[1], "subscripts mismatch"
+        return NodeInfo(ir=ir_node)
 
     def walk_Matrix(self, node, **kwargs):
+        ir_node = MatrixNode()
         kwargs[INSIDE_MATRIX] = True
         node_info = self.walk(node.value, **kwargs)
+        ir_node.value = node_info.ir
         # check matrix validity
         rows = len(node_info.content)
         cols = 0
@@ -600,19 +750,25 @@ class TypeWalker(NodeWalker):
             self.symtable[new_id] = MatrixType(rows=rows, cols=cols, block=block, sparse=sparse, list_dim=list_dim, item_types=node_info.content)
             node_info.symbol = new_id
             self.node_dict[node] = node_info
+        ir_node.la_type = node_info.la_type
+        ir_node.symbol = node_info.symbol
+        node_info.ir = ir_node
         self.node_dict[node] = node_info
         return node_info
 
     def walk_MatrixRows(self, node, **kwargs):
+        ir_node = MatrixRowsNode()
         ret_info = None
         rows = []
         symbols = set()
         if node.rs:
             ret_info = self.walk(node.rs, **kwargs)
+            ir_node.rs = ret_info.ir
             rows = rows + ret_info.content
             symbols = ret_info.symbols
         if node.r:
             r_info = self.walk(node.r, **kwargs)
+            ir_node.r = r_info.ir
             if ret_info is None:
                 ret_info = r_info
                 ret_info.content = [ret_info.content]
@@ -620,19 +776,24 @@ class TypeWalker(NodeWalker):
                 rows.append(r_info.content)
                 ret_info.content = rows
             ret_info.symbols = symbols.union(r_info.symbols)
+        ir_node.la_type = ret_info.la_type
+        ret_info.ir = ir_node
         self.node_dict[node] = ret_info
         return ret_info
 
     def walk_MatrixRow(self, node, **kwargs):
+        ir_node = MatrixRowNode()
         ret_info = None
         items = []
         symbols = set()
         if node.rc:
             ret_info = self.walk(node.rc, **kwargs)
+            ir_node.rc = ret_info.ir
             items = items + ret_info.content
             symbols = ret_info.symbols
         if node.exp:
             exp_info = self.walk(node.exp, **kwargs)
+            ir_node.exp = exp_info.ir
             if ret_info is None:
                 ret_info = exp_info
                 ret_info.content = [exp_info.la_type]
@@ -642,19 +803,24 @@ class TypeWalker(NodeWalker):
                 items.append(exp_info.la_type)
                 ret_info.content = items
             ret_info.symbols = symbols.union(exp_info.symbols)
+        ir_node.la_type = ret_info.la_type
+        ret_info.ir = ir_node
         self.node_dict[node] = ret_info
         return ret_info
 
     def walk_MatrixRowCommas(self, node, **kwargs):
+        ir_node = MatrixRowCommasNode()
         ret_info = None
         items = []
         symbols = set()
         if node.value:
             ret_info = self.walk(node.value, **kwargs)
+            ir_node.value = ret_info.ir
             items = items + ret_info.content
             symbols = ret_info.symbols
         if node.exp:
             exp_info = self.walk(node.exp, **kwargs)
+            ir_node.exp = exp_info.ir
             if ret_info is None:
                 ret_info = exp_info
                 ret_info.content = [exp_info.la_type]
@@ -664,28 +830,40 @@ class TypeWalker(NodeWalker):
                 items.append(exp_info.la_type)
                 ret_info.content = items
             ret_info.symbols = symbols.union(exp_info.symbols)
+        ir_node.la_type = ret_info.la_type
+        ret_info.ir = ir_node
         self.node_dict[node] = ret_info
         return ret_info
 
     def walk_ExpInMatrix(self, node, **kwargs):
         ret_info = self.walk(node.value, **kwargs)
+        ir_node = ExpInMatrixNode()
+        ir_node.value = ret_info.ir
+        ir_node.sign = node.sign
+        ret_info.ir = ir_node
         self.node_dict[node] = ret_info
         return ret_info
 
     def walk_NumMatrix(self, node, **kwargs):
+        ir_node = NumMatrixNode()
         id1_info = self.walk(node.id1, **kwargs)
+        ir_node.id1 = id1_info.ir
+        id1_info.ir.set_parent(ir_node)
         id1 = id1_info.content
         if isinstance(id1, str):
             assert id1 in self.symtable, "{} unknown".format(id1)
         if node.id:
+            ir_node.id = node.id
             # 'I' symbol
             assert 'I' not in self.symtable, "You can't use 'I' with subscript since it has been defined before"
             node_type = MatrixType(rows=id1, cols=id1)
         else:
+            ir_node.left = node.left
             if node.left == '0':
                 assert la_is_inside_matrix(**kwargs), "Zero matrix can only be used inside matrix"
             if node.id2:
                 id2_info = self.walk(node.id2, **kwargs)
+                ir_node.id2 = id2_info.ir
                 id2 = id2_info.content
                 if isinstance(id2, str):
                     assert id2 in self.symtable, "{} unknown".format(id2)
@@ -693,6 +871,8 @@ class TypeWalker(NodeWalker):
             else:
                 node_type = VectorType(rows=id1)
         node_info = NodeInfo(node_type)
+        ir_node.la_type = node_info.la_type
+        node_info.ir = ir_node
         self.node_dict[node] = node_type
         return node_info
 

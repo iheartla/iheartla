@@ -22,6 +22,10 @@ from la_parser.base_walker import ParserTypeEnum
 from la_parser.latex_walker import LatexWalker
 from la_parser.numpy_walker import NumpyWalker
 from la_parser.eigen_walker import EigenWalker
+from la_parser.codegen_numpy import CodeGenNumpy
+from la_parser.codegen_eigen import CodeGenEigen
+from la_parser.codegen_latex import CodeGenLatex
+from la_parser.type_walker import *
 from la_parser.ir import *
 from la_parser.ir_visitor import *
 import subprocess
@@ -33,13 +37,28 @@ import traceback
 
 
 def walk_model(parser_type, model):
+    type_walker = TypeWalker()
+    node_info = type_walker.walk(model)
     if parser_type == ParserTypeEnum.LATEX:
-        walker = LatexWalker()
+        gen = CodeGenLatex()
     elif parser_type == ParserTypeEnum.NUMPY:
-        walker = NumpyWalker()
+        gen = CodeGenNumpy()
     elif parser_type == ParserTypeEnum.EIGEN:
-        walker = EigenWalker()
-    return walker.walk_model(model)
+        gen = CodeGenEigen()
+    #
+    gen.symtable = type_walker.symtable
+    for key in gen.symtable.keys():
+        gen.def_dict[key] = False
+    gen.parameters = type_walker.parameters
+    gen.subscripts = type_walker.subscripts
+    gen.node_dict = type_walker.node_dict
+    gen.dim_dict = type_walker.dim_dict
+    gen.ids_dict = type_walker.ids_dict
+    gen.sub_name_dict = type_walker.sub_name_dict
+    gen.ret_symbol = type_walker.ret_symbol
+    gen.stat_list = type_walker.stat_list
+    gen.visit_code(node_info)
+    return gen.content
 
 
 def create_parser():
@@ -113,8 +132,8 @@ def parse_and_translate(content, frame, parser_type=None):
     parser = get_parser()
     model = parser.parse(content, parseinfo=True)
     # parsing Latex at the same time
-    latex_thread = threading.Thread(target=generate_latex_code, args=(model, frame,))
-    latex_thread.start()
+    # latex_thread = threading.Thread(target=generate_latex_code, args=(model, frame,))
+    # latex_thread.start()
     # other type
     if parser_type is None:
         parser_type = ParserTypeEnum.NUMPY
