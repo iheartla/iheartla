@@ -122,6 +122,8 @@ class TypeWalker(NodeWalker):
                 element_type = LaVarType(VarTypeEnum.REAL)
             elif node.type == 'ℤ':
                 element_type = LaVarType(VarTypeEnum.INTEGER)
+        else:
+            element_type = LaVarType(VarTypeEnum.REAL)
         la_type = MatrixType(rows=id1, cols=id2, desc=desc, element_type=element_type)
         self.handle_identifier(id0, la_type)
         self.update_parameters(id0)
@@ -151,6 +153,8 @@ class TypeWalker(NodeWalker):
                 element_type = LaVarType(VarTypeEnum.REAL)
             elif node.type == 'ℤ':
                 element_type = LaVarType(VarTypeEnum.INTEGER)
+        else:
+            element_type = LaVarType(VarTypeEnum.REAL)
         la_type = VectorType(rows=id1, desc=desc, element_type=element_type)
         self.handle_identifier(id0, la_type)
         self.update_parameters(id0)
