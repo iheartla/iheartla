@@ -4,7 +4,7 @@ from la_parser.base_walker import *
 class LatexWalker(BaseNodeWalker):
     def __init__(self):
         super().__init__(ParserTypeEnum.LATEX)
-        self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\begin{document}\n\\[\n'''
+        self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{ctex}\n\\begin{document}\n\\[\n'''
         self.post_str = '''\n\end{document}'''
 
     def walk_MatrixVdots(self, node, **kwargs):
@@ -51,7 +51,12 @@ class LatexWalker(BaseNodeWalker):
         if node.value:
             value = node.value
         else:
-            value = '{}^{\\backprime}' + node.id + '{}^{\\backprime}'
+            special_list = ['_', '&', '^', '%', '$', '#', '{', '}']
+            text = node.id
+            text = text.replace('\\', '\\textbackslash{}')
+            for special in special_list:
+                text = text.replace(special, '\\{}'.format(special))
+            value = "\\textit{{{}}}".format(text)
         return value
 
     def walk_Start(self, node, **kwargs):

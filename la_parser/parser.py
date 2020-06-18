@@ -89,7 +89,7 @@ def generate_latex_code(model, frame):
         tex_file = open(tex_file_name, 'w')
         tex_file.write(tex_content)
         tex_file.close()
-        ret = subprocess.run(["pdflatex", "-interaction=nonstopmode", tex_file_name], capture_output=False)
+        ret = subprocess.run(["xelatex", "-interaction=nonstopmode", tex_file_name], capture_output=False)
         if ret.returncode == 0:
             tex_content = None
     except subprocess.SubprocessError as e:
