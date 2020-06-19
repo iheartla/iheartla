@@ -11,8 +11,10 @@ class CodeGenNumpy(CodeGen):
     def visit_id(self, node, **kwargs):
         return CodeNodeInfo(node.get_name())
 
+    def visit_start(self, node, **kwargs):
+        return self.visit(node.stat, **kwargs)
+
     def visit_block(self, node, **kwargs):
-        self.content += "visit_block\n"
         type_checks = []
         type_declare = []
         doc = []
@@ -593,6 +595,11 @@ class CodeGenNumpy(CodeGen):
         content += '\n'
         la_remove_key(LHS, **kwargs)
         return CodeNodeInfo(content)
+
+    def visit_function(self, node, **kwargs):
+
+
+        return
 
     def visit_if(self, node, **kwargs):
         ret_info = self.visit(node.cond)

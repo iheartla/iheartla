@@ -12,6 +12,9 @@ class CodeGenEigen(CodeGen):
     def visit_id(self, node, **kwargs):
         return CodeNodeInfo(node.get_name())
 
+    def visit_start(self, node, **kwargs):
+        return self.visit(node.stat, **kwargs)
+
     def get_ctype(self, la_type):
         type_str = ""
         if la_type.var_type == VarTypeEnum.SEQUENCE:

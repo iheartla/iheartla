@@ -132,8 +132,8 @@ def parse_and_translate(content, frame, parser_type=None):
     parser = get_parser()
     model = parser.parse(content, parseinfo=True)
     # parsing Latex at the same time
-    # latex_thread = threading.Thread(target=generate_latex_code, args=(model, frame,))
-    # latex_thread.start()
+    latex_thread = threading.Thread(target=generate_latex_code, args=(model, frame,))
+    latex_thread.start()
     # other type
     if parser_type is None:
         parser_type = ParserTypeEnum.NUMPY

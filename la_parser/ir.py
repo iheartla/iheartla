@@ -5,6 +5,7 @@ import weakref
 class IRNodeType(Enum):
     # expr
     INVALID = -1
+    Start = 1000
     Id = 0
     Add = 1
     Sub = 2
@@ -50,6 +51,12 @@ class IRNodeType(Enum):
     For = 203
     While = 204
     If = 205
+    Function = 210
+    WhereConditions = 211
+    MatrixCondition = 212
+    VectorCondition = 213
+    SetCondition = 214
+    ScalarCondition = 215
 
 
 class IRNode(object):
@@ -69,6 +76,54 @@ class IRNode(object):
 class StmtNode(IRNode):
     def __init__(self, node_type=None):
         super().__init__(node_type)
+
+
+class StartNode(StmtNode):
+    def __init__(self):
+        super().__init__(IRNodeType.Start)
+        self.cond = None
+        self.stat = None
+
+
+class WhereConditionsNode(StmtNode):
+    def __init__(self):
+        super().__init__(IRNodeType.WhereConditions)
+        self.value = []
+
+
+class SetConditionNode(StmtNode):
+    def __init__(self):
+        super().__init__(IRNodeType.SetCondition)
+        self.id = None
+        self.type = None
+        self.type1 = None
+        self.type2 = None
+        self.cnt = None
+        self.desc = None
+
+
+class MatrixConditionNode(StmtNode):
+    def __init__(self):
+        super().__init__(IRNodeType.MatrixCondition)
+        self.id1 = None
+        self.id2 = None
+        self.type = None
+        self.desc = None
+
+
+class VectorConditionNode(StmtNode):
+    def __init__(self):
+        super().__init__(IRNodeType.VectorCondition)
+        self.id1 = None
+        self.type = None
+        self.desc = None
+
+
+class ScalarConditionNode(StmtNode):
+    def __init__(self):
+        super().__init__(IRNodeType.ScalarCondition)
+        self.id = None
+        self.desc = None
 
 
 class BlockNode(StmtNode):
@@ -362,5 +417,14 @@ class IntegerNode(ExprNode):
     def __init__(self):
         super().__init__(IRNodeType.Integer)
         self.value = None
+
+
+class FunctionNode(ExprNode):
+    def __init__(self):
+        super().__init__(IRNodeType.Function)
+        self.params = []
+        self.name = None
+
+
 
 

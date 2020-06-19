@@ -63,9 +63,16 @@ class IRVisitor(object):
             IRNodeType.Number: "visit_number",
             IRNodeType.Integer: "visit_integer",
 
+            IRNodeType.Start: "visit_start",
             IRNodeType.Block: "visit_block",
             IRNodeType.Assignment: "visit_assignment",
             IRNodeType.If: "visit_if",
+            IRNodeType.Function: "visit_function",
+            IRNodeType.WhereConditions: "visit_where_conditions",
+            IRNodeType.MatrixCondition: "visit_matrix_condition",
+            IRNodeType.VectorCondition: "visit_vector_condition",
+            IRNodeType.SetCondition: "visit_set_condition",
+            IRNodeType.ScalarCondition: "visit_scalar_condition",
         }
         func = getattr(self, type_func[node.node_type], None)
         if func:
