@@ -85,20 +85,6 @@ class CodeGenLatex(CodeGen):
             content += "$\n"
         return content
 
-    def visit_matrix_condition(self, node, **kwargs):
-        id0 = self.visit(node.id, **kwargs)
-        id1 = self.visit(node.id1, **kwargs)
-        id2 = self.visit(node.id2, **kwargs)
-        type_str = '\\mathbb{R}'
-        if node.type == 'ℤ':
-            type_str = '\\mathbb{Z}'
-        content = "\\item ${} \\in {}^{{ {} \\times {} }}".format(id0, type_str, id1, id2)
-        if node.desc:
-            content += ":${}\n".format(node.desc)
-        else:
-            content += "$\n"
-        return content
-
     def visit_matrix_type(self, node, **kwargs):
         id1 = self.visit(node.id1, **kwargs)
         id2 = self.visit(node.id2, **kwargs)
@@ -106,19 +92,6 @@ class CodeGenLatex(CodeGen):
         if node.type == 'ℤ':
             type_str = '\\mathbb{Z}'
         content = "{}^{{ {} \\times {} }}".format(type_str, id1, id2)
-        return content
-
-    def visit_vector_condition(self, node, **kwargs):
-        id0 = self.visit(node.id, **kwargs)
-        id1 = self.visit(node.id1, **kwargs)
-        type_str = '\\mathbb{R}'
-        if node.type == 'ℤ':
-            type_str = '\\mathbb{Z}'
-        content = "\\item ${} \\in {}^{{ {}}}".format(id0, type_str, id1)
-        if node.desc:
-            content += ":${}\n".format(node.desc)
-        else:
-            content += "$\n"
         return content
 
     def visit_vector_type(self, node, **kwargs):
@@ -129,49 +102,10 @@ class CodeGenLatex(CodeGen):
         content = "{}^{{ {}}}".format(type_str, id1)
         return content
 
-    def visit_scalar_condition(self, node, **kwargs):
-        id0 = self.visit(node.id, **kwargs)
-        content = "\\item ${} \\in \\mathbb{{R}}".format(id0)
-        if node.desc:
-            content += ":${}\n".format(node.desc)
-        else:
-            content += "$\n"
-        return content
-
     def visit_scalar_type(self, node, **kwargs):
         content = "\\mathbb{{R}}"
         if node.is_int:
             content = "\\mathbb{{Z}}"
-        return content
-
-    def visit_set_condition(self, node, **kwargs):
-        id0 = self.visit(node.id, **kwargs)
-        content = "\\item ${} \\in".format(id0)
-        int_list = []
-        cnt = 1
-        if node.type:
-            for t in node.type:
-                if t == 'ℤ':
-                    int_list.append('\\mathbb{Z}')
-                else:
-                    int_list.append('\\mathbb{R}')
-            content += " \\times ".join(int_list)
-        elif node.type1:
-            cnt = self.visit(node.cnt, **kwargs)
-            if node.type1 == 'ℤ':
-                content += '\\mathbb{{Z}}^{{ {} }}'.format(cnt)
-            else:
-                content += '\\mathbb{{Z}}^{{ {} }}'.format(cnt)
-        elif node.type2:
-            cnt = 2
-            if node.type2 == 'ℤ²':
-                content += '\\mathbb{{Z}}^{{2}}'
-            else:
-                content += '\\mathbb{{Z}}^{{2}}'
-        if node.desc:
-            content += ":${}\n".format(node.desc)
-        else:
-            content += "$\n"
         return content
 
     def visit_set_type(self, node, **kwargs):

@@ -54,10 +54,6 @@ class IRNodeType(Enum):
     Function = 210
     WhereConditions = 211
     WhereCondition = 2111
-    MatrixCondition = 212
-    VectorCondition = 213
-    SetCondition = 214
-    ScalarCondition = 215
 
     MatrixType = 216
     VectorType = 217
@@ -111,43 +107,6 @@ class WhereConditionNode(StmtNode):
         self.desc = None
 
 
-class SetConditionNode(StmtNode):
-    def __init__(self):
-        super().__init__(IRNodeType.SetCondition)
-        self.id = None
-        self.type = None
-        self.type1 = None
-        self.type2 = None
-        self.cnt = None
-        self.desc = None
-
-
-class MatrixConditionNode(StmtNode):
-    def __init__(self):
-        super().__init__(IRNodeType.MatrixCondition)
-        self.id = None
-        self.id1 = None
-        self.id2 = None
-        self.type = None
-        self.desc = None
-
-
-class VectorConditionNode(StmtNode):
-    def __init__(self):
-        super().__init__(IRNodeType.VectorCondition)
-        self.id = None
-        self.id1 = None
-        self.type = None
-        self.desc = None
-
-
-class ScalarConditionNode(StmtNode):
-    def __init__(self):
-        super().__init__(IRNodeType.ScalarCondition)
-        self.id = None
-        self.desc = None
-
-
 class SetTypeNode(ExprNode):
     def __init__(self):
         super().__init__(IRNodeType.SetType)
@@ -177,11 +136,13 @@ class ScalarTypeNode(ExprNode):
         super().__init__(IRNodeType.ScalarType)
         self.is_int = False
 
+
 class FunctionTypeNode(ExprNode):
     def __init__(self):
         super().__init__(IRNodeType.FunctionType)
         self.params = []
         self.ret = None
+
 
 class BlockNode(StmtNode):
     def __init__(self):

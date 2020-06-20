@@ -71,13 +71,6 @@ class IRVisitor(object):
             IRNodeType.WhereConditions: "visit_where_conditions",
             IRNodeType.WhereCondition: "visit_where_condition",
 
-
-            IRNodeType.MatrixCondition: "visit_matrix_condition",
-            IRNodeType.VectorCondition: "visit_vector_condition",
-            IRNodeType.SetCondition: "visit_set_condition",
-            IRNodeType.ScalarCondition: "visit_scalar_condition",
-
-
             IRNodeType.MatrixType: "visit_matrix_type",
             IRNodeType.VectorType: "visit_vector_type",
             IRNodeType.SetType: "visit_set_type",
