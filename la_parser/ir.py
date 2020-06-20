@@ -53,10 +53,16 @@ class IRNodeType(Enum):
     If = 205
     Function = 210
     WhereConditions = 211
+    WhereCondition = 2111
     MatrixCondition = 212
     VectorCondition = 213
     SetCondition = 214
     ScalarCondition = 215
+
+    MatrixType = 216
+    VectorType = 217
+    SetType = 218
+    ScalarType = 219
 
 
 class IRNode(object):
@@ -78,6 +84,11 @@ class StmtNode(IRNode):
         super().__init__(node_type)
 
 
+class ExprNode(IRNode):
+    def __init__(self, node_type=None):
+        super().__init__(node_type)
+
+
 class StartNode(StmtNode):
     def __init__(self):
         super().__init__(IRNodeType.Start)
@@ -89,6 +100,14 @@ class WhereConditionsNode(StmtNode):
     def __init__(self):
         super().__init__(IRNodeType.WhereConditions)
         self.value = []
+
+
+class WhereConditionNode(StmtNode):
+    def __init__(self):
+        super().__init__(IRNodeType.WhereCondition)
+        self.id = None
+        self.type = None
+        self.desc = None
 
 
 class SetConditionNode(StmtNode):
@@ -105,6 +124,7 @@ class SetConditionNode(StmtNode):
 class MatrixConditionNode(StmtNode):
     def __init__(self):
         super().__init__(IRNodeType.MatrixCondition)
+        self.id = None
         self.id1 = None
         self.id2 = None
         self.type = None
@@ -114,6 +134,7 @@ class MatrixConditionNode(StmtNode):
 class VectorConditionNode(StmtNode):
     def __init__(self):
         super().__init__(IRNodeType.VectorCondition)
+        self.id = None
         self.id1 = None
         self.type = None
         self.desc = None
@@ -124,6 +145,35 @@ class ScalarConditionNode(StmtNode):
         super().__init__(IRNodeType.ScalarCondition)
         self.id = None
         self.desc = None
+
+
+class SetTypeNode(ExprNode):
+    def __init__(self):
+        super().__init__(IRNodeType.SetType)
+        self.type = None
+        self.type1 = None
+        self.type2 = None
+        self.cnt = None
+
+
+class MatrixTypeNode(ExprNode):
+    def __init__(self):
+        super().__init__(IRNodeType.MatrixType)
+        self.id1 = None
+        self.id2 = None
+        self.type = None
+
+
+class VectorTypeNode(ExprNode):
+    def __init__(self):
+        super().__init__(IRNodeType.VectorType)
+        self.id1 = None
+        self.type = None
+
+
+class ScalarTypeNode(ExprNode):
+    def __init__(self):
+        super().__init__(IRNodeType.ScalarType)
 
 
 class BlockNode(StmtNode):
@@ -195,11 +245,6 @@ class LeNode(StmtNode):
         super().__init__(IRNodeType.Le)
 
 ####################################################
-
-
-class ExprNode(IRNode):
-    def __init__(self, node_type=None):
-        super().__init__(node_type)
 
 
 class ExpressionNode(ExprNode):
