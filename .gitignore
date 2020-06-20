@@ -8,4 +8,5 @@
 *.pdf
 *.ps
 *.tex
+*.fls
 la_test/generated_code.py
