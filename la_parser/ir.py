@@ -63,6 +63,7 @@ class IRNodeType(Enum):
     VectorType = 217
     SetType = 218
     ScalarType = 219
+    FunctionType = 220
 
 
 class IRNode(object):
@@ -174,7 +175,13 @@ class VectorTypeNode(ExprNode):
 class ScalarTypeNode(ExprNode):
     def __init__(self):
         super().__init__(IRNodeType.ScalarType)
+        self.is_int = False
 
+class FunctionTypeNode(ExprNode):
+    def __init__(self):
+        super().__init__(IRNodeType.FunctionType)
+        self.params = []
+        self.ret = None
 
 class BlockNode(StmtNode):
     def __init__(self):
@@ -468,6 +475,7 @@ class FunctionNode(ExprNode):
     def __init__(self):
         super().__init__(IRNodeType.Function)
         self.params = []
+        self.ret = None
         self.name = None
 
 

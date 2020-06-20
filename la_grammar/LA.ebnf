@@ -69,6 +69,8 @@ scalar_condition::ScalarCondition
 
 scalar_type::ScalarType
     = 'scalar'
+    | 'ℝ'
+    | z:'ℤ'
     ;
 
 set_condition::SetCondition
@@ -91,7 +93,7 @@ la_type
     ;
 
 function_type::FunctionType
-    = params+:la_type {{hspace} ('x'|'×'|','|';') {hspace} params+:la_type} ('→'|'->') ret+:la_type {{hspace} ('x'|'×'|','|';') {hspace} ret+:la_type}
+    = {params+:la_type {{hspace} ('x'|'×'|','|';') {hspace} params+:la_type} {hspace}} ('→'|'->') {hspace} ret:la_type
     ;
 
 expression::Expression

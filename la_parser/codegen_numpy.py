@@ -597,9 +597,13 @@ class CodeGenNumpy(CodeGen):
         return CodeNodeInfo(content)
 
     def visit_function(self, node, **kwargs):
-
-
-        return
+        name_info = self.visit(node.name, **kwargs)
+        params = []
+        if node.params:
+            for param in node.params:
+                params.append(self.visit(param, **kwargs).content)
+        content = "{}({})".format(name_info.content, ', '.join(params))
+        return CodeNodeInfo(content)
 
     def visit_if(self, node, **kwargs):
         ret_info = self.visit(node.cond)

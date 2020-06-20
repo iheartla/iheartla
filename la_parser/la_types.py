@@ -12,6 +12,7 @@ class VarTypeEnum(Enum):
     #
     INTEGER = 6
     REAL = 7
+    FUNCTION = 8
 
 
 class LaVarType(object):
@@ -83,6 +84,13 @@ class SetType(LaVarType):
         LaVarType.__init__(self, VarTypeEnum.SET, desc, element_type, symbol)
         self.size = size
         self.int_list = int_list     # whether the element is real number or integer
+
+
+class FunctionType(LaVarType):
+    def __init__(self, desc=None, symbol=None, params=[], ret=None):
+        LaVarType.__init__(self, VarTypeEnum.FUNCTION, desc, symbol)
+        self.params = params
+        self.ret = ret
 
 
 class SummationAttrs(object):

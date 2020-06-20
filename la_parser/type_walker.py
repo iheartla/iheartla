@@ -270,6 +270,9 @@ class TypeWalker(NodeWalker):
     def walk_ScalarType(self, node, **kwargs):
         ir_node = ScalarTypeNode()
         la_type = LaVarType(VarTypeEnum.SCALAR)
+        if node.z:
+            la_type = LaVarType(VarTypeEnum.INTEGER)
+            ir_node.is_int = True
         ir_node.la_type = la_type
         return ir_node
 
@@ -341,6 +344,21 @@ class TypeWalker(NodeWalker):
             else:
                 int_list = [False] * cnt
         ir_node.la_type = SetType(size=cnt, int_list=int_list)
+        return ir_node
+
+    def walk_FunctionType(self, node, **kwargs):
+        ir_node = FunctionTypeNode()
+        params = []
+        if node.params:
+            for param in node.params:
+                param_node = self.walk(param, **kwargs)
+                ir_node.params.append(param_node)
+                params.append(param_node.la_type)
+        ret_node = self.walk(node.ret, **kwargs)
+        ir_node.ret = ret_node
+        ret = ret_node.la_type
+        la_type = FunctionType(params=params, ret=ret)
+        ir_node.la_type = la_type
         return ir_node
 
     def update_parameters(self, identifier, **kwargs):
@@ -620,23 +638,22 @@ class TypeWalker(NodeWalker):
         return node_info
 
     def walk_Function(self, node, **kwargs):
-        name = self.walk(node.name, **kwargs)
-        param_list = []
-        for param in node.param:
-            param_info = self.walk(param, **kwargs)
-            param_list.append(param_info)
-        if len(param_list) > 1:
-            # function
+        name_info = self.walk(node.name, **kwargs)
+        name_type = name_info.ir.la_type
+        if name_type.var_type == VarTypeEnum.FUNCTION:
             ir_node = FunctionNode()
-            ir_node.param = param_list
-
-        if True:
-            return self.make_mul_info(name, param_list[0])
-
-        # assert f_info.la_type.var_type == VarTypeEnum.MATRIX
-        # node_type = MatrixType(rows=f_info.la_type.cols, cols=f_info.la_type.rows)
-        # node_info = NodeInfo(node_type, symbols=f_info.symbols)
-        return node_info
+            ir_node.name = name_info.ir
+            param_list = []
+            for param in node.param:
+                param_info = self.walk(param, **kwargs)
+                param_list.append(param_info.ir)
+            ir_node.params = param_list
+            node_info = NodeInfo(name_type.ret)
+            ir_node.la_type = name_type.ret
+            node_info.ir = ir_node
+            return node_info
+        else:
+            return self.make_mul_info(name_info, self.walk(node.param[0], **kwargs))
 
     def walk_IfCondition(self, node, **kwargs):
         ir_node = IfNode()

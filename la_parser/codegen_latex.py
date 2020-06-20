@@ -140,6 +140,8 @@ class CodeGenLatex(CodeGen):
 
     def visit_scalar_type(self, node, **kwargs):
         content = "\\mathbb{{R}}"
+        if node.is_int:
+            content = "\\mathbb{{Z}}"
         return content
 
     def visit_set_condition(self, node, **kwargs):
@@ -197,6 +199,14 @@ class CodeGenLatex(CodeGen):
                 content += '\\mathbb{{Z}}^{{2}}'
         return content
 
+    def visit_function_type(self, node, **kwargs):
+        params = []
+        if node.params:
+            for param in node.params:
+                params.append(self.visit(param, **kwargs))
+        ret = self.visit(node.ret, **kwargs)
+        return ', '.join(params) + '\\rightarrow ' + ret
+
     def visit_assignment(self, node, **kwargs):
         return self.visit(node.left, **kwargs) + " = " + self.visit(node.right, **kwargs)
 
@@ -227,6 +237,13 @@ class CodeGenLatex(CodeGen):
         else:
             sub = self.visit(node.sub)
         return "\\sum_" + sub + " " + self.visit(node.exp, **kwargs)
+
+    def visit_function(self, node, **kwargs):
+        params = []
+        if node.params:
+            for param in node.params:
+                params.append(self.visit(param, **kwargs))
+        return self.visit(node.name, **kwargs) + '(' + ', '.join(params) + ')'
 
     def visit_if(self, node, **kwargs):
         ret_info = self.visit(node.cond)
