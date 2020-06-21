@@ -527,9 +527,11 @@ class TypeWalker(NodeWalker):
             ir_node = FunctionNode()
             ir_node.name = name_info.ir
             param_list = []
-            for param in node.param:
-                param_info = self.walk(param, **kwargs)
+            assert len(node.params) == len(name_type.params), "parameters count mismatch"
+            for index in range(len(node.params)):
+                param_info = self.walk(node.params[index], **kwargs)
                 param_list.append(param_info.ir)
+                assert name_type.params[index].is_same_type(param_info.ir.la_type), "parameter type mismatch"
             ir_node.params = param_list
             node_info = NodeInfo(name_type.ret)
             ir_node.la_type = name_type.ret

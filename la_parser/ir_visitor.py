@@ -68,9 +68,9 @@ class IRVisitor(object):
             IRNodeType.Assignment: "visit_assignment",
             IRNodeType.If: "visit_if",
             IRNodeType.Function: "visit_function",
+            # where block
             IRNodeType.WhereConditions: "visit_where_conditions",
             IRNodeType.WhereCondition: "visit_where_condition",
-
             IRNodeType.MatrixType: "visit_matrix_type",
             IRNodeType.VectorType: "visit_vector_type",
             IRNodeType.SetType: "visit_set_type",

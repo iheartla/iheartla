@@ -84,6 +84,11 @@ class CodeGenEigen(CodeGen):
                 else:
                     type_list.append('double')
             type_str = "std::set<std::tuple< {} > >".format(", ".join(type_list))
+        elif la_type.var_type == VarTypeEnum.FUNCTION:
+            param_list = []
+            for param in la_type.params:
+                param_list.append(self.get_ctype(param))
+            type_str = "std::function<{}({})>".format(self.get_ctype(la_type.ret), ', '.join(param_list))
         return type_str
 
     def visit_block(self, node, **kwargs):
@@ -803,6 +808,15 @@ class CodeGenEigen(CodeGen):
                 content += right_exp
         content += '\n'
         la_remove_key(LHS, **kwargs)
+        return CodeNodeInfo(content)
+
+    def visit_function(self, node, **kwargs):
+        name_info = self.visit(node.name, **kwargs)
+        params = []
+        if node.params:
+            for param in node.params:
+                params.append(self.visit(param, **kwargs).content)
+        content = "{}({})".format(name_info.content, ', '.join(params))
         return CodeNodeInfo(content)
 
     def visit_if(self, node, **kwargs):

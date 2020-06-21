@@ -98,5 +98,5 @@ trans_operator::Transpose
     ;
 
 function_operator::Function
-    = name:identifier '(' {{hspace} param+:expression {{hspace} (','|';'|'x'|'×') {hspace} param+:expression}} {hspace}')'
+    = name:identifier '(' {{hspace} params+:expression {{hspace} (','|';'|'x'|'×') {hspace} params+:expression}} {hspace}')'
     ;
