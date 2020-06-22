@@ -585,20 +585,6 @@ class CodeGenNumpy(CodeGen):
         # ret_info.content = "if " + ret_info.content + ":\n"
         return ret_info
 
-    def visit_ne(self, node, **kwargs):
-        left_info = self.visit(node.left, **kwargs)
-        right_info = self.visit(node.right, **kwargs)
-        left_info.content = left_info.content + ' != ' + right_info.content
-        left_info.pre_list = self.merge_pre_list(left_info, right_info)
-        return left_info
-
-    def visit_eq(self, node, **kwargs):
-        left_info = self.visit(node.left, **kwargs)
-        right_info = self.visit(node.right, **kwargs)
-        left_info.content = left_info.content + ' == ' + right_info.content
-        left_info.pre_list = self.merge_pre_list(left_info, right_info)
-        return left_info
-
     def visit_in(self, node, **kwargs):
         item_list = []
         pre_list = []
@@ -623,31 +609,10 @@ class CodeGenNumpy(CodeGen):
         # pre_list = self.merge_pre_list(pre_list, right_info)
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
-    def visit_gt(self, node, **kwargs):
+    def visit_bin_comp(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        left_info.content = left_info.content + ' > ' + right_info.content
-        left_info.pre_list = self.merge_pre_list(left_info, right_info)
-        return left_info
-
-    def visit_ge(self, node, **kwargs):
-        left_info = self.visit(node.left, **kwargs)
-        right_info = self.visit(node.right, **kwargs)
-        left_info.content = left_info.content + ' >= ' + right_info.content
-        left_info.pre_list = self.merge_pre_list(left_info, right_info)
-        return left_info
-
-    def visit_lt(self, node, **kwargs):
-        left_info = self.visit(node.left, **kwargs)
-        right_info = self.visit(node.right, **kwargs)
-        left_info.content = left_info.content + ' < ' + right_info.content
-        left_info.pre_list = self.merge_pre_list(left_info, right_info)
-        return left_info
-
-    def visit_le(self, node, **kwargs):
-        left_info = self.visit(node.left, **kwargs)
-        right_info = self.visit(node.right, **kwargs)
-        left_info.content = left_info.content + ' <= ' + right_info.content
+        left_info.content = left_info.content + ' {} '.format(self.get_bin_comp_str(node.comp_type)) + right_info.content
         left_info.pre_list = self.merge_pre_list(left_info, right_info)
         return left_info
 

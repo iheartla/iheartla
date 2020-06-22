@@ -3,64 +3,61 @@ import weakref
 
 
 class IRNodeType(Enum):
-    # expr
     INVALID = -1
-    Start = 1000
+    # base
     Id = 0
-    Add = 1
-    Sub = 2
-    Mul = 3
-    Div = 4
-    Eq = 5
-    Ne = 6
-    Lt = 7
-    Le = 8
-    Gt = 9
-    Ge = 10
-    walk_AddSub = 11
-    Subexpression = 12
-    In = 13
-    NotIn = 14
-    Expression = 15
-    BinComp = 16
-
-    Matrix = 41
-    MatrixRows = 141
-    MatrixRow = 142
-    MatrixRowCommas = 143
-    SparseMatrix = 42
-    Summation = 43
-    Determinant = 44
-    Transpose = 45
-    Power = 46
-    Solver = 47
-    SparseIf = 48
-    SparseOther = 49
-    ExpInMatrix = 50
-    NumMatrix = 51
-    Derivative = 52
-    Factor = 53
-    Number = 54
-    Integer = 55
-    SparseIfs = 148
-
-
-    # stmt
-    Block = 200
-    Assignment = 201
-    IfThenElse = 202
-    For = 203
-    While = 204
-    If = 205
-    Function = 210
-    WhereConditions = 211
-    WhereCondition = 2111
-
-    MatrixType = 216
-    VectorType = 217
-    SetType = 218
-    ScalarType = 219
-    FunctionType = 220
+    Number = 1
+    Integer = 2
+    Factor = 3
+    Expression = 4
+    Subexpression = 5
+    # control
+    Start = 50
+    Block = 51
+    Assignment = 52
+    If = 53
+    Function = 54
+    # if condition
+    In = 100
+    NotIn = 101
+    BinComp = 102
+    Eq = 103
+    Ne = 104
+    Lt = 105
+    Le = 106
+    Gt = 107
+    Ge = 108
+    # operators
+    Add = 200
+    Sub = 201
+    Mul = 202
+    Div = 203
+    walk_AddSub = 204
+    Summation = 205
+    Determinant = 206
+    Transpose = 207
+    Power = 208
+    Solver = 209
+    Derivative = 210
+    # matrix
+    Matrix = 300
+    MatrixRows = 301
+    MatrixRow = 302
+    MatrixRowCommas = 303
+    ExpInMatrix = 304
+    SparseMatrix = 305
+    SparseIfs = 306
+    SparseIf = 307
+    SparseOther = 308
+    NumMatrix = 309
+    # where block
+    WhereConditions = 400
+    WhereCondition = 401
+    MatrixType = 402
+    VectorType = 403
+    SetType = 404
+    ScalarType = 405
+    FunctionType = 406
 
 
 class IRNode(object):
@@ -84,7 +81,6 @@ class IRNode(object):
             else:
                 parent = parent.parent
         return None
-
 
 
 class StmtNode(IRNode):
@@ -182,8 +178,6 @@ class IfNode(StmtNode):
         self.cond = None
 
 
-
-
 class InNode(StmtNode):
     def __init__(self):
         super().__init__(IRNodeType.In)
@@ -199,50 +193,12 @@ class NotInNode(StmtNode):
 
 
 class BinCompNode(StmtNode):
-    def __init__(self):
+    def __init__(self, comp_type=IRNodeType.INVALID, left=None, right=None):
         super().__init__(IRNodeType.BinComp)
-        self.left = None
-        self.right = None
+        self.comp_type = comp_type
+        self.left = left
+        self.right = right
 
-class NeNode(StmtNode):
-    def __init__(self):
-        super().__init__(IRNodeType.Ne)
-        self.left = None
-        self.right = None
-
-
-class EqNode(StmtNode):
-    def __init__(self):
-        super().__init__(IRNodeType.Eq)
-        self.left = None
-        self.right = None
-
-class GtNode(StmtNode):
-    def __init__(self):
-        super().__init__(IRNodeType.Gt)
-        self.left = None
-        self.right = None
-
-
-class GeNode(StmtNode):
-    def __init__(self):
-        super().__init__(IRNodeType.Ge)
-        self.left = None
-        self.right = None
-
-
-class LtNode(StmtNode):
-    def __init__(self):
-        super().__init__(IRNodeType.Lt)
-        self.left = None
-        self.right = None
-
-
-class LeNode(StmtNode):
-    def __init__(self):
-        super().__init__(IRNodeType.Le)
-        self.left = None
-        self.right = None
 
 ####################################################
 
@@ -252,6 +208,7 @@ class ExpressionNode(ExprNode):
         super().__init__(IRNodeType.Expression)
         self.value = None
         self.sign = None
+
 
 class IdNode(ExprNode):
     def __init__(self, main_id='', subs=None):
@@ -469,7 +426,3 @@ class FunctionNode(ExprNode):
         self.params = []
         self.ret = None
         self.name = None
-
-
-
-

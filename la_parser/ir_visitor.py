@@ -24,50 +24,46 @@ class IRVisitor(object):
 
     def visit(self, node, **kwargs):
         type_func = {
+            # base
             IRNodeType.Id: "visit_id",
-            IRNodeType.Add: "visit_add",
-            IRNodeType.Sub: "visit_sub",
-            IRNodeType.Mul: "visit_mul",
-            IRNodeType.Div: "visit_div",
-            IRNodeType.Eq: "visit_eq",
-            IRNodeType.Ne: "visit_ne",
-            IRNodeType.Lt: "visit_lt",
-            IRNodeType.Le: "visit_le",
-            IRNodeType.Gt: "visit_gt",
-            IRNodeType.Ge: "visit_ge",
-            IRNodeType.walk_AddSub: "visit_add_sub",
-            IRNodeType.Subexpression: "visit_sub_expr",
-            IRNodeType.In: "visit_in",
-            IRNodeType.NotIn: "visit_not_in",
-            IRNodeType.Expression: "visit_expression",
-
-            IRNodeType.Matrix: "visit_matrix",
-            IRNodeType.MatrixRows: "visit_matrix_rows",
-            IRNodeType.MatrixRow: "visit_matrix_row",
-            IRNodeType.MatrixRowCommas: "visit_matrix_row_commas",
-
-
-            IRNodeType.SparseMatrix: "visit_sparse_matrix",
-            IRNodeType.Summation: "visit_summation",
-            IRNodeType.Determinant: "visit_determinant",
-            IRNodeType.Transpose: "visit_transpose",
-            IRNodeType.Power: "visit_power",
-            IRNodeType.Solver: "visit_solver",
-            IRNodeType.SparseIf: "visit_sparse_if",
-            IRNodeType.SparseIfs: "visit_sparse_ifs",
-            IRNodeType.SparseOther: "visit_sparse_other",
-            IRNodeType.ExpInMatrix: "visit_exp_in_matrix",
-            IRNodeType.NumMatrix: "visit_num_matrix",
-            IRNodeType.Derivative: "visit_derivative",
-            IRNodeType.Factor: "visit_factor",
             IRNodeType.Number: "visit_number",
             IRNodeType.Integer: "visit_integer",
-
+            IRNodeType.Factor: "visit_factor",
+            IRNodeType.Expression: "visit_expression",
+            IRNodeType.Subexpression: "visit_sub_expr",
+            # control
             IRNodeType.Start: "visit_start",
             IRNodeType.Block: "visit_block",
             IRNodeType.Assignment: "visit_assignment",
             IRNodeType.If: "visit_if",
             IRNodeType.Function: "visit_function",
+            # if condition
+            IRNodeType.In: "visit_in",
+            IRNodeType.NotIn: "visit_not_in",
+            IRNodeType.BinComp: "visit_bin_comp",
+            # operators
+            IRNodeType.Add: "visit_add",
+            IRNodeType.Sub: "visit_sub",
+            IRNodeType.Mul: "visit_mul",
+            IRNodeType.Div: "visit_div",
+            IRNodeType.walk_AddSub: "visit_add_sub",
+            IRNodeType.Summation: "visit_summation",
+            IRNodeType.Determinant: "visit_determinant",
+            IRNodeType.Transpose: "visit_transpose",
+            IRNodeType.Power: "visit_power",
+            IRNodeType.Solver: "visit_solver",
+            IRNodeType.Derivative: "visit_derivative",
+            # matrix
+            IRNodeType.Matrix: "visit_matrix",
+            IRNodeType.MatrixRows: "visit_matrix_rows",
+            IRNodeType.MatrixRow: "visit_matrix_row",
+            IRNodeType.MatrixRowCommas: "visit_matrix_row_commas",
+            IRNodeType.ExpInMatrix: "visit_exp_in_matrix",
+            IRNodeType.SparseMatrix: "visit_sparse_matrix",
+            IRNodeType.SparseIfs: "visit_sparse_ifs",
+            IRNodeType.SparseIf: "visit_sparse_if",
+            IRNodeType.SparseOther: "visit_sparse_other",
+            IRNodeType.NumMatrix: "visit_num_matrix",
             # where block
             IRNodeType.WhereConditions: "visit_where_conditions",
             IRNodeType.WhereCondition: "visit_where_condition",
@@ -196,6 +192,22 @@ class IRVisitor(object):
     ###################################################################
     def is_keyword(self, name):
         return False
+
+    def get_bin_comp_str(self, comp_type):
+        op = ''
+        if comp_type == IRNodeType.Eq:
+            op = '=='
+        elif comp_type == IRNodeType.Ne:
+            op = '!='
+        elif comp_type == IRNodeType.Lt:
+            op = '<'
+        elif comp_type == IRNodeType.Le:
+            op = '<='
+        elif comp_type == IRNodeType.Gt:
+            op = '>'
+        elif comp_type == IRNodeType.Ge:
+            op = '>='
+        return op
 
     def trim_content(self, content):
         # convert special string in identifiers

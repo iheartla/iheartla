@@ -555,31 +555,6 @@ class TypeWalker(NodeWalker):
         node_info.ir = ir_node
         return node_info
 
-    def walk_NeCondition(self, node, **kwargs):
-        ir_node = NeNode()
-        left_info = self.walk(node.left, **kwargs)
-        ir_node.left = left_info.ir
-        left_type = left_info.la_type
-        right_info = self.walk(node.right, **kwargs)
-        ir_node.right = right_info.ir
-        right_type = right_info.la_type
-        assert left_type.var_type == right_type.var_type, "different type "
-        ret_info = NodeInfo(left_type, symbols=left_info.symbols.union(right_info.symbols))
-        ir_node.la_type = ret_info.la_type
-        ret_info.ir = ir_node
-        self.node_dict[node] = ret_info
-        return ret_info
-
-    def walk_EqCondition(self, node, **kwargs):
-        left_info = self.walk(node.left, **kwargs)
-        left_type = left_info.la_type
-        right_info = self.walk(node.right, **kwargs)
-        right_type = right_info.la_type
-        assert left_type.var_type == right_type.var_type, "different type "
-        ret_info = NodeInfo(left_type, symbols=left_info.symbols.union(right_info.symbols))
-        self.node_dict[node] = ret_info
-        return ret_info
-
     def walk_InCondition(self, node, **kwargs):
         ir_node = InNode()
         item_node = []
@@ -602,22 +577,41 @@ class TypeWalker(NodeWalker):
         ir_node.set = set_info.ir
         return NodeInfo(VarTypeEnum.SCALAR, ir=ir_node)
 
+    def walk_NeCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        left_type = left_info.la_type
+        right_info = self.walk(node.right, **kwargs)
+        right_type = right_info.la_type
+        assert left_type.var_type == right_type.var_type, "different type "
+        return NodeInfo(ir=BinCompNode(IRNodeType.Ne, left_info.ir, right_info.ir))
+
+    def walk_EqCondition(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        left_type = left_info.la_type
+        right_info = self.walk(node.right, **kwargs)
+        right_type = right_info.la_type
+        assert left_type.var_type == right_type.var_type, "different type "
+        return NodeInfo(ir=BinCompNode(IRNodeType.Eq, left_info.ir, right_info.ir))
+
     def walk_GreaterCondition(self, node, **kwargs):
-        ir_node = GtNode()
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
-        ir_node.left = left_info.ir
-        ir_node.right = right_info.ir
-        return NodeInfo(ir=ir_node)
+        return NodeInfo(ir=BinCompNode(IRNodeType.Gt, left_info.ir, right_info.ir))
 
     def walk_GreaterEqualCondition(self, node, **kwargs):
-        return NodeInfo(VarTypeEnum.SCALAR)
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return NodeInfo(ir=BinCompNode(IRNodeType.Ge, left_info.ir, right_info.ir))
 
     def walk_LessCondition(self, node, **kwargs):
-        return NodeInfo(VarTypeEnum.SCALAR)
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return NodeInfo(ir=BinCompNode(IRNodeType.Lt, left_info.ir, right_info.ir))
 
     def walk_LessEqualCondition(self, node, **kwargs):
-        return NodeInfo(VarTypeEnum.SCALAR)
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        return NodeInfo(ir=BinCompNode(IRNodeType.Le, left_info.ir, right_info.ir))
 
     def walk_IdentifierSubscript(self, node, **kwargs):
         right = []
