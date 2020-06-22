@@ -195,9 +195,12 @@ class CodeGenLatex(CodeGen):
         return left_info + ' == ' + right_info
 
     def visit_in(self, node, **kwargs):
-        left_info = self.visit(node.left, **kwargs)
-        right_info = self.visit(node.right, **kwargs)
-        return left_info + ' in ' + right_info
+        item_list = []
+        for item in node.items:
+            item_info = self.visit(item, **kwargs)
+            item_list.append(item_info)
+        right_info = self.visit(node.set, **kwargs)
+        return '({}) \\in {} '.format(', '.join(item_list), right_info)
 
     def visit_not_in(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
@@ -234,25 +237,21 @@ class CodeGenLatex(CodeGen):
         ifs = self.visit(node.ifs, **kwargs)
         if node.other:
             other = self.visit(node.other, **kwargs)
-            content = '{} {} \\\\ {} & otherwise {}'.format("\\begin{cases}", ifs, other, "\\end{cases}")
+            content = '{} {} {} & otherwise {}'.format("\\begin{cases}", ifs, other, "\\end{cases}")
         else:
-            content = '{} {} \\\\ {} '.format("\\begin{cases}", ifs, "\\end{cases}")
+            content = '{} {} {} '.format("\\begin{cases}", ifs, "\\end{cases}")
         return content
 
     def visit_sparse_ifs(self, node, **kwargs):
         content = ''
-        if node.ifs:
-            content += self.visit(node.ifs, **kwargs) + "\\\\"
-        if node.value:
-            content += self.visit(node.value, **kwargs)
+        for cond in node.cond_list:
+            content += (self.visit(cond, **kwargs) + " \\\\")
         return content
 
     def visit_sparse_if(self, node, **kwargs):
-        id0_info = self.visit(node.id0, **kwargs)
-        id1_info = self.visit(node.id1, **kwargs)
-        id2_info = self.visit(node.id2, **kwargs)
         stat_info = self.visit(node.stat, **kwargs)
-        return '{} & \\text{{if}} ({}, {}) \\in {} '.format(stat_info, id0_info, id1_info, id2_info)
+        cond_info = self.visit(node.cond, **kwargs)
+        return '{} & \\text{{if}} {}'.format(stat_info, cond_info)
 
     def visit_sparse_other(self, node, **kwargs):
         content = ''

@@ -22,6 +22,7 @@ class IRNodeType(Enum):
     In = 13
     NotIn = 14
     Expression = 15
+    BinComp = 16
 
     Matrix = 41
     MatrixRows = 141
@@ -74,6 +75,16 @@ class IRNode(object):
         if parent:
             # self.parent = weakref.ref(parent)
             self.parent = parent
+
+    def get_ancestor(self, node_type):
+        parent = self.parent
+        while parent is not None:
+            if parent.node_type == node_type:
+                return parent
+            else:
+                parent = parent.parent
+        return None
+
 
 
 class StmtNode(IRNode):
@@ -171,6 +182,28 @@ class IfNode(StmtNode):
         self.cond = None
 
 
+
+
+class InNode(StmtNode):
+    def __init__(self):
+        super().__init__(IRNodeType.In)
+        self.items = []
+        self.set = None
+
+
+class NotInNode(StmtNode):
+    def __init__(self):
+        super().__init__(IRNodeType.NotIn)
+        self.items = []
+        self.set = None
+
+
+class BinCompNode(StmtNode):
+    def __init__(self):
+        super().__init__(IRNodeType.BinComp)
+        self.left = None
+        self.right = None
+
 class NeNode(StmtNode):
     def __init__(self):
         super().__init__(IRNodeType.Ne)
@@ -181,36 +214,35 @@ class NeNode(StmtNode):
 class EqNode(StmtNode):
     def __init__(self):
         super().__init__(IRNodeType.Eq)
-
-
-class InNode(StmtNode):
-    def __init__(self):
-        super().__init__(IRNodeType.In)
-
-
-class NotInNode(StmtNode):
-    def __init__(self):
-        super().__init__(IRNodeType.NotIn)
-
+        self.left = None
+        self.right = None
 
 class GtNode(StmtNode):
     def __init__(self):
         super().__init__(IRNodeType.Gt)
+        self.left = None
+        self.right = None
 
 
 class GeNode(StmtNode):
     def __init__(self):
         super().__init__(IRNodeType.Ge)
+        self.left = None
+        self.right = None
 
 
 class LtNode(StmtNode):
     def __init__(self):
         super().__init__(IRNodeType.Lt)
+        self.left = None
+        self.right = None
 
 
 class LeNode(StmtNode):
     def __init__(self):
         super().__init__(IRNodeType.Le)
+        self.left = None
+        self.right = None
 
 ####################################################
 
@@ -371,8 +403,7 @@ class SparseIfNode(ExprNode):
 class SparseIfsNode(ExprNode):
     def __init__(self):
         super().__init__(IRNodeType.SparseIfs)
-        self.ifs = None
-        self.value = None
+        self.cond_list = []
 
 
 class SparseOtherNode(ExprNode):

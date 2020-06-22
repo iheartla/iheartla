@@ -145,27 +145,6 @@ class CodeGenNumpy(CodeGen):
     def visit_WhereConditions(self, node, **kwargs):
         pass
 
-    def visit_Statements(self, node, **kwargs):
-        index = 0
-        content = ''
-        if node.stats:
-            stat_info = self.visit(node.stats, **kwargs)
-            content += stat_info.content
-        else:
-            ret_str = ''
-            content += ''
-            if type(node.stat).__name__ != 'Assignment':
-                ret_str = "    " + self.ret_symbol + ' = '
-            stat_info = self.visit(node.stat, **kwargs)
-            stat_value = stat_info.content
-            if isinstance(stat_info, CodeNodeInfo):
-                if stat_info.pre_list:
-                    content += "".join(stat_info.pre_list)
-                content += ret_str + stat_info.content + '\n'
-            else:
-                content += stat_value + '\n'
-        return CodeNodeInfo(content)
-
     def visit_expression(self, node, **kwargs):
         exp_info = self.visit(node.value, **kwargs)
         if node.sign:
@@ -184,7 +163,7 @@ class CodeGenNumpy(CodeGen):
                     assert lhs_ids[1][0] == lhs_ids[1][1], "multiple subscripts for sum"
                     sub = type_info.content
                     cond_info = self.visit(node.cond, **kwargs)
-                    cond_content = cond_info.content
+                    cond_content = "if(" + cond_info.content + "):\n"
         else:
             sub_info = self.visit(node.sub)
             sub = sub_info.content
@@ -312,37 +291,33 @@ class CodeGenNumpy(CodeGen):
         return CodeNodeInfo(cur_m_id, pre_list)
 
     def visit_sparse_ifs(self, node, **kwargs):
-        ret = []
+        assign_node = node.get_ancestor(IRNodeType.Assignment)
+        sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
+        subs = assign_node.left.subs
+        ret = ["    for {} in range({}):\n".format(subs[0], sparse_node.la_type.rows),
+               "        for {} in range({}):\n".format(subs[1], sparse_node.la_type.cols)]
         pre_list = []
-        if node.ifs:
-            ifs_info = self.visit(node.ifs, **kwargs)
-            ret += ifs_info.content
-            pre_list += ifs_info.pre_list
-        if node.value:
-            value_info = self.visit(node.value, **kwargs)
-            ret += value_info.content
-            pre_list += value_info.pre_list
+        for cond in node.cond_list:
+            cond_info = self.visit(cond, **kwargs)
+            for index in range(len(cond_info.content)):
+                cond_info.content[index] = '            ' + cond_info.content[index]
+            ret += cond_info.content
+            pre_list += cond_info.pre_list
         return CodeNodeInfo(ret, pre_list)
 
     def visit_sparse_if(self, node, **kwargs):
-        sparse_node = node.parent
-        while type(sparse_node).__name__ != 'SparseMatrixNode':
-            sparse_node = sparse_node.parent
-        type_info = sparse_node
-        id0_info = self.visit(node.id0, **kwargs)
-        id0 = id0_info.content
-        id1_info = self.visit(node.id1, **kwargs)
-        id1 = id1_info.content
-        id2_info = self.visit(node.id2, **kwargs)
-        id2 = id2_info.content
+        assign_node = node.get_ancestor(IRNodeType.Assignment)
+        sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
+        subs = assign_node.left.subs
+        cond_info = self.visit(node.cond, **kwargs)
         stat_info = self.visit(node.stat, **kwargs)
         content = []
-        content.append('    for {}, {} in {}:\n'.format(id0, id1, id2))
-        content.append('        {}.append(({}, {}))\n'.format(type_info.la_type.index_var, id0, id1))
         stat_content = stat_info.content
         # replace '_ij' with '(i,j)'
-        stat_content = stat_content.replace('_{}{}'.format(id0, id1), '[{}][{}]'.format(id0, id1))
-        content.append('        {}.append({})\n'.format(type_info.la_type.value_var, stat_content))
+        stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '[{}][{}]'.format(subs[0], subs[1]))
+        content.append('if {}:\n'.format(cond_info.content))
+        content.append('    {}.append(({}, {}))\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
+        content.append('    {}.append({})\n'.format(sparse_node.la_type.value_var, stat_content))
         return CodeNodeInfo(content)
 
     def visit_sparse_other(self, node, **kwargs):
@@ -607,7 +582,7 @@ class CodeGenNumpy(CodeGen):
 
     def visit_if(self, node, **kwargs):
         ret_info = self.visit(node.cond)
-        ret_info.content = "if " + ret_info.content + ":\n"
+        # ret_info.content = "if " + ret_info.content + ":\n"
         return ret_info
 
     def visit_ne(self, node, **kwargs):
@@ -625,18 +600,28 @@ class CodeGenNumpy(CodeGen):
         return left_info
 
     def visit_in(self, node, **kwargs):
-        left_info = self.visit(node.left, **kwargs)
-        right_info = self.visit(node.right, **kwargs)
-        left_info.content = left_info.content + ' in ' + right_info.content
-        left_info.pre_list = self.merge_pre_list(left_info, right_info)
-        return left_info
+        item_list = []
+        pre_list = []
+        for item in node.items:
+            item_info = self.visit(item, **kwargs)
+            item_list.append(item_info.content)
+            # pre_list = self.merge_pre_list(pre_list, item_info)
+        right_info = self.visit(node.set, **kwargs)
+        content = '(' + ', '.join(item_list) + ') in ' + right_info.content
+        # pre_list = self.merge_pre_list(pre_list, right_info)
+        return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_not_in(self, node, **kwargs):
-        left_info = self.visit(node.left, **kwargs)
-        right_info = self.visit(node.right, **kwargs)
-        left_info.content = left_info.content + 'not in' + right_info.content
-        left_info.pre_list = self.merge_pre_list(left_info, right_info)
-        return left_info
+        item_list = []
+        pre_list = []
+        for item in node.items:
+            item_info = self.visit(item, **kwargs)
+            item_list.append(item_info.content)
+            # pre_list = self.merge_pre_list(pre_list, item_info)
+        right_info = self.visit(node.set, **kwargs)
+        content = '(' + ', '.join(item_list) + ') not in ' + right_info.content
+        # pre_list = self.merge_pre_list(pre_list, right_info)
+        return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_gt(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
@@ -665,22 +650,6 @@ class CodeGenNumpy(CodeGen):
         left_info.content = left_info.content + ' <= ' + right_info.content
         left_info.pre_list = self.merge_pre_list(left_info, right_info)
         return left_info
-
-    # def visit_IdentifierSubscript(self, node, **kwargs):
-    #     right = []
-    #     for value in node.right:
-    #         value_info = self.visit(value)
-    #         right.append(value_info.content)
-    #     left_info = self.visit(node.left)
-    #     content = left_info.content + '_' + ''.join(right)
-    #     return CodeNodeInfo(content)
-    #
-    # def visit_IdentifierAlone(self, node, **kwargs):
-    #     if node.value:
-    #         value = node.value
-    #     else:
-    #         value = '`' + node.id + '`'
-    #     return CodeNodeInfo(value)
 
     def visit_derivative(self, node, **kwargs):
         return CodeNodeInfo("")

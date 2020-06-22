@@ -9,4 +9,5 @@
 *.ps
 *.tex
 *.fls
+*.synctex
 la_test/generated_code.py

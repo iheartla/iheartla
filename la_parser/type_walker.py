@@ -41,6 +41,12 @@ def la_is_inside_sum(**kwargs):
     return False
 
 
+def la_is_if(**kwargs):
+    if IF_COND in kwargs and kwargs[IF_COND] is True:
+        return True
+    return False
+
+
 def la_remove_key(keys, **kwargs):
     if isinstance(keys, list):
         for key in keys:
@@ -575,13 +581,34 @@ class TypeWalker(NodeWalker):
         return ret_info
 
     def walk_InCondition(self, node, **kwargs):
-        return NodeInfo(VarTypeEnum.SCALAR)
+        ir_node = InNode()
+        item_node = []
+        for item in node.left:
+            item_info = self.walk(item, **kwargs)
+            item_node.append(item_info.ir)
+        ir_node.items = item_node
+        set_info = self.walk(node.right, **kwargs)
+        ir_node.set = set_info.ir
+        return NodeInfo(ir=ir_node)
 
     def walk_NotInCondition(self, node, **kwargs):
-        return NodeInfo(VarTypeEnum.SCALAR)
+        ir_node = NotInNode()
+        item_node = []
+        for item in node.left:
+            item_info = self.walk(item, **kwargs)
+            item_node.append(item_info.ir)
+        ir_node.items = item_node
+        set_info = self.walk(node.right, **kwargs)
+        ir_node.set = set_info.ir
+        return NodeInfo(VarTypeEnum.SCALAR, ir=ir_node)
 
     def walk_GreaterCondition(self, node, **kwargs):
-        return NodeInfo(VarTypeEnum.SCALAR)
+        ir_node = GtNode()
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        ir_node.left = left_info.ir
+        ir_node.right = right_info.ir
+        return NodeInfo(ir=ir_node)
 
     def walk_GreaterEqualCondition(self, node, **kwargs):
         return NodeInfo(VarTypeEnum.SCALAR)
@@ -633,7 +660,7 @@ class TypeWalker(NodeWalker):
             id0_info = self.walk(node.id, **kwargs)
             id0 = id0_info.content
             id0 = self.get_main_id(id0)
-            if not la_is_inside_sum(**kwargs):  # symbols in sum don't need to be defined before
+            if not la_is_inside_sum(**kwargs) and not la_is_if(**kwargs):  # symbols in sum don't need to be defined before
                 if id0 != 'I':  # special case
                     assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
                 else:
@@ -660,6 +687,7 @@ class TypeWalker(NodeWalker):
             ir_node.op = node_info.ir
         elif node.s:
             node_info = self.walk(node.s, **kwargs)
+            node_info.ir.set_parent(ir_node)
             ir_node.s = node_info.ir
         #
         ir_node.la_type = node_info.la_type
@@ -697,10 +725,14 @@ class TypeWalker(NodeWalker):
         if ASSIGN_OP in kwargs:
             op = kwargs[ASSIGN_OP]
         all_ids = self.get_all_ids(lhs)
-
+        # ifsNode
         ifs_info = self.walk(node.ifs, **kwargs)
-        ifs_info.ir.set_parent(ir_node)
-        ir_node.ifs = ifs_info.ir
+        ifs_node = SparseIfsNode()
+        for ir in ifs_info.ir:
+            ifs_node.cond_list.append(ir)
+            ir.set_parent(ifs_node)
+        ifs_node.set_parent(ir_node)
+        ir_node.ifs = ifs_node
         # definition
         index_var = self.generate_var_name("{}{}{}".format(all_ids[0], all_ids[1][0], all_ids[1][1]))
         value_var = self.generate_var_name("{}vals".format(all_ids[0]))
@@ -738,39 +770,39 @@ class TypeWalker(NodeWalker):
         return node_info
 
     def walk_SparseIfs(self, node, **kwargs):
-        ir_node = SparseIfsNode()
+        ir_list = []
         if node.value:
             node_info = self.walk(node.value, **kwargs)
-            node_info.ir.set_parent(ir_node)
-            ir_node.value = node_info.ir
+            ir_list.append(node_info.ir)
         if node.ifs:
             node_info = self.walk(node.ifs, **kwargs)
-            node_info.ir.set_parent(ir_node)
-            ir_node.ifs = node_info.ir
-        ret_info = NodeInfo(ir=ir_node)
+            ir_list += node_info.ir
+        ret_info = NodeInfo(ir=ir_list)
         return ret_info
 
     def walk_SparseIf(self, node, **kwargs):
         ir_node = SparseIfNode()
         lhs = kwargs[LHS]
         all_ids = self.get_all_ids(lhs)
-        id0_info = self.walk(node.id0, **kwargs)
-        ir_node.id0 = id0_info.ir
-        id0 = id0_info.content
-        assert id0 in all_ids[1], "subscripts mismatch"
-        id1_info = self.walk(node.id1, **kwargs)
-        ir_node.id1 = id1_info.ir
-        id1 = id1_info.content
-        assert id1 in all_ids[1], "subscripts mismatch"
-        id2_info = self.walk(node.id2, **kwargs)
-        ir_node.id2 = id2_info.ir
-        id2 = id2_info.content
+        # id0_info = self.walk(node.id0, **kwargs)
+        # ir_node.id0 = id0_info.ir
+        # id0 = id0_info.content
+        cond_info = self.walk(node.cond, **kwargs)
+        ir_node.cond = cond_info.ir
+        # assert id0 in all_ids[1], "subscripts mismatch"
+        # id1_info = self.walk(node.id1, **kwargs)
+        # ir_node.id1 = id1_info.ir
+        # id1 = id1_info.content
+        # assert id1 in all_ids[1], "subscripts mismatch"
+        # id2_info = self.walk(node.id2, **kwargs)
+        # ir_node.id2 = id2_info.ir
+        # id2 = id2_info.content
         stat_info = self.walk(node.stat, **kwargs)
         ir_node.stat = stat_info.ir
-        for symbol in stat_info.symbols:
-            if self.contain_subscript(symbol):
-                sym_ids = self.get_all_ids(symbol)
-                assert sym_ids[1] == all_ids[1], "subscripts mismatch"
+        # for symbol in stat_info.symbols:
+        #     if self.contain_subscript(symbol):
+        #         sym_ids = self.get_all_ids(symbol)
+        #         assert sym_ids[1] == all_ids[1], "subscripts mismatch"
         return NodeInfo(ir=ir_node)
 
     def walk_Matrix(self, node, **kwargs):
