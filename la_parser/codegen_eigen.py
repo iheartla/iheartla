@@ -372,7 +372,7 @@ class CodeGenEigen(CodeGen):
     def visit_determinant(self, node, **kwargs):
         value_info = self.visit(node.value)
         value = value_info.content
-        type_info = self.node_dict[node.value]
+        type_info = node.value.la_type
         if type_info.la_type.var_type == VarTypeEnum.VECTOR or type_info.la_type.var_type == VarTypeEnum.MATRIX or type_info.la_type.var_type == VarTypeEnum.SEQUENCE:
             if value in self.parameters:
                 value_type = self.symtable[value]
@@ -440,16 +440,6 @@ class CodeGenEigen(CodeGen):
 
 
     def visit_sparse_if(self, node, **kwargs):
-        # replace '_ij' with '(i,j)'
-        # stat_content = stat_content.replace('_{}{}'.format(id0, id1), '({}, {})'.format(id0, id1))
-        # content = []
-        # content.append('    for (auto& tuple : {}) {{\n'.format(id2))
-        # content.append('        double {} = std::get<0>(tuple);\n'.format(id0))
-        # content.append('        double {} = std::get<1>(tuple);\n'.format(id1))
-        # content.append(
-        #     '        tripletList_{}.push_back(Eigen::Triplet<double>({}, {}, {}));\n'.format(self.get_main_id(lhs), id0,
-        #                                                                                      id1, stat_content))
-        # content.append('    }\n')
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         subs = assign_node.left.subs
         cond_info = self.visit(node.cond, **kwargs)

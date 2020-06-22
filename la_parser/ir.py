@@ -32,7 +32,7 @@ class IRNodeType(Enum):
     Sub = 201
     Mul = 202
     Div = 203
-    walk_AddSub = 204
+    AddSub = 204
     Summation = 205
     Determinant = 206
     Transpose = 207

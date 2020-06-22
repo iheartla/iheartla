@@ -35,10 +35,7 @@ import sys
 import traceback
 
 
-
-def walk_model(parser_type, model):
-    type_walker = TypeWalker()
-    node_info = type_walker.walk(model)
+def walk_model(parser_type, type_walker, node_info):
     if parser_type == ParserTypeEnum.LATEX:
         gen = CodeGenLatex()
     elif parser_type == ParserTypeEnum.NUMPY:
@@ -46,18 +43,10 @@ def walk_model(parser_type, model):
     elif parser_type == ParserTypeEnum.EIGEN:
         gen = CodeGenEigen()
     #
-    gen.symtable = type_walker.symtable
-    for key in gen.symtable.keys():
-        gen.def_dict[key] = False
-    gen.parameters = type_walker.parameters
-    gen.subscripts = type_walker.subscripts
-    gen.node_dict = type_walker.node_dict
-    gen.dim_dict = type_walker.dim_dict
-    gen.ids_dict = type_walker.ids_dict
-    gen.sub_name_dict = type_walker.sub_name_dict
-    gen.ret_symbol = type_walker.ret_symbol
-    gen.stat_list = type_walker.stat_list
+    gen.init_type(type_walker)
     gen.visit_code(node_info)
+    if parser_type != ParserTypeEnum.LATEX: # print once
+        gen.print_symbols()
     return gen.content
 
 
@@ -100,10 +89,10 @@ def get_parser():
     return _last_parser
 
 
-def generate_latex_code(model, frame):
+def generate_latex_code(type_walker, node_info, frame):
     tex_content = ''
     try:
-        tex_content = walk_model(ParserTypeEnum.LATEX, model)
+        tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, node_info)
         tex_file_name = "la.tex"
         tex_file = open(tex_file_name, 'w')
         tex_file.write(tex_content)
@@ -131,13 +120,16 @@ def parse_and_translate(content, frame, parser_type=None):
     start_time = time.time()
     parser = get_parser()
     model = parser.parse(content, parseinfo=True)
+    # type walker
+    type_walker = TypeWalker()
+    node_info = type_walker.walk(model)
     # parsing Latex at the same time
-    latex_thread = threading.Thread(target=generate_latex_code, args=(model, frame,))
+    latex_thread = threading.Thread(target=generate_latex_code, args=(type_walker, node_info, frame,))
     latex_thread.start()
     # other type
     if parser_type is None:
         parser_type = ParserTypeEnum.NUMPY
-    res = walk_model(parser_type, model)
+    res = walk_model(parser_type, type_walker, node_info)
     result = (res, 0)
     wx.CallAfter(frame.UpdateMidPanel, result)
     print("------------ %.2f seconds ------------" % (time.time() - start_time))
@@ -160,7 +152,9 @@ def parse_and_translate(content, frame, parser_type=None):
 def parse_la(content, parser_type):
     parser = get_parser()
     model = parser.parse(content, parseinfo=True)
-    res = walk_model(parser_type, model)
+    type_walker = TypeWalker()
+    node_info = type_walker.walk(model)
+    res = walk_model(parser_type, type_walker, node_info)
     return res
 
 

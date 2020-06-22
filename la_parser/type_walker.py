@@ -2,6 +2,7 @@ from tatsu.model import NodeWalker
 from tatsu.objectmodel import Node
 from la_parser.la_types import *
 from la_tools.la_logger import *
+from la_tools.la_visualizer import LaVisualizer
 from la_parser.ir import *
 
 
@@ -63,13 +64,12 @@ class TypeWalker(NodeWalker):
         self.parameters = []
         self.subscripts = {}
         self.sub_name_dict = {}  # only for parameter checker
-        self.node_dict = {}      # node:var_name
         self.name_cnt_dict = {}
         self.dim_dict = {}       # parameter used. h:w_i
         self.ids_dict = {}    # identifiers with subscripts
+        self.visualizer = LaVisualizer()
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
         self.ret_symbol = None
-        self.stat_list = None
 
     def generate_var_name(self, base):
         index = -1
@@ -93,28 +93,28 @@ class TypeWalker(NodeWalker):
         raise Exception('Unexpected type %s walked', type(o).__name__)
 
     def walk_Start(self, node, **kwargs):
+        # self.visualizer.visualize(node) # visualize
         ir_node = StartNode()
         cond_node = self.walk(node.cond, **kwargs)
         ir_node.cond = cond_node
-        self.stat_list = self.walk(node.stat, **kwargs)
+        stat_list = self.walk(node.stat, **kwargs)
         block_node = BlockNode()
-        for index in range(len(self.stat_list)):
+        for index in range(len(stat_list)):
             update_ret_type = False
-            if index == len(self.stat_list) - 1:
-                if type(self.stat_list[index]).__name__ == 'Assignment':
+            if index == len(stat_list) - 1:
+                if type(stat_list[index]).__name__ == 'Assignment':
                     kwargs[SET_RET_SYMBOL] = True
                 else:
                     # new symbol for return value
                     self.ret_symbol = "ret"
                     update_ret_type = True
                     kwargs[LHS] = self.ret_symbol
-            type_info = self.walk(self.stat_list[index], **kwargs)
+            type_info = self.walk(stat_list[index], **kwargs)
             block_node.add_stmt(type_info.ir)
             if update_ret_type:
                 self.symtable[self.ret_symbol] = type_info.la_type
         ir_node.stat = block_node
         return ir_node
-        return self.stat_list
 
     ###################################################################
     def walk_WhereConditions(self, node, **kwargs):
@@ -259,15 +259,11 @@ class TypeWalker(NodeWalker):
 
     ###################################################################
     def walk_Statements(self, node, **kwargs):
-        block_node = BlockNode()
         stat_list = []
         if node.stats:
             stat_list = self.walk(node.stats, **kwargs)
-            block_node.add_stmt(stat_list)
         stat_list.append(node.stat)
-        block_node.add_stmt(self.walk(node.stat, **kwargs).ir)
         return stat_list
-        # return block_node
 
     def walk_Expression(self, node, **kwargs):
         value_info = self.walk(node.value, **kwargs)
@@ -291,7 +287,6 @@ class TypeWalker(NodeWalker):
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)
         ret_info.ir = ir_node
-        self.node_dict[node] = ret_info
         return ret_info
 
     def walk_Subtract(self, node, **kwargs):
@@ -306,7 +301,6 @@ class TypeWalker(NodeWalker):
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)
         ret_info.ir = ir_node
-        self.node_dict[node] = ret_info
         return ret_info
 
     def walk_AddSub(self, node, **kwargs):
@@ -322,7 +316,6 @@ class TypeWalker(NodeWalker):
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)
         ret_info.ir = ir_node
-        self.node_dict[node] = ret_info
         return ret_info
 
     def walk_Multiply(self, node, **kwargs):
@@ -346,7 +339,6 @@ class TypeWalker(NodeWalker):
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)
         ret_info.ir = ir_node
-        # self.node_dict[node] = ret_info
         return ret_info
 
     def walk_Divide(self, node, **kwargs):
@@ -361,7 +353,6 @@ class TypeWalker(NodeWalker):
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)
         ret_info.ir = ir_node
-        self.node_dict[node] = ret_info
         return ret_info
 
     def walk_Subexpression(self, node, **kwargs):
@@ -381,13 +372,11 @@ class TypeWalker(NodeWalker):
         kwargs[ASSIGN_OP] = node.op
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
-
+        # ir
         assign_node = AssignNode(id0_info.ir, right_info.ir)
         assign_node.op = node.op
         right_info.ir.set_parent(assign_node)
         id0_info.ir.set_parent(assign_node)
-
-
         la_remove_key(LHS, **kwargs)
         la_remove_key(ASSIGN_OP, **kwargs)
         # y_i = stat
@@ -422,7 +411,6 @@ class TypeWalker(NodeWalker):
                 assert id0 in self.symtable, "lhs should exist"
             else:
                 self.symtable[id0] = right_type
-        self.node_dict[node] = right_info
         assign_node.symbols = right_info.symbols
         right_info.ir = assign_node
         return right_info
@@ -461,14 +449,12 @@ class TypeWalker(NodeWalker):
         ir_node.symbol = ret_info.symbol
         ir_node.content = ret_info.content
         ret_info.ir = ir_node
-        self.node_dict[node] = ret_info
         return ret_info
 
     def walk_Determinant(self, node, **kwargs):
         value_info = self.walk(node.value, **kwargs)
         ret_type = LaVarType(VarTypeEnum.SCALAR)
         node_info = NodeInfo(ret_type, symbols=value_info.symbols)
-        self.node_dict[node] = node_info
         return node_info
 
     def walk_Power(self, node, **kwargs):
@@ -628,7 +614,6 @@ class TypeWalker(NodeWalker):
         ir_node.la_type = node_type
         node_info = NodeInfo(node_type, content, {content}, ir_node)
         self.ids_dict[content] = Identifier(left_info.content, right)
-        self.node_dict[node] = node_info
         return node_info
 
     def walk_IdentifierAlone(self, node, **kwargs):
@@ -644,7 +629,6 @@ class TypeWalker(NodeWalker):
         node_type.symbol = value
         ir_node.la_type = node_type
         node_info = NodeInfo(node_type, value, {value}, ir_node)
-        self.node_dict[node] = node_info
         return node_info
 
     def walk_Factor(self, node, **kwargs):
@@ -686,7 +670,6 @@ class TypeWalker(NodeWalker):
         #
         ir_node.la_type = node_info.la_type
         node_info.ir = ir_node
-        self.node_dict[node] = node_info
         return node_info
 
     def walk_Number(self, node, **kwargs):
@@ -697,7 +680,6 @@ class TypeWalker(NodeWalker):
         ir_node.value = node_value.ir
         ir_node.la_type = node_info.la_type
         node_info.ir = ir_node
-        self.node_dict[node] = node_info
         return node_info
 
     def walk_Integer(self, node, **kwargs):
@@ -709,7 +691,6 @@ class TypeWalker(NodeWalker):
         ir_node.value = int(value)
         ir_node.la_type = node_info.la_type
         node_info.ir = ir_node
-        self.node_dict[node] = node_info
         return node_info
 
     def walk_SparseMatrix(self, node, **kwargs):
@@ -760,7 +741,6 @@ class TypeWalker(NodeWalker):
         ir_node.la_type = la_type
         ir_node.symbol = node_info.symbol
         node_info.ir = ir_node
-        self.node_dict[node] = node_info
         return node_info
 
     def walk_SparseIfs(self, node, **kwargs):
@@ -838,11 +818,9 @@ class TypeWalker(NodeWalker):
             new_id = self.generate_var_name(lhs)
             self.symtable[new_id] = MatrixType(rows=rows, cols=cols, block=block, sparse=sparse, list_dim=list_dim, item_types=node_info.content)
             node_info.symbol = new_id
-            self.node_dict[node] = node_info
         ir_node.la_type = node_info.la_type
         ir_node.symbol = node_info.symbol
         node_info.ir = ir_node
-        self.node_dict[node] = node_info
         return node_info
 
     def walk_MatrixRows(self, node, **kwargs):
@@ -867,7 +845,6 @@ class TypeWalker(NodeWalker):
             ret_info.symbols = symbols.union(r_info.symbols)
         ir_node.la_type = ret_info.la_type
         ret_info.ir = ir_node
-        self.node_dict[node] = ret_info
         return ret_info
 
     def walk_MatrixRow(self, node, **kwargs):
@@ -894,7 +871,6 @@ class TypeWalker(NodeWalker):
             ret_info.symbols = symbols.union(exp_info.symbols)
         ir_node.la_type = ret_info.la_type
         ret_info.ir = ir_node
-        self.node_dict[node] = ret_info
         return ret_info
 
     def walk_MatrixRowCommas(self, node, **kwargs):
@@ -921,7 +897,6 @@ class TypeWalker(NodeWalker):
             ret_info.symbols = symbols.union(exp_info.symbols)
         ir_node.la_type = ret_info.la_type
         ret_info.ir = ir_node
-        self.node_dict[node] = ret_info
         return ret_info
 
     def walk_ExpInMatrix(self, node, **kwargs):
@@ -930,7 +905,6 @@ class TypeWalker(NodeWalker):
         ir_node.value = ret_info.ir
         ir_node.sign = node.sign
         ret_info.ir = ir_node
-        self.node_dict[node] = ret_info
         return ret_info
 
     def walk_NumMatrix(self, node, **kwargs):
@@ -962,7 +936,6 @@ class TypeWalker(NodeWalker):
         node_info = NodeInfo(node_type)
         ir_node.la_type = node_info.la_type
         node_info.ir = ir_node
-        self.node_dict[node] = node_type
         return node_info
 
     ###################################################################

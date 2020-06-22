@@ -1,4 +1,5 @@
 from la_parser.ir import *
+from la_tools.la_logger import *
 
 
 class IRVisitor(object):
@@ -10,13 +11,40 @@ class IRVisitor(object):
         self.def_dict = {}
         self.parameters = set()
         self.subscripts = {}
-        self.node_dict = {}
         self.dim_dict = {}
         self.sub_name_dict = {}
         self.ids_dict = {}  # identifiers with subscripts
         self.ret_symbol = None
-        self.stat_list = None
         self.content = ''
+        self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
+
+    def print_symbols(self):
+        self.logger.info("symtable:")
+        for (k, v) in self.symtable.items():
+            dims = ""
+            if v.var_type == VarTypeEnum.MATRIX:
+                dims = ", rows:{}, cols:{}".format(v.rows, v.cols)
+            elif v.var_type == VarTypeEnum.VECTOR:
+                dims = ", rows:{}".format(v.rows)
+            elif v.var_type == VarTypeEnum.SEQUENCE or v.var_type == VarTypeEnum.SET:
+                dims = ", size:{}".format(v.size)
+            self.logger.info(k + ':' + str(v.var_type) + dims)
+        self.logger.info("parameters:\n" + str(self.parameters))
+        self.logger.info("subscripts:\n" + str(self.subscripts))
+        self.logger.info("dim_dict:\n" + str(self.dim_dict))
+        self.logger.info("sub_name_dict:\n" + str(self.sub_name_dict) + '\n')
+
+    def init_type(self, type_walker):
+        self.symtable = type_walker.symtable
+        for key in self.symtable.keys():
+            self.def_dict[key] = False
+        self.parameters = type_walker.parameters
+        self.subscripts = type_walker.subscripts
+        self.dim_dict = type_walker.dim_dict
+        self.ids_dict = type_walker.ids_dict
+        self.sub_name_dict = type_walker.sub_name_dict
+        self.ret_symbol = type_walker.ret_symbol
+        # self.print_symbols()
 
     def visit_code(self, node, **kwargs):
         self.content = ''
@@ -46,7 +74,7 @@ class IRVisitor(object):
             IRNodeType.Sub: "visit_sub",
             IRNodeType.Mul: "visit_mul",
             IRNodeType.Div: "visit_div",
-            IRNodeType.walk_AddSub: "visit_add_sub",
+            IRNodeType.AddSub: "visit_add_sub",
             IRNodeType.Summation: "visit_summation",
             IRNodeType.Determinant: "visit_determinant",
             IRNodeType.Transpose: "visit_transpose",
