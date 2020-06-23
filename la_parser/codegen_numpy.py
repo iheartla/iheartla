@@ -8,6 +8,24 @@ class CodeGenNumpy(CodeGen):
         self.pre_str = '''import numpy as np\nimport scipy\nfrom scipy import sparse\n\n\n'''
         self.post_str = ''''''
 
+    def get_rand_test_str(self, la_type, rand_int_max):
+        rand_test = ''
+        if la_type.var_type == VarTypeEnum.MATRIX:
+            element_type = la_type.element_type
+            if isinstance(element_type, LaVarType) and element_type.var_type == VarTypeEnum.INTEGER:
+                rand_test = 'np.random.randint({}, size=({}, {}))'.format(rand_int_max, la_type.rows, la_type.cols)
+            else:
+                rand_test = 'np.random.randn({}, {})'.format(la_type.rows, la_type.cols)
+        elif self.symtable[parameter].var_type == VarTypeEnum.VECTOR:
+            element_type = la_type.element_type
+            if isinstance(element_type, LaVarType) and element_type.var_type == VarTypeEnum.INTEGER:
+                rand_test = 'np.random.randint({}, size=({}))'.format(rand_int_max, la_type.rows)
+            else:
+                rand_test = 'np.random.randn({})'.format(la_type.rows)
+        elif self.symtable[parameter].var_type == VarTypeEnum.SCALAR:
+            rand_test = 'np.random.randn()'
+        return rand_test
+
     def visit_id(self, node, **kwargs):
         return CodeNodeInfo(node.get_name())
 
@@ -103,6 +121,11 @@ class CodeGenNumpy(CodeGen):
                     else:
                         gen_list.append('np.random.randn()')
                 test_content.append('        {}.append(('.format(parameter) + ', '.join(gen_list) + '))')
+            elif self.symtable[parameter].var_type == VarTypeEnum.FUNCTION:
+                param_list = []
+                for index in range(len(self.symtable[parameter].params)):
+                    param_list.append('p{}'.format(index))
+                test_content.append('    {} = lambda {}: {}'.format(parameter, ', '.join(param_list), self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
 
             main_content.append('    print("{}:", {})'.format(parameter, parameter))
         content = 'def ' + func_name + '(' + ', '.join(self.parameters) + '):\n'

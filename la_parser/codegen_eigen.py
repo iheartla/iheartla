@@ -9,12 +9,6 @@ class CodeGenEigen(CodeGen):
         self.post_str = ''''''
         self.ret = 'ret'
 
-    def visit_id(self, node, **kwargs):
-        return CodeNodeInfo(node.get_name())
-
-    def visit_start(self, node, **kwargs):
-        return self.visit(node.stat, **kwargs)
-
     def get_set_item_str(self, set_type):
         type_list = []
         for index in range(set_type.size):
@@ -24,38 +18,16 @@ class CodeGenEigen(CodeGen):
                 type_list.append('double')
         return "std::tuple< {} >".format(", ".join(type_list))
 
+    def get_func_params_str(self, la_type):
+        param_list = []
+        for param in la_type.params:
+            param_list.append(self.get_ctype(param))
+        return ', '.join(param_list)
+
     def get_ctype(self, la_type):
         type_str = ""
         if la_type.var_type == VarTypeEnum.SEQUENCE:
-            if la_type.element_type.var_type == VarTypeEnum.MATRIX:
-                if la_type.element_type.sparse:
-                    type_str = "std::vector<Eigen::SparseMatrix<double> >"
-                else:
-                    if la_type.element_type.is_dim_constant():
-                        if la_type.element_type.element_type is not None and la_type.element_type.element_type.var_type == VarTypeEnum.INTEGER:
-                            type_str = "std::vector<Eigen::Matrix<int, {}, {}> >".format(la_type.element_type.rows,
-                                                                                         la_type.element_type.cols)
-                        else:
-                            type_str = "std::vector<Eigen::Matrix<double, {}, {}> >".format(la_type.element_type.rows,
-                                                                                            la_type.element_type.cols)
-                    else:
-                        if la_type.element_type.element_type is not None and la_type.element_type.element_type.var_type == VarTypeEnum.INTEGER:
-                            type_str = "std::vector<Eigen::MatrixXi>"
-                        else:
-                            type_str = "std::vector<Eigen::MatrixXd>"
-            elif la_type.element_type.var_type == VarTypeEnum.VECTOR:
-                if la_type.element_type.is_dim_constant():
-                    if la_type.element_type.element_type is not None and la_type.element_type.element_type.var_type == VarTypeEnum.INTEGER:
-                        type_str = "std::vector<Eigen::Matrix<int, {}, 1> >".format(la_type.element_type.rows)
-                    else:
-                        type_str = "std::vector<Eigen::Matrix<double, {}, 1> >".format(la_type.element_type.rows)
-                else:
-                    if la_type.element_type.element_type is not None and la_type.element_type.element_type.var_type == VarTypeEnum.INTEGER:
-                        type_str = "std::vector<Eigen::VectorXi>"
-                    else:
-                        type_str = "std::vector<Eigen::VectorXd>"
-            elif la_type.element_type.var_type == VarTypeEnum.SCALAR:
-                type_str = "std::vector<double>"
+            type_str = "std::vector<{}>".format(self.get_ctype(la_type.element_type))
         elif la_type.var_type == VarTypeEnum.MATRIX:
             if la_type.sparse:
                 type_str = "Eigen::SparseMatrix<double>"
@@ -81,16 +53,39 @@ class CodeGenEigen(CodeGen):
                     type_str = "Eigen::VectorXi"
                 else:
                     type_str = "Eigen::VectorXd"
-        elif la_type.var_type == VarTypeEnum.SCALAR:
+        elif la_type.var_type == VarTypeEnum.SCALAR or la_type.var_type == VarTypeEnum.REAL:
             type_str = "double"
+        elif la_type.var_type == VarTypeEnum.INTEGER:
+            type_str = "int"
         elif la_type.var_type == VarTypeEnum.SET:
             type_str = "std::set<{} >".format(self.get_set_item_str(la_type))
         elif la_type.var_type == VarTypeEnum.FUNCTION:
-            param_list = []
-            for param in la_type.params:
-                param_list.append(self.get_ctype(param))
-            type_str = "std::function<{}({})>".format(self.get_ctype(la_type.ret), ', '.join(param_list))
+            type_str = "std::function<{}({})>".format(self.get_ctype(la_type.ret), self.get_func_params_str(la_type))
         return type_str
+
+    def get_rand_test_str(self, la_type, rand_int_max):
+        rand_test = ''
+        if la_type.var_type == VarTypeEnum.MATRIX:
+            element_type = la_type.element_type
+            if isinstance(element_type, LaVarType) and element_type.var_type == VarTypeEnum.INTEGER:
+                rand_test = 'Eigen::MatrixXi::Random({}, {});'.format(la_type.rows, la_type.cols)
+            else:
+                rand_test = 'Eigen::MatrixXd::Random({}, {});'.format(la_type.rows, la_type.cols)
+        elif self.symtable[parameter].var_type == VarTypeEnum.VECTOR:
+            element_type = la_type.element_type
+            if isinstance(element_type, LaVarType) and element_type.var_type == VarTypeEnum.INTEGER:
+                rand_test = 'Eigen::VectorXi::Random({});'.format(la_type.rows)
+            else:
+                rand_test = 'Eigen::VectorXd::Random({});'.format(la_type.rows)
+        elif self.symtable[parameter].var_type == VarTypeEnum.SCALAR:
+            rand_test = 'rand() % {};'.format(rand_int_max)
+        return rand_test
+
+    def visit_id(self, node, **kwargs):
+        return CodeNodeInfo(node.get_name())
+
+    def visit_start(self, node, **kwargs):
+        return self.visit(node.stat, **kwargs)
 
     def visit_block(self, node, **kwargs):
         type_checks = []
@@ -218,7 +213,10 @@ class CodeGenEigen(CodeGen):
                 test_content.append(
                     '        {}.insert(std::make_tuple('.format(parameter) + ', '.join(gen_list) + '));')
                 test_content.append('    }')
-
+            elif self.symtable[parameter].var_type == VarTypeEnum.FUNCTION:
+                test_content.append('    {} = []({})->{}{{'.format(parameter, self.get_func_params_str(self.symtable[parameter]), self.get_ctype(self.symtable[parameter].ret)))
+                test_content.append('        return {}'.format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
+                test_content.append('    };')
             # main_print.append('    std::cout<<"{}:\\n"<<{}<<std::endl;'.format(parameter, parameter))
         content = ""
         if show_doc:
