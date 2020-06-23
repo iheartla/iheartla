@@ -16,8 +16,8 @@ sparse_if_conditions::SparseIfs
     ;
 
 sparse_if_condition::SparseIf
-    = stat:statement {hspace} IF {hspace} '(' {hspace} id0:identifier {hspace} ',' {hspace} id1:identifier {hspace} ')' {hspace} '∈' {hspace} id2:identifier
-    | '(' {hspace} id0:identifier {hspace} ',' {hspace} id1:identifier {hspace} ')' {hspace} '∈' {hspace} id2:identifier  {hspace} ':' {hspace} stat:statement
+    = stat:statement {hspace} IF {hspace} cond:if_condition
+    | cond:if_condition  {hspace} ':' {hspace} stat:statement
     ;
 
 

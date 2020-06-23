@@ -32,16 +32,13 @@ where_conditions::WhereConditions
     | {hspace} value+:where_condition {hspace}
     ;
 
-where_condition
-    = matrix_condition
-    | vector_condition
-    | scalar_condition
-    | set_condition
+where_condition::WhereCondition
+    = id:identifier {hspace} ':' {hspace} type:(function_type|la_type) { {hspace} ':' {hspace} desc:description}
     ;
 
-matrix_condition::MatrixCondition
-    = id:identifier {hspace} ':' {hspace} 'matrix' {hspace} '(' {hspace} id1:(integer | identifier)  {hspace} ',' {hspace} id2:(integer | identifier) {hspace}')'  {{hspace}+ attr+:matrix_attribute}  { {hspace} ':' {hspace} desc:description}
-    | id:identifier {hspace} ':' {hspace} type:('ℝ'|'ℤ') {hspace} '^' {hspace} '(' {hspace} id1:(integer | identifier)  {hspace} '×' {hspace} id2:(integer | identifier) {hspace}')'  {{hspace}+ attr+:matrix_attribute}  { {hspace} ':' {hspace} desc:description}
+matrix_type::MatrixType
+    = 'matrix' {hspace} '(' {hspace} id1:(integer | identifier)  {hspace} ',' {hspace} id2:(integer | identifier) {hspace}')'  {{hspace}+ attr+:matrix_attribute}
+    | type:('ℝ'|'ℤ') {hspace} '^' {hspace} '(' {hspace} id1:(integer | identifier)  {hspace} '×' {hspace} id2:(integer | identifier) {hspace}')'  {{hspace}+ attr+:matrix_attribute}
     ;
 
 matrix_attribute
@@ -49,20 +46,33 @@ matrix_attribute
     | DIAGONAL
     ;
 
-vector_condition::VectorCondition
-    = id:identifier {hspace} ':' {hspace} 'vector' {hspace} '(' {hspace} id1:(integer | identifier) {hspace}')' { {hspace} ':' {hspace} desc:description}
-    | id:identifier {hspace} ':' {hspace} type:('ℝ'|'ℤ') {hspace} '^' {hspace} '(' {hspace} id1:(integer | identifier) {hspace}')' { {hspace} ':' {hspace} desc:description}
-    | id:identifier {hspace} ':' {hspace} type:('ℝ'|'ℤ') {hspace} '^' {hspace} id1:(integer | identifier) { {hspace} ':' {hspace} desc:description}
+vector_type::VectorType
+    = 'vector' {hspace} '(' {hspace} id1:(integer | identifier) {hspace}')'
+    | type:('ℝ'|'ℤ') {hspace} '^' {hspace} '(' {hspace} id1:(integer | identifier) {hspace}')'
+    | type:('ℝ'|'ℤ') {hspace} '^' {hspace} id1:(integer | identifier)
     ;
 
-scalar_condition::ScalarCondition
-    = id:identifier {hspace} ':' {hspace} 'scalar' { {hspace} ':' {hspace} desc:description}
+scalar_type::ScalarType
+    = 'scalar'
+    | 'ℝ'
+    | z:'ℤ'
     ;
 
-set_condition::SetCondition
-    = id:identifier {hspace} ':' {hspace} '{' {hspace} type+:('ℝ'|'ℤ') {hspace} {'×' {hspace} type+:('ℝ'|'ℤ') {hspace} }'}' { {hspace} ':' {hspace} desc:description}
-    | id:identifier {hspace} ':' {hspace} '{' {hspace} type1:('ℝ'|'ℤ') {hspace} '^' {hspace} cnt:(integer) {hspace} '}' { {hspace} ':' {hspace} desc:description}
-    | id:identifier {hspace} ':' {hspace} '{' {hspace} type2:('ℝ²'|'ℤ²') {hspace} '}' { {hspace} ':' {hspace} desc:description}
+set_type::SetType
+    = '{' {hspace} type+:('ℝ'|'ℤ') {hspace} {'×' {hspace} type+:('ℝ'|'ℤ') {hspace} }'}'
+    | '{' {hspace} type1:('ℝ'|'ℤ') {hspace} '^' {hspace} cnt:(integer) {hspace} '}'
+    | '{' {hspace} type2:('ℝ²'|'ℤ²') {hspace} '}'
+    ;
+
+la_type
+    = matrix_type
+    | vector_type
+    | set_type
+    | scalar_type
+    ;
+
+function_type::FunctionType
+    = {params+:la_type {{hspace} ('x'|'×'|','|';') {hspace} params+:la_type} {hspace}} ('→'|'->') {hspace} ret:la_type
     ;
 
 expression::Expression
@@ -115,21 +125,22 @@ if_condition::IfCondition
     | cond:less_equal
     ;
 
+in::InCondition
+    = '(' {hspace} left+:expression {hspace} {',' {hspace} left+:expression {hspace}} ')' {hspace} '∈' {hspace} right:identifier
+    | left+:expression {hspace} '∈' {hspace} right:identifier
+    ;
+
+not_in::NotInCondition
+    = '(' {hspace} left+:expression {hspace} {',' {hspace} left+:expression {hspace}} ')' {hspace} '∉' {hspace} right:identifier
+    | left+:expression {hspace} '∉' {hspace} right:identifier
+    ;
+
 not_equal::NeCondition
     = left:expression {hspace} ('≠' | '!=') {hspace} right:expression
     ;
 
 equal::EqCondition
     = left:expression {hspace} ('==' | '=') {hspace} right:expression
-    ;
-
-in::InCondition
-    = left:expression {hspace} (IN | '∈') {hspace} right:expression
-    | right:expression {hspace} '∋' {hspace} left:expression
-    ;
-
-not_in::NotInCondition
-    = left:expression {hspace} '∉' {hspace} right:expression
     ;
 
 greater::GreaterCondition

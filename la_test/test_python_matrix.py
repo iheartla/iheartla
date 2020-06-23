@@ -299,9 +299,9 @@ class TestMatrix(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         P = np.array([[-6, 9, -1, -11], [17, 14, 0, 0], [6, -2, 11, 0], [2, -9, -2, -9]])
         J = np.array([[-9, -6, 0, -3], [1, 10, 0, 14], [-14, -2, 10, 13], [5, 9, 0, -10]])
-        E = [(3, 0), (1, 2), (3, 2), (0, 1), (3, 1), (0, 2), (2, 0)]
-        value = np.array([7, 0, -2, 3, 0, -1, -8])
-        B = scipy.sparse.coo_matrix((value, np.asarray(E).T), shape=(10, 10))
+        E = [(0, 1), (0, 2), (1, 2), (2, 0), (3, 0), (3, 1), (3, 2)]
+        value = np.array([3, -1, 0, -8, 7, 0, -2])
+        B = scipy.sparse.coo_matrix((value, np.asarray(E).T), shape=(10, 10), dtype=np.floating)
         self.assertSMatrixEqual(func_info.numpy_func(P, J, E), B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
@@ -353,8 +353,8 @@ class TestMatrix(BasePythonTest):
         J = np.array([[-9, -6, 0, -3], [1, 10, 0, 14], [-14, -2, 10, 13], [5, 9, 0, -10]])
         E = [(3, 0), (1, 2), (3, 2), (0, 1), (3, 1), (0, 2), (2, 0)]
         F = [(1, 1), (2, 2), (3, 3)]
-        G = [(1, 1), (2, 2), (3, 3), (3, 0), (1, 2), (3, 2), (0, 1), (3, 1), (0, 2), (2, 0)]
-        value = np.array([24, 21, -19, 7, 0, -2, 3, 0, -1, -8])
+        G = [(1, 1), (2, 2), (3, 3), (0, 1), (0, 2), (1, 2), (2, 0), (3, 0), (3, 1), (3, 2)]
+        value = np.array([24, 21, -19, 3, -1, 0, -8, 7, 0, -2])
         B = scipy.sparse.coo_matrix((value, np.asarray(G).T), shape=(10, 10))
         self.assertSMatrixEqual(func_info.numpy_func(P, J, E, F), B)
         # eigen test

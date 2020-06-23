@@ -1,6 +1,7 @@
-#operators
+# operators
 operations
     =
+    | function_operator
     | trace_operator
     | eig_operator
     | derivative_operator
@@ -94,4 +95,8 @@ matrix_operator
 
 trans_operator::Transpose
     = f:factor 'ᵀ'
+    ;
+
+function_operator::Function
+    = name:identifier '(' {{hspace} params+:expression {{hspace} (','|';'|'x'|'×') {hspace} params+:expression}} {hspace}')'
     ;

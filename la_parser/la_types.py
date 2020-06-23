@@ -12,6 +12,7 @@ class VarTypeEnum(Enum):
     #
     INTEGER = 6
     REAL = 7
+    FUNCTION = 8
 
 
 class LaVarType(object):
@@ -45,6 +46,19 @@ class LaVarType(object):
 
     def is_vector(self):
         return self.var_type == VarTypeEnum.VECTOR
+
+    def is_same_type(self, other):
+        same = False
+        if self.var_type == other.var_type:
+            if self.var_type == VarTypeEnum.SEQUENCE:
+                same = self.element_type.is_same_type(other.element_type.is_same_type)
+            elif self.var_type == VarTypeEnum.MATRIX:
+                same = self.rows == other.rows and self.cols == other.cols
+            elif self.var_type == VarTypeEnum.VECTOR:
+                same = self.rows == other.rows
+            else:
+                same = True
+        return same
 
 
 class SequenceType(LaVarType):
@@ -85,6 +99,13 @@ class SetType(LaVarType):
         self.int_list = int_list     # whether the element is real number or integer
 
 
+class FunctionType(LaVarType):
+    def __init__(self, desc=None, symbol=None, params=[], ret=None):
+        LaVarType.__init__(self, VarTypeEnum.FUNCTION, desc, symbol)
+        self.params = params
+        self.ret = ret
+
+
 class SummationAttrs(object):
     def __init__(self, subs=None, var_list=None):
         super().__init__()
@@ -93,11 +114,12 @@ class SummationAttrs(object):
 
 
 class NodeInfo(object):
-    def __init__(self, la_type=None, content=None, symbols=set()):
+    def __init__(self, la_type=None, content=None, symbols=set(), ir=None):
         super().__init__()
         self.la_type = la_type
         self.content = content
         self.symbols = symbols  # symbols covered by the node
+        self.ir = ir
 
 
 class CodeNodeInfo(object):
