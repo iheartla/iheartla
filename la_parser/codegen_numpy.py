@@ -4,7 +4,7 @@ from la_parser.type_walker import *
 
 class CodeGenNumpy(CodeGen):
     def __init__(self):
-        super().__init__()
+        super().__init__(ParserTypeEnum.NUMPY)
         self.pre_str = '''import numpy as np\nimport scipy\nfrom scipy import sparse\n\n\n'''
         self.post_str = ''''''
 

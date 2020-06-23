@@ -38,6 +38,7 @@ class LaTextControl(bc.BaseTextControl):
         while start_pos < end_pos:
             self.StartStyling(start_pos)
             char = self.GetTextRange(start_pos, start_pos+1)
+            style = self.STC_STYLE_LA_DEFAULT
             if char == '`':
                 # identifier with description
                 self.SetStyling(1, self.STC_STYLE_LA_ESCAPE_STR)
@@ -58,7 +59,6 @@ class LaTextControl(bc.BaseTextControl):
                     self.SetStyling(start_pos-line_pos, self.STC_STYLE_LA_ESCAPE_PARAMETER)
                     self.StartStyling(start_pos)
             else:
-                style = self.STC_STYLE_LA_DEFAULT
                 if char.isnumeric():
                     # numbers
                     style = self.STC_STYLE_LA_NUMBER

@@ -6,6 +6,17 @@ from la_tools.la_visualizer import LaVisualizer
 from la_parser.ir import *
 
 
+class ParserTypeEnum(Enum):
+    LATEX = 1
+    NUMPY = 2
+    EIGEN = 3
+    MATLAB = 4
+    JULIA = 5
+    PYTORCH = 6
+    ARMADILLO = 7
+    TENSORFLOW = 8
+
+
 class TypeInferenceEnum(Enum):
     INF_ADD = 0
     INF_SUB = 1

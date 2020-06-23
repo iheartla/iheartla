@@ -4,7 +4,7 @@ import unicodedata
 
 
 class IRVisitor(object):
-    def __init__(self):
+    def __init__(self, parse_type=None):
         super().__init__()
         self.pre_str = ''
         self.post_str = ''
@@ -17,6 +17,7 @@ class IRVisitor(object):
         self.ids_dict = {}  # identifiers with subscripts
         self.ret_symbol = None
         self.content = ''
+        self.parse_type = parse_type
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
 
     def print_symbols(self):

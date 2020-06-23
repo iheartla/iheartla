@@ -1,9 +1,10 @@
 from la_parser.codegen import *
+from la_parser.type_walker import *
 
 
 class CodeGenLatex(CodeGen):
     def __init__(self):
-        super().__init__()
+        super().__init__(ParserTypeEnum.LATEX)
         self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{ctex}\n\\begin{document}\n\\[\n'''
         self.post_str = '''\n\end{document}'''
 

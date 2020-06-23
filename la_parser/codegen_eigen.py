@@ -4,7 +4,7 @@ from la_parser.type_walker import *
 
 class CodeGenEigen(CodeGen):
     def __init__(self):
-        super().__init__()
+        super().__init__(ParserTypeEnum.EIGEN)
         self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n\n'''
         self.post_str = ''''''
         self.ret = 'ret'

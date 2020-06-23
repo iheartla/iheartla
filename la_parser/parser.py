@@ -18,10 +18,6 @@ from tatsu.exceptions import (
     OptionSucceeded
 )
 from enum import Enum
-from la_parser.base_walker import ParserTypeEnum
-from la_parser.latex_walker import LatexWalker
-from la_parser.numpy_walker import NumpyWalker
-from la_parser.eigen_walker import EigenWalker
 from la_parser.codegen_numpy import CodeGenNumpy
 from la_parser.codegen_eigen import CodeGenEigen
 from la_parser.codegen_latex import CodeGenLatex
