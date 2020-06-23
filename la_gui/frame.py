@@ -151,7 +151,7 @@ E: { ℤ × ℤ }''')
         self.Close(True)
 
     def OnKeyEnter(self, e):
-        print('Start compilingr')
+        print('Start compiling')
         self.OnTranslate(e)
 
     def OnClickNumpy(self, e):

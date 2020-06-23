@@ -1,5 +1,6 @@
 from la_parser.ir import *
 from la_tools.la_logger import *
+import unicodedata
 
 
 class IRVisitor(object):
@@ -237,6 +238,27 @@ class IRVisitor(object):
             op = '>='
         return op
 
+    def convert_unicode(self, name):
+        new_list = []
+        pre_unicode = False
+        for e in name:
+            if e.isalnum() or e is '_':
+                if pre_unicode:
+                    new_list.append('_')
+                    pre_unicode = False
+                new_list.append(e)
+            elif e.isspace():
+                new_list.append('_')
+            else:
+                try:
+                    if not pre_unicode:
+                        new_list.append('_')
+                    new_list.append(unicodedata.name(e).lower().replace(' ', '_'))
+                    pre_unicode = True
+                except KeyError:
+                    continue
+        return ''.join(new_list)
+
     def trim_content(self, content):
         # convert special string in identifiers
         res = content
@@ -248,9 +270,7 @@ class IRVisitor(object):
         for special in ids_list:
             if '`' not in special:
                 continue
-            new_str = ''.join(e for e in special if e.isalnum() or e is '_')
-            if new_str is '' or new_str[0].isnumeric():
-                new_str = '_' + new_str
+            new_str = self.convert_unicode(special)
             if new_str is not special:
                 while new_str in names_dict or new_str in self.symtable.keys() or self.is_keyword(new_str):
                     new_str = '_' + new_str

@@ -4,7 +4,7 @@ from la_parser.codegen import *
 class CodeGenLatex(CodeGen):
     def __init__(self):
         super().__init__()
-        self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\begin{document}\n\\[\n'''
+        self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{ctex}\n\\begin{document}\n\\[\n'''
         self.post_str = '''\n\end{document}'''
 
     def visit_id(self, node, **kwargs):
@@ -56,7 +56,12 @@ class CodeGenLatex(CodeGen):
         if node.value:
             value = node.value
         else:
-            value = '{}^{\\backprime}' + node.id + '{}^{\\backprime}'
+            special_list = ['_', '&', '^', '%', '$', '#', '{', '}']
+            text = node.id
+            text = text.replace('\\', '\\textbackslash{}')
+            for special in special_list:
+                text = text.replace(special, '\\{}'.format(special))
+            value = "\\textit{{{}}}".format(text)
         return value
 
     def visit_start(self, node, **kwargs):
