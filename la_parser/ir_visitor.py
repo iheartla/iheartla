@@ -240,9 +240,12 @@ class IRVisitor(object):
         return op
 
     def convert_unicode(self, name):
+        if '`' not in name:
+            return name
+        content = name.replace('`', '')
         new_list = []
         pre_unicode = False
-        for e in name:
+        for e in content:
             if e.isalnum() or e is '_':
                 if pre_unicode:
                     new_list.append('_')

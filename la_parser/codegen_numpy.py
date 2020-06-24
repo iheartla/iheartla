@@ -156,13 +156,13 @@ class CodeGenNumpy(CodeGen):
         content += stats_content
         content += '    return ' + self.ret_symbol
         content += '\n'
-        # convert special string in identifiers
-        content = self.trim_content(content)
         # test
         test_content.append('    return {}'.format(', '.join(self.parameters)))
         main_content.append("    func_value = {}({})".format(func_name, ', '.join(self.parameters)))
         main_content.append('    print("func_value: ", func_value)')
         content += '\n\n' + '\n'.join(test_content) + '\n\n\n' + '\n'.join(main_content)
+        # convert special string in identifiers
+        content = self.trim_content(content)
         return content
 
     def visit_WhereConditions(self, node, **kwargs):

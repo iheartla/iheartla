@@ -258,8 +258,6 @@ class CodeGenEigen(CodeGen):
         content += stats_content
         content += '    return ' + self.ret_symbol + ';'
         content += '\n}\n'
-        # convert special string in identifiers
-        content = self.trim_content(content)
         # test
         # test_content.append('    return {}'.format(', '.join(self.parameters)))
         test_content.append('}')
@@ -275,6 +273,8 @@ class CodeGenEigen(CodeGen):
         main_content.append('    return 0;')
         main_content.append('}')
         content += '\n\n' + '\n'.join(test_content) + '\n\n\n' + '\n'.join(main_content)
+        # convert special string in identifiers
+        content = self.trim_content(content)
         return content
 
     def visit_WhereConditions(self, node, **kwargs):

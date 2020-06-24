@@ -8,10 +8,24 @@ class CodeGenLatex(CodeGen):
         self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{ctex}\n\\begin{document}\n\\[\n'''
         self.post_str = '''\n\end{document}'''
 
+    def convert_unicode(self, name):
+        if '`' not in name:
+            return name
+        text = name.replace('`', '')
+        special_list = ['_', '&', '^', '%', '$', '#', '{', '}']
+        text = text.replace('\\', '\\textbackslash{}')
+        for special in special_list:
+            text = text.replace(special, '\\{}'.format(special))
+        value = "\\textit{{{}}}".format(text)
+        return value
+
     def visit_id(self, node, **kwargs):
         if node.contain_subscript():
-            return node.main_id + '_{' + ','.join(node.subs) + '}'
-        return node.get_name()
+            subs_list = []
+            for subs in node.subs:
+                subs_list.append(self.convert_unicode(subs))
+            return self.convert_unicode(node.main_id) + '_{' + ','.join(subs_list) + '}'
+        return self.convert_unicode(node.get_name())
 
     def visit_MatrixVdots(self, node, **kwargs):
         return "\\vdots"
