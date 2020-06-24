@@ -33,7 +33,7 @@ where_conditions::WhereConditions
     ;
 
 where_condition::WhereCondition
-    = id:identifier {hspace} ':' {hspace} type:(function_type|la_type) { {hspace} ':' {hspace} desc:description}
+    = id:identifier {hspace} ':' {hspace} type:la_type { {hspace} ':' {hspace} desc:description}
     ;
 
 matrix_type::MatrixType
@@ -65,14 +65,22 @@ set_type::SetType
     ;
 
 la_type
-    = matrix_type
+    =
+    | function_type
+    | matrix_type
     | vector_type
     | set_type
     | scalar_type
     ;
 
+params_type
+    = matrix_type
+    | vector_type
+    | scalar_type
+    ;
+
 function_type::FunctionType
-    = {params+:la_type {{hspace} ('x'|'×'|','|';') {hspace} params+:la_type} {hspace}} ('→'|'->') {hspace} ret:la_type
+    = {params+:params_type {{hspace} ('x'|'×'|','|';') {hspace} params+:params_type}} {hspace} ('→'|'->') {hspace} ret:params_type
     ;
 
 expression::Expression

@@ -545,7 +545,8 @@ class TypeWalker(NodeWalker):
             node_info.ir = ir_node
             return node_info
         else:
-            return self.make_mul_info(name_info, self.walk(node.param[0], **kwargs))
+            assert len(node.params) == 1, "not a function"
+            return self.make_mul_info(name_info, self.walk(node.params[0], **kwargs))
 
     def walk_IfCondition(self, node, **kwargs):
         ir_node = IfNode()

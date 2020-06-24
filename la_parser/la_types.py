@@ -58,6 +58,10 @@ class LaVarType(object):
                 same = self.rows == other.rows
             else:
                 same = True
+        else:
+            if self.var_type == VarTypeEnum.SCALAR or self.var_type == VarTypeEnum.INTEGER or self.var_type == VarTypeEnum.REAL:
+                if other.var_type == VarTypeEnum.SCALAR or other.var_type == VarTypeEnum.INTEGER or other.var_type == VarTypeEnum.REAL:
+                    same = True
         return same
 
 
