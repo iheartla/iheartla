@@ -5,8 +5,7 @@ from la_parser.type_walker import *
 class CodeGenLatex(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.LATEX)
-        self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n
-        \\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{ctex}\n\\setmainfont{Linux Libertine O}\n\\begin{document}\n\\[\n'''
+        self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{ctex}\n\\setmainfont{Linux Libertine O}\n\\begin{document}\n\\[\n'''
         self.post_str = '''\n\end{document}'''
 
     def convert_unicode(self, name):
@@ -160,7 +159,11 @@ class CodeGenLatex(CodeGen):
             for param in node.params:
                 params.append(self.visit(param, **kwargs))
         ret = self.visit(node.ret, **kwargs)
-        return ', '.join(params) + '\\rightarrow ' + ret
+        if len(params) == 0:
+            params_str = '\\varnothing'
+        else:
+            params_str = ', '.join(params)
+        return params_str + '\\rightarrow ' + ret
 
     def visit_assignment(self, node, **kwargs):
         return self.visit(node.left, **kwargs) + " = " + self.visit(node.right, **kwargs)
