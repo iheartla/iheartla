@@ -71,13 +71,13 @@ class CodeGenEigen(CodeGen):
                 rand_test = 'Eigen::MatrixXi::Random({}, {});'.format(la_type.rows, la_type.cols)
             else:
                 rand_test = 'Eigen::MatrixXd::Random({}, {});'.format(la_type.rows, la_type.cols)
-        elif self.symtable[parameter].var_type == VarTypeEnum.VECTOR:
+        elif la_type.var_type == VarTypeEnum.VECTOR:
             element_type = la_type.element_type
             if isinstance(element_type, LaVarType) and element_type.var_type == VarTypeEnum.INTEGER:
                 rand_test = 'Eigen::VectorXi::Random({});'.format(la_type.rows)
             else:
                 rand_test = 'Eigen::VectorXd::Random({});'.format(la_type.rows)
-        elif self.symtable[parameter].var_type == VarTypeEnum.SCALAR:
+        elif la_type.var_type == VarTypeEnum.SCALAR or la_type.var_type == VarTypeEnum.REAL or la_type.var_type == VarTypeEnum.INTEGER:
             rand_test = 'rand() % {};'.format(rand_int_max)
         return rand_test
 

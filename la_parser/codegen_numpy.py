@@ -17,13 +17,13 @@ class CodeGenNumpy(CodeGen):
                 rand_test = 'np.random.randint({}, size=({}, {}))'.format(rand_int_max, la_type.rows, la_type.cols)
             else:
                 rand_test = 'np.random.randn({}, {})'.format(la_type.rows, la_type.cols)
-        elif self.symtable[parameter].var_type == VarTypeEnum.VECTOR:
+        elif la_type.var_type == VarTypeEnum.VECTOR:
             element_type = la_type.element_type
             if isinstance(element_type, LaVarType) and element_type.var_type == VarTypeEnum.INTEGER:
                 rand_test = 'np.random.randint({}, size=({}))'.format(rand_int_max, la_type.rows)
             else:
                 rand_test = 'np.random.randn({})'.format(la_type.rows)
-        elif self.symtable[parameter].var_type == VarTypeEnum.SCALAR:
+        elif la_type.var_type == VarTypeEnum.SCALAR or la_type.var_type == VarTypeEnum.REAL or la_type.var_type == VarTypeEnum.INTEGER:
             rand_test = 'np.random.randn()'
         return rand_test
 
@@ -105,7 +105,7 @@ class CodeGenNumpy(CodeGen):
                 else:
                     type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
                     test_content.append('    {} = np.random.randn({})'.format(parameter, self.symtable[parameter].rows))
-                type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].rows))
+                type_checks.append('    assert {}.shape == ({}, 1)'.format(parameter, self.symtable[parameter].rows))
             elif self.symtable[parameter].var_type == VarTypeEnum.SCALAR:
                 type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
                 test_content.append('    {} = np.random.randn()'.format(parameter))
