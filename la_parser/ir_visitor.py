@@ -275,6 +275,7 @@ class IRVisitor(object):
             if '`' not in special:
                 continue
             new_str = self.convert_unicode(special)
+            new_str = new_str.replace('-', '_')
             if new_str is not special:
                 while new_str in names_dict or new_str in self.symtable.keys() or self.is_keyword(new_str):
                     new_str = '_' + new_str
