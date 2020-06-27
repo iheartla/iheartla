@@ -25,6 +25,11 @@ class LaVisualizer(object):
                 self.tags[cur_node] = self.index
                 self.ps.node(name=str(self.index), label=cur_name)
                 self.index += 1
+            if isinstance(cur_node.ast, str):  # no annotation
+                self.ps.node(name=str(self.index), label=cur_node.ast)
+                self.ps.edge(str(cur_index), str(self.index))
+                self.index += 1
+                continue
             for k, v in cur_node.ast.items():
                 if k != "parseinfo":
                     children = getattr(cur_node, k)
