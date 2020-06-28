@@ -55,8 +55,8 @@ class CodeGenLatex(CodeGen):
         elif node.s:
             return self.visit(node.s, **kwargs)
 
-    def visit_number(self, node, **kwargs):
-        return self.visit(node.value, **kwargs)
+    def visit_double(self, node):
+        return str(node.value)
 
     def visit_integer(self, node):
         return str(node.value)

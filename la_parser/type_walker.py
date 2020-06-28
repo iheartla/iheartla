@@ -759,6 +759,35 @@ class TypeWalker(NodeWalker):
         node_info.ir = ir_node
         return node_info
 
+    def walk_Double(self, node, **kwargs):
+        if node.f:
+            node_value = self.walk(node.f, **kwargs)
+        else:
+            int_info = self.walk(node.i, **kwargs)
+            node_value = "{}{}".format(int_info.ir.value, self.walk(node.exp, **kwargs))
+        node_info = NodeInfo(LaVarType(VarTypeEnum.SCALAR), content=node_value)
+        #
+        ir_node = DoubleNode()
+        ir_node.value = node_value
+        ir_node.la_type = node_info.la_type
+        node_info.ir = ir_node
+        return node_info
+
+    def walk_Mantissa(self, node, **kwargs):
+        content = ''.join(node.d) + '.'
+        if node.f:
+            content += ''.join(node.f)
+        return content
+
+    def walk_Exponent(self, node, **kwargs):
+        return node.exp + ''.join(node.pow)
+
+    def walk_Float(self, node, **kwargs):
+        content = self.walk(node.m, **kwargs)
+        if node.e:
+            content += self.walk(node.e, **kwargs)
+        return content
+
     def walk_SparseMatrix(self, node, **kwargs):
         ir_node = SparseMatrixNode()
         if LHS in kwargs:

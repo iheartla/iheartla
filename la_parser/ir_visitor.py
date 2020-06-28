@@ -56,7 +56,7 @@ class IRVisitor(object):
         type_func = {
             # base
             IRNodeType.Id: "visit_id",
-            IRNodeType.Number: "visit_number",
+            IRNodeType.Double: "visit_double",
             IRNodeType.Integer: "visit_integer",
             IRNodeType.Factor: "visit_factor",
             IRNodeType.Expression: "visit_expression",
@@ -200,7 +200,7 @@ class IRVisitor(object):
     def visit_factor(self, node, **kwargs):
         pass
 
-    def visit_number(self, node, **kwargs):
+    def visit_double(self, node, **kwargs):
         pass
 
     def visit_integer(self, node, **kwargs):

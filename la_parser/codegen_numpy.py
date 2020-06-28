@@ -664,8 +664,9 @@ class CodeGenNumpy(CodeGen):
         elif node.s:
             return self.visit(node.s, **kwargs)
 
-    def visit_number(self, node, **kwargs):
-        return self.visit(node.value, **kwargs)
+    def visit_double(self, node, **kwargs):
+        content = str(node.value)
+        return CodeNodeInfo(content)
 
     def visit_integer(self, node, **kwargs):
         content = str(node.value)

@@ -6,7 +6,7 @@ class IRNodeType(Enum):
     INVALID = -1
     # base
     Id = 0
-    Number = 1
+    Double = 1
     Integer = 2
     Factor = 3
     Expression = 4
@@ -419,9 +419,9 @@ class FactorNode(ExprNode):
         self.s = None
 
 
-class NumberNode(ExprNode):
+class DoubleNode(ExprNode):
     def __init__(self):
-        super().__init__(IRNodeType.Number)
+        super().__init__(IRNodeType.Double)
         self.value = None
 
 

@@ -9,25 +9,25 @@ integer::Integer
     value:{digit}+
     ;
 
-exponent
-    = /[DdEe][+-]?/ {digit}+
+exponent::Exponent
+    = exp:/[DdEe][+-]?/ pow:{digit}+
     ;
 
-mantissa
-    = ({digit}* '.' {digit}+) | ({digit}+ '.')
+mantissa::Mantissa
+    = (d:{digit}* '.' f:{digit}+) | (d:{digit}+ '.')
     ;
 
-floating_point
-    = mantissa [exponent]
+floating_point::Float
+    = m:mantissa e:[exponent]
     ;
 
-double
-    = integer exponent
-    | floating_point
+double::Double
+    = i:integer exp:exponent
+    | f:floating_point
     ;
 
-number::Number
+number
     =
-    | value:double
-    | value:integer
+    | double
+    | integer
     ;
