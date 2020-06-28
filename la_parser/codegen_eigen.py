@@ -26,58 +26,59 @@ class CodeGenEigen(CodeGen):
 
     def get_ctype(self, la_type):
         type_str = ""
-        if la_type.var_type == VarTypeEnum.SEQUENCE:
+        if la_type.is_sequence():
             type_str = "std::vector<{}>".format(self.get_ctype(la_type.element_type))
-        elif la_type.var_type == VarTypeEnum.MATRIX:
+        elif la_type.is_matrix():
             if la_type.sparse:
                 type_str = "Eigen::SparseMatrix<double>"
             else:
                 if la_type.is_dim_constant():
-                    if la_type.element_type is not None and la_type.element_type.var_type == VarTypeEnum.INTEGER:
+                    if la_type.element_type is not None and la_type.is_scalar() and la_type.is_int:
                         type_str = "Eigen::Matrix<int, {}, {}>".format(la_type.rows, la_type.cols)
                     else:
                         type_str = "Eigen::Matrix<double, {}, {}>".format(la_type.rows, la_type.cols)
                 else:
-                    if la_type.element_type is not None and la_type.element_type.var_type == VarTypeEnum.INTEGER:
+                    if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::MatrixXi"
                     else:
                         type_str = "Eigen::MatrixXd"
-        elif la_type.var_type == VarTypeEnum.VECTOR:
+        elif la_type.is_vector():
             if la_type.is_dim_constant():
-                if la_type.element_type is not None and la_type.element_type.var_type == VarTypeEnum.INTEGER:
+                if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                     type_str = "Eigen::Matrix<int, {}, 1>".format(la_type.rows)
                 else:
                     type_str = "Eigen::Matrix<double, {}, 1>".format(la_type.rows)
             else:
-                if la_type.element_type is not None and la_type.element_type.var_type == VarTypeEnum.INTEGER:
+                if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                     type_str = "Eigen::VectorXi"
                 else:
                     type_str = "Eigen::VectorXd"
-        elif la_type.var_type == VarTypeEnum.SCALAR or la_type.var_type == VarTypeEnum.REAL:
-            type_str = "double"
-        elif la_type.var_type == VarTypeEnum.INTEGER:
-            type_str = "int"
-        elif la_type.var_type == VarTypeEnum.SET:
+        elif la_type.is_scalar():
+            if la_type.is_scalar() and la_type.is_int:
+                type_str = "int"
+            else:
+                type_str = "double"
+        elif la_type.is_set():
             type_str = "std::set<{} >".format(self.get_set_item_str(la_type))
-        elif la_type.var_type == VarTypeEnum.FUNCTION:
+        elif la_type.is_function():
             type_str = "std::function<{}({})>".format(self.get_ctype(la_type.ret), self.get_func_params_str(la_type))
         return type_str
 
     def get_rand_test_str(self, la_type, rand_int_max):
         rand_test = ''
-        if la_type.var_type == VarTypeEnum.MATRIX:
+        if la_type.is_matrix():
             element_type = la_type.element_type
-            if isinstance(element_type, LaVarType) and element_type.var_type == VarTypeEnum.INTEGER:
+            if isinstance(element_type, LaVarType) and element_type.is_scalar() and element_type.is_int:
                 rand_test = 'Eigen::MatrixXi::Random({}, {});'.format(la_type.rows, la_type.cols)
             else:
                 rand_test = 'Eigen::MatrixXd::Random({}, {});'.format(la_type.rows, la_type.cols)
-        elif la_type.var_type == VarTypeEnum.VECTOR:
+        elif la_type.is_vector():
             element_type = la_type.element_type
-            if isinstance(element_type, LaVarType) and element_type.var_type == VarTypeEnum.INTEGER:
+            if isinstance(element_type, LaVarType) and element_type.is_scalar() and element_type.is_int:
                 rand_test = 'Eigen::VectorXi::Random({});'.format(la_type.rows)
             else:
                 rand_test = 'Eigen::VectorXd::Random({});'.format(la_type.rows)
-        elif la_type.var_type == VarTypeEnum.SCALAR or la_type.var_type == VarTypeEnum.REAL or la_type.var_type == VarTypeEnum.INTEGER:
+        elif la_type.is_scalar():
             rand_test = 'rand() % {};'.format(rand_int_max)
         return rand_test
 
@@ -104,14 +105,14 @@ class CodeGenEigen(CodeGen):
         if self.dim_dict:
             for key, value in self.dim_dict.items():
                 test_content.append("    const int {} = rand()%{};".format(key, rand_int_max))
-                if self.symtable[value[0]].var_type == VarTypeEnum.SEQUENCE:
+                if self.symtable[value[0]].is_sequence():
                     dim_content += "    const long {} = {}.size();\n".format(key, value[0])
-                elif self.symtable[value[0]].var_type == VarTypeEnum.MATRIX:
+                elif self.symtable[value[0]].is_matrix():
                     if value[1] == 0:
                         dim_content += "    const long {} = {}.rows();\n".format(key, value[0])
                     else:
                         dim_content += "    const long {} = {}.cols();\n".format(key, value[0])
-                elif self.symtable[value[0]].var_type == VarTypeEnum.VECTOR:
+                elif self.symtable[value[0]].is_vector():
                     dim_content += "    const long {} = {}.size();\n".format(key, value[0])
         par_des_list = []
         test_par_list = []
@@ -122,16 +123,16 @@ class CodeGenEigen(CodeGen):
             if self.symtable[parameter].desc:
                 show_doc = True
                 doc.append('@param {} {}'.format(parameter, self.symtable[parameter].desc))
-            if self.symtable[parameter].var_type == VarTypeEnum.SEQUENCE:
+            if self.symtable[parameter].is_sequence():
                 ele_type = self.symtable[parameter].element_type
                 data_type = ele_type.element_type
                 integer_type = False
                 test_content.append('    {}.resize({});'.format(parameter, self.symtable[parameter].size))
                 test_content.append('    for(int i=0; i<{}; i++){{'.format(self.symtable[parameter].size))
                 if isinstance(data_type, LaVarType):
-                    if data_type.var_type == VarTypeEnum.INTEGER:
+                    if data_type.is_scalar() and data_type.is_int:
                         integer_type = True
-                if ele_type.var_type == VarTypeEnum.MATRIX:
+                if ele_type.is_matrix():
                     type_checks.append(
                         '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
                     if not ele_type.is_dim_constant():
@@ -147,7 +148,7 @@ class CodeGenEigen(CodeGen):
                         test_content.append(
                             '        {}[i] = Eigen::MatrixXd::Random({}, {});'.format(parameter, ele_type.rows,
                                                                                       ele_type.cols))
-                elif ele_type.var_type == VarTypeEnum.VECTOR:
+                elif ele_type.is_vector():
                     if not ele_type.is_dim_constant():
                         type_checks.append(
                             '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
@@ -160,18 +161,18 @@ class CodeGenEigen(CodeGen):
                     else:
                         test_content.append(
                             '        {}[i] = Eigen::VectorXd::Random({});'.format(parameter, ele_type.rows))
-                elif ele_type.var_type == VarTypeEnum.SCALAR:
+                elif ele_type.is_scalar():
                     type_checks.append(
                         '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
                 test_content.append('    }')
-            elif self.symtable[parameter].var_type == VarTypeEnum.MATRIX:
+            elif self.symtable[parameter].is_matrix():
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
-                    if element_type.var_type == VarTypeEnum.INTEGER:
+                    if element_type.is_scalar() and element_type.is_int:
                         test_content.append(
                             '    {} = Eigen::MatrixXi::Random({}, {});'.format(parameter, self.symtable[parameter].rows,
                                                                                self.symtable[parameter].cols))
-                    elif element_type.var_type == VarTypeEnum.REAL:
+                    else:
                         test_content.append(
                             '    {} = Eigen::MatrixXd::Random({}, {});'.format(parameter, self.symtable[parameter].rows,
                                                                                self.symtable[parameter].cols))
@@ -184,13 +185,13 @@ class CodeGenEigen(CodeGen):
                         '    assert( {}.rows() == {} );'.format(parameter, self.symtable[parameter].rows))
                     type_checks.append(
                         '    assert( {}.cols() == {} );'.format(parameter, self.symtable[parameter].cols))
-            elif self.symtable[parameter].var_type == VarTypeEnum.VECTOR:
+            elif self.symtable[parameter].is_vector():
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
-                    if element_type.var_type == VarTypeEnum.INTEGER:
+                    if element_type.is_scalar() and element_type.is_int:
                         test_content.append(
                             '    {} = Eigen::VectorXi::Random({});'.format(parameter, self.symtable[parameter].rows))
-                    elif element_type.var_type == VarTypeEnum.REAL:
+                    else:
                         test_content.append(
                             '    {} = Eigen::VectorXd::Random({});'.format(parameter, self.symtable[parameter].rows))
                 else:
@@ -199,9 +200,9 @@ class CodeGenEigen(CodeGen):
                 if not self.symtable[parameter].is_dim_constant():
                     type_checks.append(
                         '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].rows))
-            elif self.symtable[parameter].var_type == VarTypeEnum.SCALAR:
+            elif self.symtable[parameter].is_scalar():
                 test_content.append('    {} = rand() % {};'.format(parameter, rand_int_max))
-            elif self.symtable[parameter].var_type == VarTypeEnum.SET:
+            elif self.symtable[parameter].is_set():
                 test_content.append('    const int {}_0 = rand()%10;'.format(parameter, rand_int_max))
                 test_content.append('    for(int i=0; i<{}_0; i++){{'.format(parameter))
                 gen_list = []
@@ -213,7 +214,7 @@ class CodeGenEigen(CodeGen):
                 test_content.append(
                     '        {}.insert(std::make_tuple('.format(parameter) + ', '.join(gen_list) + '));')
                 test_content.append('    }')
-            elif self.symtable[parameter].var_type == VarTypeEnum.FUNCTION:
+            elif self.symtable[parameter].is_function():
                 test_content.append('    {} = []({})->{}{{'.format(parameter, self.get_func_params_str(self.symtable[parameter]), self.get_ctype(self.symtable[parameter].ret)))
                 test_content.append('        return {}'.format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
                 test_content.append('    };')
@@ -315,21 +316,21 @@ class CodeGenEigen(CodeGen):
                 for var_sub in var_subs:
                     if sub == var_sub:
                         target_var.append(var_ids[0])
-        if self.symtable[assign_id].var_type == VarTypeEnum.MATRIX:
+        if self.symtable[assign_id].is_matrix():
             content.append(
                 "Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".format(assign_id, self.symtable[assign_id].rows,
                                                                                self.symtable[assign_id].cols))
-        elif self.symtable[assign_id].var_type == VarTypeEnum.VECTOR:
+        elif self.symtable[assign_id].is_vector():
             content.append(
                 "Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, 1);\n".format(assign_id, self.symtable[assign_id].rows))
-        elif self.symtable[assign_id].var_type == VarTypeEnum.SEQUENCE:
+        elif self.symtable[assign_id].is_sequence():
             ele_type = self.symtable[assign_id].element_type
             content.append(
                 "Eigen::MatrixXd {} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].size,
                                                                        ele_type.rows, ele_type.cols))
         else:
             content.append("double {} = 0;\n".format(assign_id))
-        if self.symtable[target_var[0]].var_type == VarTypeEnum.MATRIX:  # todo
+        if self.symtable[target_var[0]].is_matrix():  # todo
             content.append("for(int {}=0; {}<{}.rows(); {}++){{\n".format(sub, sub, target_var[0], sub))
         else:
             content.append("for(int {}=0; {}<{}.size(); {}++){{\n".format(sub, sub, target_var[0], sub))
@@ -372,9 +373,9 @@ class CodeGenEigen(CodeGen):
         value = value_info.content
         type_info = node.value
         content = ''
-        if type_info.la_type.var_type == VarTypeEnum.SCALAR:
+        if type_info.la_type.is_scalar():
             content = "abs({})".format(value)
-        elif type_info.la_type.var_type == VarTypeEnum.VECTOR:
+        elif type_info.la_type.is_vector():
             if node.norm_type == NormType.NormInteger:
                 content = "{}.lpNorm<{}>()".format(value, node.sub)
             elif node.norm_type == NormType.NormMax:
@@ -382,7 +383,7 @@ class CodeGenEigen(CodeGen):
             elif node.norm_type == NormType.NormIdentifier:
                 sub_info = self.visit(node.sub, **kwargs)
                 content = "sqrt(({}).transpose()*{}*({}))".format(value, sub_info.content, value)
-        elif type_info.la_type.var_type == VarTypeEnum.MATRIX:
+        elif type_info.la_type.is_matrix():
             if node.norm_type == NormType.NormFrobenius:
                 content = "({}).norm()".format(value)
             elif node.norm_type == NormType.NormNuclear:
@@ -654,8 +655,8 @@ class CodeGenEigen(CodeGen):
         l_info = node.left
         r_info = node.right
         mul = ' * '
-        # if l_info.la_type.var_type == VarTypeEnum.MATRIX or l_info.la_type.var_type == VarTypeEnum.VECTOR:
-        #     if r_info.la_type.var_type == VarTypeEnum.MATRIX or r_info.la_type.var_type == VarTypeEnum.VECTOR:
+        # if l_info.la_type.is_matrix() or l_info.la_type.is_vector():
+        #     if r_info.la_type.is_matrix() or r_info.la_type.is_vector():
         #         mul = ' @ '
         left_info.content = left_info.content + mul + right_info.content
         left_info.pre_list = self.merge_pre_list(left_info, right_info)
@@ -693,7 +694,7 @@ class CodeGenEigen(CodeGen):
             if len(left_subs) == 2:  # matrix only
                 sequence = left_ids[0]  # y left_subs[0]
                 sub_strs = left_subs[0] + left_subs[1]
-                if self.symtable[sequence].var_type == VarTypeEnum.MATRIX and self.symtable[sequence].sparse:
+                if self.symtable[sequence].is_matrix() and self.symtable[sequence].sparse:
                     # sparse mat assign
                     # right_exp += '    ' + sequence + ' = ' + right_info.content
                     # content += right_info.content
@@ -726,7 +727,7 @@ class CodeGenEigen(CodeGen):
                             right_info.content = right_info.content.replace(right_var, "{}({}, {})".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
                     right_exp += "    {}({}, {}) = {};".format(self.get_main_id(left_id), left_subs[0], left_subs[1],
                                                                right_info.content)
-                    if self.symtable[sequence].var_type == VarTypeEnum.MATRIX:
+                    if self.symtable[sequence].is_matrix():
                         if node.op == '=':
                             # declare
                             content += "    Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".format(sequence,
@@ -754,10 +755,10 @@ class CodeGenEigen(CodeGen):
 
                 right_exp += "    {}[{}] = {}".format(self.get_main_id(left_id), left_subs[0], right_info.content)
                 ele_type = self.symtable[sequence].element_type
-                if ele_type.var_type == VarTypeEnum.MATRIX:
+                if ele_type.is_matrix():
                     content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
                                                          self.symtable[sequence].size)
-                elif ele_type.var_type == VarTypeEnum.VECTOR:
+                elif ele_type.is_vector():
                     content += "    Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {})\n".format(sequence,
                                                                                                  self.symtable[
                                                                                                      sequence].size,

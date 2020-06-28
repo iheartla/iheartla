@@ -11,19 +11,19 @@ class CodeGenNumpy(CodeGen):
 
     def get_rand_test_str(self, la_type, rand_int_max):
         rand_test = ''
-        if la_type.var_type == VarTypeEnum.MATRIX:
+        if la_type.is_matrix():
             element_type = la_type.element_type
-            if isinstance(element_type, LaVarType) and element_type.var_type == VarTypeEnum.INTEGER:
+            if isinstance(element_type, LaVarType) and element_type.is_scalar() and element_type.is_int:
                 rand_test = 'np.random.randint({}, size=({}, {}))'.format(rand_int_max, la_type.rows, la_type.cols)
             else:
                 rand_test = 'np.random.randn({}, {})'.format(la_type.rows, la_type.cols)
-        elif la_type.var_type == VarTypeEnum.VECTOR:
+        elif la_type.is_vector():
             element_type = la_type.element_type
-            if isinstance(element_type, LaVarType) and element_type.var_type == VarTypeEnum.INTEGER:
+            if isinstance(element_type, LaVarType) and element_type.is_scalar() and element_type.is_int:
                 rand_test = 'np.random.randint({}, size=({}))'.format(rand_int_max, la_type.rows)
             else:
                 rand_test = 'np.random.randn({})'.format(la_type.rows)
-        elif la_type.var_type == VarTypeEnum.SCALAR or la_type.var_type == VarTypeEnum.REAL or la_type.var_type == VarTypeEnum.INTEGER:
+        elif la_type.is_scalar():
             rand_test = 'np.random.randn()'
         return rand_test
 
@@ -57,59 +57,59 @@ class CodeGenNumpy(CodeGen):
             if self.symtable[parameter].desc:
                 show_doc = True
                 doc.append('    :param :{} :{}'.format(parameter, self.symtable[parameter].desc))
-            if self.symtable[parameter].var_type == VarTypeEnum.SEQUENCE:
+            if self.symtable[parameter].is_sequence():
                 ele_type = self.symtable[parameter].element_type
                 data_type = ele_type.element_type
                 size_str = ""
-                if ele_type.var_type == VarTypeEnum.MATRIX:
+                if ele_type.is_matrix():
                     type_checks.append('    assert {}.shape == ({}, {}, {})'.format(parameter, self.symtable[parameter].size, ele_type.rows, ele_type.cols))
                     size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
-                elif ele_type.var_type == VarTypeEnum.VECTOR:
+                elif ele_type.is_vector():
                     type_checks.append('    assert {}.shape == ({}, {})'.format(parameter, self.symtable[parameter].size, ele_type.rows))
                     size_str = '{}, {}'.format(self.symtable[parameter].size, ele_type.rows)
-                elif ele_type.var_type == VarTypeEnum.SCALAR:
+                elif ele_type.is_scalar():
                     type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].size))
                     size_str = '{}'.format(self.symtable[parameter].size)
                 if isinstance(data_type, LaVarType):
-                    if data_type.var_type == VarTypeEnum.INTEGER:
+                    if data_type.is_scalar() and data_type.is_int:
                         type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
                         test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, size_str))
-                    elif data_type.var_type == VarTypeEnum.REAL:
+                    else:
                         type_declare.append('    {} = np.asarray({}, dtype=np.floating)'.format(parameter, parameter))
                         test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
                 else:
                     type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
                     test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
-            elif self.symtable[parameter].var_type == VarTypeEnum.MATRIX:
+            elif self.symtable[parameter].is_matrix():
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
-                    if element_type.var_type == VarTypeEnum.INTEGER:
+                    if element_type.is_scalar() and element_type.is_int:
                         type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
                         test_content.append('    {} = np.random.randint({}, size=({}, {}))'.format(parameter, rand_int_max, self.symtable[parameter].rows, self.symtable[parameter].cols))
-                    elif element_type.var_type == VarTypeEnum.REAL:
+                    else:
                         type_declare.append('    {} = np.asarray({}, dtype=np.floating)'.format(parameter, parameter))
                         test_content.append('    {} = np.random.randn({}, {})'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
                 else:
                     type_checks.append('    {} = np.asarray({})'.format(parameter, parameter))
                     test_content.append('    {} = np.random.randn({}, {})'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
                 type_checks.append('    assert {}.shape == ({}, {})'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
-            elif self.symtable[parameter].var_type == VarTypeEnum.VECTOR:
+            elif self.symtable[parameter].is_vector():
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
-                    if element_type.var_type == VarTypeEnum.INTEGER:
+                    if element_type.is_scalar() and element_type.is_int:
                         type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
                         test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, self.symtable[parameter].rows))
-                    elif element_type.var_type == VarTypeEnum.REAL:
+                    else:
                         type_declare.append('    {} = np.asarray({}, dtype=np.floating)'.format(parameter, parameter))
                         test_content.append('    {} = np.random.randn({})'.format(parameter, self.symtable[parameter].rows))
                 else:
                     type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
                     test_content.append('    {} = np.random.randn({})'.format(parameter, self.symtable[parameter].rows))
                 type_checks.append('    assert {}.shape == ({}, 1)'.format(parameter, self.symtable[parameter].rows))
-            elif self.symtable[parameter].var_type == VarTypeEnum.SCALAR:
+            elif self.symtable[parameter].is_scalar():
                 type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
                 test_content.append('    {} = np.random.randn()'.format(parameter))
-            elif self.symtable[parameter].var_type == VarTypeEnum.SET:
+            elif self.symtable[parameter].is_set():
                 type_checks.append('    assert isinstance({}, list) and len({}) > 0'.format(parameter, parameter))
                 type_checks.append('    assert len({}[0]) == {}'.format(parameter, self.symtable[parameter].size))
                 test_content.append('    {} = []'.format(parameter))
@@ -122,7 +122,7 @@ class CodeGenNumpy(CodeGen):
                     else:
                         gen_list.append('np.random.randn()')
                 test_content.append('        {}.append(('.format(parameter) + ', '.join(gen_list) + '))')
-            elif self.symtable[parameter].var_type == VarTypeEnum.FUNCTION:
+            elif self.symtable[parameter].is_function():
                 param_list = []
                 for index in range(len(self.symtable[parameter].params)):
                     param_list.append('p{}'.format(index))
@@ -204,11 +204,11 @@ class CodeGenNumpy(CodeGen):
                 for var_sub in var_subs:
                     if sub == var_sub:
                         target_var.append(var_ids[0])
-        if self.symtable[assign_id].var_type == VarTypeEnum.MATRIX:
+        if self.symtable[assign_id].is_matrix():
             content.append("{} = np.zeros(({}, {}))\n".format(assign_id, self.symtable[assign_id].rows, self.symtable[assign_id].cols))
-        elif self.symtable[assign_id].var_type == VarTypeEnum.VECTOR:
+        elif self.symtable[assign_id].is_vector():
             content.append("{} = np.zeros({})\n".format(assign_id, self.symtable[assign_id].rows))
-        elif self.symtable[assign_id].var_type == VarTypeEnum.SEQUENCE:
+        elif self.symtable[assign_id].is_sequence():
             ele_type = self.symtable[assign_id].element_type
             content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].size, ele_type.rows, ele_type.cols))
         else:
@@ -251,9 +251,9 @@ class CodeGenNumpy(CodeGen):
         value = value_info.content
         type_info = node.value
         content = ''
-        if type_info.la_type.var_type == VarTypeEnum.SCALAR:
+        if type_info.la_type.is_scalar():
             content = "np.absolute({})".format(value)
-        elif type_info.la_type.var_type == VarTypeEnum.VECTOR:
+        elif type_info.la_type.is_vector():
             if node.norm_type == NormType.NormInteger:
                 content = "numpy.linalg.norm({}, {})".format(value, node.sub)
             elif node.norm_type == NormType.NormMax:
@@ -261,7 +261,7 @@ class CodeGenNumpy(CodeGen):
             elif node.norm_type == NormType.NormIdentifier:
                 sub_info = self.visit(node.sub, **kwargs)
                 content = "scipy.linalg.sqrtm(({}).T*{}*({}))".format(value, sub_info.content, value)
-        elif type_info.la_type.var_type == VarTypeEnum.MATRIX:
+        elif type_info.la_type.is_matrix():
             if node.norm_type == NormType.NormFrobenius:
                 content = "numpy.linalg.norm({}, ‘fro’)".format(value)
             elif node.norm_type == NormType.NormNuclear:
@@ -502,8 +502,8 @@ class CodeGenNumpy(CodeGen):
         l_info = node.left
         r_info = node.right
         mul = ' * '
-        if l_info.la_type.var_type == VarTypeEnum.MATRIX or l_info.la_type.var_type == VarTypeEnum.VECTOR:
-            if r_info.la_type.var_type == VarTypeEnum.MATRIX or r_info.la_type.var_type == VarTypeEnum.VECTOR:
+        if l_info.la_type.is_matrix() or l_info.la_type.is_vector():
+            if r_info.la_type.is_matrix() or r_info.la_type.is_vector():
                 mul = ' @ '
         left_info.content = left_info.content + mul + right_info.content
         left_info.pre_list = self.merge_pre_list(left_info, right_info)
@@ -541,7 +541,7 @@ class CodeGenNumpy(CodeGen):
             if len(left_subs) == 2: # matrix only
                 sequence = left_ids[0]  # y left_subs[0]
                 sub_strs = left_subs[0] + left_subs[1]
-                if self.symtable[sequence].var_type == VarTypeEnum.MATRIX and self.symtable[sequence].sparse:
+                if self.symtable[sequence].is_matrix() and self.symtable[sequence].sparse:
                     # sparse mat assign
                     right_exp += '    ' + sequence + ' = ' + right_info.content
                     content += right_exp
@@ -560,7 +560,7 @@ class CodeGenNumpy(CodeGen):
                             var_ids = self.get_all_ids(right_var)
                             right_info.content = right_info.content.replace(right_var, "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
                     right_exp += "    {}[{}][{}] = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
-                    if self.symtable[sequence].var_type == VarTypeEnum.MATRIX:
+                    if self.symtable[sequence].is_matrix():
                         if node.op == '=':
                             # declare
                             content += "    {} = np.zeros(({}, {}))\n".format(sequence,
@@ -580,9 +580,9 @@ class CodeGenNumpy(CodeGen):
 
                 right_exp += "    {}[{}] = {}".format(self.get_main_id(left_id), left_subs[0], right_info.content)
                 ele_type = self.symtable[sequence].element_type
-                if ele_type.var_type == VarTypeEnum.MATRIX:
+                if ele_type.is_matrix():
                     content += "    {} = np.zeros(({}, {}, {}))\n".format(sequence, self.symtable[sequence].size, ele_type.rows, ele_type.cols)
-                elif ele_type.var_type == VarTypeEnum.VECTOR:
+                elif ele_type.is_vector():
                     content += "    {} = np.zeros(({}, {}))\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
                 else:
                     content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].size)

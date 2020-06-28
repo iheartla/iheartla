@@ -9,10 +9,7 @@ class VarTypeEnum(Enum):
     VECTOR = 3
     SET = 4
     SCALAR = 5
-    #
-    INTEGER = 6
-    REAL = 7
-    FUNCTION = 8
+    FUNCTION = 6
 
 
 class LaVarType(object):
@@ -47,6 +44,15 @@ class LaVarType(object):
     def is_vector(self):
         return self.var_type == VarTypeEnum.VECTOR
 
+    def is_scalar(self):
+        return self.var_type == VarTypeEnum.SCALAR
+
+    def is_set(self):
+        return self.var_type == VarTypeEnum.SET
+
+    def is_function(self):
+        return self.var_type == VarTypeEnum.FUNCTION
+
     def is_same_type(self, other):
         same = False
         if self.var_type == other.var_type:
@@ -58,10 +64,6 @@ class LaVarType(object):
                 same = self.rows == other.rows
             else:
                 same = True
-        else:
-            if self.var_type == VarTypeEnum.SCALAR or self.var_type == VarTypeEnum.INTEGER or self.var_type == VarTypeEnum.REAL:
-                if other.var_type == VarTypeEnum.SCALAR or other.var_type == VarTypeEnum.INTEGER or other.var_type == VarTypeEnum.REAL:
-                    same = True
         return same
 
 
@@ -101,6 +103,12 @@ class SetType(LaVarType):
         LaVarType.__init__(self, VarTypeEnum.SET, desc, element_type, symbol)
         self.size = size
         self.int_list = int_list     # whether the element is real number or integer
+
+
+class ScalarType(LaVarType):
+    def __init__(self, is_int=False, desc=None, element_type=None, symbol=None):
+        LaVarType.__init__(self, VarTypeEnum.SCALAR, desc, element_type, symbol)
+        self.is_int = is_int
 
 
 class FunctionType(LaVarType):

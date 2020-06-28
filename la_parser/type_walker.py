@@ -147,25 +147,25 @@ class TypeWalker(NodeWalker):
         type_node.la_type.desc = desc
         self.handle_identifier(id0, type_node.la_type)
         self.update_parameters(id0)
-        if type_node.la_type.var_type == VarTypeEnum.MATRIX:
+        if type_node.la_type.is_matrix():
             id1 = type_node.la_type.rows
             id2 = type_node.la_type.cols
             if isinstance(id1, str):
-                self.symtable[id1] = LaVarType(VarTypeEnum.INTEGER)
+                self.symtable[id1] = ScalarType(is_int=True)
                 if self.contain_subscript(id0):
                     self.dim_dict[id1] = [self.get_main_id(id0), 1]
                 else:
                     self.dim_dict[id1] = [self.get_main_id(id0), 0]
             if isinstance(id2, str):
-                self.symtable[id2] = LaVarType(VarTypeEnum.INTEGER)
+                self.symtable[id2] = ScalarType(is_int=True)
                 if self.contain_subscript(id0):
                     self.dim_dict[id2] = [self.get_main_id(id0), 2]
                 else:
                     self.dim_dict[id2] = [self.get_main_id(id0), 1]
-        elif type_node.la_type.var_type == VarTypeEnum.VECTOR:
+        elif type_node.la_type.is_vector():
             id1 = type_node.la_type.rows
             if isinstance(id1, str):
-                self.symtable[id1] = LaVarType(VarTypeEnum.INTEGER)
+                self.symtable[id1] = ScalarType(is_int=True)
                 self.dim_dict[id1] = [self.get_main_id(id0), 0]
         ir_node.type = type_node
         return ir_node
@@ -183,11 +183,11 @@ class TypeWalker(NodeWalker):
         if node.type:
             ir_node.type = node.type
             if node.type == 'ℝ':
-                element_type = LaVarType(VarTypeEnum.REAL)
+                element_type = ScalarType()
             elif node.type == 'ℤ':
-                element_type = LaVarType(VarTypeEnum.INTEGER)
+                element_type = ScalarType(is_int=True)
         else:
-            element_type = LaVarType(VarTypeEnum.REAL)
+            element_type = ScalarType()
         la_type = MatrixType(rows=id1, cols=id2, element_type=element_type)
         ir_node.la_type = la_type
         return ir_node
@@ -201,20 +201,20 @@ class TypeWalker(NodeWalker):
         if node.type:
             ir_node.type = node.type
             if node.type == 'ℝ':
-                element_type = LaVarType(VarTypeEnum.REAL)
+                element_type = ScalarType()
             elif node.type == 'ℤ':
-                element_type = LaVarType(VarTypeEnum.INTEGER)
+                element_type = ScalarType(is_int=True)
         else:
-            element_type = LaVarType(VarTypeEnum.REAL)
+            element_type = ScalarType()
         la_type = VectorType(rows=id1, element_type=element_type)
         ir_node.la_type = la_type
         return ir_node
 
     def walk_ScalarType(self, node, **kwargs):
         ir_node = ScalarTypeNode()
-        la_type = LaVarType(VarTypeEnum.SCALAR)
+        la_type = ScalarType()
         if node.z:
-            la_type = LaVarType(VarTypeEnum.INTEGER)
+            la_type = ScalarType(is_int=True)
             ir_node.is_int = True
         ir_node.la_type = la_type
         return ir_node
@@ -402,7 +402,7 @@ class TypeWalker(NodeWalker):
             if node.op != '=':
                 assert sequence in self.symtable, "lhs should exist"
             if len(left_subs) == 2: # matrix
-                if right_info.la_type is not None and right_info.la_type.var_type == VarTypeEnum.MATRIX:
+                if right_info.la_type is not None and right_info.la_type.is_matrix():
                     # sparse mat assign
                     if right_info.la_type.sparse:
                         self.symtable[sequence] = right_type
@@ -488,25 +488,25 @@ class TypeWalker(NodeWalker):
                     ir_node.sub = sub_type.ir
         else:
             # default
-            if ir_node.value.la_type.var_type == VarTypeEnum.MATRIX:
+            if ir_node.value.la_type.is_matrix():
                 ir_node.norm_type = NormType.NormFrobenius
             else:
                 ir_node.norm_type = NormType.NormInteger
             ir_node.sub = 2
         #
-        if ir_node.value.la_type.var_type == VarTypeEnum.SCALAR:
+        if ir_node.value.la_type.is_scalar():
             assert node.single is not None, "Scalar type has to use | rather than ||"
-        elif ir_node.value.la_type.var_type == VarTypeEnum.VECTOR:
+        elif ir_node.value.la_type.is_vector():
             assert node.single is None, "Vector type has to use || rather than |"
             assert ir_node.norm_type != NormType.NormFrobenius and ir_node.norm_type != NormType.NormNuclear, "Invalid norm for Vector"
             if ir_node.norm_type == NormType.NormIdentifier:
-                assert ir_node.sub.la_type.var_type == VarTypeEnum.MATRIX, "Subscript has to be matrix for vector type"
+                assert ir_node.sub.la_type.is_matrix(), "Subscript has to be matrix for vector type"
                 assert ir_node.sub.la_type.rows == ir_node.sub.la_type.cols and ir_node.sub.la_type.rows == ir_node.value.la_type.rows, "Norm: dim error"
-        elif ir_node.value.la_type.var_type == VarTypeEnum.MATRIX:
+        elif ir_node.value.la_type.is_matrix():
             assert node.single is None, "MATRIX type has to use || rather than |"
             assert ir_node.norm_type == NormType.NormFrobenius or ir_node.norm_type == NormType.NormNuclear, "Invalid norm for Matrix"
         # ret type
-        ret_type = LaVarType(VarTypeEnum.SCALAR)
+        ret_type = ScalarType()
         ir_node.la_type = ret_type
         if node.power:
             # superscript
@@ -519,7 +519,7 @@ class TypeWalker(NodeWalker):
         power_node = PowerNode()
         power_node.base = base
         power_node.power = power
-        power_node.la_type = LaVarType(VarTypeEnum.SCALAR)
+        power_node.la_type = ScalarType()
         return power_node
 
     def walk_Power(self, node, **kwargs):
@@ -529,11 +529,11 @@ class TypeWalker(NodeWalker):
         symbols = base_info.symbols
         if node.t:
             ir_node.t = node.t
-            assert base_info.la_type.var_type == VarTypeEnum.MATRIX
+            assert base_info.la_type.is_matrix()
             node_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows)
         elif node.r:
             ir_node.r = node.r
-            assert base_info.la_type.var_type == VarTypeEnum.MATRIX
+            assert base_info.la_type.is_matrix()
             assert base_info.la_type.rows == base_info.la_type.cols
             node_type = MatrixType(rows=base_info.la_type.rows, cols=base_info.la_type.rows)
         else:
@@ -552,14 +552,14 @@ class TypeWalker(NodeWalker):
         ir_node = SolverNode()
         ir_node.left = left_info.ir
         ir_node.right = right_info.ir
-        assert left_info.la_type.var_type == VarTypeEnum.MATRIX
-        assert right_info.la_type.var_type == VarTypeEnum.MATRIX or right_info.la_type.var_type == VarTypeEnum.VECTOR
+        assert left_info.la_type.is_matrix()
+        assert right_info.la_type.is_matrix() or right_info.la_type.is_vector()
         node_type = None
-        if left_info.la_type.var_type == VarTypeEnum.MATRIX:
+        if left_info.la_type.is_matrix():
             assert left_info.la_type.rows == right_info.la_type.rows
-            if right_info.la_type.var_type == VarTypeEnum.MATRIX:
+            if right_info.la_type.is_matrix():
                 node_type = MatrixType(rows=left_info.la_type.cols, cols=left_info.la_type.cols)
-            elif right_info.la_type.var_type == VarTypeEnum.VECTOR:
+            elif right_info.la_type.is_vector():
                 node_type = VectorType(rows=left_info.la_type.cols)
         ir_node.la_type = node_type
         node_info = NodeInfo(node_type, symbols=left_info.symbols.union(right_info.symbols))
@@ -570,7 +570,7 @@ class TypeWalker(NodeWalker):
         ir_node = TransposeNode()
         f_info = self.walk(node.f, **kwargs)
         ir_node.f = f_info.ir
-        assert f_info.la_type.var_type == VarTypeEnum.MATRIX
+        assert f_info.la_type.is_matrix()
         node_type = MatrixType(rows=f_info.la_type.cols, cols=f_info.la_type.rows)
         node_info = NodeInfo(node_type, symbols=f_info.symbols)
         node_info.ir = ir_node
@@ -580,7 +580,7 @@ class TypeWalker(NodeWalker):
     def walk_Function(self, node, **kwargs):
         name_info = self.walk(node.name, **kwargs)
         name_type = name_info.ir.la_type
-        if name_type.var_type == VarTypeEnum.FUNCTION:
+        if name_type.is_function():
             ir_node = FunctionNode()
             ir_node.name = name_info.ir
             param_list = []
@@ -740,7 +740,7 @@ class TypeWalker(NodeWalker):
 
     def walk_Number(self, node, **kwargs):
         node_value = self.walk(node.value, **kwargs)
-        node_info = NodeInfo(LaVarType(VarTypeEnum.SCALAR), content=node_value)
+        node_info = NodeInfo(ScalarType(), content=node_value)
         #
         ir_node = NumberNode()
         ir_node.value = node_value.ir
@@ -750,7 +750,7 @@ class TypeWalker(NodeWalker):
 
     def walk_Integer(self, node, **kwargs):
         value = ''.join(node.value)
-        node_type = LaVarType(VarTypeEnum.INTEGER)
+        node_type = ScalarType(is_int=True)
         node_info = NodeInfo(node_type, content=int(value))
         #
         ir_node = IntegerNode()
@@ -765,7 +765,7 @@ class TypeWalker(NodeWalker):
         else:
             int_info = self.walk(node.i, **kwargs)
             node_value = "{}{}".format(int_info.ir.value, self.walk(node.exp, **kwargs))
-        node_info = NodeInfo(LaVarType(VarTypeEnum.SCALAR), content=node_value)
+        node_info = NodeInfo(ScalarType(), content=node_value)
         #
         ir_node = DoubleNode()
         ir_node.value = node_value
@@ -886,11 +886,11 @@ class TypeWalker(NodeWalker):
         sparse = False
         for row in node_info.content:
             for col in row:
-                if col.var_type == VarTypeEnum.MATRIX:
+                if col.is_matrix():
                     if col.sparse:
                         sparse = True
                     block = True
-                elif col.var_type == VarTypeEnum.VECTOR:
+                elif col.is_vector():
                     block = True
             if len(row) > cols:
                 cols = len(row)
@@ -1051,8 +1051,8 @@ class TypeWalker(NodeWalker):
         # fill dim array, check mismatch
         for i in range(rows):
             for j in range(cols):
-                if type_array[i][j].var_type == VarTypeEnum.MATRIX or type_array[i][j].var_type == VarTypeEnum.VECTOR:
-                    if type_array[i][j].var_type == VarTypeEnum.MATRIX:
+                if type_array[i][j].is_matrix() or type_array[i][j].is_vector():
+                    if type_array[i][j].is_matrix():
                         cur_cols = type_array[i][j].cols
                     else:
                         cur_cols = 1  # vector
@@ -1156,45 +1156,39 @@ class TypeWalker(NodeWalker):
         if op == TypeInferenceEnum.INF_ADD or op == TypeInferenceEnum.INF_SUB:
             assert left_type.var_type == right_type.var_type, 'left:{}, right:{}'.format(left_type.var_type, right_type.var_type)
             ret_type = left_type
-            if left_type.var_type == VarTypeEnum.MATRIX:
+            if left_type.is_matrix():
                 assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, 'error: dimension mismatch'
                 if left_type.sparse or right_type.sparse:
                     ret_type.sparse = True
-            elif left_type.var_type == VarTypeEnum.VECTOR:
+            elif left_type.is_vector():
                 assert left_type.rows == right_type.rows, 'error: dimension mismatch'
         elif op == TypeInferenceEnum.INF_MUL:
             assert left_type.var_type is not VarTypeEnum.SEQUENCE and right_type.var_type is not VarTypeEnum.SEQUENCE, 'error: sequence can not be operated'
-            if left_type.var_type == VarTypeEnum.SCALAR:
+            if left_type.is_scalar():
                 ret_type = right_type
-            elif left_type.var_type == VarTypeEnum.INTEGER:
-                ret_type = right_type
-            elif left_type.var_type == VarTypeEnum.MATRIX:
-                if right_type.var_type == VarTypeEnum.SCALAR:
+            elif left_type.is_matrix():
+                if right_type.is_scalar():
                     ret_type = left_type
-                if right_type.var_type == VarTypeEnum.INTEGER:
-                    ret_type = left_type
-                elif right_type.var_type == VarTypeEnum.MATRIX:
+                elif right_type.is_matrix():
                     assert left_type.cols == right_type.rows, 'error: dimension mismatch'
                     ret_type = MatrixType(rows=left_type.rows, cols=right_type.cols)
                     if left_type.sparse and right_type.sparse:
                         ret_type.sparse = True
-                elif right_type.var_type == VarTypeEnum.VECTOR:
+                elif right_type.is_vector():
                     assert left_type.cols == right_type.rows, 'error: dimension mismatch'
                     ret_type = VectorType(rows=left_type.rows)
-            elif left_type.var_type == VarTypeEnum.VECTOR:
-                if right_type.var_type == VarTypeEnum.SCALAR:
+            elif left_type.is_vector():
+                if right_type.is_scalar():
                     ret_type = left_type
-                if right_type.var_type == VarTypeEnum.INTEGER:
-                    ret_type = left_type
-                elif right_type.var_type == VarTypeEnum.MATRIX:
+                elif right_type.is_matrix():
                     assert 1 == right_type.rows, 'error: dimension mismatch'
                     ret_type = MatrixType(rows=left_type.rows, cols=right_type.cols)
-                elif right_type.var_type == VarTypeEnum.VECTOR:
+                elif right_type.is_vector():
                     assert left_type.cols == right_type.rows, 'error: dimension mismatch'
         elif op == TypeInferenceEnum.INF_DIV:
-            assert (left_type.var_type == VarTypeEnum.SCALAR or left_type.var_type == VarTypeEnum.INTEGER), 'error: type mismatch'
-            assert (right_type.var_type == VarTypeEnum.SCALAR or right_type.var_type == VarTypeEnum.INTEGER), 'error: type mismatch'
-            ret_type = LaVarType(VarTypeEnum.SCALAR)
+            assert (left_type.is_scalar()), 'error: type mismatch'
+            assert (right_type.is_scalar()), 'error: type mismatch'
+            ret_type = ScalarType()
         elif op == TypeInferenceEnum.INF_MATRIX_ROW:
             # assert left_type.var_type == right_type.var_type
             ret_type = left_type
