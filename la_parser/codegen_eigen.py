@@ -6,6 +6,7 @@ class CodeGenEigen(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.EIGEN)
         self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n\n'''
+        self.pre_str += "#include <unsupported/Eigen/MatrixFunctions>\n"
         self.post_str = ''''''
         self.ret = 'ret'
 
@@ -269,7 +270,7 @@ class CodeGenEigen(CodeGen):
         main_content.append(
             "    {} func_value = {}({});".format(self.get_ctype(self.symtable[self.ret_symbol]), func_name,
                                                  ', '.join(self.parameters)))
-        if self.symtable[self.ret_symbol].is_matrix():
+        if self.symtable[self.ret_symbol].is_matrix() or self.symtable[self.ret_symbol].is_vector() or self.symtable[self.ret_symbol].is_scalar():
             main_content.append('    std::cout<<"func_value:\\n"<<func_value<<std::endl;')
         main_content.append('    return 0;')
         main_content.append('}')
@@ -377,9 +378,12 @@ class CodeGenEigen(CodeGen):
             content = "abs({})".format(value)
         elif type_info.la_type.is_vector():
             if node.norm_type == NormType.NormInteger:
-                content = "{}.lpNorm<{}>()".format(value, node.sub)
+                if node.sub == 0:
+                    content = "{}.array().count()".format(value)
+                else:
+                    content = "{}.lpNorm<{}>()".format(value, node.sub)
             elif node.norm_type == NormType.NormMax:
-                content = "{}.lpNorm<Infinity>()".format(value)
+                content = "{}.lpNorm<Eigen::Infinity>()".format(value)
             elif node.norm_type == NormType.NormIdentifier:
                 sub_info = self.visit(node.sub, **kwargs)
                 content = "sqrt(({}).transpose()*{}*({}))".format(value, sub_info.content, value)

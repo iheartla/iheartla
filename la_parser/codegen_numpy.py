@@ -105,7 +105,8 @@ class CodeGenNumpy(CodeGen):
                 else:
                     type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
                     test_content.append('    {} = np.random.randn({})'.format(parameter, self.symtable[parameter].rows))
-                type_checks.append('    assert {}.shape == ({}, 1)'.format(parameter, self.symtable[parameter].rows))
+                # type_checks.append('    assert {}.shape == ({}, 1)'.format(parameter, self.symtable[parameter].rows))
+                test_content.append('    {}.reshape(({}, 1))'.format(parameter, self.symtable[parameter].rows))
             elif self.symtable[parameter].is_scalar():
                 type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
                 test_content.append('    {} = np.random.randn()'.format(parameter))
@@ -255,17 +256,17 @@ class CodeGenNumpy(CodeGen):
             content = "np.absolute({})".format(value)
         elif type_info.la_type.is_vector():
             if node.norm_type == NormType.NormInteger:
-                content = "numpy.linalg.norm({}, {})".format(value, node.sub)
+                content = "np.linalg.norm({}, {})".format(value, node.sub)
             elif node.norm_type == NormType.NormMax:
-                content = "numpy.linalg.norm({}, ‘inf’)".format(value)
+                content = "np.linalg.norm({}, np.inf)".format(value)
             elif node.norm_type == NormType.NormIdentifier:
                 sub_info = self.visit(node.sub, **kwargs)
-                content = "scipy.linalg.sqrtm(({}).T*{}*({}))".format(value, sub_info.content, value)
+                content = "np.sqrt(({}).T @ {} @ ({}))".format(value, sub_info.content, value)
         elif type_info.la_type.is_matrix():
             if node.norm_type == NormType.NormFrobenius:
-                content = "numpy.linalg.norm({}, ‘fro’)".format(value)
+                content = "np.linalg.norm({}, 'fro')".format(value)
             elif node.norm_type == NormType.NormNuclear:
-                content = "numpy.linalg.norm({}, ‘nuc’)".format(value)
+                content = "np.linalg.norm({}, 'nuc')".format(value)
         return CodeNodeInfo(content)
 
     def visit_transpose(self, node, **kwargs):
