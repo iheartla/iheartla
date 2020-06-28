@@ -466,11 +466,61 @@ class TypeWalker(NodeWalker):
         ret_info.ir = ir_node
         return ret_info
 
-    def walk_Determinant(self, node, **kwargs):
+    def walk_Norm(self, node, **kwargs):
+        ir_node = NormNode()
         value_info = self.walk(node.value, **kwargs)
+        ir_node.value = value_info.ir
+        if node.sub:
+            if node.sub == 'F':
+                ir_node.norm_type = NormType.NormFrobenius
+            elif node.sub == '*':
+                ir_node.norm_type = NormType.NormNuclear
+            elif node.sub == '∞':
+                ir_node.norm_type = NormType.NormMax
+            else:
+                sub_type = self.walk(node.sub, **kwargs)
+                if sub_type.ir.node_type == IRNodeType.Integer:
+                    ir_node.sub = sub_type.ir.value
+                    ir_node.norm_type = NormType.NormInteger
+                else:
+                    # identifier
+                    ir_node.norm_type = NormType.NormIdentifier
+                    ir_node.sub = sub_type.ir
+        else:
+            # default
+            if ir_node.value.la_type.var_type == VarTypeEnum.MATRIX:
+                ir_node.norm_type = NormType.NormFrobenius
+            else:
+                ir_node.norm_type = NormType.NormInteger
+            ir_node.sub = 2
+        #
+        if ir_node.value.la_type.var_type == VarTypeEnum.SCALAR:
+            assert node.single is not None, "Scalar type has to use | rather than ||"
+        elif ir_node.value.la_type.var_type == VarTypeEnum.VECTOR:
+            assert node.single is None, "Vector type has to use || rather than |"
+            assert ir_node.norm_type != NormType.NormFrobenius and ir_node.norm_type != NormType.NormNuclear, "Invalid norm for Vector"
+            if ir_node.norm_type == NormType.NormIdentifier:
+                assert ir_node.sub.la_type.var_type == VarTypeEnum.MATRIX, "Subscript has to be matrix for vector type"
+                assert ir_node.sub.la_type.rows == ir_node.sub.la_type.cols and ir_node.sub.la_type.rows == ir_node.value.la_type.rows, "Norm: dim error"
+        elif ir_node.value.la_type.var_type == VarTypeEnum.MATRIX:
+            assert node.single is None, "MATRIX type has to use || rather than |"
+            assert ir_node.norm_type == NormType.NormFrobenius or ir_node.norm_type == NormType.NormNuclear, "Invalid norm for Matrix"
+        # ret type
         ret_type = LaVarType(VarTypeEnum.SCALAR)
-        node_info = NodeInfo(ret_type, symbols=value_info.symbols)
+        ir_node.la_type = ret_type
+        if node.power:
+            # superscript
+            power_info = self.walk(node.power, **kwargs)
+            ir_node = self.create_power_node(ir_node, power_info.ir)
+        node_info = NodeInfo(ret_type, symbols=value_info.symbols, ir=ir_node)
         return node_info
+
+    def create_power_node(self, base, power):
+        power_node = PowerNode()
+        power_node.base = base
+        power_node.power = power
+        power_node.la_type = LaVarType(VarTypeEnum.SCALAR)
+        return power_node
 
     def walk_Power(self, node, **kwargs):
         ir_node = PowerNode()
@@ -584,7 +634,7 @@ class TypeWalker(NodeWalker):
         left_type = left_info.la_type
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
-        assert left_type.var_type == right_type.var_type, "different type "
+        # assert left_type.var_type == right_type.var_type, "different type "
         return NodeInfo(ir=BinCompNode(IRNodeType.Ne, left_info.ir, right_info.ir))
 
     def walk_EqCondition(self, node, **kwargs):
@@ -592,7 +642,7 @@ class TypeWalker(NodeWalker):
         left_type = left_info.la_type
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
-        assert left_type.var_type == right_type.var_type, "different type "
+        # assert left_type.var_type == right_type.var_type, "different type "
         return NodeInfo(ir=BinCompNode(IRNodeType.Eq, left_info.ir, right_info.ir))
 
     def walk_GreaterCondition(self, node, **kwargs):

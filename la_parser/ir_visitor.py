@@ -78,7 +78,7 @@ class IRVisitor(object):
             IRNodeType.Div: "visit_div",
             IRNodeType.AddSub: "visit_add_sub",
             IRNodeType.Summation: "visit_summation",
-            IRNodeType.Determinant: "visit_determinant",
+            IRNodeType.Norm: "visit_norm",
             IRNodeType.Transpose: "visit_transpose",
             IRNodeType.Power: "visit_power",
             IRNodeType.Solver: "visit_solver",

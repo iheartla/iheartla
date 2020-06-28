@@ -34,7 +34,7 @@ class IRNodeType(Enum):
     Div = 203
     AddSub = 204
     Summation = 205
-    Determinant = 206
+    Norm = 206
     Transpose = 207
     Power = 208
     Solver = 209
@@ -311,10 +311,21 @@ class SummationNode(ExprNode):
         self.content = None
 
 
-class DeterminantNode(ExprNode):
+class NormType(Enum):
+    NormInvalid = -1
+    NormFrobenius = 0
+    NormNuclear = 1
+    NormInteger = 2
+    NormIdentifier = 3
+    NormMax = 4
+
+
+class NormNode(ExprNode):
     def __init__(self):
-        super().__init__(IRNodeType.Determinant)
+        super().__init__(IRNodeType.Norm)
         self.value = None
+        self.sub = None
+        self.norm_type = NormType.NormInvalid
 
 
 class TransposeNode(ExprNode):

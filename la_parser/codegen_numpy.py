@@ -6,7 +6,7 @@ import keyword
 class CodeGenNumpy(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.NUMPY)
-        self.pre_str = '''import numpy as np\nimport scipy\nfrom scipy import sparse\n\n\n'''
+        self.pre_str = '''import numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\n\n\n'''
         self.post_str = ''''''
 
     def get_rand_test_str(self, la_type, rand_int_max):
@@ -246,22 +246,27 @@ class CodeGenNumpy(CodeGen):
         content[0] = "    " + content[0]
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
-    def visit_determinant(self, node, **kwargs):
-        value_info = self.visit(node.value)
+    def visit_norm(self, node, **kwargs):
+        value_info = self.visit(node.value, **kwargs)
         value = value_info.content
-        type_info = node.value.la_type
-        if type_info.la_type.var_type == VarTypeEnum.VECTOR or type_info.la_type.var_type == VarTypeEnum.MATRIX or type_info.la_type.var_type == VarTypeEnum.SEQUENCE:
-            if value in self.parameters:
-                value_type = self.symtable[value]
-                if type_info.la_type.var_type == VarTypeEnum.SEQUENCE:
-                    dim = value_type.size
-                else:
-                    dim = value_type.rows
-                return CodeNodeInfo(str(dim))
-            elif value in self.symtable:
-                return CodeNodeInfo(value + '.shape[0]')
-            return CodeNodeInfo('(' + value + ').shape[0]')
-        return CodeNodeInfo('np.absolute(' + value + ')')
+        type_info = node.value
+        content = ''
+        if type_info.la_type.var_type == VarTypeEnum.SCALAR:
+            content = "np.absolute({})".format(value)
+        elif type_info.la_type.var_type == VarTypeEnum.VECTOR:
+            if node.norm_type == NormType.NormInteger:
+                content = "numpy.linalg.norm({}, {})".format(value, node.sub)
+            elif node.norm_type == NormType.NormMax:
+                content = "numpy.linalg.norm({}, ‘inf’)".format(value)
+            elif node.norm_type == NormType.NormIdentifier:
+                sub_info = self.visit(node.sub, **kwargs)
+                content = "scipy.linalg.sqrtm(({}).T*{}*({}))".format(value, sub_info.content, value)
+        elif type_info.la_type.var_type == VarTypeEnum.MATRIX:
+            if node.norm_type == NormType.NormFrobenius:
+                content = "numpy.linalg.norm({}, ‘fro’)".format(value)
+            elif node.norm_type == NormType.NormNuclear:
+                content = "numpy.linalg.norm({}, ‘nuc’)".format(value)
+        return CodeNodeInfo(content)
 
     def visit_transpose(self, node, **kwargs):
         f_info = self.visit(node.f, **kwargs)

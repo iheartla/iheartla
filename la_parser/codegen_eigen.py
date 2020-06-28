@@ -367,22 +367,27 @@ class CodeGenEigen(CodeGen):
         content.append("}\n")
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
-    def visit_determinant(self, node, **kwargs):
-        value_info = self.visit(node.value)
+    def visit_norm(self, node, **kwargs):
+        value_info = self.visit(node.value, **kwargs)
         value = value_info.content
-        type_info = node.value.la_type
-        if type_info.la_type.var_type == VarTypeEnum.VECTOR or type_info.la_type.var_type == VarTypeEnum.MATRIX or type_info.la_type.var_type == VarTypeEnum.SEQUENCE:
-            if value in self.parameters:
-                value_type = self.symtable[value]
-                if type_info.la_type.var_type == VarTypeEnum.SEQUENCE:
-                    dim = value_type.size
-                else:
-                    dim = value_type.rows
-                return CodeNodeInfo(str(dim))
-            elif value in self.symtable:
-                return CodeNodeInfo(value + '.shape[0]')
-            return CodeNodeInfo('(' + value + ').shape[0]')
-        return CodeNodeInfo('np.absolute(' + value + ')')
+        type_info = node.value
+        content = ''
+        if type_info.la_type.var_type == VarTypeEnum.SCALAR:
+            content = "abs({})".format(value)
+        elif type_info.la_type.var_type == VarTypeEnum.VECTOR:
+            if node.norm_type == NormType.NormInteger:
+                content = "{}.lpNorm<{}>()".format(value, node.sub)
+            elif node.norm_type == NormType.NormMax:
+                content = "{}.lpNorm<Infinity>()".format(value)
+            elif node.norm_type == NormType.NormIdentifier:
+                sub_info = self.visit(node.sub, **kwargs)
+                content = "sqrt(({}).transpose()*{}*({}))".format(value, sub_info.content, value)
+        elif type_info.la_type.var_type == VarTypeEnum.MATRIX:
+            if node.norm_type == NormType.NormFrobenius:
+                content = "({}).norm()".format(value)
+            elif node.norm_type == NormType.NormNuclear:
+                content = "(({}).transpose()*({})).sqrt().trace()".format(value, value)
+        return CodeNodeInfo(content)
 
     def visit_transpose(self, node, **kwargs):
         f_info = self.visit(node.f, **kwargs)

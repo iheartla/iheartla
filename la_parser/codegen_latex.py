@@ -324,6 +324,11 @@ class CodeGenLatex(CodeGen):
         right_info = self.visit(node.right, **kwargs)
         return left_info + ' \setminus ' + right_info
 
+    def visit_norm(self, node, **kwargs):
+        if node.value.la_type.var_type == VarTypeEnum.SCALAR:
+            return "|{}|".format(self.visit(node.value, **kwargs))
+        return "\\|{}\\|".format(self.visit(node.value, **kwargs))
+
     def visit_transpose(self, node, **kwargs):
         return self.visit(node.f, **kwargs)
 
