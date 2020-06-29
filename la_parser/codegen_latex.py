@@ -316,7 +316,7 @@ class CodeGenLatex(CodeGen):
             base_info = base_info + "^{-1}"
         else:
             power_info = self.visit(node.power, **kwargs)
-            base_info = base_info + '^' + power_info
+            base_info = "{}^{{{}}}".format(base_info, power_info)
         return base_info
 
     def visit_solver(self, node, **kwargs):
@@ -326,8 +326,23 @@ class CodeGenLatex(CodeGen):
 
     def visit_norm(self, node, **kwargs):
         if node.value.la_type.is_scalar():
-            return "|{}|".format(self.visit(node.value, **kwargs))
-        return "\\|{}\\|".format(self.visit(node.value, **kwargs))
+            content = "|{}|".format(self.visit(node.value, **kwargs))
+        else:
+            content = "\\|{}\\|".format(self.visit(node.value, **kwargs))
+            if node.value.la_type.is_vector():
+                if node.norm_type == NormType.NormInteger:
+                    content += "_{}".format(node.sub)
+                elif node.norm_type == NormType.NormMax:
+                    content += "_\\infty"
+                elif node.norm_type == NormType.NormIdentifier:
+                    sub_info = self.visit(node.sub, **kwargs)
+                    content += "_{{{}}}".format(sub_info)
+            elif node.value.la_type.is_matrix():
+                if node.norm_type == NormType.NormFrobenius:
+                    content += "_F"
+                elif node.norm_type == NormType.NormNuclear:
+                    content += "_*"
+        return content
 
     def visit_transpose(self, node, **kwargs):
         return self.visit(node.f, **kwargs)

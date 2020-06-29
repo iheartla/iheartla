@@ -519,6 +519,7 @@ class TypeWalker(NodeWalker):
         power_node = PowerNode()
         power_node.base = base
         power_node.power = power
+        assert power.la_type.is_scalar(), "power must be scalar"
         power_node.la_type = ScalarType()
         return power_node
 

@@ -213,3 +213,101 @@ class TestNorm(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_vector_superscript_only(self):
+        la_str = """A = ||T||^2
+                    where 
+                    T: ℝ ^ 3: vector"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([3, 4, 12])
+        self.assertEqual(func_info.numpy_func(A), 169)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 3, 1> A;",
+                     "    A << 3, 4, 12;",
+                     "    double B = {}(A);".format(func_info.eig_func_name),
+                     "    return (B == 169);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_vector_superscript_subscript_0(self):
+        la_str = """A = ||T||^2_2
+                    where 
+                    T: ℝ ^ 3: vector"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([3, 4, 12])
+        self.assertEqual(func_info.numpy_func(A), 169)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 3, 1> A;",
+                     "    A << 3, 4, 12;",
+                     "    double B = {}(A);".format(func_info.eig_func_name),
+                     "    return (B == 169);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_vector_superscript_subscript_1(self):
+        la_str = """A = ||T||_2^2
+                    where 
+                    T: ℝ ^ 3: vector"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([3, 4, 12])
+        self.assertEqual(func_info.numpy_func(A), 169)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 3, 1> A;",
+                     "    A << 3, 4, 12;",
+                     "    double B = {}(A);".format(func_info.eig_func_name),
+                     "    return (B == 169);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_vector_superscript_subscript_2(self):
+        la_str = """A = ||T||_P^2
+                    where 
+                    T: ℝ ^ 2: a sequence
+                    P: ℝ ^ (2×2): a sequence"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([-5, 12])
+        P = np.array([[1, 0], [0, 1]])
+        self.assertEqual(func_info.numpy_func(A, P), 169)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 1> A;",
+                     "    A << -5, 12;",
+                     "    Eigen::Matrix<double, 2, 2> P;",
+                     "    P << 1, 0, 0, 1;",
+                     "    double B = {}(A, P);".format(func_info.eig_func_name),
+                     "    return (B == 169);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_vector_superscript_subscript_3(self):
+        la_str = """A = ||T||^2_P
+                    where 
+                    T: ℝ ^ 2: a sequence
+                    P: ℝ ^ (2×2): a sequence"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([-5, 12])
+        P = np.array([[1, 0], [0, 1]])
+        self.assertEqual(func_info.numpy_func(A, P), 169)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 1> A;",
+                     "    A << -5, 12;",
+                     "    Eigen::Matrix<double, 2, 2> P;",
+                     "    P << 1, 0, 0, 1;",
+                     "    double B = {}(A, P);".format(func_info.eig_func_name),
+                     "    return (B == 169);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())

@@ -282,7 +282,7 @@ class CodeGenNumpy(CodeGen):
             base_info.content = "np.linalg.inv({})".format(base_info.content)
         else:
             power_info = self.visit(node.power, **kwargs)
-            base_info.content = base_info.content + '^' + power_info.content
+            base_info.content = "np.power({}, {})".format(base_info.content, power_info.content)
         return base_info
 
     def visit_solver(self, node, **kwargs):

@@ -5,8 +5,8 @@ from la_parser.type_walker import *
 class CodeGenEigen(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.EIGEN)
-        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n\n'''
-        self.pre_str += "#include <unsupported/Eigen/MatrixFunctions>\n"
+        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n'''
+        self.pre_str += "#include <unsupported/Eigen/MatrixFunctions>\n\n"
         self.post_str = ''''''
         self.ret = 'ret'
 
@@ -407,7 +407,7 @@ class CodeGenEigen(CodeGen):
             base_info.content = "{}.inverse()".format(base_info.content)
         else:
             power_info = self.visit(node.power, **kwargs)
-            base_info.content = base_info.content + '^' + power_info.content
+            base_info.content = "pow({}, {})".format(base_info.content, power_info.content)
         return base_info
 
     def visit_solver(self, node, **kwargs):
