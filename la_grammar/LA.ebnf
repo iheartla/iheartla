@@ -80,7 +80,7 @@ params_type
     ;
 
 function_type::FunctionType
-    = ((params+:params_type {{hspace} ('x'|'×'|','|';') {hspace} params+:params_type})|'∅'|'{'{hspace}'}') {hspace} ('→'|'->') {hspace} ret:params_type
+    = ((params+:params_type {{hspace} params_separator {hspace} params+:params_type})|'∅'|'{'{hspace}'}') {hspace} ('→'|'->') {hspace} ret:params_type
     ;
 
 expression::Expression

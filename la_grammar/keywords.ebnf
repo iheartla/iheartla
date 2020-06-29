@@ -8,9 +8,6 @@ KEYWORDS
     | RE
     | IM
     | INV
-    | SQRT
-    | EXP
-    | LOG
     | DET
     | SVD
     | RANK
@@ -28,6 +25,20 @@ KEYWORDS
     | OTHERWISE
     | IS
     | IN
+    | SIN
+    | COS
+    | ASIN
+    | ARCSIN
+    | ACOS
+    | ARCCOS
+    | TAN
+    | ATAN
+    | ARCTAN
+    | ATAN2
+    | EXP
+    | LOG
+    | LN
+    | SQRT
     ;
 
 TRACE = 'trace';
@@ -39,9 +50,6 @@ CONJ = 'conj';
 RE = 'Re';
 IM = 'Im';
 INV = 'inv';
-SQRT = 'sqrt';
-EXP = 'exp';
-LOG = 'log';
 DET = 'det';
 SVD = 'svd';
 RANK = 'rank';
@@ -61,3 +69,17 @@ IF = 'if';
 OTHERWISE = 'otherwise';
 IS = 'is';
 IN = 'in';
+SIN = 'sin';
+ASIN = 'asin';
+ARCSIN = 'arcsin';
+COS = 'cos';
+ACOS = 'acos';
+ARCCOS = 'arccos';
+TAN = 'tan';
+ATAN = 'atan';
+ARCTAN = 'arctan';
+ATAN2 = 'atan2';
+EXP = 'exp';
+LOG = 'log';
+LN = 'ln';
+SQRT = 'sqrt';

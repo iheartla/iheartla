@@ -350,5 +350,33 @@ class CodeGenLatex(CodeGen):
     def visit_derivative(self, node, **kwargs):
         return "\\partial" + self.visit(value, **kwargs)
 
+    def visit_math_func(self, node, **kwargs):
+        content = ''
+        param_info = self.visit(node.param, **kwargs)
+        if node.func_type == MathFuncType.MathFuncSin:
+            content = 'sin'
+        elif node.func_type == MathFuncType.MathFuncAsin:
+            content = 'asin'
+        elif node.func_type == MathFuncType.MathFuncCos:
+            content = 'cos'
+        elif node.func_type == MathFuncType.MathFuncAcos:
+            content = 'acos'
+        elif node.func_type == MathFuncType.MathFuncTan:
+            content = 'tan'
+        elif node.func_type == MathFuncType.MathFuncAtan:
+            content = 'atan'
+        elif node.func_type == MathFuncType.MathFuncAtan2:
+            content = 'atan2'
+            param_info += ', ' + self.visit(node.remain_params[0], **kwargs)
+        elif node.func_type == MathFuncType.MathFuncExp:
+            content = 'exp'
+        elif node.func_type == MathFuncType.MathFuncLog:
+            content = 'log10'
+        elif node.func_type == MathFuncType.MathFuncLn:
+            content = 'log'
+        elif node.func_type == MathFuncType.MathFuncSqrt:
+            content = 'sqrt'
+        return "{}({})".format(content, param_info)
+
     def visit_inner_product(self, node, **kwargs):
         return self.visit(left, **kwargs) + " " + self.visit(right, **kwargs)

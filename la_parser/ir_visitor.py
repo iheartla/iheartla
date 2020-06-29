@@ -83,6 +83,7 @@ class IRVisitor(object):
             IRNodeType.Power: "visit_power",
             IRNodeType.Solver: "visit_solver",
             IRNodeType.Derivative: "visit_derivative",
+            IRNodeType.MathFunc: "visit_math_func",
             # matrix
             IRNodeType.Matrix: "visit_matrix",
             IRNodeType.MatrixRows: "visit_matrix_rows",

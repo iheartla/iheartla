@@ -1034,6 +1034,47 @@ class TypeWalker(NodeWalker):
         node_info.ir = ir_node
         return node_info
 
+    def createMathNodeInfo(self, func_type, param, remains=[]):
+        assert param.la_type.is_scalar(), "Parameters must be scalar type"
+        tri_node = MathFuncNode(param, func_type, remains)
+        node_info = NodeInfo(ScalarType())
+        tri_node.la_type = node_info.la_type
+        node_info.ir = tri_node
+        return node_info
+
+    def walk_SinFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncSin, self.walk(node.param, **kwargs).ir)
+
+    def walk_AsinFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncAsin, self.walk(node.param, **kwargs).ir)
+
+    def walk_CosFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncCos, self.walk(node.param, **kwargs).ir)
+
+    def walk_AcosFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncAcos, self.walk(node.param, **kwargs).ir)
+
+    def walk_TanFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncTan, self.walk(node.param, **kwargs).ir)
+
+    def walk_AtanFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncAtan, self.walk(node.param, **kwargs).ir)
+
+    def walk_Atan2Func(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncAtan2, self.walk(node.param, **kwargs).ir, [self.walk(node.second, **kwargs).ir])
+
+    def walk_ExpFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncExp, self.walk(node.param, **kwargs).ir)
+
+    def walk_LogFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncLog, self.walk(node.param, **kwargs).ir)
+
+    def walk_LnFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncLn, self.walk(node.param, **kwargs).ir)
+
+    def walk_SqrtFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncSqrt, self.walk(node.param, **kwargs).ir)
+
     ###################################################################
     def check_bmat_validity(self, type_array, mat_size):
         """

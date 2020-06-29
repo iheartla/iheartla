@@ -48,3 +48,7 @@ separator_with_space
 blank
     = {(hspace | separator)}
     ;
+
+params_separator
+    = ','|';'|'x'|'×'
+    ;

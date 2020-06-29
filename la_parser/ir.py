@@ -39,6 +39,7 @@ class IRNodeType(Enum):
     Power = 208
     Solver = 209
     Derivative = 210
+    MathFunc = 211
     # matrix
     Matrix = 300
     MatrixRows = 301
@@ -405,6 +406,29 @@ class DerivativeNode(ExprNode):
     def __init__(self):
         super().__init__(IRNodeType.Derivative)
         self.value = None
+
+
+class MathFuncType(Enum):
+    MathFuncInvalid = -1
+    MathFuncSin = 0
+    MathFuncAsin = 1
+    MathFuncCos = 2
+    MathFuncAcos = 3
+    MathFuncTan = 4
+    MathFuncAtan = 5
+    MathFuncAtan2 = 6
+    MathFuncExp = 7
+    MathFuncLog = 8
+    MathFuncLn = 9
+    MathFuncSqrt = 10
+
+
+class MathFuncNode(ExprNode):
+    def __init__(self, param=None, func_type=MathFuncType.MathFuncInvalid, remain_params=[]):
+        super().__init__(IRNodeType.MathFunc)
+        self.param = param   # first param
+        self.remain_params = remain_params  # remain params
+        self.func_type = func_type
 
 
 class FactorNode(ExprNode):

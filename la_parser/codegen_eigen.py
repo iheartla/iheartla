@@ -841,6 +841,35 @@ class CodeGenEigen(CodeGen):
     def visit_derivative(self, node, **kwargs):
         return CodeNodeInfo("")
 
+    def visit_math_func(self, node, **kwargs):
+        content = ''
+        param_info = self.visit(node.param, **kwargs)
+        params_content = param_info.content
+        if node.func_type == MathFuncType.MathFuncSin:
+            content = 'sin'
+        elif node.func_type == MathFuncType.MathFuncAsin:
+            content = 'asin'
+        elif node.func_type == MathFuncType.MathFuncCos:
+            content = 'cos'
+        elif node.func_type == MathFuncType.MathFuncAcos:
+            content = 'acos'
+        elif node.func_type == MathFuncType.MathFuncTan:
+            content = 'tan'
+        elif node.func_type == MathFuncType.MathFuncAtan:
+            content = 'atan'
+        elif node.func_type == MathFuncType.MathFuncAtan2:
+            content = 'atan2'
+            params_content += ', ' + self.visit(node.remain_params[0], **kwargs).content
+        elif node.func_type == MathFuncType.MathFuncExp:
+            content = 'exp'
+        elif node.func_type == MathFuncType.MathFuncLog:
+            content = 'log10'
+        elif node.func_type == MathFuncType.MathFuncLn:
+            content = 'log'
+        elif node.func_type == MathFuncType.MathFuncSqrt:
+            content = 'sqrt'
+        return CodeNodeInfo("{}({})".format(content, params_content))
+
     def visit_factor(self, node, **kwargs):
         if node.id:
             return self.visit(node.id, **kwargs)
