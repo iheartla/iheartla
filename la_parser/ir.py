@@ -11,6 +11,7 @@ class IRNodeType(Enum):
     Factor = 3
     Expression = 4
     Subexpression = 5
+    Constant = 6
     # control
     Start = 50
     Block = 51
@@ -400,6 +401,17 @@ class SubexpressionNode(ExprNode):
     def __init__(self):
         super().__init__(IRNodeType.Subexpression)
         self.value = None
+
+
+class ConstantType(Enum):
+    ConstantInvalid = -1
+    ConstantPi = 0
+
+
+class ConstantNode(ExprNode):
+    def __init__(self, c_type=ConstantType.ConstantInvalid):
+        super().__init__(IRNodeType.Constant)
+        self.c_type = c_type
 
 
 class DerivativeNode(ExprNode):

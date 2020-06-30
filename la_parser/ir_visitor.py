@@ -61,6 +61,7 @@ class IRVisitor(object):
             IRNodeType.Factor: "visit_factor",
             IRNodeType.Expression: "visit_expression",
             IRNodeType.Subexpression: "visit_sub_expr",
+            IRNodeType.Constant: "visit_constant",
             # control
             IRNodeType.Start: "visit_start",
             IRNodeType.Block: "visit_block",

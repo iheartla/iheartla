@@ -52,3 +52,12 @@ blank
 params_separator
     = ','|';'|'x'|'×'
     ;
+
+constant
+    =
+    pi
+    ;
+
+pi::Pi
+    = 'π'
+    ;

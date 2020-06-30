@@ -114,6 +114,7 @@ factor::Factor
     | num:number
     | m:matrix
     | s:sparse_matrix
+    | c:constant
     ;
 
 subexpression::Subexpression

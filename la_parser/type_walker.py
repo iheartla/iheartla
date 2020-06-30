@@ -734,7 +734,18 @@ class TypeWalker(NodeWalker):
             node_info = self.walk(node.s, **kwargs)
             node_info.ir.set_parent(ir_node)
             ir_node.s = node_info.ir
+        elif node.c:
+            node_info = self.walk(node.c, **kwargs)
+            node_info.ir.set_parent(ir_node)
+            ir_node.c = node_info.ir
         #
+        ir_node.la_type = node_info.la_type
+        node_info.ir = ir_node
+        return node_info
+
+    def walk_Pi(self, node, **kwargs):
+        node_info = NodeInfo(ScalarType())
+        ir_node = ConstantNode(ConstantType.ConstantPi)
         ir_node.la_type = node_info.la_type
         node_info.ir = ir_node
         return node_info

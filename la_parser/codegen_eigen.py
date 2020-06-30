@@ -885,6 +885,14 @@ class CodeGenEigen(CodeGen):
             return self.visit(node.op, **kwargs)
         elif node.s:
             return self.visit(node.s, **kwargs)
+        elif node.c:
+            return self.visit(node.c, **kwargs)
+
+    def visit_constant(self, node, **kwargs):
+        content = ''
+        if node.c_type == ConstantType.ConstantPi:
+            content = 'M_PI'
+        return CodeNodeInfo(content)
 
     def visit_double(self, node, **kwargs):
         content = str(node.value)
