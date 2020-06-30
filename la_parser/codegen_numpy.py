@@ -656,15 +656,15 @@ class CodeGenNumpy(CodeGen):
         if node.func_type == MathFuncType.MathFuncSin:
             content = 'np.sin'
         elif node.func_type == MathFuncType.MathFuncAsin:
-            content = 'np.asin'
+            content = 'np.arcsin'
         elif node.func_type == MathFuncType.MathFuncCos:
             content = 'np.cos'
         elif node.func_type == MathFuncType.MathFuncAcos:
-            content = 'np.acos'
+            content = 'np.arccos'
         elif node.func_type == MathFuncType.MathFuncTan:
             content = 'np.tan'
         elif node.func_type == MathFuncType.MathFuncAtan:
-            content = 'np.atan'
+            content = 'np.arctan'
         elif node.func_type == MathFuncType.MathFuncAtan2:
             content = 'np.arctan2'
             params_content += ', ' + self.visit(node.remain_params[0], **kwargs).content

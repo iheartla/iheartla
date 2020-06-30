@@ -11,7 +11,7 @@ operations
     | sum_operator
     | trans_operator
     | solver_operator
-    | builtin_functions
+    | builtin_operators
     ;
 
 
@@ -105,7 +105,7 @@ function_operator::Function
     = name:identifier '(' {{hspace} params+:expression {{hspace} params_separator {hspace} params+:expression}} {hspace}')'
     ;
 
-builtin_functions
+builtin_operators
     =
     | sin_func
     | asin_func
