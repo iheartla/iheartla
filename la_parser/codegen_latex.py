@@ -148,7 +148,7 @@ class CodeGenLatex(CodeGen):
                     int_list.append('\\mathbb{R}')
             content += " \\times ".join(int_list)
         elif node.type1:
-            cnt = self.visit(node.cnt, **kwargs)
+            cnt = node.cnt
             if node.type1 == 'ℤ':
                 content += '\\mathbb{{Z}}^{{ {} }}'.format(cnt)
             else:

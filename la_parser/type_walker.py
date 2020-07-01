@@ -236,6 +236,7 @@ class TypeWalker(NodeWalker):
             cnt_info = self.walk(node.cnt, **kwargs)
             if isinstance(cnt_info.content, int):
                 cnt = cnt_info.content
+                ir_node.cnt = cnt
             if node.type1 == 'ℤ':
                 int_list = [True] * cnt
             else:
