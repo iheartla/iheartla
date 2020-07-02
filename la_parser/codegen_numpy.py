@@ -665,6 +665,24 @@ class CodeGenNumpy(CodeGen):
             content = 'np.tan'
         elif node.func_type == MathFuncType.MathFuncAtan:
             content = 'np.arctan'
+        elif node.func_type == MathFuncType.MathFuncSinh:
+            content = 'np.sinh'
+        elif node.func_type == MathFuncType.MathFuncAsinh:
+            content = 'np.arcsinh'
+        elif node.func_type == MathFuncType.MathFuncCosh:
+            content = 'np.cosh'
+        elif node.func_type == MathFuncType.MathFuncAcosh:
+            content = 'np.arccosh'
+        elif node.func_type == MathFuncType.MathFuncTanh:
+            content = 'np.tanh'
+        elif node.func_type == MathFuncType.MathFuncAtanh:
+            content = 'np.arctanh'
+        elif node.func_type == MathFuncType.MathFuncCot:
+            content = '1/np.tan'
+        elif node.func_type == MathFuncType.MathFuncSec:
+            content = '1/np.cos'
+        elif node.func_type == MathFuncType.MathFuncCsc:
+            content = '1/np.sin'
         elif node.func_type == MathFuncType.MathFuncAtan2:
             content = 'np.arctan2'
             params_content += ', ' + self.visit(node.remain_params[0], **kwargs).content

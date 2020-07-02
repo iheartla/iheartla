@@ -857,6 +857,24 @@ class CodeGenEigen(CodeGen):
             content = 'tan'
         elif node.func_type == MathFuncType.MathFuncAtan:
             content = 'atan'
+        elif node.func_type == MathFuncType.MathFuncSinh:
+            content = 'sinh'
+        elif node.func_type == MathFuncType.MathFuncAsinh:
+            content = 'asinh'
+        elif node.func_type == MathFuncType.MathFuncCosh:
+            content = 'cosh'
+        elif node.func_type == MathFuncType.MathFuncAcosh:
+            content = 'acosh'
+        elif node.func_type == MathFuncType.MathFuncTanh:
+            content = 'tanh'
+        elif node.func_type == MathFuncType.MathFuncAtanh:
+            content = 'atanh'
+        elif node.func_type == MathFuncType.MathFuncCot:
+            content = '1/tan'
+        elif node.func_type == MathFuncType.MathFuncSec:
+            content = '1/cos'
+        elif node.func_type == MathFuncType.MathFuncCsc:
+            content = '1/sin'
         elif node.func_type == MathFuncType.MathFuncAtan2:
             content = 'atan2'
             params_content += ', ' + self.visit(node.remain_params[0], **kwargs).content

@@ -114,6 +114,15 @@ builtin_operators
     | tan_func
     | atan_func
     | atan2_func
+    | sinh_func
+    | asinh_func
+    | cosh_func
+    | acosh_func
+    | tanh_func
+    | atanh_func
+    | cot_func
+    | sec_func
+    | csc_func
     | exp_func
     | log_func
     | ln_func
@@ -142,6 +151,42 @@ tan_func::TanFunc
 
 atan_func::AtanFunc
     = (ATAN|ARCTAN) '(' {hspace} param:expression {hspace} ')'
+    ;
+
+sinh_func::SinhFunc
+    = SINH '(' {hspace} param:expression {hspace} ')'
+    ;
+
+asinh_func::AsinhFunc
+    = (ASINH|ARCSINH) '(' {hspace} param:expression {hspace} ')'
+    ;
+
+cosh_func::CoshFunc
+    = COSH '(' {hspace} param:expression {hspace} ')'
+    ;
+
+acosh_func::AcoshFunc
+    = (ACOSH|ARCCOSH) '(' {hspace} param:expression {hspace} ')'
+    ;
+
+tanh_func::TanhFunc
+    = TANH '(' {hspace} param:expression {hspace} ')'
+    ;
+
+atanh_func::AtanhFunc
+    = (ATANH|ARCTANH) '(' {hspace} param:expression {hspace} ')'
+    ;
+
+cot_func::CotFunc
+    = COT '(' {hspace} param:expression {hspace} ')'
+    ;
+
+sec_func::SecFunc
+    = SEC '(' {hspace} param:expression {hspace} ')'
+    ;
+
+csc_func::CscFunc
+    = CSC '(' {hspace} param:expression {hspace} ')'
     ;
 
 atan2_func::Atan2Func

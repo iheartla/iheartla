@@ -1072,6 +1072,33 @@ class TypeWalker(NodeWalker):
     def walk_AtanFunc(self, node, **kwargs):
         return self.createMathNodeInfo(MathFuncType.MathFuncAtan, self.walk(node.param, **kwargs).ir)
 
+    def walk_SinhFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncSinh, self.walk(node.param, **kwargs).ir)
+
+    def walk_AsinhFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncAsinh, self.walk(node.param, **kwargs).ir)
+
+    def walk_CoshFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncCosh, self.walk(node.param, **kwargs).ir)
+
+    def walk_AcoshFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncAcosh, self.walk(node.param, **kwargs).ir)
+
+    def walk_TanhFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncTanh, self.walk(node.param, **kwargs).ir)
+
+    def walk_AtanhFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncAtanh, self.walk(node.param, **kwargs).ir)
+
+    def walk_CotFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncCot, self.walk(node.param, **kwargs).ir)
+
+    def walk_SecFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncSec, self.walk(node.param, **kwargs).ir)
+
+    def walk_CscFunc(self, node, **kwargs):
+        return self.createMathNodeInfo(MathFuncType.MathFuncCsc, self.walk(node.param, **kwargs).ir)
+
     def walk_Atan2Func(self, node, **kwargs):
         return self.createMathNodeInfo(MathFuncType.MathFuncAtan2, self.walk(node.param, **kwargs).ir, [self.walk(node.second, **kwargs).ir])
 

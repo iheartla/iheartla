@@ -427,11 +427,21 @@ class MathFuncType(Enum):
     MathFuncAcos = 3
     MathFuncTan = 4
     MathFuncAtan = 5
-    MathFuncAtan2 = 6
-    MathFuncExp = 7
-    MathFuncLog = 8
-    MathFuncLn = 9
-    MathFuncSqrt = 10
+    MathFuncSinh = 6
+    MathFuncAsinh = 7
+    MathFuncCosh = 8
+    MathFuncAcosh = 9
+    MathFuncTanh = 10
+    MathFuncAtanh = 11
+    MathFuncCot = 12
+    MathFuncSec = 13
+    MathFuncCsc = 14
+    #
+    MathFuncAtan2 = 15
+    MathFuncExp = 16
+    MathFuncLog = 17
+    MathFuncLn = 18
+    MathFuncSqrt = 19
 
 
 class MathFuncNode(ExprNode):
