@@ -149,6 +149,132 @@ class TestBuiltinFunctions(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
 
+    def test_builtin_sinh(self):
+        # space
+        la_str = """b = sinh(a)
+        where
+        a: scalar"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(3), np.sinh(3))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    return {}(3) == sinh(3);".format(func_info.eig_func_name),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+
+    def test_builtin_asinh(self):
+        # space
+        la_str = """b = asinh(a) + arcsinh(a)
+        where
+        a: scalar"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(3), 2*np.arcsinh(3))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    return {}(3) == 2*asinh(3);".format(func_info.eig_func_name),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+
+    def test_builtin_cosh(self):
+        # space
+        la_str = """b = cosh(a)
+        where
+        a: scalar"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(3), np.cosh(3))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    return {}(3) == cosh(3);".format(func_info.eig_func_name),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+
+    def test_builtin_acosh(self):
+        # space
+        la_str = """b = acosh(a) + arccosh(a)
+        where
+        a: scalar"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(3), 2*np.arccosh(3))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    return {}(3) == 2*acosh(3);".format(func_info.eig_func_name),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+
+    def test_builtin_tanh(self):
+        # space
+        la_str = """b = tanh(a)
+        where
+        a: scalar"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(3), np.tanh(3))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    return {}(3) == tanh(3);".format(func_info.eig_func_name),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+
+    def test_builtin_atanh(self):
+        # space
+        la_str = """b = atanh(a) + arctanh(a)
+        where
+        a: scalar"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(0.3), 2*np.arctanh(0.3))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    return {}(0.3) == 2*atanh(0.3);".format(func_info.eig_func_name),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+
+    def test_builtin_cot(self):
+        # space
+        la_str = """b = cot(a)
+        where
+        a: scalar"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(3), 1/np.tan(3))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    return {}(3) == 1/tan(3);".format(func_info.eig_func_name),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+
+    def test_builtin_sec(self):
+        # space
+        la_str = """b = sec(a)
+        where
+        a: scalar"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(3), 1/np.cos(3))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    return {}(3) == 1/cos(3);".format(func_info.eig_func_name),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+
+    def test_builtin_csc(self):
+        # space
+        la_str = """b = csc(a)
+        where
+        a: scalar"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(3), 1/np.sin(3))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    return {}(3) == 1/sin(3);".format(func_info.eig_func_name),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+
     def test_builtin_exp(self):
         # space
         la_str = """b = exp(a)
