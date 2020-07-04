@@ -275,6 +275,24 @@ class TestBuiltinFunctions(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
 
+    def test_builtin_trig_matrix(self):
+        # space
+        la_str = """A = sin(T)
+        where
+        T: ℝ ^ (2×2): a sequence"""
+        func_info = self.gen_func_info(la_str)
+        T = np.array([[1, 2], [3, 4]])
+        self.assertDMatrixEqual(func_info.numpy_func(T), np.sin(T))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> T;",
+                     "    T << 1, 2, 4, 3;",
+                     "    Eigen::Matrix<double, 2, 2> B = {}(T);".format(func_info.eig_func_name),
+                     "    return ((B - T.sin()).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+
     def test_builtin_exp(self):
         # space
         la_str = """b = exp(a)

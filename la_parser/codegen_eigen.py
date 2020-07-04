@@ -886,7 +886,11 @@ class CodeGenEigen(CodeGen):
             content = 'log'
         elif node.func_type == MathFuncType.MathFuncSqrt:
             content = 'sqrt'
-        return CodeNodeInfo("{}({})".format(content, params_content))
+        if node.param.la_type.is_scalar():
+            content = "{}({})".format(content, params_content)
+        else:
+            content = "({}).{}()".format(params_content, content)
+        return CodeNodeInfo(content)
 
     def visit_factor(self, node, **kwargs):
         if node.id:

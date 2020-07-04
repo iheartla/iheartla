@@ -466,7 +466,7 @@ class TypeWalker(NodeWalker):
         ir_node.content = ret_info.content
         ret_info.ir = ir_node
         return ret_info
-
+    
     def walk_Norm(self, node, **kwargs):
         ir_node = NormNode()
         value_info = self.walk(node.value, **kwargs)
@@ -1047,10 +1047,15 @@ class TypeWalker(NodeWalker):
         return node_info
 
     def createMathNodeInfo(self, func_type, param, remains=[]):
-        assert param.la_type.is_scalar(), "Parameters must be scalar type"
+        if MathFuncType.MathFuncInvalid < func_type < MathFuncType.MathFuncAtan2:
+            assert param.la_type.is_scalar() or param.la_type.is_matrix() or param.la_type.is_vector(), "Parameters must be scalar, vector or matrix type"
+        else:
+            assert param.la_type.is_scalar(), "Parameters must be scalar type"
+            for par in remains:
+                assert par.la_type.is_scalar(), "Parameters must be scalar type"
         tri_node = MathFuncNode(param, func_type, remains)
-        node_info = NodeInfo(ScalarType())
-        tri_node.la_type = node_info.la_type
+        node_info = NodeInfo(param.la_type)
+        tri_node.la_type = param.la_type
         node_info.ir = tri_node
         return node_info
 

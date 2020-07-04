@@ -386,11 +386,11 @@ class CodeGenLatex(CodeGen):
         elif node.func_type == MathFuncType.MathFuncAtanh:
             content = 'atanh'
         elif node.func_type == MathFuncType.MathFuncCot:
-            return "\\frac{1}{tan(" + param_info + ")}"
+            content = 'cot'
         elif node.func_type == MathFuncType.MathFuncSec:
-            return "\\frac{1}{cos(" + param_info + ")}"
+            content = 'sec'
         elif node.func_type == MathFuncType.MathFuncCsc:
-            return "\\frac{1}{sin(" + param_info + ")}"
+            content = 'csc'
         elif node.func_type == MathFuncType.MathFuncAtan2:
             content = 'atan2'
             param_info += ', ' + self.visit(node.remain_params[0], **kwargs)
