@@ -158,7 +158,7 @@ sinh_func::SinhFunc
     ;
 
 asinh_func::AsinhFunc
-    = (ASINH|ARCSINH) '(' {hspace} param:expression {hspace} ')'
+    = (ASINH|ARSINH) '(' {hspace} param:expression {hspace} ')'
     ;
 
 cosh_func::CoshFunc
@@ -166,7 +166,7 @@ cosh_func::CoshFunc
     ;
 
 acosh_func::AcoshFunc
-    = (ACOSH|ARCCOSH) '(' {hspace} param:expression {hspace} ')'
+    = (ACOSH|ARCOSH) '(' {hspace} param:expression {hspace} ')'
     ;
 
 tanh_func::TanhFunc
@@ -174,7 +174,7 @@ tanh_func::TanhFunc
     ;
 
 atanh_func::AtanhFunc
-    = (ATANH|ARCTANH) '(' {hspace} param:expression {hspace} ')'
+    = (ATANH|ARTANH) '(' {hspace} param:expression {hspace} ')'
     ;
 
 cot_func::CotFunc

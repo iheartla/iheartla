@@ -165,7 +165,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_asinh(self):
         # space
-        la_str = """b = asinh(a) + arcsinh(a)
+        la_str = """b = asinh(a) + arsinh(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -193,7 +193,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_acosh(self):
         # space
-        la_str = """b = acosh(a) + arccosh(a)
+        la_str = """b = acosh(a) + arcosh(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -221,7 +221,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_atanh(self):
         # space
-        la_str = """b = atanh(a) + arctanh(a)
+        la_str = """b = atanh(a) + artanh(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
