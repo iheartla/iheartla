@@ -261,7 +261,10 @@ class CodeGenNumpy(CodeGen):
                 content = "np.linalg.norm({}, np.inf)".format(value)
             elif node.norm_type == NormType.NormIdentifier:
                 sub_info = self.visit(node.sub, **kwargs)
-                content = "np.sqrt(({}).T @ {} @ ({}))".format(value, sub_info.content, value)
+                if node.sub.la_type.is_scalar():
+                    content = "np.linalg.norm({}, {})".format(value, sub_info.content)
+                else:
+                    content = "np.sqrt(({}).T @ {} @ ({}))".format(value, sub_info.content, value)
         elif type_info.la_type.is_matrix():
             if node.norm_type == NormType.NormFrobenius:
                 content = "np.linalg.norm({}, 'fro')".format(value)

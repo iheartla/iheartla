@@ -386,7 +386,10 @@ class CodeGenEigen(CodeGen):
                 content = "{}.lpNorm<Eigen::Infinity>()".format(value)
             elif node.norm_type == NormType.NormIdentifier:
                 sub_info = self.visit(node.sub, **kwargs)
-                content = "sqrt(({}).transpose()*{}*({}))".format(value, sub_info.content, value)
+                if node.sub.la_type.is_scalar():
+                    content = "pow({}.cwiseAbs().array().pow({}).sum(), 1.0/{});".format(value, sub_info.content, sub_info.content)
+                else:
+                    content = "sqrt(({}).transpose()*{}*({}))".format(value, sub_info.content, value)
         elif type_info.la_type.is_matrix():
             if node.norm_type == NormType.NormFrobenius:
                 content = "({}).norm()".format(value)

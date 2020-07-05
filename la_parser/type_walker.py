@@ -501,8 +501,9 @@ class TypeWalker(NodeWalker):
             assert node.single is None, "Vector type has to use || rather than |"
             assert ir_node.norm_type != NormType.NormFrobenius and ir_node.norm_type != NormType.NormNuclear, "Invalid norm for Vector"
             if ir_node.norm_type == NormType.NormIdentifier:
-                assert ir_node.sub.la_type.is_matrix(), "Subscript has to be matrix for vector type"
-                assert ir_node.sub.la_type.rows == ir_node.sub.la_type.cols and ir_node.sub.la_type.rows == ir_node.value.la_type.rows, "Norm: dim error"
+                assert ir_node.sub.la_type.is_matrix() or ir_node.sub.la_type.is_scalar(), "Subscript has to be matrix or scalar for vector type"
+                if ir_node.sub.la_type.is_matrix():
+                    assert ir_node.sub.la_type.rows == ir_node.sub.la_type.cols and ir_node.sub.la_type.rows == ir_node.value.la_type.rows, "Norm: dim error"
         elif ir_node.value.la_type.is_matrix():
             assert node.single is None, "MATRIX type has to use || rather than |"
             assert ir_node.norm_type == NormType.NormFrobenius or ir_node.norm_type == NormType.NormNuclear, "Invalid norm for Matrix"

@@ -120,6 +120,25 @@ class TestNorm(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_vector_norm_id(self):
+        la_str = """A = ||T||_a
+                    where 
+                    a: scalar
+                    T: ℝ ^ 4: vector"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([5, 0, 12, 0])
+        self.assertEqual(func_info.numpy_func(2, A), 13)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 4, 1> A;",
+                     "    A << 5, 0, 12, 0;",
+                     "    double B = {}(2, A);".format(func_info.eig_func_name),
+                     "    return (B == 13);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_vector_norm_max(self):
         la_str = """A = ||T||_∞
                     where 
@@ -209,7 +228,8 @@ class TestNorm(BasePythonTest):
                      "    Eigen::Matrix<double, 2, 2> A;",
                      "    A << 12, 5, 5, 12;",
                      "    double B = {}(A);".format(func_info.eig_func_name),
-                     "    return (B == (A.transpose()*A).sqrt().trace());",     # precision
+                     "    Eigen::JacobiSVD<Eigen::MatrixXd> svd(A, Eigen::ComputeThinU | Eigen::ComputeThinV);",
+                     "    return (B == svd.singularValues().sum());",     # precision
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
