@@ -466,7 +466,7 @@ class TypeWalker(NodeWalker):
         ir_node.content = ret_info.content
         ret_info.ir = ir_node
         return ret_info
-    
+
     def walk_Norm(self, node, **kwargs):
         ir_node = NormNode()
         value_info = self.walk(node.value, **kwargs)
@@ -506,6 +506,8 @@ class TypeWalker(NodeWalker):
         elif ir_node.value.la_type.is_matrix():
             assert node.single is None, "MATRIX type has to use || rather than |"
             assert ir_node.norm_type == NormType.NormFrobenius or ir_node.norm_type == NormType.NormNuclear, "Invalid norm for Matrix"
+            if ir_node.norm_type == NormType.NormNuclear:
+                assert not ir_node.value.la_type.sparse, "Nuclear norm is invalid for sparse matrix"
         # ret type
         ret_type = ScalarType()
         ir_node.la_type = ret_type

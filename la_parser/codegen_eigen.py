@@ -5,8 +5,7 @@ from la_parser.type_walker import *
 class CodeGenEigen(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.EIGEN)
-        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n'''
-        self.pre_str += "#include <unsupported/Eigen/MatrixFunctions>\n\n"
+        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n\n'''
         self.post_str = ''''''
         self.ret = 'ret'
 
@@ -374,6 +373,7 @@ class CodeGenEigen(CodeGen):
         value = value_info.content
         type_info = node.value
         content = ''
+        pre_list = []
         if type_info.la_type.is_scalar():
             content = "abs({})".format(value)
         elif type_info.la_type.is_vector():
@@ -391,8 +391,10 @@ class CodeGenEigen(CodeGen):
             if node.norm_type == NormType.NormFrobenius:
                 content = "({}).norm()".format(value)
             elif node.norm_type == NormType.NormNuclear:
-                content = "(({}).transpose()*({})).sqrt().trace()".format(value, value)
-        return CodeNodeInfo(content)
+                svd_name = self.generate_var_name("svd")
+                content = "{}.singularValues().sum()".format(svd_name)
+                pre_list.append("    Eigen::JacobiSVD<Eigen::MatrixXd> {}(T, Eigen::ComputeThinU | Eigen::ComputeThinV);\n".format(svd_name))
+        return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_transpose(self, node, **kwargs):
         f_info = self.visit(node.f, **kwargs)

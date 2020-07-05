@@ -14,11 +14,27 @@ class IRVisitor(object):
         self.subscripts = {}
         self.dim_dict = {}
         self.sub_name_dict = {}
+        self.name_cnt_dict = {}
         self.ids_dict = {}  # identifiers with subscripts
         self.ret_symbol = None
         self.content = ''
         self.parse_type = parse_type
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
+
+    def generate_var_name(self, base):
+        index = -1
+        if base in self.name_cnt_dict:
+            index = self.name_cnt_dict[base]
+        index += 1
+        valid = False
+        ret = ""
+        while not valid:
+            ret = "_{}_{}".format(base, index)
+            if ret not in self.symtable:
+                valid = True
+            index += 1
+        self.name_cnt_dict[base] = index - 1
+        return ret
 
     def print_symbols(self):
         self.logger.info("symtable:")
@@ -45,6 +61,7 @@ class IRVisitor(object):
         self.dim_dict = type_walker.dim_dict
         self.ids_dict = type_walker.ids_dict
         self.sub_name_dict = type_walker.sub_name_dict
+        self.name_cnt_dict = type_walker.name_cnt_dict
         self.ret_symbol = type_walker.ret_symbol
         # self.print_symbols()
 
