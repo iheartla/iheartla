@@ -544,7 +544,7 @@ class TypeWalker(NodeWalker):
         else:
             power_info = self.walk(node.power, **kwargs)
             ir_node.power = power_info.ir
-            symbols += power_info.symbols
+            symbols = symbols.union(power_info.symbols)
             node_type = power_info.la_type
         ir_node.la_type = node_type
         node_info = NodeInfo(node_type, symbols=symbols)

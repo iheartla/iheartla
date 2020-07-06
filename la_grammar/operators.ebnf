@@ -66,9 +66,9 @@ derivative_operator::Derivative
 
 
 power_operator::Power
-    = base:identifier {hspace} t:'^T'
-    | base:identifier {hspace} r:'^(-1)'
-    | base:identifier {hspace} '^' {hspace} power:factor
+    = base:factor {hspace} t:'^T'
+    | base:factor {hspace} r:'^(-1)'
+    | base:factor {hspace} '^' {hspace} power:factor
     ;
 
 solver_operator::Solver
