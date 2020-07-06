@@ -1049,7 +1049,7 @@ class TypeWalker(NodeWalker):
         node_info.ir = ir_node
         return node_info
 
-    def createMathNodeInfo(self, func_type, param, remains=[]):
+    def create_math_node_info(self, func_type, param, remains=[]):
         if MathFuncType.MathFuncInvalid < func_type < MathFuncType.MathFuncAtan2:
             assert param.la_type.is_scalar() or param.la_type.is_matrix() or param.la_type.is_vector(), "Parameters must be scalar, vector or matrix type"
         else:
@@ -1062,65 +1062,72 @@ class TypeWalker(NodeWalker):
         node_info.ir = tri_node
         return node_info
 
+    def create_trig_node_info(self, func_type, param, power):
+        if power:
+            ir_node = self.create_power_node(MathFuncNode(param, func_type), self.walk(power).ir)
+            return NodeInfo(ir_node.la_type, ir=ir_node)
+        else:
+            return self.create_math_node_info(func_type, param)
+
     def walk_SinFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncSin, self.walk(node.param, **kwargs).ir)
+        return self.create_trig_node_info(MathFuncType.MathFuncSin, self.walk(node.param, **kwargs).ir, node.power)
 
     def walk_AsinFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncAsin, self.walk(node.param, **kwargs).ir)
+        return self.create_trig_node_info(MathFuncType.MathFuncAsin, self.walk(node.param, **kwargs).ir, node.power)
 
     def walk_CosFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncCos, self.walk(node.param, **kwargs).ir)
+        return self.create_trig_node_info(MathFuncType.MathFuncCos, self.walk(node.param, **kwargs).ir, node.power)
 
     def walk_AcosFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncAcos, self.walk(node.param, **kwargs).ir)
+        return self.create_trig_node_info(MathFuncType.MathFuncAcos, self.walk(node.param, **kwargs).ir, node.power)
 
     def walk_TanFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncTan, self.walk(node.param, **kwargs).ir)
+        return self.create_trig_node_info(MathFuncType.MathFuncTan, self.walk(node.param, **kwargs).ir, node.power)
 
     def walk_AtanFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncAtan, self.walk(node.param, **kwargs).ir)
+        return self.create_trig_node_info(MathFuncType.MathFuncAtan, self.walk(node.param, **kwargs).ir, node.power)
 
     def walk_SinhFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncSinh, self.walk(node.param, **kwargs).ir)
+        return self.create_trig_node_info(MathFuncType.MathFuncSinh, self.walk(node.param, **kwargs).ir, node.power)
 
     def walk_AsinhFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncAsinh, self.walk(node.param, **kwargs).ir)
+        return self.create_trig_node_info(MathFuncType.MathFuncAsinh, self.walk(node.param, **kwargs).ir, node.power)
 
     def walk_CoshFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncCosh, self.walk(node.param, **kwargs).ir)
+        return self.create_trig_node_info(MathFuncType.MathFuncCosh, self.walk(node.param, **kwargs).ir, node.power)
 
     def walk_AcoshFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncAcosh, self.walk(node.param, **kwargs).ir)
+        return self.create_trig_node_info(MathFuncType.MathFuncAcosh, self.walk(node.param, **kwargs).ir, node.power)
 
     def walk_TanhFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncTanh, self.walk(node.param, **kwargs).ir)
+        return self.create_trig_node_info(MathFuncType.MathFuncTanh, self.walk(node.param, **kwargs).ir, node.power)
 
     def walk_AtanhFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncAtanh, self.walk(node.param, **kwargs).ir)
+        return self.create_trig_node_info(MathFuncType.MathFuncAtanh, self.walk(node.param, **kwargs).ir, node.power)
 
     def walk_CotFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncCot, self.walk(node.param, **kwargs).ir)
+        return self.create_trig_node_info(MathFuncType.MathFuncCot, self.walk(node.param, **kwargs).ir, node.power)
 
     def walk_SecFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncSec, self.walk(node.param, **kwargs).ir)
+        return self.create_trig_node_info(MathFuncType.MathFuncSec, self.walk(node.param, **kwargs).ir, node.power)
 
     def walk_CscFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncCsc, self.walk(node.param, **kwargs).ir)
+        return self.create_trig_node_info(MathFuncType.MathFuncCsc, self.walk(node.param, **kwargs).ir, node.power)
 
     def walk_Atan2Func(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncAtan2, self.walk(node.param, **kwargs).ir, [self.walk(node.second, **kwargs).ir])
+        return self.create_math_node_info(MathFuncType.MathFuncAtan2, self.walk(node.param, **kwargs).ir, [self.walk(node.second, **kwargs).ir])
 
     def walk_ExpFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncExp, self.walk(node.param, **kwargs).ir)
+        return self.create_math_node_info(MathFuncType.MathFuncExp, self.walk(node.param, **kwargs).ir)
 
     def walk_LogFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncLog, self.walk(node.param, **kwargs).ir)
+        return self.create_math_node_info(MathFuncType.MathFuncLog, self.walk(node.param, **kwargs).ir)
 
     def walk_LnFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncLn, self.walk(node.param, **kwargs).ir)
+        return self.create_math_node_info(MathFuncType.MathFuncLn, self.walk(node.param, **kwargs).ir)
 
     def walk_SqrtFunc(self, node, **kwargs):
-        return self.createMathNodeInfo(MathFuncType.MathFuncSqrt, self.walk(node.param, **kwargs).ir)
+        return self.create_math_node_info(MathFuncType.MathFuncSqrt, self.walk(node.param, **kwargs).ir)
 
     ###################################################################
     def check_bmat_validity(self, type_array, mat_size):

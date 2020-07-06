@@ -130,63 +130,63 @@ builtin_operators
     ;
 
 sin_func::SinFunc
-    = SIN '(' {hspace} param:expression {hspace} ')'
+    = SIN {'^' power:integer} '(' {hspace} param:expression {hspace} ')'
     ;
 
 asin_func::AsinFunc
-    = (ASIN|ARCSIN) '(' {hspace} param:expression {hspace} ')'
+    = (ASIN|ARCSIN) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 cos_func::CosFunc
-    = COS '(' {hspace} param:expression {hspace} ')'
+    = COS {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 acos_func::AcosFunc
-    = (ACOS|ARCCOS) '(' {hspace} param:expression {hspace} ')'
+    = (ACOS|ARCCOS) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 tan_func::TanFunc
-    = TAN '(' {hspace} param:expression {hspace} ')'
+    = TAN {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 atan_func::AtanFunc
-    = (ATAN|ARCTAN) '(' {hspace} param:expression {hspace} ')'
+    = (ATAN|ARCTAN) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 sinh_func::SinhFunc
-    = SINH '(' {hspace} param:expression {hspace} ')'
+    = SINH {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 asinh_func::AsinhFunc
-    = (ASINH|ARSINH) '(' {hspace} param:expression {hspace} ')'
+    = (ASINH|ARSINH) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 cosh_func::CoshFunc
-    = COSH '(' {hspace} param:expression {hspace} ')'
+    = COSH {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 acosh_func::AcoshFunc
-    = (ACOSH|ARCOSH) '(' {hspace} param:expression {hspace} ')'
+    = (ACOSH|ARCOSH) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 tanh_func::TanhFunc
-    = TANH '(' {hspace} param:expression {hspace} ')'
+    = TANH {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 atanh_func::AtanhFunc
-    = (ATANH|ARTANH) '(' {hspace} param:expression {hspace} ')'
+    = (ATANH|ARTANH) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 cot_func::CotFunc
-    = COT '(' {hspace} param:expression {hspace} ')'
+    = COT {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 sec_func::SecFunc
-    = SEC '(' {hspace} param:expression {hspace} ')'
+    = SEC {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 csc_func::CscFunc
-    = CSC '(' {hspace} param:expression {hspace} ')'
+    = CSC {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 atan2_func::Atan2Func
