@@ -21,6 +21,11 @@ KEYWORDS
     | DDOTS
     | WHERE
     | SUM
+    | MIN
+    | MAX
+    | ARGMIN
+    | ARGMAX
+    | INT
     | IF
     | OTHERWISE
     | IS
@@ -63,6 +68,11 @@ IDDOTS = '\u22F0';  #⋰
 DDOTS = '\u22F1';   #⋱
 WHERE = 'where';
 SUM = 'sum' | '∑';
+MIN = 'min';
+MAX = 'max';
+ARGMIN = 'argmin';
+ARGMAX = 'argmax';
+INT = 'int';
 SYMMETRIC = 'symmetric';
 DIAGONAL = 'diagonal';
 IF = 'if';

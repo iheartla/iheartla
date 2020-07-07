@@ -102,6 +102,9 @@ class IRVisitor(object):
             IRNodeType.Solver: "visit_solver",
             IRNodeType.Derivative: "visit_derivative",
             IRNodeType.MathFunc: "visit_math_func",
+            IRNodeType.Optimize: "visit_optimize",
+            IRNodeType.Domain: "visit_domain",
+            IRNodeType.Integral: "visit_integral",
             # matrix
             IRNodeType.Matrix: "visit_matrix",
             IRNodeType.MatrixRows: "visit_matrix_rows",

@@ -5,7 +5,9 @@ from la_parser.type_walker import *
 class CodeGenLatex(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.LATEX)
-        self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{ctex}\n\\setmainfont{Linux Libertine O}\n\\begin{document}\n\\[\n'''
+        self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{ctex}\n\\setmainfont{Linux Libertine O}\n'''
+        self.pre_str += '''\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n'''
+        self.pre_str += '''\\begin{document}\n\\[\n'''
         self.post_str = '''\n\end{document}'''
 
     def convert_unicode(self, name):
@@ -222,7 +224,10 @@ class CodeGenLatex(CodeGen):
             item_info = self.visit(item, **kwargs)
             item_list.append(item_info)
         right_info = self.visit(node.set, **kwargs)
-        return '({}) \\in {} '.format(', '.join(item_list), right_info)
+        if len(item_list) > 1:
+            return '({}) \\in {} '.format(', '.join(item_list), right_info)
+        else:
+            return '{} \\in {} '.format(', '.join(item_list), right_info)
 
     def visit_not_in(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
@@ -357,6 +362,28 @@ class CodeGenLatex(CodeGen):
 
     def visit_derivative(self, node, **kwargs):
         return "\\partial" + self.visit(value, **kwargs)
+
+    def visit_optimize(self, node, **kwargs):
+        category = ''
+        if node.opt_type == OptimizeType.OptimizeMin:
+            category = '\\min'
+        elif node.opt_type == OptimizeType.OptimizeMax:
+            category = '\\max'
+        elif node.opt_type == OptimizeType.OptimizeArgmin:
+            category = '\\argmin'
+        elif node.opt_type == OptimizeType.OptimizeArgmax:
+            category = '\\argmax'
+        return "{}_{{{}}} {}".format(category, self.visit(node.cond, **kwargs), self.visit(node.exp, **kwargs))
+
+    def visit_domain(self, node, **kwargs):
+        return ""
+
+    def visit_integral(self, node, **kwargs):
+        lower = self.visit(node.domain.lower, **kwargs)
+        upper = self.visit(node.domain.upper, **kwargs)
+        exp = self.visit(node.exp, **kwargs)
+        base = self.visit(node.base, **kwargs)
+        return "\\int_{{{}}}^{{{}}} {} d{}".format(lower, upper, exp, base)
 
     def visit_math_func(self, node, **kwargs):
         content = ''

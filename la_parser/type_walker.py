@@ -467,6 +467,36 @@ class TypeWalker(NodeWalker):
         ret_info.ir = ir_node
         return ret_info
 
+    def walk_Optimize(self, node, **kwargs):
+        opt_type = OptimizeType.OptimizeInvalid
+        if node.min:
+            opt_type = OptimizeType.OptimizeMin
+        elif node.max:
+            opt_type = OptimizeType.OptimizeMax
+        elif node.amin:
+            opt_type = OptimizeType.OptimizeArgmin
+        elif node.amax:
+            opt_type = OptimizeType.OptimizeArgmax
+        opt_node = OptimizeNode(opt_type, self.walk(node.cond, **kwargs).ir, self.walk(node.exp, **kwargs).ir)
+        opt_node.la_type = ScalarType()
+        node_info = NodeInfo(opt_node.la_type, ir=opt_node)
+        return node_info
+
+    def walk_Domain(self, node, **kwargs):
+        domain_node = DomainNode(self.walk(node.lower, **kwargs).ir, self.walk(node.upper, **kwargs).ir)
+        return domain_node
+
+    def walk_Integral(self, node, **kwargs):
+        if node.d:
+            domain_node = self.walk(node.d, **kwargs)
+        else:
+            domain_node = DomainNode(self.walk(node.lower, **kwargs).ir, self.walk(node.upper, **kwargs).ir)
+        int_node = IntegralNode(domain=domain_node, exp=self.walk(node.exp, **kwargs).ir, base=self.walk(node.id, **kwargs).ir)
+        node_info = NodeInfo(ScalarType())
+        node_info.ir = int_node
+        int_node.la_type = node_info.la_type
+        return node_info
+
     def walk_Norm(self, node, **kwargs):
         ir_node = NormNode()
         value_info = self.walk(node.value, **kwargs)

@@ -652,6 +652,15 @@ class CodeGenNumpy(CodeGen):
     def visit_derivative(self, node, **kwargs):
         return CodeNodeInfo("")
 
+    def visit_optimize(self, node, **kwargs):
+        return CodeNodeInfo("")
+
+    def visit_domain(self, node, **kwargs):
+        return CodeNodeInfo("")
+
+    def visit_integral(self, node, **kwargs):
+        return CodeNodeInfo("")
+
     def visit_math_func(self, node, **kwargs):
         content = ''
         param_info = self.visit(node.param, **kwargs)

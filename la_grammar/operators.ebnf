@@ -5,10 +5,12 @@ operations
     | norm_operator
     | trace_operator
     | eig_operator
-    | derivative_operator
+    #| derivative_operator
     | inner_product_operator
     | power_operator
     | sum_operator
+    | optimize_operator
+    | integral_operator
     | trans_operator
     | solver_operator
     | builtin_operators
@@ -78,6 +80,18 @@ solver_operator::Solver
 sum_operator::Summation
     = SUM '_' sub:identifier_alone {hspace}+ exp:expression
     | SUM '_(' {hspace} id:identifier_alone {hspace} 'for' {hspace} cond:if_condition {hspace} ')' {hspace}+ exp:expression
+    ;
+
+optimize_operator::Optimize
+    = (min:MIN|max:MAX|amin:ARGMIN|amax:ARGMAX) '_(' {hspace} id:identifier_alone {hspace} 'for' {hspace} cond:if_condition {hspace} ')' {hspace}+ exp:expression
+    ;
+
+integral_operator::Integral
+    = (INT|'∫') '_' (d:domain | ('(' lower:(integer|identifier_alone) {hspace} '^' {hspace} upper:(integer|identifier_alone) ')')) {hspace} exp:expression {hspace} ('d'|'∂') id:identifier_alone
+    ;
+
+domain::Domain
+    = '[' {hspace} lower:(integer|identifier_alone) {hspace} ',' {hspace} upper:(integer|identifier_alone) ']'
     ;
 
 norm_operator::Norm

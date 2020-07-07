@@ -41,6 +41,9 @@ class IRNodeType(Enum):
     Solver = 209
     Derivative = 210
     MathFunc = 211
+    Optimize = 212
+    Domain = 213
+    Integral = 214
     # matrix
     Matrix = 300
     MatrixRows = 301
@@ -312,6 +315,37 @@ class SummationNode(ExprNode):
         self.content = None
 
 
+class OptimizeType(Enum):
+    OptimizeInvalid = -1
+    OptimizeMin = 0
+    OptimizeMax = 1
+    OptimizeArgmin = 2
+    OptimizeArgmax = 3
+
+
+class OptimizeNode(ExprNode):
+    def __init__(self, opt_type=OptimizeType.OptimizeInvalid, cond=None, exp=None):
+        super().__init__(IRNodeType.Optimize)
+        self.opt_type = opt_type
+        self.cond = cond
+        self.exp = exp
+
+
+class DomainNode(ExprNode):
+    def __init__(self, lower=None, upper=None):
+        super().__init__(IRNodeType.Domain)
+        self.upper = upper
+        self.lower = lower
+
+
+class IntegralNode(ExprNode):
+    def __init__(self, domain=None, exp=None, base=None):
+        super().__init__(IRNodeType.Integral)
+        self.domain = domain
+        self.exp = exp
+        self.base = base
+
+
 class NormType(Enum):
     NormInvalid = -1
     NormFrobenius = 0
@@ -419,7 +453,7 @@ class DerivativeNode(ExprNode):
         self.value = None
 
 
-class MathFuncType(Enum):
+class MathFuncType(IntEnum):
     MathFuncInvalid = -1
     MathFuncSin = 0
     MathFuncAsin = 1
