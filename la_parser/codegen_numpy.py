@@ -6,7 +6,9 @@ import keyword
 class CodeGenNumpy(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.NUMPY)
-        self.pre_str = '''import numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\n\n\n'''
+        self.pre_str = '''import numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\n'''
+        self.pre_str += "from scipy.integrate import quad\n"
+        self.pre_str += "\n\n"
         self.post_str = ''''''
 
     def get_rand_test_str(self, la_type, rand_int_max):
@@ -659,7 +661,12 @@ class CodeGenNumpy(CodeGen):
         return CodeNodeInfo("")
 
     def visit_integral(self, node, **kwargs):
-        return CodeNodeInfo("")
+        lower_info = self.visit(node.domain.lower, **kwargs)
+        upper_info = self.visit(node.domain.upper, **kwargs)
+        exp_info = self.visit(node.exp, **kwargs)
+        base_info = self.visit(node.base, **kwargs)
+        content = "quad({}, {}, {})".format("lambda {}: {}".format(base_info.content, exp_info.content), lower_info.content, upper_info.content)
+        return CodeNodeInfo(content)
 
     def visit_math_func(self, node, **kwargs):
         content = ''
