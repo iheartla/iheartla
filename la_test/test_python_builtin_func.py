@@ -293,6 +293,20 @@ class TestBuiltinFunctions(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
 
+    def test_builtin_trig_power(self):
+        # space
+        la_str = """b = asin^2(a)
+        where
+        a: scalar"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(0.4), np.power(np.arcsin(0.4), 2))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    return {}(0.4) == pow(asin(0.4), 2);".format(func_info.eig_func_name),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+
     def test_builtin_exp(self):
         # space
         la_str = """b = exp(a)
