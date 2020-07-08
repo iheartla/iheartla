@@ -8,6 +8,7 @@ class CodeGenNumpy(CodeGen):
         super().__init__(ParserTypeEnum.NUMPY)
         self.pre_str = '''import numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\n'''
         self.pre_str += "from scipy.integrate import quad\n"
+        self.pre_str += "from scipy.optimize import minimize\n"
         self.pre_str += "\n\n"
         self.post_str = ''''''
 
@@ -114,7 +115,8 @@ class CodeGenNumpy(CodeGen):
                 test_content.append('    {} = np.random.randn()'.format(parameter))
             elif self.symtable[parameter].is_set():
                 type_checks.append('    assert isinstance({}, list) and len({}) > 0'.format(parameter, parameter))
-                type_checks.append('    assert len({}[0]) == {}'.format(parameter, self.symtable[parameter].size))
+                if self.symtable[parameter].size > 1:
+                    type_checks.append('    assert len({}[0]) == {}'.format(parameter, self.symtable[parameter].size))
                 test_content.append('    {} = []'.format(parameter))
                 test_content.append('    {}_0 = np.random.randint(1, {})'.format(parameter, rand_int_max))
                 test_content.append('    for i in range({}_0):'.format(parameter))
@@ -655,7 +657,44 @@ class CodeGenNumpy(CodeGen):
         return CodeNodeInfo("")
 
     def visit_optimize(self, node, **kwargs):
-        return CodeNodeInfo("")
+        exp_info = self.visit(node.exp, **kwargs)
+        id_info = self.visit(node.base, **kwargs)
+        category = ''
+        if node.opt_type == OptimizeType.OptimizeMin:
+            category = 'min'
+        elif node.opt_type == OptimizeType.OptimizeMax:
+            category = 'max'
+        elif node.opt_type == OptimizeType.OptimizeArgmin:
+            category = 'argmin'
+        elif node.opt_type == OptimizeType.OptimizeArgmax:
+            category = 'argmax'
+        opt_func = self.generate_var_name(category)
+        opt_param = self.generate_var_name('x')
+        opt_ret = self.generate_var_name('ret')
+        v_set = ''
+        if node.cond.cond.node_type == IRNodeType.In:
+            v_set = self.visit(node.cond.cond.set, **kwargs).content
+        pre_list = []
+        pre_list.append("    def {}({}):\n".format(opt_func, opt_param))
+        pre_list.append("        {} = 1\n".format(opt_ret))
+        pre_list.append("        for i in range(len({})):\n".format(v_set))
+        pre_list.append("            {} *= ({}[0] - {}[i])\n".format(opt_ret, opt_param, v_set))
+        pre_list.append("        return {}\n".format(opt_ret))
+        cons = self.generate_var_name('cons')
+        pre_list.append("    {} = ({{'type': 'eq', 'fun': {}}})\n".format(cons, opt_func))
+        target_func = self.generate_var_name('target')
+        exp = exp_info.content.replace(id_info.content, "{}[0]".format(id_info.content))
+        if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
+            pre_list.append("    {} = lambda {}: -({})\n".format(target_func, id_info.content, exp))
+        else:
+            pre_list.append("    {} = lambda {}: {}\n".format(target_func, id_info.content, exp))
+        if node.opt_type == OptimizeType.OptimizeMin:
+            content = "minimize({}, {}, constraints={}).fun".format(target_func, 0, cons)
+        elif node.opt_type == OptimizeType.OptimizeMax:
+            content = "-minimize({}, {}, constraints={}).fun".format(target_func, 0, cons)
+        elif node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
+            content = "minimize({}, {}, constraints={}).x[0]".format(target_func, 0, cons)
+        return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_domain(self, node, **kwargs):
         return CodeNodeInfo("")

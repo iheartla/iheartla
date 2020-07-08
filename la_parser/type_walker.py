@@ -477,7 +477,9 @@ class TypeWalker(NodeWalker):
             opt_type = OptimizeType.OptimizeArgmin
         elif node.amax:
             opt_type = OptimizeType.OptimizeArgmax
-        opt_node = OptimizeNode(opt_type, self.walk(node.cond, **kwargs).ir, self.walk(node.exp, **kwargs).ir)
+        cond_node = self.walk(node.cond, **kwargs).ir
+        assert cond_node.cond.node_type == IRNodeType.In, "Variable value must be in a set"
+        opt_node = OptimizeNode(opt_type, cond_node, self.walk(node.exp, **kwargs).ir, self.walk(node.id, **kwargs).ir)
         opt_node.la_type = ScalarType()
         node_info = NodeInfo(opt_node.la_type, ir=opt_node)
         return node_info
@@ -741,7 +743,8 @@ class TypeWalker(NodeWalker):
             id0 = self.get_main_id(id0)
             if not la_is_inside_sum(**kwargs) and not la_is_if(**kwargs):  # symbols in sum don't need to be defined before
                 if id0 != 'I':  # special case
-                    assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
+                    # assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
+                    pass  # todo:delete
                 else:
                     # I
                     if 'I' not in self.symtable:
