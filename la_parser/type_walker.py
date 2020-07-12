@@ -1097,6 +1097,7 @@ class TypeWalker(NodeWalker):
 
     def create_trig_node_info(self, func_type, param, power):
         if power:
+            assert param.la_type.is_scalar(), "Parameters must be scalar type for the power"
             ir_node = self.create_power_node(MathFuncNode(param, func_type), self.walk(power).ir)
             return NodeInfo(ir_node.la_type, ir=ir_node)
         else:
@@ -1147,6 +1148,7 @@ class TypeWalker(NodeWalker):
     def walk_CscFunc(self, node, **kwargs):
         return self.create_trig_node_info(MathFuncType.MathFuncCsc, self.walk(node.param, **kwargs).ir, node.power)
 
+    # other math node
     def walk_Atan2Func(self, node, **kwargs):
         return self.create_math_node_info(MathFuncType.MathFuncAtan2, self.walk(node.param, **kwargs).ir, [self.walk(node.second, **kwargs).ir])
 
