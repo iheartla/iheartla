@@ -373,7 +373,12 @@ class CodeGenLatex(CodeGen):
             category = '\\argmin'
         elif node.opt_type == OptimizeType.OptimizeArgmax:
             category = '\\argmax'
-        return "{}_{{{}}} {}".format(category, self.visit(node.cond, **kwargs), self.visit(node.exp, **kwargs))
+        content = "{}_{} {}\n\\]\n".format(category, self.visit(node.base, **kwargs), self.visit(node.exp, **kwargs))
+        content += "\\[s.t.\\]\n" + "\\[\n"
+        constraint_list = []
+        for cond_node in node.cond_list:
+            constraint_list.append("{}".format(self.visit(cond_node, **kwargs)))
+        return content + "\\]\n\\[\n".join(constraint_list)
 
     def visit_domain(self, node, **kwargs):
         return ""

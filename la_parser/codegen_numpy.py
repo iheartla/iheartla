@@ -668,22 +668,44 @@ class CodeGenNumpy(CodeGen):
             category = 'argmin'
         elif node.opt_type == OptimizeType.OptimizeArgmax:
             category = 'argmax'
-        opt_func = self.generate_var_name(category)
         opt_param = self.generate_var_name('x')
         opt_ret = self.generate_var_name('ret')
-        v_set = ''
-        if node.cond.cond.node_type == IRNodeType.In:
-            v_set = self.visit(node.cond.cond.set, **kwargs).content
+        # Handle constraints
         pre_list = []
-        pre_list.append("    def {}({}):\n".format(opt_func, opt_param))
-        pre_list.append("        {} = 1\n".format(opt_ret))
-        pre_list.append("        for i in range(len({})):\n".format(v_set))
-        pre_list.append("            {} *= ({}[0] - {}[i])\n".format(opt_ret, opt_param, v_set))
-        pre_list.append("        return {}\n".format(opt_ret))
+        constraint_list = []
+        v_set = ''
+        for cond_node in node.cond_list:
+            if cond_node.cond.node_type == IRNodeType.BinComp:
+                if cond_node.cond.comp_type == IRNodeType.Gt or cond_node.cond.comp_type == IRNodeType.Ge:
+                    constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: {}-{}}}".format(id_info.content,
+                                                                                                self.visit(cond_node.cond.left, **kwargs).content,
+                                                                                                self.visit(cond_node.cond.right, **kwargs).content))
+                elif cond_node.cond.comp_type == IRNodeType.Lt or cond_node.cond.comp_type == IRNodeType.Le:
+                    constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: {}-{}}}".format(id_info.content,
+                                                                                                self.visit(cond_node.cond.right, **kwargs).content,
+                                                                                                self.visit(cond_node.cond.left, **kwargs).content))
+                elif cond_node.cond.comp_type == IRNodeType.Eq:
+                    constraint_list.append("{{'type': 'eq', 'fun': lambda {}: {}-{}}}".format(id_info.content,
+                                                                                              self.visit(cond_node.cond.left, **kwargs).content,
+                                                                                              self.visit(cond_node.cond.right, **kwargs).content))
+                elif cond_node.cond.comp_type == IRNodeType.Ne:
+                    constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: np.power({}-{}, 2)}}".format(id_info.content,
+                                                                                              self.visit(cond_node.cond.left, **kwargs).content,
+                                                                                              self.visit(cond_node.cond.right, **kwargs).content))
+            elif cond_node.cond.node_type == IRNodeType.In:
+                v_set = self.visit(cond_node.cond.node_type, **kwargs).content
+                opt_func = self.generate_var_name(category)
+                pre_list.append("    def {}({}):\n".format(opt_func, opt_param))
+                pre_list.append("        {} = 1\n".format(opt_ret))
+                pre_list.append("        for i in range(len({})):\n".format(v_set))
+                pre_list.append("            {} *= ({}[0] - {}[i])\n".format(opt_ret, opt_param, v_set))
+                pre_list.append("        return {}\n".format(opt_ret))
+                constraint_list.append("{{'type': 'eq', 'fun': {}}}".format(opt_func))
         cons = self.generate_var_name('cons')
-        pre_list.append("    {} = ({{'type': 'eq', 'fun': {}}})\n".format(cons, opt_func))
+        pre_list.append("    {} = ({})\n".format(cons, ','.join(constraint_list)))
         target_func = self.generate_var_name('target')
         exp = exp_info.content.replace(id_info.content, "{}[0]".format(id_info.content))
+        # Handle optimization type
         if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
             pre_list.append("    {} = lambda {}: -({})\n".format(target_func, id_info.content, exp))
         else:

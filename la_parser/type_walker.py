@@ -477,12 +477,20 @@ class TypeWalker(NodeWalker):
             opt_type = OptimizeType.OptimizeArgmin
         elif node.amax:
             opt_type = OptimizeType.OptimizeArgmax
-        cond_node = self.walk(node.cond, **kwargs).ir
-        assert cond_node.cond.node_type == IRNodeType.In, "Variable value must be in a set"
-        opt_node = OptimizeNode(opt_type, cond_node, self.walk(node.exp, **kwargs).ir, self.walk(node.id, **kwargs).ir)
+        cond_list = self.walk(node.cond, **kwargs)
+
+        # assert cond_node.cond.node_type == IRNodeType.In, "Variable value must be in a set"
+        opt_node = OptimizeNode(opt_type, cond_list, self.walk(node.exp, **kwargs).ir, self.walk(node.id, **kwargs).ir)
         opt_node.la_type = ScalarType()
         node_info = NodeInfo(opt_node.la_type, ir=opt_node)
         return node_info
+
+    def walk_MultiCond(self, node, **kwargs):
+        conds_list = []
+        if node.m_cond:
+            conds_list = self.walk(node.m_cond, **kwargs)
+        conds_list.append(self.walk(node.cond, **kwargs).ir)
+        return conds_list
 
     def walk_Domain(self, node, **kwargs):
         domain_node = DomainNode(self.walk(node.lower, **kwargs).ir, self.walk(node.upper, **kwargs).ir)

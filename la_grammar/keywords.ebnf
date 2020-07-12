@@ -44,6 +44,7 @@ KEYWORDS
     | LOG
     | LN
     | SQRT
+    | SUBJECT_TO
     ;
 
 TRACE = 'trace';
@@ -105,3 +106,4 @@ EXP = 'exp';
 LOG = 'log';
 LN = 'ln';
 SQRT = 'sqrt';
+SUBJECT_TO = 's.t.'|'subject to';
