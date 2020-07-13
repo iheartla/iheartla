@@ -726,7 +726,7 @@ class CodeGenNumpy(CodeGen):
         upper_info = self.visit(node.domain.upper, **kwargs)
         exp_info = self.visit(node.exp, **kwargs)
         base_info = self.visit(node.base, **kwargs)
-        content = "quad({}, {}, {})".format("lambda {}: {}".format(base_info.content, exp_info.content), lower_info.content, upper_info.content)
+        content = "quad({}, {}, {})[0]".format("lambda {}: {}".format(base_info.content, exp_info.content), lower_info.content, upper_info.content)
         return CodeNodeInfo(content)
 
     def visit_math_func(self, node, **kwargs):
