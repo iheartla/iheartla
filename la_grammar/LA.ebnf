@@ -24,7 +24,7 @@ statements::Statements
 statement
     =
     | assignment
-    | expression
+    | right_hand_side
     ;
 
 where_conditions::WhereConditions
@@ -94,8 +94,14 @@ expression::Expression
 
 assignment::Assignment
     =
-    left:identifier {hspace} op:'=' {hspace} {separator_with_space} right:expression {hspace}
-    | left:identifier {hspace} op:'+=' {hspace} {separator_with_space} right:expression {hspace}
+    left:identifier {hspace} op:'=' {hspace} {separator_with_space} right:right_hand_side {hspace}
+    | left:identifier {hspace} op:'+=' {hspace} {separator_with_space} right:right_hand_side {hspace}
+    ;
+
+right_hand_side
+    =
+    | expression
+    | optimize_operator
     ;
 
 term

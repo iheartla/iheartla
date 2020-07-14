@@ -78,12 +78,13 @@ class IRNode(object):
             self.parent = weakref.ref(parent)
 
     def get_ancestor(self, node_type):
-        parent = self.parent()
-        while parent is not None:
-            if parent.node_type == node_type:
-                return parent
-            else:
-                parent = parent.parent()
+        if self.parent is not None:
+            parent = self.parent()
+            while parent is not None:
+                if parent.node_type == node_type:
+                    return parent
+                else:
+                    parent = parent.parent()
         return None
 
 

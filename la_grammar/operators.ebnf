@@ -9,7 +9,6 @@ operations
     | inner_product_operator
     | power_operator
     | sum_operator
-    | optimize_operator
     | integral_operator
     | trans_operator
     | solver_operator

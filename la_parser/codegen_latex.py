@@ -176,7 +176,10 @@ class CodeGenLatex(CodeGen):
         return params_str + '\\rightarrow ' + ret
 
     def visit_assignment(self, node, **kwargs):
-        return self.visit(node.left, **kwargs) + " = " + self.visit(node.right, **kwargs)
+        if node.right.node_type == IRNodeType.Optimize:
+            return self.visit(node.right, **kwargs)
+        else:
+            return self.visit(node.left, **kwargs) + " = " + self.visit(node.right, **kwargs)
 
     def visit_expression(self, node, **kwargs):
         value = self.visit(node.value, **kwargs)
@@ -364,6 +367,7 @@ class CodeGenLatex(CodeGen):
         return "\\partial" + self.visit(value, **kwargs)
 
     def visit_optimize(self, node, **kwargs):
+        assign_node = node.get_ancestor(IRNodeType.Assignment)
         category = ''
         if node.opt_type == OptimizeType.OptimizeMin:
             category = '\\min'
@@ -373,12 +377,20 @@ class CodeGenLatex(CodeGen):
             category = '\\argmin'
         elif node.opt_type == OptimizeType.OptimizeArgmax:
             category = '\\argmax'
-        content = "{}_{} {}\n\\]\n".format(category, self.visit(node.base, **kwargs), self.visit(node.exp, **kwargs))
-        content += "\\[s.t.\\]\n" + "\\[\n"
+        content = "\\begin{aligned}"
+        if assign_node:
+            content += "{} = {}_{} \\quad & {} \\\\\n".format(self.visit(assign_node.left, **kwargs), category,
+                                                              self.visit(node.base, **kwargs),
+                                                              self.visit(node.exp, **kwargs))
+        else:
+            content += "{}_{} \\quad & {} \\\\\n".format(category, self.visit(node.base, **kwargs), self.visit(node.exp, **kwargs))
+        content += "\\textrm{s.t.} \\quad &"
         constraint_list = []
         for cond_node in node.cond_list:
             constraint_list.append("{}".format(self.visit(cond_node, **kwargs)))
-        return content + "\\]\n\\[\n".join(constraint_list)
+        content += "\\\\\n & ".join(constraint_list)
+        content += "\n\\end{aligned}"
+        return content
 
     def visit_domain(self, node, **kwargs):
         return ""
