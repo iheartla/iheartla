@@ -31,7 +31,10 @@ class CodeGenNumpy(CodeGen):
         return rand_test
 
     def visit_id(self, node, **kwargs):
-        return CodeNodeInfo(node.get_name())
+        content = node.get_name()
+        if content in self.name_convention_dict:
+            content = self.name_convention_dict[content]
+        return CodeNodeInfo(content)
 
     def visit_start(self, node, **kwargs):
         return self.visit(node.stat, **kwargs)
@@ -657,8 +660,17 @@ class CodeGenNumpy(CodeGen):
         return CodeNodeInfo("")
 
     def visit_optimize(self, node, **kwargs):
-        exp_info = self.visit(node.exp, **kwargs)
         id_info = self.visit(node.base, **kwargs)
+        if node.base_type.la_type.is_scalar():
+            init_value = 0
+        elif node.base_type.la_type.is_vector():
+            init_value = "np.zeros({})".format(node.base_type.la_type.rows)
+        elif node.base_type.la_type.is_matrix():
+            init_value = "np.zeros({}*{})".format(node.base_type.la_type.rows, node.base_type.la_type.cols)
+            self.name_convention_dict[id_info.content] = "{}.reshape({}, {})".format(id_info.content,
+                                                                                        node.base_type.la_type.rows,
+                                                                                        node.base_type.la_type.cols)
+        exp_info = self.visit(node.exp, **kwargs)
         category = ''
         if node.opt_type == OptimizeType.OptimizeMin:
             category = 'min'
@@ -705,32 +717,30 @@ class CodeGenNumpy(CodeGen):
         target_func = self.generate_var_name('target')
         if node.base_type.la_type.is_scalar():
             exp = exp_info.content.replace(id_info.content, "{}[0]".format(id_info.content))
-        elif node.base_type.la_type.is_vector():
+        else:
             exp = exp_info.content
-        elif node.base_type.la_type.is_matrix():
-            exp = exp_info.content.replace(id_info.content, "{}.reshape({}, {})".format(id_info.content,
-                                                                                        node.base_type.la_type.rows,
-                                                                                        node.base_type.la_type.cols))
         # Handle optimization type
         if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
             pre_list.append("    {} = lambda {}: -({})\n".format(target_func, id_info.content, exp))
         else:
             pre_list.append("    {} = lambda {}: {}\n".format(target_func, id_info.content, exp))
         if node.opt_type == OptimizeType.OptimizeMin:
-            content = "minimize({}, {}, constraints={}).fun".format(target_func, 0, cons)
+            content = "minimize({}, {}, constraints={}).fun".format(target_func, init_value, cons)
         elif node.opt_type == OptimizeType.OptimizeMax:
-            content = "-minimize({}, {}, constraints={}).fun".format(target_func, 0, cons)
+            content = "-minimize({}, {}, constraints={}).fun".format(target_func, init_value, cons)
         elif node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
             if node.base_type.la_type.is_scalar():
-                content = "minimize({}, {}, constraints={}).x[0]".format(target_func, 0, cons)
+                content = "minimize({}, {}, constraints={}).x[0]".format(target_func, init_value, cons)
             elif node.base_type.la_type.is_vector():
-                content = "minimize({}, np.zeros({}), constraints={}).x".format(target_func, node.base_type.la_type.rows, cons)
+                content = "minimize({}, {}, constraints={}).x".format(target_func, init_value, cons)
             elif node.base_type.la_type.is_matrix():
-                content = "minimize({}, np.zeros({}), constraints={}).x.reshape({}, {})".format(target_func,
-                                                                                                node.base_type.la_type.rows*node.base_type.la_type.cols,
+                content = "minimize({}, {}, constraints={}).x.reshape({}, {})".format(target_func,
+                                                                                                init_value,
                                                                                                 cons,
                                                                                                 node.base_type.la_type.rows,
                                                                                                 node.base_type.la_type.cols)
+        if node.base_type.la_type.is_matrix():
+            del self.name_convention_dict[id_info.content]
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_domain(self, node, **kwargs):

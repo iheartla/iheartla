@@ -20,6 +20,7 @@ class IRVisitor(object):
         self.content = ''
         self.parse_type = parse_type
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
+        self.name_convention_dict = {}  # eg:i -> i[0]
 
     def generate_var_name(self, base):
         index = -1
