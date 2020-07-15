@@ -243,13 +243,20 @@ class TypeWalker(NodeWalker):
                 int_list = [False] * cnt
         elif node.type2:
             ir_node.type2 = node.type2
-            cnt = 2
-            if node.type2 == 'ℤ²':
+            cnt = 0
+            for index in range(len(node.cnt)):
+                cnt += self.get_unicode_number(node.cnt[len(node.cnt)-1-index]) * 10 ** index
+            if node.type2 == 'ℤ':
                 int_list = [True] * cnt
             else:
                 int_list = [False] * cnt
         ir_node.la_type = SetType(size=cnt, int_list=int_list)
         return ir_node
+
+    def get_unicode_number(self, unicode):
+        # 0:\u2070,1:\u00B9,2:\u00B2,3:\u00B3,4-9:[\u2074-\u2079]
+        number_dict = {'⁰':0,'¹':1,'²':2, '³':3,'⁴':4,'⁵':5,'⁶':6,'⁷':7,'⁸':8,'⁹':9 }
+        return number_dict[unicode]
 
     def walk_FunctionType(self, node, **kwargs):
         ir_node = FunctionTypeNode()

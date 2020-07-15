@@ -61,7 +61,7 @@ scalar_type::ScalarType
 set_type::SetType
     = '{' {hspace} type+:('ℝ'|'ℤ') {hspace} {'×' {hspace} type+:('ℝ'|'ℤ') {hspace} }'}'
     | '{' {hspace} type1:('ℝ'|'ℤ') {hspace} '^' {hspace} cnt:(integer) {hspace} '}'
-    | '{' {hspace} type2:('ℝ²'|'ℤ²') {hspace} '}'
+    | '{' {hspace} type2:(/\u211D/ | /\u2124/) cnt:{/[\u2070\u00B9\u00B2\u00B3\u2074-\u2079]/} {hspace} '}'     #  \u2124:ℤ  \u211D:ℝ
     ;
 
 la_type
