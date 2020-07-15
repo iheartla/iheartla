@@ -141,8 +141,8 @@ if_condition::IfCondition
     ;
 
 in::InCondition
-    = '(' {hspace} left+:expression {hspace} {',' {hspace} left+:expression {hspace}} ')' {hspace} '∈' {hspace} right:identifier
-    | left+:expression {hspace} '∈' {hspace} right:identifier
+    = '(' {hspace} left+:expression {hspace} {',' {hspace} left+:expression {hspace}} ')' {hspace} IN {hspace} right:identifier
+    | left+:expression {hspace} IN {hspace} right:identifier
     ;
 
 not_in::NotInCondition

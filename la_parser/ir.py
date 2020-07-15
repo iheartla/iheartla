@@ -325,12 +325,13 @@ class OptimizeType(Enum):
 
 
 class OptimizeNode(ExprNode):
-    def __init__(self, opt_type=OptimizeType.OptimizeInvalid, cond_list=None, exp=None, base=None):
+    def __init__(self, opt_type=OptimizeType.OptimizeInvalid, cond_list=None, exp=None, base=None, base_type=None):
         super().__init__(IRNodeType.Optimize)
         self.opt_type = opt_type
         self.cond_list = cond_list
         self.exp = exp
         self.base = base
+        self.base_type = base_type
 
 
 class DomainNode(ExprNode):

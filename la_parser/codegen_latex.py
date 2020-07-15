@@ -377,13 +377,10 @@ class CodeGenLatex(CodeGen):
             category = '\\argmin'
         elif node.opt_type == OptimizeType.OptimizeArgmax:
             category = '\\argmax'
-        content = "\\begin{aligned}"
+        content = "\\begin{aligned} "
         if assign_node:
-            content += "{} = {}_{} \\quad & {} \\\\\n".format(self.visit(assign_node.left, **kwargs), category,
-                                                              self.visit(node.base, **kwargs),
-                                                              self.visit(node.exp, **kwargs))
-        else:
-            content += "{}_{} \\quad & {} \\\\\n".format(category, self.visit(node.base, **kwargs), self.visit(node.exp, **kwargs))
+            content += "{} = ".format(self.visit(assign_node.left, **kwargs))
+        content += "{}_{{{} \\in {}}} \\quad & {} \\\\\n".format(category, self.visit(node.base, **kwargs), self.visit(node.base_type, **kwargs), self.visit(node.exp, **kwargs))
         content += "\\textrm{s.t.} \\quad &"
         constraint_list = []
         for cond_node in node.cond_list:
