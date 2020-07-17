@@ -44,6 +44,7 @@ class IRNodeType(Enum):
     Optimize = 212
     Domain = 213
     Integral = 214
+    InnerProduct = 215
     # matrix
     Matrix = 300
     MatrixRows = 301
@@ -347,6 +348,14 @@ class IntegralNode(ExprNode):
         self.domain = domain
         self.exp = exp
         self.base = base
+
+
+class InnerProductNode(ExprNode):
+    def __init__(self, left=None, right=None, sub=None):
+        super().__init__(IRNodeType.InnerProduct)
+        self.left = left
+        self.right = right
+        self.sub = sub
 
 
 class NormType(Enum):

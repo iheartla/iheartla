@@ -112,7 +112,9 @@ norm_operator::Norm
     ;
 
 inner_product_operator::InnerProduct
-    = '<' {hspace} left:identifier {hspace} ',' {hspace}  right:identifier {hspace} '>'
+    = (('<' {hspace} left:expression {hspace} ',' {hspace}  right:expression {hspace} '>')
+    | ('⟨' {hspace} left:expression {hspace} ',' {hspace}  right:expression {hspace} '⟩'))
+    {'_' sub:identifier}
     ;
 
 

@@ -754,6 +754,15 @@ class CodeGenNumpy(CodeGen):
         content = "quad({}, {}, {})[0]".format("lambda {}: {}".format(base_info.content, exp_info.content), lower_info.content, upper_info.content)
         return CodeNodeInfo(content)
 
+    def visit_inner_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        content = "np.inner({}, {})".format(left_info.content, right_info.content)
+        if node.sub:
+            sub_info = self.visit(node.sub, **kwargs)
+            content = "({}).T @ ({}) @ ({})".format(right_info.content, sub_info.content, left_info.content)
+        return CodeNodeInfo(content)
+
     def visit_math_func(self, node, **kwargs):
         content = ''
         param_info = self.visit(node.param, **kwargs)

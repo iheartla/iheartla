@@ -573,6 +573,22 @@ class TypeWalker(NodeWalker):
         node_info = NodeInfo(ret_type, symbols=value_info.symbols, ir=ir_node)
         return node_info
 
+    def walk_InnerProduct(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        assert left_info.ir.la_type.is_vector(), "parameters must be vector"
+        assert right_info.ir.la_type.is_vector(), "parameters must be vector"
+        assert left_info.ir.la_type.rows == right_info.ir.la_type.rows, "the dims of vector must be the same"
+        sub_node = None
+        if node.sub:
+            sub_node = self.walk(node.sub, **kwargs).ir
+            assert sub_node.la_type.is_matrix() and sub_node.la_type.rows==sub_node.la_type.cols==left_info.ir.la_type.rows, "the dim of subscript must correspond to the vector dim"
+        ir_node = InnerProductNode(left_info.ir, right_info.ir, sub_node)
+        ret_type = ScalarType()
+        ir_node.la_type = ret_type
+        node_info = NodeInfo(ret_type, ir=ir_node)
+        return node_info
+
     def create_power_node(self, base, power):
         power_node = PowerNode()
         power_node.base = base

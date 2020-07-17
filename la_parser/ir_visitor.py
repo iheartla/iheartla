@@ -106,6 +106,7 @@ class IRVisitor(object):
             IRNodeType.Optimize: "visit_optimize",
             IRNodeType.Domain: "visit_domain",
             IRNodeType.Integral: "visit_integral",
+            IRNodeType.InnerProduct: "visit_inner_product",
             # matrix
             IRNodeType.Matrix: "visit_matrix",
             IRNodeType.MatrixRows: "visit_matrix_rows",
