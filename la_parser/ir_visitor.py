@@ -107,6 +107,11 @@ class IRVisitor(object):
             IRNodeType.Domain: "visit_domain",
             IRNodeType.Integral: "visit_integral",
             IRNodeType.InnerProduct: "visit_inner_product",
+            IRNodeType.FroProduct: "visit_fro_product",
+            IRNodeType.HadamardProduct: "visit_hadamard_product",
+            IRNodeType.CrossProduct: "visit_cross_product",
+            IRNodeType.KroneckerProduct: "visit_kronecker_product",
+            IRNodeType.DotProduct: "visit_dot_product",
             # matrix
             IRNodeType.Matrix: "visit_matrix",
             IRNodeType.MatrixRows: "visit_matrix_rows",

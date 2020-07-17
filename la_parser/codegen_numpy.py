@@ -763,6 +763,31 @@ class CodeGenNumpy(CodeGen):
             content = "({}).T @ ({}) @ ({})".format(right_info.content, sub_info.content, left_info.content)
         return CodeNodeInfo(content)
 
+    def visit_fro_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        return CodeNodeInfo("np.trace(({}).T @ ({}))".format(left_info.content, right_info.content))
+
+    def visit_hadamard_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        return CodeNodeInfo("np.multiply({}, {})".format(left_info.content, right_info.content))
+
+    def visit_cross_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        return CodeNodeInfo("np.cross({}, {})".format(left_info.content, right_info.content))
+
+    def visit_kronecker_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        return CodeNodeInfo("np.kron({}, {})".format(left_info.content, right_info.content))
+
+    def visit_dot_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        return CodeNodeInfo("np.dot({}, {})".format(left_info.content, right_info.content))
+
     def visit_math_func(self, node, **kwargs):
         content = ''
         param_info = self.visit(node.param, **kwargs)

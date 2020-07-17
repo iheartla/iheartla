@@ -45,6 +45,11 @@ class IRNodeType(Enum):
     Domain = 213
     Integral = 214
     InnerProduct = 215
+    FroProduct = 216
+    HadamardProduct = 217
+    CrossProduct = 218
+    KroneckerProduct = 219
+    DotProduct = 220
     # matrix
     Matrix = 300
     MatrixRows = 301
@@ -356,6 +361,41 @@ class InnerProductNode(ExprNode):
         self.left = left
         self.right = right
         self.sub = sub
+
+
+class FroProductNode(ExprNode):
+    def __init__(self, left=None, right=None):
+        super().__init__(IRNodeType.FroProduct)
+        self.left = left
+        self.right = right
+
+
+class HadamardProductNode(ExprNode):
+    def __init__(self, left=None, right=None):
+        super().__init__(IRNodeType.HadamardProduct)
+        self.left = left
+        self.right = right
+
+
+class CrossProductNode(ExprNode):
+    def __init__(self, left=None, right=None):
+        super().__init__(IRNodeType.CrossProduct)
+        self.left = left
+        self.right = right
+
+
+class KroneckerProductNode(ExprNode):
+    def __init__(self, left=None, right=None):
+        super().__init__(IRNodeType.KroneckerProduct)
+        self.left = left
+        self.right = right
+
+
+class DotProductNode(ExprNode):
+    def __init__(self, left=None, right=None):
+        super().__init__(IRNodeType.DotProduct)
+        self.left = left
+        self.right = right
 
 
 class NormType(Enum):

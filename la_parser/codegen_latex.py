@@ -407,6 +407,31 @@ class CodeGenLatex(CodeGen):
             content = "{{{}}}_{}".format(content, self.visit(node.sub, **kwargs))
         return content
 
+    def visit_fro_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        return "{} : {}".format(left_info, right_info)
+
+    def visit_hadamard_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        return "{} \\circ {}".format(left_info, right_info)
+
+    def visit_cross_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        return "{} × {}".format(left_info, right_info)
+
+    def visit_kronecker_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        return "{} \\otimes {}".format(left_info, right_info)
+
+    def visit_dot_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        return "{} \\cdot {}".format(left_info, right_info)
+
     def visit_math_func(self, node, **kwargs):
         content = ''
         param_info = self.visit(node.param, **kwargs)

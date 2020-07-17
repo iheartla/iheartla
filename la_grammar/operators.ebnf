@@ -7,6 +7,11 @@ operations
     | eig_operator
     #| derivative_operator
     | inner_product_operator
+    | frobenius_product_operator
+    | hadamard_product_operator
+    | cross_product_operator
+    | kronecker_product_operator
+    | dot_product_operator
     | power_operator
     | sum_operator
     | integral_operator
@@ -117,6 +122,25 @@ inner_product_operator::InnerProduct
     {'_' sub:identifier}
     ;
 
+frobenius_product_operator::FroProduct
+    = left:factor {hspace} ':' {hspace}  right:factor
+    ;
+
+hadamard_product_operator::HadamardProduct
+    = left:factor {hspace} '○' {hspace}  right:factor
+    ;
+
+cross_product_operator::CrossProduct
+    = left:factor {hspace} '×' {hspace}  right:factor
+    ;
+
+kronecker_product_operator::KroneckerProduct
+    = left:factor {hspace} '⨂' {hspace}  right:factor
+    ;
+
+dot_product_operator::DotProduct
+    = left:factor {hspace} '⋅' {hspace}  right:factor
+    ;
 
 trans_operator::Transpose
     = f:factor 'ᵀ'

@@ -864,6 +864,43 @@ class CodeGenEigen(CodeGen):
             content = "({}).transpose() * ({}) * ({})".format(right_info.content, sub_info.content, left_info.content)
         return CodeNodeInfo(content)
 
+    def visit_fro_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        return CodeNodeInfo("(({}).transpose() * ({})).trace()".format(left_info.content, right_info.content))
+
+    def visit_hadamard_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        return CodeNodeInfo("({}).cwiseProduct({})".format(left_info.content, right_info.content))
+
+    def visit_cross_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        return CodeNodeInfo("({}).cross({})".format(left_info.content, right_info.content))
+
+    def visit_kronecker_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        index_i = self.generate_var_name('i')
+        index_j = self.generate_var_name('j')
+        kronecker = self.generate_var_name('kron')
+        pre_list = []
+        pre_list.append("    {} {};\n".format(self.get_ctype(node.la_type), kronecker))
+        pre_list.append("    for( int {}=0; {}<{}; {}++){{\n".format(index_i, index_i, node.left.la_type.rows, index_i))
+        pre_list.append("        for( int {}=0; {}<{}; {}++){{\n".format(index_j, index_j, node.left.la_type.cols, index_j))
+        pre_list.append("            {}.block({}*{},{}*{},{},{}) = ({})({}, {})*({});\n".format(kronecker, index_i, node.left.la_type.rows, index_j, node.left.la_type.cols,
+                                                                                           node.left.la_type.rows, node.left.la_type.cols,
+                                                                                         left_info.content, index_i, index_j, right_info.content))
+        pre_list.append("        }\n")
+        pre_list.append("    }\n")
+        return CodeNodeInfo(content=kronecker,pre_list=pre_list)
+
+    def visit_dot_product(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        return CodeNodeInfo("({}).dot({})".format(left_info.content, right_info.content))
+
     def visit_math_func(self, node, **kwargs):
         content = ''
         param_info = self.visit(node.param, **kwargs)

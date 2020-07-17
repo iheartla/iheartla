@@ -96,6 +96,7 @@ class VectorType(LaVarType):
     def __init__(self, rows=0, desc=None, element_type=None, symbol=None):
         LaVarType.__init__(self, VarTypeEnum.VECTOR, desc, element_type, symbol)
         self.rows = rows
+        self.cols = 1
 
 
 class SetType(LaVarType):

@@ -589,6 +589,47 @@ class TypeWalker(NodeWalker):
         node_info = NodeInfo(ret_type, ir=ir_node)
         return node_info
 
+    def walk_FroProduct(self, node, **kwargs):
+        ir_node = FroProductNode(self.walk(node.left, **kwargs).ir, self.walk(node.right, **kwargs).ir)
+        ir_node.la_type = ScalarType()
+        return NodeInfo(ir_node.la_type, ir=ir_node)
+
+    def walk_HadamardProduct(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        ir_node = HadamardProductNode(left_info.ir, right_info.ir)
+        assert (left_info.la_type.is_vector() and right_info.la_type.is_vector()) or (left_info.la_type.is_matrix() and right_info.la_type.is_matrix()), "parameters must be matrix or vector"
+        assert left_info.la_type.rows == left_info.la_type.rows, "dims of parameters must be the same"
+        if left_info.la_type.is_matrix():
+            assert left_info.la_type.cols == left_info.la_type.cols, "dims of parameters must be the same"
+            ir_node.la_type = MatrixType(rows=left_info.la_type.rows, cols=left_info.la_type.rows)
+        else:
+            ir_node.la_type = VectorType(rows=left_info.la_type.rows)
+        return NodeInfo(ir_node.la_type, ir=ir_node)
+
+    def walk_CrossProduct(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        assert left_info.la_type.is_vector() or right_info.la_type.is_vector(), "params must be vectors"
+        assert left_info.la_type.rows == 3, "cross product is only for vectors of size 3"
+        ir_node = CrossProductNode(left_info.ir, right_info.ir)
+        ir_node.la_type = VectorType(rows=left_info.la_type.rows)
+        return NodeInfo(ir_node.la_type, ir=ir_node)
+
+    def walk_KroneckerProduct(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        ir_node = KroneckerProductNode(left_info.ir, right_info.ir)
+        assert left_info.la_type.is_vector() or left_info.la_type.is_matrix(), "left param must be vector or matrix"
+        assert right_info.la_type.is_vector() or right_info.la_type.is_matrix(), "right param must be vector or matrix"
+        ir_node.la_type = MatrixType(rows=left_info.la_type.rows*right_info.la_type.rows, cols=left_info.la_type.cols*right_info.la_type.cols)
+        return NodeInfo(ir_node.la_type, ir=ir_node)
+
+    def walk_DotProduct(self, node, **kwargs):
+        ir_node = DotProductNode(self.walk(node.left, **kwargs).ir, self.walk(node.right, **kwargs).ir)
+        ir_node.la_type = ScalarType()
+        return NodeInfo(ir_node.la_type, ir=ir_node)
+
     def create_power_node(self, base, power):
         power_node = PowerNode()
         power_node.base = base
