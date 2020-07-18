@@ -31,3 +31,47 @@ class TestOthers(BasePythonTest):
         a: scalar """
         func_info = self.gen_func_info(la_str)
         self.assertEqual(func_info.numpy_func(2), 9)
+
+    def test_optimization_argmin(self):
+        # no return symbol
+        la_str = """b = argmin_(i ∈ ℝ) 3i+a
+        s.t.
+        i > 4
+        i < 9 
+        where 
+        a: scalar """
+        func_info = self.gen_func_info(la_str)
+        self.assertTrue(abs(func_info.numpy_func(2) - 4) < 0.00001)
+
+    def test_optimization_min(self):
+        # no return symbol
+        la_str = """b = min_(i ∈ ℝ) 3i+a
+        s.t.
+        i > 4
+        i < 9 
+        where 
+        a: scalar """
+        func_info = self.gen_func_info(la_str)
+        self.assertTrue(abs(func_info.numpy_func(2) - 14) < 0.00001)
+
+    def test_optimization_argmax(self):
+        # no return symbol
+        la_str = """b = argmax_(i ∈ ℝ) 3i+a
+        s.t.
+        i > 4
+        i < 9 
+        where 
+        a: scalar """
+        func_info = self.gen_func_info(la_str)
+        self.assertTrue(abs(func_info.numpy_func(2) - 9) < 0.00001)
+
+    def test_optimization_max(self):
+        # no return symbol
+        la_str = """b = max_(i ∈ ℝ) 3i+a
+        s.t.
+        i > 4
+        i < 9 
+        where 
+        a: scalar """
+        func_info = self.gen_func_info(la_str)
+        self.assertTrue(abs(func_info.numpy_func(2) - 29) < 0.00001)
