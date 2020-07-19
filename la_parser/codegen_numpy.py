@@ -766,7 +766,7 @@ class CodeGenNumpy(CodeGen):
     def visit_fro_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("np.trace(({}).T @ ({}))".format(left_info.content, right_info.content))
+        return CodeNodeInfo("np.dot(({}).ravel(), ({}).ravel())".format(left_info.content, right_info.content))
 
     def visit_hadamard_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)

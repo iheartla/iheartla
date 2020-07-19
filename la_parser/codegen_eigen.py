@@ -867,7 +867,7 @@ class CodeGenEigen(CodeGen):
     def visit_fro_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("(({}).transpose() * ({})).trace()".format(left_info.content, right_info.content))
+        return CodeNodeInfo("({}).cwiseProduct({}).sum();".format(left_info.content, right_info.content))
 
     def visit_hadamard_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
