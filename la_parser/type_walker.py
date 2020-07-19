@@ -590,7 +590,11 @@ class TypeWalker(NodeWalker):
         return node_info
 
     def walk_FroProduct(self, node, **kwargs):
-        ir_node = FroProductNode(self.walk(node.left, **kwargs).ir, self.walk(node.right, **kwargs).ir)
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        assert left_info.la_type.is_vector() or left_info.la_type.is_matrix(), "left param must be vector or matrix"
+        assert right_info.la_type.is_vector() or right_info.la_type.is_matrix(), "right param must be vector or matrix"
+        ir_node = FroProductNode(left_info.ir, right_info.ir)
         ir_node.la_type = ScalarType()
         return NodeInfo(ir_node.la_type, ir=ir_node)
 
@@ -611,7 +615,7 @@ class TypeWalker(NodeWalker):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
         assert left_info.la_type.is_vector() or right_info.la_type.is_vector(), "params must be vectors"
-        assert left_info.la_type.rows == 3, "cross product is only for vectors of size 3"
+        assert left_info.la_type.rows == 3 and right_info.la_type.rows == 3, "cross product is only for vectors of dim 3"
         ir_node = CrossProductNode(left_info.ir, right_info.ir)
         ir_node.la_type = VectorType(rows=left_info.la_type.rows)
         return NodeInfo(ir_node.la_type, ir=ir_node)
@@ -626,7 +630,11 @@ class TypeWalker(NodeWalker):
         return NodeInfo(ir_node.la_type, ir=ir_node)
 
     def walk_DotProduct(self, node, **kwargs):
-        ir_node = DotProductNode(self.walk(node.left, **kwargs).ir, self.walk(node.right, **kwargs).ir)
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        ir_node = DotProductNode(left_info.ir, right_info.ir)
+        assert left_info.la_type.is_vector() and right_info.la_type.is_vector(), "params must be vectors"
+        assert left_info.la_type.rows == right_info.la_type.rows, "params must be same dimensional vectors"
         ir_node.la_type = ScalarType()
         return NodeInfo(ir_node.la_type, ir=ir_node)
 
