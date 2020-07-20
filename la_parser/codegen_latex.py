@@ -89,6 +89,9 @@ class CodeGenLatex(CodeGen):
             value = "\\textit{{{}}}".format(text)
         return value
 
+    def visit_import(self, node, **kwargs):
+        pass
+
     def visit_start(self, node, **kwargs):
         return self.visit(node.stat, **kwargs) + "\n\\]\n\nwhere\n\n\\begin{itemize}\n" + self.visit(node.cond,
                                                                                                    **kwargs) + '\\end{itemize}\n'

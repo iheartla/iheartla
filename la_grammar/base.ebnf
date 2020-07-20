@@ -26,9 +26,12 @@ identifier_alone::IdentifierAlone
     #= !KEYWORDS value:/[A-Za-z]/ | '`' id:/[\p{L}\p{M}A-Za-z0-9\s\u2190-\u21FF\u1000-\uFFFFF]*/ '`'
     ;
 
+keyword_str
+    = /[A-Za-z][A-Za-z0-9]*/
+    ;
 
 description
-    = !KEYWORDS /[A-Za-z0-9][A-Za-z0-9\t ]*/
+    = /[A-Za-z0-9][A-Za-z0-9\t ]*/
     ;
 
 desc_identifier

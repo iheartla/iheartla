@@ -69,6 +69,8 @@ class IRNodeType(Enum):
     SetType = 404
     ScalarType = 405
     FunctionType = 406
+    # Derivatives
+    Import = 500
 
 
 class IRNode(object):
@@ -109,6 +111,7 @@ class StartNode(StmtNode):
         super().__init__(IRNodeType.Start)
         self.cond = None
         self.stat = None
+        self.directives = None
 
 
 class WhereConditionsNode(StmtNode):
@@ -160,6 +163,13 @@ class FunctionTypeNode(ExprNode):
         super().__init__(IRNodeType.FunctionType)
         self.params = []
         self.ret = None
+
+
+class ImportNode(StmtNode):
+    def __init__(self, package=None, names=None):
+        super().__init__(IRNodeType.Import)
+        self.package = package
+        self.names = names
 
 
 class BlockNode(StmtNode):

@@ -131,6 +131,8 @@ class IRVisitor(object):
             IRNodeType.SetType: "visit_set_type",
             IRNodeType.ScalarType: "visit_scalar_type",
             IRNodeType.FunctionType: "visit_function_type",
+            # derivatives
+            IRNodeType.Import: "visit_import",
         }
         func = getattr(self, type_func[node.node_type], None)
         if func:
@@ -243,6 +245,10 @@ class IRVisitor(object):
         pass
 
     def visit_if(self, node, **kwargs):
+        pass
+
+    ####################################################
+    def visit_import(self, node, **kwargs):
         pass
 
     ####################################################

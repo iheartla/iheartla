@@ -81,6 +81,10 @@ class TypeWalker(NodeWalker):
         self.visualizer = LaVisualizer()
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
         self.ret_symbol = None
+        self.packages = {'trigonometry': ['sin', 'asin', 'cos', 'acos', 'tan', 'atan', 'atan2',
+                                          'sinh', 'asinh', 'cosh', 'acosh', 'tanh', 'atanh', 'cot',
+                                          'sec', 'csc']}
+        self.first_parsing = True   # directives grammar
 
     def generate_var_name(self, base):
         index = -1
@@ -106,6 +110,13 @@ class TypeWalker(NodeWalker):
     def walk_Start(self, node, **kwargs):
         # self.visualizer.visualize(node) # visualize
         ir_node = StartNode()
+        if node.directive:
+            ir_node.directives = self.walk(node.directive, **kwargs)
+            if self.first_parsing:
+                self.first_parsing = False
+                return ir_node
+            else:
+                self.first_parsing = True
         cond_node = self.walk(node.cond, **kwargs)
         ir_node.cond = cond_node
         stat_list = self.walk(node.stat, **kwargs)
@@ -281,6 +292,13 @@ class TypeWalker(NodeWalker):
             self.parameters.append(identifier)
 
     ###################################################################
+    def walk_Import(self, node, **kwargs):
+        assert node.package in self.packages, "package {} not exist".format(node.package)
+        func_list = self.packages[node.package]
+        for name in node.names:
+            assert name in func_list, "func {} not exist".format(name)
+        return ImportNode(package=node.package, names=node.names)
+
     def walk_Statements(self, node, **kwargs):
         stat_list = []
         if node.stats:

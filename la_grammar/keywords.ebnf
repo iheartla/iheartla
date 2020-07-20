@@ -45,6 +45,7 @@ KEYWORDS
     | LN
     | SQRT
     | SUBJECT_TO
+    | FROM
     ;
 
 TRACE = 'trace';
@@ -107,3 +108,4 @@ LOG = 'log';
 LN = 'ln';
 SQRT = 'sqrt';
 SUBJECT_TO = 's.t.'|'subject to';
+FROM = 'from';

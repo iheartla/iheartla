@@ -4,7 +4,8 @@
 
 start::Start
     =
-    {separator_with_space} stat:statements {separator_with_space}+ WHERE {separator_with_space}+ cond:where_conditions {blank} $
+    | {separator_with_space} directive:Directives
+    | {separator_with_space} {directive:Directives {separator_with_space}+} stat:statements {separator_with_space}+ WHERE {separator_with_space}+ cond:where_conditions {blank} $
     ;
 
 #include :: "linear_algebra/la_grammar/keywords.ebnf"
@@ -25,6 +26,14 @@ statement
     =
     | assignment
     | right_hand_side
+    ;
+
+Directives
+    = import
+    ;
+
+import::Import
+    = FROM  {hspace}+ package:keyword_str {hspace} ':' {hspace} names+:keyword_str {{hspace} ',' {hspace} names+:keyword_str }
     ;
 
 where_conditions::WhereConditions
