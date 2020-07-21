@@ -45,12 +45,15 @@ def walk_model(parser_type, type_walker, node_info):
         gen.print_symbols()
     return gen.content
 
+_grammar_content = None
 
 def create_parser():
     parser = None
     try:
         file = open('la_grammar/LA.ebnf')
         grammar = file.read()
+        global _grammar_content
+        _grammar_content = grammar
         parser = tatsu.compile(grammar, asmodel=True)
         file.close()
     except IOError:
@@ -118,14 +121,27 @@ def parse_and_translate(content, frame, parser_type=None):
     model = parser.parse(content, parseinfo=True)
     # type walker
     type_walker = TypeWalker()
-    node_info = type_walker.walk(model)
+    start_node = type_walker.walk(model)
+    if start_node.cond is None:
+        # include directives
+        directive_node = start_node.directives
+        global _grammar_content
+        index = _grammar_content.find('#include :: "src/la_grammar/base.ebnf"\n')
+        current_content = _grammar_content[:index] + '#include :: "src/la_grammar/trigonometry.ebnf"\n' + _grammar_content[index:]
+        # remove derivatives grammar
+        current_content = current_content.replace('    | {separator_with_space} directive:Directives\n    |', '')
+        print(current_content)
+        parser = tatsu.compile(current_content, asmodel=True)
+        model = parser.parse(content, parseinfo=True)
+        start_node = type_walker.walk(model)
+
     # parsing Latex at the same time
-    latex_thread = threading.Thread(target=generate_latex_code, args=(type_walker, node_info, frame,))
+    latex_thread = threading.Thread(target=generate_latex_code, args=(type_walker, start_node, frame,))
     latex_thread.start()
     # other type
     if parser_type is None:
         parser_type = ParserTypeEnum.NUMPY
-    res = walk_model(parser_type, type_walker, node_info)
+    res = walk_model(parser_type, type_walker, start_node)
     result = (res, 0)
     wx.CallAfter(frame.UpdateMidPanel, result)
     print("------------ %.2f seconds ------------" % (time.time() - start_time))

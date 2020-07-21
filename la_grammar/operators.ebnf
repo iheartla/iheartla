@@ -152,90 +152,10 @@ function_operator::Function
 
 builtin_operators
     =
-    | sin_func
-    | asin_func
-    | cos_func
-    | acos_func
-    | tan_func
-    | atan_func
-    | atan2_func
-    | sinh_func
-    | asinh_func
-    | cosh_func
-    | acosh_func
-    | tanh_func
-    | atanh_func
-    | cot_func
-    | sec_func
-    | csc_func
     | exp_func
     | log_func
     | ln_func
     | sqrt_func
-    ;
-
-sin_func::SinFunc
-    = SIN {'^' power:integer} '(' {hspace} param:expression {hspace} ')'
-    ;
-
-asin_func::AsinFunc
-    = (ASIN|ARCSIN) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
-    ;
-
-cos_func::CosFunc
-    = COS {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
-    ;
-
-acos_func::AcosFunc
-    = (ACOS|ARCCOS) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
-    ;
-
-tan_func::TanFunc
-    = TAN {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
-    ;
-
-atan_func::AtanFunc
-    = (ATAN|ARCTAN) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
-    ;
-
-sinh_func::SinhFunc
-    = SINH {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
-    ;
-
-asinh_func::AsinhFunc
-    = (ASINH|ARSINH) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
-    ;
-
-cosh_func::CoshFunc
-    = COSH {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
-    ;
-
-acosh_func::AcoshFunc
-    = (ACOSH|ARCOSH) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
-    ;
-
-tanh_func::TanhFunc
-    = TANH {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
-    ;
-
-atanh_func::AtanhFunc
-    = (ATANH|ARTANH) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
-    ;
-
-cot_func::CotFunc
-    = COT {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
-    ;
-
-sec_func::SecFunc
-    = SEC {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
-    ;
-
-csc_func::CscFunc
-    = CSC {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
-    ;
-
-atan2_func::Atan2Func
-    = ATAN2 '(' {hspace} param:expression {hspace} params_separator {hspace} second:expression {hspace} ')'
     ;
 
 exp_func::ExpFunc
