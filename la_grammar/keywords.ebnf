@@ -1,4 +1,4 @@
-KEYWORDS
+BUILTIN_KEYWORDS
     = TRACE
     | VEC
     | DIAG
@@ -30,22 +30,13 @@ KEYWORDS
     | OTHERWISE
     | IS
     | IN
-    | SIN
-    | COS
-    | ASIN
-    | ARCSIN
-    | ACOS
-    | ARCCOS
-    | TAN
-    | ATAN
-    | ARCTAN
-    | ATAN2
     | EXP
     | LOG
     | LN
     | SQRT
     | SUBJECT_TO
     | FROM
+    #| SIN | COS | ASIN | ARCSIN | ACOS | ARCCOS | TAN | ATAN | ARCTAN | ATAN2
     ;
 
 TRACE = 'trace';

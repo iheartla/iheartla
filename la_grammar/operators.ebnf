@@ -150,7 +150,7 @@ function_operator::Function
     = name:identifier '(' {{hspace} params+:expression {{hspace} params_separator {hspace} params+:expression}} {hspace}')'
     ;
 
-builtin_operators
+predefined_built_operators
     =
     | exp_func
     | log_func

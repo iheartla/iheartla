@@ -13,8 +13,17 @@ start::Start
 #include :: "linear_algebra/la_grammar/operators.ebnf"
 #include :: "linear_algebra/la_grammar/matrix.ebnf"
 #include :: "linear_algebra/la_grammar/base.ebnf"
+#include :: "linear_algebra/la_grammar/trigonometry.ebnf"
 
 
+KEYWORDS
+    = BUILTIN_KEYWORDS
+    ;
+
+builtin_operators
+    =
+    predefined_built_operators
+    ;
 
 statements::Statements
     =

@@ -46,6 +46,14 @@ def walk_model(parser_type, type_walker, node_info):
     return gen.content
 
 _grammar_content = None
+_compiled_parser = {}
+def get_compiled_parser(grammar):
+    global _compiled_parser
+    if grammar in _compiled_parser:
+        return _compiled_parser[grammar]
+    parser = tatsu.compile(grammar, asmodel=True)
+    _compiled_parser[grammar] = parser
+    return parser
 
 def create_parser():
     parser = None
@@ -54,7 +62,7 @@ def create_parser():
         grammar = file.read()
         global _grammar_content
         _grammar_content = grammar
-        parser = tatsu.compile(grammar, asmodel=True)
+        parser = get_compiled_parser(grammar)
         file.close()
     except IOError:
         print("IO Error!")
@@ -65,7 +73,7 @@ _last_parser = None
 _last_parser_mtime = None
 
 
-def get_parser():
+def get_default_parser():
     '''
     Equivalent to create_parser(), but stores the result for immediate access in the future.
     Re-creates the parser if any grammar files change.
@@ -117,7 +125,7 @@ def generate_latex_code(type_walker, node_info, frame):
 def parse_and_translate(content, frame, parser_type=None):
     # try:
     start_time = time.time()
-    parser = get_parser()
+    parser = get_default_parser()
     model = parser.parse(content, parseinfo=True)
     # type walker
     type_walker = TypeWalker()
@@ -125,13 +133,18 @@ def parse_and_translate(content, frame, parser_type=None):
     if start_node.cond is None:
         # include directives
         directive_node = start_node.directives
+        key_names = []
+        for name in directive_node.names:
+            key_names.append("{}_func".format(name))
         global _grammar_content
-        index = _grammar_content.find('#include :: "src/la_grammar/base.ebnf"\n')
-        current_content = _grammar_content[:index] + '#include :: "src/la_grammar/trigonometry.ebnf"\n' + _grammar_content[index:]
         # remove derivatives grammar
-        current_content = current_content.replace('    | {separator_with_space} directive:Directives\n    |', '')
+        current_content = _grammar_content.replace('    | {separator_with_space} directive:Directives\n    |', '')
+        # add new rules
+        keyword_index = current_content.find('predefined_built_operators\n')
+        current_content = current_content[:keyword_index] + '|'.join(key_names) + '|' + current_content[keyword_index:]
         print(current_content)
-        parser = tatsu.compile(current_content, asmodel=True)
+        # get new parser
+        parser = get_compiled_parser(current_content)
         model = parser.parse(content, parseinfo=True)
         start_node = type_walker.walk(model)
 
@@ -162,7 +175,7 @@ def parse_and_translate(content, frame, parser_type=None):
 
 
 def parse_la(content, parser_type):
-    parser = get_parser()
+    parser = get_default_parser()
     model = parser.parse(content, parseinfo=True)
     type_walker = TypeWalker()
     node_info = type_walker.walk(model)
@@ -176,5 +189,5 @@ def parse_in_background(content, frame, parse_type):
 
 
 def create_parser_background():
-    create_thread = threading.Thread(target=get_parser)
+    create_thread = threading.Thread(target=get_default_parser)
     create_thread.start()
