@@ -111,7 +111,8 @@ class TypeWalker(NodeWalker):
         # self.visualizer.visualize(node) # visualize
         ir_node = StartNode()
         if node.directive:
-            ir_node.directives = self.walk(node.directive, **kwargs)
+            for directive in node.directive:
+                ir_node.directives.append(self.walk(directive, **kwargs))
             if self.first_parsing:
                 self.first_parsing = False
                 return ir_node

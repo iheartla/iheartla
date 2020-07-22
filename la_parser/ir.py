@@ -111,7 +111,17 @@ class StartNode(StmtNode):
         super().__init__(IRNodeType.Start)
         self.cond = None
         self.stat = None
-        self.directives = None
+        self.directives = []
+
+    def get_package_dict(self):
+        package_func_dict = {}
+        for directive in self.directives:
+            if directive.package in package_func_dict:
+                package_func_dict[directive.package] = list(set(package_func_dict[directive.package] + directive.names))
+            else:
+                package_func_dict[directive.package] = list(set(directive.names))
+            package_func_dict[directive.package].sort()
+        return package_func_dict
 
 
 class WhereConditionsNode(StmtNode):

@@ -132,13 +132,14 @@ def parse_and_translate(content, frame, parser_type=None):
     start_node = type_walker.walk(model)
     if start_node.cond is None:
         # include directives
-        directive_node = start_node.directives
+        package_name_dict = start_node.get_package_dict()
         key_names = []
-        for name in directive_node.names:
-            key_names.append("{}_func".format(name))
+        for package in package_name_dict:
+            for name in package_name_dict[package]:
+                key_names.append("{}_func".format(name))
         global _grammar_content
         # remove derivatives grammar
-        current_content = _grammar_content.replace('    | {separator_with_space} directive:Directives\n    |', '')
+        current_content = _grammar_content.replace('| {separator_with_space} directive+:Directive {{separator_with_space}+ directive+:Directive}\n    |', '')
         # add new rules
         keyword_index = current_content.find('predefined_built_operators\n')
         current_content = current_content[:keyword_index] + '|'.join(key_names) + '|' + current_content[keyword_index:]
