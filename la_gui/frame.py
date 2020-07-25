@@ -36,14 +36,14 @@ class MainWindow(wx.Frame):
         self.statusbar.SetFieldsCount(1)
         # Menu
         menu_file = wx.Menu()
-        item_open = menu_file.Append(wx.ID_OPEN, "&Open LA file", " Open a file to edit")
-        item_save_default_la = menu_file.Append(wx.NewId(), "&Save LA", " Save LA code")
+        item_open = menu_file.Append(wx.ID_OPEN, "&Open LA file\tCTRL+O", " Open a file to edit")
+        item_save_default_la = menu_file.Append(wx.NewId(), "&Save LA\tCTRL+S", " Save LA code")
         item_save_la = menu_file.Append(wx.NewId(), "&Save LA As...", " Save LA code to a file")
         item_save_python = menu_file.Append(wx.NewId(), "&Save Numpy As...", " Save Numpy code to a file")
         item_save_eigen = menu_file.Append(wx.NewId(), "&Save Eigen As...", " Save Eigen code to a file")
         item_about = menu_file.Append(wx.ID_ABOUT, "&About", " Information about this program")
         menu_run = wx.Menu()
-        item_run = menu_run.Append(wx.NewId(), "&Run program", "Let's run LA code")
+        item_run = menu_run.Append(wx.NewId(), "&Run program\tCTRL+R", "Let's run LA code")
         menu_bar = wx.MenuBar()
         # languages
         menu_language = wx.Menu()
@@ -109,10 +109,14 @@ class MainWindow(wx.Frame):
         r_new_id = wx.NewId()
         self.Bind(wx.EVT_MENU, self.OnKeyEnter, id=r_new_id)
         save_id = wx.NewId()
+        self.Bind(wx.EVT_MENU, self.OnSaveLADefault, id=save_id)
+        zoom_in_id = wx.NewId()
         self.Bind(wx.EVT_MENU, self.OnZoomIn, id=zoom_in_id)
         zoom_out_id = wx.NewId()
         self.Bind(wx.EVT_MENU, self.OnZoomOut, id=zoom_out_id)
         acc_zoom_out = wx.AcceleratorTable([(wx.ACCEL_CTRL, ord('R'), r_new_id),
+                                            (wx.ACCEL_CTRL, ord('O'), wx.ID_OPEN),
+                                            (wx.ACCEL_CTRL, ord('S'), save_id),
                                             (wx.ACCEL_CTRL, ord('='), zoom_in_id),
                                             (wx.ACCEL_CTRL, ord('-'), zoom_out_id)])
         self.SetAcceleratorTable(acc_zoom_out)
@@ -203,7 +207,7 @@ E: { ℤ × ℤ }''')
         parse_in_background(self.control.GetValue(), self, self.parser_type)
 
     def OnOpen(self, e):
-        dlg = wx.FileDialog(self, "Choose a file", "", "", "*.*", wx.FD_OPEN)
+        dlg = wx.FileDialog(self, "Choose LA source file", "", "", "*.*", wx.FD_OPEN)
         if dlg.ShowModal() == wx.ID_OK:
             self.cur_la_file = dlg.GetPath()
             filename = dlg.GetFilename()
@@ -211,7 +215,11 @@ E: { ℤ × ℤ }''')
             f = open(os.path.join(dirname, filename), 'r', encoding="utf8")
             self.control.SetValue(f.read())
             f.close()
-        dlg.Destroy() 
+        dlg.Destroy()
+
+    def OnSave(self, e):
+        print(self.control.Active())
+        self.OnSaveLA(e)
 
     def OnSaveLADefault(self, e):
         if self.cur_la_file is None:
