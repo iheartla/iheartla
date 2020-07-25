@@ -30,6 +30,9 @@ class MidPanel(wx.Panel):
         self.cur_type = panel_type
         self.update_panel()
 
+    def get_content(self, panel_type):
+        return self.panel_dict[self.cur_type].GetValue()
+
     def update_panel(self):
         if self.cur_type == MidPanelEnum.PYTHON:
             self.py_ctrl.Show()
