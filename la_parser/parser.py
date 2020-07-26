@@ -130,7 +130,7 @@ def parse_and_translate(content, frame, parser_type=None):
     # type walker
     type_walker = TypeWalker()
     start_node = type_walker.walk(model)
-    if start_node.cond is None:
+    if len(start_node.directives) > 0:
         # include directives
         package_name_dict = start_node.get_package_dict()
         key_names = []

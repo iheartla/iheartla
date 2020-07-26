@@ -118,8 +118,9 @@ class TypeWalker(NodeWalker):
                 return ir_node
             else:
                 self.first_parsing = True
-        cond_node = self.walk(node.cond, **kwargs)
-        ir_node.cond = cond_node
+        if node.cond:
+            cond_node = self.walk(node.cond, **kwargs)
+            ir_node.cond = cond_node
         stat_list = self.walk(node.stat, **kwargs)
         block_node = BlockNode()
         for index in range(len(stat_list)):

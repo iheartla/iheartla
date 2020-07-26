@@ -90,11 +90,17 @@ class CodeGenLatex(CodeGen):
         return value
 
     def visit_import(self, node, **kwargs):
-        pass
+        return "from {} import {}\n".format(node.package, ", ".join(node.names))
 
     def visit_start(self, node, **kwargs):
-        return self.visit(node.stat, **kwargs) + "\n\\]\n\nwhere\n\n\\begin{itemize}\n" + self.visit(node.cond,
-                                                                                                   **kwargs) + '\\end{itemize}\n'
+        content = ""
+        # for directive in node.directives:
+        #     content += self.visit(directive, **kwargs)
+        if node.cond:
+            content += self.visit(node.stat, **kwargs) + "\n\\]\n\nwhere\n\n\\begin{itemize}\n" + self.visit(node.cond, **kwargs) + '\\end{itemize}\n'
+        else:
+            content += self.visit(node.stat, **kwargs) + "\n\\]\n\n"
+        return content
 
     def visit_block(self, node, **kwargs):
         ret = []

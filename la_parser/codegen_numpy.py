@@ -48,8 +48,11 @@ class CodeGenNumpy(CodeGen):
         rand_func_name = "generateRandomData"
         test_content = ["def " + rand_func_name + "():"]
         rand_int_max = 10
-        main_content = ["if __name__ == '__main__':",
-                        "    {} = {}()".format(', '.join(self.parameters), rand_func_name)]
+        main_content = ["if __name__ == '__main__':"]
+        if len(self.parameters) > 0:
+            main_content.append("    {} = {}()".format(', '.join(self.parameters), rand_func_name))
+        else:
+            main_content.append("    {}()".format(', '.join(self.parameters), rand_func_name))
         dim_content = ""
         if self.dim_dict:
             for key, value in self.dim_dict.items():

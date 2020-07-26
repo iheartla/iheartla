@@ -26,3 +26,16 @@ class TestStat(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_no_where_block(self):
+        la_str = """A = 2 + 3"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(), 5)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    double B = {}();".format(func_info.eig_func_name),
+                     "    return (B == 5);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
