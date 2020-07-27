@@ -75,3 +75,11 @@ class TestOthers(BasePythonTest):
         a: scalar """
         func_info = self.gen_func_info(la_str)
         self.assertTrue(abs(func_info.numpy_func(2) - 29) < 0.00001)
+
+    def test_optimization_argmin(self):
+        # no return symbol
+        la_str = """b = argmin_(i ∈ ℝ) i^2 
+        where 
+        a: scalar """
+        func_info = self.gen_func_info(la_str)
+        self.assertTrue(abs(func_info.numpy_func(2) == 0))

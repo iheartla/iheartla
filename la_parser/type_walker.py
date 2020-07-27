@@ -510,7 +510,9 @@ class TypeWalker(NodeWalker):
         base_id = base_node.get_main_id()
         self.symtable[base_id] = base_type.la_type
         exp_node = self.walk(node.exp, **kwargs).ir
-        cond_list = self.walk(node.cond, **kwargs)
+        cond_list = []
+        if node.cond:
+            cond_list = self.walk(node.cond, **kwargs)
         del self.symtable[base_id]
         #
         assert exp_node.la_type.is_scalar(), "Objective function must return a scalar"

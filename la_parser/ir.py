@@ -351,7 +351,7 @@ class OptimizeType(Enum):
 
 
 class OptimizeNode(ExprNode):
-    def __init__(self, opt_type=OptimizeType.OptimizeInvalid, cond_list=None, exp=None, base=None, base_type=None):
+    def __init__(self, opt_type=OptimizeType.OptimizeInvalid, cond_list=[], exp=None, base=None, base_type=None):
         super().__init__(IRNodeType.Optimize)
         self.opt_type = opt_type
         self.cond_list = cond_list

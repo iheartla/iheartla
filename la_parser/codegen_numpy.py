@@ -52,7 +52,7 @@ class CodeGenNumpy(CodeGen):
         if len(self.parameters) > 0:
             main_content.append("    {} = {}()".format(', '.join(self.parameters), rand_func_name))
         else:
-            main_content.append("    {}()".format(', '.join(self.parameters), rand_func_name))
+            main_content.append("    {}()".format(rand_func_name))
         dim_content = ""
         if self.dim_dict:
             for key, value in self.dim_dict.items():
@@ -715,8 +715,13 @@ class CodeGenNumpy(CodeGen):
                 pre_list.append("            {} *= ({}[0] - {}[i])\n".format(opt_ret, opt_param, v_set))
                 pre_list.append("        return {}\n".format(opt_ret))
                 constraint_list.append("{{'type': 'eq', 'fun': {}}}".format(opt_func))
-        cons = self.generate_var_name('cons')
-        pre_list.append("    {} = ({})\n".format(cons, ','.join(constraint_list)))
+
+        # constraint
+        constraints_param = ""
+        if len(constraint_list) > 0:
+            cons = self.generate_var_name('cons')
+            pre_list.append("    {} = ({})\n".format(cons, ','.join(constraint_list)))
+            constraints_param = ", constraints={}".format(cons)
         target_func = self.generate_var_name('target')
         if node.base_type.la_type.is_scalar():
             exp = exp_info.content.replace(id_info.content, "{}[0]".format(id_info.content))
@@ -728,18 +733,18 @@ class CodeGenNumpy(CodeGen):
         else:
             pre_list.append("    {} = lambda {}: {}\n".format(target_func, id_info.content, exp))
         if node.opt_type == OptimizeType.OptimizeMin:
-            content = "minimize({}, {}, constraints={}).fun".format(target_func, init_value, cons)
+            content = "minimize({}, {}{}).fun".format(target_func, init_value, constraints_param)
         elif node.opt_type == OptimizeType.OptimizeMax:
-            content = "-minimize({}, {}, constraints={}).fun".format(target_func, init_value, cons)
+            content = "-minimize({}, {}{}).fun".format(target_func, init_value, constraints_param)
         elif node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
             if node.base_type.la_type.is_scalar():
-                content = "minimize({}, {}, constraints={}).x[0]".format(target_func, init_value, cons)
+                content = "minimize({}, {}{}).x[0]".format(target_func, init_value, constraints_param)
             elif node.base_type.la_type.is_vector():
-                content = "minimize({}, {}, constraints={}).x".format(target_func, init_value, cons)
+                content = "minimize({}, {}{}).x".format(target_func, init_value, constraints_param)
             elif node.base_type.la_type.is_matrix():
-                content = "minimize({}, {}, constraints={}).x.reshape({}, {})".format(target_func,
+                content = "minimize({}, {}{}).x.reshape({}, {})".format(target_func,
                                                                                                 init_value,
-                                                                                                cons,
+                                                                                                constraints_param,
                                                                                                 node.base_type.la_type.rows,
                                                                                                 node.base_type.la_type.cols)
         if node.base_type.la_type.is_matrix():
