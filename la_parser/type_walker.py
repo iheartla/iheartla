@@ -4,17 +4,21 @@ from la_parser.la_types import *
 from la_tools.la_logger import *
 from la_tools.la_visualizer import LaVisualizer
 from la_parser.ir import *
+from enum import Enum, IntFlag
 
 
-class ParserTypeEnum(Enum):
+class ParserTypeEnum(IntFlag):
+    INVALID = 0
+    DEFAULT = 7
+    #
     LATEX = 1
     NUMPY = 2
-    EIGEN = 3
-    MATLAB = 4
-    JULIA = 5
-    PYTORCH = 6
-    ARMADILLO = 7
-    TENSORFLOW = 8
+    EIGEN = 4
+    MATLAB = 8
+    JULIA = 16
+    PYTORCH = 32
+    ARMADILLO = 64
+    TENSORFLOW = 128
 
 
 class TypeInferenceEnum(Enum):

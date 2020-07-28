@@ -29,6 +29,7 @@ import threading
 import wx
 import sys
 import traceback
+import ntpath
 
 
 def walk_model(parser_type, type_walker, node_info):
@@ -122,11 +123,7 @@ def generate_latex_code(type_walker, node_info, frame):
         wx.CallAfter(frame.UpdateTexPanel, tex_content)
 
 
-def parse_and_translate(content, frame, parser_type=None):
-    # try:
-    start_time = time.time()
-    parser = get_default_parser()
-    model = parser.parse(content, parseinfo=True)
+def parse_ir_node(model):
     # type walker
     type_walker = TypeWalker()
     start_node = type_walker.walk(model)
@@ -148,7 +145,16 @@ def parse_and_translate(content, frame, parser_type=None):
         parser = get_compiled_parser(current_content)
         model = parser.parse(content, parseinfo=True)
         start_node = type_walker.walk(model)
+    return type_walker, start_node
 
+
+def parse_and_translate(content, frame, parser_type=None):
+    # try:
+    start_time = time.time()
+    parser = get_default_parser()
+    model = parser.parse(content, parseinfo=True)
+    # type walker
+    type_walker, start_node = parse_ir_node(model)
     # parsing Latex at the same time
     latex_thread = threading.Thread(target=generate_latex_code, args=(type_walker, start_node, frame,))
     latex_thread.start()
@@ -173,6 +179,48 @@ def parse_and_translate(content, frame, parser_type=None):
     # finally:
     #     print tex
     #     return result
+
+
+def save_to_file(content, file_name):
+    try:
+        file = open(file_name, 'w')
+        file.write(content)
+        file.close()
+    except IOError:
+        print("IO Error!")
+
+
+def read_from_file(file_name):
+    try:
+        file = open(file_name, 'r')
+        content = file.read()
+        file.close()
+    except IOError:
+        print("IO Error!")
+    return content
+
+
+def compile_la_file(la_file, parser_type):
+    content = read_from_file(la_file)
+    head, tail = ntpath.split(la_file)
+    name = tail or ntpath.basename(head)
+    base_name = name.rsplit('.', 1)[0]
+    # print("head:", head, ", name:", name, "parser_type", parser_type, ", base_name:", base_name)
+    parser = get_default_parser()
+    model = parser.parse(content, parseinfo=True)
+    type_walker, start_node = parse_ir_node(model)
+    if parser_type & ParserTypeEnum.NUMPY:
+        numpy_file = base_name + ".py"
+        numpy_content = walk_model(ParserTypeEnum.NUMPY, type_walker, start_node)
+        save_to_file(numpy_content, numpy_file)
+    if parser_type & ParserTypeEnum.EIGEN:
+        eigen_file = base_name + ".cpp"
+        eigen_content = walk_model(ParserTypeEnum.EIGEN, type_walker, start_node)
+        save_to_file(eigen_content, eigen_file)
+    if parser_type & ParserTypeEnum.LATEX:
+        tex_file = base_name + ".tex"
+        tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, start_node)
+        save_to_file(tex_content, tex_file)
 
 
 def parse_la(content, parser_type):
