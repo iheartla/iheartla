@@ -10,7 +10,7 @@ cppyy.add_include_path(eigen_path)
 class TestConstant(BasePythonTest):
     def test_constant_pi(self):
         # space
-        la_str = """A = sin(π/a)
+        la_str = self.import_trig+"""A = sin(π/a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)

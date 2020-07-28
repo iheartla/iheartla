@@ -123,7 +123,7 @@ def generate_latex_code(type_walker, node_info, frame):
         wx.CallAfter(frame.UpdateTexPanel, tex_content)
 
 
-def parse_ir_node(model):
+def parse_ir_node(content, model):
     # type walker
     type_walker = TypeWalker()
     start_node = type_walker.walk(model)
@@ -140,7 +140,7 @@ def parse_ir_node(model):
         # add new rules
         keyword_index = current_content.find('predefined_built_operators\n')
         current_content = current_content[:keyword_index] + '|'.join(key_names) + '|' + current_content[keyword_index:]
-        print(current_content)
+        # print(current_content)
         # get new parser
         parser = get_compiled_parser(current_content)
         model = parser.parse(content, parseinfo=True)
@@ -154,7 +154,7 @@ def parse_and_translate(content, frame, parser_type=None):
     parser = get_default_parser()
     model = parser.parse(content, parseinfo=True)
     # type walker
-    type_walker, start_node = parse_ir_node(model)
+    type_walker, start_node = parse_ir_node(content, model)
     # parsing Latex at the same time
     latex_thread = threading.Thread(target=generate_latex_code, args=(type_walker, start_node, frame,))
     latex_thread.start()
@@ -208,7 +208,7 @@ def compile_la_file(la_file, parser_type):
     # print("head:", head, ", name:", name, "parser_type", parser_type, ", base_name:", base_name)
     parser = get_default_parser()
     model = parser.parse(content, parseinfo=True)
-    type_walker, start_node = parse_ir_node(model)
+    type_walker, start_node = parse_ir_node(content, model)
     if parser_type & ParserTypeEnum.NUMPY:
         numpy_file = base_name + ".py"
         numpy_content = walk_model(ParserTypeEnum.NUMPY, type_walker, start_node)
@@ -226,8 +226,7 @@ def compile_la_file(la_file, parser_type):
 def parse_la(content, parser_type):
     parser = get_default_parser()
     model = parser.parse(content, parseinfo=True)
-    type_walker = TypeWalker()
-    node_info = type_walker.walk(model)
+    type_walker, node_info = parse_ir_node(content, model)
     res = walk_model(parser_type, type_walker, node_info)
     return res
 

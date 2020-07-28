@@ -28,6 +28,7 @@ class BasePythonTest(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super(BasePythonTest, self).__init__(*args, **kwargs)
+        self.import_trig = "from trigonometry: sin,asin,cos,acos,tan,atan,atan2,sinh,asinh,cosh,acosh,tanh,atanh,cot,sec,csc\n"
         if BasePythonTest.cnt == 0:
             LaLogger.getInstance().set_level(logging.WARNING)
 

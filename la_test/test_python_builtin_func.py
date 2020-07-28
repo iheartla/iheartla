@@ -10,7 +10,7 @@ cppyy.add_include_path(eigen_path)
 class TestBuiltinFunctions(BasePythonTest):
     def test_builtin_sin(self):
         # space
-        la_str = """b = sin(a)
+        la_str = self.import_trig+"""b = sin(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -24,7 +24,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_cos(self):
         # space
-        la_str = """b = cos(a)
+        la_str = self.import_trig+"""b = cos(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -38,7 +38,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_asin_0(self):
         # space
-        la_str = """b = asin(a)
+        la_str = self.import_trig+"""b = asin(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -52,7 +52,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_asin_1(self):
         # space
-        la_str = """b = arcsin(a)
+        la_str = self.import_trig+"""b = arcsin(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -66,7 +66,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_acos_0(self):
         # space
-        la_str = """b = acos(a)
+        la_str = self.import_trig+"""b = acos(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -80,7 +80,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_acos_1(self):
         # space
-        la_str = """b = arccos(a)
+        la_str = self.import_trig+"""b = arccos(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -94,7 +94,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_tan(self):
         # space
-        la_str = """b = tan(a)
+        la_str = self.import_trig+"""b = tan(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -108,7 +108,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_arctan_0(self):
         # space
-        la_str = """b = atan(a)
+        la_str = self.import_trig+"""b = atan(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -122,7 +122,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_arctan_1(self):
         # space
-        la_str = """b = arctan(a)
+        la_str = self.import_trig+"""b = arctan(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -136,7 +136,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_arctan2(self):
         # space
-        la_str = """c = atan2(a, b)
+        la_str = self.import_trig+"""c = atan2(a, b)
         where
         a: scalar
         b: scalar"""
@@ -151,7 +151,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_sinh(self):
         # space
-        la_str = """b = sinh(a)
+        la_str = self.import_trig+"""b = sinh(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -165,7 +165,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_asinh(self):
         # space
-        la_str = """b = asinh(a) + arsinh(a)
+        la_str = self.import_trig+"""b = asinh(a) + arsinh(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -179,7 +179,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_cosh(self):
         # space
-        la_str = """b = cosh(a)
+        la_str = self.import_trig+"""b = cosh(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -193,7 +193,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_acosh(self):
         # space
-        la_str = """b = acosh(a) + arcosh(a)
+        la_str = self.import_trig+"""b = acosh(a) + arcosh(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -207,7 +207,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_tanh(self):
         # space
-        la_str = """b = tanh(a)
+        la_str = self.import_trig+"""b = tanh(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -221,7 +221,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_atanh(self):
         # space
-        la_str = """b = atanh(a) + artanh(a)
+        la_str = self.import_trig+"""b = atanh(a) + artanh(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -235,7 +235,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_cot(self):
         # space
-        la_str = """b = cot(a)
+        la_str = self.import_trig+"""b = cot(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -249,7 +249,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_sec(self):
         # space
-        la_str = """b = sec(a)
+        la_str = self.import_trig+"""b = sec(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -263,7 +263,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_csc(self):
         # space
-        la_str = """b = csc(a)
+        la_str = self.import_trig+"""b = csc(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -277,7 +277,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_trig_matrix_sin(self):
         # space
-        la_str = """A = sin(T)
+        la_str = self.import_trig+"""A = sin(T)
         where
         T: ℝ ^ (2×2): a sequence"""
         func_info = self.gen_func_info(la_str)
@@ -295,7 +295,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_trig_matrix_cot(self):
         # space
-        la_str = """A = cot(T)
+        la_str = self.import_trig+"""A = cot(T)
         where
         T: ℝ ^ (2×2): a sequence"""
         func_info = self.gen_func_info(la_str)
@@ -313,7 +313,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_trig_power(self):
         # space
-        la_str = """b = asin^2(a)
+        la_str = self.import_trig+"""b = asin^2(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
@@ -327,7 +327,7 @@ class TestBuiltinFunctions(BasePythonTest):
 
     def test_builtin_exp(self):
         # space
-        la_str = """b = exp(a)
+        la_str = self.import_trig+"""b = exp(a)
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
