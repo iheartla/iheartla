@@ -537,14 +537,20 @@ class TypeWalker(NodeWalker):
         return domain_node
 
     def walk_Integral(self, node, **kwargs):
+        base_node = self.walk(node.id, **kwargs).ir
+        # temporary add to symbol table : opt scope
+        base_id = base_node.get_main_id()
+        self.symtable[base_id] = ScalarType() # scalar only
         if node.d:
             domain_node = self.walk(node.d, **kwargs)
         else:
             domain_node = DomainNode(self.walk(node.lower, **kwargs).ir, self.walk(node.upper, **kwargs).ir)
-        int_node = IntegralNode(domain=domain_node, exp=self.walk(node.exp, **kwargs).ir, base=self.walk(node.id, **kwargs).ir)
+        int_node = IntegralNode(domain=domain_node, exp=self.walk(node.exp, **kwargs).ir, base=base_node)
         node_info = NodeInfo(ScalarType())
         node_info.ir = int_node
         int_node.la_type = node_info.la_type
+        #
+        del self.symtable[base_id]
         return node_info
 
     def walk_Norm(self, node, **kwargs):
@@ -854,10 +860,10 @@ class TypeWalker(NodeWalker):
             id0_info = self.walk(node.id, **kwargs)
             id0 = id0_info.content
             id0 = self.get_main_id(id0)
-            if not la_is_inside_sum(**kwargs) and not la_is_if(**kwargs):  # symbols in sum don't need to be defined before
+            if not la_is_inside_sum(**kwargs) and not la_is_if(**kwargs):  # symbols in sum don't need to be defined before todo:modify
                 if id0 != 'I':  # special case
-                    # assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
-                    pass  # todo:delete
+                    assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
+                    # pass  # todo:delete
                 else:
                     # I
                     if 'I' not in self.symtable:
