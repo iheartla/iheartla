@@ -24,7 +24,9 @@ class MidPanel(wx.Panel):
         self.update_panel()
 
     def set_value(self, text):
+        self.panel_dict[self.cur_type].SetEditable(True)
         self.panel_dict[self.cur_type].SetValue(text)
+        self.panel_dict[self.cur_type].SetEditable(False)
 
     def set_panel(self, panel_type):
         self.cur_type = panel_type

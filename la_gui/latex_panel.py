@@ -62,7 +62,9 @@ class LatexPanel(wx.Panel):
             # render text
             self.tex_panel.Hide()
             self.latex_ctrl.Show()
+            self.latex_ctrl.SetEditable(True)
             self.latex_ctrl.SetValue(tex)
+            self.latex_ctrl.SetEditable(False)
         else:
             # render PDF
             self.tex_panel.Show()

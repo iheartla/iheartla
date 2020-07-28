@@ -17,6 +17,7 @@ class LaTextControl(bc.BaseTextControl):
 
     def __init__(self, parent):
         super().__init__(parent)
+        self.SetEditable(True)
         self.keywords = ['where', 'trace', 'vec', 'diag', 'Id', 'eig', 'conj', 'Re', 'Im', 'inv', 'sqrt', 'exp',
                          'log', 'det', 'svd', 'rank', 'null', 'orth', 'qr', 'sum', 'symmetric', 'diagonal', 'if',
                          'otherwise', 'is', 'in']

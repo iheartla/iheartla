@@ -7,6 +7,10 @@ BACKGROUND_COLOR = "#2B2B2B"
 class BaseTextControl(wx.stc.StyledTextCtrl):
     def __init__(self, parent):
         super().__init__(parent)
+        self.SetEditable(False)
+        # change "Ctrl-Y" to "Ctrl-Shift-Z"
+        self.CmdKeyClear(89, wx.stc.STC_SCMOD_CTRL)
+        self.CmdKeyAssign(90, wx.stc.STC_SCMOD_SHIFT | wx.stc.STC_SCMOD_CTRL, wx.stc.STC_CMD_REDO)
         self.text_font = wx.Font(14, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, faceName=u'Monaco')
         self.SetFont(self.text_font)
         self.fonts = "face:{},size:{}".format(self.text_font.GetFaceName(), self.text_font.GetPointSize())

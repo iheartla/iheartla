@@ -45,6 +45,14 @@ class MainWindow(wx.Frame):
         menu_run = wx.Menu()
         item_run = menu_run.Append(wx.NewId(), "&Run program\tCTRL+R", "Let's run LA code")
         menu_bar = wx.MenuBar()
+        # edit
+        self.menu_edit = wx.Menu()
+        self.undo_item = self.menu_edit.Append(wx.NewId(), "&Undo\tCTRL+Z")
+        self.redo_item = self.menu_edit.Append(wx.NewId(), "&Redo\tCTRL+SHIFT+Z")
+        self.cut_item = self.menu_edit.Append(wx.NewId(), "&Cut\tCTRL+X")
+        self.copy_item = self.menu_edit.Append(wx.NewId(), "&Copy\tCTRL+C")
+        self.paste_item = self.menu_edit.Append(wx.NewId(), "&Paste\tCTRL+V")
+        self.Bind(wx.EVT_MENU_OPEN, self.OnMenuOpen)
         # languages
         menu_language = wx.Menu()
         py_lang = menu_language.AppendRadioItem(wx.NewId(), "&Python with Numpy")
@@ -55,15 +63,23 @@ class MainWindow(wx.Frame):
         item_reset = menu_view.Append(wx.NewId(), "&Reset", "Reset all panels")
         # line
         menu_bar.Append(menu_file, "&File")
+        menu_bar.Append(self.menu_edit, "Edit")
         menu_bar.Append(menu_run, "&Run")
         menu_bar.Append(menu_language, "&Languages")
         menu_bar.Append(menu_view, "&View")
         self.SetMenuBar(menu_bar)
+        # File
         self.Bind(wx.EVT_MENU, self.OnOpen, item_open)
         self.Bind(wx.EVT_MENU, self.OnSaveLADefault, item_save_default_la)
         self.Bind(wx.EVT_MENU, self.OnSaveLA, item_save_la)
         self.Bind(wx.EVT_MENU, self.OnSavePython, item_save_python)
         self.Bind(wx.EVT_MENU, self.OnSaveEigen, item_save_eigen)
+        # Edit
+        self.Bind(wx.EVT_MENU, self.OnUndo, self.undo_item)
+        self.Bind(wx.EVT_MENU, self.OnRedo, self.redo_item)
+        self.Bind(wx.EVT_MENU, self.OnCut, self.cut_item)
+        self.Bind(wx.EVT_MENU, self.OnCopy, self.copy_item)
+        self.Bind(wx.EVT_MENU, self.OnPaste, self.paste_item)
         #
         self.Bind(wx.EVT_MENU, self.OnAbout, item_about)
         self.Bind(wx.EVT_MENU, self.OnKeyEnter, item_run)
@@ -243,6 +259,35 @@ E: { ℤ × ℤ }''')
 
     def OnSaveEigen(self, e):
         self.save_content(FileType.EIGEN)
+
+    def OnShowEdit(self, e):
+        self.update_edit_menu_item()
+
+    def OnUndo(self, e):
+        self.control.Undo()
+
+    def OnRedo(self, e):
+        self.control.Redo()
+
+    def OnCut(self, e):
+        self.control.Cut()
+
+    def OnCopy(self, e):
+        self.control.Copy()
+
+    def OnPaste(self, e):
+        self.control.Paste()
+
+    def OnMenuOpen(self, e):
+        if e.GetMenu() == self.menu_edit:
+            self.update_edit_menu_item()
+
+    def update_edit_menu_item(self):
+        self.undo_item.Enable(self.control.CanUndo())
+        self.redo_item.Enable(self.control.CanRedo())
+        self.cut_item.Enable(self.control.CanCut())
+        self.copy_item.Enable(self.control.CanCopy())
+        self.paste_item.Enable(self.control.CanPaste())
 
     def save_content(self, file_type):
         if file_type == FileType.LA:
