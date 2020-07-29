@@ -15,8 +15,9 @@ if __name__ == '__main__':
     LaLogger.getInstance().set_level(logging.INFO)
     arg_parser = argparse.ArgumentParser(description='I heart LA')
     arg_parser.add_argument('-o', '--output', help='Type of output languages')
-    arg_parser.add_argument('-i', '--input', help='File name containing I heart LA source code')
-    arg_parser.add_argument('--gui', '--GUI', help='Editor for I heart LA')
+    # arg_parser.add_argument('-i', '--input', help='File name containing I heart LA source code')
+    arg_parser.add_argument('--gui', action='store_true', help='Editor for I heart LA')
+    arg_parser.add_argument('input', nargs='?')
     args = arg_parser.parse_args()
     if args.gui:
         show_gui()
@@ -26,7 +27,7 @@ if __name__ == '__main__':
         if args.output:
             out_list = args.output.split(",")
             for out in out_list:
-                assert out in out_dict, "--output can only be numpy, eigen or latex"
+                assert out in out_dict, "Parameters after -o or --output can only be numpy, eigen or latex"
                 parser_type = parser_type | out_dict[out]
         compile_la_file(args.input, parser_type)
     else:

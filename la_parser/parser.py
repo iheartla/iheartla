@@ -196,6 +196,7 @@ def read_from_file(file_name):
         content = file.read()
         file.close()
     except IOError:
+        content = ''
         print("IO Error!")
     return content
 
