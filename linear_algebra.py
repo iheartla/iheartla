@@ -19,7 +19,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('--GUI', action='store_true', help='Editor for I heart LA')
     arg_parser.add_argument('input', nargs='?')
     args = arg_parser.parse_args()
-    if args.gui:
+    if args.GUI:
         show_gui()
     elif args.input:
         parser_type = ParserTypeEnum.DEFAULT
