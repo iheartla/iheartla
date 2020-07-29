@@ -227,7 +227,7 @@ E: { ℤ × ℤ }''')
     def OnTranslate(self, e):
         self.statusbar.SetStatusText("Compiling ...", 0)
         self.Update()
-        parse_in_background(self.control.GetValue(), self, self.parser_type)
+        parse_in_background(self.control.GetValue(), self, self.parser_type, self.cur_la_file)
 
     def OnOpen(self, e):
         dlg = wx.FileDialog(self, "Choose LA source file", "", "", "*.*", wx.FD_OPEN)

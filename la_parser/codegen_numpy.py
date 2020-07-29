@@ -44,7 +44,6 @@ class CodeGenNumpy(CodeGen):
         type_declare = []
         doc = []
         show_doc = False
-        func_name = "myExpression"
         rand_func_name = "generateRandomData"
         test_content = ["def " + rand_func_name + "():"]
         rand_int_max = 10
@@ -140,7 +139,7 @@ class CodeGenNumpy(CodeGen):
                 test_content.append('    {} = lambda {}: {}'.format(parameter, ', '.join(param_list), self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
 
             main_content.append('    print("{}:", {})'.format(parameter, parameter))
-        content = 'def ' + func_name + '(' + ', '.join(self.parameters) + '):\n'
+        content = 'def ' + self.func_name + '(' + ', '.join(self.parameters) + '):\n'
         if show_doc:
             content += '    \"\"\"\n' + '\n'.join(doc) + '\n    \"\"\"\n'
         # merge content
@@ -170,7 +169,7 @@ class CodeGenNumpy(CodeGen):
         content += '\n'
         # test
         test_content.append('    return {}'.format(', '.join(self.parameters)))
-        main_content.append("    func_value = {}({})".format(func_name, ', '.join(self.parameters)))
+        main_content.append("    func_value = {}({})".format(self.func_name, ', '.join(self.parameters)))
         main_content.append('    print("func_value: ", func_value)')
         content += '\n\n' + '\n'.join(test_content) + '\n\n\n' + '\n'.join(main_content)
         # convert special string in identifiers

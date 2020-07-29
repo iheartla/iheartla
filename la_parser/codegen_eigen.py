@@ -92,7 +92,6 @@ class CodeGenEigen(CodeGen):
         type_checks = []
         doc = []
         show_doc = False
-        func_name = "myExpression"
         rand_func_name = "generateRandomData"
         test_content = ['{']
         rand_int_max = 10
@@ -221,14 +220,14 @@ class CodeGenEigen(CodeGen):
             # main_print.append('    std::cout<<"{}:\\n"<<{}<<std::endl;'.format(parameter, parameter))
         content = ""
         if show_doc:
-            content += '/**\n * ' + func_name + '\n *\n * ' + '\n * '.join(doc) + '\n * @return {}\n */\n'.format(
+            content += '/**\n * ' + self.func_name + '\n *\n * ' + '\n * '.join(doc) + '\n * @return {}\n */\n'.format(
                 self.ret_symbol)
         ret_type = self.get_ctype(self.symtable[self.ret_symbol])
         if len(self.parameters) == 1:
-            content += ret_type + ' ' + func_name + '(' + ', '.join(par_des_list) + ')\n{\n'  # func name
+            content += ret_type + ' ' + self.func_name + '(' + ', '.join(par_des_list) + ')\n{\n'  # func name
             test_content.insert(0, "void {}({})".format(rand_func_name, ', '.join(test_par_list)))
         else:
-            content += ret_type + ' ' + func_name + '(\n    ' + ',\n    '.join(par_des_list) + ')\n{\n'  # func name
+            content += ret_type + ' ' + self.func_name + '(\n    ' + ',\n    '.join(par_des_list) + ')\n{\n'  # func name
             test_content.insert(0, "void {}({})".format(rand_func_name, ',\n    '.join(test_par_list)))
         # merge content
         # content += '\n'.join(type_declare) + '\n\n'
@@ -267,7 +266,7 @@ class CodeGenEigen(CodeGen):
         main_content.append("    {}({});".format(rand_func_name, ', '.join(self.parameters)))
         main_content += main_print
         main_content.append(
-            "    {} func_value = {}({});".format(self.get_ctype(self.symtable[self.ret_symbol]), func_name,
+            "    {} func_value = {}({});".format(self.get_ctype(self.symtable[self.ret_symbol]), self.func_name,
                                                  ', '.join(self.parameters)))
         if self.symtable[self.ret_symbol].is_matrix() or self.symtable[self.ret_symbol].is_vector() or self.symtable[self.ret_symbol].is_scalar():
             main_content.append('    std::cout<<"func_value:\\n"<<func_value<<std::endl;')
