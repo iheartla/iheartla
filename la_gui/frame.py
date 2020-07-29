@@ -22,6 +22,7 @@ class FileType(Enum):
     LA = 0
     NUMPY = 1
     EIGEN = 2
+    LATEX = 3
 
 
 class MainWindow(wx.Frame):
@@ -45,6 +46,7 @@ class MainWindow(wx.Frame):
         item_save_la = menu_file.Append(wx.NewId(), "&Save LA As...", " Save LA code to a file")
         item_save_python = menu_file.Append(wx.NewId(), "&Save Numpy As...", " Save Numpy code to a file")
         item_save_eigen = menu_file.Append(wx.NewId(), "&Save Eigen As...", " Save Eigen code to a file")
+        item_save_tex = menu_file.Append(wx.NewId(), "&Save Latex As...", " Save Latex code to a file")
         item_about = menu_file.Append(wx.ID_ABOUT, "&About", " Information about this program")
         menu_run = wx.Menu()
         item_run = menu_run.Append(wx.NewId(), "&Run program\tCTRL+R", "Let's run LA code")
@@ -78,6 +80,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnSaveLA, item_save_la)
         self.Bind(wx.EVT_MENU, self.OnSavePython, item_save_python)
         self.Bind(wx.EVT_MENU, self.OnSaveEigen, item_save_eigen)
+        self.Bind(wx.EVT_MENU, self.OnSaveTex, item_save_tex)
         # Edit
         self.Bind(wx.EVT_MENU, self.OnUndo, self.undo_item)
         self.Bind(wx.EVT_MENU, self.OnRedo, self.redo_item)
@@ -170,8 +173,8 @@ E: { ℤ × ℤ }''')
         self.pyPanel.SetSize((w - transW) / 2, h - sH)
         self.pyPanel.SetPosition(((w + transW) / 2, 0))
 
-    def UpdateTexPanel(self, tex):
-        self.latexPanel.render_content(tex)
+    def UpdateTexPanel(self, tex, show_pdf):
+        self.latexPanel.render_content(tex, show_pdf)
 
     def UpdateMidPanel(self, result):
         self.midPanel.set_value(result[0])
@@ -261,6 +264,9 @@ E: { ℤ × ℤ }''')
     def OnSaveEigen(self, e):
         self.save_content(FileType.EIGEN)
 
+    def OnSaveTex(self, e):
+        self.save_content(FileType.LATEX)
+
     def OnShowEdit(self, e):
         self.update_edit_menu_item()
 
@@ -319,6 +325,8 @@ E: { ℤ × ℤ }''')
             tips = "Save Eigen code"
         elif file_type == FileType.NUMPY:
             tips = "Save Numpy code"
+        elif file_type == FileType.LATEX:
+            tips = "Save Latex code"
         with wx.FileDialog(self, tips,
                            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
             if fileDialog.ShowModal() == wx.ID_CANCEL:
@@ -330,6 +338,8 @@ E: { ℤ × ℤ }''')
                 content = self.midPanel.get_content(MidPanelEnum.PYTHON)
             elif file_type == FileType.NUMPY:
                 content = self.midPanel.get_content(MidPanelEnum.CPP)
+            elif file_type == FileType.LATEX:
+                content = self.latexPanel.get_content()
             if content == "":
                 self.statusbar.SetStatusText("Blank content", 0)
                 return

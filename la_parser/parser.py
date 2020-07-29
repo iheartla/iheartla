@@ -99,6 +99,7 @@ def get_default_parser():
 
 def generate_latex_code(type_walker, node_info, frame):
     tex_content = ''
+    show_pdf = False
     try:
         tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, node_info)
         tex_file_name = "la.tex"
@@ -107,7 +108,7 @@ def generate_latex_code(type_walker, node_info, frame):
         tex_file.close()
         ret = subprocess.run(["xelatex", "-interaction=nonstopmode", tex_file_name], capture_output=False)
         if ret.returncode == 0:
-            tex_content = None
+            show_pdf = True
     except subprocess.SubprocessError as e:
         tex_content = str(e)
     except FailedParse as e:
@@ -120,7 +121,7 @@ def generate_latex_code(type_walker, node_info, frame):
         traceback.print_exc()
         tex_content = str(exc_info[2])
     finally:
-        wx.CallAfter(frame.UpdateTexPanel, tex_content)
+        wx.CallAfter(frame.UpdateTexPanel, tex_content, show_pdf)
 
 
 def parse_ir_node(content, model):
