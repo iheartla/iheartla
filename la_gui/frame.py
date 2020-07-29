@@ -2,6 +2,7 @@
 import wx
 import os
 import sys
+import time
 import threading
 import wx.lib.agw.aui as aui
 from enum import Enum
@@ -25,7 +26,10 @@ class FileType(Enum):
 
 class MainWindow(wx.Frame):
     def __init__(self, parent, title):
+        self.cur_timestamp = 0
         self.cur_la_file = None
+        self.cur_la_code = ''
+        self.timer = wx.Timer
         self.parser_type = ParserTypeEnum.NUMPY
         w, h = wx.DisplaySize()
         wx.Frame.__init__(self, parent, title=title, pos=(w / 4, h / 4))
@@ -225,12 +229,7 @@ E: { ℤ × ℤ }''')
     def OnOpen(self, e):
         dlg = wx.FileDialog(self, "Choose LA source file", "", "", "*.*", wx.FD_OPEN)
         if dlg.ShowModal() == wx.ID_OK:
-            self.cur_la_file = dlg.GetPath()
-            filename = dlg.GetFilename()
-            dirname = dlg.GetDirectory()
-            f = open(os.path.join(dirname, filename), 'r', encoding="utf8")
-            self.control.SetValue(f.read())
-            f.close()
+            self.load_la_content(dlg.GetPath())
         dlg.Destroy()
 
     def OnSave(self, e):
@@ -246,6 +245,8 @@ E: { ℤ × ℤ }''')
                 file = open(self.cur_la_file, 'w')
                 file.write(content)
                 file.close()
+                self.cur_timestamp = os.path.getmtime(self.cur_la_file)
+                self.cur_la_code = content
                 self.statusbar.SetStatusText("Saved Successfully", 0)
             except IOError:
                 print("IO Error!")
@@ -289,6 +290,28 @@ E: { ℤ × ℤ }''')
         self.copy_item.Enable(self.control.CanCopy())
         self.paste_item.Enable(self.control.CanPaste())
 
+    def load_la_content(self, file_name):
+        self.cur_la_file = file_name
+        self.cur_timestamp = os.path.getmtime(self.cur_la_file)
+        f = open(file_name, 'r', encoding="utf8")
+        self.cur_la_code = f.read()
+        f.close()
+        self.control.SetValue(self.cur_la_code)
+        # compile after load
+        self.OnTranslate(None)
+        # start timer
+        self.on_timer()
+
+    def on_timer(self):
+        self.refresh_la_file()
+        wx.CallLater(5000, self.on_timer)
+
+    def refresh_la_file(self):
+        if self.control.GetValue() == self.cur_la_code:  # not modified in editor
+            disk_time = os.path.getmtime(self.cur_la_file)
+            if disk_time > self.cur_timestamp:
+                self.load_la_content(self.cur_la_file)
+
     def save_content(self, file_type):
         if file_type == FileType.LA:
             tips = "Save LA code"
@@ -315,6 +338,11 @@ E: { ℤ × ℤ }''')
                     file.write(content)
                     file.close()
                     self.statusbar.SetStatusText("Saved Successfully", 0)
+                    if file_type == FileType.LA:
+                        print("la file")
+                        self.cur_la_file = pathname
+                        self.cur_timestamp = os.path.getmtime(pathname)
+                        self.cur_la_code = content
             except IOError:
                 print("Cannot save current data in file '%s'." % pathname)
                 self.statusbar.SetStatusText("Fail to save", 0)
