@@ -36,7 +36,8 @@ except ImportError:
 
 import sys
 import traceback
-import ntpath
+import os.path
+from pathlib import Path
 
 
 def walk_model(parser_type, type_walker, node_info, func_name=None):
@@ -88,8 +89,6 @@ def get_default_parser():
     '''
     global _last_parser, _last_parser_mtime
     ## Collect all .ebnf file modification times.
-    from pathlib import Path
-    import os
     # print( 'grammar paths:', [ str(f) for f in Path('la_grammar').glob('*.ebnf') ] )
     mtimes = [os.path.getmtime(path) for path in Path('la_grammar').glob('*.ebnf')]
     # print( 'mtimes:', mtimes )
@@ -210,10 +209,7 @@ def read_from_file(file_name):
 
 
 def get_file_name(path_name):
-    head, tail = ntpath.split(path_name)
-    name = tail or ntpath.basename(head)
-    base_name = name.rsplit('.', 1)[0]
-    return base_name
+    return Path(path_name).stem
 
 
 def compile_la_file(la_file, parser_type):
@@ -227,15 +223,15 @@ def compile_la_file(la_file, parser_type):
     model = parser.parse(content, parseinfo=True)
     type_walker, start_node = parse_ir_node(content, model)
     if parser_type & ParserTypeEnum.NUMPY:
-        numpy_file = base_name + ".py"
+        numpy_file = Path(la_file).with_suffix( ".py" )
         numpy_content = walk_model(ParserTypeEnum.NUMPY, type_walker, start_node, func_name=base_name)
         save_to_file(numpy_content, numpy_file)
     if parser_type & ParserTypeEnum.EIGEN:
-        eigen_file = base_name + ".cpp"
+        eigen_file = Path(la_file).with_suffix( ".cpp" )
         eigen_content = walk_model(ParserTypeEnum.EIGEN, type_walker, start_node, func_name=base_name)
         save_to_file(eigen_content, eigen_file)
     if parser_type & ParserTypeEnum.LATEX:
-        tex_file = base_name + ".tex"
+        tex_file = Path(la_file).with_suffix( ".tex" )
         tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, start_node, func_name=base_name)
         save_to_file(tex_content, tex_file)
 
