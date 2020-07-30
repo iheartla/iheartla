@@ -26,7 +26,14 @@ from la_parser.ir import *
 from la_parser.ir_visitor import *
 import subprocess
 import threading
-import wx
+
+## We don't need wx to run in command-line mode. This makes it optional.
+try:
+    import wx
+except ImportError:
+    class wx(object): pass
+    wx.CallAfter = lambda o,*x,**y: None
+
 import sys
 import traceback
 import ntpath

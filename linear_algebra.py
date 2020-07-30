@@ -1,11 +1,11 @@
-from la_gui.frame import *
-from la_parser.parser import compile_la_file
+from la_parser.parser import compile_la_file, ParserTypeEnum
 from la_tools.la_logger import LaLogger, LoggerTypeEnum
 import logging
 import argparse
 
 
 def show_gui():
+    from la_gui.frame import wx, MainWindow
     app = wx.App(False)
     MainWindow(None, "I heart LA")
     app.MainLoop()
@@ -17,7 +17,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('-o', '--output', help='Type of output languages')
     # arg_parser.add_argument('-i', '--input', help='File name containing I heart LA source code')
     arg_parser.add_argument('--GUI', action='store_true', help='Editor for I heart LA')
-    arg_parser.add_argument('input', nargs='?')
+    arg_parser.add_argument('input', nargs='+')
     args = arg_parser.parse_args()
     if args.GUI:
         show_gui()
@@ -29,6 +29,6 @@ if __name__ == '__main__':
             for out in out_list:
                 assert out in out_dict, "Parameters after -o or --output can only be numpy, eigen or latex"
                 parser_type = parser_type | out_dict[out]
-        compile_la_file(args.input, parser_type)
+        for input in args.input: compile_la_file(input, parser_type)
     else:
         show_gui()

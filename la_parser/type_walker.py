@@ -2,7 +2,14 @@ from tatsu.model import NodeWalker
 from tatsu.objectmodel import Node
 from la_parser.la_types import *
 from la_tools.la_logger import *
-from la_tools.la_visualizer import LaVisualizer
+
+## Make the visualizer
+try: from la_tools.la_visualizer import LaVisualizer
+except ImportError:
+    print( "Skipping visualizer." )
+    class LaVisualizer(object):
+        def visualize(self, node): pass
+
 from la_parser.ir import *
 from enum import Enum, IntFlag
 
