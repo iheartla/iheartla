@@ -21,6 +21,7 @@ class IRVisitor(object):
         self.parse_type = parse_type
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
         self.name_convention_dict = {}  # eg:i -> i[0]
+        self.func_name = 'myExpression'
 
     def generate_var_name(self, base):
         index = -1
@@ -53,7 +54,7 @@ class IRVisitor(object):
         self.logger.info("dim_dict:\n" + str(self.dim_dict))
         self.logger.info("sub_name_dict:\n" + str(self.sub_name_dict) + '\n')
 
-    def init_type(self, type_walker):
+    def init_type(self, type_walker, func_name):
         self.symtable = type_walker.symtable
         for key in self.symtable.keys():
             self.def_dict[key] = False
@@ -64,6 +65,8 @@ class IRVisitor(object):
         self.sub_name_dict = type_walker.sub_name_dict
         self.name_cnt_dict = type_walker.name_cnt_dict
         self.ret_symbol = type_walker.ret_symbol
+        if func_name is not None:
+            self.func_name = func_name
         # self.print_symbols()
 
     def visit_code(self, node, **kwargs):

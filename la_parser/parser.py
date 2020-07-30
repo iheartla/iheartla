@@ -39,7 +39,7 @@ import traceback
 import ntpath
 
 
-def walk_model(parser_type, type_walker, node_info):
+def walk_model(parser_type, type_walker, node_info, func_name=None):
     if parser_type == ParserTypeEnum.LATEX:
         gen = CodeGenLatex()
     elif parser_type == ParserTypeEnum.NUMPY:
@@ -47,7 +47,7 @@ def walk_model(parser_type, type_walker, node_info):
     elif parser_type == ParserTypeEnum.EIGEN:
         gen = CodeGenEigen()
     #
-    gen.init_type(type_walker)
+    gen.init_type(type_walker, func_name)
     gen.visit_code(node_info)
     if parser_type != ParserTypeEnum.LATEX: # print once
         gen.print_symbols()
@@ -106,6 +106,7 @@ def get_default_parser():
 
 def generate_latex_code(type_walker, node_info, frame):
     tex_content = ''
+    show_pdf = False
     try:
         tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, node_info)
         tex_file_name = "la.tex"
@@ -114,7 +115,7 @@ def generate_latex_code(type_walker, node_info, frame):
         tex_file.close()
         ret = subprocess.run(["xelatex", "-interaction=nonstopmode", tex_file_name], capture_output=False)
         if ret.returncode == 0:
-            tex_content = None
+            show_pdf = True
     except subprocess.SubprocessError as e:
         tex_content = str(e)
     except FailedParse as e:
@@ -127,7 +128,7 @@ def generate_latex_code(type_walker, node_info, frame):
         traceback.print_exc()
         tex_content = str(exc_info[2])
     finally:
-        wx.CallAfter(frame.UpdateTexPanel, tex_content)
+        wx.CallAfter(frame.UpdateTexPanel, tex_content, show_pdf)
 
 
 def parse_ir_node(content, model):
@@ -155,7 +156,7 @@ def parse_ir_node(content, model):
     return type_walker, start_node
 
 
-def parse_and_translate(content, frame, parser_type=None):
+def parse_and_translate(content, frame, parser_type=None, func_name=None):
     # try:
     start_time = time.time()
     parser = get_default_parser()
@@ -168,7 +169,7 @@ def parse_and_translate(content, frame, parser_type=None):
     # other type
     if parser_type is None:
         parser_type = ParserTypeEnum.NUMPY
-    res = walk_model(parser_type, type_walker, start_node)
+    res = walk_model(parser_type, type_walker, start_node, func_name)
     result = (res, 0)
     wx.CallAfter(frame.UpdateMidPanel, result)
     print("------------ %.2f seconds ------------" % (time.time() - start_time))
@@ -208,30 +209,41 @@ def read_from_file(file_name):
     return content
 
 
-def compile_la_file(la_file, parser_type):
-    content = read_from_file(la_file)
-    head, tail = ntpath.split(la_file)
+def get_file_name(path_name):
+    head, tail = ntpath.split(path_name)
     name = tail or ntpath.basename(head)
     base_name = name.rsplit('.', 1)[0]
+    return base_name
+
+
+def compile_la_file(la_file, parser_type):
+    """
+    used for command line
+    """
+    content = read_from_file(la_file)
+    base_name = get_file_name(la_file)
     # print("head:", head, ", name:", name, "parser_type", parser_type, ", base_name:", base_name)
     parser = get_default_parser()
     model = parser.parse(content, parseinfo=True)
     type_walker, start_node = parse_ir_node(content, model)
     if parser_type & ParserTypeEnum.NUMPY:
         numpy_file = base_name + ".py"
-        numpy_content = walk_model(ParserTypeEnum.NUMPY, type_walker, start_node)
+        numpy_content = walk_model(ParserTypeEnum.NUMPY, type_walker, start_node, func_name=base_name)
         save_to_file(numpy_content, numpy_file)
     if parser_type & ParserTypeEnum.EIGEN:
         eigen_file = base_name + ".cpp"
-        eigen_content = walk_model(ParserTypeEnum.EIGEN, type_walker, start_node)
+        eigen_content = walk_model(ParserTypeEnum.EIGEN, type_walker, start_node, func_name=base_name)
         save_to_file(eigen_content, eigen_file)
     if parser_type & ParserTypeEnum.LATEX:
         tex_file = base_name + ".tex"
-        tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, start_node)
+        tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, start_node, func_name=base_name)
         save_to_file(tex_content, tex_file)
 
 
 def parse_la(content, parser_type):
+    """
+    used for testing
+    """
     parser = get_default_parser()
     model = parser.parse(content, parseinfo=True)
     type_walker, node_info = parse_ir_node(content, model)
@@ -239,8 +251,14 @@ def parse_la(content, parser_type):
     return res
 
 
-def parse_in_background(content, frame, parse_type):
-    latex_thread = threading.Thread(target=parse_and_translate, args=(content, frame, parse_type,))
+def parse_in_background(content, frame, parse_type, path_name=None):
+    """
+    used for the GUI
+    """
+    func_name = None
+    if path_name is not None:
+        func_name = get_file_name(path_name)
+    latex_thread = threading.Thread(target=parse_and_translate, args=(content, frame, parse_type, func_name,))
     latex_thread.start()
 
 

@@ -57,19 +57,22 @@ class LatexPanel(wx.Panel):
         # self.latex_ctrl.Hide()
         self.Layout()
 
-    def render_content(self, tex):
-        if tex is not None:
+    def render_content(self, tex, show_pdf):
+        self.latex_ctrl.SetEditable(True)
+        self.latex_ctrl.SetValue(tex)
+        self.latex_ctrl.SetEditable(False)
+        if not show_pdf:
             # render text
             self.tex_panel.Hide()
             self.latex_ctrl.Show()
-            self.latex_ctrl.SetEditable(True)
-            self.latex_ctrl.SetValue(tex)
-            self.latex_ctrl.SetEditable(False)
         else:
             # render PDF
             self.tex_panel.Show()
             self.latex_ctrl.Hide()
             self.viewer.LoadFile("la.pdf")
+
+    def get_content(self):
+        return self.latex_ctrl.GetValue()
 
     def OnSize(self, e):
         self.tex_panel.SetPosition((0, 0))
