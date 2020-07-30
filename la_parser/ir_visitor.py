@@ -284,7 +284,7 @@ class IRVisitor(object):
         new_list = []
         pre_unicode = False
         for e in content:
-            if e.isalnum() or e is '_':
+            if e.isalnum() or e == '_':
                 if pre_unicode:
                     new_list.append('_')
                     pre_unicode = False
