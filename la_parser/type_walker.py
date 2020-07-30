@@ -1420,7 +1420,7 @@ class TypeWalker(NodeWalker):
             elif left_type.is_vector():
                 assert left_type.rows == right_type.rows, 'error: dimension mismatch'
         elif op == TypeInferenceEnum.INF_MUL:
-            assert left_type.var_type is not VarTypeEnum.SEQUENCE and right_type.var_type is not VarTypeEnum.SEQUENCE, 'error: sequence can not be operated'
+            assert left_type.var_type != VarTypeEnum.SEQUENCE and right_type.var_type != VarTypeEnum.SEQUENCE, 'error: sequence can not be operated'
             if left_type.is_scalar():
                 ret_type = right_type
             elif left_type.is_matrix():

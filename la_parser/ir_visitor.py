@@ -314,7 +314,7 @@ class IRVisitor(object):
                 continue
             new_str = self.convert_unicode(special)
             new_str = new_str.replace('-', '_')
-            if new_str is not special:
+            if new_str != special:
                 while new_str in names_dict or new_str in self.symtable.keys() or self.is_keyword(new_str):
                     new_str = '_' + new_str
                 names_dict.append(new_str)
