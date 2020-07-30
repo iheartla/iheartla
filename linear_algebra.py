@@ -17,7 +17,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('-o', '--output', help='Type of output languages')
     # arg_parser.add_argument('-i', '--input', help='File name containing I heart LA source code')
     arg_parser.add_argument('--GUI', action='store_true', help='Editor for I heart LA')
-    arg_parser.add_argument('input', nargs='+')
+    arg_parser.add_argument('input', nargs='*')
     args = arg_parser.parse_args()
     if args.GUI:
         show_gui()
