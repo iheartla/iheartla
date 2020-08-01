@@ -216,7 +216,7 @@ class CodeGenLatex(CodeGen):
         if node.cond:
             sub = '{' + self.visit(node.cond, **kwargs) + '}'
         else:
-            sub = self.visit(node.sub)
+            sub = self.visit(node.id)
         return "\\sum_" + sub + " " + self.visit(node.exp, **kwargs)
 
     def visit_function(self, node, **kwargs):

@@ -190,17 +190,10 @@ class CodeGenNumpy(CodeGen):
         assign_id = type_info.symbol
         cond_content = ""
         if node.cond:
-            if LHS in kwargs:
-                lhs = kwargs[LHS]
-                if self.contain_subscript(lhs):
-                    lhs_ids = self.get_all_ids(lhs)
-                    assert lhs_ids[1][0] == lhs_ids[1][1], "multiple subscripts for sum"
-                    sub = type_info.content
-                    cond_info = self.visit(node.cond, **kwargs)
-                    cond_content = "if(" + cond_info.content + "):\n"
-        else:
-            sub_info = self.visit(node.sub)
-            sub = sub_info.content
+            cond_info = self.visit(node.cond, **kwargs)
+            cond_content = "if(" + cond_info.content + "):\n"
+        sub_info = self.visit(node.id)
+        sub = sub_info.content
         vars = type_info.symbols
         kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
         content = []
@@ -228,7 +221,12 @@ class CodeGenNumpy(CodeGen):
             for right_var in type_info.symbols:
                 if self.contain_subscript(right_var):
                     var_ids = self.get_all_ids(right_var)
-                    exp_str = exp_str.replace(right_var, "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
+                    if len(var_ids[1]) > 1:
+                        exp_str = exp_str.replace(right_var, "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
+                    else:
+                        old = "{}_{}".format(var_ids[0], var_ids[1][0])
+                        new = "{}[{}]".format(var_ids[0], var_ids[1][0])
+                        exp_str = exp_str.replace(old, new)
                     if exp_info.pre_list:
                         for index in range(len(exp_info.pre_list)):
                             exp_info.pre_list[index] = exp_info.pre_list[index].replace(old, new)

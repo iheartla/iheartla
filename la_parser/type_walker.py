@@ -482,12 +482,11 @@ class TypeWalker(NodeWalker):
             if LHS in kwargs:
                 lhs = kwargs[LHS]
                 lhs_ids = self.get_all_ids(lhs)
-                assert lhs_ids[1][0] == lhs_ids[1][1], "multiple subscripts for sum"
-                cond_info = self.walk(node.cond, **kwargs)
-                cond_info.ir.set_parent(ir_node)
+                # assert lhs_ids[1][0] == lhs_ids[1][1], "multiple subscripts for sum"
         else:
             sub_info = self.walk(node.sub)
             ir_node.sub = sub_info.ir
+            ir_node.id = sub_info.ir
             sub_info.ir.set_parent(ir_node)
             subs = sub_info.content
         new_id = self.generate_var_name("sum")
@@ -1460,6 +1459,8 @@ class TypeWalker(NodeWalker):
         if identifier in self.ids_dict:
             return self.ids_dict[identifier].get_all_ids()
         res = identifier.split('_')
+        if len(res) == 1:
+            return res
         subs = []
         for index in range(len(res[1])):
             subs.append(res[1][index])
