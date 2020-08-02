@@ -376,15 +376,15 @@ class CodeGenEigen(CodeGen):
         elif type_info.la_type.is_vector():
             if node.norm_type == NormType.NormInteger:
                 if node.sub == 0:
-                    content = "{}.array().count()".format(value)
+                    content = "({}).array().count()".format(value)
                 else:
-                    content = "{}.lpNorm<{}>()".format(value, node.sub)
+                    content = "({}).lpNorm<{}>()".format(value, node.sub)
             elif node.norm_type == NormType.NormMax:
-                content = "{}.lpNorm<Eigen::Infinity>()".format(value)
+                content = "({}).lpNorm<Eigen::Infinity>()".format(value)
             elif node.norm_type == NormType.NormIdentifier:
                 sub_info = self.visit(node.sub, **kwargs)
                 if node.sub.la_type.is_scalar():
-                    content = "pow({}.cwiseAbs().array().pow({}).sum(), 1.0/{});".format(value, sub_info.content, sub_info.content)
+                    content = "pow(({}).cwiseAbs().array().pow({}).sum(), 1.0/{});".format(value, sub_info.content, sub_info.content)
                 else:
                     content = "sqrt(({}).transpose()*{}*({}))".format(value, sub_info.content, value)
         elif type_info.la_type.is_matrix():
