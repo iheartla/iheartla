@@ -157,6 +157,20 @@ class TypeWalker(NodeWalker):
         for cond in node.value:
             cond_node = self.walk(cond, **kwargs)
             ir_node.value.append(cond_node)
+        # ir_list = []
+        # ir_index = []  # matrix, vector, function
+        # for i in range(len(node.value)):
+        #     # walk scalar first
+        #     if type(node.value[i].type).__name__ == "ScalarType" or type(node.value[i].type).__name__ == "SetType":
+        #         ir_list.append(self.walk(node.value[i], **kwargs))
+        #     else:
+        #         ir_list.append(None)
+        #         ir_index.append(i)
+        # # remaining nodes
+        # if len(ir_index) > 0:
+        #     for i in range(len(ir_index)):
+        #         ir_list[ir_index[i]] = self.walk(node.value[ir_index[i]], **kwargs)
+        # ir_node.value = ir_list
         return ir_node
 
     def walk_WhereCondition(self, node, **kwargs):
@@ -624,7 +638,7 @@ class TypeWalker(NodeWalker):
         ir_node = InnerProductNode(left_info.ir, right_info.ir, sub_node)
         ret_type = ScalarType()
         ir_node.la_type = ret_type
-        node_info = NodeInfo(ret_type, ir=ir_node)
+        node_info = NodeInfo(ret_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
         return node_info
 
     def walk_FroProduct(self, node, **kwargs):
@@ -634,7 +648,7 @@ class TypeWalker(NodeWalker):
         assert right_info.la_type.is_vector() or right_info.la_type.is_matrix(), "right param must be vector or matrix"
         ir_node = FroProductNode(left_info.ir, right_info.ir)
         ir_node.la_type = ScalarType()
-        return NodeInfo(ir_node.la_type, ir=ir_node)
+        return NodeInfo(ir_node.la_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
 
     def walk_HadamardProduct(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
@@ -647,7 +661,7 @@ class TypeWalker(NodeWalker):
             ir_node.la_type = MatrixType(rows=left_info.la_type.rows, cols=left_info.la_type.rows)
         else:
             ir_node.la_type = VectorType(rows=left_info.la_type.rows)
-        return NodeInfo(ir_node.la_type, ir=ir_node)
+        return NodeInfo(ir_node.la_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
 
     def walk_CrossProduct(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
@@ -656,7 +670,7 @@ class TypeWalker(NodeWalker):
         assert left_info.la_type.rows == 3 and right_info.la_type.rows == 3, "cross product is only for vectors of dim 3"
         ir_node = CrossProductNode(left_info.ir, right_info.ir)
         ir_node.la_type = VectorType(rows=left_info.la_type.rows)
-        return NodeInfo(ir_node.la_type, ir=ir_node)
+        return NodeInfo(ir_node.la_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
 
     def walk_KroneckerProduct(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
@@ -665,7 +679,7 @@ class TypeWalker(NodeWalker):
         assert left_info.la_type.is_vector() or left_info.la_type.is_matrix(), "left param must be vector or matrix"
         assert right_info.la_type.is_vector() or right_info.la_type.is_matrix(), "right param must be vector or matrix"
         ir_node.la_type = MatrixType(rows=left_info.la_type.rows*right_info.la_type.rows, cols=left_info.la_type.cols*right_info.la_type.cols)
-        return NodeInfo(ir_node.la_type, ir=ir_node)
+        return NodeInfo(ir_node.la_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
 
     def walk_DotProduct(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
@@ -674,7 +688,7 @@ class TypeWalker(NodeWalker):
         assert left_info.la_type.is_vector() and right_info.la_type.is_vector(), "params must be vectors"
         assert left_info.la_type.rows == right_info.la_type.rows, "params must be same dimensional vectors"
         ir_node.la_type = ScalarType()
-        return NodeInfo(ir_node.la_type, ir=ir_node)
+        return NodeInfo(ir_node.la_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
 
     def create_power_node(self, base, power):
         power_node = PowerNode()
@@ -747,12 +761,14 @@ class TypeWalker(NodeWalker):
             ir_node.name = name_info.ir
             param_list = []
             assert len(node.params) == len(name_type.params), "parameters count mismatch"
+            symbols = set()
             for index in range(len(node.params)):
                 param_info = self.walk(node.params[index], **kwargs)
+                symbols = symbols.union(param_info.symbols)
                 param_list.append(param_info.ir)
                 assert name_type.params[index].is_same_type(param_info.ir.la_type), "parameter type mismatch"
             ir_node.params = param_list
-            node_info = NodeInfo(name_type.ret)
+            node_info = NodeInfo(name_type.ret,symbols=symbols)
             ir_node.la_type = name_type.ret
             node_info.ir = ir_node
             return node_info

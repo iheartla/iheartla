@@ -370,7 +370,7 @@ class CodeGenEigen(CodeGen):
         value = value_info.content
         type_info = node.value
         content = ''
-        pre_list = []
+        pre_list = value_info.pre_list
         if type_info.la_type.is_scalar():
             content = "abs({})".format(value)
         elif type_info.la_type.is_vector():
@@ -795,12 +795,15 @@ class CodeGenEigen(CodeGen):
 
     def visit_function(self, node, **kwargs):
         name_info = self.visit(node.name, **kwargs)
+        pre_list = []
         params = []
         if node.params:
             for param in node.params:
-                params.append(self.visit(param, **kwargs).content)
+                param_info = self.visit(param, **kwargs)
+                params.append(param_info.content)
+                pre_list += param_info.pre_list
         content = "{}({})".format(name_info.content, ', '.join(params))
-        return CodeNodeInfo(content)
+        return CodeNodeInfo(content, pre_list)
 
     def visit_if(self, node, **kwargs):
         ret_info = self.visit(node.cond)
