@@ -849,15 +849,18 @@ class TypeWalker(NodeWalker):
             v_info = self.walk(value)
             right.append(v_info.content)
         left_info = self.walk(node.left, **kwargs)
-        content = left_info.content + '_' + ''.join(right)
-        node_type = LaVarType(VarTypeEnum.INVALID, symbol = content)
-        if left_info.content in self.symtable:
-            node_type = self.symtable[left_info.content].element_type
+        return self.create_id_node_info(left_info.content, right)
+
+    def create_id_node_info(self, left_content, right_content):
+        content = left_content + '_' + ''.join(right_content)
+        node_type = LaVarType(VarTypeEnum.INVALID, symbol=content)
+        if left_content in self.symtable:
+            node_type = self.symtable[left_content].element_type
         #
-        ir_node = IdNode(left_info.content, right)
+        ir_node = IdNode(left_content, right_content)
         ir_node.la_type = node_type
         node_info = NodeInfo(node_type, content, {content}, ir_node)
-        self.ids_dict[content] = Identifier(left_info.content, right)
+        self.ids_dict[content] = Identifier(left_content, right_content)
         return node_info
 
     def walk_IdentifierAlone(self, node, **kwargs):
@@ -1198,14 +1201,19 @@ class TypeWalker(NodeWalker):
         ir_node.id1 = id1_info.ir
         id1_info.ir.set_parent(ir_node)
         id1 = id1_info.content
-        if isinstance(id1, str):
-            assert id1 in self.symtable, "{} unknown".format(id1)
         if node.id:
             ir_node.id = node.id
+            if 'I' in self.symtable and self.symtable['I'].is_sequence():
+                # I_i, sequence
+                return self.create_id_node_info('I', [id1])
+            if isinstance(id1, str):
+                assert id1 in self.symtable, "{} unknown".format(id1)
             # 'I' symbol
             assert 'I' not in self.symtable, "You can't use 'I' with subscript since it has been defined before"
             node_type = MatrixType(rows=id1, cols=id1)
         else:
+            if isinstance(id1, str):
+                assert id1 in self.symtable, "{} unknown".format(id1)
             ir_node.left = node.left
             if node.left == '0':
                 assert la_is_inside_matrix(**kwargs), "Zero matrix can only be used inside matrix"
