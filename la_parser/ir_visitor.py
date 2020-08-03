@@ -9,6 +9,7 @@ class IRVisitor(object):
         self.pre_str = ''
         self.post_str = ''
         self.symtable = {}
+        self.tmp_symtable = {}
         self.def_dict = {}
         self.parameters = set()
         self.subscripts = {}
@@ -56,6 +57,7 @@ class IRVisitor(object):
 
     def init_type(self, type_walker, func_name):
         self.symtable = type_walker.symtable
+        self.tmp_symtable = type_walker.tmp_symtable
         for key in self.symtable.keys():
             self.def_dict[key] = False
         self.parameters = type_walker.parameters
@@ -304,7 +306,7 @@ class IRVisitor(object):
     def trim_content(self, content):
         # convert special string in identifiers
         res = content
-        ids_list = list(self.symtable.keys())
+        ids_list = list(self.symtable.keys()) + list(self.tmp_symtable.keys())
         for ids in self.ids_dict.keys():
             all_ids = self.get_all_ids(ids)
             ids_list += all_ids[1]

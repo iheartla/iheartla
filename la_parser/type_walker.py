@@ -83,6 +83,7 @@ class TypeWalker(NodeWalker):
     def __init__(self):
         super().__init__()
         self.symtable = {}
+        self.tmp_symtable = {}
         self.parameters = []
         self.subscripts = {}
         self.sub_name_dict = {}  # only for parameter checker
@@ -533,6 +534,7 @@ class TypeWalker(NodeWalker):
         # temporary add to symbol table : opt scope
         base_id = base_node.get_main_id()
         self.symtable[base_id] = base_type.la_type
+        self.tmp_symtable[base_id] = base_type.la_type
         exp_node = self.walk(node.exp, **kwargs).ir
         cond_list = []
         if node.cond:
@@ -561,6 +563,7 @@ class TypeWalker(NodeWalker):
         # temporary add to symbol table : opt scope
         base_id = base_node.get_main_id()
         self.symtable[base_id] = ScalarType() # scalar only
+        self.tmp_symtable[base_id] = ScalarType()
         if node.d:
             domain_node = self.walk(node.d, **kwargs)
         else:
