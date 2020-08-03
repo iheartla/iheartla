@@ -74,14 +74,14 @@ class SequenceType(LaVarType):
 
 
 class MatrixType(LaVarType):
-    def __init__(self, rows=0, cols=0, desc=None, element_type=None, symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=[], list_dim=None, index_var=None, value_var=None, item_types = None):
+    def __init__(self, rows=0, cols=0, desc=None, element_type=None, symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=None, list_dim=None, index_var=None, value_var=None, item_types=None):
         LaVarType.__init__(self, VarTypeEnum.MATRIX, desc, element_type, symbol)
         self.rows = rows
         self.cols = cols
         # attributes
         self.need_exp = need_exp      # need expression
         self.diagonal = diagonal
-        self.subs = subs
+        self.subs = subs or []
         # block matrix
         self.block = block
         self.list_dim = list_dim      # used by block mat
@@ -113,9 +113,9 @@ class ScalarType(LaVarType):
 
 
 class FunctionType(LaVarType):
-    def __init__(self, desc=None, symbol=None, params=[], ret=None):
+    def __init__(self, desc=None, symbol=None, params=None, ret=None):
         LaVarType.__init__(self, VarTypeEnum.FUNCTION, desc, symbol)
-        self.params = params
+        self.params = params or []
         self.ret = ret
 
 
@@ -127,26 +127,26 @@ class SummationAttrs(object):
 
 
 class NodeInfo(object):
-    def __init__(self, la_type=None, content=None, symbols=set(), ir=None):
+    def __init__(self, la_type=None, content=None, symbols=None, ir=None):
         super().__init__()
         self.la_type = la_type
         self.content = content
-        self.symbols = symbols  # symbols covered by the node
+        self.symbols = symbols or set()  # symbols covered by the node
         self.ir = ir
 
 
 class CodeNodeInfo(object):
-    def __init__(self, content=None, pre_list=[]):
+    def __init__(self, content=None, pre_list=None):
         super().__init__()
         self.content = content
-        self.pre_list = pre_list
+        self.pre_list = pre_list or []
 
 
 class Identifier(object):
-    def __init__(self, main_id='', subs=[]):
+    def __init__(self, main_id='', subs=None):
         super().__init__()
         self.main_id = main_id
-        self.subs = subs
+        self.subs = subs or []
 
     def contain_subscript(self):
         return len(self.subs) > 0
