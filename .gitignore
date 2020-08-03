@@ -10,4 +10,5 @@
 *.tex
 *.fls
 *.synctex
+.idea/
 la_test/generated_code.py

@@ -613,12 +613,15 @@ class CodeGenNumpy(CodeGen):
 
     def visit_function(self, node, **kwargs):
         name_info = self.visit(node.name, **kwargs)
+        pre_list = []
         params = []
         if node.params:
             for param in node.params:
-                params.append(self.visit(param, **kwargs).content)
+                param_info = self.visit(param, **kwargs)
+                params.append(param_info.content)
+                pre_list += param_info.pre_list
         content = "{}({})".format(name_info.content, ', '.join(params))
-        return CodeNodeInfo(content)
+        return CodeNodeInfo(content, pre_list)
 
     def visit_if(self, node, **kwargs):
         ret_info = self.visit(node.cond)
@@ -726,9 +729,20 @@ class CodeGenNumpy(CodeGen):
             exp = exp_info.content
         # Handle optimization type
         if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
-            pre_list.append("    {} = lambda {}: -({})\n".format(target_func, id_info.content, exp))
+            exp = "-({})".format(exp)
+
+        if len(exp_info.pre_list) > 0:
+            pre_list.append("    def {}({}):\n".format(target_func, id_info.content))
+            for pre in exp_info.pre_list:
+                lines = pre.split('\n')
+                for line in lines:
+                    if line != "":
+                        pre_list.append("    {}\n".format(line))
+            pre_list.append("        return {}\n".format(exp))
         else:
+            # simple expression
             pre_list.append("    {} = lambda {}: {}\n".format(target_func, id_info.content, exp))
+        #
         if node.opt_type == OptimizeType.OptimizeMin:
             content = "minimize({}, {}{}).fun".format(target_func, init_value, constraints_param)
         elif node.opt_type == OptimizeType.OptimizeMax:
