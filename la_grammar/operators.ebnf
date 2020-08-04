@@ -147,7 +147,7 @@ trans_operator::Transpose
     ;
 
 function_operator::Function
-    = name:identifier '(' {{hspace} params+:expression {{hspace} params_separator {hspace} params+:expression}} {hspace}')'
+    = name:identifier '(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
     ;
 
 predefined_built_operators

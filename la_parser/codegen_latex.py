@@ -174,15 +174,18 @@ class CodeGenLatex(CodeGen):
         return content
 
     def visit_function_type(self, node, **kwargs):
-        params = []
-        if node.params:
-            for param in node.params:
-                params.append(self.visit(param, **kwargs))
         ret = self.visit(node.ret, **kwargs)
-        if len(params) == 0:
-            params_str = '\\varnothing'
+        if len(node.params) == 0:
+            if node.empty:
+                params_str = '\\varnothing'
+            else:
+                params_str = '\{\}'
         else:
-            params_str = ', '.join(params)
+            params_str = ''
+            for index in range(len(node.params)):
+                params_str += self.visit(node.params[index], **kwargs)
+                if index < len(node.params)-1:
+                    params_str += node.separators[index] + ''
         return params_str + '\\rightarrow ' + ret
 
     def visit_assignment(self, node, **kwargs):
@@ -224,7 +227,13 @@ class CodeGenLatex(CodeGen):
         if node.params:
             for param in node.params:
                 params.append(self.visit(param, **kwargs))
-        return self.visit(node.name, **kwargs) + '(' + ', '.join(params) + ')'
+        params_str = ''
+        if len(node.params) > 0:
+            for index in range(len(node.params)):
+                params_str += self.visit(node.params[index], **kwargs)
+                if index < len(node.params)-1:
+                    params_str += node.separators[index] + ''
+        return self.visit(node.name, **kwargs) + '(' + params_str + ')'
 
     def visit_if(self, node, **kwargs):
         ret_info = self.visit(node.cond)

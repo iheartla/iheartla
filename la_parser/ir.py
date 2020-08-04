@@ -171,7 +171,9 @@ class ScalarTypeNode(ExprNode):
 class FunctionTypeNode(ExprNode):
     def __init__(self):
         super().__init__(IRNodeType.FunctionType)
+        self.empty = None
         self.params = []
+        self.separators = []
         self.ret = None
 
 
@@ -586,5 +588,6 @@ class FunctionNode(ExprNode):
     def __init__(self):
         super().__init__(IRNodeType.Function)
         self.params = []
+        self.separators = []
         self.ret = None
         self.name = None

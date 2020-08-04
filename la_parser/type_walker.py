@@ -299,6 +299,8 @@ class TypeWalker(NodeWalker):
 
     def walk_FunctionType(self, node, **kwargs):
         ir_node = FunctionTypeNode()
+        ir_node.empty = node.empty
+        ir_node.separators = node.separators
         params = []
         if node.params:
             for param in node.params:
@@ -771,6 +773,7 @@ class TypeWalker(NodeWalker):
                 param_list.append(param_info.ir)
                 assert name_type.params[index].is_same_type(param_info.ir.la_type), "parameter type mismatch"
             ir_node.params = param_list
+            ir_node.separators = node.separators
             node_info = NodeInfo(name_type.ret,symbols=symbols)
             ir_node.la_type = name_type.ret
             node_info.ir = ir_node
