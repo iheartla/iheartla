@@ -553,11 +553,13 @@ class MathFuncType(IntEnum):
 
 
 class MathFuncNode(ExprNode):
-    def __init__(self, param=None, func_type=MathFuncType.MathFuncInvalid, remain_params=[]):
+    def __init__(self, param=None, func_type=MathFuncType.MathFuncInvalid, remain_params=[], func_name=None, separator=None):
         super().__init__(IRNodeType.MathFunc)
         self.param = param   # first param
         self.remain_params = remain_params  # remain params
         self.func_type = func_type
+        self.func_name = func_name
+        self.separator = separator
 
 
 class FactorNode(ExprNode):

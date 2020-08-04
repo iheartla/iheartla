@@ -459,27 +459,27 @@ class CodeGenLatex(CodeGen):
         if node.func_type == MathFuncType.MathFuncSin:
             content = 'sin'
         elif node.func_type == MathFuncType.MathFuncAsin:
-            content = 'asin'
+            content = node.func_name  # 'asin'
         elif node.func_type == MathFuncType.MathFuncCos:
             content = 'cos'
         elif node.func_type == MathFuncType.MathFuncAcos:
-            content = 'acos'
+            content = node.func_name  # 'acos'
         elif node.func_type == MathFuncType.MathFuncTan:
             content = 'tan'
         elif node.func_type == MathFuncType.MathFuncAtan:
-            content = 'atan'
+            content = node.func_name  # 'atan'
         elif node.func_type == MathFuncType.MathFuncSinh:
             content = 'sinh'
         elif node.func_type == MathFuncType.MathFuncAsinh:
-            content = 'asinh'
+            content = node.func_name  # 'asinh'
         elif node.func_type == MathFuncType.MathFuncCosh:
             content = 'cosh'
         elif node.func_type == MathFuncType.MathFuncAcosh:
-            content = 'acosh'
+            content = node.func_name  # 'acosh'
         elif node.func_type == MathFuncType.MathFuncTanh:
             content = 'tanh'
         elif node.func_type == MathFuncType.MathFuncAtanh:
-            content = 'atanh'
+            content = node.func_name  # 'atanh'
         elif node.func_type == MathFuncType.MathFuncCot:
             content = 'cot'
         elif node.func_type == MathFuncType.MathFuncSec:
@@ -488,7 +488,7 @@ class CodeGenLatex(CodeGen):
             content = 'csc'
         elif node.func_type == MathFuncType.MathFuncAtan2:
             content = 'atan2'
-            param_info += ', ' + self.visit(node.remain_params[0], **kwargs)
+            param_info += node.separator + ' ' + self.visit(node.remain_params[0], **kwargs)
         elif node.func_type == MathFuncType.MathFuncExp:
             content = 'exp'
         elif node.func_type == MathFuncType.MathFuncLog:

@@ -25,7 +25,7 @@ sin_func::SinFunc
     ;
 
 asin_func::AsinFunc
-    = (ASIN|ARCSIN) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    = name:(ASIN|ARCSIN) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 cos_func::CosFunc
@@ -33,7 +33,7 @@ cos_func::CosFunc
     ;
 
 acos_func::AcosFunc
-    = (ACOS|ARCCOS) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    = name:(ACOS|ARCCOS) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 tan_func::TanFunc
@@ -41,7 +41,7 @@ tan_func::TanFunc
     ;
 
 atan_func::AtanFunc
-    = (ATAN|ARCTAN) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    = name:(ATAN|ARCTAN) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 sinh_func::SinhFunc
@@ -49,7 +49,7 @@ sinh_func::SinhFunc
     ;
 
 asinh_func::AsinhFunc
-    = (ASINH|ARSINH) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    = name:(ASINH|ARSINH) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 cosh_func::CoshFunc
@@ -57,7 +57,7 @@ cosh_func::CoshFunc
     ;
 
 acosh_func::AcoshFunc
-    = (ACOSH|ARCOSH) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    = name:(ACOSH|ARCOSH) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 tanh_func::TanhFunc
@@ -65,7 +65,7 @@ tanh_func::TanhFunc
     ;
 
 atanh_func::AtanhFunc
-    = (ATANH|ARTANH) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    = name:(ATANH|ARTANH) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 cot_func::CotFunc
@@ -81,5 +81,5 @@ csc_func::CscFunc
     ;
 
 atan2_func::Atan2Func
-    = ATAN2 '(' {hspace} param:expression {hspace} params_separator {hspace} second:expression {hspace} ')'
+    = ATAN2 '(' {hspace} param:expression {hspace} separator:params_separator {hspace} second:expression {hspace} ')'
     ;
