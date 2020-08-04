@@ -710,7 +710,7 @@ class TypeWalker(NodeWalker):
         symbols = base_info.symbols
         if node.t:
             ir_node.t = node.t
-            assert base_info.la_type.is_matrix()
+            assert base_info.la_type.is_matrix() or base_info.la_type.is_vector()
             node_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows)
         elif node.r:
             ir_node.r = node.r
@@ -1476,7 +1476,11 @@ class TypeWalker(NodeWalker):
                         ret_type.sparse = True
                 elif right_type.is_vector():
                     assert left_type.cols == right_type.rows, 'error: dimension mismatch'
-                    ret_type = VectorType(rows=left_type.rows)
+                    if left_type.rows == 1:
+                        # scalar
+                        ret_type = ScalarType()
+                    else:
+                        ret_type = VectorType(rows=left_type.rows)
             elif left_type.is_vector():
                 if right_type.is_scalar():
                     ret_type = left_type
