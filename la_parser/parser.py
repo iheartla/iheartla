@@ -112,7 +112,7 @@ def generate_latex_code(type_walker, node_info, frame):
         tex_file = open(tex_file_name, 'w')
         tex_file.write(tex_content)
         tex_file.close()
-        ret = subprocess.run(["xelatex", "-interaction=nonstopmode", tex_file_name], capture_output=False)
+        ret = subprocess.run(["xelatex", "-interaction=nonstopmode", tex_file_name], capture_output=True)
         if ret.returncode == 0:
             show_pdf = True
     except subprocess.SubprocessError as e:
@@ -156,36 +156,42 @@ def parse_ir_node(content, model):
 
 
 def parse_and_translate(content, frame, parser_type=None, func_name=None):
-    # try:
-    start_time = time.time()
-    parser = get_default_parser()
-    model = parser.parse(content, parseinfo=True)
-    # type walker
-    type_walker, start_node = parse_ir_node(content, model)
-    # parsing Latex at the same time
-    latex_thread = threading.Thread(target=generate_latex_code, args=(type_walker, start_node, frame,))
-    latex_thread.start()
-    # other type
-    if parser_type is None:
-        parser_type = ParserTypeEnum.NUMPY
-    res = walk_model(parser_type, type_walker, start_node, func_name)
-    result = (res, 0)
-    wx.CallAfter(frame.UpdateMidPanel, result)
-    print("------------ %.2f seconds ------------" % (time.time() - start_time))
-    return result
-    # except FailedParse as e:
-    #     tex = str(e)
-    #     result = (tex, 1)
-    # except FailedCut as e:
-    #     tex = str(e)
-    #     result = (tex, 1)
-    # except:
-    #     pass
-    #     tex = str(sys.exc_info()[0])
-    #     result = (tex, 1)
-    # finally:
-    #     print tex
-    #     return result
+    try:
+        start_time = time.time()
+        parser = get_default_parser()
+        model = parser.parse(content, parseinfo=True)
+        # type walker
+        type_walker, start_node = parse_ir_node(content, model)
+        # parsing Latex at the same time
+        latex_thread = threading.Thread(target=generate_latex_code, args=(type_walker, start_node, frame,))
+        latex_thread.start()
+        # other type
+        if parser_type is None:
+            parser_type = ParserTypeEnum.NUMPY
+        res = walk_model(parser_type, type_walker, start_node, func_name)
+        result = (res, 0)
+        return result
+    except FailedParse as e:
+        tex = "FailedParse: {}".format(str(e))
+        result = (tex, 1)
+    except FailedCut as e:
+        tex = "FailedCut: {}".format(str(e))
+        result = (tex, 1)
+    except AssertionError as e:
+        tex = "Assertion: {}".format(e.args[0])
+        result = (tex, 1)
+    except Exception as e:
+        tex = "Exception: {}".format(str(e))
+        result = (tex, 1)
+    except:
+        tex = str(sys.exc_info()[0])
+        result = (tex, 1)
+    finally:
+        wx.CallAfter(frame.UpdateMidPanel, result)
+        print("------------ %.2f seconds ------------" % (time.time() - start_time))
+        if result[1] != 0:
+            print(result[0])
+        return result
 
 
 def save_to_file(content, file_name):

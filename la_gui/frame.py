@@ -177,10 +177,18 @@ E: { ℤ × ℤ }''')
         self.latexPanel.render_content(tex, show_pdf)
 
     def UpdateMidPanel(self, result):
-        self.midPanel.set_value(result[0])
         if result[1] == 0:
+            self.midPanel.set_value(result[0])
             self.statusbar.SetStatusText("Finished", 0)
         else:
+            self.msgPanel.SetEditable(True)
+            if self.msgPanel.GetValue() == '':
+                msg = result[0]
+            else:
+                msg = "{}\n\n{}".format(self.msgPanel.GetValue(), result[0])
+            self.msgPanel.SetValue(msg)
+            self.msgPanel.ScrollToEnd()
+            self.msgPanel.SetEditable(False)
             self.statusbar.SetStatusText("Error", 0)
 
     def OnIdle(self, e):
