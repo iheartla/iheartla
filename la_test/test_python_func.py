@@ -132,6 +132,39 @@ class TestFunction(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_func_multi_params(self):
+        la_str = """A = P f(2, 3)
+                    where 
+                    P: ℝ ^(2×2): a matrix 
+                    f: scalar, scalar -> ℝ^(2 × 2): a function"""
+        func_info = self.gen_func_info(la_str)
+        P = np.array([[1, 2], [4, 3]])
+        def f(p, q):
+            ret = np.zeros((2, 2))
+            ret[0] = [p, p]
+            ret[1] = [q, q]
+            return ret
+        A = np.array([[8, 8], [17, 17]])
+        self.assertDMatrixEqual(func_info.numpy_func(P, f), A)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> P;",
+                     "    P << 1, 2, 4, 3;",
+                     "    Eigen::Matrix<double, 2, 2> A;",
+                     "    A << 8, 8, 17, 17;",
+                     "    std::function<Eigen::Matrix<double, 2, 2>(double, double)> f;"
+                     "    f = [](double p, double q)->Eigen::Matrix<double, 2, 2>{"
+                     "    Eigen::Matrix<double, 2, 2> ret;"
+                     "    ret << p, p, q, q;",
+                     "    return ret;"
+                     "    };",
+                     "    Eigen::Matrix<double, 2, 2> B = {}(P, f);".format(func_info.eig_func_name),
+                     "    return ((B - A).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_func_ret_types_vector(self):
         la_str = """A = P f(2)
                     where 

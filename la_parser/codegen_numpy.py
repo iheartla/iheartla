@@ -707,7 +707,7 @@ class CodeGenNumpy(CodeGen):
                                                                                               self.visit(cond_node.cond.left, **kwargs).content,
                                                                                               self.visit(cond_node.cond.right, **kwargs).content))
             elif cond_node.cond.node_type == IRNodeType.In:
-                v_set = self.visit(cond_node.cond.node_type, **kwargs).content
+                v_set = self.visit(cond_node.cond.set, **kwargs).content
                 opt_func = self.generate_var_name(category)
                 pre_list.append("    def {}({}):\n".format(opt_func, opt_param))
                 pre_list.append("        {} = 1\n".format(opt_ret))
