@@ -31,7 +31,7 @@ keyword_str
     ;
 
 description
-    = /[A-Za-z0-9][A-Za-z0-9\t ]*/
+    = /[^`;\n\r\f]*/
     ;
 
 desc_identifier
