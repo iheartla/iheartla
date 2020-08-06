@@ -3,8 +3,8 @@ operations
     =
     | function_operator
     | norm_operator
-    | trace_operator
-    | eig_operator
+    #| trace_operator
+    #| eig_operator
     #| derivative_operator
     | inner_product_operator
     | frobenius_product_operator

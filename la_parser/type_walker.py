@@ -719,6 +719,7 @@ class TypeWalker(NodeWalker):
             node_type = MatrixType(rows=base_info.la_type.rows, cols=base_info.la_type.rows)
         else:
             power_info = self.walk(node.power, **kwargs)
+            assert (base_info.la_type.is_matrix() and base_info.la_type.rows == base_info.la_type.cols) or base_info.la_type.is_scalar(), "The base must be matrix or scalar type"
             ir_node.power = power_info.ir
             symbols = symbols.union(power_info.symbols)
             node_type = power_info.la_type
