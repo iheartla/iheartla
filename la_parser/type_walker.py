@@ -519,6 +519,7 @@ class TypeWalker(NodeWalker):
         ir_node.symbol = ret_info.symbol
         ir_node.content = ret_info.content
         ret_info.ir = ir_node
+        self.logger.debug("summation, symbols: {}".format(ir_node.symbols))
         return ret_info
 
     def walk_Optimize(self, node, **kwargs):

@@ -186,27 +186,32 @@ class CodeGenNumpy(CodeGen):
         return exp_info
 
     def visit_summation(self, node, **kwargs):
-        type_info = node
-        assign_id = type_info.symbol
-        cond_content = ""
-        if node.cond:
-            cond_info = self.visit(node.cond, **kwargs)
-            cond_content = "if(" + cond_info.content + "):\n"
-        sub_info = self.visit(node.id)
-        sub = sub_info.content
-        vars = type_info.symbols
-        kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
-        content = []
         target_var = []
-        exp_info = self.visit(node.exp)
-        exp_str = exp_info.content
-        for var in vars:
+        sub = self.visit(node.id).content
+        # name convention
+        name_convention = {}
+        for var in node.symbols:
             if self.contain_subscript(var):
                 var_ids = self.get_all_ids(var)
                 var_subs = var_ids[1]
                 for var_sub in var_subs:
                     if sub == var_sub:
                         target_var.append(var_ids[0])
+                if len(var_ids[1]) > 1:  # matrix
+                    name_convention[var] = "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1])
+                else:
+                    name_convention[var] = "{}[{}]".format(var_ids[0], var_ids[1][0])
+        self.add_name_conventions(name_convention)
+        #
+        assign_id = node.symbol
+        cond_content = ""
+        if node.cond:
+            cond_info = self.visit(node.cond, **kwargs)
+            cond_content = "if(" + cond_info.content + "):\n"
+        kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
+        content = []
+        exp_info = self.visit(node.exp)
+        exp_str = exp_info.content
         if self.symtable[assign_id].is_matrix():
             content.append("{} = np.zeros(({}, {}))\n".format(assign_id, self.symtable[assign_id].rows, self.symtable[assign_id].cols))
         elif self.symtable[assign_id].is_vector():
@@ -217,27 +222,6 @@ class CodeGenNumpy(CodeGen):
         else:
             content.append("{} = 0\n".format(assign_id))
         content.append("for {} in range(len({})):\n".format(sub, target_var[0]))
-        if node.cond:
-            for right_var in type_info.symbols:
-                if self.contain_subscript(right_var):
-                    var_ids = self.get_all_ids(right_var)
-                    if len(var_ids[1]) > 1:
-                        exp_str = exp_str.replace(right_var, "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
-                    else:
-                        old = "{}_{}".format(var_ids[0], var_ids[1][0])
-                        new = "{}[{}]".format(var_ids[0], var_ids[1][0])
-                        exp_str = exp_str.replace(old, new)
-                    if exp_info.pre_list:
-                        for index in range(len(exp_info.pre_list)):
-                            exp_info.pre_list[index] = exp_info.pre_list[index].replace(old, new)
-        else:
-            for var in target_var:
-                old = "{}_{}".format(var, sub)
-                new = "{}[{}]".format(var, sub)
-                exp_str = exp_str.replace(old, new)
-                if exp_info.pre_list:
-                    for index in range(len(exp_info.pre_list)):
-                        exp_info.pre_list[index] = exp_info.pre_list[index].replace(old, new)
         if exp_info.pre_list:   # catch pre_list
             list_content = "".join(exp_info.pre_list)
             # content += exp_info.pre_list
@@ -670,9 +654,8 @@ class CodeGenNumpy(CodeGen):
             init_value = "np.zeros({})".format(node.base_type.la_type.rows)
         elif node.base_type.la_type.is_matrix():
             init_value = "np.zeros({}*{})".format(node.base_type.la_type.rows, node.base_type.la_type.cols)
-            self.name_convention_dict[id_info.content] = "{}.reshape({}, {})".format(id_info.content,
-                                                                                        node.base_type.la_type.rows,
-                                                                                        node.base_type.la_type.cols)
+            name_convention = {id_info.content: "{}.reshape({}, {})".format(id_info.content, node.base_type.la_type.rows, node.base_type.la_type.cols)}
+            self.add_name_conventions(name_convention)
         exp_info = self.visit(node.exp, **kwargs)
         category = ''
         if node.opt_type == OptimizeType.OptimizeMin:
@@ -759,7 +742,7 @@ class CodeGenNumpy(CodeGen):
                                                                                                 node.base_type.la_type.rows,
                                                                                                 node.base_type.la_type.cols)
         if node.base_type.la_type.is_matrix():
-            del self.name_convention_dict[id_info.content]
+            self.del_name_conventions(name_convention)
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_domain(self, node, **kwargs):

@@ -30,7 +30,7 @@ class BasePythonTest(unittest.TestCase):
         super(BasePythonTest, self).__init__(*args, **kwargs)
         self.import_trig = "from trigonometry: sin,asin,cos,acos,tan,atan,atan2,sinh,asinh,cosh,acosh,tanh,atanh,cot,sec,csc\n"
         if BasePythonTest.cnt == 0:
-            LaLogger.getInstance().set_level(logging.WARNING)
+            LaLogger.getInstance().set_level(logging.ERROR)
 
     def gen_func_info(self, parse_str):
         func_name = "myExpression"   # can use different name in future

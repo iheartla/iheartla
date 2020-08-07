@@ -24,6 +24,19 @@ class IRVisitor(object):
         self.name_convention_dict = {}  # eg:i -> i[0]
         self.func_name = 'myExpression'
 
+    def add_name_conventions(self, con_dict):
+        for key, value in con_dict.items():
+            self.logger.debug("name:{} -> {}".format(key, value))
+            if key in self.name_convention_dict:
+                self.logger.debug("{} already exists".format(key))
+            self.name_convention_dict[key] = value
+
+    def del_name_conventions(self, con_dict):
+        for key in con_dict:
+            self.logger.debug("del name:{}".format(key))
+            if key in self.name_convention_dict:
+                del self.name_convention_dict[key]
+
     def generate_var_name(self, base):
         index = -1
         if base in self.name_cnt_dict:

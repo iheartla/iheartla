@@ -83,7 +83,10 @@ class CodeGenEigen(CodeGen):
         return rand_test
 
     def visit_id(self, node, **kwargs):
-        return CodeNodeInfo(node.get_name())
+        content = node.get_name()
+        if content in self.name_convention_dict:
+            content = self.name_convention_dict[content]
+        return CodeNodeInfo(content)
 
     def visit_start(self, node, **kwargs):
         return self.visit(node.stat, **kwargs)
@@ -287,30 +290,35 @@ class CodeGenEigen(CodeGen):
         return exp_info
 
     def visit_summation(self, node, **kwargs):
-        type_info = node
-        assign_id = type_info.symbol
-        cond_content = ""
-        if node.cond:
-            cond_info = self.visit(node.cond, **kwargs)
-            cond_content = "if(" + cond_info.content + ")\n"
-        sub_info = self.visit(node.id)
-        sub = sub_info.content
-        vars = type_info.symbols
-        kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
-        content = []
         target_var = []
-        exp_info = self.visit(node.exp)
-        exp_str = exp_info.content
-        for var in vars:
+        sub = self.visit(node.id).content
+        # name convention
+        name_convention = {}
+        for var in node.symbols:
             if self.contain_subscript(var):
                 var_ids = self.get_all_ids(var)
                 var_subs = var_ids[1]
                 for var_sub in var_subs:
                     if sub == var_sub:
                         target_var.append(var_ids[0])
+                if len(var_ids[1]) > 1:  # matrix
+                    name_convention[var] = "{}({}, {})".format(var_ids[0], var_ids[1][0], var_ids[1][1])
+                else:
+                    name_convention[var] = "{}[{}]".format(var_ids[0], var_ids[1][0])
+        self.add_name_conventions(name_convention)
+        #
+        assign_id = node.symbol
+        cond_content = ""
+        if node.cond:
+            cond_info = self.visit(node.cond, **kwargs)
+            cond_content = "if(" + cond_info.content + ")\n"
+        kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
+        content = []
+        exp_info = self.visit(node.exp)
+        exp_str = exp_info.content
         if self.symtable[assign_id].is_matrix():
             content.append(
-                "Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".format(assign_id, self.symtable[assign_id].rows,
+                "Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".    format(assign_id, self.symtable[assign_id].rows,
                                                                                self.symtable[assign_id].cols))
         elif self.symtable[assign_id].is_vector():
             content.append(
@@ -326,27 +334,6 @@ class CodeGenEigen(CodeGen):
             content.append("for(int {}=0; {}<{}.rows(); {}++){{\n".format(sub, sub, target_var[0], sub))
         else:
             content.append("for(int {}=0; {}<{}.size(); {}++){{\n".format(sub, sub, target_var[0], sub))
-        if node.cond:
-            for right_var in type_info.symbols:
-                if self.contain_subscript(right_var):
-                    var_ids = self.get_all_ids(right_var)
-                    if len(var_ids[1]) > 1:
-                        exp_str = exp_str.replace(right_var, "{}({}, {})".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
-                    else:
-                        old = "{}_{}".format(var_ids[0], var_ids[1][0])
-                        new = "{}[{}]".format(var_ids[0], var_ids[1][0])
-                        exp_str = exp_str.replace(old, new)
-                    if exp_info.pre_list:
-                        for index in range(len(exp_info.pre_list)):
-                            exp_info.pre_list[index] = exp_info.pre_list[index].replace(old, new)
-        else:
-            for var in target_var:
-                old = "{}_{}".format(var, sub)
-                new = "{}[{}]".format(var, sub)
-                exp_str = exp_str.replace(old, new)
-                if exp_info.pre_list:
-                    for index in range(len(exp_info.pre_list)):
-                        exp_info.pre_list[index] = exp_info.pre_list[index].replace(old, new)
         if exp_info.pre_list:  # catch pre_list
             list_content = "".join(exp_info.pre_list)
             # content += exp_info.pre_list
@@ -363,6 +350,7 @@ class CodeGenEigen(CodeGen):
         content[0] = "    " + content[0]
 
         content.append("}\n")
+        self.del_name_conventions(name_convention)
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
     def visit_norm(self, node, **kwargs):
