@@ -894,7 +894,7 @@ class TypeWalker(NodeWalker):
             id0 = self.get_main_id(id0)
             if not la_is_inside_sum(**kwargs) and not la_is_if(**kwargs):  # symbols in sum don't need to be defined before todo:modify
                 if id0 != 'I':  # special case
-                    assert self.symtable.get(id0) is not None, ("error: no symbol:{}".format(id0))
+                    assert self.symtable.get(id0) is not None, "error: no symbol:{}".format(id0)
                     # pass  # todo:delete
                 else:
                     # I
@@ -1238,101 +1238,111 @@ class TypeWalker(NodeWalker):
         node_info.ir = ir_node
         return node_info
 
-    def create_math_node_info(self, func_type, param, remains=[]):
+    def create_math_node_info(self, func_type, param_info, remains=[]):
+        param = param_info.ir
+        symbols = param_info.symbols
         if MathFuncType.MathFuncInvalid < func_type < MathFuncType.MathFuncAtan2:
             assert param.la_type.is_scalar() or param.la_type.is_matrix() or param.la_type.is_vector(), "Parameters must be scalar, vector or matrix type"
         else:
             assert param.la_type.is_scalar(), "Parameters must be scalar type"
-            for par in remains:
+            remain_list = []
+            for par_info in remains:
+                par = par_info.ir
+                remain_list.append(par)
                 assert par.la_type.is_scalar(), "Parameters must be scalar type"
-        tri_node = MathFuncNode(param, func_type, remains)
-        node_info = NodeInfo(param.la_type)
+                symbols = symbols.union(par_info.symbols)
+        tri_node = MathFuncNode(param, func_type, remain_list)
+        node_info = NodeInfo(param.la_type, symbols=symbols)
         tri_node.la_type = param.la_type
         node_info.ir = tri_node
         return node_info
 
-    def create_trig_node_info(self, func_type, param, power):
+    def create_trig_node_info(self, func_type, param_info, power):
+        symbols = param_info.symbols
+        param = param_info
         if power:
             assert param.la_type.is_scalar(), "Parameters must be scalar type for the power"
-            ir_node = self.create_power_node(MathFuncNode(param, func_type), self.walk(power).ir)
-            return NodeInfo(ir_node.la_type, ir=ir_node)
+            power_info = self.walk(power)
+            symbols = symbols.union(power_info.symbols)
+            ir_node = self.create_power_node(MathFuncNode(param, func_type), power_info.ir)
+            return NodeInfo(ir_node.la_type, ir=ir_node, symbols=symbols)
         else:
-            return self.create_math_node_info(func_type, param)
+            return self.create_math_node_info(func_type, param_info)
 
     def walk_SinFunc(self, node, **kwargs):
-        return self.create_trig_node_info(MathFuncType.MathFuncSin, self.walk(node.param, **kwargs).ir, node.power)
+        return self.create_trig_node_info(MathFuncType.MathFuncSin, self.walk(node.param, **kwargs), node.power)
 
     def walk_AsinFunc(self, node, **kwargs):
-        node_info = self.create_trig_node_info(MathFuncType.MathFuncAsin, self.walk(node.param, **kwargs).ir, node.power)
+        node_info = self.create_trig_node_info(MathFuncType.MathFuncAsin, self.walk(node.param, **kwargs), node.power)
         node_info.ir.func_name = node.name
         return node_info
 
     def walk_CosFunc(self, node, **kwargs):
-        return self.create_trig_node_info(MathFuncType.MathFuncCos, self.walk(node.param, **kwargs).ir, node.power)
+        return self.create_trig_node_info(MathFuncType.MathFuncCos, self.walk(node.param, **kwargs), node.power)
 
     def walk_AcosFunc(self, node, **kwargs):
-        node_info = self.create_trig_node_info(MathFuncType.MathFuncAcos, self.walk(node.param, **kwargs).ir, node.power)
+        node_info = self.create_trig_node_info(MathFuncType.MathFuncAcos, self.walk(node.param, **kwargs), node.power)
         node_info.ir.func_name = node.name
         return node_info
 
     def walk_TanFunc(self, node, **kwargs):
-        return self.create_trig_node_info(MathFuncType.MathFuncTan, self.walk(node.param, **kwargs).ir, node.power)
+        return self.create_trig_node_info(MathFuncType.MathFuncTan, self.walk(node.param, **kwargs), node.power)
 
     def walk_AtanFunc(self, node, **kwargs):
-        node_info = self.create_trig_node_info(MathFuncType.MathFuncAtan, self.walk(node.param, **kwargs).ir, node.power)
+        node_info = self.create_trig_node_info(MathFuncType.MathFuncAtan, self.walk(node.param, **kwargs), node.power)
         node_info.ir.func_name = node.name
         return node_info
 
     def walk_SinhFunc(self, node, **kwargs):
-        return self.create_trig_node_info(MathFuncType.MathFuncSinh, self.walk(node.param, **kwargs).ir, node.power)
+        return self.create_trig_node_info(MathFuncType.MathFuncSinh, self.walk(node.param, **kwargs), node.power)
 
     def walk_AsinhFunc(self, node, **kwargs):
-        node_info = self.create_trig_node_info(MathFuncType.MathFuncAsinh, self.walk(node.param, **kwargs).ir, node.power)
+        node_info = self.create_trig_node_info(MathFuncType.MathFuncAsinh, self.walk(node.param, **kwargs), node.power)
         node_info.ir.func_name = node.name
         return node_info
 
     def walk_CoshFunc(self, node, **kwargs):
-        return self.create_trig_node_info(MathFuncType.MathFuncCosh, self.walk(node.param, **kwargs).ir, node.power)
+        return self.create_trig_node_info(MathFuncType.MathFuncCosh, self.walk(node.param, **kwargs), node.power)
 
     def walk_AcoshFunc(self, node, **kwargs):
-        node_info = self.create_trig_node_info(MathFuncType.MathFuncAcosh, self.walk(node.param, **kwargs).ir, node.power)
+        node_info = self.create_trig_node_info(MathFuncType.MathFuncAcosh, self.walk(node.param, **kwargs), node.power)
         node_info.ir.func_name = node.name
         return node_info
 
     def walk_TanhFunc(self, node, **kwargs):
-        return self.create_trig_node_info(MathFuncType.MathFuncTanh, self.walk(node.param, **kwargs).ir, node.power)
+        return self.create_trig_node_info(MathFuncType.MathFuncTanh, self.walk(node.param, **kwargs), node.power)
 
     def walk_AtanhFunc(self, node, **kwargs):
-        node_info = self.create_trig_node_info(MathFuncType.MathFuncAtanh, self.walk(node.param, **kwargs).ir, node.power)
+        node_info = self.create_trig_node_info(MathFuncType.MathFuncAtanh, self.walk(node.param, **kwargs), node.power)
         node_info.ir.func_name = node.name
         return node_info
 
     def walk_CotFunc(self, node, **kwargs):
-        return self.create_trig_node_info(MathFuncType.MathFuncCot, self.walk(node.param, **kwargs).ir, node.power)
+        return self.create_trig_node_info(MathFuncType.MathFuncCot, self.walk(node.param, **kwargs), node.power)
 
     def walk_SecFunc(self, node, **kwargs):
-        return self.create_trig_node_info(MathFuncType.MathFuncSec, self.walk(node.param, **kwargs).ir, node.power)
+        return self.create_trig_node_info(MathFuncType.MathFuncSec, self.walk(node.param, **kwargs), node.power)
 
     def walk_CscFunc(self, node, **kwargs):
-        return self.create_trig_node_info(MathFuncType.MathFuncCsc, self.walk(node.param, **kwargs).ir, node.power)
+        return self.create_trig_node_info(MathFuncType.MathFuncCsc, self.walk(node.param, **kwargs), node.power)
 
     # other math node
     def walk_Atan2Func(self, node, **kwargs):
-        node_info = self.create_math_node_info(MathFuncType.MathFuncAtan2, self.walk(node.param, **kwargs).ir, [self.walk(node.second, **kwargs).ir])
+        node_info = self.create_math_node_info(MathFuncType.MathFuncAtan2, self.walk(node.param, **kwargs), [self.walk(node.second, **kwargs)])
         node_info.ir.separator = node.separator
         return node_info
 
     def walk_ExpFunc(self, node, **kwargs):
-        return self.create_math_node_info(MathFuncType.MathFuncExp, self.walk(node.param, **kwargs).ir)
+        return self.create_math_node_info(MathFuncType.MathFuncExp, self.walk(node.param, **kwargs))
 
     def walk_LogFunc(self, node, **kwargs):
-        return self.create_math_node_info(MathFuncType.MathFuncLog, self.walk(node.param, **kwargs).ir)
+        return self.create_math_node_info(MathFuncType.MathFuncLog, self.walk(node.param, **kwargs))
 
     def walk_LnFunc(self, node, **kwargs):
-        return self.create_math_node_info(MathFuncType.MathFuncLn, self.walk(node.param, **kwargs).ir)
+        return self.create_math_node_info(MathFuncType.MathFuncLn, self.walk(node.param, **kwargs))
 
     def walk_SqrtFunc(self, node, **kwargs):
-        return self.create_math_node_info(MathFuncType.MathFuncSqrt, self.walk(node.param, **kwargs).ir)
+        return self.create_math_node_info(MathFuncType.MathFuncSqrt, self.walk(node.param, **kwargs))
 
     ###################################################################
     def check_bmat_validity(self, type_array, mat_size):
