@@ -371,6 +371,7 @@ class CodeGenEigen(CodeGen):
                 content = "({}).lpNorm<Eigen::Infinity>()".format(value)
             elif node.norm_type == NormType.NormIdentifier:
                 sub_info = self.visit(node.sub, **kwargs)
+                pre_list += sub_info.pre_list
                 if node.sub.la_type.is_scalar():
                     content = "pow(({}).cwiseAbs().array().pow({}).sum(), 1.0/{});".format(value, sub_info.content, sub_info.content)
                 else:
@@ -626,21 +627,21 @@ class CodeGenEigen(CodeGen):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
         left_info.content = left_info.content + ' + ' + right_info.content
-        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        left_info.pre_list += right_info.pre_list
         return left_info
 
     def visit_sub(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
         left_info.content = left_info.content + ' - ' + right_info.content
-        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        left_info.pre_list += right_info.pre_list
         return left_info
 
     def visit_add_sub(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
         left_info.content = left_info.content + ' +- ' + right_info.content
-        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        left_info.pre_list += right_info.pre_list
         return left_info
 
     def visit_mul(self, node, **kwargs):
@@ -653,14 +654,14 @@ class CodeGenEigen(CodeGen):
         #     if r_info.la_type.is_matrix() or r_info.la_type.is_vector():
         #         mul = ' @ '
         left_info.content = left_info.content + mul + right_info.content
-        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        left_info.pre_list += right_info.pre_list
         return left_info
 
     def visit_div(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
         left_info.content = left_info.content + ' / ' + right_info.content
-        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        left_info.pre_list += right_info.pre_list
         return left_info
 
     def visit_sub_expr(self, node, **kwargs):
@@ -804,24 +805,22 @@ class CodeGenEigen(CodeGen):
         for item in node.items:
             item_info = self.visit(item, **kwargs)
             item_list.append(item_info.content)
-            # pre_list = self.merge_pre_list(pre_list, item_info)
         right_info = self.visit(node.set, **kwargs)
         content = '{}.find({}({})) != {}.end()'.format(right_info.content, self.get_set_item_str(self.symtable[right_info.content]), ', '.join(item_list),right_info.content)
-        # pre_list = self.merge_pre_list(pre_list, right_info)
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_not_in(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
         left_info.content = left_info.content + 'not in' + right_info.content
-        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        left_info.pre_list += right_info.pre_list
         return left_info
 
     def visit_bin_comp(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
         left_info.content = left_info.content + ' {} '.format(self.get_bin_comp_str(node.comp_type)) + right_info.content
-        left_info.pre_list = self.merge_pre_list(left_info, right_info)
+        left_info.pre_list += right_info.pre_list
         return left_info
 
     def visit_IdentifierAlone(self, node, **kwargs):
@@ -850,22 +849,22 @@ class CodeGenEigen(CodeGen):
         if node.sub:
             sub_info = self.visit(node.sub, **kwargs)
             content = "({}).transpose() * ({}) * ({})".format(right_info.content, sub_info.content, left_info.content)
-        return CodeNodeInfo(content)
+        return CodeNodeInfo(content, pre_list=left_info.pre_list+right_info.pre_list)
 
     def visit_fro_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("({}).cwiseProduct({}).sum();".format(left_info.content, right_info.content))
+        return CodeNodeInfo("({}).cwiseProduct({}).sum();".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
 
     def visit_hadamard_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("({}).cwiseProduct({})".format(left_info.content, right_info.content))
+        return CodeNodeInfo("({}).cwiseProduct({})".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
 
     def visit_cross_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("({}).cross({})".format(left_info.content, right_info.content))
+        return CodeNodeInfo("({}).cross({})".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
 
     def visit_kronecker_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
@@ -873,7 +872,7 @@ class CodeGenEigen(CodeGen):
         index_i = self.generate_var_name('i')
         index_j = self.generate_var_name('j')
         kronecker = self.generate_var_name('kron')
-        pre_list = []
+        pre_list = left_info.pre_list + right_info.pre_list
         pre_list.append("    {} {};\n".format(self.get_ctype(node.la_type), kronecker))
         pre_list.append("    for( int {}=0; {}<{}; {}++){{\n".format(index_i, index_i, node.left.la_type.rows, index_i))
         pre_list.append("        for( int {}=0; {}<{}; {}++){{\n".format(index_j, index_j, node.left.la_type.cols, index_j))
@@ -887,11 +886,12 @@ class CodeGenEigen(CodeGen):
     def visit_dot_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("({}).dot({})".format(left_info.content, right_info.content))
+        return CodeNodeInfo("({}).dot({})".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
 
     def visit_math_func(self, node, **kwargs):
         content = ''
         param_info = self.visit(node.param, **kwargs)
+        pre_list = param_info.pre_list
         params_content = param_info.content
         if node.func_type == MathFuncType.MathFuncSin:
             content = 'sin'
@@ -925,7 +925,9 @@ class CodeGenEigen(CodeGen):
             content = '1/sin'
         elif node.func_type == MathFuncType.MathFuncAtan2:
             content = 'atan2'
-            params_content += ', ' + self.visit(node.remain_params[0], **kwargs).content
+            remain_info = self.visit(node.remain_params[0], **kwargs)
+            params_content += ', ' + remain_info.content
+            pre_list += remain_info.pre_list
         elif node.func_type == MathFuncType.MathFuncExp:
             content = 'exp'
         elif node.func_type == MathFuncType.MathFuncLog:
@@ -944,7 +946,7 @@ class CodeGenEigen(CodeGen):
                 content = "{}.unaryExpr<double(*)(double)>(&std::cos).cwiseInverse()".format(params_content)
             elif node.func_type == MathFuncType.MathFuncCsc:
                 content = "{}.unaryExpr<double(*)(double)>(&std::sin).cwiseInverse()".format(params_content)
-        return CodeNodeInfo(content)
+        return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_factor(self, node, **kwargs):
         if node.id:
@@ -979,15 +981,6 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo(content)
 
     ###################################################################
-    def merge_pre_list(self, left_info, right_info):
-        ret = left_info.pre_list
-        if right_info.pre_list is not None:
-            if ret is None:
-                ret = right_info.pre_list
-            else:
-                ret = ret + right_info.pre_list
-        return ret
-
     def is_keyword(self, name):
         kwlist = "Asm auto bool break case catch char class const_cast continue default delete do double else \
         enum dynamic_cast extern false float for union unsigned using friend goto if \

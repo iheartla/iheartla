@@ -1242,11 +1242,11 @@ class TypeWalker(NodeWalker):
     def create_math_node_info(self, func_type, param_info, remains=[]):
         param = param_info.ir
         symbols = param_info.symbols
+        remain_list = []
         if MathFuncType.MathFuncInvalid < func_type < MathFuncType.MathFuncAtan2:
             assert param.la_type.is_scalar() or param.la_type.is_matrix() or param.la_type.is_vector(), "Parameters must be scalar, vector or matrix type"
         else:
             assert param.la_type.is_scalar(), "Parameters must be scalar type"
-            remain_list = []
             for par_info in remains:
                 par = par_info.ir
                 remain_list.append(par)
@@ -1260,7 +1260,7 @@ class TypeWalker(NodeWalker):
 
     def create_trig_node_info(self, func_type, param_info, power):
         symbols = param_info.symbols
-        param = param_info
+        param = param_info.ir
         if power:
             assert param.la_type.is_scalar(), "Parameters must be scalar type for the power"
             power_info = self.walk(power)
