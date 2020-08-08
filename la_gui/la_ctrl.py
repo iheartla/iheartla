@@ -21,6 +21,9 @@ class LaTextControl(bc.BaseTextControl):
         self.keywords = ['where', 'trace', 'vec', 'diag', 'Id', 'eig', 'conj', 'Re', 'Im', 'inv', 'sqrt', 'exp',
                          'log', 'det', 'svd', 'rank', 'null', 'orth', 'qr', 'sum', 'symmetric', 'diagonal', 'if',
                          'otherwise', 'is', 'in']
+        self.unicode_dict = {'\\R': 'ℝ', '\\Z': 'ℤ', '\\x': '×', '\\inf': '∞', '\\in': '∈', '\\sum': '∑',
+                             '\\had': '○', '\\kro': '⨂', '\\dot': '⋅', '\\T': 'ᵀ', '\\par': '∂', '\\emp': '∅',
+                             '\\arr': '→', '\\int': '∫', '\\dbl': '‖'}
         self.StyleSetSpec(self.STC_STYLE_LA_DEFAULT, "fore:#A9B7C6,back:{}".format(bc.BACKGROUND_COLOR))
         self.StyleSetSpec(self.STC_STYLE_LA_KW, "fore:#94558D,bold,back:{}".format(bc.BACKGROUND_COLOR))
         self.StyleSetSpec(self.STC_STYLE_LA_ESCAPE_STR, "fore:#6A8759,bold,back:{}".format(bc.BACKGROUND_COLOR))
@@ -59,6 +62,24 @@ class LaTextControl(bc.BaseTextControl):
                     self.StartStyling(line_pos)
                     self.SetStyling(start_pos-line_pos, self.STC_STYLE_LA_ESCAPE_PARAMETER)
                     self.StartStyling(start_pos)
+            elif char == '\\':
+                # unicode string
+                match = False
+                index = 1
+                prefix = self.GetTextRange(start_pos, start_pos + index)
+                unicode_str = ''
+                while self.is_unicode_prefix(prefix) and start_pos + index < end_pos:
+                    if self.is_unicode(prefix):
+                        unicode_str = self.get_unicode(prefix)
+                        match = True
+                        break
+                    index += 1
+                    prefix = self.GetTextRange(start_pos, start_pos + index)
+                if match:
+                    self.DeleteRange(start_pos, index)
+                    self.AddText(unicode_str)
+                    start_pos += index
+                    continue
             else:
                 if char.isnumeric():
                     # numbers
@@ -90,6 +111,18 @@ class LaTextControl(bc.BaseTextControl):
                 return True
         return False
 
+    def is_unicode_prefix(self, prefix):
+        for unicode in self.unicode_dict:
+            if unicode.startswith(prefix):
+                return True
+        return False
+
+    def get_unicode(self, unicode):
+        return self.unicode_dict[unicode]
+
     def is_keyword(self, key):
         return key in self.keywords
+
+    def is_unicode(self, unicode):
+        return unicode in self.unicode_dict
 
