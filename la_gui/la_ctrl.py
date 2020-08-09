@@ -21,9 +21,9 @@ class LaTextControl(bc.BaseTextControl):
         self.keywords = ['where', 'trace', 'vec', 'diag', 'Id', 'eig', 'conj', 'Re', 'Im', 'inv', 'sqrt', 'exp',
                          'log', 'det', 'svd', 'rank', 'null', 'orth', 'qr', 'sum', 'symmetric', 'diagonal', 'if',
                          'otherwise', 'is', 'in']
-        self.unicode_dict = {'\\R': 'ℝ', '\\Z': 'ℤ', '\\x': '×', '\\inf': '∞', '\\in': '∈', '\\sum': '∑',
-                             '\\had': '○', '\\kro': '⨂', '\\dot': '⋅', '\\T': 'ᵀ', '\\par': '∂', '\\emp': '∅',
-                             '\\arr': '→', '\\int': '∫', '\\dbl': '‖'}
+        self.unicode_dict = {'R': 'ℝ', 'Z': 'ℤ', 'x': '×', 'inf': '∞', 'in': '∈', 'sum': '∑',
+                             'had': '○', 'kro': '⨂', 'dot': '⋅', 'T': 'ᵀ', 'par': '∂', 'emp': '∅',
+                             'arr': '→', 'int': '∫', 'dbl': '‖'}
         self.StyleSetSpec(self.STC_STYLE_LA_DEFAULT, "fore:#A9B7C6,back:{}".format(bc.BACKGROUND_COLOR))
         self.StyleSetSpec(self.STC_STYLE_LA_KW, "fore:#94558D,bold,back:{}".format(bc.BACKGROUND_COLOR))
         self.StyleSetSpec(self.STC_STYLE_LA_ESCAPE_STR, "fore:#6A8759,bold,back:{}".format(bc.BACKGROUND_COLOR))
@@ -39,6 +39,8 @@ class LaTextControl(bc.BaseTextControl):
         line = self.LineFromPosition(last_styled_pos)
         start_pos = self.PositionFromLine(line)
         end_pos = event.GetPosition()
+        start_pos = 0
+        # print("line:{}, start_pos:{}, end_pos:{}".format(line, start_pos, end_pos))
         while start_pos < end_pos:
             self.StartStyling(start_pos)
             char = self.GetTextRange(start_pos, start_pos+1)
@@ -86,19 +88,19 @@ class LaTextControl(bc.BaseTextControl):
                     style = self.STC_STYLE_LA_NUMBER
                 else:
                     # keywords
-                    match = False
                     index = 1
                     prefix = self.GetTextRange(start_pos, start_pos+index)
-                    while self.is_keyword_prefix(prefix) and start_pos+index < end_pos:
-                        if self.is_keyword(prefix):
-                            match = True
-                            break
-                        index += 1
-                        prefix = self.GetTextRange(start_pos, start_pos + index)
-                    if match:
-                        self.SetStyling(index, self.STC_STYLE_LA_KW)
-                        start_pos += index
-                        continue
+                    if start_pos > 1 and not self.GetTextRange(start_pos-1, start_pos).isalnum():
+                        while self.is_keyword_prefix(prefix) and start_pos+index < end_pos:
+                            index += 1
+                            prefix = self.GetTextRange(start_pos, start_pos + index)
+                        if index > 2 and start_pos+index+1 < end_pos:
+                            if not self.GetTextRange(start_pos + index - 1, start_pos + index).isalnum():
+                                prefix = self.GetTextRange(start_pos, start_pos + index - 1)
+                                if self.is_keyword(prefix):
+                                    self.SetStyling(index, self.STC_STYLE_LA_KW)
+                                    start_pos += index - 1
+                                    continue
             self.SetStyling(1, style)
             start_pos += 1
 
@@ -113,16 +115,21 @@ class LaTextControl(bc.BaseTextControl):
 
     def is_unicode_prefix(self, prefix):
         for unicode in self.unicode_dict:
-            if unicode.startswith(prefix):
+            target = '\\' + unicode + '\\'
+            if target.startswith(prefix):
                 return True
         return False
 
     def get_unicode(self, unicode):
-        return self.unicode_dict[unicode]
+        return self.unicode_dict[unicode.replace('\\', '')]
 
     def is_keyword(self, key):
         return key in self.keywords
 
-    def is_unicode(self, unicode):
-        return unicode in self.unicode_dict
+    def is_unicode(self, prefix):
+        for unicode in self.unicode_dict:
+            target = '\\' + unicode + '\\'
+            if target == prefix:
+                return True
+        return False
 
