@@ -647,13 +647,7 @@ class CodeGenEigen(CodeGen):
     def visit_mul(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        l_info = node.left
-        r_info = node.right
-        mul = ' * '
-        # if l_info.la_type.is_matrix() or l_info.la_type.is_vector():
-        #     if r_info.la_type.is_matrix() or r_info.la_type.is_vector():
-        #         mul = ' @ '
-        left_info.content = left_info.content + mul + right_info.content
+        left_info.content = left_info.content + ' * ' + right_info.content
         left_info.pre_list += right_info.pre_list
         return left_info
 

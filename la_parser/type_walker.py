@@ -939,16 +939,6 @@ class TypeWalker(NodeWalker):
         node_info.ir = ir_node
         return node_info
 
-    def walk_Number(self, node, **kwargs):
-        node_value = self.walk(node.value, **kwargs)
-        node_info = NodeInfo(ScalarType(), content=node_value)
-        #
-        ir_node = NumberNode()
-        ir_node.value = node_value.ir
-        ir_node.la_type = node_info.la_type
-        node_info.ir = ir_node
-        return node_info
-
     def walk_Integer(self, node, **kwargs):
         value = ''.join(node.value)
         node_type = ScalarType(is_int=True)
@@ -1052,27 +1042,10 @@ class TypeWalker(NodeWalker):
 
     def walk_SparseIf(self, node, **kwargs):
         ir_node = SparseIfNode()
-        lhs = kwargs[LHS]
-        all_ids = self.get_all_ids(lhs)
-        # id0_info = self.walk(node.id0, **kwargs)
-        # ir_node.id0 = id0_info.ir
-        # id0 = id0_info.content
         cond_info = self.walk(node.cond, **kwargs)
         ir_node.cond = cond_info.ir
-        # assert id0 in all_ids[1], "subscripts mismatch"
-        # id1_info = self.walk(node.id1, **kwargs)
-        # ir_node.id1 = id1_info.ir
-        # id1 = id1_info.content
-        # assert id1 in all_ids[1], "subscripts mismatch"
-        # id2_info = self.walk(node.id2, **kwargs)
-        # ir_node.id2 = id2_info.ir
-        # id2 = id2_info.content
         stat_info = self.walk(node.stat, **kwargs)
         ir_node.stat = stat_info.ir
-        # for symbol in stat_info.symbols:
-        #     if self.contain_subscript(symbol):
-        #         sym_ids = self.get_all_ids(symbol)
-        #         assert sym_ids[1] == all_ids[1], "subscripts mismatch"
         return NodeInfo(ir=ir_node)
 
     def walk_Matrix(self, node, **kwargs):
