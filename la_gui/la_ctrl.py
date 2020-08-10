@@ -13,7 +13,8 @@ class LaTextControl(bc.BaseTextControl):
     STC_STYLE_LA_NUMBER,\
     STC_STYLE_LA_ESCAPE_CHAR, \
     STC_STYLE_LA_ESCAPE_STR , \
-    STC_STYLE_LA_ESCAPE_PARAMETER  = range(9)
+    STC_STYLE_LA_ESCAPE_PARAMETER, \
+    STC_STYLE_LA_ESCAPE_DESCRIPTION  = range(10)
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -29,12 +30,14 @@ class LaTextControl(bc.BaseTextControl):
         self.StyleSetSpec(self.STC_STYLE_LA_ESCAPE_STR, "fore:#6A8759,bold,back:{}".format(bc.BACKGROUND_COLOR))
         self.StyleSetSpec(self.STC_STYLE_LA_NUMBER, "fore:#9686F5,bold,back:{}".format(bc.BACKGROUND_COLOR))
         self.StyleSetSpec(self.STC_STYLE_LA_ESCAPE_PARAMETER, "fore:#CC7832,bold,back:{}".format(bc.BACKGROUND_COLOR))
+        self.StyleSetSpec(self.STC_STYLE_LA_ESCAPE_DESCRIPTION, "fore:#6C7986,bold,back:{}".format(bc.BACKGROUND_COLOR))
         self.SetLexer(wx.stc.STC_LEX_CONTAINER)
         # evt handler
         self.Bind(wx.stc.EVT_STC_MARGINCLICK, self.OnMarginClick)
         self.Bind(wx.stc.EVT_STC_STYLENEEDED, self.OnStyleNeeded)
 
     def OnStyleNeeded(self, event):
+        where_block = False
         last_styled_pos = self.GetEndStyled()
         line = self.LineFromPosition(last_styled_pos)
         start_pos = self.PositionFromLine(line)
@@ -56,14 +59,22 @@ class LaTextControl(bc.BaseTextControl):
                 self.SetStyling(1, self.STC_STYLE_LA_ESCAPE_STR)
                 start_pos += 1
                 continue
-            elif char == ':':
+            elif char == ':' and where_block:
                 # parameters after where block
                 cur_line = self.LineFromPosition(start_pos)
                 line_pos = self.PositionFromLine(cur_line)
+                # print("cur_line:{}, start_pos:{}, line_pos:{}", cur_line, start_pos, line_pos)
                 if ':' not in self.GetTextRange(line_pos, start_pos):
                     self.StartStyling(line_pos)
                     self.SetStyling(start_pos-line_pos, self.STC_STYLE_LA_ESCAPE_PARAMETER)
                     self.StartStyling(start_pos)
+                else:
+                    line_end = self.GetLineEndPosition(cur_line)
+                    if self.GetTextRange(line_pos, start_pos).count(':') == 1:
+                        self.StartStyling(start_pos + 1)
+                        self.SetStyling(line_end - start_pos + 1, self.STC_STYLE_LA_ESCAPE_DESCRIPTION)
+                        start_pos = line_end
+                        continue
             elif char == '\\':
                 # unicode string
                 match = False
@@ -100,6 +111,8 @@ class LaTextControl(bc.BaseTextControl):
                                 if self.is_keyword(prefix):
                                     self.SetStyling(index, self.STC_STYLE_LA_KW)
                                     start_pos += index - 1
+                                    if prefix == 'where':
+                                        where_block = True
                                     continue
             self.SetStyling(1, style)
             start_pos += 1
