@@ -24,7 +24,8 @@ class LaTextControl(bc.BaseTextControl):
                          'otherwise', 'is', 'in']
         self.unicode_dict = {'R': 'ℝ', 'Z': 'ℤ', 'x': '×', 'inf': '∞', 'in': '∈', 'sum': '∑',
                              'had': '○', 'kro': '⨂', 'dot': '⋅', 'T': 'ᵀ', 'par': '∂', 'emp': '∅',
-                             'arr': '→', 'int': '∫', 'dbl': '‖'}
+                             'arr': '→', 'int': '∫', 'dbl': '‖', 'pi': 'π', 'sig': 'σ', 'row': 'ρ',
+                             'phi': 'ϕ', 'the': 'θ'}
         self.StyleSetSpec(self.STC_STYLE_LA_DEFAULT, "fore:#A9B7C6,back:{}".format(bc.BACKGROUND_COLOR))
         self.StyleSetSpec(self.STC_STYLE_LA_KW, "fore:#94558D,bold,back:{}".format(bc.BACKGROUND_COLOR))
         self.StyleSetSpec(self.STC_STYLE_LA_ESCAPE_STR, "fore:#6A8759,bold,back:{}".format(bc.BACKGROUND_COLOR))
