@@ -57,6 +57,33 @@ class TestSubscript(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_subscript_I(self):
+        # sequence
+        la_str = """B_i = I_i
+        where
+        I_i: ℝ ^ (2 × 2): a matrix"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([[[1, 2], [4, 3]], [[1, 2], [4, 3]]])
+        self.assertDMatrixEqual(func_info.numpy_func(A), A)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> A1;",
+                     "    A1 << 1, 2, 4, 3;",
+                     "    Eigen::Matrix<double, 2, 2> A2;",
+                     "    A2 << 1, 2, 4, 3;",
+                     "    std::vector<Eigen::Matrix<double, 2, 2> > A;",
+                     "    A.push_back(A1);",
+                     "    A.push_back(A2);",
+                     "    std::vector<Eigen::Matrix<double, 2, 2> > B = {}(A);".format(func_info.eig_func_name),
+                     "    if((A[0] - B[0]).norm() == 0 && (A[1] - B[1]).norm() == 0){",
+                     "        return true;",
+                     "    }",
+                     "    return false;",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_summation_0(self):
         # simple version
         la_str = """B = sum_i A_i

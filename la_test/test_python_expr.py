@@ -8,6 +8,33 @@ cppyy.add_include_path(eigen_path)
 
 
 class TestExpr(BasePythonTest):
+    def test_addition_vector_matrix(self):
+        # space
+        la_str = """C = P+Q
+        where
+        P: ℝ^2 
+        Q: ℝ^(2×1)"""
+        func_info = self.gen_func_info(la_str)
+        P = np.array([[1], [4]])
+        P.reshape((2, 1))
+        Q = np.array([[1], [2]])
+        C = np.array([[2], [6]])
+        self.assertDMatrixEqual(func_info.numpy_func(P, Q), C)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 1> P;",
+                     "    P << 1, 4;",
+                     "    Eigen::Matrix<double, 2, 1> Q;",
+                     "    Q << 1, 2;",
+                     "    Eigen::Matrix<double, 2, 1> C;",
+                     "    C << 2, 6;",
+                     "    Eigen::Matrix<double, 2, 1> B = {}(P, Q);".format(func_info.eig_func_name),
+                     "    return ((B - C).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_multiplication_0(self):
         # space
         la_str = """c = a b
