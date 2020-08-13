@@ -257,3 +257,39 @@ class TestExpr(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_scalar_pow(self):
+        la_str = """C = A^2
+        where
+        A: ℝ: a scalar"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(2), 4)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    double C = {}(2);".format(func_info.eig_func_name),
+                     "    return (C == 4);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_matrix_pow(self):
+        la_str = """C = A^2
+        where
+        A: ℝ ^ (2 × 2): a matrix"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([[1, 2], [3, 4]])
+        C = np.array([[7, 10], [15, 22]])
+        self.assertDMatrixEqual(func_info.numpy_func(A), C)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> A;",
+                     "    A << 1, 2, 3, 4;",
+                     "    Eigen::Matrix<double, 2, 2> B;",
+                     "    B << 7, 10, 15, 22;",
+                     "    Eigen::Matrix<double, 2, 2> C = {}(A);".format(func_info.eig_func_name),
+                     "    return ((B - C).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
