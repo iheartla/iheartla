@@ -90,6 +90,7 @@ class TypeWalker(NodeWalker):
         self.name_cnt_dict = {}
         self.dim_dict = {}       # parameter used. h:w_i
         self.ids_dict = {}    # identifiers with subscripts
+        self.unofficial_method = False
         self.visualizer = LaVisualizer()
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
         self.ret_symbol = None
@@ -702,6 +703,11 @@ class TypeWalker(NodeWalker):
         power_node.power = power
         assert power.la_type.is_scalar(), "power must be scalar"
         power_node.la_type = ScalarType()
+        assert base.la_type.is_scalar() or base.la_type.is_matrix(), "base of power must be scalar or matrix"
+        if base.la_type.is_matrix():
+            assert base.la_type.rows == base.la_type.cols, "rows must be the same as cols"
+            self.unofficial_method = True
+            power_node.la_type = base.la_type
         return power_node
 
     def walk_Power(self, node, **kwargs):
@@ -712,20 +718,17 @@ class TypeWalker(NodeWalker):
         if node.t:
             ir_node.t = node.t
             assert base_info.la_type.is_matrix() or base_info.la_type.is_vector()
-            node_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows)
+            ir_node.la_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows)
         elif node.r:
             ir_node.r = node.r
             assert base_info.la_type.is_matrix()
             assert base_info.la_type.rows == base_info.la_type.cols
-            node_type = MatrixType(rows=base_info.la_type.rows, cols=base_info.la_type.rows)
+            ir_node.la_type = MatrixType(rows=base_info.la_type.rows, cols=base_info.la_type.rows)
         else:
             power_info = self.walk(node.power, **kwargs)
-            assert (base_info.la_type.is_matrix() and base_info.la_type.rows == base_info.la_type.cols) or base_info.la_type.is_scalar(), "The base must be matrix or scalar type"
-            ir_node.power = power_info.ir
             symbols = symbols.union(power_info.symbols)
-            node_type = power_info.la_type
-        ir_node.la_type = node_type
-        node_info = NodeInfo(node_type, symbols=symbols)
+            ir_node = self.create_power_node(base_info.ir, power_info.ir)
+        node_info = NodeInfo(ir_node.la_type, symbols=symbols)
         node_info.ir = ir_node
         return node_info
 

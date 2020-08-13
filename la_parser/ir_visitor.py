@@ -18,6 +18,7 @@ class IRVisitor(object):
         self.name_cnt_dict = {}
         self.ids_dict = {}  # identifiers with subscripts
         self.ret_symbol = None
+        self.unofficial_method = False  # matrix pow only(eigen)
         self.content = ''
         self.parse_type = parse_type
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
@@ -80,6 +81,7 @@ class IRVisitor(object):
         self.sub_name_dict = type_walker.sub_name_dict
         self.name_cnt_dict = type_walker.name_cnt_dict
         self.ret_symbol = type_walker.ret_symbol
+        self.unofficial_method = type_walker.unofficial_method
         if func_name is not None:
             self.func_name = func_name
         # self.print_symbols()

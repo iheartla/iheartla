@@ -5,9 +5,15 @@ from la_parser.type_walker import *
 class CodeGenEigen(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.EIGEN)
-        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n\n'''
+        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n'''
         self.post_str = ''''''
         self.ret = 'ret'
+
+    def init_type(self, type_walker, func_name):
+        super().init_type(type_walker, func_name)
+        if self.unofficial_method:
+            self.pre_str += '#include <unsupported/Eigen/MatrixFunctions>\n'
+        self.pre_str += '\n'
 
     def get_set_item_str(self, set_type):
         type_list = []
@@ -398,7 +404,12 @@ class CodeGenEigen(CodeGen):
             base_info.content = "{}.inverse()".format(base_info.content)
         else:
             power_info = self.visit(node.power, **kwargs)
-            base_info.content = "pow({}, {})".format(base_info.content, power_info.content)
+            if node.base.la_type.is_scalar():
+                base_info.content = "pow({}, {})".format(base_info.content, power_info.content)
+            else:
+                name = self.generate_var_name('pow')
+                base_info.pre_list.append("    Eigen::MatrixPower<{}> {}({});\n".format(self.get_ctype(node.la_type), name, base_info.content))
+                base_info.content = "{}({})".format(name, power_info.content)
         return base_info
 
     def visit_solver(self, node, **kwargs):
