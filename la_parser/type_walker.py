@@ -1487,8 +1487,10 @@ class TypeWalker(NodeWalker):
                 elif right_type.is_vector():
                     assert left_type.cols == right_type.rows, error_msg
         elif op == TypeInferenceEnum.INF_DIV:
-            assert left_type.is_scalar() and right_type.is_scalar(), error_msg
-            ret_type = ScalarType()
+            # assert left_type.is_scalar() and right_type.is_scalar(), error_msg
+            assert left_type.is_scalar() or left_type.is_vector() or left_type.is_matrix(), error_msg
+            assert right_type.is_scalar(), error_msg
+            ret_type = left_type
         elif op == TypeInferenceEnum.INF_MATRIX_ROW:
             # assert left_type.var_type == right_type.var_type
             ret_type = left_type
