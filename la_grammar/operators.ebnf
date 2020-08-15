@@ -1,6 +1,7 @@
 # operators
 operations
     =
+    | power_operator
     | function_operator
     | norm_operator
     #| trace_operator
@@ -12,7 +13,6 @@ operations
     | cross_product_operator
     | kronecker_product_operator
     | dot_product_operator
-    | power_operator
     | sum_operator
     | integral_operator
     | trans_operator
@@ -147,7 +147,7 @@ trans_operator::Transpose
     ;
 
 function_operator::Function
-    = name:identifier '(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
+    = name:func_id '(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
     ;
 
 predefined_built_operators

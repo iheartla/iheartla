@@ -135,6 +135,8 @@ term
     | factor
     ;
 
+func_id=identifier;
+
 factor::Factor
     =
     | op:operations

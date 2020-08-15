@@ -131,9 +131,10 @@ def generate_latex_code(type_walker, node_info, frame):
 
 
 def parse_ir_node(content, model):
+    global _grammar_content
     # type walker
     type_walker = TypeWalker()
-    start_node = type_walker.walk(model)
+    start_node = type_walker.walk(model, pre_walk=True)
     if len(start_node.directives) > 0:
         # include directives
         package_name_dict = start_node.get_package_dict()
@@ -141,7 +142,6 @@ def parse_ir_node(content, model):
         for package in package_name_dict:
             for name in package_name_dict[package]:
                 key_names.append("{}_func".format(name))
-        global _grammar_content
         # remove derivatives grammar
         current_content = _grammar_content.replace('| {separator_with_space} directive+:Directive {{separator_with_space}+ directive+:Directive}\n    |', '')
         # add new rules
@@ -151,12 +151,25 @@ def parse_ir_node(content, model):
         # get new parser
         parser = get_compiled_parser(current_content)
         model = parser.parse(content, parseinfo=True)
-        start_node = type_walker.walk(model)
+        start_node = type_walker.walk(model, pre_walk=True)
+    else:
+        current_content = _grammar_content
+    # deal with function
+    func_list = type_walker.get_func_symbols()
+    if len(func_list) > 0:
+        func_rule = "'" + "'|'".join(func_list) + "'"
+        print("func_rule:", func_rule)
+        current_content = current_content.replace("func_id=identifier;", "func_id={};".format(func_rule))
+        parser = get_compiled_parser(current_content)
+        model = parser.parse(content, parseinfo=True)
+    # third parsing
+    type_walker.reset_state()   # reset
+    start_node = type_walker.walk(model)
     return type_walker, start_node
 
 
 def parse_and_translate(content, frame, parser_type=None, func_name=None):
-    try:
+    # try:
         start_time = time.time()
         parser = get_default_parser()
         model = parser.parse(content, parseinfo=True)
@@ -170,23 +183,22 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
             parser_type = ParserTypeEnum.NUMPY
         res = walk_model(parser_type, type_walker, start_node, func_name)
         result = (res, 0)
-        return result
-    except FailedParse as e:
-        tex = "FailedParse: {}".format(str(e))
-        result = (tex, 1)
-    except FailedCut as e:
-        tex = "FailedCut: {}".format(str(e))
-        result = (tex, 1)
-    except AssertionError as e:
-        tex = "Assertion: {}".format(e.args[0])
-        result = (tex, 1)
-    except Exception as e:
-        tex = "Exception: {}".format(str(e))
-        result = (tex, 1)
-    except:
-        tex = str(sys.exc_info()[0])
-        result = (tex, 1)
-    finally:
+    # except FailedParse as e:
+    #     tex = "FailedParse: {}".format(str(e))
+    #     result = (tex, 1)
+    # except FailedCut as e:
+    #     tex = "FailedCut: {}".format(str(e))
+    #     result = (tex, 1)
+    # except AssertionError as e:
+    #     tex = "Assertion: {}".format(e.args[0])
+    #     result = (tex, 1)
+    # except Exception as e:
+    #     tex = "Exception: {}".format(str(e))
+    #     result = (tex, 1)
+    # except:
+    #     tex = str(sys.exc_info()[0])
+    #     result = (tex, 1)
+    # finally:
         wx.CallAfter(frame.UpdateMidPanel, result)
         print("------------ %.2f seconds ------------" % (time.time() - start_time))
         if result[1] != 0:

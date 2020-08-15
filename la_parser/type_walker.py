@@ -99,6 +99,25 @@ class TypeWalker(NodeWalker):
                                           'sec', 'csc']}
         self.first_parsing = True   # directives grammar
 
+    def reset_state(self):
+        self.symtable.clear()
+        self.tmp_symtable.clear()
+        self.parameters = []
+        self.subscripts.clear()
+        self.sub_name_dict.clear()
+        self.name_cnt_dict.clear()
+        self.dim_dict.clear()
+        self.ids_dict.clear()
+
+    def get_func_symbols(self):
+        # if node.cond:
+        #     cond_node = self.walk(node.cond, **kwargs)
+        ret = []
+        for keys in self.symtable:
+            if self.symtable[keys] and self.symtable[keys].is_function():
+                ret.append(keys)
+        return ret
+
     def generate_var_name(self, base):
         index = -1
         if base in self.name_cnt_dict:
@@ -121,7 +140,7 @@ class TypeWalker(NodeWalker):
         raise Exception('Unexpected type %s walked', type(o).__name__)
 
     def walk_Start(self, node, **kwargs):
-        # self.visualizer.visualize(node) # visualize
+        # self.visualizer.visualize(node)  # visualize
         ir_node = StartNode()
         if node.directive:
             for directive in node.directive:
@@ -134,6 +153,8 @@ class TypeWalker(NodeWalker):
         if node.cond:
             cond_node = self.walk(node.cond, **kwargs)
             ir_node.cond = cond_node
+        if 'pre_walk' in kwargs:
+            return ir_node
         stat_list = self.walk(node.stat, **kwargs)
         block_node = BlockNode()
         for index in range(len(stat_list)):
@@ -764,7 +785,12 @@ class TypeWalker(NodeWalker):
         return node_info
 
     def walk_Function(self, node, **kwargs):
-        name_info = self.walk(node.name, **kwargs)
+        if isinstance(node.name, str):
+            ir_node = IdNode(node.name)
+            ir_node.la_type = self.symtable[node.name]
+            name_info = NodeInfo(ir_node.la_type, ir=ir_node)
+        else:
+            name_info = self.walk(node.name, **kwargs)
         name_type = name_info.ir.la_type
         if name_type.is_function():
             ir_node = FunctionNode()
