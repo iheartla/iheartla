@@ -97,7 +97,7 @@ class TypeWalker(NodeWalker):
         self.packages = {'trigonometry': ['sin', 'asin', 'cos', 'acos', 'tan', 'atan', 'atan2',
                                           'sinh', 'asinh', 'cosh', 'acosh', 'tanh', 'atanh', 'cot',
                                           'sec', 'csc']}
-        self.first_parsing = True   # directives grammar
+        self.directive_parsing = True   # directives grammar
 
     def reset_state(self):
         self.symtable.clear()
@@ -145,11 +145,9 @@ class TypeWalker(NodeWalker):
         if node.directive:
             for directive in node.directive:
                 ir_node.directives.append(self.walk(directive, **kwargs))
-            if self.first_parsing:
-                self.first_parsing = False
+            if self.directive_parsing:
+                self.directive_parsing = False
                 return ir_node
-            else:
-                self.first_parsing = True
         if node.cond:
             cond_node = self.walk(node.cond, **kwargs)
             ir_node.cond = cond_node
@@ -1267,7 +1265,8 @@ class TypeWalker(NodeWalker):
             assert param.la_type.is_scalar(), "Parameters must be scalar type for the power"
             power_info = self.walk(power)
             symbols = symbols.union(power_info.symbols)
-            ir_node = self.create_power_node(MathFuncNode(param, func_type), power_info.ir)
+            math_info = self.create_math_node_info(func_type, param_info)
+            ir_node = self.create_power_node(math_info.ir, power_info.ir)
             return NodeInfo(ir_node.la_type, ir=ir_node, symbols=symbols)
         else:
             return self.create_math_node_info(func_type, param_info)
