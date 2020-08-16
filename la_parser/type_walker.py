@@ -99,6 +99,10 @@ class TypeWalker(NodeWalker):
                                           'sec', 'csc']}
         self.directive_parsing = True   # directives grammar
 
+    def reset(self):
+        self.reset_state()
+        self.directive_parsing = True
+
     def reset_state(self):
         self.symtable.clear()
         self.tmp_symtable.clear()
@@ -108,6 +112,8 @@ class TypeWalker(NodeWalker):
         self.name_cnt_dict.clear()
         self.dim_dict.clear()
         self.ids_dict.clear()
+        self.ret_symbol = None
+        self.unofficial_method = False
 
     def get_func_symbols(self):
         # if node.cond:

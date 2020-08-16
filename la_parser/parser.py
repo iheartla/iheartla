@@ -64,6 +64,15 @@ def get_compiled_parser(grammar):
     _compiled_parser[grammar] = parser
     return parser
 
+_type_walker = None
+def get_type_walker():
+    global _type_walker
+    if _type_walker:
+        _type_walker.reset()
+    else:
+        _type_walker = TypeWalker()
+    return _type_walker
+
 def create_parser():
     parser = None
     try:
@@ -133,7 +142,7 @@ def generate_latex_code(type_walker, node_info, frame):
 def parse_ir_node(content, model):
     global _grammar_content
     # type walker
-    type_walker = TypeWalker()
+    type_walker = get_type_walker()
     start_node = type_walker.walk(model, pre_walk=True)
     if len(start_node.directives) > 0:
         # include directives
