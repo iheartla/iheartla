@@ -97,11 +97,10 @@ class TypeWalker(NodeWalker):
         self.packages = {'trigonometry': ['sin', 'asin', 'cos', 'acos', 'tan', 'atan', 'atan2',
                                           'sinh', 'asinh', 'cosh', 'acosh', 'tanh', 'atanh', 'cot',
                                           'sec', 'csc']}
-        self.directive_parsing = True   # directives grammar
+        # self.directive_parsing = True   # directives grammar
 
     def reset(self):
         self.reset_state()
-        self.directive_parsing = True
 
     def reset_state(self):
         self.symtable.clear()
@@ -116,12 +115,10 @@ class TypeWalker(NodeWalker):
         self.unofficial_method = False
 
     def get_func_symbols(self):
-        # if node.cond:
-        #     cond_node = self.walk(node.cond, **kwargs)
-        ret = []
+        ret = {}
         for keys in self.symtable:
             if self.symtable[keys] and self.symtable[keys].is_function():
-                ret.append(keys)
+                ret[keys] = self.symtable[keys].get_signature()
         return ret
 
     def generate_var_name(self, base):
@@ -151,9 +148,6 @@ class TypeWalker(NodeWalker):
         if node.directive:
             for directive in node.directive:
                 ir_node.directives.append(self.walk(directive, **kwargs))
-            if self.directive_parsing:
-                self.directive_parsing = False
-                return ir_node
         if node.cond:
             cond_node = self.walk(node.cond, **kwargs)
             ir_node.cond = cond_node

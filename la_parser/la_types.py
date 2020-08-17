@@ -66,11 +66,17 @@ class LaVarType(object):
                 same = True
         return same
 
+    def get_signature(self):
+        return ''
+
 
 class SequenceType(LaVarType):
     def __init__(self, size=0, desc=None, element_type=None, symbol=None):
         LaVarType.__init__(self, VarTypeEnum.SEQUENCE, desc, element_type, symbol)
         self.size = size
+
+    def get_signature(self):
+        return "sequence,ele_type:{}".format(self.element_type.get_signature())
 
 
 class MatrixType(LaVarType):
@@ -91,12 +97,24 @@ class MatrixType(LaVarType):
         self.index_var = index_var    # used by sparse mat
         self.value_var = value_var    # used by sparse mat
 
+    def get_signature(self):
+        if self.element_type:
+            return "matrix,rows:{},cols:{},ele_type:{}".format(self.rows, self.cols, self.element_type.get_signature())
+        else:
+            return "matrix,rows:{},cols:{}".format(self.rows, self.cols)
+
 
 class VectorType(LaVarType):
     def __init__(self, rows=0, desc=None, element_type=None, symbol=None):
         LaVarType.__init__(self, VarTypeEnum.VECTOR, desc, element_type, symbol)
         self.rows = rows
         self.cols = 1
+
+    def get_signature(self):
+        if self.element_type:
+            return "vector,rows:{},ele_type:{}".format(self.rows, self.element_type.get_signature())
+        else:
+            return "vector,rows:{}".format(self.rows)
 
 
 class SetType(LaVarType):
@@ -105,11 +123,19 @@ class SetType(LaVarType):
         self.size = size
         self.int_list = int_list     # whether the element is real number or integer
 
+    def get_signature(self):
+        return 'set'
+
 
 class ScalarType(LaVarType):
     def __init__(self, is_int=False, desc=None, element_type=None, symbol=None):
         LaVarType.__init__(self, VarTypeEnum.SCALAR, desc, element_type, symbol)
         self.is_int = is_int
+
+    def get_signature(self):
+        if self.is_int:
+            return 'scalar:integer'
+        return 'scalar:double'
 
 
 class FunctionType(LaVarType):
@@ -117,6 +143,13 @@ class FunctionType(LaVarType):
         LaVarType.__init__(self, VarTypeEnum.FUNCTION, desc, symbol)
         self.params = params or []
         self.ret = ret
+
+    def get_signature(self):
+        signature = 'func,params:'
+        for param in self.params:
+            signature += param.get_signature() + ';'
+        signature += 'ret:'+self.ret.get_signature()
+        return signature
 
 
 class SummationAttrs(object):

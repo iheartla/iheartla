@@ -54,14 +54,18 @@ def walk_model(parser_type, type_walker, node_info, func_name=None):
         gen.print_symbols()
     return gen.content
 
-_grammar_content = None
+_directive_rule = "= {{separator_with_space} directive+:Directive {{separator_with_space}+ directive+:Directive}} ((blank:/[\s\S]*(?=where)/ {WHERE {separator_with_space}+ cond:where_conditions} {blank})|(blank:/[\s\S]*/))\n    #|"
+_grammar_content = None   # content in file
+_default_key = 'default'
 _compiled_parser = {}
-def get_compiled_parser(grammar):
+def get_compiled_parser(grammar, keys='init'):
+    print("keys:", keys)
     global _compiled_parser
-    if grammar in _compiled_parser:
-        return _compiled_parser[grammar]
+    if keys in _compiled_parser:
+        return _compiled_parser[keys]
+    print(grammar)
     parser = tatsu.compile(grammar, asmodel=True)
-    _compiled_parser[grammar] = parser
+    _compiled_parser[keys] = parser
     return parser
 
 _type_walker = None
@@ -80,8 +84,15 @@ def create_parser():
         grammar = file.read()
         global _grammar_content
         _grammar_content = grammar
+        # reset all parsers
+        _compiled_parser.clear()
+        # get init parser
         parser = get_compiled_parser(grammar)
         file.close()
+        # get default parser
+        current_content = _grammar_content.replace(_directive_rule, '=')
+        # get new parser
+        get_compiled_parser(current_content, _default_key)
     except IOError:
         print("IO Error!")
     return parser
@@ -141,9 +152,19 @@ def generate_latex_code(type_walker, node_info, frame):
 
 def parse_ir_node(content, model):
     global _grammar_content
+    current_content = _grammar_content
     # type walker
     type_walker = get_type_walker()
     start_node = type_walker.walk(model, pre_walk=True)
+    # deal with function
+    func_dict = type_walker.get_func_symbols()
+    parse_key = _default_key
+    if len(func_dict.keys()) > 0:
+        func_rule = "'" + "'|'".join(func_dict.keys()) + "'"
+        print("func_rule:", func_rule)
+        current_content = current_content.replace("func_id='!!!';", "func_id={};".format(func_rule))
+        parse_key = ";".join(func_dict.values())
+    # deal with packages
     if len(start_node.directives) > 0:
         # include directives
         package_name_dict = start_node.get_package_dict()
@@ -151,27 +172,16 @@ def parse_ir_node(content, model):
         for package in package_name_dict:
             for name in package_name_dict[package]:
                 key_names.append("{}_func".format(name))
-        # remove derivatives grammar
-        current_content = _grammar_content.replace('| {separator_with_space} directive+:Directive {{separator_with_space}+ directive+:Directive}\n    |', '')
         # add new rules
         keyword_index = current_content.find('predefined_built_operators\n')
         current_content = current_content[:keyword_index] + '|'.join(key_names) + '|' + current_content[keyword_index:]
-        # print(current_content)
-        # get new parser
-        parser = get_compiled_parser(current_content)
-        model = parser.parse(content, parseinfo=True)
-        start_node = type_walker.walk(model, pre_walk=True)
-    else:
-        current_content = _grammar_content
-    # deal with function
-    func_list = type_walker.get_func_symbols()
-    if len(func_list) > 0:
-        func_rule = "'" + "'|'".join(func_list) + "'"
-        print("func_rule:", func_rule)
-        current_content = current_content.replace("func_id=identifier;", "func_id={};".format(func_rule))
-        parser = get_compiled_parser(current_content)
-        model = parser.parse(content, parseinfo=True)
-    # third parsing
+        parse_key += ';'.join(key_names)
+    # remove derivatives grammar
+    current_content = current_content.replace(_directive_rule, '=')
+    # get new parser
+    parser = get_compiled_parser(current_content, parse_key)
+    model = parser.parse(content, parseinfo=True)
+    # second parsing
     type_walker.reset_state()   # reset
     start_node = type_walker.walk(model)
     return type_walker, start_node
@@ -182,6 +192,7 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
         start_time = time.time()
         parser = get_default_parser()
         model = parser.parse(content, parseinfo=True)
+        print(model)
         # type walker
         type_walker, start_node = parse_ir_node(content, model)
         # parsing Latex at the same time
