@@ -59,11 +59,11 @@ _grammar_content = None   # content in file
 _default_key = 'default'
 _compiled_parser = {}
 def get_compiled_parser(grammar, keys='init'):
-    print("keys:", keys)
+    log_la("keys:" + keys)
     global _compiled_parser
     if keys in _compiled_parser:
         return _compiled_parser[keys]
-    print(grammar)
+    # print(grammar)
     parser = tatsu.compile(grammar, asmodel=True)
     _compiled_parser[keys] = parser
     return parser
@@ -76,6 +76,9 @@ def get_type_walker():
     else:
         _type_walker = TypeWalker()
     return _type_walker
+
+def log_la(content):
+    LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT).debug(content)
 
 def create_parser():
     parser = None
@@ -161,9 +164,9 @@ def parse_ir_node(content, model):
     parse_key = _default_key
     if len(func_dict.keys()) > 0:
         func_rule = "'" + "'|'".join(func_dict.keys()) + "'"
-        print("func_rule:", func_rule)
+        log_la("func_rule:" + func_rule)
         current_content = current_content.replace("func_id='!!!';", "func_id={};".format(func_rule))
-        parse_key = ";".join(func_dict.values())
+        parse_key = "func symbol:{}, func sig:{}".format(','.join(func_dict.keys()), ";".join(func_dict.values()))
     # deal with packages
     if len(start_node.directives) > 0:
         # include directives
@@ -192,7 +195,6 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
         start_time = time.time()
         parser = get_default_parser()
         model = parser.parse(content, parseinfo=True)
-        print(model)
         # type walker
         type_walker, start_node = parse_ir_node(content, model)
         # parsing Latex at the same time
