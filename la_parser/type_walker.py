@@ -175,23 +175,32 @@ class TypeWalker(NodeWalker):
     ###################################################################
     def walk_WhereConditions(self, node, **kwargs):
         ir_node = WhereConditionsNode()
-        for cond in node.value:
-            cond_node = self.walk(cond, **kwargs)
-            ir_node.value.append(cond_node)
-        # ir_list = []
-        # ir_index = []  # matrix, vector, function
-        # for i in range(len(node.value)):
-        #     # walk scalar first
-        #     if type(node.value[i].type).__name__ == "ScalarType" or type(node.value[i].type).__name__ == "SetType":
-        #         ir_list.append(self.walk(node.value[i], **kwargs))
-        #     else:
-        #         ir_list.append(None)
-        #         ir_index.append(i)
-        # # remaining nodes
-        # if len(ir_index) > 0:
-        #     for i in range(len(ir_index)):
-        #         ir_list[ir_index[i]] = self.walk(node.value[ir_index[i]], **kwargs)
-        # ir_node.value = ir_list
+        # for cond in node.value:
+        #     cond_node = self.walk(cond, **kwargs)
+        #     ir_node.value.append(cond_node)
+        ir_list = []
+        ir_index = []  # matrix, vector
+        func_index = []  # function
+        for i in range(len(node.value)):
+            # walk scalar first
+            if type(node.value[i].type).__name__ == "ScalarType" or type(node.value[i].type).__name__ == "SetType":
+                ir_list.append(self.walk(node.value[i], **kwargs))
+            elif type(node.value[i].type).__name__ == "FunctionType":
+                ir_list.append(None)
+                func_index.append(i)
+            else:
+                ir_list.append(None)
+                ir_index.append(i)
+        # matrix, vector nodes
+        if len(ir_index) > 0:
+            for i in range(len(ir_index)):
+                ir_list[ir_index[i]] = self.walk(node.value[ir_index[i]], **kwargs)
+        # func nodes:
+        if len(func_index) > 0:
+            for i in range(len(func_index)):
+                ir_list[func_index[i]] = self.walk(node.value[func_index[i]], **kwargs)
+        #
+        ir_node.value = ir_list
         return ir_node
 
     def walk_WhereCondition(self, node, **kwargs):
@@ -210,13 +219,15 @@ class TypeWalker(NodeWalker):
             id1 = type_node.la_type.rows
             id2 = type_node.la_type.cols
             if isinstance(id1, str):
-                self.symtable[id1] = ScalarType(is_int=True)
+                if id1 not in self.symtable:
+                    self.symtable[id1] = ScalarType(is_int=True)
                 if self.contain_subscript(id0):
                     self.dim_dict[id1] = [self.get_main_id(id0), 1]
                 else:
                     self.dim_dict[id1] = [self.get_main_id(id0), 0]
             if isinstance(id2, str):
-                self.symtable[id2] = ScalarType(is_int=True)
+                if id2 not in self.symtable:
+                    self.symtable[id2] = ScalarType(is_int=True)
                 if self.contain_subscript(id0):
                     self.dim_dict[id2] = [self.get_main_id(id0), 2]
                 else:
@@ -224,7 +235,8 @@ class TypeWalker(NodeWalker):
         elif type_node.la_type.is_vector():
             id1 = type_node.la_type.rows
             if isinstance(id1, str):
-                self.symtable[id1] = ScalarType(is_int=True)
+                if id1 not in self.symtable:
+                    self.symtable[id1] = ScalarType(is_int=True)
                 self.dim_dict[id1] = [self.get_main_id(id0), 0]
         ir_node.type = type_node
         return ir_node

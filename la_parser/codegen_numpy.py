@@ -55,6 +55,8 @@ class CodeGenNumpy(CodeGen):
         dim_content = ""
         if self.dim_dict:
             for key, value in self.dim_dict.items():
+                if key in self.parameters:
+                    continue
                 test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
                 if self.contain_subscript(value[0]):
                     main_id = self.get_main_id(value[0])
@@ -117,7 +119,10 @@ class CodeGenNumpy(CodeGen):
                 test_content.append('    {}.reshape(({}, 1))'.format(parameter, self.symtable[parameter].rows))
             elif self.symtable[parameter].is_scalar():
                 type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
-                test_content.append('    {} = np.random.randn()'.format(parameter))
+                if self.symtable[parameter].is_int:
+                    test_content.append('    {} = np.random.randint({})'.format(parameter, rand_int_max))
+                else:
+                    test_content.append('    {} = np.random.randn()'.format(parameter))
             elif self.symtable[parameter].is_set():
                 type_checks.append('    assert isinstance({}, list) and len({}) > 0'.format(parameter, parameter))
                 if self.symtable[parameter].size > 1:

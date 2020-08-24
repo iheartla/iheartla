@@ -112,6 +112,8 @@ class CodeGenEigen(CodeGen):
         dim_content = ""
         if self.dim_dict:
             for key, value in self.dim_dict.items():
+                if key in self.parameters:
+                    continue
                 test_content.append("    const int {} = rand()%{};".format(key, rand_int_max))
                 if self.symtable[value[0]].is_sequence():
                     dim_content += "    const long {} = {}.size();\n".format(key, value[0])
