@@ -334,15 +334,41 @@ class TypeWalker(NodeWalker):
         ir_node.empty = node.empty
         ir_node.separators = node.separators
         params = []
+        template_symbols = []
+        template_ret = []
         if node.params:
             for param in node.params:
                 param_node = self.walk(param, **kwargs)
                 ir_node.params.append(param_node)
                 params.append(param_node.la_type)
+                if param_node.la_type.is_scalar():
+                    pass
+                elif param_node.la_type.is_vector():
+                    if isinstance(param_node.la_type.rows, str) and param_node.la_type.rows not in self.symtable:
+                        template_symbols.append(param_node.la_type.rows)
+                elif param_node.la_type.is_matrix():
+                    if isinstance(param_node.la_type.rows, str) and param_node.la_type.rows not in self.symtable:
+                        template_symbols.append(param_node.la_type.rows)
+                    if isinstance(param_node.la_type.cols, str) and param_node.la_type.cols not in self.symtable:
+                        template_symbols.append(param_node.la_type.cols)
         ret_node = self.walk(node.ret, **kwargs)
         ir_node.ret = ret_node
         ret = ret_node.la_type
-        la_type = FunctionType(params=params, ret=ret)
+        if ret.is_vector():
+            if isinstance(ret.rows, str):
+                assert ret.rows in self.symtable or ret.rows in template_symbols, "vector as return value of function must have concrete dimension"
+                if ret.rows in template_symbols:
+                    template_ret.append(ret.rows)
+        elif ret.is_matrix():
+            if isinstance(ret.rows, str):
+                assert ret.rows in self.symtable or ret.rows in template_symbols, "matrix as return value of function must have concrete dimension"
+            if ret.rows in template_symbols:
+                template_ret.append(ret.rows)
+            if isinstance(ret.cols, str):
+                assert ret.cols in self.symtable or ret.cols in template_symbols, "matrix as return value of function must have concrete dimension"
+                if ret.cols in template_symbols:
+                    template_ret.append(ret.cols)
+        la_type = FunctionType(params=params, ret=ret, template_symbols=template_symbols, ret_symbols=template_ret)
         ir_node.la_type = la_type
         return ir_node
 
@@ -805,6 +831,7 @@ class TypeWalker(NodeWalker):
         if name_type.is_function():
             ir_node = FunctionNode()
             ir_node.name = name_info.ir
+            convertion_dict = {}   # template -> instance
             param_list = []
             assert len(node.params) == len(name_type.params), "parameters count mismatch"
             symbols = set()
@@ -812,11 +839,50 @@ class TypeWalker(NodeWalker):
                 param_info = self.walk(node.params[index], **kwargs)
                 symbols = symbols.union(param_info.symbols)
                 param_list.append(param_info.ir)
-                assert name_type.params[index].is_same_type(param_info.ir.la_type), "parameter type mismatch"
+                if len(name_type.template_symbols) == 0:
+                    assert name_type.params[index].is_same_type(param_info.ir.la_type), "parameter type mismatch"
+                    continue
+                if name_type.params[index].is_scalar():
+                    assert name_type.params[index].is_same_type(param_info.ir.la_type), "parameter type mismatch"
+                elif name_type.params[index].is_vector():
+                    assert param_info.ir.la_type.is_vector()
+                    if name_type.params[index].rows in name_type.template_symbols:
+                        convertion_dict[name_type.params[index].rows] = param_info.ir.la_type.rows
+                    else:
+                        assert name_type.params[index].rows == param_info.ir.la_type.rows
+                elif name_type.params[index].is_matrix():
+                    assert param_info.ir.la_type.is_matrix()
+                    if name_type.params[index].rows in name_type.template_symbols:
+                        convertion_dict[name_type.params[index].rows] = param_info.ir.la_type.rows
+                    else:
+                        assert name_type.params[index].rows == param_info.ir.la_type.rows
+                    #
+                    if name_type.params[index].cols in name_type.template_symbols:
+                        convertion_dict[name_type.params[index].cols] = param_info.ir.la_type.cols
+                    else:
+                        assert name_type.params[index].cols == param_info.ir.la_type.cols
             ir_node.params = param_list
             ir_node.separators = node.separators
-            node_info = NodeInfo(name_type.ret,symbols=symbols)
-            ir_node.la_type = name_type.ret
+            self.logger.debug("convertion_dict:{}".format(convertion_dict))
+            ret_type = name_type.ret
+            if name_type.ret.is_scalar():
+                pass
+            elif name_type.ret.is_vector():
+                if name_type.ret.rows in name_type.template_symbols:
+                    ret_type = VectorType()
+                    ret_type.rows = convertion_dict[name_type.ret.rows]
+            elif name_type.ret.is_matrix():
+                ret_type = MatrixType()
+                if name_type.ret.rows in name_type.template_symbols:
+                    ret_type.rows = convertion_dict[name_type.ret.rows]
+                else:
+                    ret_type.rows = name_type.ret.rows
+                if name_type.ret.cols in name_type.template_symbols:
+                    ret_type.cols = convertion_dict[name_type.ret.cols]
+                else:
+                    ret_type.cols = name_type.ret.cols
+            node_info = NodeInfo(ret_type, symbols=symbols)
+            ir_node.la_type = ret_type
             node_info.ir = ir_node
             return node_info
         else:

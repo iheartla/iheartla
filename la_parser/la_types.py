@@ -139,10 +139,12 @@ class ScalarType(LaVarType):
 
 
 class FunctionType(LaVarType):
-    def __init__(self, desc=None, symbol=None, params=None, ret=None):
+    def __init__(self, desc=None, symbol=None, params=None, ret=None, template_symbols=None, ret_symbols=None):
         LaVarType.__init__(self, VarTypeEnum.FUNCTION, desc, symbol)
         self.params = params or []
         self.ret = ret
+        self.template_symbols = template_symbols or []
+        self.ret_symbols = ret_symbols or []
 
     def get_signature(self):
         signature = 'func,params:'
