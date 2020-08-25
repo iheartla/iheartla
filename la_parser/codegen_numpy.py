@@ -139,9 +139,23 @@ class CodeGenNumpy(CodeGen):
                 test_content.append('        {}.append(('.format(parameter) + ', '.join(gen_list) + '))')
             elif self.symtable[parameter].is_function():
                 param_list = []
+                dim_definition = []
+                if self.symtable[parameter].ret_template():
+                    for ret_dim in self.symtable[parameter].ret_symbols:
+                        param_i = self.symtable[parameter].template_symbols[ret_dim]
+                        if self.symtable[parameter].params[param_i].is_vector():
+                            dim_definition.append('        {} = {}{}.shape[0]'.format(ret_dim, self.param_name_test, param_i))
+                        elif self.symtable[parameter].params[param_i].is_matrix():
+                            if ret_dim == self.symtable[parameter].params[param_i].rows:
+                                dim_definition.append('        {} = {}{}.shape[0]'.format(ret_dim, self.param_name_test, param_i))
+                            else:
+                                dim_definition.append('        {} = {}{}.shape[1]'.format(ret_dim, self.param_name_test, param_i))
                 for index in range(len(self.symtable[parameter].params)):
-                    param_list.append('p{}'.format(index))
-                test_content.append('    {} = lambda {}: {}'.format(parameter, ', '.join(param_list), self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
+                    param_list.append('{}{}'.format(self.param_name_test, index))
+                test_content.append("    def {}({}):".format(parameter, ', '.join(param_list)))
+                test_content += dim_definition
+                test_content.append("        return {}".format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
+                # test_content.append('    {} = lambda {}: {}'.format(parameter, ', '.join(param_list), self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
 
             main_content.append('    print("{}:", {})'.format(parameter, parameter))
         content = 'def ' + self.func_name + '(' + ', '.join(self.parameters) + '):\n'

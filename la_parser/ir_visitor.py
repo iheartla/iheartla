@@ -24,6 +24,7 @@ class IRVisitor(object):
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
         self.name_convention_dict = {}  # eg:i -> i[0]
         self.func_name = 'myExpression'
+        self.param_name_test = 'p'  # param name for test function
 
     def add_name_conventions(self, con_dict):
         for key, value in con_dict.items():

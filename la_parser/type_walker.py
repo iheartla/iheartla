@@ -334,23 +334,26 @@ class TypeWalker(NodeWalker):
         ir_node.empty = node.empty
         ir_node.separators = node.separators
         params = []
-        template_symbols = []
+        template_symbols = {}
         template_ret = []
         if node.params:
-            for param in node.params:
-                param_node = self.walk(param, **kwargs)
+            for index in range(len(node.params)):
+                param_node = self.walk(node.params[index], **kwargs)
                 ir_node.params.append(param_node)
                 params.append(param_node.la_type)
                 if param_node.la_type.is_scalar():
                     pass
                 elif param_node.la_type.is_vector():
                     if isinstance(param_node.la_type.rows, str) and param_node.la_type.rows not in self.symtable:
-                        template_symbols.append(param_node.la_type.rows)
+                        if param_node.la_type.rows not in template_symbols:
+                            template_symbols[param_node.la_type.rows] = index
                 elif param_node.la_type.is_matrix():
                     if isinstance(param_node.la_type.rows, str) and param_node.la_type.rows not in self.symtable:
-                        template_symbols.append(param_node.la_type.rows)
+                        if param_node.la_type.rows not in template_symbols:
+                            template_symbols[param_node.la_type.rows] = index
                     if isinstance(param_node.la_type.cols, str) and param_node.la_type.cols not in self.symtable:
-                        template_symbols.append(param_node.la_type.cols)
+                        if param_node.la_type.cols not in template_symbols:
+                            template_symbols[param_node.la_type.cols] = index
         ret_node = self.walk(node.ret, **kwargs)
         ir_node.ret = ret_node
         ret = ret_node.la_type
@@ -358,16 +361,20 @@ class TypeWalker(NodeWalker):
             if isinstance(ret.rows, str):
                 assert ret.rows in self.symtable or ret.rows in template_symbols, "vector as return value of function must have concrete dimension"
                 if ret.rows in template_symbols:
-                    template_ret.append(ret.rows)
+                    if ret.rows not in template_ret:
+                        template_ret.append(ret.rows)
         elif ret.is_matrix():
             if isinstance(ret.rows, str):
                 assert ret.rows in self.symtable or ret.rows in template_symbols, "matrix as return value of function must have concrete dimension"
             if ret.rows in template_symbols:
-                template_ret.append(ret.rows)
+                if ret.rows not in template_ret:
+                    template_ret.append(ret.rows)
             if isinstance(ret.cols, str):
                 assert ret.cols in self.symtable or ret.cols in template_symbols, "matrix as return value of function must have concrete dimension"
                 if ret.cols in template_symbols:
-                    template_ret.append(ret.cols)
+                    if ret.cols not in template_ret:
+                        template_ret.append(ret.cols)
+        self.logger.debug("template_symbols:{}, template_ret:{}".format(template_symbols, template_ret))
         la_type = FunctionType(params=params, ret=ret, template_symbols=template_symbols, ret_symbols=template_ret)
         ir_node.la_type = la_type
         return ir_node

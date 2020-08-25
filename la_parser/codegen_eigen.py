@@ -24,10 +24,13 @@ class CodeGenEigen(CodeGen):
                 type_list.append('double')
         return "std::tuple< {} >".format(", ".join(type_list))
 
-    def get_func_params_str(self, la_type):
+    def get_func_params_str(self, la_type, name_required=False):
         param_list = []
-        for param in la_type.params:
-            param_list.append(self.get_ctype(param))
+        for index in range(len(la_type.params)):
+            name_str = ''
+            if name_required:
+                name_str = " {}{}".format(self.param_name_test, index)
+            param_list.append(self.get_ctype(la_type.params[index]) + name_str)
         return ', '.join(param_list)
 
     def get_ctype(self, la_type):
@@ -225,7 +228,21 @@ class CodeGenEigen(CodeGen):
                     '        {}.insert(std::make_tuple('.format(parameter) + ', '.join(gen_list) + '));')
                 test_content.append('    }')
             elif self.symtable[parameter].is_function():
-                test_content.append('    {} = []({})->{}{{'.format(parameter, self.get_func_params_str(self.symtable[parameter]), self.get_ctype(self.symtable[parameter].ret)))
+                name_required = False
+                dim_definition = []
+                if self.symtable[parameter].ret_template():
+                    name_required = True
+                    for ret_dim in self.symtable[parameter].ret_symbols:
+                        param_i = self.symtable[parameter].template_symbols[ret_dim]
+                        if self.symtable[parameter].params[param_i].is_vector():
+                            dim_definition.append('        long {} = {}{}.size();'.format(ret_dim, self.param_name_test, param_i))
+                        elif self.symtable[parameter].params[param_i].is_matrix():
+                            if ret_dim == self.symtable[parameter].params[param_i].rows:
+                                dim_definition.append('        long {} = {}{}.rows();'.format(ret_dim, self.param_name_test, param_i))
+                            else:
+                                dim_definition.append('        long {} = {}{}.cols();'.format(ret_dim, self.param_name_test, param_i))
+                test_content.append('    {} = []({})->{}{{'.format(parameter, self.get_func_params_str(self.symtable[parameter], name_required), self.get_ctype(self.symtable[parameter].ret)))
+                test_content += dim_definition
                 test_content.append('        return {}'.format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
                 test_content.append('    };')
             # main_print.append('    std::cout<<"{}:\\n"<<{}<<std::endl;'.format(parameter, parameter))

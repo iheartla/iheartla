@@ -143,7 +143,7 @@ class FunctionType(LaVarType):
         LaVarType.__init__(self, VarTypeEnum.FUNCTION, desc, symbol)
         self.params = params or []
         self.ret = ret
-        self.template_symbols = template_symbols or []
+        self.template_symbols = template_symbols or {}  # symbol: index of params
         self.ret_symbols = ret_symbols or []
 
     def get_signature(self):
@@ -152,6 +152,9 @@ class FunctionType(LaVarType):
             signature += param.get_signature() + ';'
         signature += 'ret:'+self.ret.get_signature()
         return signature
+
+    def ret_template(self):
+        return len(self.ret_symbols) > 0
 
 
 class SummationAttrs(object):
