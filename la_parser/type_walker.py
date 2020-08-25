@@ -50,6 +50,7 @@ ASSIGN_TYPE = "assign_type"
 INSIDE_SUMMATION = "inside_summation"
 IF_COND = "if_condition"
 SET_RET_SYMBOL = "set_ret_symbol"
+PARAM_INDEX = "param_index"
 
 
 def la_is_inside_matrix(**kwargs):
@@ -181,9 +182,11 @@ class TypeWalker(NodeWalker):
         ir_list = []
         ir_index = []  # matrix, vector
         func_index = []  # function
+        self.parameters = [None] * len(node.value)
         for i in range(len(node.value)):
             # walk scalar first
             if type(node.value[i].type).__name__ == "ScalarType" or type(node.value[i].type).__name__ == "SetType":
+                kwargs[PARAM_INDEX] = i
                 ir_list.append(self.walk(node.value[i], **kwargs))
             elif type(node.value[i].type).__name__ == "FunctionType":
                 ir_list.append(None)
@@ -194,10 +197,12 @@ class TypeWalker(NodeWalker):
         # matrix, vector nodes
         if len(ir_index) > 0:
             for i in range(len(ir_index)):
+                kwargs[PARAM_INDEX] = ir_index[i]
                 ir_list[ir_index[i]] = self.walk(node.value[ir_index[i]], **kwargs)
         # func nodes:
         if len(func_index) > 0:
             for i in range(len(func_index)):
+                kwargs[PARAM_INDEX] = func_index[i]
                 ir_list[func_index[i]] = self.walk(node.value[func_index[i]], **kwargs)
         #
         ir_node.value = ir_list
@@ -214,7 +219,8 @@ class TypeWalker(NodeWalker):
         type_node = self.walk(node.type, **kwargs)
         type_node.la_type.desc = desc
         self.handle_identifier(id0, type_node.la_type)
-        self.update_parameters(id0)
+        self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
+        self.update_parameters(id0, kwargs[PARAM_INDEX])
         if type_node.la_type.is_matrix():
             id1 = type_node.la_type.rows
             id2 = type_node.la_type.cols
@@ -379,12 +385,12 @@ class TypeWalker(NodeWalker):
         ir_node.la_type = la_type
         return ir_node
 
-    def update_parameters(self, identifier, **kwargs):
+    def update_parameters(self, identifier, index):
         if self.contain_subscript(identifier):
             arr = self.get_all_ids(identifier)
-            self.parameters.append(arr[0])
+            self.parameters[index] = arr[0]
         else:
-            self.parameters.append(identifier)
+            self.parameters[index] = identifier
 
     ###################################################################
     def walk_Import(self, node, **kwargs):
