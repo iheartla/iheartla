@@ -83,3 +83,58 @@ class TestDims(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_template_func_2(self):
+        la_str = """f( M )
+                    where
+                    M: ℝ^( k×k )
+                    f: ℝ^( k×k ) -> ℝ """
+        func_info = self.gen_func_info(la_str)
+        P = np.array([[1, 2], [4, 3]])
+        f = lambda p : np.trace(p)
+        self.assertEqual(func_info.numpy_func(P, f), 4)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> P;",
+                     "    P << 1, 2, 4, 3;",
+                     "    std::function<double(Eigen::MatrixXd)> f;"
+                     "    f = [](Eigen::MatrixXd p)->double{",
+                     "    return p.trace();"
+                     "    };",
+                     "    double B = {}(P, f);".format(func_info.eig_func_name),
+                     "    return ((B - 4) == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_template_func_2(self):
+        la_str = """f( M ) + f(N)
+                    where
+                    M: ℝ^( m×m )
+                    N: ℝ^( m×m )
+                    f: ℝ^( k×k ) -> ℝ^( k×k )  """
+        func_info = self.gen_func_info(la_str)
+        P = np.array([[1, 2], [4, 3]])
+        Q = np.array([[5, 6], [8, 7]])
+        f = lambda p : 2*p
+        R = np.array([[12, 16], [24, 20]])
+        self.assertDMatrixEqual(func_info.numpy_func(P, Q, f), R)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> P;",
+                     "    P << 1, 2, 4, 3;",
+                     "    Eigen::Matrix<double, 2, 2> Q;",
+                     "    Q << 5, 6, 8, 7;",
+                     "    Eigen::Matrix<double, 2, 2> R;",
+                     "    R << 12, 16, 24, 20;",
+                     "    std::function<Eigen::MatrixXd(Eigen::MatrixXd)> f;"
+                     "    f = [](Eigen::MatrixXd p)->Eigen::MatrixXd{",
+                     "    return 2*p;"
+                     "    };",
+                     "    Eigen::MatrixXd B = {}(P, Q, f);".format(func_info.eig_func_name),
+                     "    return ((B - R).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
