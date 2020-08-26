@@ -45,7 +45,8 @@ class CodeGenNumpy(CodeGen):
         doc = []
         show_doc = False
         rand_func_name = "generateRandomData"
-        test_content = ["def " + rand_func_name + "():"]
+        test_content = []
+        test_function = ["def " + rand_func_name + "():"]
         rand_int_max = 10
         main_content = ["if __name__ == '__main__':"]
         if len(self.parameters) > 0:
@@ -120,9 +121,9 @@ class CodeGenNumpy(CodeGen):
             elif self.symtable[parameter].is_scalar():
                 type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
                 if self.symtable[parameter].is_int:
-                    test_content.append('    {} = np.random.randint({})'.format(parameter, rand_int_max))
+                    test_function.append('    {} = np.random.randint({})'.format(parameter, rand_int_max))
                 else:
-                    test_content.append('    {} = np.random.randn()'.format(parameter))
+                    test_function.append('    {} = np.random.randn()'.format(parameter))
             elif self.symtable[parameter].is_set():
                 type_checks.append('    assert isinstance({}, list) and len({}) > 0'.format(parameter, parameter))
                 if self.symtable[parameter].size > 1:
@@ -187,10 +188,11 @@ class CodeGenNumpy(CodeGen):
         content += '    return ' + self.ret_symbol
         content += '\n'
         # test
-        test_content.append('    return {}'.format(', '.join(self.parameters)))
+        test_function += test_content
+        test_function.append('    return {}'.format(', '.join(self.parameters)))
         main_content.append("    func_value = {}({})".format(self.func_name, ', '.join(self.parameters)))
         main_content.append('    print("func_value: ", func_value)')
-        content += '\n\n' + '\n'.join(test_content) + '\n\n\n' + '\n'.join(main_content)
+        content += '\n\n' + '\n'.join(test_function) + '\n\n\n' + '\n'.join(main_content)
         # convert special string in identifiers
         content = self.trim_content(content)
         return content

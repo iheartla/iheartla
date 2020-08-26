@@ -105,7 +105,8 @@ class CodeGenEigen(CodeGen):
         doc = []
         show_doc = False
         rand_func_name = "generateRandomData"
-        test_content = ['{']
+        test_content = []
+        test_function = ['{']
         rand_int_max = 10
         # main
         main_declaration = []
@@ -214,7 +215,7 @@ class CodeGenEigen(CodeGen):
                     type_checks.append(
                         '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].rows))
             elif self.symtable[parameter].is_scalar():
-                test_content.append('    {} = rand() % {};'.format(parameter, rand_int_max))
+                test_function.append('    {} = rand() % {};'.format(parameter, rand_int_max))
             elif self.symtable[parameter].is_set():
                 test_content.append('    const int {}_0 = rand()%10;'.format(parameter, rand_int_max))
                 test_content.append('    for(int i=0; i<{}_0; i++){{'.format(parameter))
@@ -253,10 +254,10 @@ class CodeGenEigen(CodeGen):
         ret_type = self.get_ctype(self.symtable[self.ret_symbol])
         if len(self.parameters) == 1:
             content += ret_type + ' ' + self.func_name + '(' + ', '.join(par_des_list) + ')\n{\n'  # func name
-            test_content.insert(0, "void {}({})".format(rand_func_name, ', '.join(test_par_list)))
+            test_function.insert(0, "void {}({})".format(rand_func_name, ', '.join(test_par_list)))
         else:
             content += ret_type + ' ' + self.func_name + '(\n    ' + ',\n    '.join(par_des_list) + ')\n{\n'  # func name
-            test_content.insert(0, "void {}({})".format(rand_func_name, ',\n    '.join(test_par_list)))
+            test_function.insert(0, "void {}({})".format(rand_func_name, ',\n    '.join(test_par_list)))
         # merge content
         # content += '\n'.join(type_declare) + '\n\n'
         content += dim_content
@@ -288,7 +289,8 @@ class CodeGenEigen(CodeGen):
         content += '\n}\n'
         # test
         # test_content.append('    return {}'.format(', '.join(self.parameters)))
-        test_content.append('}')
+        test_function += test_content
+        test_function.append('}')
         # main
         main_content += main_declaration
         main_content.append("    {}({});".format(rand_func_name, ', '.join(self.parameters)))
@@ -300,7 +302,7 @@ class CodeGenEigen(CodeGen):
             main_content.append('    std::cout<<"func_value:\\n"<<func_value<<std::endl;')
         main_content.append('    return 0;')
         main_content.append('}')
-        content += '\n\n' + '\n'.join(test_content) + '\n\n\n' + '\n'.join(main_content)
+        content += '\n\n' + '\n'.join(test_function) + '\n\n\n' + '\n'.join(main_content)
         # convert special string in identifiers
         content = self.trim_content(content)
         return content

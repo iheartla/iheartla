@@ -140,7 +140,7 @@ class TestSubscript(BasePythonTest):
 
     def test_summation_2(self):
         # multiple operands: Add
-        la_str = """C = sum_i A_i + B_i
+        la_str = """C = sum_i (A_i + B_i)
         where
         A_i: ℝ ^ (2 × 2): a matrix
         B_i: ℝ ^ (2 × 2): a matrix"""
