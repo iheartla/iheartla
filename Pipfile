@@ -11,6 +11,7 @@ tatsu = "*"
 graphviz = "*"
 wxpython = "*"
 PyMuPDF = "*"
+regex = "*"
 
 [requires]
 python_version = "3.7"

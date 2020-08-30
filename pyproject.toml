@@ -2,7 +2,7 @@
 name = "linear_algebra"
 version = "0.1.0"
 description = "I heart LA"
-authors = ["Yong Li <190361902@qq.com>"]
+authors = ["Yong Li <pressure36@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
@@ -10,6 +10,7 @@ tatsu = "^4.4"
 wxpython = "^4.1.0"
 PyMuPDF = "^1.17.0"
 graphviz = "^0.14"
+regex = "^2020.7.14"
 
 [tool.poetry.dev-dependencies]
 cppyy = "^1.7.1"

@@ -20,7 +20,7 @@ or
 
 Python 3.x and some modules:
 
-    pip3 install tatsu wxpython graphviz PyMuPDF cppyy
+    pip3 install tatsu wxpython graphviz PyMuPDF cppyy regex
 
 or
 
