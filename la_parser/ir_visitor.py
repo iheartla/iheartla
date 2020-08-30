@@ -317,6 +317,8 @@ class IRVisitor(object):
                     pre_unicode = True
                 except KeyError:
                     continue
+        if len(new_list) > 0 and new_list[0].isnumeric():
+            new_list.insert(0, '_')
         return ''.join(new_list)
 
     def trim_content(self, content):
