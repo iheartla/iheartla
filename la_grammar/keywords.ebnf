@@ -36,6 +36,7 @@ BUILTIN_KEYWORDS
     | SQRT
     | SUBJECT_TO
     | FROM
+    | PI
     #| SIN | COS | ASIN | ARCSIN | ACOS | ARCCOS | TAN | ATAN | ARCTAN | ATAN2
     ;
 
@@ -100,3 +101,4 @@ LN = 'ln';
 SQRT = 'sqrt';
 SUBJECT_TO = 's.t.'|'subject to';
 FROM = 'from';
+PI = 'π';
