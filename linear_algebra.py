@@ -7,7 +7,7 @@ import argparse
 def show_gui():
     from la_gui.frame import wx, MainWindow
     app = wx.App(False)
-    MainWindow(None, "I heart LA")
+    MainWindow(None, "I❤️LA")
     app.MainLoop()
 
 
