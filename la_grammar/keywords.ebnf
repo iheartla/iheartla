@@ -37,6 +37,7 @@ BUILTIN_KEYWORDS
     | SUBJECT_TO
     | FROM
     | PI
+    | '|'
     #| SIN | COS | ASIN | ARCSIN | ACOS | ARCCOS | TAN | ATAN | ARCTAN | ATAN2
     ;
 
