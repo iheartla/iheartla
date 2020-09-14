@@ -24,6 +24,7 @@ from la_parser.codegen_latex import CodeGenLatex
 from la_parser.type_walker import *
 from la_parser.ir import *
 from la_parser.ir_visitor import *
+from la_tools.la_msg import *
 import subprocess
 import threading
 
@@ -191,7 +192,7 @@ def parse_ir_node(content, model):
 
 
 def parse_and_translate(content, frame, parser_type=None, func_name=None):
-    # try:
+    try:
         start_time = time.time()
         parser = get_default_parser()
         model = parser.parse(content, parseinfo=True)
@@ -205,27 +206,28 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
             parser_type = ParserTypeEnum.NUMPY
         res = walk_model(parser_type, type_walker, start_node, func_name)
         result = (res, 0)
-    # except FailedParse as e:
-    #     tex = "FailedParse: {}".format(str(e))
-    #     result = (tex, 1)
-    # except FailedCut as e:
-    #     tex = "FailedCut: {}".format(str(e))
-    #     result = (tex, 1)
-    # except AssertionError as e:
-    #     tex = "Assertion: {}".format(e.args[0])
-    #     result = (tex, 1)
-    # except Exception as e:
-    #     tex = "Exception: {}".format(str(e))
-    #     result = (tex, 1)
-    # except:
-    #     tex = str(sys.exc_info()[0])
-    #     result = (tex, 1)
-    # finally:
+    except FailedParse as e:
+        tex = LaMsg.getInstance().get_parse_error(e)
+        log_la("FailedParse:" + str(e))
+        result = (tex, 1)
+    except FailedCut as e:
+        tex = "FailedCut: {}".format(str(e))
+        result = (tex, 1)
+    except AssertionError as e:
+        tex = "Assertion: {}".format(e.args[0])
+        result = (tex, 1)
+    except Exception as e:
+        tex = "Exception: {}".format(str(e))
+        result = (tex, 1)
+    except:
+        tex = str(sys.exc_info()[0])
+        result = (tex, 1)
+    finally:
         wx.CallAfter(frame.UpdateMidPanel, result)
         print("------------ %.2f seconds ------------" % (time.time() - start_time))
         if result[1] != 0:
             print(result[0])
-        return result
+    return result
 
 
 def save_to_file(content, file_name):
