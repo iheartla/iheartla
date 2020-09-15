@@ -112,6 +112,9 @@ class LaMsg(object):
     def get_line_desc(self, line_info):
         return "Error on line {} at column {}".format(line_info.line + 1, line_info.col + 1)
 
+    def get_line_desc_with_col(self, line, col):
+        return "Error on line {} at column {}".format(line + 1, col + 1)
+
     def get_pos_marker(self, column):
         return ''.join([' '] * column) + '^'
 

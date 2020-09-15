@@ -170,6 +170,23 @@ class TypeWalker(NodeWalker):
             desc = "function"
         return desc
 
+    def get_line_desc(self, node):
+        # ir node
+        line_info = node.parse_info.buffer.line_info(node.parse_info.pos)
+        return self.la_msg.get_line_desc(line_info)
+
+    def get_text_pos_marker(self, node):
+        # ir node
+        line_info = node.parse_info.buffer.line_info(node.parse_info.pos)
+        return "{}{}".format(line_info.text, self.la_msg.get_pos_marker(line_info.col))
+
+    def get_line_info(self, parse_info):
+        return parse_info.buffer.line_info(parse_info.pos)
+
+    def get_err_msg(self, line_info, col, error_msg):
+        line_msg = self.la_msg.get_line_desc_with_col(line_info.line, col)
+        return "{}. {}.\n{}{}".format(line_msg, error_msg, line_info.text, self.la_msg.get_pos_marker(col))
+
     def walk_Node(self, node):
         print('Reached Node: ', node)
 
@@ -427,11 +444,16 @@ class TypeWalker(NodeWalker):
 
     ###################################################################
     def walk_Import(self, node, **kwargs):
-        assert node.package in self.packages, "package {} not exist".format(node.package)
+        import_node = ImportNode(package=node.package, names=node.names, parse_info=node.parseinfo)
+        assert node.package in self.packages, self.get_err_msg(self.get_line_info(node.parseinfo),
+                                                               self.get_line_info(node.parseinfo).text.find(node.package),
+                                                               "Package {} not exist".format(node.package))
         func_list = self.packages[node.package]
         for name in node.names:
-            assert name in func_list, "func {} not exist".format(name)
-        return ImportNode(package=node.package, names=node.names, parse_info=node.parseinfo)
+            assert name in func_list, self.get_err_msg(self.get_line_info(node.parseinfo),
+                                                       self.get_line_info(node.parseinfo).text.find(name),
+                                                       "Function {} not exist".format(name))
+        return import_node
 
     def walk_Statements(self, node, **kwargs):
         stat_list = []
