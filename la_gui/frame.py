@@ -38,7 +38,8 @@ class MainWindow(wx.Frame):
         self.SetSize((1300, 600))
         # status
         self.statusbar = self.CreateStatusBar()
-        self.statusbar.SetFieldsCount(1)
+        self.statusbar.SetFieldsCount(2)
+        self.statusbar.SetStatusStyles([wx.SB_SUNKEN, wx.SB_RAISED])
         # Menu
         menu_file = wx.Menu()
         item_open = menu_file.Append(wx.ID_OPEN, "&Open LA file\tCTRL+O", " Open a file to edit")
@@ -116,11 +117,11 @@ class MainWindow(wx.Frame):
         #
         self.aui_info4 = aui.framemanager.AuiPaneInfo().CaptionVisible(False).PaneBorder(False).CloseButton(
             False).Bottom()
-        self.aui_info4.BestSize(wx.Size(self.GetSize().width, self.GetSize().height/4))
+        self.aui_info4.BestSize(wx.Size(self.GetSize().width, self.GetSize().height/6))
         self.mgr.AddPane(self.msgPanel, self.aui_info4)
 
         self.mgr.Update()
-        self.msgPanel.Hide()
+        #self.msgPanel.Hide()
         # sizer
         # sizer = wx.BoxSizer(wx.HORIZONTAL)
         # sizer.Add(self.control, 1, wx.EXPAND, 100)
@@ -155,6 +156,13 @@ E: { ℤ × ℤ }''')
 
         self.Bind(wx.EVT_BUTTON, self.OnButtonClicked)
         self.Bind(wx.EVT_IDLE, self.OnIdle)
+        #
+        self.control.Bind(wx.stc.EVT_STC_UPDATEUI, self.OnUpdateUI)
+        self.msgPanel.Bind(wx.stc.EVT_STC_UPDATEUI, self.OnUpdateUI)
+        self.latexPanel.latex_ctrl.Bind(wx.stc.EVT_STC_UPDATEUI, self.OnUpdateUI)
+        self.midPanel.py_ctrl.Bind(wx.stc.EVT_STC_UPDATEUI, self.OnUpdateUI)
+        self.midPanel.cpp_ctrl.Bind(wx.stc.EVT_STC_UPDATEUI, self.OnUpdateUI)
+
         create_parser_background()
         self.OnClickEigen(None)  # Eigen default
 
@@ -296,6 +304,12 @@ E: { ℤ × ℤ }''')
     def OnMenuOpen(self, e):
         if e.GetMenu() == self.menu_edit:
             self.update_edit_menu_item()
+
+    def OnUpdateUI(self, e):
+        self.OnPositionChanged(e.EventObject.GetCurrentLine(), e.EventObject.GetColumn(e.EventObject.GetInsertionPoint()))
+
+    def OnPositionChanged(self, line, col):
+        self.statusbar.SetStatusText("{}:{}".format(line+1, col+1), 1)
 
     def update_edit_menu_item(self):
         self.undo_item.Enable(self.control.CanUndo())
