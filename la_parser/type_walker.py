@@ -2,6 +2,7 @@ from tatsu.model import NodeWalker
 from tatsu.objectmodel import Node
 from la_parser.la_types import *
 from la_tools.la_logger import *
+from la_tools.la_msg import *
 
 ## Make the visualizer
 try: from la_tools.la_visualizer import LaVisualizer
@@ -94,6 +95,7 @@ class TypeWalker(NodeWalker):
         self.unofficial_method = False
         self.visualizer = LaVisualizer()
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
+        self.la_msg = LaMsg.getInstance()
         self.ret_symbol = None
         self.packages = {'trigonometry': ['sin', 'asin', 'cos', 'acos', 'tan', 'atan', 'atan2',
                                           'sinh', 'asinh', 'cosh', 'acosh', 'tanh', 'atanh', 'cot',
@@ -137,6 +139,36 @@ class TypeWalker(NodeWalker):
             index += 1
         self.name_cnt_dict[base] = index - 1
         return ret
+
+    def get_op_desc(self, op):
+        desc = ""
+        if op == TypeInferenceEnum.INF_ADD:
+            desc = "add"
+        elif op == TypeInferenceEnum.INF_SUB:
+            desc = "subtract"
+        elif op == TypeInferenceEnum.INF_MUL:
+            desc = "multiply"
+        elif op == TypeInferenceEnum.INF_DIV:
+            desc = "divide"
+        elif op == TypeInferenceEnum.INF_MATRIX_ROW:
+            desc = "place"
+        return desc
+
+    def get_type_desc(self, la_type):
+        desc = "NoneType"
+        if la_type.is_sequence():
+            desc = "sequence"
+        elif la_type.is_matrix():
+            desc = "matrix"
+        elif la_type.is_vector():
+            desc = "vector"
+        elif la_type.is_scalar():
+            desc = "scalar"
+        elif la_type.is_set():
+            desc = "set"
+        elif la_type.is_function():
+            desc = "function"
+        return desc
 
     def walk_Node(self, node):
         print('Reached Node: ', node)
@@ -423,7 +455,7 @@ class TypeWalker(NodeWalker):
         left_type = left_info.la_type
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
-        ret_type = self.type_inference(TypeInferenceEnum.INF_ADD, left_type, right_type)
+        ret_type = self.type_inference(TypeInferenceEnum.INF_ADD, left_info.ir, right_info.ir)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         ir_node = AddNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
         ir_node.la_type = ret_type
@@ -437,7 +469,7 @@ class TypeWalker(NodeWalker):
         left_type = left_info.la_type
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
-        ret_type = self.type_inference(TypeInferenceEnum.INF_SUB, left_type, right_type)
+        ret_type = self.type_inference(TypeInferenceEnum.INF_SUB, left_info.ir, right_info.ir)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         ir_node = SubNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
         ir_node.la_type = ret_type
@@ -452,7 +484,7 @@ class TypeWalker(NodeWalker):
         left_type = left_info.la_type
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
-        ret_type = self.type_inference(TypeInferenceEnum.INF_ADD, left_type, right_type)
+        ret_type = self.type_inference(TypeInferenceEnum.INF_ADD, left_info.ir, right_info.ir)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         ir_node = AddSubNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
         ir_node.la_type = ret_type
@@ -469,7 +501,7 @@ class TypeWalker(NodeWalker):
     def make_mul_info(self, left_info, right_info):
         left_type = left_info.la_type
         right_type = right_info.la_type
-        ret_type = self.type_inference(TypeInferenceEnum.INF_MUL, left_type, right_type)
+        ret_type = self.type_inference(TypeInferenceEnum.INF_MUL, left_info.ir, right_info.ir)
         sym_set = left_info.symbols.union(right_info.symbols)
         # I in block matrix
         if ret_type is not None:
@@ -489,7 +521,7 @@ class TypeWalker(NodeWalker):
         left_type = left_info.la_type
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
-        ret_type = self.type_inference(TypeInferenceEnum.INF_DIV, left_type, right_type)
+        ret_type = self.type_inference(TypeInferenceEnum.INF_DIV, left_info.ir, right_info.ir)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         ir_node = DivNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
         ir_node.la_type = ret_type
@@ -1252,7 +1284,7 @@ class TypeWalker(NodeWalker):
                 ret_info = exp_info
                 ret_info.content = [exp_info.la_type]
             else:
-                new_type = self.type_inference(TypeInferenceEnum.INF_MATRIX_ROW, ret_info.la_type, exp_info.la_type)
+                new_type = self.type_inference(TypeInferenceEnum.INF_MATRIX_ROW, ret_info.ir, exp_info.ir)
                 ret_info.la_type = new_type
                 items.append(exp_info.la_type)
                 ret_info.content = items
@@ -1550,14 +1582,25 @@ class TypeWalker(NodeWalker):
                     valid = False
         return valid, undef_list, type_array, real_dims
 
-    def type_inference(self, op, left_type, right_type):
+    def type_inference(self, op, left_info, right_info):
+        left_type = left_info.la_type
+        right_type = right_info.la_type
         # todo:delete
         if left_type.var_type == VarTypeEnum.INVALID:
             left_type.var_type = VarTypeEnum.SCALAR
         if right_type.var_type == VarTypeEnum.INVALID:
             right_type.var_type = VarTypeEnum.SCALAR
-        #
-        error_msg = 'dimension mismatch, op:{}, left:{}, right:{}'.format(op, left_type.var_type, right_type.var_type)
+        # error msg
+        left_line = left_info.parse_info.buffer.line_info(left_info.parse_info.pos)
+        right_line = right_info.parse_info.buffer.line_info(right_info.parse_info.pos)
+        error_msg = '{}. Dimension mismatch. Can\'t {} {} {} and {} {}.\n'.format(self.la_msg.get_line_desc(left_line),
+                                                                            self.get_op_desc(op),
+                                                                            self.get_type_desc(left_type),
+                                                                            left_info.parse_info.buffer.text[left_info.parse_info.pos:left_info.parse_info.endpos],
+                                                                            self.get_type_desc(right_type),
+                                                                                  right_info.parse_info.buffer.text[right_info.parse_info.pos:right_info.parse_info.endpos])
+        error_msg += left_line.text
+        error_msg += self.la_msg.get_pos_marker(left_line.col)
         ret_type = None
         if op == TypeInferenceEnum.INF_ADD or op == TypeInferenceEnum.INF_SUB:
             ret_type = left_type  # default type

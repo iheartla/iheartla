@@ -214,7 +214,7 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
         tex = "FailedCut: {}".format(str(e))
         result = (tex, 1)
     except AssertionError as e:
-        tex = "Assertion: {}".format(e.args[0])
+        tex = "{}".format(e.args[0])
         result = (tex, 1)
     except Exception as e:
         tex = "Exception: {}".format(str(e))

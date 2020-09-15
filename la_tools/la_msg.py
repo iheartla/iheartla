@@ -109,6 +109,9 @@ class LaMsg(object):
             }
             LaMsg.__instance = self
 
+    def get_line_desc(self, line_info):
+        return "Error on line {} at column {}".format(line_info.line + 1, line_info.col + 1)
+
     def get_pos_marker(self, column):
         return ''.join([' '] * column) + '^'
 
@@ -119,7 +122,7 @@ class LaMsg(object):
             if rule in self.rule_convention_dict:
                 converted_name = self.rule_convention_dict[rule]
                 break
-        content = "Error on line {} at column {}, failed to parse {}: {}\n".format(line_info.line + 1, line_info.col + 1, converted_name, err.message)
+        content = "{}. Failed to parse {}: {}\n".format(self.get_line_desc(line_info), converted_name, err.message)
         content += line_info.text
         content += self.get_pos_marker(line_info.col)
         return content
