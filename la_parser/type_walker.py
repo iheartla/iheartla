@@ -175,6 +175,9 @@ class TypeWalker(NodeWalker):
         line_info = node.parse_info.buffer.line_info(node.parse_info.pos)
         return self.la_msg.get_line_desc(line_info)
 
+    def get_node_col(self, node):
+        return node.parse_info.buffer.line_info(node.parse_info.pos).col
+
     def get_text_pos_marker(self, node):
         # ir node
         line_info = node.parse_info.buffer.line_info(node.parse_info.pos)
@@ -501,7 +504,9 @@ class TypeWalker(NodeWalker):
         return ret_info
 
     def walk_AddSub(self, node, **kwargs):
-        assert IF_COND in kwargs, "must be used inside if codition"
+        assert IF_COND in kwargs, self.get_err_msg(self.get_line_info(node.parseinfo),
+                                                   self.get_line_info(node.parseinfo).text.find(node.op),
+                                                   "{} must be used inside if codition".format(node.op))
         left_info = self.walk(node.left, **kwargs)
         left_type = left_info.la_type
         right_info = self.walk(node.right, **kwargs)
@@ -670,7 +675,9 @@ class TypeWalker(NodeWalker):
             cond_list = self.walk(node.cond, **kwargs)
         del self.symtable[base_id]
         #
-        assert exp_node.la_type.is_scalar(), "Objective function must return a scalar"
+        assert exp_node.la_type.is_scalar(), self.get_err_msg(self.get_line_info(exp_node.parse_info),
+                                                              self.get_line_info(exp_node.parse_info).col,
+                                                              "Objective function must return a scalar")
         opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node, base_type, parse_info=node.parseinfo)
         opt_node.la_type = ScalarType()
         node_info = NodeInfo(opt_node.la_type, ir=opt_node)
@@ -1068,12 +1075,16 @@ class TypeWalker(NodeWalker):
             id0 = self.get_main_id(id0)
             if not la_is_inside_sum(**kwargs) and not la_is_if(**kwargs):  # symbols in sum don't need to be defined before todo:modify
                 if id0 != 'I':  # special case
-                    assert self.symtable.get(id0) is not None, "error: no symbol:{}".format(id0)
+                    assert self.symtable.get(id0) is not None, self.get_err_msg(self.get_line_info(id0_info.ir.parse_info),
+                                                                           self.get_line_info(id0_info.ir.parse_info).col,
+                                                                           "Symbol {} is not defined".format(id0))
                     # pass  # todo:delete
                 else:
                     # I
                     if 'I' not in self.symtable:
-                        assert la_is_inside_matrix(**kwargs), "I must be used inside matrix if not defined"
+                        assert la_is_inside_matrix(**kwargs),  self.get_err_msg(self.get_line_info(id0_info.ir.parse_info),
+                                                                                self.get_line_info(id0_info.ir.parse_info).col,
+                                                                                "I must be used inside matrix if not defined")
             node_info = NodeInfo(id0_info.la_type, id0, id0_info.symbols, id0_info.ir)
             # node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
             ir_node.id = node_info.ir
@@ -1245,7 +1256,7 @@ class TypeWalker(NodeWalker):
         if block:
             # check block mat
             valid, undef_list, type_array, real_dims = self.check_bmat_validity(node_info.content, None)
-            assert valid, "block matrix: invalid dimensions"
+            assert valid, self.get_err_msg(self.get_line_info(node.parseinfo), self.get_line_info(node.parseinfo).col,  "block matrix: invalid dimensions")
             rows = real_dims[0]
             cols = real_dims[1]
             if len(undef_list) > 0:
