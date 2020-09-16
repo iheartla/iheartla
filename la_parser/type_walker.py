@@ -1343,7 +1343,7 @@ class TypeWalker(NodeWalker):
                 ret_info = exp_info
                 ret_info.content = [exp_info.la_type]
             else:
-                new_type = self.type_inference(TypeInferenceEnum.INF_MATRIX_ROW, ret_info.la_type, exp_info.la_type)
+                new_type = self.type_inference(TypeInferenceEnum.INF_MATRIX_ROW, ret_info.ir, exp_info.ir)
                 ret_info.la_type = new_type
                 items.append(exp_info.la_type)
                 ret_info.content = items
@@ -1357,6 +1357,7 @@ class TypeWalker(NodeWalker):
         ir_node = ExpInMatrixNode(parse_info=node.parseinfo)
         ir_node.value = ret_info.ir
         ir_node.sign = node.sign
+        ir_node.la_type = ret_info.la_type
         ret_info.ir = ir_node
         return ret_info
 
