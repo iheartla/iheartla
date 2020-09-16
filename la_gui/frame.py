@@ -188,16 +188,20 @@ E: { ℤ × ℤ }''')
         if result[1] == 0:
             self.midPanel.set_value(result[0])
             self.statusbar.SetStatusText("Finished", 0)
+            self.set_msg("{}Compile succeeded\n".format(self.msgPanel.GetValue()))
         else:
-            self.msgPanel.SetEditable(True)
             if self.msgPanel.GetValue() == '':
                 msg = result[0]
             else:
-                msg = "{}\n\n{}".format(self.msgPanel.GetValue(), result[0])
-            self.msgPanel.SetValue(msg)
-            self.msgPanel.ScrollToEnd()
-            self.msgPanel.SetEditable(False)
+                msg = "{}{}".format(self.msgPanel.GetValue(), result[0])
+            self.set_msg(msg)
             self.statusbar.SetStatusText("Error", 0)
+
+    def set_msg(self, msg):
+        self.msgPanel.SetEditable(True)
+        self.msgPanel.SetValue(msg)
+        self.msgPanel.ScrollToEnd()
+        self.msgPanel.SetEditable(False)
 
     def OnIdle(self, e):
         pass

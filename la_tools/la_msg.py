@@ -116,7 +116,7 @@ class LaMsg(object):
         return "Error on line {} at column {}".format(line + 1, col + 1)
 
     def get_pos_marker(self, column):
-        return ''.join([' '] * column) + '^'
+        return ''.join([' '] * column) + '^\n'
 
     def get_parse_error(self, err):
         line_info = err.buf.line_info(err.pos)
