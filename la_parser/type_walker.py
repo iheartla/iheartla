@@ -588,6 +588,14 @@ class TypeWalker(NodeWalker):
             sequence = left_ids[0]    #y
             if node.op != '=':
                 assert sequence in self.symtable, "lhs should exist"
+            else:
+                if sequence in self.symtable:
+                    err_msg = "{} has been assigned before".format(id0)
+                    if sequence in self.parameters:
+                        err_msg = "{} is a parameter, can not be assigned".format(id0)
+                    assert False, self.get_err_msg(self.get_line_info(id0_info.ir.parse_info),
+                                                                       self.get_line_info(id0_info.ir.parse_info).col,
+                                                                       err_msg)
             if len(left_subs) == 2: # matrix
                 if right_info.la_type is not None and right_info.la_type.is_matrix():
                     # sparse mat assign
@@ -612,6 +620,13 @@ class TypeWalker(NodeWalker):
             if node.op != '=':
                 assert id0 in self.symtable, "lhs should exist"
             else:
+                if id0 in self.symtable:
+                    err_msg = "{} has been assigned before".format(id0)
+                    if id0 in self.parameters:
+                        err_msg = "{} is a parameter, can not be assigned".format(id0)
+                    assert False, self.get_err_msg(self.get_line_info(id0_info.ir.parse_info),
+                                                                       self.get_line_info(id0_info.ir.parse_info).col,
+                                                                       err_msg)
                 self.symtable[id0] = right_type
         assign_node.symbols = right_info.symbols
         right_info.ir = assign_node
