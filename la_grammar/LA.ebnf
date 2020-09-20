@@ -60,6 +60,7 @@ matrix_type::MatrixType
 matrix_attribute
     = SYMMETRIC
     | DIAGONAL
+    | SPARSE
     ;
 
 vector_type::VectorType

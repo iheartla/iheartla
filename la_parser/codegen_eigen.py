@@ -39,10 +39,19 @@ class CodeGenEigen(CodeGen):
             type_str = "std::vector<{}>".format(self.get_ctype(la_type.element_type))
         elif la_type.is_matrix():
             if la_type.sparse:
-                type_str = "Eigen::SparseMatrix<double>"
+                if la_type.is_dim_constant():
+                    if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
+                        type_str = "Eigen::SparseMatrix<int>"
+                    else:
+                        type_str = "Eigen::SparseMatrix<double>"
+                else:
+                    if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
+                        type_str = "Eigen::SparseMatrix<int>"
+                    else:
+                        type_str = "Eigen::SparseMatrix<double>"
             else:
                 if la_type.is_dim_constant():
-                    if la_type.element_type is not None and la_type.is_scalar() and la_type.is_int:
+                    if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::Matrix<int, {}, {}>".format(la_type.rows, la_type.cols)
                     else:
                         type_str = "Eigen::Matrix<double, {}, {}>".format(la_type.rows, la_type.cols)
@@ -154,14 +163,17 @@ class CodeGenEigen(CodeGen):
                         type_checks.append('        assert( el.rows() == {} );'.format(ele_type.rows))
                         type_checks.append('        assert( el.cols() == {} );'.format(ele_type.cols))
                         type_checks.append('    }')
+                    sparse_view = ''
+                    if ele_type.sparse:
+                        sparse_view = '.sparseView()'
                     if integer_type:
                         test_content.append(
-                            '        {}[i] = Eigen::MatrixXi::Random({}, {});'.format(parameter, ele_type.rows,
-                                                                                      ele_type.cols))
+                            '        {}[i] = Eigen::MatrixXi::Random({}, {}){};'.format(parameter, ele_type.rows,
+                                                                                      ele_type.cols, sparse_view))
                     else:
                         test_content.append(
-                            '        {}[i] = Eigen::MatrixXd::Random({}, {});'.format(parameter, ele_type.rows,
-                                                                                      ele_type.cols))
+                            '        {}[i] = Eigen::MatrixXd::Random({}, {}){};'.format(parameter, ele_type.rows,
+                                                                                      ele_type.cols, sparse_view))
                 elif ele_type.is_vector():
                     if not ele_type.is_dim_constant():
                         type_checks.append(
@@ -181,20 +193,23 @@ class CodeGenEigen(CodeGen):
                 test_content.append('    }')
             elif self.symtable[parameter].is_matrix():
                 element_type = self.symtable[parameter].element_type
+                sparse_view = ''
+                if self.symtable[parameter].sparse:
+                    sparse_view = '.sparseView()'
                 if isinstance(element_type, LaVarType):
                     if element_type.is_scalar() and element_type.is_int:
                         test_content.append(
-                            '    {} = Eigen::MatrixXi::Random({}, {});'.format(parameter, self.symtable[parameter].rows,
-                                                                               self.symtable[parameter].cols))
+                            '    {} = Eigen::MatrixXi::Random({}, {}){};'.format(parameter, self.symtable[parameter].rows,
+                                                                               self.symtable[parameter].cols, sparse_view))
                     else:
                         test_content.append(
-                            '    {} = Eigen::MatrixXd::Random({}, {});'.format(parameter, self.symtable[parameter].rows,
-                                                                               self.symtable[parameter].cols))
+                            '    {} = Eigen::MatrixXd::Random({}, {}){};'.format(parameter, self.symtable[parameter].rows,
+                                                                               self.symtable[parameter].cols, sparse_view))
                 else:
                     test_content.append(
-                        '    {} = Eigen::MatrixXd::Random({}, {});'.format(parameter, self.symtable[parameter].rows,
-                                                                           self.symtable[parameter].cols))
-                if not self.symtable[parameter].is_dim_constant():
+                        '    {} = Eigen::MatrixXd::Random({}, {}){};'.format(parameter, self.symtable[parameter].rows,
+                                                                           self.symtable[parameter].cols,sparse_view))
+                if not self.symtable[parameter].is_dim_constant() or self.symtable[parameter].sparse:
                     type_checks.append(
                         '    assert( {}.rows() == {} );'.format(parameter, self.symtable[parameter].rows))
                     type_checks.append(
@@ -344,8 +359,11 @@ class CodeGenEigen(CodeGen):
         exp_info = self.visit(node.exp)
         exp_str = exp_info.content
         if self.symtable[assign_id].is_matrix():
-            content.append(
-                "Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".    format(assign_id, self.symtable[assign_id].rows,
+            if self.symtable[assign_id].sparse:
+                content.append("{} {}({}, {});\n".format(self.get_ctype(self.symtable[assign_id]), assign_id, self.symtable[
+                    assign_id].rows, self.symtable[assign_id].cols))
+            else:
+                content.append("Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".    format(assign_id, self.symtable[assign_id].rows,
                                                                                self.symtable[assign_id].cols))
         elif self.symtable[assign_id].is_vector():
             content.append(

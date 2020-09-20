@@ -70,6 +70,7 @@ ARGMAX = 'argmax';
 INT = 'int';
 SYMMETRIC = 'symmetric';
 DIAGONAL = 'diagonal';
+SPARSE = 'sparse';
 IF = 'if';
 OTHERWISE = 'otherwise';
 IS = 'is';

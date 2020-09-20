@@ -319,6 +319,8 @@ class TypeWalker(NodeWalker):
         else:
             element_type = ScalarType()
         la_type = MatrixType(rows=id1, cols=id2, element_type=element_type)
+        if node.attr and 'sparse' in node.attr:
+            la_type.sparse = True
         ir_node.la_type = la_type
         return ir_node
 
@@ -1052,15 +1054,15 @@ class TypeWalker(NodeWalker):
             v_info = self.walk(value)
             right.append(v_info.content)
         left_info = self.walk(node.left, **kwargs)
-        return self.create_id_node_info(left_info.content, right)
+        return self.create_id_node_info(left_info.content, right, node.parseinfo)
 
-    def create_id_node_info(self, left_content, right_content):
+    def create_id_node_info(self, left_content, right_content, parse_info=None):
         content = left_content + '_' + ''.join(right_content)
         node_type = LaVarType(VarTypeEnum.INVALID, symbol=content)
         if left_content in self.symtable:
             node_type = self.symtable[left_content].element_type
         #
-        ir_node = IdNode(left_content, right_content, parse_info=node.parseinfo)
+        ir_node = IdNode(left_content, right_content, parse_info=parse_info)
         ir_node.la_type = node_type
         node_info = NodeInfo(node_type, content, {content}, ir_node)
         self.ids_dict[content] = Identifier(left_content, right_content)
@@ -1386,7 +1388,7 @@ class TypeWalker(NodeWalker):
             ir_node.id = node.id
             if 'I' in self.symtable and self.symtable['I'].is_sequence():
                 # I_i, sequence
-                return self.create_id_node_info('I', [id1])
+                return self.create_id_node_info('I', [id1], node.parseinfo)
             if isinstance(id1, str):
                 assert id1 in self.symtable, "{} unknown".format(id1)
             # 'I' symbol
