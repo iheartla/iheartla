@@ -538,7 +538,7 @@ class TypeWalker(NodeWalker):
             for sym in sym_set:
                 ret_type.symbol += sym
         ret_info = NodeInfo(ret_type, symbols=sym_set)
-        ir_node = MulNode(left_info.ir, right_info.ir)
+        ir_node = MulNode(left_info.ir, right_info.ir, parse_info=left_info.ir.parse_info)
         ir_node.la_type = ret_type
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)
@@ -1427,7 +1427,7 @@ class TypeWalker(NodeWalker):
                 remain_list.append(par)
                 assert par.la_type.is_scalar(), "Parameters must be scalar type"
                 symbols = symbols.union(par_info.symbols)
-        tri_node = MathFuncNode(param, func_type, remain_list, parse_info=node.parseinfo)
+        tri_node = MathFuncNode(param, func_type, remain_list)
         node_info = NodeInfo(param.la_type, symbols=symbols)
         tri_node.la_type = param.la_type
         node_info.ir = tri_node
