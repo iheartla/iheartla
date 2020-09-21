@@ -55,7 +55,6 @@ def walk_model(parser_type, type_walker, node_info, func_name=None):
         gen.print_symbols()
     return gen.content
 
-_directive_rule = "= {{separator_with_space} directive+:Directive {{separator_with_space}+ directive+:Directive}} ((blank:/[\s\S]*(?=where)/ {WHERE {separator_with_space}+ cond:where_conditions} {blank})|(blank:/[\s\S]*/))\n    #|"
 _grammar_content = None   # content in file
 _default_key = 'default'
 _compiled_parser = {}
@@ -85,18 +84,19 @@ def create_parser():
     parser = None
     try:
         file = open('la_grammar/LA.ebnf')
+        simplified_file = open('la_grammar/simplified_grammar.ebnf')
         grammar = file.read()
+        simplified_grammar = simplified_file.read()
         global _grammar_content
         _grammar_content = grammar
         # reset all parsers
         _compiled_parser.clear()
         # get init parser
-        parser = get_compiled_parser(grammar)
+        parser = get_compiled_parser(simplified_grammar)
         file.close()
+        simplified_file.close()
         # get default parser
-        current_content = _grammar_content.replace(_directive_rule, '=')
-        # get new parser
-        get_compiled_parser(current_content, _default_key)
+        get_compiled_parser(_grammar_content, _default_key)
     except IOError:
         print("IO Error!")
     return parser
@@ -180,8 +180,6 @@ def parse_ir_node(content, model):
         keyword_index = current_content.find('predefined_built_operators\n')
         current_content = current_content[:keyword_index] + '|'.join(key_names) + '|' + current_content[keyword_index:]
         parse_key += ';'.join(key_names)
-    # remove derivatives grammar
-    current_content = current_content.replace(_directive_rule, '=')
     # get new parser
     parser = get_compiled_parser(current_content, parse_key)
     model = parser.parse(content, parseinfo=True)

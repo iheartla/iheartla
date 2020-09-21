@@ -1,16 +1,7 @@
 # number definition
-digit
-    =
-    /\d/
-    ;
-
-integer::Integer
-    =
-    value:{digit}+
-    ;
 
 exponent::Exponent
-    = exp:/[DdEe][+-]?/ pow:{digit}+
+    = exp:/[E][+-]?/ pow:{digit}+
     ;
 
 mantissa::Mantissa

@@ -3,8 +3,7 @@
 @@left_recursion::True
 
 start::Start
-    = {{separator_with_space} directive+:Directive {{separator_with_space}+ directive+:Directive}} ((blank:/[\s\S]*(?=where)/ {WHERE {separator_with_space}+ cond:where_conditions} {blank})|(blank:/[\s\S]*/))
-    #| {separator_with_space} {directive+:Directive {{separator_with_space}+ directive+:Directive} {separator_with_space}+} stat:statements {{separator_with_space}+ WHERE {separator_with_space}+ cond:where_conditions} {blank} $
+    = {separator_with_space} {directive+:Directive {{separator_with_space}+ directive+:Directive} {separator_with_space}+} stat:statements {{separator_with_space}+ WHERE {separator_with_space}+ cond:where_conditions} {blank} $
     ;
 
 #include :: "linear_algebra/la_grammar/keywords.ebnf"
@@ -13,11 +12,8 @@ start::Start
 #include :: "linear_algebra/la_grammar/matrix.ebnf"
 #include :: "linear_algebra/la_grammar/base.ebnf"
 #include :: "linear_algebra/la_grammar/trigonometry.ebnf"
+#include :: "linear_algebra/la_grammar/shared.ebnf"
 
-
-KEYWORDS
-    = BUILTIN_KEYWORDS
-    ;
 
 builtin_operators
     =
@@ -36,75 +32,6 @@ statement
     | right_hand_side
     ;
 
-Directive
-    = import
-    ;
-
-import::Import
-    = FROM  {hspace}+ package:keyword_str {hspace} ':' {hspace} names+:keyword_str {{hspace} ',' {hspace} names+:keyword_str }
-    ;
-
-where_conditions::WhereConditions
-    = {hspace} value+:where_condition {{separator_with_space}+ value+:where_condition}
-    ;
-
-where_condition::WhereCondition
-    = id:identifier {hspace} ':' {hspace} type:la_type { {hspace} ':' {hspace} desc:description}
-    ;
-
-matrix_type::MatrixType
-    = 'matrix' {hspace} '(' {hspace} id1:dimension  {hspace} ',' {hspace} id2:dimension {hspace}')'  {{hspace}+ attr+:matrix_attribute}
-    | type:('ℝ'|'ℤ') {hspace} '^' {hspace} '(' {hspace} id1:dimension  {hspace} '×' {hspace} id2:dimension {hspace}')'  {{hspace}+ attr+:matrix_attribute}
-    ;
-
-matrix_attribute
-    = SYMMETRIC
-    | DIAGONAL
-    | SPARSE
-    ;
-
-vector_type::VectorType
-    = 'vector' {hspace} '(' {hspace} id1:dimension {hspace}')'
-    | type:('ℝ'|'ℤ') {hspace} '^' {hspace} '(' {hspace} id1:dimension {hspace}')'
-    | type:('ℝ'|'ℤ') {hspace} '^' {hspace} id1:dimension
-    ;
-
-scalar_type::ScalarType
-    = 'scalar'
-    | 'ℝ'
-    | z:'ℤ'
-    ;
-
-set_type::SetType
-    = '{' {hspace} type+:('ℝ'|'ℤ') {hspace} {'×' {hspace} type+:('ℝ'|'ℤ') {hspace} }'}'
-    | '{' {hspace} type1:('ℝ'|'ℤ') {hspace} '^' {hspace} cnt:(integer) {hspace} '}'
-    | '{' {hspace} type2:(/\u211D/ | /\u2124/) cnt:{/[\u2070\u00B9\u00B2\u00B3\u2074-\u2079]/} {hspace} '}'     #  \u2124:ℤ  \u211D:ℝ
-    ;
-
-dimension
-    =
-    integer | identifier
-    #expression
-    ;
-
-la_type
-    =
-    | function_type
-    | matrix_type
-    | vector_type
-    | set_type
-    | scalar_type
-    ;
-
-params_type
-    = matrix_type
-    | vector_type
-    | scalar_type
-    ;
-
-function_type::FunctionType
-    = ((params+:params_type {{hspace} separators+:params_separator {hspace} params+:params_type})|empty:'∅'|'{'{hspace}'}') {hspace} ('→'|'->') {hspace} ret:params_type
-    ;
 
 expression::Expression
     =
