@@ -301,7 +301,7 @@ class TestMatrix(BasePythonTest):
         J = np.array([[-9, -6, 0, -3], [1, 10, 0, 14], [-14, -2, 10, 13], [5, 9, 0, -10]])
         E = [(0, 1), (0, 2), (1, 2), (2, 0), (3, 0), (3, 1), (3, 2)]
         value = np.array([3, -1, 0, -8, 7, 0, -2])
-        B = scipy.sparse.coo_matrix((value, np.asarray(E).T), shape=(10, 10), dtype=np.floating)
+        B = scipy.sparse.coo_matrix((value, np.asarray(E).T), shape=(10, 10), dtype=np.float64)
         self.assertSMatrixEqual(func_info.numpy_func(P, J, E), B)
         # eigen test
         cppyy.include(func_info.eig_file_name)

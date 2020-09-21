@@ -106,7 +106,7 @@ class TestExpr(BasePythonTest):
         A = np.array([[1, 2], [3, 4]])
         C = np.array([[19, 22], [43, 50]])
         B = np.array([[5., 6.], [7., 8.]])
-        B = np.asarray(B, dtype=np.floating)
+        B = np.asarray(B, dtype=np.float64)
         self.assertDMatrixEqual(func_info.numpy_func(A, C), np.linalg.solve(A, C))
         # eigen test
         cppyy.include(func_info.eig_file_name)

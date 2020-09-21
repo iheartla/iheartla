@@ -86,7 +86,7 @@ class CodeGenNumpy(CodeGen):
                         type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
                         test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, size_str))
                     else:
-                        type_declare.append('    {} = np.asarray({}, dtype=np.floating)'.format(parameter, parameter))
+                        type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
                         test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
                 else:
                     type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
@@ -98,7 +98,7 @@ class CodeGenNumpy(CodeGen):
                         type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
                         test_content.append('    {} = np.random.randint({}, size=({}, {}))'.format(parameter, rand_int_max, self.symtable[parameter].rows, self.symtable[parameter].cols))
                     else:
-                        type_declare.append('    {} = np.asarray({}, dtype=np.floating)'.format(parameter, parameter))
+                        type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
                         test_content.append('    {} = np.random.randn({}, {})'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
                 else:
                     type_checks.append('    {} = np.asarray({})'.format(parameter, parameter))
@@ -111,7 +111,7 @@ class CodeGenNumpy(CodeGen):
                         type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
                         test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, self.symtable[parameter].rows))
                     else:
-                        type_declare.append('    {} = np.asarray({}, dtype=np.floating)'.format(parameter, parameter))
+                        type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
                         test_content.append('    {} = np.random.randn({})'.format(parameter, self.symtable[parameter].rows))
                 else:
                     type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))

@@ -591,7 +591,7 @@ class TypeWalker(NodeWalker):
             if node.op != '=':
                 assert sequence in self.symtable, "lhs should exist"
             else:
-                if sequence in self.symtable:
+                if sequence in self.symtable and len(left_subs) != 2:  # matrix items
                     err_msg = "{} has been assigned before".format(id0)
                     if sequence in self.parameters:
                         err_msg = "{} is a parameter, can not be assigned".format(id0)
