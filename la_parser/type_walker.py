@@ -190,6 +190,10 @@ class TypeWalker(NodeWalker):
         line_msg = self.la_msg.get_line_desc_with_col(line_info.line, col)
         return "{}. {}.\n{}{}".format(line_msg, error_msg, line_info.text, self.la_msg.get_pos_marker(col))
 
+    def get_err_msg_info(self, parse_info, error_msg):
+        line_info = self.get_line_info(parse_info)
+        return self.get_err_msg(line_info, line_info.col, error_msg)
+
     def walk_Node(self, node):
         print('Reached Node: ', node)
 
@@ -589,15 +593,14 @@ class TypeWalker(NodeWalker):
             left_subs = left_ids[1]
             sequence = left_ids[0]    #y
             if node.op != '=':
-                assert sequence in self.symtable, "lhs should exist"
+                assert sequence in self.symtable, self.get_err_msg_info(id0_info.ir.parse_info,
+                                                                       "{} hasn't been defined".format(sequence))
             else:
                 if sequence in self.symtable and len(left_subs) != 2:  # matrix items
                     err_msg = "{} has been assigned before".format(id0)
                     if sequence in self.parameters:
                         err_msg = "{} is a parameter, can not be assigned".format(id0)
-                    assert False, self.get_err_msg(self.get_line_info(id0_info.ir.parse_info),
-                                                                       self.get_line_info(id0_info.ir.parse_info).col,
-                                                                       err_msg)
+                    assert False, self.get_err_msg_info(id0_info.ir.parse_info, err_msg)
             if len(left_subs) == 2: # matrix
                 if right_info.la_type is not None and right_info.la_type.is_matrix():
                     # sparse mat assign
@@ -620,15 +623,13 @@ class TypeWalker(NodeWalker):
                 self.symtable[sequence] = SequenceType(size=dim, element_type=right_type)
         else:
             if node.op != '=':
-                assert id0 in self.symtable, "lhs should exist"
+                assert id0 in self.symtable, self.get_err_msg_info(id0_info.ir.parse_info, "{} hasn't been defined".format(id0))
             else:
                 if id0 in self.symtable:
                     err_msg = "{} has been assigned before".format(id0)
                     if id0 in self.parameters:
                         err_msg = "{} is a parameter, can not be assigned".format(id0)
-                    assert False, self.get_err_msg(self.get_line_info(id0_info.ir.parse_info),
-                                                                       self.get_line_info(id0_info.ir.parse_info).col,
-                                                                       err_msg)
+                    assert False, self.get_err_msg_info(id0_info.ir.parse_info, err_msg)
                 self.symtable[id0] = right_type
         assign_node.symbols = right_info.symbols
         right_info.ir = assign_node
@@ -692,9 +693,7 @@ class TypeWalker(NodeWalker):
             cond_list = self.walk(node.cond, **kwargs)
         del self.symtable[base_id]
         #
-        assert exp_node.la_type.is_scalar(), self.get_err_msg(self.get_line_info(exp_node.parse_info),
-                                                              self.get_line_info(exp_node.parse_info).col,
-                                                              "Objective function must return a scalar")
+        assert exp_node.la_type.is_scalar(), self.get_err_msg_info(exp_node.parse_info, "Objective function must return a scalar")
         opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node, base_type, parse_info=node.parseinfo)
         opt_node.la_type = ScalarType()
         node_info = NodeInfo(opt_node.la_type, ir=opt_node)
@@ -758,19 +757,22 @@ class TypeWalker(NodeWalker):
             ir_node.sub = 2
         #
         if ir_node.value.la_type.is_scalar():
-            assert node.single is not None, "Scalar type has to use | rather than ||"
+            assert node.single is not None, self.get_err_msg_info(node.parseinfo, "Norm error. Scalar type has to use | rather than ||")
         elif ir_node.value.la_type.is_vector():
-            assert node.single is None, "Vector type has to use || rather than |"
-            assert ir_node.norm_type != NormType.NormFrobenius and ir_node.norm_type != NormType.NormNuclear, "Invalid norm for Vector"
+            assert node.single is None, self.get_err_msg_info(node.parseinfo, "Norm error. Vector type has to use || rather than |")
+            assert ir_node.norm_type != NormType.NormFrobenius and ir_node.norm_type != NormType.NormNuclear, self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Invalid norm for Vector")
             if ir_node.norm_type == NormType.NormIdentifier:
-                assert ir_node.sub.la_type.is_matrix() or ir_node.sub.la_type.is_scalar(), "Subscript has to be matrix or scalar for vector type"
+                assert ir_node.sub.la_type.is_matrix() or ir_node.sub.la_type.is_scalar(), self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Subscript has to be matrix or scalar for vector type")
                 if ir_node.sub.la_type.is_matrix():
-                    assert ir_node.sub.la_type.rows == ir_node.sub.la_type.cols and ir_node.sub.la_type.rows == ir_node.value.la_type.rows, "Norm: dim error"
+                    assert ir_node.sub.la_type.rows == ir_node.sub.la_type.cols and ir_node.sub.la_type.rows == ir_node.value.la_type.rows, self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Dimension error")
         elif ir_node.value.la_type.is_matrix():
-            assert node.single is None, "MATRIX type has to use || rather than |"
-            assert ir_node.norm_type == NormType.NormFrobenius or ir_node.norm_type == NormType.NormNuclear, "Invalid norm for Matrix"
+            assert node.single is None, self.get_err_msg_info(node.parseinfo, "Norm error. MATRIX type has to use || rather than |")
+            assert ir_node.norm_type == NormType.NormFrobenius or ir_node.norm_type == NormType.NormNuclear, self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Invalid norm for Matrix")
             if ir_node.norm_type == NormType.NormNuclear:
-                assert not ir_node.value.la_type.sparse, "Nuclear norm is invalid for sparse matrix"
+                assert not ir_node.value.la_type.sparse, self.get_err_msg(self.get_line_info(node.parseinfo),
+                                                                          self.get_line_info(node.parseinfo).text.find('*'),
+                                                                          "Norm error. Nuclear norm is invalid for sparse matrix")
+
         # ret type
         ret_type = ScalarType()
         ir_node.la_type = ret_type
@@ -784,13 +786,15 @@ class TypeWalker(NodeWalker):
     def walk_InnerProduct(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
-        assert left_info.ir.la_type.is_vector(), "parameters must be vector"
-        assert right_info.ir.la_type.is_vector(), "parameters must be vector"
-        assert left_info.ir.la_type.rows == right_info.ir.la_type.rows, "the dims of vector must be the same"
+        assert left_info.ir.la_type.is_vector(), self.get_err_msg_info(left_info.ir.parse_info, "Inner product error. Parameter {} must be vector".format(node.left.text))
+        assert right_info.ir.la_type.is_vector(), self.get_err_msg_info(right_info.ir.parse_info, "Inner product error. Parameter {} must be vector".format(node.right.text))
+        assert left_info.ir.la_type.rows == right_info.ir.la_type.rows, self.get_err_msg_info(node.parseinfo,
+                                                                                        "Inner product error. Parameters {} and {} must have the same dimension".format(node.left.text, node.right.text))
         sub_node = None
         if node.sub:
             sub_node = self.walk(node.sub, **kwargs).ir
-            assert sub_node.la_type.is_matrix() and sub_node.la_type.rows==sub_node.la_type.cols==left_info.ir.la_type.rows, "the dim of subscript must correspond to the vector dim"
+            assert sub_node.la_type.is_matrix() and sub_node.la_type.rows==sub_node.la_type.cols==left_info.ir.la_type.rows, \
+                self.get_err_msg_info(sub_node.parse_info, "Inner product error. The dimension of subscript {} must correspond to the vector dimension".format(node.sub.text))
         ir_node = InnerProductNode(left_info.ir, right_info.ir, sub_node, parse_info=node.parseinfo)
         ret_type = ScalarType()
         ir_node.la_type = ret_type
@@ -800,8 +804,8 @@ class TypeWalker(NodeWalker):
     def walk_FroProduct(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
-        assert left_info.la_type.is_vector() or left_info.la_type.is_matrix(), "left param must be vector or matrix"
-        assert right_info.la_type.is_vector() or right_info.la_type.is_matrix(), "right param must be vector or matrix"
+        assert left_info.la_type.is_vector() or left_info.la_type.is_matrix(), self.get_err_msg_info(left_info.ir.parse_info, "Frobenius product error. Parameter {} must be vector or matrix".format(node.left.text))
+        assert right_info.la_type.is_vector() or right_info.la_type.is_matrix(), self.get_err_msg_info(right_info.ir.parse_info, "Frobenius product error. Parameter {} must be vector or matrix".format(node.right.text))
         ir_node = FroProductNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
         ir_node.la_type = ScalarType()
         return NodeInfo(ir_node.la_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
@@ -810,10 +814,13 @@ class TypeWalker(NodeWalker):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
         ir_node = HadamardProductNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
-        assert (left_info.la_type.is_vector() and right_info.la_type.is_vector()) or (left_info.la_type.is_matrix() and right_info.la_type.is_matrix()), "parameters must be matrix or vector"
-        assert left_info.la_type.rows == left_info.la_type.rows, "dims of parameters must be the same"
+        assert left_info.la_type.is_vector() or left_info.la_type.is_matrix(), self.get_err_msg_info(left_info.ir.parse_info, "Hadamard product error. Parameter {} must be vector or matrix".format(node.left.text))
+        assert right_info.la_type.is_vector() or right_info.la_type.is_matrix(), self.get_err_msg_info(right_info.ir.parse_info, "Hadamard product error. Parameter {} must be vector or matrix".format(node.right.text))
+        assert left_info.la_type.rows == left_info.la_type.rows, self.get_err_msg_info(node.parseinfo,
+                                                                                        "Hadamard product error. Parameters {} and {} must have the same dimension".format(node.left.text, node.right.text))
         if left_info.la_type.is_matrix():
-            assert left_info.la_type.cols == left_info.la_type.cols, "dims of parameters must be the same"
+            assert left_info.la_type.cols == left_info.la_type.cols, self.get_err_msg_info(node.parseinfo,
+                                                                                        "Hadamard product error. Parameters {} and {} must have the same dimension".format(node.left.text, node.right.text))
             ir_node.la_type = MatrixType(rows=left_info.la_type.rows, cols=left_info.la_type.rows)
         else:
             ir_node.la_type = VectorType(rows=left_info.la_type.rows)
@@ -822,8 +829,10 @@ class TypeWalker(NodeWalker):
     def walk_CrossProduct(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
-        assert left_info.la_type.is_vector() or right_info.la_type.is_vector(), "params must be vectors"
-        assert left_info.la_type.rows == 3 and right_info.la_type.rows == 3, "cross product is only for vectors of dim 3"
+        assert left_info.la_type.is_vector(), self.get_err_msg_info(left_info.ir.parse_info, "Cross product error. Parameter {} must be vector".format(node.left.text))
+        assert right_info.la_type.is_vector(), self.get_err_msg_info(right_info.ir.parse_info, "Cross product error. Parameter {} must be vector".format(node.right.text))
+        assert left_info.la_type.rows == 3, self.get_err_msg_info(left_info.ir.parse_info, "Cross product error. The dimension of parameter {} must be 3".format(node.left.text))
+        assert right_info.la_type.rows == 3, self.get_err_msg_info(right_info.ir.parse_info, "Cross product error. The dimension of parameter {} must be 3".format(node.right.text))
         ir_node = CrossProductNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
         ir_node.la_type = VectorType(rows=left_info.la_type.rows)
         return NodeInfo(ir_node.la_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
@@ -832,8 +841,8 @@ class TypeWalker(NodeWalker):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
         ir_node = KroneckerProductNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
-        assert left_info.la_type.is_vector() or left_info.la_type.is_matrix(), "left param must be vector or matrix"
-        assert right_info.la_type.is_vector() or right_info.la_type.is_matrix(), "right param must be vector or matrix"
+        assert left_info.la_type.is_vector() or left_info.la_type.is_matrix(), self.get_err_msg_info(left_info.ir.parse_info, "Kronecker product error. Parameter {} must be vector or matrix".format(node.left.text))
+        assert right_info.la_type.is_vector() or right_info.la_type.is_matrix(), self.get_err_msg_info(right_info.ir.parse_info, "Kronecker product error. Parameter {} must be vector or matrix".format(node.right.text))
         ir_node.la_type = MatrixType(rows=left_info.la_type.rows*right_info.la_type.rows, cols=left_info.la_type.cols*right_info.la_type.cols)
         return NodeInfo(ir_node.la_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
 
@@ -841,8 +850,10 @@ class TypeWalker(NodeWalker):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
         ir_node = DotProductNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
-        assert left_info.la_type.is_vector() and right_info.la_type.is_vector(), "params must be vectors"
-        assert left_info.la_type.rows == right_info.la_type.rows, "params must be same dimensional vectors"
+        assert left_info.la_type.is_vector(), self.get_err_msg_info(left_info.ir.parse_info, "Dot product error. Parameter {} must be vector".format(node.left.text))
+        assert right_info.la_type.is_vector(), self.get_err_msg_info(right_info.ir.parse_info, "Dot product error. Parameter {} must be vector".format(node.right.text))
+        assert left_info.la_type.rows == right_info.la_type.rows, self.get_err_msg_info(node.parseinfo,
+                                                                                        "Dot product error. Parameters {} and {} must have the same dimension".format(node.left.text, node.right.text))
         ir_node.la_type = ScalarType()
         return NodeInfo(ir_node.la_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
 
@@ -850,11 +861,11 @@ class TypeWalker(NodeWalker):
         power_node = PowerNode()
         power_node.base = base
         power_node.power = power
-        assert power.la_type.is_scalar(), "power must be scalar"
+        assert power.la_type.is_scalar(), self.get_err_msg_info(power.parse_info, "Power must be scalar")
         power_node.la_type = ScalarType()
-        assert base.la_type.is_scalar() or base.la_type.is_matrix(), "base of power must be scalar or matrix"
+        assert base.la_type.is_scalar() or base.la_type.is_matrix(), self.get_err_msg_info(base.parse_info, "Base of power must be scalar or matrix")
         if base.la_type.is_matrix():
-            assert base.la_type.rows == base.la_type.cols, "rows must be the same as cols"
+            assert base.la_type.rows == base.la_type.cols, self.get_err_msg_info(base.parse_info, "Power error. Rows must be the same as columns")
             self.unofficial_method = True
             power_node.la_type = base.la_type
         return power_node
@@ -1092,15 +1103,13 @@ class TypeWalker(NodeWalker):
             id0 = self.get_main_id(id0)
             if not la_is_inside_sum(**kwargs) and not la_is_if(**kwargs):  # symbols in sum don't need to be defined before todo:modify
                 if id0 != 'I':  # special case
-                    assert self.symtable.get(id0) is not None, self.get_err_msg(self.get_line_info(id0_info.ir.parse_info),
-                                                                           self.get_line_info(id0_info.ir.parse_info).col,
-                                                                           "Symbol {} is not defined".format(id0))
+                    assert self.symtable.get(id0) is not None, self.get_err_msg_info(id0_info.ir.parse_info,
+                                                                                     "Symbol {} is not defined".format(id0))
                     # pass  # todo:delete
                 else:
                     # I
                     if 'I' not in self.symtable:
-                        assert la_is_inside_matrix(**kwargs),  self.get_err_msg(self.get_line_info(id0_info.ir.parse_info),
-                                                                                self.get_line_info(id0_info.ir.parse_info).col,
+                        assert la_is_inside_matrix(**kwargs),  self.get_err_msg_info(id0_info.ir.parse_info,
                                                                                 "I must be used inside matrix if not defined")
             node_info = NodeInfo(id0_info.la_type, id0, id0_info.symbols, id0_info.ir)
             # node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
@@ -1273,7 +1282,7 @@ class TypeWalker(NodeWalker):
         if block:
             # check block mat
             valid, undef_list, type_array, real_dims = self.check_bmat_validity(node_info.content, None)
-            assert valid, self.get_err_msg(self.get_line_info(node.parseinfo), self.get_line_info(node.parseinfo).col,  "block matrix: invalid dimensions")
+            assert valid, self.get_err_msg_info(node.parseinfo,  "block matrix: invalid dimensions")
             rows = real_dims[0]
             cols = real_dims[1]
             if len(undef_list) > 0:
