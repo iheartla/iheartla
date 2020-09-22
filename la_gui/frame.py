@@ -15,6 +15,7 @@ from la_gui.cpp_ctrl import CppTextControl
 from la_gui.latex_panel import LatexPanel
 from la_gui.msg_panel import MsgControl
 from la_gui.mid_panel import MidPanel, MidPanelEnum
+from la_tools.la_msg import *
 
 
 class FileType(Enum):
@@ -162,6 +163,8 @@ E: { ℤ × ℤ }''')
         self.latexPanel.latex_ctrl.Bind(wx.stc.EVT_STC_UPDATEUI, self.OnUpdateUI)
         self.midPanel.py_ctrl.Bind(wx.stc.EVT_STC_UPDATEUI, self.OnUpdateUI)
         self.midPanel.cpp_ctrl.Bind(wx.stc.EVT_STC_UPDATEUI, self.OnUpdateUI)
+        self.control.IndicatorSetStyle(0, wx.stc.STC_INDIC_POINTCHARACTER)
+        self.error_pos = 0
 
         create_parser_background()
         self.OnClickEigen(None)  # Eigen default
@@ -189,6 +192,7 @@ E: { ℤ × ℤ }''')
             self.midPanel.set_value(result[0])
             self.statusbar.SetStatusText("Finished", 0)
             self.set_msg("{}Compile succeeded\n".format(self.msgPanel.GetValue()))
+            self.update_indicator(False)
         else:
             if self.msgPanel.GetValue() == '':
                 msg = result[0]
@@ -196,6 +200,13 @@ E: { ℤ × ℤ }''')
                 msg = "{}{}".format(self.msgPanel.GetValue(), result[0])
             self.set_msg(msg)
             self.statusbar.SetStatusText("Error", 0)
+            self.update_indicator(True, self.control.FindColumn(LaMsg.getInstance().cur_line, LaMsg.getInstance().cur_col))
+
+    def update_indicator(self, on, pos=0):
+        self.control.IndicatorClearRange(0, len(self.control.GetValue()))
+        if on:
+            self.error_pos = pos
+            self.control.IndicatorFillRange(pos, 1)
 
     def set_msg(self, msg):
         self.msgPanel.SetEditable(True)

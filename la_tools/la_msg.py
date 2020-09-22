@@ -107,12 +107,18 @@ class LaMsg(object):
                 "csc_func": "csc function",
                 "atan2_func": "atan2 function",
             }
+            self.cur_line = 0
+            self.cur_col = 0
             LaMsg.__instance = self
 
     def get_line_desc(self, line_info):
+        self.cur_line = line_info.line
+        self.cur_col = line_info.col
         return "Error on line {} at column {}".format(line_info.line + 1, line_info.col + 1)
 
     def get_line_desc_with_col(self, line, col):
+        self.cur_line = line
+        self.cur_col = col
         return "Error on line {} at column {}".format(line + 1, col + 1)
 
     def get_pos_marker(self, column):
