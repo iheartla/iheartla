@@ -12,4 +12,7 @@ start::Start
 #include :: "linear_algebra/la_grammar/shared.ebnf"
 
 
+KEYWORDS
+    = BUILTIN_KEYWORDS
+    ;
 

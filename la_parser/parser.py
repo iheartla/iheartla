@@ -174,7 +174,13 @@ def parse_ir_node(content, model):
         package_name_dict = start_node.get_package_dict()
         key_names = []
         for package in package_name_dict:
-            for name in package_name_dict[package]:
+            name_list = package_name_dict[package]
+            if 'e' in name_list:
+                current_content = current_content.replace("pi;", "pi|e;")
+                current_content = current_content.replace("BUILTIN_KEYWORDS;", "BUILTIN_KEYWORDS|e;")
+                name_list.remove('e')
+                parse_key += 'e;'
+            for name in name_list:
                 key_names.append("{}_func".format(name))
         # add new rules
         keyword_index = current_content.find('predefined_built_operators\n')

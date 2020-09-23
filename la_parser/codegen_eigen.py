@@ -1014,6 +1014,8 @@ class CodeGenEigen(CodeGen):
         content = ''
         if node.c_type == ConstantType.ConstantPi:
             content = 'M_PI'
+        elif node.c_type == ConstantType.ConstantE:
+            content = 'M_E'
         return CodeNodeInfo(content)
 
     def visit_double(self, node, **kwargs):

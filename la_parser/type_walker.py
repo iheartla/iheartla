@@ -99,7 +99,7 @@ class TypeWalker(NodeWalker):
         self.ret_symbol = None
         self.packages = {'trigonometry': ['sin', 'asin', 'cos', 'acos', 'tan', 'atan', 'atan2',
                                           'sinh', 'asinh', 'cosh', 'acosh', 'tanh', 'atanh', 'cot',
-                                          'sec', 'csc']}
+                                          'sec', 'csc', 'e']}
         self.constants = ['π']
         # self.directive_parsing = True   # directives grammar
 
@@ -1145,6 +1145,13 @@ class TypeWalker(NodeWalker):
     def walk_Pi(self, node, **kwargs):
         node_info = NodeInfo(ScalarType())
         ir_node = ConstantNode(ConstantType.ConstantPi, parse_info=node.parseinfo)
+        ir_node.la_type = node_info.la_type
+        node_info.ir = ir_node
+        return node_info
+
+    def walk_E(self, node, **kwargs):
+        node_info = NodeInfo(ScalarType())
+        ir_node = ConstantNode(ConstantType.ConstantE, parse_info=node.parseinfo)
         ir_node.la_type = node_info.la_type
         node_info.ir = ir_node
         return node_info

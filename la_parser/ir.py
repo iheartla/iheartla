@@ -514,6 +514,7 @@ class SubexpressionNode(ExprNode):
 class ConstantType(Enum):
     ConstantInvalid = -1
     ConstantPi = 0
+    ConstantE = 1
 
 
 class ConstantNode(ExprNode):

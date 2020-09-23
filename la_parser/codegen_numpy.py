@@ -886,6 +886,8 @@ class CodeGenNumpy(CodeGen):
         content = ''
         if node.c_type == ConstantType.ConstantPi:
             content = 'np.pi'
+        elif node.c_type == ConstantType.ConstantE:
+            content = 'np.e'
         return CodeNodeInfo(content)
 
     def visit_double(self, node, **kwargs):

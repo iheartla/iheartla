@@ -57,11 +57,10 @@ params_separator
     = ','|';'|'x'|'×'
     ;
 
-constant
-    =
-    pi
-    ;
-
 pi::Pi
     = 'π'
+    ;
+
+e::E
+    = 'e'
     ;

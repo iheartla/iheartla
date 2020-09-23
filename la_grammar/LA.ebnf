@@ -75,6 +75,13 @@ factor::Factor
     | c:constant
     ;
 
+constant
+    =
+    pi;
+
+KEYWORDS
+    = BUILTIN_KEYWORDS;
+
 subexpression::Subexpression
     =
     '(' {hspace} value:expression {hspace} ')'
