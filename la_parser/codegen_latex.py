@@ -64,6 +64,8 @@ class CodeGenLatex(CodeGen):
         content = ''
         if node.c_type == ConstantType.ConstantPi:
             content = '\\pi'
+        elif node.c_type == ConstantType.ConstantE:
+            content = 'e'
         return content
 
     def visit_double(self, node):
