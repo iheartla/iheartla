@@ -59,7 +59,10 @@ class IRVisitor(object):
         for (k, v) in self.symtable.items():
             dims = ""
             if v.var_type == VarTypeEnum.MATRIX:
-                dims = ", rows:{}, cols:{}".format(v.rows, v.cols)
+                if v.sparse:
+                    dims = ", sparse, rows:{}, cols:{}".format(v.rows, v.cols)
+                else:
+                    dims = ", rows:{}, cols:{}".format(v.rows, v.cols)
             elif v.var_type == VarTypeEnum.VECTOR:
                 dims = ", rows:{}".format(v.rows)
             elif v.var_type == VarTypeEnum.SEQUENCE or v.var_type == VarTypeEnum.SET:

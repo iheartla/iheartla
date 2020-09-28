@@ -1,3 +1,4 @@
+import copy
 from tatsu.model import NodeWalker
 from tatsu.objectmodel import Node
 from la_parser.la_types import *
@@ -1671,29 +1672,31 @@ class TypeWalker(NodeWalker):
         error_msg += self.la_msg.get_pos_marker(left_line.col)
         ret_type = None
         if op == TypeInferenceEnum.INF_ADD or op == TypeInferenceEnum.INF_SUB:
-            ret_type = left_type  # default type
+            ret_type = copy.deepcopy(left_type)  # default type
             if left_type.is_scalar():
                 assert right_type.is_scalar(), error_msg
             elif left_type.is_matrix():
                 assert right_type.is_matrix() or right_type.is_vector(), error_msg
                 assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, error_msg
-                if right_type.is_matrix() and right_type.sparse:
+                if left_type.sparse and right_type.sparse:
                     ret_type.sparse = True
+                else:
+                    ret_type.sparse = False
             elif left_type.is_vector():
                 assert right_type.is_matrix() or right_type.is_vector(), error_msg
                 assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, error_msg
                 if right_type.is_matrix():
-                    ret_type = right_type
+                    ret_type = copy.deepcopy(right_type)
             else:
                 # sequence et al.
                 assert left_type.var_type == right_type.var_type, error_msg
         elif op == TypeInferenceEnum.INF_MUL:
             assert left_type.var_type != VarTypeEnum.SEQUENCE and right_type.var_type != VarTypeEnum.SEQUENCE, 'error: sequence can not be operated'
             if left_type.is_scalar():
-                ret_type = right_type
+                ret_type = copy.deepcopy(right_type)
             elif left_type.is_matrix():
                 if right_type.is_scalar():
-                    ret_type = left_type
+                    ret_type = copy.deepcopy(left_type)
                 elif right_type.is_matrix():
                     assert left_type.cols == right_type.rows, error_msg
                     ret_type = MatrixType(rows=left_type.rows, cols=right_type.cols)
@@ -1708,7 +1711,7 @@ class TypeWalker(NodeWalker):
                         ret_type = VectorType(rows=left_type.rows)
             elif left_type.is_vector():
                 if right_type.is_scalar():
-                    ret_type = left_type
+                    ret_type = copy.deepcopy(left_type)
                 elif right_type.is_matrix():
                     assert 1 == right_type.rows, error_msg
                     ret_type = MatrixType(rows=left_type.rows, cols=right_type.cols)
@@ -1718,10 +1721,10 @@ class TypeWalker(NodeWalker):
             # assert left_type.is_scalar() and right_type.is_scalar(), error_msg
             assert left_type.is_scalar() or left_type.is_vector() or left_type.is_matrix(), error_msg
             assert right_type.is_scalar(), error_msg
-            ret_type = left_type
+            ret_type = copy.deepcopy(left_type)
         elif op == TypeInferenceEnum.INF_MATRIX_ROW:
             # assert left_type.var_type == right_type.var_type
-            ret_type = left_type
+            ret_type = copy.deepcopy(left_type)
         return ret_type
 
     def contain_subscript(self, identifier):
