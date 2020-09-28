@@ -74,13 +74,14 @@ class IRNodeType(Enum):
 
 
 class IRNode(object):
-    def __init__(self, node_type=None, parent=None, parse_info=None):
+    def __init__(self, node_type=None, parent=None, parse_info=None, raw_text=None):
         super().__init__()
         self.node_type = node_type
         self.la_type = None
         self.parent = None
         self.set_parent(parent)
         self.parse_info = parse_info
+        self.raw_text = raw_text
 
     def set_parent(self, parent):
         if parent:
@@ -98,18 +99,18 @@ class IRNode(object):
 
 
 class StmtNode(IRNode):
-    def __init__(self, node_type=None, parse_info=None):
-        super().__init__(node_type, parse_info=parse_info)
+    def __init__(self, node_type=None, parse_info=None, raw_text=None):
+        super().__init__(node_type, parse_info=parse_info, raw_text=raw_text)
 
 
 class ExprNode(IRNode):
-    def __init__(self, node_type=None, parse_info=None):
-        super().__init__(node_type, parse_info=parse_info)
+    def __init__(self, node_type=None, parse_info=None, raw_text=None):
+        super().__init__(node_type, parse_info=parse_info, raw_text=raw_text)
 
 
 class StartNode(StmtNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.Start, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Start, parse_info=parse_info, raw_text=raw_text)
         self.cond = None
         self.stat = None
         self.directives = []
@@ -126,22 +127,22 @@ class StartNode(StmtNode):
 
 
 class WhereConditionsNode(StmtNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.WhereConditions, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.WhereConditions, parse_info=parse_info, raw_text=raw_text)
         self.value = []
 
 
 class WhereConditionNode(StmtNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.WhereCondition, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.WhereCondition, parse_info=parse_info, raw_text=raw_text)
         self.id = None
         self.type = None
         self.desc = None
 
 
 class SetTypeNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.SetType, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.SetType, parse_info=parse_info, raw_text=raw_text)
         self.type = None
         self.type1 = None
         self.type2 = None
@@ -149,29 +150,29 @@ class SetTypeNode(ExprNode):
 
 
 class MatrixTypeNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.MatrixType, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.MatrixType, parse_info=parse_info, raw_text=raw_text)
         self.id1 = None
         self.id2 = None
         self.type = None
 
 
 class VectorTypeNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.VectorType, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.VectorType, parse_info=parse_info, raw_text=raw_text)
         self.id1 = None
         self.type = None
 
 
 class ScalarTypeNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.ScalarType, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.ScalarType, parse_info=parse_info, raw_text=raw_text)
         self.is_int = False
 
 
 class FunctionTypeNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.FunctionType, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.FunctionType, parse_info=parse_info, raw_text=raw_text)
         self.empty = None
         self.params = []
         self.separators = []
@@ -179,15 +180,15 @@ class FunctionTypeNode(ExprNode):
 
 
 class ImportNode(StmtNode):
-    def __init__(self, package=None, names=None, parse_info=None):
-        super().__init__(IRNodeType.Import, parse_info=parse_info)
+    def __init__(self, package=None, names=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Import, parse_info=parse_info, raw_text=raw_text)
         self.package = package
         self.names = names
 
 
 class BlockNode(StmtNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.Block, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Block, parse_info=parse_info, raw_text=raw_text)
         self.stmts = []
 
     def add_stmt(self, stmt):
@@ -198,8 +199,8 @@ class BlockNode(StmtNode):
 
 
 class AssignNode(StmtNode):
-    def __init__(self, left=None, right=None, parse_info=None):
-        super().__init__(IRNodeType.Assignment, parse_info=parse_info)
+    def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Assignment, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
         self.op = None
@@ -207,28 +208,28 @@ class AssignNode(StmtNode):
 
 
 class IfNode(StmtNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.If, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.If, parse_info=parse_info, raw_text=raw_text)
         self.cond = None
 
 
 class InNode(StmtNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.In, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.In, parse_info=parse_info, raw_text=raw_text)
         self.items = []
         self.set = None
 
 
 class NotInNode(StmtNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.NotIn, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.NotIn, parse_info=parse_info, raw_text=raw_text)
         self.items = []
         self.set = None
 
 
 class BinCompNode(StmtNode):
-    def __init__(self, comp_type=IRNodeType.INVALID, left=None, right=None, parse_info=None):
-        super().__init__(IRNodeType.BinComp, parse_info=parse_info)
+    def __init__(self, comp_type=IRNodeType.INVALID, left=None, right=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.BinComp, parse_info=parse_info, raw_text=raw_text)
         self.comp_type = comp_type
         self.left = left
         self.right = right
@@ -238,15 +239,15 @@ class BinCompNode(StmtNode):
 
 
 class ExpressionNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.Expression, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Expression, parse_info=parse_info, raw_text=raw_text)
         self.value = None
         self.sign = None
 
 
 class IdNode(ExprNode):
-    def __init__(self, main_id='', subs=None, parse_info=None):
-        super().__init__(IRNodeType.Id, parse_info=parse_info)
+    def __init__(self, main_id='', subs=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Id, parse_info=parse_info, raw_text=raw_text)
         self.name = None
         self.main_id = main_id
         self.subs = subs
@@ -270,15 +271,15 @@ class IdNode(ExprNode):
 
 
 class AddNode(ExprNode):
-    def __init__(self, left=None, right=None, parse_info=None):
-        super().__init__(IRNodeType.Add, parse_info=parse_info)
+    def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Add, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
 
 
 class SubNode(ExprNode):
-    def __init__(self, left=None, right=None, parse_info=None):
-        super().__init__(IRNodeType.Sub, parse_info=parse_info)
+    def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Sub, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
 
@@ -291,51 +292,51 @@ class AddSubNode(ExprNode):
 
 
 class MulNode(ExprNode):
-    def __init__(self, left=None, right=None, parse_info=None):
-        super().__init__(IRNodeType.Mul, parse_info=parse_info)
+    def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Mul, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
 
 
 class DivNode(ExprNode):
-    def __init__(self, left=None, right=None, parse_info=None):
-        super().__init__(IRNodeType.Div, parse_info=parse_info)
+    def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Div, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
 
 
 class MatrixNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.Matrix, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Matrix, parse_info=parse_info, raw_text=raw_text)
         self.items = None
         self.symbol = None
         self.value = None
 
 
 class MatrixRowsNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.MatrixRows, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.MatrixRows, parse_info=parse_info, raw_text=raw_text)
         self.rs = None
         self.r = None
 
 
 class MatrixRowNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.MatrixRow, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.MatrixRow, parse_info=parse_info, raw_text=raw_text)
         self.rc = None
         self.exp = None
 
 
 class MatrixRowCommasNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.MatrixRowCommas, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.MatrixRowCommas, parse_info=parse_info, raw_text=raw_text)
         self.value = None
         self.exp = None
 
 
 class SummationNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.Summation, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Summation, parse_info=parse_info, raw_text=raw_text)
         self.sub = None
         self.exp = None
         self.id = None
@@ -354,8 +355,8 @@ class OptimizeType(Enum):
 
 
 class OptimizeNode(ExprNode):
-    def __init__(self, opt_type=OptimizeType.OptimizeInvalid, cond_list=[], exp=None, base=None, base_type=None, parse_info=None):
-        super().__init__(IRNodeType.Optimize, parse_info=parse_info)
+    def __init__(self, opt_type=OptimizeType.OptimizeInvalid, cond_list=[], exp=None, base=None, base_type=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Optimize, parse_info=parse_info, raw_text=raw_text)
         self.opt_type = opt_type
         self.cond_list = cond_list
         self.exp = exp
@@ -364,59 +365,59 @@ class OptimizeNode(ExprNode):
 
 
 class DomainNode(ExprNode):
-    def __init__(self, lower=None, upper=None, parse_info=None):
-        super().__init__(IRNodeType.Domain, parse_info=parse_info)
+    def __init__(self, lower=None, upper=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Domain, parse_info=parse_info, raw_text=raw_text)
         self.upper = upper
         self.lower = lower
 
 
 class IntegralNode(ExprNode):
-    def __init__(self, domain=None, exp=None, base=None, parse_info=None):
-        super().__init__(IRNodeType.Integral, parse_info=parse_info)
+    def __init__(self, domain=None, exp=None, base=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Integral, parse_info=parse_info, raw_text=raw_text)
         self.domain = domain
         self.exp = exp
         self.base = base
 
 
 class InnerProductNode(ExprNode):
-    def __init__(self, left=None, right=None, sub=None, parse_info=None):
-        super().__init__(IRNodeType.InnerProduct, parse_info=parse_info)
+    def __init__(self, left=None, right=None, sub=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.InnerProduct, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
         self.sub = sub
 
 
 class FroProductNode(ExprNode):
-    def __init__(self, left=None, right=None, parse_info=None):
-        super().__init__(IRNodeType.FroProduct, parse_info=parse_info)
+    def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.FroProduct, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
 
 
 class HadamardProductNode(ExprNode):
-    def __init__(self, left=None, right=None, parse_info=None):
-        super().__init__(IRNodeType.HadamardProduct, parse_info=parse_info)
+    def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.HadamardProduct, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
 
 
 class CrossProductNode(ExprNode):
-    def __init__(self, left=None, right=None, parse_info=None):
-        super().__init__(IRNodeType.CrossProduct, parse_info=parse_info)
+    def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.CrossProduct, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
 
 
 class KroneckerProductNode(ExprNode):
-    def __init__(self, left=None, right=None, parse_info=None):
-        super().__init__(IRNodeType.KroneckerProduct, parse_info=parse_info)
+    def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.KroneckerProduct, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
 
 
 class DotProductNode(ExprNode):
-    def __init__(self, left=None, right=None, parse_info=None):
-        super().__init__(IRNodeType.DotProduct, parse_info=parse_info)
+    def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.DotProduct, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
 
@@ -431,22 +432,22 @@ class NormType(Enum):
 
 
 class NormNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.Norm, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Norm, parse_info=parse_info, raw_text=raw_text)
         self.value = None
         self.sub = None
         self.norm_type = NormType.NormInvalid
 
 
 class TransposeNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.Transpose, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Transpose, parse_info=parse_info, raw_text=raw_text)
         self.f = None
 
 
 class PowerNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.Power, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Power, parse_info=parse_info, raw_text=raw_text)
         self.base = None
         self.t = None
         self.r = None
@@ -454,15 +455,15 @@ class PowerNode(ExprNode):
 
 
 class SolverNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.Solver, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Solver, parse_info=parse_info, raw_text=raw_text)
         self.left = None
         self.right = None
 
 
 class SparseMatrixNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.SparseMatrix, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.SparseMatrix, parse_info=parse_info, raw_text=raw_text)
         self.ifs = None
         self.other = None
         self.id2 = None
@@ -470,8 +471,8 @@ class SparseMatrixNode(ExprNode):
 
 
 class SparseIfNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.SparseIf, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.SparseIf, parse_info=parse_info, raw_text=raw_text)
         self.stat = None
         self.id0 = None
         self.id1 = None
@@ -479,26 +480,26 @@ class SparseIfNode(ExprNode):
 
 
 class SparseIfsNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.SparseIfs, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.SparseIfs, parse_info=parse_info, raw_text=raw_text)
         self.cond_list = []
 
 
 class SparseOtherNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.SparseOther, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.SparseOther, parse_info=parse_info, raw_text=raw_text)
 
 
 class ExpInMatrixNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.ExpInMatrix, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.ExpInMatrix, parse_info=parse_info, raw_text=raw_text)
         self.value = None
         self.sign = None
 
 
 class NumMatrixNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.NumMatrix, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.NumMatrix, parse_info=parse_info, raw_text=raw_text)
         self.id = None
         self.id1 = None
         self.id2 = None
@@ -506,8 +507,8 @@ class NumMatrixNode(ExprNode):
 
 
 class SubexpressionNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.Subexpression, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Subexpression, parse_info=parse_info, raw_text=raw_text)
         self.value = None
 
 
@@ -518,14 +519,14 @@ class ConstantType(Enum):
 
 
 class ConstantNode(ExprNode):
-    def __init__(self, c_type=ConstantType.ConstantInvalid, parse_info=None):
-        super().__init__(IRNodeType.Constant, parse_info=parse_info)
+    def __init__(self, c_type=ConstantType.ConstantInvalid, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Constant, parse_info=parse_info, raw_text=raw_text)
         self.c_type = c_type
 
 
 class DerivativeNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.Derivative, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Derivative, parse_info=parse_info, raw_text=raw_text)
         self.value = None
 
 
@@ -555,8 +556,8 @@ class MathFuncType(IntEnum):
 
 
 class MathFuncNode(ExprNode):
-    def __init__(self, param=None, func_type=MathFuncType.MathFuncInvalid, remain_params=[], func_name=None, separator=None, parse_info=None):
-        super().__init__(IRNodeType.MathFunc, parse_info=parse_info)
+    def __init__(self, param=None, func_type=MathFuncType.MathFuncInvalid, remain_params=[], func_name=None, separator=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.MathFunc, parse_info=parse_info, raw_text=raw_text)
         self.param = param   # first param
         self.remain_params = remain_params  # remain params
         self.func_type = func_type
@@ -567,8 +568,8 @@ class MathFuncNode(ExprNode):
 
 
 class FactorNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.Factor, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Factor, parse_info=parse_info, raw_text=raw_text)
         self.op = None
         self.sub = None
         self.nm = None
@@ -579,20 +580,20 @@ class FactorNode(ExprNode):
 
 
 class DoubleNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.Double, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Double, parse_info=parse_info, raw_text=raw_text)
         self.value = None
 
 
 class IntegerNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.Integer, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Integer, parse_info=parse_info, raw_text=raw_text)
         self.value = None
 
 
 class FunctionNode(ExprNode):
-    def __init__(self, parse_info=None):
-        super().__init__(IRNodeType.Function, parse_info=parse_info)
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Function, parse_info=parse_info, raw_text=raw_text)
         self.params = []
         self.separators = []
         self.ret = None

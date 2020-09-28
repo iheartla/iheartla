@@ -1267,7 +1267,7 @@ class TypeWalker(NodeWalker):
         return NodeInfo(ir=ir_node)
 
     def walk_Matrix(self, node, **kwargs):
-        ir_node = MatrixNode(parse_info=node.parseinfo)
+        ir_node = MatrixNode(parse_info=node.parseinfo, raw_text=node.text)
         kwargs[INSIDE_MATRIX] = True
         node_info = self.walk(node.value, **kwargs)
         ir_node.value = node_info.ir
@@ -1276,20 +1276,24 @@ class TypeWalker(NodeWalker):
         cols = 0
         block = False
         sparse = False
+        type_array = []
         for row in node_info.content:
+            row_type = []
             for col in row:
-                if col.is_matrix():
-                    if col.sparse:
+                row_type.append(col.la_type)
+                if col.la_type.is_matrix():
+                    if col.la_type.sparse:
                         sparse = True
                     block = True
-                elif col.is_vector():
+                elif col.la_type.is_vector():
                     block = True
             if len(row) > cols:
                 cols = len(row)
+            type_array.append(row_type)
         list_dim = None
         if block:
             # check block mat
-            valid, undef_list, type_array, real_dims = self.check_bmat_validity(node_info.content, None)
+            valid, undef_list, type_array, real_dims = self.check_bmat_validity(type_array, None)
             assert valid, self.get_err_msg_info(node.parseinfo,  "Block matrix error. Invalid dimensions")
             rows = real_dims[0]
             cols = real_dims[1]
@@ -1297,6 +1301,11 @@ class TypeWalker(NodeWalker):
                 # need change dimension
                 list_dim = {}
                 for i, j in undef_list:
+                    cur_ir = node_info.content[i][j]
+                    if 'I' in cur_ir.raw_text:
+                        pass
+                    else:
+                        assert '0' in cur_ir.raw_text or '1' in cur_ir.raw_text, self.get_err_msg_info(cur_ir.parse_info, "Can not lift {}".format(cur_ir.raw_text))
                     list_dim[(i, j)] = [type_array[i][j].rows, type_array[i][j].cols]
         node_type = MatrixType(rows=rows, cols=cols, block=block, sparse=sparse, list_dim=list_dim, item_types=node_info.content)
         node_info = NodeInfo(node_type)
@@ -1311,7 +1320,7 @@ class TypeWalker(NodeWalker):
         return node_info
 
     def walk_MatrixRows(self, node, **kwargs):
-        ir_node = MatrixRowsNode(parse_info=node.parseinfo)
+        ir_node = MatrixRowsNode(parse_info=node.parseinfo, raw_text=node.text)
         ret_info = None
         rows = []
         symbols = set()
@@ -1335,7 +1344,7 @@ class TypeWalker(NodeWalker):
         return ret_info
 
     def walk_MatrixRow(self, node, **kwargs):
-        ir_node = MatrixRowNode(parse_info=node.parseinfo)
+        ir_node = MatrixRowNode(parse_info=node.parseinfo, raw_text=node.text)
         ret_info = None
         items = []
         symbols = set()
@@ -1349,11 +1358,11 @@ class TypeWalker(NodeWalker):
             ir_node.exp = exp_info.ir
             if ret_info is None:
                 ret_info = exp_info
-                ret_info.content = [exp_info.la_type]
+                ret_info.content = [exp_info.ir]
             else:
                 new_type = self.type_inference(TypeInferenceEnum.INF_MATRIX_ROW, ret_info.ir, exp_info.ir)
                 ret_info.la_type = new_type
-                items.append(exp_info.la_type)
+                items.append(exp_info.ir)
                 ret_info.content = items
             ret_info.symbols = symbols.union(exp_info.symbols)
         ir_node.la_type = ret_info.la_type
@@ -1361,7 +1370,7 @@ class TypeWalker(NodeWalker):
         return ret_info
 
     def walk_MatrixRowCommas(self, node, **kwargs):
-        ir_node = MatrixRowCommasNode(parse_info=node.parseinfo)
+        ir_node = MatrixRowCommasNode(parse_info=node.parseinfo, raw_text=node.text)
         ret_info = None
         items = []
         symbols = set()
@@ -1375,11 +1384,11 @@ class TypeWalker(NodeWalker):
             ir_node.exp = exp_info.ir
             if ret_info is None:
                 ret_info = exp_info
-                ret_info.content = [exp_info.la_type]
+                ret_info.content = [exp_info.ir]
             else:
                 new_type = self.type_inference(TypeInferenceEnum.INF_MATRIX_ROW, ret_info.ir, exp_info.ir)
                 ret_info.la_type = new_type
-                items.append(exp_info.la_type)
+                items.append(exp_info.ir)
                 ret_info.content = items
             ret_info.symbols = symbols.union(exp_info.symbols)
         ir_node.la_type = ret_info.la_type
@@ -1388,7 +1397,7 @@ class TypeWalker(NodeWalker):
 
     def walk_ExpInMatrix(self, node, **kwargs):
         ret_info = self.walk(node.value, **kwargs)
-        ir_node = ExpInMatrixNode(parse_info=node.parseinfo)
+        ir_node = ExpInMatrixNode(parse_info=node.parseinfo, raw_text=node.text)
         ir_node.value = ret_info.ir
         ir_node.sign = node.sign
         ir_node.la_type = ret_info.la_type
