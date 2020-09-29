@@ -104,6 +104,13 @@ class CodeGenEigen(CodeGen):
         content = node.get_name()
         if content in self.name_convention_dict:
             content = self.name_convention_dict[content]
+        if self.convert_matrix and node.contain_subscript():
+            if len(node.subs) == 2:
+                if self.symtable[node.main_id].is_matrix():
+                    if self.symtable[node.main_id].sparse:
+                        content = "{}.coeff({}, {})".format(node.main_id, node.subs[0], node.subs[1])
+                    else:
+                        content = "{}({}, {})".format(node.main_id, node.subs[0], node.subs[1])
         return CodeNodeInfo(content)
 
     def visit_start(self, node, **kwargs):
@@ -489,6 +496,7 @@ class CodeGenEigen(CodeGen):
 
 
     def visit_sparse_if(self, node, **kwargs):
+        self.convert_matrix = True
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         subs = assign_node.left.subs
         cond_info = self.visit(node.cond, **kwargs)
@@ -500,6 +508,7 @@ class CodeGenEigen(CodeGen):
         content.append('if({}){{\n'.format(cond_info.content))
         content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}, {}, {}));\n'.format(assign_node.left.get_main_id(), subs[0], subs[1], stat_content))
         content.append('}\n')
+        self.convert_matrix = False
         return CodeNodeInfo(content)
 
     def visit_sparse_other(self, node, **kwargs):
