@@ -34,6 +34,13 @@ class CodeGenNumpy(CodeGen):
         content = node.get_name()
         if content in self.name_convention_dict:
             content = self.name_convention_dict[content]
+        if self.convert_matrix and node.contain_subscript():
+            if len(node.subs) == 2:
+                if self.symtable[node.main_id].is_matrix():
+                    if self.symtable[node.main_id].sparse:
+                        content = "{}.tocsr()[{}, {}]".format(node.main_id, node.subs[0], node.subs[1])
+                    else:
+                        content = "{}[{}][{}]".format(node.main_id, node.subs[0], node.subs[1])
         return CodeNodeInfo(content)
 
     def visit_start(self, node, **kwargs):
@@ -71,38 +78,67 @@ class CodeGenNumpy(CodeGen):
             if self.symtable[parameter].is_sequence():
                 ele_type = self.symtable[parameter].element_type
                 data_type = ele_type.element_type
-                size_str = ""
-                if ele_type.is_matrix():
-                    type_checks.append('    assert {}.shape == ({}, {}, {})'.format(parameter, self.symtable[parameter].size, ele_type.rows, ele_type.cols))
-                    size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
-                elif ele_type.is_vector():
-                    type_checks.append('    assert {}.shape == ({}, {})'.format(parameter, self.symtable[parameter].size, ele_type.rows))
-                    size_str = '{}, {}'.format(self.symtable[parameter].size, ele_type.rows)
-                elif ele_type.is_scalar():
+                if ele_type.is_matrix() and ele_type.sparse:
                     type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].size))
-                    size_str = '{}'.format(self.symtable[parameter].size)
-                if isinstance(data_type, LaVarType):
-                    if data_type.is_scalar() and data_type.is_int:
-                        type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
-                        test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, size_str))
-                    else:
-                        type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
-                        test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
-                else:
                     type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
-                    test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
+                    test_content.append('    {} = []'.format(parameter))
+                    test_content.append('    for i in range({}):'.format(self.symtable[parameter].size))
+                    if isinstance(data_type, LaVarType) and data_type.is_scalar() and data_type.is_int:
+                        test_content.append(
+                            '        {}.append(sparse.random({}, {}, dtype=np.integer))'.format(parameter, ele_type.rows, ele_type.cols))
+                    else:
+                        test_content.append(
+                            '        {}.append(sparse.random({}, {}, dtype=np.float64))'.format(parameter, ele_type.rows,
+                                                                                            ele_type.cols))
+                else:
+                    size_str = ""
+                    if ele_type.is_matrix():
+                        type_checks.append('    assert {}.shape == ({}, {}, {})'.format(parameter, self.symtable[parameter].size, ele_type.rows, ele_type.cols))
+                        size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
+                    elif ele_type.is_vector():
+                        type_checks.append('    assert {}.shape == ({}, {})'.format(parameter, self.symtable[parameter].size, ele_type.rows))
+                        size_str = '{}, {}'.format(self.symtable[parameter].size, ele_type.rows)
+                    elif ele_type.is_scalar():
+                        type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].size))
+                        size_str = '{}'.format(self.symtable[parameter].size)
+                    if isinstance(data_type, LaVarType):
+                        if data_type.is_scalar() and data_type.is_int:
+                            type_declare.append('    {} = np.asarray({}, dtype=np.int)'.format(parameter, parameter))
+                            test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, size_str))
+                        else:
+                            type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
+                            test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
+                    else:
+                        type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
+                        test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
             elif self.symtable[parameter].is_matrix():
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
-                    if element_type.is_scalar() and element_type.is_int:
-                        type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
-                        test_content.append('    {} = np.random.randint({}, size=({}, {}))'.format(parameter, rand_int_max, self.symtable[parameter].rows, self.symtable[parameter].cols))
+                    if self.symtable[parameter].sparse:
+                        if element_type.is_scalar() and element_type.is_int:
+                            test_content.append(
+                                '    {} = sparse.random({}, {}, dtype=np.integer)'.format(parameter, self.symtable[parameter].rows,
+                                                                          self.symtable[parameter].cols))
+                        else:
+                            test_content.append(
+                                '    {} = sparse.random({}, {}, dtype=np.float64)'.format(parameter, self.symtable[parameter].rows,
+                                                                        self.symtable[parameter].cols))
                     else:
-                        type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
-                        test_content.append('    {} = np.random.randn({}, {})'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
+                        # dense
+                        if element_type.is_scalar() and element_type.is_int:
+                            type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
+                            test_content.append('    {} = np.random.randint({}, size=({}, {}))'.format(parameter, rand_int_max, self.symtable[parameter].rows, self.symtable[parameter].cols))
+                        else:
+                            type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
+                            test_content.append('    {} = np.random.randn({}, {})'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
                 else:
-                    type_checks.append('    {} = np.asarray({})'.format(parameter, parameter))
-                    test_content.append('    {} = np.random.randn({}, {})'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
+                    if self.symtable[parameter].sparse:
+                        test_content.append(
+                            '    {} = sparse.random({}, {}, dtype=np.float64)'.format(parameter, self.symtable[parameter].rows,
+                                                                      self.symtable[parameter].cols))
+                    else:
+                        type_checks.append('    {} = np.asarray({})'.format(parameter, parameter))
+                        test_content.append('    {} = np.random.randn({}, {})'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
                 type_checks.append('    assert {}.shape == ({}, {})'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
             elif self.symtable[parameter].is_vector():
                 element_type = self.symtable[parameter].element_type
@@ -356,6 +392,7 @@ class CodeGenNumpy(CodeGen):
         return CodeNodeInfo(ret, pre_list)
 
     def visit_sparse_if(self, node, **kwargs):
+        self.convert_matrix = True
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
         subs = assign_node.left.subs
@@ -368,6 +405,7 @@ class CodeGenNumpy(CodeGen):
         content.append('if {}:\n'.format(cond_info.content))
         content.append('    {}.append(({}, {}))\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
         content.append('    {}.append({})\n'.format(sparse_node.la_type.value_var, stat_content))
+        self.convert_matrix = False
         return CodeNodeInfo(content)
 
     def visit_sparse_other(self, node, **kwargs):
