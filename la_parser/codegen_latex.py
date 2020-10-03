@@ -134,6 +134,8 @@ class CodeGenLatex(CodeGen):
         if node.type == 'ℤ':
             type_str = '\\mathbb{Z}'
         content = "{}^{{ {} \\times {} }}".format(type_str, id1, id2)
+        if node.la_type.sparse:
+            content += " \\textit{{sparse}}"
         return content
 
     def visit_vector_type(self, node, **kwargs):
