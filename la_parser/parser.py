@@ -162,12 +162,21 @@ def parse_ir_node(content, model):
     start_node = type_walker.walk(model, pre_walk=True)
     # deal with function
     func_dict = type_walker.get_func_symbols()
+    multi_list = []
     parse_key = _default_key
+    for parameter in type_walker.parameters:
+        if len(parameter) > 1 and '_' not in parameter and '`' not in parameter:
+            multi_list.append(parameter)
+    if len(multi_list) > 0:
+        keys_rule = "'" + "'|'".join(multi_list) + "'"
+        log_la("keys_rule:" + keys_rule)
+        parse_key += "keys_rule:{};".format(keys_rule)
+        current_content = current_content.replace("= !KEYWORDS(", "= const:({}) | (!(KEYWORDS | {} )".format(keys_rule, keys_rule))
     if len(func_dict.keys()) > 0:
         func_rule = "'" + "'|'".join(func_dict.keys()) + "'"
         log_la("func_rule:" + func_rule)
         current_content = current_content.replace("func_id='!!!';", "func_id={};".format(func_rule))
-        parse_key = "func symbol:{}, func sig:{}".format(','.join(func_dict.keys()), ";".join(func_dict.values()))
+        parse_key += "func symbol:{}, func sig:{}".format(','.join(func_dict.keys()), ";".join(func_dict.values()))
     # deal with packages
     if len(start_node.directives) > 0:
         # include directives

@@ -1084,8 +1084,10 @@ class TypeWalker(NodeWalker):
         node_type = LaVarType(VarTypeEnum.INVALID)
         if node.value:
             value = node.value
-        else:
+        elif node.id:
             value = '`' + node.id + '`'
+        else:
+            value = node.const
         #
         ir_node = IdNode(value, parse_info=node.parseinfo)
         if value in self.symtable:
