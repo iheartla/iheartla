@@ -198,12 +198,12 @@ class TestMatrix(BasePythonTest):
 
     def test_block_matrix_4(self):
         # I identity matrix
-        la_str = """C = [A 3; 2 I_2]
+        la_str = """C = [A 1; 0 I_2]
         where
         A: ℝ ^ (2 × 2): a matrix"""
         func_info = self.gen_func_info(la_str)
         A = np.array([[1, 2], [3, 4]])
-        C = np.array([[1, 2, 3, 3], [3, 4, 3, 3], [2, 2, 1, 0], [2, 2, 0, 1]])
+        C = np.array([[1, 2, 1, 1], [3, 4, 1, 1], [0, 0, 1, 0], [0, 0, 0, 1]])
         self.assertDMatrixEqual(func_info.numpy_func(A), C)
         # eigen test
         cppyy.include(func_info.eig_file_name)
@@ -211,7 +211,7 @@ class TestMatrix(BasePythonTest):
                      "    Eigen::Matrix<double, 2, 2> A;",
                      "    A << 1, 2, 3, 4;",
                      "    Eigen::Matrix<double, 4, 4> B;",
-                     "    B << 1, 2, 3, 3, 3, 4, 3, 3, 2, 2, 1, 0, 2, 2, 0, 1;",
+                     "    B << 1, 2, 1, 1, 3, 4, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1;",
                      "    Eigen::Matrix<double, 4, 4> C = {}(A);".format(func_info.eig_func_name),
                      "    return ((B - C).norm() == 0);",
                      "}"]
