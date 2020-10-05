@@ -168,6 +168,7 @@ def parse_ir_node(content, model):
         if len(parameter) > 1 and '_' not in parameter and '`' not in parameter:
             multi_list.append(parameter)
     if len(multi_list) > 0:
+        multi_list = sorted(multi_list, key=len, reverse=True)
         keys_rule = "'" + "'|'".join(multi_list) + "'"
         log_la("keys_rule:" + keys_rule)
         parse_key += "keys_rule:{};".format(keys_rule)
