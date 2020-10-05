@@ -1,5 +1,6 @@
 import copy
 from tatsu.model import NodeWalker
+import re
 from tatsu.objectmodel import Node
 from la_parser.la_types import *
 from la_tools.la_logger import *
@@ -102,7 +103,18 @@ class TypeWalker(NodeWalker):
                                           'sinh', 'asinh', 'cosh', 'acosh', 'tanh', 'atanh', 'cot',
                                           'sec', 'csc', 'e']}
         self.constants = ['π']
+        self.pattern = re.compile("[A-Za-z]+")
         # self.directive_parsing = True   # directives grammar
+
+    def filter_symbol(self, symbol):
+        if '`' in symbol:
+            new_symbol = symbol.replace('`', '')
+            if not self.pattern.fullmatch(new_symbol):
+                new_symbol = symbol
+        else:
+            new_symbol = symbol
+        return new_symbol
+
 
     def reset(self):
         self.reset_state()
@@ -275,9 +287,10 @@ class TypeWalker(NodeWalker):
         desc = ':'.join(ret[1:len(ret)])
         ir_node.desc = node.desc
         type_node = self.walk(node.type, **kwargs)
+        type_node.parse_info = node.parseinfo
         type_node.la_type.desc = desc
-        self.handle_identifier(id0, type_node.la_type)
-        self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
+        self.handle_identifier(id0, type_node)
+        # self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
         self.update_parameters(id0, kwargs[PARAM_INDEX])
         if type_node.la_type.is_matrix():
             id1 = type_node.la_type.rows
@@ -448,9 +461,11 @@ class TypeWalker(NodeWalker):
     def update_parameters(self, identifier, index):
         if self.contain_subscript(identifier):
             arr = self.get_all_ids(identifier)
-            self.parameters[index] = arr[0]
+            new_symbol = self.filter_symbol(arr[0])
+            self.parameters[index] = new_symbol
         else:
-            self.parameters[index] = identifier
+            new_symbol = self.filter_symbol(identifier)
+            self.parameters[index] = new_symbol
 
     ###################################################################
     def walk_Import(self, node, **kwargs):
@@ -1106,7 +1121,8 @@ class TypeWalker(NodeWalker):
             id0 = self.get_main_id(id0)
             if not la_is_inside_sum(**kwargs) and not la_is_if(**kwargs):  # symbols in sum don't need to be defined before todo:modify
                 if id0 != 'I':  # special case
-                    assert self.symtable.get(id0) is not None, self.get_err_msg_info(id0_info.ir.parse_info,
+                    new_symbol = self.filter_symbol(id0)
+                    assert self.symtable.get(new_symbol) is not None, self.get_err_msg_info(id0_info.ir.parse_info,
                                                                                      "Symbol {} is not defined".format(id0))
                     # pass  # todo:delete
                 else:
@@ -1760,7 +1776,8 @@ class TypeWalker(NodeWalker):
         return identifier
 
     # handle subscripts only (where block)
-    def handle_identifier(self, identifier, id_type):
+    def handle_identifier(self, identifier, id_node):
+        id_type = id_node.la_type
         if self.contain_subscript(identifier):
             arr = self.get_all_ids(identifier)
             new_var_name = None
@@ -1778,7 +1795,12 @@ class TypeWalker(NodeWalker):
                 else:
                     # first sequence
                     self.subscripts[val] = [arr[0]]
-            self.symtable[arr[0]] = SequenceType(size=new_var_name, element_type=id_type, desc=id_type.desc, symbol=arr[0])
+            new_symbol = self.filter_symbol(arr[0])
+            assert new_symbol not in self.symtable, self.get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(new_symbol))
+            self.symtable[new_symbol] = SequenceType(size=new_var_name, element_type=id_type, desc=id_type.desc, symbol=new_symbol)
         else:
             id_type.symbol = identifier
-            self.symtable[identifier] = id_type
+            new_symbol = self.filter_symbol(identifier)
+            id_type.symbol = new_symbol
+            assert new_symbol not in self.symtable, self.get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(new_symbol))
+            self.symtable[new_symbol] = id_type

@@ -1,3 +1,4 @@
+import re
 from la_parser.ir import *
 from la_tools.la_logger import *
 import unicodedata
@@ -26,6 +27,7 @@ class IRVisitor(object):
         self.func_name = 'myExpression'
         self.param_name_test = 'p'  # param name for test function
         self.convert_matrix = False
+        self.pattern = re.compile("[A-Za-z]+")
 
     def add_name_conventions(self, con_dict):
         for key, value in con_dict.items():
@@ -344,6 +346,15 @@ class IRVisitor(object):
                 names_dict.append(new_str)
                 res = res.replace(special, new_str)
         return res
+
+    def filter_symbol(self, symbol):
+        if '`' in symbol:
+            new_symbol = symbol.replace('`', '')
+            if not self.pattern.fullmatch(new_symbol):
+                new_symbol = symbol
+        else:
+            new_symbol = symbol
+        return new_symbol
 
     def contain_subscript(self, identifier):
         if identifier in self.ids_dict:

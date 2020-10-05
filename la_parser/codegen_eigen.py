@@ -102,6 +102,7 @@ class CodeGenEigen(CodeGen):
 
     def visit_id(self, node, **kwargs):
         content = node.get_name()
+        content = self.filter_symbol(content)
         if content in self.name_convention_dict:
             content = self.name_convention_dict[content]
         if self.convert_matrix and node.contain_subscript():
