@@ -1037,11 +1037,3 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo(content)
 
     ###################################################################
-    def is_keyword(self, name):
-        kwlist = "Asm auto bool break case catch char class const_cast continue default delete do double else \
-        enum dynamic_cast extern false float for union unsigned using friend goto if \
-        inline int long mutable virtual namespace new operator private protected public \
-        register void reinterpret_cast return short signed sizeof static static_cast volatile \
-        struct switch template this throw true try typedef typeid unsigned wchar_t while"
-        keywords = kwlist.split(' ')
-        return name in keywords

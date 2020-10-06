@@ -5,6 +5,7 @@ from tatsu.objectmodel import Node
 from la_parser.la_types import *
 from la_tools.la_logger import *
 from la_tools.la_msg import *
+from la_tools.la_helper import *
 
 ## Make the visualizer
 try: from la_tools.la_visualizer import LaVisualizer
@@ -15,20 +16,6 @@ except ImportError:
 
 from la_parser.ir import *
 from enum import Enum, IntFlag
-
-
-class ParserTypeEnum(IntFlag):
-    INVALID = 0
-    DEFAULT = 7
-    #
-    LATEX = 1
-    NUMPY = 2
-    EIGEN = 4
-    MATLAB = 8
-    JULIA = 16
-    PYTORCH = 32
-    ARMADILLO = 64
-    TENSORFLOW = 128
 
 
 class TypeInferenceEnum(Enum):
@@ -109,7 +96,7 @@ class TypeWalker(NodeWalker):
     def filter_symbol(self, symbol):
         if '`' in symbol:
             new_symbol = symbol.replace('`', '')
-            if not self.pattern.fullmatch(new_symbol):
+            if not self.pattern.fullmatch(new_symbol) or is_keyword(new_symbol):
                 new_symbol = symbol
         else:
             new_symbol = symbol
@@ -461,11 +448,9 @@ class TypeWalker(NodeWalker):
     def update_parameters(self, identifier, index):
         if self.contain_subscript(identifier):
             arr = self.get_all_ids(identifier)
-            new_symbol = self.filter_symbol(arr[0])
-            self.parameters[index] = new_symbol
+            self.parameters[index] = arr[0]
         else:
-            new_symbol = self.filter_symbol(identifier)
-            self.parameters[index] = new_symbol
+            self.parameters[index] = identifier
 
     ###################################################################
     def walk_Import(self, node, **kwargs):
@@ -942,6 +927,7 @@ class TypeWalker(NodeWalker):
     def walk_Function(self, node, **kwargs):
         if isinstance(node.name, str):
             ir_node = IdNode(node.name, parse_info=node.parseinfo)
+            node.name = self.filter_symbol(node.name)
             ir_node.la_type = self.symtable[node.name]
             name_info = NodeInfo(ir_node.la_type, ir=ir_node)
         else:
@@ -1103,6 +1089,7 @@ class TypeWalker(NodeWalker):
             value = '`' + node.id + '`'
         else:
             value = node.const
+        value = self.filter_symbol(value)
         #
         ir_node = IdNode(value, parse_info=node.parseinfo)
         if value in self.symtable:
@@ -1795,12 +1782,9 @@ class TypeWalker(NodeWalker):
                 else:
                     # first sequence
                     self.subscripts[val] = [arr[0]]
-            new_symbol = self.filter_symbol(arr[0])
-            assert new_symbol not in self.symtable, self.get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(new_symbol))
-            self.symtable[new_symbol] = SequenceType(size=new_var_name, element_type=id_type, desc=id_type.desc, symbol=new_symbol)
+            assert arr[0] not in self.symtable, self.get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(arr[0]))
+            self.symtable[arr[0]] = SequenceType(size=new_var_name, element_type=id_type, desc=id_type.desc, symbol=arr[0])
         else:
             id_type.symbol = identifier
-            new_symbol = self.filter_symbol(identifier)
-            id_type.symbol = new_symbol
-            assert new_symbol not in self.symtable, self.get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(new_symbol))
-            self.symtable[new_symbol] = id_type
+            assert identifier not in self.symtable, self.get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier))
+            self.symtable[identifier] = id_type

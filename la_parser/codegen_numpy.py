@@ -938,5 +938,3 @@ class CodeGenNumpy(CodeGen):
         return CodeNodeInfo(content)
 
     ###################################################################
-    def is_keyword(self, name):
-        return keyword.iskeyword(name)

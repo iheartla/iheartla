@@ -1,6 +1,7 @@
 import re
 from la_parser.ir import *
 from la_tools.la_logger import *
+from la_tools.la_helper import *
 import unicodedata
 
 
@@ -282,8 +283,9 @@ class IRVisitor(object):
     def walk_object(self, o):
         raise Exception('Unexpected type %s walked: %s', type(o).__name__, o)
     ###################################################################
+
     def is_keyword(self, name):
-        return False
+        return is_keyword(name, parser_type=self.parse_type)
 
     def get_bin_comp_str(self, comp_type):
         op = ''
@@ -350,7 +352,7 @@ class IRVisitor(object):
     def filter_symbol(self, symbol):
         if '`' in symbol:
             new_symbol = symbol.replace('`', '')
-            if not self.pattern.fullmatch(new_symbol):
+            if not self.pattern.fullmatch(new_symbol) or is_keyword(new_symbol):
                 new_symbol = symbol
         else:
             new_symbol = symbol

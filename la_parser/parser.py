@@ -174,7 +174,13 @@ def parse_ir_node(content, model):
         parse_key += "keys_rule:{};".format(keys_rule)
         current_content = current_content.replace("= !KEYWORDS(", "= const:({}) | (!(KEYWORDS | {} )".format(keys_rule, keys_rule))
     if len(func_dict.keys()) > 0:
-        func_rule = "'" + "'|'".join(func_dict.keys()) + "'"
+        key_list = list(func_dict.keys())
+        extra_list = []
+        for key in key_list:
+            if '`' not in key:
+                extra_list.append('`{}`'.format(key))
+        key_list += extra_list
+        func_rule = "'" + "'|'".join(key_list) + "'"
         log_la("func_rule:" + func_rule)
         current_content = current_content.replace("func_id='!!!';", "func_id={};".format(func_rule))
         parse_key += "func symbol:{}, func sig:{}".format(','.join(func_dict.keys()), ";".join(func_dict.values()))
