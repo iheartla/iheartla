@@ -4,7 +4,11 @@
 # Only parse directives and where block
 
 start::Start
-    = {{separator_with_space} directive+:Directive {{separator_with_space}+ directive+:Directive}} ((blank:/[\s\S]*(?=where)/ {'where' {separator_with_space}+ cond:where_conditions} {blank})|(blank:/[\s\S]*/))
+    = {{separator_with_space} directive+:Directive {{separator_with_space}+ directive+:Directive}}
+    {'given'
+    {separator_with_space}+ given:where_conditions
+    {separator_with_space}+}
+    ((blank:/[\s\S]*(?=where)/ {'where' {separator_with_space}+ cond:where_conditions} {blank})|(blank:/[\s\S]*/))
     ;
 
 #include :: "linear_algebra/la_grammar/keywords.ebnf"

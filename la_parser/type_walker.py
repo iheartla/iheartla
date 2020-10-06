@@ -206,6 +206,9 @@ class TypeWalker(NodeWalker):
         if node.directive:
             for directive in node.directive:
                 ir_node.directives.append(self.walk(directive, **kwargs))
+        if node.given:
+            cond_node = self.walk(node.given, **kwargs)
+            ir_node.given_cond = cond_node
         if node.cond:
             cond_node = self.walk(node.cond, **kwargs)
             ir_node.cond = cond_node
@@ -239,6 +242,7 @@ class TypeWalker(NodeWalker):
         ir_list = []
         ir_index = []  # matrix, vector
         func_index = []  # function
+        prev_parameters = self.parameters
         self.parameters = [None] * len(node.value)
         for i in range(len(node.value)):
             # walk scalar first
@@ -263,6 +267,7 @@ class TypeWalker(NodeWalker):
                 ir_list[func_index[i]] = self.walk(node.value[func_index[i]], **kwargs)
         #
         ir_node.value = ir_list
+        self.parameters = prev_parameters + self.parameters
         return ir_node
 
     def walk_WhereCondition(self, node, **kwargs):

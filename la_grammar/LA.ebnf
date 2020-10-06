@@ -3,7 +3,11 @@
 @@left_recursion::True
 
 start::Start
-    = {separator_with_space} {directive+:Directive {{separator_with_space}+ directive+:Directive} {separator_with_space}+} stat:statements {{separator_with_space}+ WHERE {separator_with_space}+ cond:where_conditions} {blank} $
+    = {separator_with_space} {directive+:Directive {{separator_with_space}+ directive+:Directive} {separator_with_space}+}
+    {'given'
+    {separator_with_space}+ given:where_conditions
+    {separator_with_space}+}
+    stat:statements {{separator_with_space}+ WHERE {separator_with_space}+ cond:where_conditions} {blank} $
     ;
 
 #include :: "linear_algebra/la_grammar/keywords.ebnf"

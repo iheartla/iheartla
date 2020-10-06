@@ -112,6 +112,7 @@ class StartNode(StmtNode):
     def __init__(self, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Start, parse_info=parse_info, raw_text=raw_text)
         self.cond = None
+        self.given_cond = None
         self.stat = None
         self.directives = []
 
