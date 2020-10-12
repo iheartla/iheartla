@@ -91,6 +91,7 @@ class TypeWalker(NodeWalker):
                                           'sec', 'csc', 'e']}
         self.constants = ['π']
         self.pattern = re.compile("[A-Za-z]+")
+        self.multi_lhs_list = []
         # self.directive_parsing = True   # directives grammar
 
     def filter_symbol(self, symbol):
@@ -208,8 +209,16 @@ class TypeWalker(NodeWalker):
                 ir_node.directives.append(self.walk(directive, **kwargs))
         # vblock
         vblock_list = []
+        multi_lhs_list = []
         for vblock in node.vblock:
-            vblock_list.append(self.walk(vblock, **kwargs))
+            vblock_info = self.walk(vblock, **kwargs)
+            vblock_list.append(vblock_info)
+            if isinstance(vblock_info, list) and len(vblock_info) > 0:  # statement list with single statement
+                if type(vblock_info[0]).__name__ == 'Assignment':
+                    id_node = self.walk(vblock_info[0].left, **kwargs).ir
+                    if len(id_node.get_main_id()) > 1:
+                        multi_lhs_list.append(id_node.get_main_id())
+        self.multi_lhs_list = multi_lhs_list
         ir_node.vblock = vblock_list
         if 'pre_walk' in kwargs:
             return ir_node

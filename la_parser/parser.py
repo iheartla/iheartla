@@ -169,6 +169,7 @@ def parse_ir_node(content, model):
     for parameter in type_walker.parameters:
         if len(parameter) > 1 and '_' not in parameter and '`' not in parameter:
             multi_list.append(parameter)
+    multi_list += type_walker.multi_lhs_list
     if len(multi_list) > 0:
         multi_list = sorted(multi_list, key=len, reverse=True)
         keys_rule = "'" + "'|'".join(multi_list) + "'"
