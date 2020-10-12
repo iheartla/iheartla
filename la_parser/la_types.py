@@ -10,6 +10,7 @@ class VarTypeEnum(Enum):
     SET = 4
     SCALAR = 5
     FUNCTION = 6
+    INDEX = 7
 
 
 class LaVarType(object):
@@ -136,6 +137,11 @@ class ScalarType(LaVarType):
         if self.is_int:
             return 'scalar:integer'
         return 'scalar:double'
+
+
+class IndexType(LaVarType):
+    def __init__(self, desc=None, symbol=None):
+        LaVarType.__init__(self, VarTypeEnum.INDEX, desc, symbol)
 
 
 class FunctionType(LaVarType):
