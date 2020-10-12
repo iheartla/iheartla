@@ -11,9 +11,9 @@ start::Start
     ((blank:/[\s\S]*(?=where)/ {'where' {separator_with_space}+ cond:where_conditions} {blank})|(blank:/[\s\S]*/))
     ;
 
-#include :: "linear_algebra/la_grammar/keywords.ebnf"
-#include :: "linear_algebra/la_grammar/base.ebnf"
-#include :: "linear_algebra/la_grammar/shared.ebnf"
+#include :: "keywords.ebnf"
+#include :: "base.ebnf"
+#include :: "shared.ebnf"
 
 
 

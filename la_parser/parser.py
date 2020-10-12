@@ -64,7 +64,9 @@ def get_compiled_parser(grammar, keys='init'):
     if keys in _compiled_parser:
         return _compiled_parser[keys]
     # print(grammar)
-    parser = tatsu.compile(grammar, asmodel=True)
+    # os.path.dirname(filename) is used as the prefix for relative #include commands
+    # It just needs to be a path inside the directory where all the grammar files are.
+    parser = tatsu.compile(grammar, asmodel=True, filename='la_grammar/here')
     _compiled_parser[keys] = parser
     return parser
 

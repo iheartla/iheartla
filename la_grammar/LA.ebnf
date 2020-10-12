@@ -10,13 +10,13 @@ start::Start
     stat:statements {{separator_with_space}+ WHERE {separator_with_space}+ cond:where_conditions} {blank} $
     ;
 
-#include :: "linear_algebra/la_grammar/keywords.ebnf"
-#include :: "linear_algebra/la_grammar/number.ebnf"
-#include :: "linear_algebra/la_grammar/operators.ebnf"
-#include :: "linear_algebra/la_grammar/matrix.ebnf"
-#include :: "linear_algebra/la_grammar/base.ebnf"
-#include :: "linear_algebra/la_grammar/trigonometry.ebnf"
-#include :: "linear_algebra/la_grammar/shared.ebnf"
+#include :: "keywords.ebnf"
+#include :: "number.ebnf"
+#include :: "operators.ebnf"
+#include :: "matrix.ebnf"
+#include :: "base.ebnf"
+#include :: "trigonometry.ebnf"
+#include :: "shared.ebnf"
 
 
 builtin_operators
