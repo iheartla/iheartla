@@ -206,19 +206,14 @@ class TypeWalker(NodeWalker):
         if node.directive:
             for directive in node.directive:
                 ir_node.directives.append(self.walk(directive, **kwargs))
-        # if node.given:
-        #     cond_node = self.walk(node.given, **kwargs)
-        #     ir_node.given_cond = cond_node
-        # if node.cond:
-        #     cond_node = self.walk(node.cond, **kwargs)
-        #     ir_node.cond = cond_node
+        # vblock
         vblock_list = []
         for vblock in node.vblock:
             vblock_list.append(self.walk(vblock, **kwargs))
         ir_node.vblock = vblock_list
         if 'pre_walk' in kwargs:
             return ir_node
-        stat_list = ir_node.get_stat_list()
+        stat_list, index_list = ir_node.get_stat_list()
         block_node = BlockNode()
         for index in range(len(stat_list)):
             update_ret_type = False
@@ -231,6 +226,7 @@ class TypeWalker(NodeWalker):
                     update_ret_type = True
                     kwargs[LHS] = self.ret_symbol
             type_info = self.walk(stat_list[index], **kwargs)
+            ir_node.vblock[index_list[index]] = type_info.ir   # latex use
             block_node.add_stmt(type_info.ir)
             if update_ret_type:
                 self.symtable[self.ret_symbol] = type_info.la_type

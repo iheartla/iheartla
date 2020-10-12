@@ -8,7 +8,7 @@ class CodeGenLatex(CodeGen):
         self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n'''
         # self.pre_str += ''''\\usepackage{ctex}\n\\setmainfont{Linux Libertine O}\n'''
         self.pre_str += '''\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n'''
-        self.pre_str += '''\\begin{document}\n\\[\n'''
+        self.pre_str += '''\\begin{document}\n'''
         self.post_str = '''\n\end{document}'''
 
     def convert_unicode(self, name):
@@ -97,12 +97,13 @@ class CodeGenLatex(CodeGen):
 
     def visit_start(self, node, **kwargs):
         content = ""
-        # for directive in node.directives:
-        #     content += self.visit(directive, **kwargs)
-        if node.cond:
-            content += self.visit(node.stat, **kwargs) + "\n\\]\n\nwhere\n\n\\begin{itemize}\n" + self.visit(node.cond, **kwargs) + '\\end{itemize}\n'
-        else:
-            content += self.visit(node.stat, **kwargs) + "\n\\]\n\n"
+        for directive in node.directives:
+            content += self.visit(directive, **kwargs) + '\n'
+        for vblock in node.vblock:
+            if vblock.node_type != IRNodeType.ParamsBlock:
+                content += "\\[\n" + self.visit(vblock, **kwargs) + "\n\\]\n"
+            else:
+                content += self.visit(vblock, **kwargs)
         return content
 
     def visit_block(self, node, **kwargs):
@@ -110,6 +111,12 @@ class CodeGenLatex(CodeGen):
         for stmt in node.stmts:
             ret.append(self.visit(stmt, **kwargs))
         return '\\]\n\\[\n'.join(ret)
+
+    def visit_params_block(self, node, **kwargs):
+        content = "\\begin{itemize}\n" + self.visit(node.conds, **kwargs) + '\\end{itemize}\n\n'
+        if node.annotation:
+            content = "\n" + node.annotation + "\n" + content
+        return content
 
     def visit_where_conditions(self, node, **kwargs):
         ret = []

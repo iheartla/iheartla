@@ -120,10 +120,13 @@ class StartNode(StmtNode):
 
     def get_stat_list(self):
         stat_list = []
-        for vblock in self.vblock:
+        index_list = []
+        for index in range(len(self.vblock)):
+            vblock = self.vblock[index]
             if isinstance(vblock, list):
                 stat_list += vblock
-        return stat_list
+                index_list.append(index)
+        return stat_list, index_list
 
     def get_package_dict(self):
         package_func_dict = {}

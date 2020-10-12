@@ -152,6 +152,7 @@ class IRVisitor(object):
             IRNodeType.SparseOther: "visit_sparse_other",
             IRNodeType.NumMatrix: "visit_num_matrix",
             # where block
+            IRNodeType.ParamsBlock: "visit_params_block",
             IRNodeType.WhereConditions: "visit_where_conditions",
             IRNodeType.WhereCondition: "visit_where_condition",
             IRNodeType.MatrixType: "visit_matrix_type",
