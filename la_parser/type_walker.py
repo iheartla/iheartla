@@ -206,15 +206,19 @@ class TypeWalker(NodeWalker):
         if node.directive:
             for directive in node.directive:
                 ir_node.directives.append(self.walk(directive, **kwargs))
-        if node.given:
-            cond_node = self.walk(node.given, **kwargs)
-            ir_node.given_cond = cond_node
-        if node.cond:
-            cond_node = self.walk(node.cond, **kwargs)
-            ir_node.cond = cond_node
+        # if node.given:
+        #     cond_node = self.walk(node.given, **kwargs)
+        #     ir_node.given_cond = cond_node
+        # if node.cond:
+        #     cond_node = self.walk(node.cond, **kwargs)
+        #     ir_node.cond = cond_node
+        vblock_list = []
+        for vblock in node.vblock:
+            vblock_list.append(self.walk(vblock, **kwargs))
+        ir_node.vblock = vblock_list
         if 'pre_walk' in kwargs:
             return ir_node
-        stat_list = self.walk(node.stat, **kwargs)
+        stat_list = ir_node.get_stat_list()
         block_node = BlockNode()
         for index in range(len(stat_list)):
             update_ret_type = False
@@ -234,6 +238,11 @@ class TypeWalker(NodeWalker):
         return ir_node
 
     ###################################################################
+    def walk_ParamsBlock(self, node, **kwargs):
+        where_conds = self.walk(node.conds, **kwargs)
+        ir_node = ParamsBlockNode(parse_info=node.parseinfo, annotation=node.annotation, conds=where_conds)
+        return ir_node
+
     def walk_WhereConditions(self, node, **kwargs):
         ir_node = WhereConditionsNode(parse_info=node.parseinfo)
         # for cond in node.value:
@@ -472,8 +481,8 @@ class TypeWalker(NodeWalker):
 
     def walk_Statements(self, node, **kwargs):
         stat_list = []
-        if node.stats:
-            stat_list = self.walk(node.stats, **kwargs)
+        # if node.stats:
+        #     stat_list = self.walk(node.stats, **kwargs)
         stat_list.append(node.stat)
         return stat_list
 

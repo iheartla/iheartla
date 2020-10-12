@@ -4,10 +4,7 @@
 
 start::Start
     = {separator_with_space} {directive+:Directive {{separator_with_space}+ directive+:Directive} {separator_with_space}+}
-    {'given'
-    {separator_with_space}+ given:where_conditions
-    {separator_with_space}+}
-    stat:statements {{separator_with_space}+ WHERE {separator_with_space}+ cond:where_conditions} {blank} $
+    {{separator_with_space} vblock+:valid_block {separator_with_space}}+ {blank} $
     ;
 
 #include :: "keywords.ebnf"
@@ -19,6 +16,15 @@ start::Start
 #include :: "shared.ebnf"
 
 
+valid_block
+    = params_block | statements
+    ;
+
+
+params_block::ParamsBlock
+    = {annotation:(WHERE | GIVEN ) {separator_with_space}+} conds:where_conditions
+    ;
+
 builtin_operators
     =
     predefined_built_operators
@@ -26,8 +32,8 @@ builtin_operators
 
 statements::Statements
     =
-    | {hspace} stats:statements {separator_with_space}+ stat:statement {hspace}
-    | {hspace} stat:statement {hspace}
+    #| {hspace} stats:statements {separator_with_space}+ stat:statement {hspace}
+    {hspace} stat:statement {hspace}
     ;
 
 statement

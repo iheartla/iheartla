@@ -62,6 +62,7 @@ class IRNodeType(Enum):
     SparseOther = 308
     NumMatrix = 309
     # where block
+    ParamsBlock = 399
     WhereConditions = 400
     WhereCondition = 401
     MatrixType = 402
@@ -115,6 +116,14 @@ class StartNode(StmtNode):
         self.given_cond = None
         self.stat = None
         self.directives = []
+        self.vblock = []
+
+    def get_stat_list(self):
+        stat_list = []
+        for vblock in self.vblock:
+            if isinstance(vblock, list):
+                stat_list += vblock
+        return stat_list
 
     def get_package_dict(self):
         package_func_dict = {}
@@ -125,6 +134,13 @@ class StartNode(StmtNode):
                 package_func_dict[directive.package] = list(set(directive.names))
             package_func_dict[directive.package].sort()
         return package_func_dict
+
+
+class ParamsBlockNode(StmtNode):
+    def __init__(self, parse_info=None, raw_text=None, annotation=None, conds=None):
+        super().__init__(IRNodeType.ParamsBlock, parse_info=parse_info, raw_text=raw_text)
+        self.annotation = annotation
+        self.conds = conds
 
 
 class WhereConditionsNode(StmtNode):

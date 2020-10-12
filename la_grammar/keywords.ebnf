@@ -20,6 +20,7 @@ BUILTIN_KEYWORDS
     | IDDOTS
     | DDOTS
     | WHERE
+    | GIVEN
     | SUM
     | MIN
     | MAX
@@ -38,6 +39,7 @@ BUILTIN_KEYWORDS
     | FROM
     | PI
     | '|'
+    | 'ℝ'|'ℤ'
     #| SIN | COS | ASIN | ARCSIN | ACOS | ARCCOS | TAN | ATAN | ARCTAN | ATAN2
     ;
 
@@ -62,6 +64,7 @@ CDOTS = '\u22EF';   #⋯
 IDDOTS = '\u22F0';  #⋰
 DDOTS = '\u22F1';   #⋱
 WHERE = 'where';
+GIVEN = 'given';
 SUM = 'sum' | '∑';
 MIN = 'min';
 MAX = 'max';
