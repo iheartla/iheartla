@@ -7,7 +7,7 @@ matrix::Matrix
 sparse_matrix::SparseMatrix
     = '{' {hspace} ifs:sparse_if_conditions
     {{separator_with_space}+ {hspace} other:statement {hspace} OTHERWISE }
-    {{separator_with_space}+ {hspace} IS {hspace} id1:(integer | identifier) {hspace} '×' {hspace} id2:(integer | identifier)}
+    # {{separator_with_space}+ {hspace} IS {hspace} id1:(integer | identifier) {hspace} '×' {hspace} id2:(integer | identifier)}
     ;
 
 sparse_if_conditions::SparseIfs

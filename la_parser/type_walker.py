@@ -1242,13 +1242,22 @@ class TypeWalker(NodeWalker):
         if op == '=':  # require dims
             new_id = self.generate_var_name('sparse')
             id_name = new_id
-            assert node.id1 and node.id2, self.get_err_msg_info(node.parseinfo, "Sparse matrix: need dim")
-            id1_info = self.walk(node.id1, **kwargs)
-            id1 = id1_info.content
-            ir_node.id1 = id1_info.ir
-            id2_info = self.walk(node.id2, **kwargs)
-            id2 = id2_info.content
-            ir_node.id2 = id2_info.ir
+            assert all_ids[0] in self.symtable, self.get_err_msg_info(node.parseinfo, "Sparse matrix: need dim")
+            if all_ids[0] in self.parameters:
+                self.parameters.remove(all_ids[0])  # not a parameter
+            # assert node.id1 and node.id2, self.get_err_msg_info(node.parseinfo, "Sparse matrix: need dim")
+            # id1_info = self.walk(node.id1, **kwargs)
+            # id1 = id1_info.content
+            # ir_node.id1 = id1_info.ir
+            # id2_info = self.walk(node.id2, **kwargs)
+            # id2 = id2_info.content
+            # ir_node.id2 = id2_info.ir
+            id1 = self.symtable[all_ids[0]].rows
+            if not isinstance(id1, int):
+                assert id1 in self.symtable, self.get_err_msg_info(node.parseinfo, "Sparse matrix: dim {} is not defined".format(id1))
+            id2 = self.symtable[all_ids[0]].cols
+            if not isinstance(id2, int):
+                assert id2 in self.symtable, self.get_err_msg_info(node.parseinfo, "Sparse matrix: dim {} is not defined".format(id2))
             la_type = MatrixType(rows=id1, cols=id2, sparse=True, index_var=index_var, value_var=value_var)
             self.symtable[new_id] = la_type
         elif op == '+=':
