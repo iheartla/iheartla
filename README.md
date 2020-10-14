@@ -59,4 +59,6 @@ or install the [Poetry](https://python-poetry.org/) dependency manager and run:
     poetry install --no-root --no-dev
     poetry shell
 
+**NOTE**: As of this writing (2020-10-14), the version of poetry you get using `brew install poetry` has a bug whose workaround is to type `poetry env use python3.8` before you run `poetry install --no-root --no-dev`.
+
 If you are developing I❤️LA, the test suite needs a working C++ compiler and, optionally, the Graphviz graph visualization software (`brew install graphviz`).
