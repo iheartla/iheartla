@@ -13,11 +13,11 @@ def show_gui():
 
 if __name__ == '__main__':
     LaLogger.getInstance().set_level(logging.INFO)
-    arg_parser = argparse.ArgumentParser(description='I heart LA')
-    arg_parser.add_argument('-o', '--output', help='Type of output languages')
+    arg_parser = argparse.ArgumentParser(description='I Heart LA')
+    arg_parser.add_argument('-o', '--output', help='The output language', choices = ['numpy', 'eigen', 'latex'])
     # arg_parser.add_argument('-i', '--input', help='File name containing I heart LA source code')
-    arg_parser.add_argument('--GUI', action='store_true', help='Editor for I heart LA')
-    arg_parser.add_argument('input', nargs='*')
+    arg_parser.add_argument('--GUI', action='store_true', help='Launch the GUI editor')
+    arg_parser.add_argument('input', nargs='*', help='The I Heart LA files to compile.')
     args = arg_parser.parse_args()
     if args.GUI:
         show_gui()
