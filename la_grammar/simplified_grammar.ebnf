@@ -71,10 +71,11 @@ term
     | factor
     ;
 
-func_id='!!!';
+func_id=identifier_alone;
 
 identifier_alone::IdentifierAlone
     = !KEYWORDS(  value:/[A-Za-z][[A-Za-z0-9]*/ | value:/[A-Za-z\p{Ll}|\p{Lu}|\p{Lo}]/ | '`' id:/[^`]*/ '`')
+    #= !KEYWORDS(  value:/[^:`_\s]*/ | value:/[A-Za-z\p{Ll}|\p{Lu}|\p{Lo}]/ | '`' id:/[^`]*/ '`')
     #= const:('abc'|'sss') | (!(KEYWORDS |'abc'|'sss' ) value:/[A-Za-z\p{Ll}|\p{Lu}|\p{Lo}]/ | '`' id:/[^`]*/ '`')
     # !KEYWORDS value:/[^`;\n\r\f_\d]/ | '`' id:/[^`]*/ '`'
     #= !KEYWORDS value:/[A-Za-z]/ | '`' id:/[\p{L}\p{M}A-Za-z0-9\s\u2190-\u21FF\u1000-\uFFFFF]*/ '`'
