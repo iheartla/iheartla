@@ -55,6 +55,14 @@ def walk_model(parser_type, type_walker, node_info, func_name=None):
         gen.print_symbols()
     return gen.content
 
+if getattr(sys, 'frozen', False):
+    # We are running in a bundle.
+    GRAMMAR_DIR = Path(sys._MEIPASS) / 'la_grammar'
+else:
+    # We are running in a normal Python environment.
+    GRAMMAR_DIR = Path(__file__).resolve().parent.parent / 'la_grammar'
+print( 'GRAMMAR_DIR:', GRAMMAR_DIR )
+
 _grammar_content = None   # content in file
 _default_key = 'default'
 _compiled_parser = {}
@@ -66,7 +74,7 @@ def get_compiled_parser(grammar, keys='init'):
     # print(grammar)
     # os.path.dirname(filename) is used as the prefix for relative #include commands
     # It just needs to be a path inside the directory where all the grammar files are.
-    parser = tatsu.compile(grammar, asmodel=True, filename='la_grammar/here')
+    parser = tatsu.compile(grammar, asmodel=True, filename=GRAMMAR_DIR/'here')
     _compiled_parser[keys] = parser
     return parser
 
@@ -85,8 +93,8 @@ def log_la(content):
 def create_parser():
     parser = None
     try:
-        file = open('la_grammar/LA.ebnf')
-        simplified_file = open('la_grammar/simplified_grammar.ebnf')
+        file = open(GRAMMAR_DIR/'LA.ebnf')
+        simplified_file = open(GRAMMAR_DIR/'simplified_grammar.ebnf')
         grammar = file.read()
         simplified_grammar = simplified_file.read()
         global _grammar_content
@@ -115,8 +123,8 @@ def get_default_parser():
     '''
     global _last_parser, _last_parser_mtime
     ## Collect all .ebnf file modification times.
-    # print( 'grammar paths:', [ str(f) for f in Path('la_grammar').glob('*.ebnf') ] )
-    mtimes = [os.path.getmtime(path) for path in Path('la_grammar').glob('*.ebnf')]
+    # print( 'grammar paths:', [ str(f) for f in GRAMMAR_DIR.glob('*.ebnf') ] )
+    mtimes = [os.path.getmtime(path) for path in GRAMMAR_DIR.glob('*.ebnf')]
     # print( 'mtimes:', mtimes )
     ## If the parser hasn't been created or a file has changed, re-create it.
     if _last_parser is None or any([t >= _last_parser_mtime for t in mtimes]):

@@ -76,4 +76,4 @@ To use the code output for the various backends, you will need:
 
 ### Packaging a release
 
-**macOS**: `pyinstaller --windowed --icon docs/icon/icon.icns linear_algebra.py`. The output `linear_algebra.app` is placed into `dist/`
+**macOS**: `pyinstaller iheartla.spec`. The output `iheartla.app` is placed into `dist/`
