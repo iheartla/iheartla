@@ -69,7 +69,6 @@ class LatexPanel(wx.Panel):
             # render PDF
             self.tex_panel.Show()
             self.latex_ctrl.Hide()
-            print('Viewing pdf:', show_pdf)
             self.viewer.LoadFile(show_pdf)
 
     def get_content(self):

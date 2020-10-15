@@ -40,6 +40,7 @@ import traceback
 import os.path
 from pathlib import Path
 import tempfile
+import io
 
 
 def walk_model(parser_type, type_walker, node_info, func_name=None):
@@ -143,36 +144,38 @@ def get_default_parser():
 def generate_latex_code(type_walker, node_info, frame):
     tex_content = ''
     show_pdf = None
-    try:
-        tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, node_info)
-        tmpdir = tempfile.gettempdir()
-        template_name = str(Path(tmpdir)/"la")
-        tex_file_name = "{}.tex".format(template_name)
-        print( 'tex_file_name:', tex_file_name )
-        tex_file = open(tex_file_name, 'w')
-        tex_file.write(tex_content)
-        tex_file.close()
-        ## xelatex places its output in the current working directory, not next to the input file.
-        ## We need to pass subprocess.run() the directory where we created the tex file.
-        ret = subprocess.run(["xelatex", "-interaction=nonstopmode", tex_file_name], capture_output=True, cwd=tmpdir)
-        if ret.returncode == 0:
-            ret = subprocess.run(["pdfcrop", "--margins", "30", "{}.pdf".format(template_name), "{}.pdf".format(template_name)], capture_output=True)
+    ## Let's create a temporary directory that cleans itself up
+    ## and avoids a race condition other running instances of iheartla.
+    ## We will pass UpdateTexPanel a file-like object containing the bytes of the PDF.
+    with tempfile.TemporaryDirectory() as tmpdir:
+        try:
+            tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, node_info)
+            template_name = str(Path(tmpdir)/"la")
+            tex_file_name = "{}.tex".format(template_name)
+            # print( 'tex_file_name:', tex_file_name )
+            tex_file = open(tex_file_name, 'w')
+            tex_file.write(tex_content)
+            tex_file.close()
+            ## xelatex places its output in the current working directory, not next to the input file.
+            ## We need to pass subprocess.run() the directory where we created the tex file.
+            ret = subprocess.run(["xelatex", "-interaction=nonstopmode", tex_file_name], capture_output=True, cwd=tmpdir)
             if ret.returncode == 0:
-                show_pdf = "{}.pdf".format(template_name)
-    except subprocess.SubprocessError as e:
-        tex_content = str(e)
-    except FailedParse as e:
-        tex_content = str(e)
-    except FailedCut as e:
-        tex_content = str(e)
-    except Exception as e:
-        tex_content = str(e)
-        exc_info = sys.exc_info()
-        traceback.print_exc()
-        tex_content = str(exc_info[2])
-    finally:
-        print("updating tex with pdf:", show_pdf)
-        wx.CallAfter(frame.UpdateTexPanel, tex_content, show_pdf)
+                ret = subprocess.run(["pdfcrop", "--margins", "30", "{}.pdf".format(template_name), "{}.pdf".format(template_name)], capture_output=True)
+                if ret.returncode == 0:
+                    show_pdf = io.BytesIO( open("{}.pdf".format(template_name),'rb').read() )
+        except subprocess.SubprocessError as e:
+            tex_content = str(e)
+        except FailedParse as e:
+            tex_content = str(e)
+        except FailedCut as e:
+            tex_content = str(e)
+        except Exception as e:
+            tex_content = str(e)
+            exc_info = sys.exc_info()
+            traceback.print_exc()
+            tex_content = str(exc_info[2])
+        finally:
+            wx.CallAfter(frame.UpdateTexPanel, tex_content, show_pdf)
 
 
 def parse_ir_node(content, model):

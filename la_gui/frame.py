@@ -35,7 +35,7 @@ class MainWindow(wx.Frame):
         self.parser_type = ParserTypeEnum.NUMPY
         w, h = wx.DisplaySize()
         wx.Frame.__init__(self, parent, title=title, pos=(w / 4, h / 4))
-        self.SetPosition((200, 200))
+        self.SetPosition((0, 50))
         self.SetSize((1280, 600))
         # status
         self.statusbar = self.CreateStatusBar()
