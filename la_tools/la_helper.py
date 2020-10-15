@@ -38,8 +38,8 @@ def check_version():
     tatsu_version = __version__
     valid = False
     msg = ''
-    if tatsu_version >= '5.0.0':
-        if version_info.major >= 3 and version_info.minor >= 8:
+    if int(tatsu_version.split('.')[0]) >= 5:
+        if (version_info.major,version_info.minor) >= (3,8):
             valid = True
         else:
             msg = 'Tatsu {} requires Python >= 3.8'.format(tatsu_version)
