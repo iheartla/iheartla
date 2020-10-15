@@ -48,6 +48,8 @@ You can also run as a command-line compiler:
 
 ## Installing
 
+You can find releases on the GitHub [release page](https://github.com/pressureless/linear_algebra/releases). The following instructions are for running from source.
+
 I❤️LA depends on Python 3.x and several modules. You can install the modules via `pip`:
 
     pip3 install tatsu==4.4 regex wxpython PyMuPDF
@@ -63,3 +65,11 @@ or install the [Poetry](https://python-poetry.org/) dependency manager and run:
 **NOTE**: As of this writing (2020-10-14), installing poetry via homebrew has a bug whose workaround is to type `poetry env use python3.8` before you run `poetry install --no-root --no-dev`.
 
 If you are developing I❤️LA, the test suite needs a working C++ compiler and, optionally, the Graphviz graph visualization software (`brew install graphviz`).
+
+## Output Dependencies
+
+To use the code output for the various backends, you will need:
+
+* LaTeX: A working tex distribution with `xelatex` and `pdfcrop`
+* Python: NumPy and SciPy
+* C++: Eigen. Compilation differs on different platforms. On macOS with Homebrew eigen `c++ -I/usr/local/eigen3 output.cpp -o output`
