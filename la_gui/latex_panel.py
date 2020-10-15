@@ -61,7 +61,7 @@ class LatexPanel(wx.Panel):
         self.latex_ctrl.SetEditable(True)
         self.latex_ctrl.SetValue(tex)
         self.latex_ctrl.SetEditable(False)
-        if not show_pdf:
+        if show_pdf is None:
             # render text
             self.tex_panel.Hide()
             self.latex_ctrl.Show()
@@ -69,7 +69,8 @@ class LatexPanel(wx.Panel):
             # render PDF
             self.tex_panel.Show()
             self.latex_ctrl.Hide()
-            self.viewer.LoadFile("la.pdf")
+            print('Viewing pdf:', show_pdf)
+            self.viewer.LoadFile(show_pdf)
 
     def get_content(self):
         return self.latex_ctrl.GetValue()
