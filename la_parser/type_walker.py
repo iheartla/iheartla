@@ -69,6 +69,10 @@ def la_remove_key(keys, **kwargs):
     elif keys in kwargs:
         del kwargs[keys]
 
+def get_parse_info_buffer(parse_info):
+    if is_new_tatsu_version():
+        return parse_info.tokenizer
+    return parse_info.buffer
 
 class TypeWalker(NodeWalker):
     def __init__(self):
@@ -173,19 +177,19 @@ class TypeWalker(NodeWalker):
 
     def get_line_desc(self, node):
         # ir node
-        line_info = node.parse_info.buffer.line_info(node.parse_info.pos)
+        line_info = get_parse_info_buffer(node.parse_info).line_info(node.parse_info.pos)
         return self.la_msg.get_line_desc(line_info)
 
     def get_node_col(self, node):
-        return node.parse_info.buffer.line_info(node.parse_info.pos).col
+        return get_parse_info_buffer(node.parse_info).line_info(node.parse_info.pos).col
 
     def get_text_pos_marker(self, node):
         # ir node
-        line_info = node.parse_info.buffer.line_info(node.parse_info.pos)
+        line_info = get_parse_info_buffer(node.parse_info).line_info(node.parse_info.pos)
         return "{}{}".format(line_info.text, self.la_msg.get_pos_marker(line_info.col))
 
     def get_line_info(self, parse_info):
-        return parse_info.buffer.line_info(parse_info.pos)
+        return get_parse_info_buffer(parse_info).line_info(parse_info.pos)
 
     def get_err_msg(self, line_info, col, error_msg):
         line_msg = self.la_msg.get_line_desc_with_col(line_info.line, col)
@@ -1702,14 +1706,14 @@ class TypeWalker(NodeWalker):
         if right_type.var_type == VarTypeEnum.INVALID:
             right_type.var_type = VarTypeEnum.SCALAR
         # error msg
-        left_line = left_info.parse_info.buffer.line_info(left_info.parse_info.pos)
-        right_line = right_info.parse_info.buffer.line_info(right_info.parse_info.pos)
+        left_line = get_parse_info_buffer(left_info.parse_info).line_info(left_info.parse_info.pos)
+        right_line = get_parse_info_buffer(right_info.parse_info).line_info(right_info.parse_info.pos)
         error_msg = '{}. Dimension mismatch. Can\'t {} {} {} and {} {}.\n'.format(self.la_msg.get_line_desc(left_line),
                                                                             self.get_op_desc(op),
                                                                             self.get_type_desc(left_type),
-                                                                            left_info.parse_info.buffer.text[left_info.parse_info.pos:left_info.parse_info.endpos],
+                                                                            get_parse_info_buffer(left_info.parse_info).text[left_info.parse_info.pos:left_info.parse_info.endpos],
                                                                             self.get_type_desc(right_type),
-                                                                                  right_info.parse_info.buffer.text[right_info.parse_info.pos:right_info.parse_info.endpos])
+                                                                                  get_parse_info_buffer(right_info.parse_info).text[right_info.parse_info.pos:right_info.parse_info.endpos])
         error_msg += left_line.text
         error_msg += self.la_msg.get_pos_marker(left_line.col)
         ret_type = None

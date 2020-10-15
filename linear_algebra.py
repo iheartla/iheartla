@@ -1,5 +1,7 @@
 from la_parser.parser import compile_la_file, ParserTypeEnum
 from la_tools.la_logger import LaLogger, LoggerTypeEnum
+from la_tools.la_helper import check_version
+
 import logging
 import argparse
 
@@ -12,6 +14,9 @@ def show_gui():
 
 
 if __name__ == '__main__':
+    valid, msg = check_version()
+    if not valid:
+        print(msg)
     LaLogger.getInstance().set_level(logging.INFO)
     arg_parser = argparse.ArgumentParser(description='I Heart LA')
     arg_parser.add_argument('-o', '--output', help='The output language', choices = ['numpy', 'eigen', 'latex'])
