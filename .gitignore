@@ -12,3 +12,8 @@
 *.synctex
 .idea/
 la_test/generated_code.py
+
+# pyinstaller creates these
+/build
+/dist
+/linear_algebra.spec
