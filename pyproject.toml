@@ -14,6 +14,9 @@ regex = "^2020.7.14"
 
 [tool.poetry.dev-dependencies]
 cppyy = "^1.7.1"
+numpy = "^1.19.2"
+scipy = "^1.5.2"
+pyinstaller = "^4.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

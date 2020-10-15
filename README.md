@@ -54,7 +54,7 @@ I❤️LA depends on Python 3.x and several modules. You can install the modules
 
     pip3 install tatsu==4.4 regex wxpython PyMuPDF
     ## For development, also install:
-    pip3 install graphviz cppyy
+    pip3 install graphviz cppyy numpy scipy pyinstaller
 
 or install the [Poetry](https://python-poetry.org/) dependency manager and run:
 
@@ -66,10 +66,14 @@ or install the [Poetry](https://python-poetry.org/) dependency manager and run:
 
 If you are developing I❤️LA, the test suite needs a working C++ compiler and, optionally, the Graphviz graph visualization software (`brew install graphviz`).
 
-## Output Dependencies
+### Output Dependencies
 
 To use the code output for the various backends, you will need:
 
 * LaTeX: A working tex distribution with `xelatex` and `pdfcrop`
 * Python: NumPy and SciPy
 * C++: Eigen. Compilation differs on different platforms. On macOS with Homebrew eigen `c++ -I/usr/local/eigen3 output.cpp -o output`
+
+### Packaging a release
+
+**macOS**: `pyinstaller --windowed linear_algebra.py`. The output `linear_algebra.app` is placed into `dist/`
