@@ -50,12 +50,13 @@ You can also run as a command-line compiler:
 
 I❤️LA depends on Python 3.x and several modules. You can install the modules via `pip`:
 
-    pip3 install tatsu regex wxpython PyMuPDF
+    pip3 install tatsu==4.4 regex wxpython PyMuPDF
     ## For development, also install:
     pip3 install graphviz cppyy
 
 or install the [Poetry](https://python-poetry.org/) dependency manager and run:
 
+    poetry env use python3.8 # needed only if you installed poetry via Homebrew
     poetry install --no-root --no-dev
     poetry shell
 
