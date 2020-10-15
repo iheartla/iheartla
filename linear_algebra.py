@@ -1,9 +1,9 @@
 from la_parser.parser import compile_la_file, ParserTypeEnum
 from la_tools.la_logger import LaLogger, LoggerTypeEnum
 from la_tools.la_helper import check_version
-
 import logging
 import argparse
+DEBUG = False   # log level
 
 
 def show_gui():
@@ -17,7 +17,10 @@ if __name__ == '__main__':
     valid, msg = check_version()
     if not valid:
         print(msg)
-    LaLogger.getInstance().set_level(logging.INFO)
+    if DEBUG:
+        LaLogger.getInstance().set_level(logging.INFO)
+    else:
+        LaLogger.getInstance().set_level(logging.ERROR)
     arg_parser = argparse.ArgumentParser(description='I Heart LA')
     arg_parser.add_argument('-o', '--output', help='The output language', choices = ['numpy', 'eigen', 'latex'])
     # arg_parser.add_argument('-i', '--input', help='File name containing I heart LA source code')
