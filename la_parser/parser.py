@@ -61,7 +61,7 @@ if getattr(sys, 'frozen', False):
 else:
     # We are running in a normal Python environment.
     GRAMMAR_DIR = Path(__file__).resolve().parent.parent / 'la_grammar'
-print( 'GRAMMAR_DIR:', GRAMMAR_DIR )
+# print( 'GRAMMAR_DIR:', GRAMMAR_DIR )
 
 _grammar_content = None   # content in file
 _default_key = 'default'
@@ -114,7 +114,7 @@ def create_parser():
 
 _last_parser = None
 _last_parser_mtime = None
-
+_last_parser_mutex = threading.Lock()
 
 def get_default_parser():
     '''
@@ -122,19 +122,21 @@ def get_default_parser():
     Re-creates the parser if any grammar files change.
     '''
     global _last_parser, _last_parser_mtime
-    ## Collect all .ebnf file modification times.
-    # print( 'grammar paths:', [ str(f) for f in GRAMMAR_DIR.glob('*.ebnf') ] )
-    mtimes = [os.path.getmtime(path) for path in GRAMMAR_DIR.glob('*.ebnf')]
-    # print( 'mtimes:', mtimes )
-    ## If the parser hasn't been created or a file has changed, re-create it.
-    if _last_parser is None or any([t >= _last_parser_mtime for t in mtimes]):
-        print("Creating parser...")
-        start_time = time.time()
-        _last_parser = create_parser()
-        _last_parser_mtime = time.time()
-        print("------------ %.2f seconds ------------" % (time.time() - start_time))
-
-    return _last_parser
+    
+    with _last_parser_mutex:
+        ## Collect all .ebnf file modification times.
+        # print( 'grammar paths:', [ str(f) for f in GRAMMAR_DIR.glob('*.ebnf') ] )
+        mtimes = [os.path.getmtime(path) for path in GRAMMAR_DIR.glob('*.ebnf')]
+        # print( 'mtimes:', mtimes )
+        ## If the parser hasn't been created or a file has changed, re-create it.
+        if _last_parser is None or any([t >= _last_parser_mtime for t in mtimes]):
+            print("Creating parser...")
+            start_time = time.time()
+            _last_parser = create_parser()
+            _last_parser_mtime = time.time()
+            print("------------ %.2f seconds ------------" % (time.time() - start_time))
+    
+        return _last_parser
 
 
 def generate_latex_code(type_walker, node_info, frame):
