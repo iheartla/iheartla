@@ -134,13 +134,16 @@ def generate_latex_code(type_walker, node_info, frame):
     show_pdf = False
     try:
         tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, node_info)
-        tex_file_name = "la.tex"
+        template_name = "la"
+        tex_file_name = "{}.tex".format(template_name)
         tex_file = open(tex_file_name, 'w')
         tex_file.write(tex_content)
         tex_file.close()
         ret = subprocess.run(["xelatex", "-interaction=nonstopmode", tex_file_name], capture_output=True)
         if ret.returncode == 0:
-            show_pdf = True
+            ret = subprocess.run(["pdfcrop", "--margins", "30", "{}.pdf".format(template_name), "{}.pdf".format(template_name)], capture_output=True)
+            if ret.returncode == 0:
+                show_pdf = True
     except subprocess.SubprocessError as e:
         tex_content = str(e)
     except FailedParse as e:
