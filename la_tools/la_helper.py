@@ -33,20 +33,5 @@ def is_keyword(name, parser_type=ParserTypeEnum.DEFAULT):
         return is_keyword(name, parser_type=ParserTypeEnum.NUMPY) or is_keyword(name, parser_type=ParserTypeEnum.EIGEN)
 
 
-def check_version():
-    version_info = sys.version_info
-    tatsu_version = __version__
-    valid = False
-    msg = ''
-    if int(tatsu_version.split('.')[0]) >= 5:
-        if (version_info.major,version_info.minor) >= (3,8):
-            valid = True
-        else:
-            msg = 'Tatsu {} requires Python >= 3.8'.format(tatsu_version)
-    else:
-        valid = True
-    return valid, msg
-
-
 def is_new_tatsu_version():
     return __version__ >= '5.0.0'

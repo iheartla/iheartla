@@ -1,6 +1,5 @@
 from la_parser.parser import compile_la_file, ParserTypeEnum
 from la_tools.la_logger import LaLogger, LoggerTypeEnum
-from la_tools.la_helper import check_version
 import logging
 import argparse
 DEBUG = False   # log level
@@ -14,9 +13,6 @@ def show_gui():
 
 
 if __name__ == '__main__':
-    valid, msg = check_version()
-    if not valid:
-        print(msg)
     if DEBUG:
         LaLogger.getInstance().set_level(logging.INFO)
     else:
