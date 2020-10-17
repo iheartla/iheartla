@@ -35,3 +35,23 @@ def is_keyword(name, parser_type=ParserTypeEnum.DEFAULT):
 
 def is_new_tatsu_version():
     return __version__ >= '5.0.0'
+
+
+def save_to_file(content, file_name):
+    try:
+        file = open(file_name, 'w')
+        file.write(content)
+        file.close()
+    except IOError as e:
+        print("IO Error!:{}".format(e))
+
+
+def read_from_file(file_name):
+    try:
+        file = open(file_name, 'r')
+        content = file.read()
+        file.close()
+    except IOError as e:
+        content = ''
+        print("IO Error!:{}".format(e))
+    return content
