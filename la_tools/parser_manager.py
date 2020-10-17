@@ -1,4 +1,5 @@
 from la_tools.la_helper import *
+from la_tools.la_logger import *
 import pickle
 import tatsu
 from appdirs import *
@@ -6,10 +7,12 @@ from os import listdir
 from pathlib import Path
 import hashlib
 import importlib
+import threading
 
 
 class ParserManager(object):
     def __init__(self):
+        self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
         self.parse_dict = {}
         self.prefix = "grammar"
         self.module_dir = "la_local_parsers"
@@ -42,7 +45,7 @@ class ParserManager(object):
                 parser_semantic = getattr(module, "grammar{}ModelBuilderSemantics".format(hash_value))
                 parser = parser_a(semantics=parser_semantic())
                 self.parse_dict[hash_value] = parser
-        # print("After loading, self.parse_dict:{}".format(self.parse_dict))
+        self.logger.debug("After loading, self.parse_dict:{}".format(self.parse_dict))
         if len(self.parse_dict) > 1:
             print("{} parsers loaded".format(len(self.parse_dict)))
         else:
@@ -55,7 +58,9 @@ class ParserManager(object):
         # os.path.dirname(filename) is used as the prefix for relative #include commands
         # It just needs to be a path inside the directory where all the grammar files are.
         parser = tatsu.compile(grammar, asmodel=True, filename='la_grammar/here')
-        self.save_grammar(hash_value, grammar)
+        # save to file asynchronously
+        save_thread = threading.Thread(target=self.save_grammar, args=(hash_value, grammar,))
+        save_thread.start()
         self.parse_dict[hash_value] = parser
         # self.save_dict()
         return parser
@@ -68,7 +73,7 @@ class ParserManager(object):
         save_to_file(code, "{}/grammar_{}.py".format("la_local_parsers", hash_value))
 
     def save_dict(self):
-        print("self.parse_dict:{}".format(self.parse_dict))
+        self.logger.debug("self.parse_dict:{}".format(self.parse_dict))
         try:
             with open(self.cache_file, 'wb') as f:
                 pickle.dump(self.parse_dict, f, pickle.HIGHEST_PROTOCOL)
