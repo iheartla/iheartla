@@ -151,6 +151,10 @@ class IRVisitor(object):
             IRNodeType.SparseIf: "visit_sparse_if",
             IRNodeType.SparseOther: "visit_sparse_other",
             IRNodeType.NumMatrix: "visit_num_matrix",
+            #
+            IRNodeType.MatrixIndex: "visit_matrix_index",
+            IRNodeType.VectorIndex: "visit_vector_index",
+            IRNodeType.SequenceIndex: "visit_sequence_index",
             # where block
             IRNodeType.ParamsBlock: "visit_params_block",
             IRNodeType.WhereConditions: "visit_where_conditions",
@@ -252,6 +256,15 @@ class IRVisitor(object):
         pass
 
     def visit_num_matrix(self, node, **kwargs):
+        pass
+
+    def visit_matrix_index(self, node, **kwargs):
+        pass
+
+    def visit_vector_index(self, node, **kwargs):
+        pass
+
+    def visit_sequence_index(self, node, **kwargs):
         pass
 
     def visit_derivative(self, node, **kwargs):

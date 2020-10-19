@@ -535,6 +535,15 @@ class CodeGenNumpy(CodeGen):
         node_info = CodeNodeInfo(content+post_s)
         return node_info
 
+    def visit_matrix_index(self, node, **kwargs):
+        pass
+
+    def visit_vector_index(self, node, **kwargs):
+        pass
+
+    def visit_sequence_index(self, node, **kwargs):
+        pass
+
     def visit_add(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)

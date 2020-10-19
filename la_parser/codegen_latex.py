@@ -315,6 +315,17 @@ class CodeGenLatex(CodeGen):
                 content = "{}_{{ {} }}".format(content, id1_info)
         return content
 
+    def visit_matrix_index(self, node, **kwargs):
+        pass
+
+    def visit_vector_index(self, node, **kwargs):
+        main_info = self.visit(node.main, **kwargs)
+        index_info = self.visit(node.row_index, **kwargs)
+        return "{}_{}".format(main_info, index_info)
+
+    def visit_sequence_index(self, node, **kwargs):
+        pass
+
     def visit_matrix(self, node, **kwargs):
         return '\\begin{bmatrix}\n' + self.visit(node.value, **kwargs) + '\\end{bmatrix}'
 
