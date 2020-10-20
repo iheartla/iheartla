@@ -11,6 +11,7 @@ import importlib
 import importlib.util
 import threading
 import shutil
+from datetime import datetime
 MAXIMUM_SIZE = 12  # 10 + 2 default
 
 
@@ -18,7 +19,7 @@ class ParserManager(object):
     def __init__(self):
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
         self.parser_dict = {}
-        self.prefix = "grammar"
+        self.prefix = "parser"
         self.module_dir = "iheartla"
         self.default_parsers = [hashlib.md5("init".encode()).hexdigest(), hashlib.md5("default".encode()).hexdigest()]
         # create the user's cache directory (pickle)
@@ -82,7 +83,7 @@ class ParserManager(object):
         code_model = tatsu.to_python_model(grammar, name="grammar{}".format(hash_value), filename='la_grammar/here')
         code_model = code_model.replace("from __future__ import print_function, division, absolute_import, unicode_literals", "")
         code += code_model
-        save_to_file(code, "{}/grammar_{}.py".format(self.cache_dir, hash_value))
+        save_to_file(code, "{}/{}_{}_{}.py".format(self.cache_dir, self.prefix, hash_value, datetime.now().strftime("%Y-%m-%d-%H-%M-%S")))
 
     def check_parser_cnt(self):
         parser_size = len(self.parser_dict)
