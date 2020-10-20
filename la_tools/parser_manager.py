@@ -23,13 +23,13 @@ class ParserManager(object):
         self.module_dir = "iheartla"
         self.default_parsers = [hashlib.md5("init".encode()).hexdigest(), hashlib.md5("default".encode()).hexdigest()]
         # create the user's cache directory (pickle)
-        self.cache_dir = user_cache_dir(self.module_dir)
+        self.cache_dir = os.path.join(user_cache_dir(), self.module_dir)
         dir_path = Path(self.cache_dir)
         if not dir_path.exists():
             dir_path.mkdir()
             # copy default parsers
             for f in listdir("la_local_parsers"):
-                shutil.copy("la_local_parsers/"+f, self.cache_dir)
+                shutil.copy(os.path.join("la_local_parsers", f), self.cache_dir)
         # self.cache_file = Path(self.cache_dir + '/parsers.pickle')
         #######
         self.load_parsers()
@@ -49,7 +49,7 @@ class ParserManager(object):
                 name = f.split('.')[0]
                 hash_value = name.split('_')[1]
                 module_name = "{}.{}".format(self.module_dir, name)
-                path_to_file = "{}/{}.py".format(self.cache_dir, name)
+                path_to_file = os.path.join(self.cache_dir, "{}.py".format(name))
                 spec = importlib.util.spec_from_file_location(module_name, path_to_file)
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
@@ -69,7 +69,7 @@ class ParserManager(object):
             return self.parser_dict[hash_value]
         # os.path.dirname(filename) is used as the prefix for relative #include commands
         # It just needs to be a path inside the directory where all the grammar files are.
-        parser = tatsu.compile(grammar, asmodel=True, filename='la_grammar/here')
+        parser = tatsu.compile(grammar, asmodel=True, filename=os.path.join('la_grammar', 'here'))
         self.parser_dict[hash_value] = parser
         # save to file asynchronously
         save_thread = threading.Thread(target=self.save_grammar, args=(hash_value, grammar,))
@@ -79,11 +79,11 @@ class ParserManager(object):
 
     def save_grammar(self, hash_value, grammar):
         self.check_parser_cnt()
-        code = tatsu.to_python_sourcecode(grammar, name="grammar{}".format(hash_value), filename='la_grammar/here')
-        code_model = tatsu.to_python_model(grammar, name="grammar{}".format(hash_value), filename='la_grammar/here')
+        code = tatsu.to_python_sourcecode(grammar, name="grammar{}".format(hash_value), filename=os.path.join('la_grammar', 'here'))
+        code_model = tatsu.to_python_model(grammar, name="grammar{}".format(hash_value), filename=os.path.join('la_grammar', 'here'))
         code_model = code_model.replace("from __future__ import print_function, division, absolute_import, unicode_literals", "")
         code += code_model
-        save_to_file(code, "{}/{}_{}_{}.py".format(self.cache_dir, self.prefix, hash_value, datetime.now().strftime("%Y-%m-%d-%H-%M-%S")))
+        save_to_file(code, os.path.join(self.cache_dir, "{}_{}_{}.py".format(self.prefix, hash_value, datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))))
 
     def check_parser_cnt(self):
         parser_size = len(self.parser_dict)
@@ -97,14 +97,14 @@ class ParserManager(object):
                     name = f.split('.')[0]
                     hash_value = name.split('_')[1]
                     if hash_value not in self.default_parsers:
-                        cur_time = os.path.getmtime(self.cache_dir + '/' + f)
+                        cur_time = os.path.getmtime(os.path.join(self.cache_dir, f))
                         if cur_time < earliest_time:
                             earliest_time = cur_time
                             earliest_file = f
                             earliest_hash = hash_value
             if earliest_file is not None and earliest_hash in self.parser_dict:
                 del self.parser_dict[earliest_hash]
-                os.remove(self.cache_dir + '/' + earliest_file)
+                os.remove(os.path.join(self.cache_dir, earliest_file))
                 parser_size = len(self.parser_dict)
             else:
                 # avoid dead loop
