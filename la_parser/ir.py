@@ -552,6 +552,7 @@ class SequenceIndexNode(ExprNode):
         self.main_index = None
         self.row_index = None
         self.col_index = None
+        self.slice_matrix = False
 
 
 class SubexpressionNode(ExprNode):

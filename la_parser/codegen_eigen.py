@@ -684,7 +684,18 @@ class CodeGenEigen(CodeGen):
         return node_info
 
     def visit_matrix_index(self, node, **kwargs):
-        pass
+        main_info = self.visit(node.main, **kwargs)
+        if node.row_index is not None:
+            row_info = self.visit(node.row_index, **kwargs)
+            if node.col_index is not None:
+                col_info = self.visit(node.col_index, **kwargs)
+                content = "{}({}, {})".format(main_info.content, row_info.content, col_info.content)
+            else:
+                content = "{}.row({})".format(main_info.content, row_info.content)
+        else:
+            col_info = self.visit(node.col_index, **kwargs)
+            content = "{}.col({})".format(main_info.content, col_info.content)
+        return CodeNodeInfo(content)
 
     def visit_vector_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
@@ -692,7 +703,26 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo("{}({})".format(main_info.content, index_info.content))
 
     def visit_sequence_index(self, node, **kwargs):
-        pass
+        main_info = self.visit(node.main, **kwargs)
+        main_index_info = self.visit(node.main_index, **kwargs)
+        if node.slice_matrix:
+            if node.row_index is not None:
+                row_info = self.visit(node.row_index, **kwargs)
+                content = "{}[{}].row({})".format(main_info.content, main_index_info.content, row_info.content)
+            else:
+                col_info = self.visit(node.col_index, **kwargs)
+                content = "{}[{}].col({})".format(main_info.content, main_index_info.content, col_info.content)
+        else:
+            if node.row_index is not None:
+                row_info = self.visit(node.row_index, **kwargs)
+                if node.col_index is not None:
+                    col_info = self.visit(node.col_index, **kwargs)
+                    content = "{}[{}]({}, {})".format(main_info.content, main_index_info.content, row_info.content, col_info.content)
+                else:
+                    content = "{}[{}]({})".format(main_info.content, main_index_info.content, row_info.content)
+            else:
+                content = "{}[{}]".format(main_info.content, main_index_info.content)
+        return CodeNodeInfo(content)
 
     def visit_add(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)

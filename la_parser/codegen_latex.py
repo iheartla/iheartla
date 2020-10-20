@@ -316,7 +316,16 @@ class CodeGenLatex(CodeGen):
         return content
 
     def visit_matrix_index(self, node, **kwargs):
-        pass
+        main_info = self.visit(node.main, **kwargs)
+        if node.row_index is not None:
+            row_info = self.visit(node.row_index, **kwargs)
+        else:
+            row_info = '*'
+        if node.col_index is not None:
+            col_info = self.visit(node.col_index, **kwargs)
+        else:
+            col_info = '*'
+        return "{}_{{{}, {}}}".format(main_info, row_info, col_info)
 
     def visit_vector_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
@@ -324,7 +333,26 @@ class CodeGenLatex(CodeGen):
         return "{}_{}".format(main_info, index_info)
 
     def visit_sequence_index(self, node, **kwargs):
-        pass
+        main_info = self.visit(node.main, **kwargs)
+        main_index_info = self.visit(node.main_index, **kwargs)
+        if node.slice_matrix:
+            if node.row_index is not None:
+                row_info = self.visit(node.row_index, **kwargs)
+                content = "{}[{}]_{{{}, *}}".format(main_info, main_index_info, row_info)
+            else:
+                col_info = self.visit(node.col_index, **kwargs)
+                content = "{}[{}]_{{*, {}}}".format(main_info, main_index_info, col_info)
+        else:
+            if node.row_index is not None:
+                row_info = self.visit(node.row_index, **kwargs)
+                if node.col_index is not None:
+                    col_info = self.visit(node.col_index, **kwargs)
+                    content = "{}[{}]_{{{}, {}}}".format(main_info, main_index_info, row_info, col_info)
+                else:
+                    content = "{}[{}]({})".format(main_info, main_index_info, row_info)
+            else:
+                content = "{}_{}".format(main_info, main_index_info)
+        return content
 
     def visit_matrix(self, node, **kwargs):
         return '\\begin{bmatrix}\n' + self.visit(node.value, **kwargs) + '\\end{bmatrix}'
