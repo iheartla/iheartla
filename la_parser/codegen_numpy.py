@@ -153,8 +153,8 @@ class CodeGenNumpy(CodeGen):
                 else:
                     type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
                     test_content.append('    {} = np.random.randn({})'.format(parameter, self.symtable[parameter].rows))
-                # type_checks.append('    assert {}.shape == ({}, 1)'.format(parameter, self.symtable[parameter].rows))
-                test_content.append('    {}.reshape(({}, 1))'.format(parameter, self.symtable[parameter].rows))
+                type_checks.append('    assert {}.shape == ({}, 1)'.format(parameter, self.symtable[parameter].rows))
+                test_content.append('    {} = {}.reshape(({}, 1))'.format(parameter, parameter, self.symtable[parameter].rows))
             elif self.symtable[parameter].is_scalar():
                 type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
                 if self.symtable[parameter].is_int:
