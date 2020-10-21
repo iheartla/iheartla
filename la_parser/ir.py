@@ -61,6 +61,10 @@ class IRNodeType(Enum):
     SparseIf = 307
     SparseOther = 308
     NumMatrix = 309
+    #
+    MatrixIndex = 320
+    VectorIndex = 321
+    SequenceIndex = 322
     # where block
     ParamsBlock = 399
     WhereConditions = 400
@@ -524,6 +528,31 @@ class NumMatrixNode(ExprNode):
         self.id1 = None
         self.id2 = None
         self.left = None
+
+
+class MatrixIndexNode(ExprNode):
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.MatrixIndex, parse_info=parse_info, raw_text=raw_text)
+        self.main = None
+        self.row_index = None
+        self.col_index = None
+
+
+class VectorIndexNode(ExprNode):
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.VectorIndex, parse_info=parse_info, raw_text=raw_text)
+        self.main = None
+        self.row_index = None
+
+
+class SequenceIndexNode(ExprNode):
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.SequenceIndex, parse_info=parse_info, raw_text=raw_text)
+        self.main = None
+        self.main_index = None
+        self.row_index = None
+        self.col_index = None
+        self.slice_matrix = False
 
 
 class SubexpressionNode(ExprNode):

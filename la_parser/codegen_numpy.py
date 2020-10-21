@@ -153,8 +153,8 @@ class CodeGenNumpy(CodeGen):
                 else:
                     type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
                     test_content.append('    {} = np.random.randn({})'.format(parameter, self.symtable[parameter].rows))
-                # type_checks.append('    assert {}.shape == ({}, 1)'.format(parameter, self.symtable[parameter].rows))
-                test_content.append('    {}.reshape(({}, 1))'.format(parameter, self.symtable[parameter].rows))
+                type_checks.append('    assert {}.shape == ({}, 1)'.format(parameter, self.symtable[parameter].rows))
+                test_content.append('    {} = {}.reshape(({}, 1))'.format(parameter, parameter, self.symtable[parameter].rows))
             elif self.symtable[parameter].is_scalar():
                 type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
                 if self.symtable[parameter].is_int:
@@ -534,6 +534,48 @@ class CodeGenNumpy(CodeGen):
             content = "{}({})".format(func_name, id1_info.content)
         node_info = CodeNodeInfo(content+post_s)
         return node_info
+
+    def visit_matrix_index(self, node, **kwargs):
+        main_info = self.visit(node.main, **kwargs)
+        if node.row_index is not None:
+            row_info = self.visit(node.row_index, **kwargs)
+            if node.col_index is not None:
+                col_info = self.visit(node.col_index, **kwargs)
+                content = "{}[{}, {}]".format(main_info.content, row_info.content, col_info.content)
+            else:
+                content = "{}[{}, :]".format(main_info.content, row_info.content)
+        else:
+            col_info = self.visit(node.col_index, **kwargs)
+            content = "{}[:, {}]".format(main_info.content, col_info.content)
+        return CodeNodeInfo(content)
+
+    def visit_vector_index(self, node, **kwargs):
+        main_info = self.visit(node.main, **kwargs)
+        index_info = self.visit(node.row_index, **kwargs)
+        return CodeNodeInfo("{}[{}]".format(main_info.content, index_info.content))
+
+    def visit_sequence_index(self, node, **kwargs):
+        main_info = self.visit(node.main, **kwargs)
+        main_index_info = self.visit(node.main_index, **kwargs)
+        if node.slice_matrix:
+            if node.row_index is not None:
+                row_info = self.visit(node.row_index, **kwargs)
+                content = "{}[{}][{}, :]".format(main_info.content, main_index_info.content, row_info.content)
+            else:
+                col_info = self.visit(node.col_index, **kwargs)
+                content = "{}[{}][:, {}]".format(main_info.content, main_index_info.content, col_info.content)
+        else:
+            if node.row_index is not None:
+                row_info = self.visit(node.row_index, **kwargs)
+                if node.col_index is not None:
+                    col_info = self.visit(node.col_index, **kwargs)
+                    content = "{}[{}][{}, {}]".format(main_info.content, main_index_info.content, row_info.content,
+                                                      col_info.content)
+                else:
+                    content = "{}[{}][{}]".format(main_info.content, main_index_info.content, row_info.content)
+            else:
+                content = "{}[{}]".format(main_info.content, main_index_info.content)
+        return CodeNodeInfo(content)
 
     def visit_add(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)

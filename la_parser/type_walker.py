@@ -86,6 +86,7 @@ class TypeWalker(NodeWalker):
         self.dim_dict = {}       # parameter used. h:w_i
         self.ids_dict = {}    # identifiers with subscripts
         self.unofficial_method = False
+        self.is_param_block = False  # where or given block
         self.visualizer = LaVisualizer()
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
         self.la_msg = LaMsg.getInstance()
@@ -248,8 +249,10 @@ class TypeWalker(NodeWalker):
 
     ###################################################################
     def walk_ParamsBlock(self, node, **kwargs):
+        self.is_param_block = True
         where_conds = self.walk(node.conds, **kwargs)
         ir_node = ParamsBlockNode(parse_info=node.parseinfo, annotation=node.annotation, conds=where_conds)
+        self.is_param_block = False
         return ir_node
 
     def walk_WhereConditions(self, node, **kwargs):
@@ -1086,10 +1089,92 @@ class TypeWalker(NodeWalker):
 
     def walk_IdentifierSubscript(self, node, **kwargs):
         right = []
+        left_info = self.walk(node.left, **kwargs)
+        if not self.is_param_block and not la_is_inside_sum(**kwargs):
+            assert left_info.content in self.symtable, self.get_err_msg_info(left_info.ir.parse_info,
+                                                                                    "Element hasn't been defined")
+            if self.symtable[left_info.content].is_sequence():
+                la_type = self.symtable[left_info.content].element_type
+                ir_node = SequenceIndexNode()
+                ir_node.main = left_info.ir
+                main_index_info = self.walk(node.right[0])
+                ir_node.main_index = main_index_info.ir
+                if len(node.right) == 1:
+                    assert node.right[0] != '*'
+                    ir_node.la_type = self.symtable[left_info.content].element_type
+                elif len(node.right) == 2:
+                    assert self.symtable[left_info.content].is_vector_seq()
+                    assert '*' not in node.right
+                    main_index_info = self.walk(node.right[0])
+                    row_index_info = self.walk(node.right[1])
+                    ir_node.main_index = main_index_info.ir
+                    ir_node.row_index = row_index_info.ir
+                    ir_node.la_type = self.symtable[left_info.content].element_type.element_type
+                    la_type = ir_node.la_type
+                elif len(node.right) == 3:
+                    assert self.symtable[left_info.content].is_matrix_seq()
+                    assert node.right[0] != '*'
+                    if '*' in node.right:
+                        ir_node.slice_matrix = True
+                        if node.right[1] == '*':
+                            assert node.right[2] != '*'
+                            la_type = VectorType(rows=self.symtable[left_info.content].element_type.rows)
+                            col_index_info = self.walk(node.right[2])
+                            ir_node.col_index = col_index_info.ir
+                        else:
+                            la_type = MatrixType(rows=1, cols=self.symtable[left_info.content].cols)
+                            row_index_info = self.walk(node.right[1])
+                            ir_node.row_index = row_index_info.ir
+                    else:
+                        row_index_info = self.walk(node.right[1])
+                        col_index_info = self.walk(node.right[2])
+                        ir_node.main_index = main_index_info.ir
+                        ir_node.row_index = row_index_info.ir
+                        ir_node.col_index = col_index_info.ir
+                        ir_node.la_type = self.symtable[left_info.content].element_type.element_type
+                        la_type = ir_node.la_type
+                return NodeInfo(la_type, left_info.content,
+                                         {left_info.content},
+                                         ir_node)
+            elif self.symtable[left_info.content].is_matrix():
+                assert len(node.right) == 2
+                ir_node = MatrixIndexNode()
+                ir_node.main = left_info.ir
+                la_type = self.symtable[left_info.content].element_type
+                if '*' in node.right:
+                    if node.right[0] == '*':
+                        assert node.right[1] != '*'
+                        la_type = VectorType(rows=self.symtable[left_info.content].rows)
+                        col_index_info = self.walk(node.right[1])
+                        ir_node.col_index = col_index_info.ir
+                    else:
+                        la_type = MatrixType(rows=1, cols=self.symtable[left_info.content].cols)
+                        row_index_info = self.walk(node.right[0])
+                        ir_node.row_index = row_index_info.ir
+                else:
+                    row_index_info = self.walk(node.right[0])
+                    col_index_info = self.walk(node.right[1])
+                    ir_node.row_index = row_index_info.ir
+                    ir_node.col_index = col_index_info.ir
+                ir_node.la_type = la_type
+                node_info = NodeInfo(la_type, left_info.content, {left_info.content},
+                                     ir_node)
+                return node_info
+            elif self.symtable[left_info.content].is_vector():
+                assert len(node.right) == 1
+                assert node.right[0] != '*'
+                index_info = self.walk(node.right[0])
+                assert index_info.la_type.is_scalar()
+                ir_node = VectorIndexNode()
+                ir_node.main = left_info.ir
+                ir_node.row_index = index_info.ir
+                ir_node.la_type = self.symtable[left_info.content].element_type
+                node_info = NodeInfo(self.symtable[left_info.content].element_type, left_info.content, {left_info.content}, ir_node)
+                return node_info
+        #
         for value in node.right:
             v_info = self.walk(value)
             right.append(v_info.content)
-        left_info = self.walk(node.left, **kwargs)
         return self.create_id_node_info(left_info.content, right, node.parseinfo)
 
     def create_id_node_info(self, left_content, right_content, parse_info=None):

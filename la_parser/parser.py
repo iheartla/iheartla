@@ -25,6 +25,8 @@ from la_parser.type_walker import *
 from la_parser.ir import *
 from la_parser.ir_visitor import *
 from la_tools.la_msg import *
+from la_tools.la_helper import *
+from la_tools.parser_manager import ParserManager
 import subprocess
 import threading
 
@@ -67,18 +69,11 @@ else:
 
 _grammar_content = None   # content in file
 _default_key = 'default'
-_compiled_parser = {}
+_parser_manager = ParserManager()
 def get_compiled_parser(grammar, keys='init'):
     log_la("keys:" + keys)
-    global _compiled_parser
-    if keys in _compiled_parser:
-        return _compiled_parser[keys]
-    # print(grammar)
-    # os.path.dirname(filename) is used as the prefix for relative #include commands
-    # It just needs to be a path inside the directory where all the grammar files are.
-    parser = tatsu.compile(grammar, asmodel=True, filename=GRAMMAR_DIR/'here')
-    _compiled_parser[keys] = parser
-    return parser
+    return _parser_manager.get_parser(keys, grammar)
+
 
 _type_walker = None
 def get_type_walker():
@@ -101,8 +96,6 @@ def create_parser():
         simplified_grammar = simplified_file.read()
         global _grammar_content
         _grammar_content = grammar
-        # reset all parsers
-        _compiled_parser.clear()
         # get init parser
         parser = get_compiled_parser(simplified_grammar)
         file.close()
@@ -278,26 +271,6 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
         if result[1] != 0:
             print(result[0])
     return result
-
-
-def save_to_file(content, file_name):
-    try:
-        file = open(file_name, 'w')
-        file.write(content)
-        file.close()
-    except IOError:
-        print("IO Error!")
-
-
-def read_from_file(file_name):
-    try:
-        file = open(file_name, 'r')
-        content = file.read()
-        file.close()
-    except IOError:
-        content = ''
-        print("IO Error!")
-    return content
 
 
 def get_file_name(path_name):
