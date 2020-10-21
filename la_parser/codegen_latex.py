@@ -338,20 +338,20 @@ class CodeGenLatex(CodeGen):
         if node.slice_matrix:
             if node.row_index is not None:
                 row_info = self.visit(node.row_index, **kwargs)
-                content = "{}[{}]_{{{}, *}}".format(main_info, main_index_info, row_info)
+                content = "{}_{{ {}, {}, *}}".format(main_info, main_index_info, row_info)
             else:
                 col_info = self.visit(node.col_index, **kwargs)
-                content = "{}[{}]_{{*, {}}}".format(main_info, main_index_info, col_info)
+                content = "{}_{{ {}, *, {}}}".format(main_info, main_index_info, col_info)
         else:
             if node.row_index is not None:
                 row_info = self.visit(node.row_index, **kwargs)
                 if node.col_index is not None:
                     col_info = self.visit(node.col_index, **kwargs)
-                    content = "{}[{}]_{{{}, {}}}".format(main_info, main_index_info, row_info, col_info)
+                    content = "{}_{{ {}, {}, {}}}".format(main_info, main_index_info, row_info, col_info)
                 else:
-                    content = "{}[{}]({})".format(main_info, main_index_info, row_info)
+                    content = "{}_{{ {}, {}, {}}}".format(main_info, main_index_info, row_info)
             else:
-                content = "{}_{}".format(main_info, main_index_info)
+                content = "{}_{{ {} }}".format(main_info, main_index_info)
         return content
 
     def visit_matrix(self, node, **kwargs):

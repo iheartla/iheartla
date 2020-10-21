@@ -1090,7 +1090,7 @@ class TypeWalker(NodeWalker):
     def walk_IdentifierSubscript(self, node, **kwargs):
         right = []
         left_info = self.walk(node.left, **kwargs)
-        if not self.is_param_block:
+        if not self.is_param_block and not la_is_inside_sum(**kwargs):
             assert left_info.content in self.symtable, self.get_err_msg_info(left_info.ir.parse_info,
                                                                                     "Element hasn't been defined")
             if self.symtable[left_info.content].is_sequence():
