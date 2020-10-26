@@ -1088,6 +1088,18 @@ class TypeWalker(NodeWalker):
         return NodeInfo(ir=BinCompNode(IRNodeType.Le, left_info.ir, right_info.ir, parse_info=node.parseinfo))
 
     def walk_IdentifierSubscript(self, node, **kwargs):
+        # check first *
+        if node.right[0] == '*' and len(node.right) > 1:
+            raw_text = node.text
+            start = raw_text.index('_*') + 2
+            cur = start
+            while cur < len(raw_text):
+                if raw_text[cur] == ',':
+                    break
+                else:
+                    line_info = self.get_line_info(node.parseinfo)
+                    assert raw_text[cur] == ' ', self.get_err_msg(line_info, line_info.text.index('_*') + 1, "* must be used with ," )
+                cur += 1
         right = []
         left_info = self.walk(node.left, **kwargs)
         if not self.is_param_block and not la_is_inside_sum(**kwargs):
