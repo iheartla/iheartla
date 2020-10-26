@@ -12,7 +12,7 @@ operations
     | hadamard_product_operator
     | cross_product_operator
     | kronecker_product_operator
-    | dot_product_operator
+    #| dot_product_operator
     | sum_operator
     | integral_operator
     | trans_operator
@@ -40,7 +40,7 @@ add_sub_operator::AddSub
 
 multiplication::Multiply
     =
-    left:term {hspace} op:'*' {hspace} right:factor
+    left:term {hspace} op:'⋅' {hspace} right:factor
     | left:term {hspace} right:factor
     ;
 

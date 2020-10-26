@@ -70,7 +70,7 @@ term_in_matrix
     ;
 
 multiplication_in_matrix::Multiply
-    = left:term_in_matrix '*' right:factor
+    = left:term_in_matrix '⋅' right:factor
     | left:term_in_matrix right:factor
     ;
 
