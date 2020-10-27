@@ -49,12 +49,6 @@ def la_is_inside_matrix(**kwargs):
     return False
 
 
-def la_is_inside_sum(**kwargs):
-    if INSIDE_SUMMATION in kwargs and kwargs[INSIDE_SUMMATION] is True:
-        return True
-    return False
-
-
 def la_is_if(**kwargs):
     if IF_COND in kwargs and kwargs[IF_COND] is True:
         return True
@@ -98,6 +92,8 @@ class TypeWalker(NodeWalker):
         self.pattern = re.compile("[A-Za-z]+")
         self.multi_lhs_list = []
         # self.directive_parsing = True   # directives grammar
+        self.sum_subs = []
+        self.sum_conds = []
 
     def filter_symbol(self, symbol):
         if '`' in symbol:
@@ -108,6 +104,8 @@ class TypeWalker(NodeWalker):
             new_symbol = symbol
         return new_symbol
 
+    def is_inside_sum(self):
+        return len(self.sum_subs) > 0
 
     def reset(self):
         self.reset_state()
@@ -666,11 +664,14 @@ class TypeWalker(NodeWalker):
         return right_info
 
     def walk_Summation(self, node, **kwargs):
+        self.logger.debug("cur sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         kwargs[INSIDE_SUMMATION] = True
         #
         ir_node = SummationNode(parse_info=node.parseinfo)
         if node.cond:
             id_info = self.walk(node.id, **kwargs)
+            self.sum_subs.append(id_info.content)
+            self.sum_conds.append(True)
             ir_node.id = id_info.ir
             ir_node.cond = self.walk(node.cond, **kwargs).ir
             id_info.ir.set_parent(ir_node)
@@ -681,10 +682,13 @@ class TypeWalker(NodeWalker):
                 # assert lhs_ids[1][0] == lhs_ids[1][1], "multiple subscripts for sum"
         else:
             sub_info = self.walk(node.sub)
+            self.sum_subs.append(sub_info.content)
+            self.sum_conds.append(False)
             ir_node.sub = sub_info.ir
             ir_node.id = sub_info.ir
             sub_info.ir.set_parent(ir_node)
             subs = sub_info.content
+        self.logger.debug("new sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         new_id = self.generate_var_name("sum")
         ret_info = self.walk(node.exp, **kwargs)
         ir_node.exp = ret_info.ir
@@ -698,6 +702,8 @@ class TypeWalker(NodeWalker):
         ir_node.symbol = ret_info.symbol
         ir_node.content = ret_info.content
         ret_info.ir = ir_node
+        self.sum_subs.pop()
+        self.sum_conds.pop()
         self.logger.debug("summation, symbols: {}".format(ir_node.symbols))
         return ret_info
 
@@ -1105,7 +1111,10 @@ class TypeWalker(NodeWalker):
                 cur += 1
         right = []
         left_info = self.walk(node.left, **kwargs)
-        if not self.is_param_block and not la_is_inside_sum(**kwargs):
+        if not self.is_param_block:
+            content_symbol = node.text.replace(' ', '').replace(',', '')
+            split_res = content_symbol.split('_')
+            self.ids_dict[content_symbol] = Identifier(split_res[0], split_res[1])
             assert left_info.content in self.symtable, self.get_err_msg_info(left_info.ir.parse_info,
                                                                                     "Element hasn't been defined")
             if self.symtable[left_info.content].is_sequence():
@@ -1148,8 +1157,8 @@ class TypeWalker(NodeWalker):
                         ir_node.col_index = col_index_info.ir
                         ir_node.la_type = self.symtable[left_info.content].element_type.element_type
                         la_type = ir_node.la_type
-                return NodeInfo(la_type, left_info.content,
-                                         {left_info.content},
+                return NodeInfo(la_type, content_symbol,
+                                         {content_symbol},
                                          ir_node)
             elif self.symtable[left_info.content].is_matrix():
                 assert len(node.right) == 2
@@ -1172,7 +1181,7 @@ class TypeWalker(NodeWalker):
                     ir_node.row_index = row_index_info.ir
                     ir_node.col_index = col_index_info.ir
                 ir_node.la_type = la_type
-                node_info = NodeInfo(la_type, left_info.content, {left_info.content},
+                node_info = NodeInfo(la_type, content_symbol, {content_symbol},
                                      ir_node)
                 return node_info
             elif self.symtable[left_info.content].is_vector():
@@ -1184,7 +1193,7 @@ class TypeWalker(NodeWalker):
                 ir_node.main = left_info.ir
                 ir_node.row_index = index_info.ir
                 ir_node.la_type = self.symtable[left_info.content].element_type
-                node_info = NodeInfo(self.symtable[left_info.content].element_type, left_info.content, {left_info.content}, ir_node)
+                node_info = NodeInfo(self.symtable[left_info.content].element_type, content_symbol, {content_symbol}, ir_node)
                 return node_info
         #
         for value in node.right:
@@ -1229,7 +1238,7 @@ class TypeWalker(NodeWalker):
             id0_info = self.walk(node.id, **kwargs)
             id0 = id0_info.content
             id0 = self.get_main_id(id0)
-            if not la_is_inside_sum(**kwargs) and not la_is_if(**kwargs):  # symbols in sum don't need to be defined before todo:modify
+            if not self.is_inside_sum() and not la_is_if(**kwargs):  # symbols in sum don't need to be defined before todo:modify
                 if id0 != 'I':  # special case
                     new_symbol = self.filter_symbol(id0)
                     assert self.symtable.get(new_symbol) is not None, self.get_err_msg_info(id0_info.ir.parse_info,
