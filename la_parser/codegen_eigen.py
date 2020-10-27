@@ -354,7 +354,7 @@ class CodeGenEigen(CodeGen):
                 if len(var_ids[1]) > 1:  # matrix
                     name_convention[var] = "{}({}, {})".format(var_ids[0], var_ids[1][0], var_ids[1][1])
                 else:
-                    name_convention[var] = "{}[{}]".format(var_ids[0], var_ids[1][0])
+                    name_convention[var] = "{}.at({})".format(var_ids[0], var_ids[1][0])
         self.add_name_conventions(name_convention)
         #
         assign_id = node.symbol
@@ -708,20 +708,20 @@ class CodeGenEigen(CodeGen):
         if node.slice_matrix:
             if node.row_index is not None:
                 row_info = self.visit(node.row_index, **kwargs)
-                content = "{}[{}].row({})".format(main_info.content, main_index_info.content, row_info.content)
+                content = "{}.at({}).row({})".format(main_info.content, main_index_info.content, row_info.content)
             else:
                 col_info = self.visit(node.col_index, **kwargs)
-                content = "{}[{}].col({})".format(main_info.content, main_index_info.content, col_info.content)
+                content = "{}.at({}).col({})".format(main_info.content, main_index_info.content, col_info.content)
         else:
             if node.row_index is not None:
                 row_info = self.visit(node.row_index, **kwargs)
                 if node.col_index is not None:
                     col_info = self.visit(node.col_index, **kwargs)
-                    content = "{}[{}]({}, {})".format(main_info.content, main_index_info.content, row_info.content, col_info.content)
+                    content = "{}.at({})({}, {})".format(main_info.content, main_index_info.content, row_info.content, col_info.content)
                 else:
-                    content = "{}[{}]({})".format(main_info.content, main_index_info.content, row_info.content)
+                    content = "{}.at({})({})".format(main_info.content, main_index_info.content, row_info.content)
             else:
-                content = "{}[{}]".format(main_info.content, main_index_info.content)
+                content = "{}.at({})".format(main_info.content, main_index_info.content)
         return CodeNodeInfo(content)
 
     def visit_add(self, node, **kwargs):
@@ -841,9 +841,9 @@ class CodeGenEigen(CodeGen):
                     if self.contain_subscript(right_var):
                         var_ids = self.get_all_ids(right_var)
                         right_info.content = right_info.content.replace(right_var,
-                                                                        "{}[{}]".format(var_ids[0], var_ids[1][0]))
+                                                                        "{}.at({})".format(var_ids[0], var_ids[1][0]))
 
-                right_exp += "    {}[{}] = {}".format(self.get_main_id(left_id), left_subs[0], right_info.content)
+                right_exp += "    {}.at({}) = {}".format(self.get_main_id(left_id), left_subs[0], right_info.content)
                 ele_type = self.symtable[sequence].element_type
                 if ele_type.is_matrix():
                     content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
