@@ -355,6 +355,8 @@ class CodeGenEigen(CodeGen):
                     name_convention[var] = "{}({}, {})".format(var_ids[0], var_ids[1][0], var_ids[1][1])
                 else:
                     name_convention[var] = "{}.at({})".format(var_ids[0], var_ids[1][0])
+        for sym, subs in node.sym_dict.items():
+            target_var.append(sym)
         self.add_name_conventions(name_convention)
         #
         assign_id = node.symbol
@@ -383,8 +385,12 @@ class CodeGenEigen(CodeGen):
                                                                        ele_type.rows, ele_type.cols))
         else:
             content.append("double {} = 0;\n".format(assign_id))
+        sym_info = node.sym_dict[target_var[0]]
         if self.symtable[target_var[0]].is_matrix():  # todo
-            content.append("for(int {}=0; {}<{}.rows(); {}++){{\n".format(sub, sub, target_var[0], sub))
+            if sub == sym_info[0]:
+                content.append("for(int {}=0; {}<{}.rows(); {}++){{\n".format(sub, sub, target_var[0], sub))
+            else:
+                content.append("for(int {}=0; {}<{}.cols(); {}++){{\n".format(sub, sub, target_var[0], sub))
         else:
             content.append("for(int {}=0; {}<{}.size(); {}++){{\n".format(sub, sub, target_var[0], sub))
         if exp_info.pre_list:  # catch pre_list

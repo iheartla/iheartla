@@ -121,6 +121,9 @@ class TypeWalker(NodeWalker):
         self.ids_dict.clear()
         self.ret_symbol = None
         self.unofficial_method = False
+        self.sum_subs = []
+        self.sum_sym_list = []
+        self.sum_conds = []
 
     def get_func_symbols(self):
         ret = {}
@@ -668,6 +671,7 @@ class TypeWalker(NodeWalker):
         kwargs[INSIDE_SUMMATION] = True
         #
         ir_node = SummationNode(parse_info=node.parseinfo)
+        self.sum_sym_list.append({})
         if node.cond:
             id_info = self.walk(node.id, **kwargs)
             self.sum_subs.append(id_info.content)
@@ -701,9 +705,12 @@ class TypeWalker(NodeWalker):
         ir_node.symbols = ret_info.symbols
         ir_node.symbol = ret_info.symbol
         ir_node.content = ret_info.content
-        ret_info.ir = ir_node
         self.sum_subs.pop()
         self.sum_conds.pop()
+        cur_sym_dict = self.sum_sym_list.pop()
+        ir_node.sym_dict = cur_sym_dict
+        ret_info.ir = ir_node
+        self.logger.debug("cur_sym_dict: {}".format(cur_sym_dict))
         self.logger.debug("summation, symbols: {}".format(ir_node.symbols))
         return ret_info
 
@@ -1097,6 +1104,14 @@ class TypeWalker(NodeWalker):
         return NodeInfo(ir=BinCompNode(IRNodeType.Le, left_info.ir, right_info.ir, parse_info=node.parseinfo))
 
     def walk_IdentifierSubscript(self, node, **kwargs):
+        def get_right_list():
+            right_list = []
+            for right in node.right:
+                if right != '*':
+                    right_list.append(self.walk(right).content)
+                else:
+                    right_list.append(right)
+            return right_list
         # check first *
         if node.right[0] == '*' and len(node.right) > 1:
             raw_text = node.text
@@ -1112,6 +1127,17 @@ class TypeWalker(NodeWalker):
         right = []
         left_info = self.walk(node.left, **kwargs)
         if not self.is_param_block:
+            if len(self.sum_subs) > 0:
+                # inside summation
+                right_sym_list = get_right_list()
+                print("right_sym_list:{}".format(right_sym_list))
+                for sub_index in range(len(self.sum_subs)):
+                    sub_sym = self.sum_subs[sub_index]
+                    if sub_sym in right_sym_list:
+                        cur_dict = self.sum_sym_list[sub_index]
+                        cur_dict[left_info.content] = right_sym_list
+                        self.sum_sym_list[sub_index] = cur_dict
+
             content_symbol = node.text.replace(' ', '').replace(',', '')
             split_res = content_symbol.split('_')
             self.ids_dict[content_symbol] = Identifier(split_res[0], split_res[1])

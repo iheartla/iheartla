@@ -368,6 +368,7 @@ class SummationNode(ExprNode):
         self.symbols = None
         self.symbol = None
         self.content = None
+        self.sym_dict = None
 
 
 class OptimizeType(Enum):
