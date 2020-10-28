@@ -7,6 +7,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "appdirs"
+version = "1.4.4"
+description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "cppyy"
 version = "1.8.4"
 description = "Cling-based Python-C++ bindings"
@@ -206,12 +214,16 @@ six = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7, <3.9"
-content-hash = "0e09ba44837f26d130c882fe2134f2d7d187dd44ddc876ece40b1d8370f135b6"
+content-hash = "6043144b7496a1499221797bb86a5b991870516c06678bf53a44b50848e07236"
 
 [metadata.files]
 altgraph = [
     {file = "altgraph-0.17-py2.py3-none-any.whl", hash = "sha256:c623e5f3408ca61d4016f23a681b9adb100802ca3e3da5e718915a9e4052cebe"},
     {file = "altgraph-0.17.tar.gz", hash = "sha256:1f05a47122542f97028caf78775a095fbe6a2699b5089de8477eb583167d69aa"},
+]
+appdirs = [
+    {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
+    {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
 ]
 cppyy = [
     {file = "cppyy-1.8.4.tar.gz", hash = "sha256:4c772db1716a104f58c406f5ad6b97704b044a6f0f52f358882bee6dfbaa3a41"},

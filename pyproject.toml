@@ -11,6 +11,7 @@ wxpython = "^4.1.0"
 PyMuPDF = "^1.17.0"
 graphviz = "^0.14"
 regex = "^2020.7.14"
+appdirs = "^1.4.4"
 
 [tool.poetry.dev-dependencies]
 cppyy = "^1.7.1"
