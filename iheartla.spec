@@ -2,6 +2,23 @@
 
 import os.path
 
+print("Did you forget to re-generate the cached parsers first with `poetry run python la_local_parsers.py`?")
+
+'''
+from pathlib import Path
+## Create the default parsers if needed.
+# import la_parser.parser
+# la_parser.parser.create_parser()
+# TODO: Wait for the saving thread to finish.
+## Copy the parsers from the cache folder.
+from appdirs import user_cache_dir
+cached_parsers = Path(user_cache_dir())/'iheartla'
+import shutil, tempfile
+tmpdir = tempfile.TemporaryDirectory()
+for f in cached_parsers.glob('*.py'): shutil.copy( f, tmpdir.name )
+## Change below to `datas=[...,(tmpdir.name, 'la_local_parsers')]`
+'''
+
 block_cipher = None
 
 a = Analysis(['linear_algebra.py'],
@@ -9,7 +26,7 @@ a = Analysis(['linear_algebra.py'],
              ## next to the 'linear_algebra.py' file and the 'la_grammar' directory.
              pathex=[os.path.abspath(os.getcwd())],
              binaries=[],
-             datas=[('la_grammar', 'la_grammar')],
+             datas=[('la_grammar', 'la_grammar'), ('la_local_parsers', 'la_local_parsers')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],

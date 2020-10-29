@@ -586,8 +586,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._kronecker_product_operator_()
             with self._option():
-                self._dot_product_operator_()
-            with self._option():
                 self._sum_operator_()
             with self._option():
                 self._integral_operator_()
@@ -682,7 +680,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 def block1():
                     self._hspace_()
                 self._closure(block1)
-                self._token('*')
+                self._token('⋅')
                 self.name_last_node('op')
 
                 def block3():
@@ -1397,7 +1395,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         )
 
     @tatsumasu('DotProduct')
-    @nomemo
     def _dot_product_operator_(self):  # noqa
         self._factor_()
         self.name_last_node('left')
@@ -1897,7 +1894,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._term_in_matrix_()
                 self.name_last_node('left')
-                self._token('*')
+                self._token('⋅')
                 self._factor_()
                 self.name_last_node('right')
             with self._option():
@@ -2086,13 +2083,56 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._identifier_alone_()
         self.name_last_node('left')
         self._token('_')
-        self._identifier_alone_()
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._integer_()
+                with self._option():
+                    self._token('*')
+                with self._option():
+                    self._identifier_alone_()
+                self._error('no available options')
         self.add_last_node_to_name('right')
 
-        def block2():
-            self._identifier_alone_()
-            self.add_last_node_to_name('right')
-        self._closure(block2)
+        def block3():
+            with self._choice():
+                with self._option():
+                    with self._group():
+
+                        def block4():
+                            self._hspace_()
+                        self._closure(block4)
+                        self._token(',')
+
+                        def block5():
+                            self._hspace_()
+                        self._closure(block5)
+                        self._token('*')
+                        self.add_last_node_to_name('right')
+                with self._option():
+                    with self._group():
+
+                        def block7():
+
+                            def block8():
+                                self._hspace_()
+                            self._closure(block8)
+                            self._token(',')
+
+                            def block9():
+                                self._hspace_()
+                            self._closure(block9)
+                        self._closure(block7)
+                        with self._group():
+                            with self._choice():
+                                with self._option():
+                                    self._integer_()
+                                with self._option():
+                                    self._identifier_alone_()
+                                self._error('no available options')
+                        self.add_last_node_to_name('right')
+                self._error('no available options')
+        self._closure(block3)
         self.ast._define(
             ['left'],
             ['right']

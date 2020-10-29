@@ -76,4 +76,4 @@ To use the code output for the various backends, you will need:
 
 ### Packaging a release
 
-**macOS**: `pyinstaller iheartla.spec`. The output `iheartla.app` is placed into `dist/`
+**macOS**: `pyinstaller iheartla.spec`. The output `iheartla.app` is placed into `dist/`. Whoever is packaging should run `la_local_parsers.py` at least once to generate the cached parsers for everyone to use. For example, `poetry run python la_local_parsers.py`.

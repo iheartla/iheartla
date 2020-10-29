@@ -16,23 +16,34 @@ MAXIMUM_SIZE = 12  # 10 + 2 default
 
 
 class ParserManager(object):
-    def __init__(self):
+    def __init__(self, grammar_dir):
+        self.grammar_dir = Path(grammar_dir)
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
         self.parser_dict = {}
         self.prefix = "parser"
         self.module_dir = "iheartla"
         self.default_parsers = [hashlib.md5("init".encode()).hexdigest(), hashlib.md5("default".encode()).hexdigest()]
+        self.save_threads = []
         # create the user's cache directory (pickle)
         self.cache_dir = os.path.join(user_cache_dir(), self.module_dir)
+        # init the cache and load the default parsers
+        self.init_cache()
+        self.load_parsers()
+    
+    def reload(self):
+        self.parser_dict = {}
+        self.init_cache()
+        self.load_parsers()
+
+    def init_cache(self):
         dir_path = Path(self.cache_dir)
         if not dir_path.exists():
             dir_path.mkdir()
-            # copy default parsers
-            for f in listdir("la_local_parsers"):
-                shutil.copy(os.path.join("la_local_parsers", f), self.cache_dir)
+        # copy default parsers
+        for f in (self.grammar_dir.parent/'la_local_parsers').glob('*.py'):
+            if not (dir_path/f.name).exists():
+                shutil.copy(f, dir_path)
         # self.cache_file = Path(self.cache_dir + '/parsers.pickle')
-        #######
-        self.load_parsers()
 
     def load_from_pickle(self):
         # Load parsers when program launches
@@ -69,11 +80,12 @@ class ParserManager(object):
             return self.parser_dict[hash_value]
         # os.path.dirname(filename) is used as the prefix for relative #include commands
         # It just needs to be a path inside the directory where all the grammar files are.
-        parser = tatsu.compile(grammar, asmodel=True, filename=os.path.join('la_grammar', 'here'))
+        parser = tatsu.compile(grammar, asmodel=True, filename=self.grammar_dir/'here')
         self.parser_dict[hash_value] = parser
         # save to file asynchronously
         save_thread = threading.Thread(target=self.save_grammar, args=(hash_value, grammar,))
         save_thread.start()
+        self.save_threads.append( save_thread )
         # self.save_dict()
         return parser
 
@@ -119,3 +131,30 @@ class ParserManager(object):
         except Exception as e:
             print("IO error:{}".format(e))
 
+
+def recreate_local_parser_cache():
+    ### WARNING: This will delete and re-create the cache and 'la_local_parsers' directories.
+    import la_parser.parser
+    PM = la_parser.parser._parser_manager
+    
+    print( '## Clear the cache dir:', PM.cache_dir )
+    shutil.rmtree( PM.cache_dir )
+    Path(PM.cache_dir).mkdir()
+    
+    la_local_parsers = PM.grammar_dir.parent/'la_local_parsers'
+    print( '## Clear the la_local_parsers dir:', la_local_parsers )
+    shutil.rmtree( la_local_parsers )
+    la_local_parsers.mkdir()
+    
+    print('## Reload the ParserManager.')
+    PM.reload()
+    
+    print('## Re-create the parsers.')
+    la_parser.parser.create_parser()
+    
+    print('## Wait for them to be saved.')
+    for thread in PM.save_threads: thread.join()
+    
+    print('## Copy the cache dir contents into the local dir.')
+    for f in Path(PM.cache_dir).glob('*.py'):
+        shutil.copy( f, la_local_parsers )
