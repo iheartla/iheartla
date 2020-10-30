@@ -153,11 +153,11 @@ def generate_latex_code(type_walker, node_info, frame):
             ## If we are running in a bundle, we don't have the PATH available. Assume MacTex.
             PATH = os.environ['PATH']
             PATH = ':'.join( [ '/Library/TeX/texbin', '/usr/texbin', '/usr/local/bin', '/opt/local/bin', '/usr/bin', '/bin', PATH ] )
-            ret = subprocess.run(["/usr/bin/env", "xelatex", "-interaction=nonstopmode", tex_file_name], capture_output=True, cwd=tmpdir, env={"PATH":PATH})
+            ret = subprocess.run(["xelatex", "-interaction=nonstopmode", tex_file_name], capture_output=True, cwd=tmpdir, env={"PATH":PATH})
             if ret.returncode == 0:
                 ## If we are running in a bundle, we don't have the PATH available. Assume MacTex.
                 ## But then we may not have ghostscript `gs` available, either.
-                ret = subprocess.run(["/usr/bin/env", "pdfcrop", "--margins", "30", "{}.pdf".format(template_name), "{}.pdf".format(template_name)], capture_output=True, cwd=tmpdir, env={"PATH":PATH})
+                ret = subprocess.run(["pdfcrop", "--margins", "30", "{}.pdf".format(template_name), "{}.pdf".format(template_name)], capture_output=True, cwd=tmpdir, env={"PATH":PATH})
                 # If xelatex worked, we have a PDF, even if pdfcrop failed.
                 # if ret.returncode == 0:
                 show_pdf = io.BytesIO( open("{}.pdf".format(template_name),'rb').read() )
