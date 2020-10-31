@@ -52,7 +52,7 @@ class LaVarType(object):
         return self.var_type == VarTypeEnum.SEQUENCE and self.element_type.is_scalar()
 
     def is_vector(self):
-        return self.var_type == VarTypeEnum.VECTOR
+        return self.var_type == VarTypeEnum.VECTOR or (self.var_type == VarTypeEnum.MATRIX and self.cols == 1)
 
     def is_scalar(self):
         return self.var_type == VarTypeEnum.SCALAR
@@ -80,6 +80,17 @@ class LaVarType(object):
         return ''
 
 
+class ScalarType(LaVarType):
+    def __init__(self, is_int=False, desc=None, element_type=None, symbol=None):
+        LaVarType.__init__(self, VarTypeEnum.SCALAR, desc, element_type, symbol)
+        self.is_int = is_int
+
+    def get_signature(self):
+        if self.is_int:
+            return 'scalar:integer'
+        return 'scalar:double'
+
+
 class SequenceType(LaVarType):
     def __init__(self, size=0, desc=None, element_type=None, symbol=None):
         LaVarType.__init__(self, VarTypeEnum.SEQUENCE, desc, element_type, symbol)
@@ -90,7 +101,7 @@ class SequenceType(LaVarType):
 
 
 class MatrixType(LaVarType):
-    def __init__(self, rows=0, cols=0, desc=None, element_type=None, symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=None, list_dim=None, index_var=None, value_var=None, item_types=None):
+    def __init__(self, rows=0, cols=0, desc=None, element_type=ScalarType(), symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=None, list_dim=None, index_var=None, value_var=None, item_types=None):
         LaVarType.__init__(self, VarTypeEnum.MATRIX, desc, element_type, symbol)
         self.rows = rows
         self.cols = cols
@@ -115,7 +126,7 @@ class MatrixType(LaVarType):
 
 
 class VectorType(LaVarType):
-    def __init__(self, rows=0, desc=None, element_type=None, symbol=None):
+    def __init__(self, rows=0, desc=None, element_type=ScalarType(), symbol=None):
         LaVarType.__init__(self, VarTypeEnum.VECTOR, desc, element_type, symbol)
         self.rows = rows
         self.cols = 1
@@ -135,17 +146,6 @@ class SetType(LaVarType):
 
     def get_signature(self):
         return 'set'
-
-
-class ScalarType(LaVarType):
-    def __init__(self, is_int=False, desc=None, element_type=None, symbol=None):
-        LaVarType.__init__(self, VarTypeEnum.SCALAR, desc, element_type, symbol)
-        self.is_int = is_int
-
-    def get_signature(self):
-        if self.is_int:
-            return 'scalar:integer'
-        return 'scalar:double'
 
 
 class IndexType(LaVarType):

@@ -851,16 +851,9 @@ class CodeGenEigen(CodeGen):
 
                 right_exp += "    {}.at({}) = {}".format(self.get_main_id(left_id), left_subs[0], right_info.content)
                 ele_type = self.symtable[sequence].element_type
-                if ele_type.is_matrix():
-                    content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
-                                                         self.symtable[sequence].size)
-                elif ele_type.is_vector():
-                    content += "    Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {})\n".format(sequence,
-                                                                                                 self.symtable[
-                                                                                                     sequence].size,
-                                                                                                 ele_type.rows)
-                else:
-                    content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].size)
+                # definition
+                content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
+                                                     self.symtable[sequence].size)
                 content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                         self.symtable[sequence].size, left_subs[0])
                 content += "    " + right_exp + ";\n"

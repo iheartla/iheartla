@@ -349,7 +349,7 @@ class CodeGenLatex(CodeGen):
                     col_info = self.visit(node.col_index, **kwargs)
                     content = "{}_{{ {}, {}, {}}}".format(main_info, main_index_info, row_info, col_info)
                 else:
-                    content = "{}_{{ {}, {}, {}}}".format(main_info, main_index_info, row_info)
+                    content = "{}_{{ {}, {} }}".format(main_info, main_index_info, row_info)
             else:
                 content = "{}_{{ {} }}".format(main_info, main_index_info)
         return content

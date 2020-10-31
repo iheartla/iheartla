@@ -692,6 +692,7 @@ class TypeWalker(NodeWalker):
             ir_node.id = sub_info.ir
             sub_info.ir.set_parent(ir_node)
             subs = sub_info.content
+        self.symtable[subs] = ScalarType()  # add subscript to symbol table temporarily
         self.logger.debug("new sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         new_id = self.generate_var_name("sum")
         ret_info = self.walk(node.exp, **kwargs)
@@ -710,6 +711,7 @@ class TypeWalker(NodeWalker):
         cur_sym_dict = self.sum_sym_list.pop()
         ir_node.sym_dict = cur_sym_dict
         ret_info.ir = ir_node
+        del self.symtable[subs]   # remove subscript from symbol table
         self.logger.debug("cur_sym_dict: {}".format(cur_sym_dict))
         self.logger.debug("summation, symbols: {}".format(ir_node.symbols))
         return ret_info
@@ -1126,7 +1128,7 @@ class TypeWalker(NodeWalker):
                 cur += 1
         right = []
         left_info = self.walk(node.left, **kwargs)
-        if not self.is_param_block:
+        if not self.is_param_block and left_info.content in self.symtable:
             if len(self.sum_subs) > 0:
                 # inside summation
                 right_sym_list = get_right_list()
@@ -1151,7 +1153,7 @@ class TypeWalker(NodeWalker):
                 ir_node.main_index = main_index_info.ir
                 if len(node.right) == 1:
                     assert node.right[0] != '*'
-                    ir_node.la_type = self.symtable[left_info.content].element_type
+                    la_type = self.symtable[left_info.content].element_type
                 elif len(node.right) == 2:
                     assert self.symtable[left_info.content].is_vector_seq()
                     assert '*' not in node.right
@@ -1159,8 +1161,7 @@ class TypeWalker(NodeWalker):
                     row_index_info = self.walk(node.right[1])
                     ir_node.main_index = main_index_info.ir
                     ir_node.row_index = row_index_info.ir
-                    ir_node.la_type = self.symtable[left_info.content].element_type.element_type
-                    la_type = ir_node.la_type
+                    la_type = self.symtable[left_info.content].element_type.element_type
                 elif len(node.right) == 3:
                     assert self.symtable[left_info.content].is_matrix_seq()
                     assert node.right[0] != '*'
@@ -1181,8 +1182,8 @@ class TypeWalker(NodeWalker):
                         ir_node.main_index = main_index_info.ir
                         ir_node.row_index = row_index_info.ir
                         ir_node.col_index = col_index_info.ir
-                        ir_node.la_type = self.symtable[left_info.content].element_type.element_type
-                        la_type = ir_node.la_type
+                        la_type = self.symtable[left_info.content].element_type.element_type
+                ir_node.la_type = la_type
                 return NodeInfo(la_type, content_symbol,
                                          {content_symbol},
                                          ir_node)
@@ -1264,7 +1265,7 @@ class TypeWalker(NodeWalker):
             id0_info = self.walk(node.id, **kwargs)
             id0 = id0_info.content
             id0 = self.get_main_id(id0)
-            if not self.is_inside_sum() and not la_is_if(**kwargs):  # symbols in sum don't need to be defined before todo:modify
+            if not la_is_if(**kwargs):  # symbols in sum don't need to be defined before todo:modify
                 if id0 != 'I':  # special case
                     new_symbol = self.filter_symbol(id0)
                     assert self.symtable.get(new_symbol) is not None, self.get_err_msg_info(id0_info.ir.parse_info,
