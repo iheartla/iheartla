@@ -137,24 +137,26 @@ def recreate_local_parser_cache():
     import la_parser.parser
     PM = la_parser.parser._parser_manager
     
-    print( '## Clear the cache dir:', PM.cache_dir )
+    print( '## Clearing the cache dir:', PM.cache_dir )
     shutil.rmtree( PM.cache_dir )
     Path(PM.cache_dir).mkdir()
     
     la_local_parsers = PM.grammar_dir.parent/'la_local_parsers'
-    print( '## Clear the la_local_parsers dir:', la_local_parsers )
+    print( '## Clearing the la_local_parsers dir:', la_local_parsers )
     shutil.rmtree( la_local_parsers )
     la_local_parsers.mkdir()
     
-    print('## Reload the ParserManager.')
+    print('## Reloading the ParserManager.')
     PM.reload()
     
-    print('## Re-create the parsers.')
+    print('## Re-creating the parsers.')
     la_parser.parser.create_parser()
     
-    print('## Wait for them to be saved.')
+    print('## Waiting for them to be saved.')
     for thread in PM.save_threads: thread.join()
     
-    print('## Copy the cache dir contents into the local dir.')
+    print('## Coping the cache dir contents into the local dir.')
     for f in Path(PM.cache_dir).glob('*.py'):
         shutil.copy( f, la_local_parsers )
+    
+    print('## Done.')
