@@ -15,7 +15,7 @@ or this:
 A_ij = { 1 if (i,j) ∈ E
          0 otherwise
 where
-A: ℝ^(n,n)
+A: ℝ^(n × n)
 E: { ℤ × ℤ }
 n: ℤ
 ```
