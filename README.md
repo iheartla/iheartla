@@ -29,7 +29,7 @@ or this:
                    1  0  0  0 ] P
 where
 t: ℝ
-P: ℝ^(4,d)
+P: ℝ^(4 × d)
 ```
 
 In other words, I❤️LA is a linear algebra domain specific language (DSL) that targets other languages. Write once, use everywhere.
