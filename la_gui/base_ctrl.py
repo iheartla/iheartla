@@ -3,6 +3,14 @@ import wx.stc
 
 BACKGROUND_COLOR = "#2B2B2B"
 
+def getBestFont():
+    e = wx.FontEnumerator()
+    e.EnumerateFacenames()
+    fontnames = e.GetFacenames( fixedWidthOnly = True )
+    for name in [ 'DejaVu Sans Mono', 'Courier New' ]:
+        if name in fontnames:
+            return name
+    return None
 
 class BaseTextControl(wx.stc.StyledTextCtrl):
     def __init__(self, parent):
@@ -22,7 +30,11 @@ class BaseTextControl(wx.stc.StyledTextCtrl):
         self.SetProperty("fold.comment", "1")
         self.SetMarginType(1, wx.stc.STC_MARGIN_NUMBER)
         self.SetWindowStyle(self.GetWindowStyle() | wx.DOUBLE_BORDER)
-        self.StyleSetSpec(wx.stc.STC_STYLE_DEFAULT, "size:15,face:Courier New")
+        
+        fontname = getBestFont()
+        if fontname is None: fontname = self.text_font.GetFaceName()
+        
+        self.StyleSetSpec(wx.stc.STC_STYLE_DEFAULT, f"size:15,face:{fontname}")
         self.SetWrapMode(wx.stc.STC_WRAP_WORD)
         self.SetMarginLeft(0)
 
