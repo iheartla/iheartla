@@ -234,6 +234,10 @@ def parse_ir_node(content, model):
     return type_walker, start_node
 
 
+def clean_parsers():
+    _parser_manager.clean_parsers()
+
+
 def parse_and_translate(content, frame, parser_type=None, func_name=None):
     try:
         start_time = time.time()

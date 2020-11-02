@@ -8,7 +8,7 @@ import wx.lib.agw.aui as aui
 from enum import Enum
 
 sys.path.append('../')
-from la_parser.parser import create_parser_background, parse_in_background, ParserTypeEnum
+from la_parser.parser import create_parser_background, parse_in_background, ParserTypeEnum, clean_parsers
 from la_gui.la_ctrl import LaTextControl
 from la_gui.python_ctrl import PyTextControl
 from la_gui.cpp_ctrl import CppTextControl
@@ -69,12 +69,16 @@ class MainWindow(wx.Frame):
         # view
         menu_view = wx.Menu()
         item_reset = menu_view.Append(wx.NewId(), "&Reset", "Reset all panels")
+        # tools
+        tools_view = wx.Menu()
+        item_clean = tools_view.Append(wx.NewId(), "&Clean cache", "Delete all cached parsers")
         # line
         menu_bar.Append(menu_file, "&File")
         menu_bar.Append(self.menu_edit, "Edit")
         menu_bar.Append(menu_run, "&Run")
         menu_bar.Append(menu_language, "&Languages")
         menu_bar.Append(menu_view, "&View")
+        menu_bar.Append(tools_view, "&Tools")
         self.SetMenuBar(menu_bar)
         # File
         self.Bind(wx.EVT_MENU, self.OnOpen, item_open)
@@ -96,6 +100,8 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnClickEigen, cpp_lang)
         self.Bind(wx.EVT_MENU, self.OnResetPanel, item_reset)
         self.Bind(wx.EVT_SIZE, self.OnSize)
+        # tools
+        self.Bind(wx.EVT_MENU, self.OnCleanCache, item_clean)
         # panel
         self.control = LaTextControl(self)
         self.midPanel = MidPanel(self)
@@ -239,6 +245,9 @@ E: { ℤ × ℤ }''')
     def OnClickEigen(self, e):
         self.midPanel.set_panel(MidPanelEnum.CPP)
         self.parser_type = ParserTypeEnum.EIGEN
+
+    def OnCleanCache(self, e):
+        clean_parsers()
 
     def OnResetPanel(self, e):
         self.control.SetSize(self.GetSize().width/3, self.GetSize().height)

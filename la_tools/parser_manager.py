@@ -45,6 +45,12 @@ class ParserManager(object):
                 shutil.copy(f, dir_path)
         # self.cache_file = Path(self.cache_dir + '/parsers.pickle')
 
+    def clean_parsers(self):
+        dir_path = Path(self.cache_dir)
+        if dir_path.exists():
+            shutil.rmtree(dir_path)
+            dir_path.mkdir()
+
     def load_from_pickle(self):
         # Load parsers when program launches
         if self.cache_file.exists():
