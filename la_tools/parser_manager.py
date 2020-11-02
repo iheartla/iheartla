@@ -56,11 +56,12 @@ class ParserManager(object):
             if self.valid_parser_file(f):
                 name, hash_value, t = self.separate_parser_file(f)
                 if hash_value in self.default_parsers_dict:
-                    if self.default_parsers_dict[hash_value] > t:
-                        os.remove(os.path.join(self.cache_dir, f))
-                    else:
+                    if self.default_parsers_dict[hash_value] <= t:
                         copy_from_default = False
+                        break
         if copy_from_default:
+            # remove all current parsers
+            self.clean_parsers()
             # copy default parsers
             dir_path = Path(self.cache_dir)
             for f in (self.grammar_dir.parent/'la_local_parsers').glob('*.py'):
