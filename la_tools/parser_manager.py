@@ -22,7 +22,11 @@ class ParserManager(object):
         self.parser_dict = {}
         self.prefix = "parser"
         self.module_dir = "iheartla"
-        self.default_parsers = [hashlib.md5("init".encode()).hexdigest(), hashlib.md5("default".encode()).hexdigest()]
+        self.default_parsers_dict = {hashlib.md5("init".encode()).hexdigest(): 0, hashlib.md5("default".encode()).hexdigest(): 0}
+        for f in (self.grammar_dir.parent / 'la_local_parsers').glob('*.py'):
+            name, hash_value, t = self.separate_parser_file(f.name)
+            if hash_value in self.default_parsers_dict:
+                self.default_parsers_dict[hash_value] = t
         self.save_threads = []
         # create the user's cache directory (pickle)
         self.cache_dir = os.path.join(user_cache_dir(), self.module_dir)
@@ -35,14 +39,42 @@ class ParserManager(object):
         self.init_cache()
         self.load_parsers()
 
+    def separate_parser_file(self, parser_file):
+        """
+        :param parser_file: parser_****_****.py
+        :return: full_file_name, hash_value, timestamp
+        """
+        name = parser_file.split('.')[0]
+        sep_list = name.split('_')
+        timestamp = time.mktime(datetime.strptime(sep_list[2], "%Y-%m-%d-%H-%M-%S").timetuple())
+        return name, sep_list[1], timestamp
+
+    def merge_default_parsers(self):
+        # dir has been created
+        copy_from_default = True
+        for f in listdir(self.cache_dir):
+            if self.valid_parser_file(f):
+                name, hash_value, t = self.separate_parser_file(f)
+                if hash_value in self.default_parsers_dict:
+                    if self.default_parsers_dict[hash_value] > t:
+                        os.remove(os.path.join(self.cache_dir, f))
+                    else:
+                        copy_from_default = False
+        if copy_from_default:
+            # copy default parsers
+            dir_path = Path(self.cache_dir)
+            for f in (self.grammar_dir.parent/'la_local_parsers').glob('*.py'):
+                if not (dir_path/f.name).exists():
+                    shutil.copy(f, dir_path)
+
+    def valid_parser_file(self, parser_file):
+        return self.prefix in parser_file and '.py' in parser_file and '_' in parser_file
+
     def init_cache(self):
         dir_path = Path(self.cache_dir)
         if not dir_path.exists():
             dir_path.mkdir()
-        # copy default parsers
-        for f in (self.grammar_dir.parent/'la_local_parsers').glob('*.py'):
-            if not (dir_path/f.name).exists():
-                shutil.copy(f, dir_path)
+        self.merge_default_parsers()
         # self.cache_file = Path(self.cache_dir + '/parsers.pickle')
 
     def clean_parsers(self):
@@ -62,9 +94,8 @@ class ParserManager(object):
 
     def load_parsers(self):
         for f in listdir(self.cache_dir):
-            if self.prefix in f and '.py' in f and '_' in f:
-                name = f.split('.')[0]
-                hash_value = name.split('_')[1]
+            if self.valid_parser_file(f):
+                name, hash_value, t = self.separate_parser_file(f)
                 module_name = "{}.{}".format(self.module_dir, name)
                 path_to_file = os.path.join(self.cache_dir, "{}.py".format(name))
                 spec = importlib.util.spec_from_file_location(module_name, path_to_file)
@@ -111,10 +142,9 @@ class ParserManager(object):
             earliest_file = None
             earliest_hash = None
             for f in listdir(self.cache_dir):
-                if self.prefix in f and '.py' in f and '_' in f:
-                    name = f.split('.')[0]
-                    hash_value = name.split('_')[1]
-                    if hash_value not in self.default_parsers:
+                if self.valid_parser_file(f):
+                    name, hash_value, t = self.separate_parser_file(f)
+                    if hash_value not in self.default_parsers_dict:
                         cur_time = os.path.getmtime(os.path.join(self.cache_dir, f))
                         if cur_time < earliest_time:
                             earliest_time = cur_time
