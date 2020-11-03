@@ -6,7 +6,10 @@ import keyword
 class CodeGenNumpy(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.NUMPY)
-        self.pre_str = '''import numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\n'''
+
+    def init_type(self, type_walker, func_name):
+        super().init_type(type_walker, func_name)
+        self.pre_str = '''"""\n{}\n"""\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\n'''.format(self.la_content)
         self.pre_str += "from scipy.integrate import quad\n"
         self.pre_str += "from scipy.optimize import minimize\n"
         self.pre_str += "\n\n"

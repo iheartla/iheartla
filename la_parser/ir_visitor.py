@@ -29,6 +29,7 @@ class IRVisitor(object):
         self.param_name_test = 'p'  # param name for test function
         self.convert_matrix = False
         self.pattern = re.compile("[A-Za-z]+")
+        self.la_content = ''
 
     def add_name_conventions(self, con_dict):
         for key, value in con_dict.items():
@@ -90,6 +91,7 @@ class IRVisitor(object):
         self.name_cnt_dict = type_walker.name_cnt_dict
         self.ret_symbol = type_walker.ret_symbol
         self.unofficial_method = type_walker.unofficial_method
+        self.la_content = type_walker.la_content
         if func_name is not None:
             self.func_name = func_name
         # self.print_symbols()

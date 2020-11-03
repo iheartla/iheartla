@@ -5,12 +5,12 @@ from la_parser.type_walker import *
 class CodeGenEigen(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.EIGEN)
-        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n'''
-        self.post_str = ''''''
-        self.ret = 'ret'
 
     def init_type(self, type_walker, func_name):
         super().init_type(type_walker, func_name)
+        self.pre_str = '''/*\n{}\n*/\n#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n'''.format(self.la_content)
+        self.post_str = ''''''
+        self.ret = 'ret'
         if self.unofficial_method:
             self.pre_str += '#include <unsupported/Eigen/MatrixFunctions>\n'
         self.pre_str += '\n'

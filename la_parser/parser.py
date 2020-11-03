@@ -45,13 +45,21 @@ import tempfile
 import io
 
 
+_codegen_dict = {}
+def get_codegen(parser_type):
+    if parser_type not in _codegen_dict:
+        if parser_type == ParserTypeEnum.LATEX:
+            gen = CodeGenLatex()
+        elif parser_type == ParserTypeEnum.NUMPY:
+            gen = CodeGenNumpy()
+        elif parser_type == ParserTypeEnum.EIGEN:
+            gen = CodeGenEigen()
+        _codegen_dict[parser_type] = gen
+    return _codegen_dict[parser_type]
+
+
 def walk_model(parser_type, type_walker, node_info, func_name=None):
-    if parser_type == ParserTypeEnum.LATEX:
-        gen = CodeGenLatex()
-    elif parser_type == ParserTypeEnum.NUMPY:
-        gen = CodeGenNumpy()
-    elif parser_type == ParserTypeEnum.EIGEN:
-        gen = CodeGenEigen()
+    gen = get_codegen(parser_type)
     #
     gen.init_type(type_walker, func_name)
     gen.visit_code(node_info)
@@ -229,7 +237,7 @@ def parse_ir_node(content, model):
     parser = get_compiled_parser(current_content, parse_key)
     model = parser.parse(content, parseinfo=True)
     # second parsing
-    type_walker.reset_state()   # reset
+    type_walker.reset_state(content)   # reset
     start_node = type_walker.walk(model)
     return type_walker, start_node
 
