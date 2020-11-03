@@ -609,6 +609,11 @@ class TypeWalker(NodeWalker):
             self.ret_symbol = self.get_main_id(id0)
         kwargs[LHS] = id0
         kwargs[ASSIGN_OP] = node.op
+        if self.contain_subscript(id0):
+            left_ids = self.get_all_ids(id0)
+            left_subs = left_ids[1]
+            for sub_sym in left_subs:
+                self.symtable[sub_sym] = ScalarType()
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         # ir
@@ -645,13 +650,19 @@ class TypeWalker(NodeWalker):
                             cols = self.symtable[main_id].cols
                             break
                     self.symtable[sequence] = MatrixType(rows=rows, cols=cols, element_type=right_type)
-            elif len(left_subs) == 1: # sequence
+            elif len(left_subs) == 1:  # sequence or vector
                 for symbol in right_info.symbols:
                     if left_subs[0] in symbol:
                         main_id = self.get_main_id(symbol)
-                        dim = self.symtable[main_id].size
+                        if self.symtable[main_id].is_sequence():
+                            dim = self.symtable[main_id].size
+                            self.symtable[sequence] = SequenceType(size=dim, element_type=right_type)
+                        elif self.symtable[main_id].is_vector():
+                            self.symtable[sequence] = VectorType(rows=self.symtable[main_id].rows)
                         break
-                self.symtable[sequence] = SequenceType(size=dim, element_type=right_type)
+            #
+            for sub_sym in left_subs:
+                del self.symtable[sub_sym]
         else:
             if node.op != '=':
                 assert id0 in self.symtable, self.get_err_msg_info(id0_info.ir.parse_info, "{} hasn't been defined".format(id0))

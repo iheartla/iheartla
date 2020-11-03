@@ -849,13 +849,23 @@ class CodeGenEigen(CodeGen):
                         right_info.content = right_info.content.replace(right_var,
                                                                         "{}.at({})".format(var_ids[0], var_ids[1][0]))
 
-                right_exp += "    {}.at({}) = {}".format(self.get_main_id(left_id), left_subs[0], right_info.content)
+
                 ele_type = self.symtable[sequence].element_type
                 # definition
-                content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
-                                                     self.symtable[sequence].size)
-                content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0],
-                                                                        self.symtable[sequence].size, left_subs[0])
+                if self.symtable[sequence].is_sequence():
+                    right_exp += "    {}.at({}) = {}".format(self.get_main_id(left_id), left_subs[0],
+                                                             right_info.content)
+                    content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
+                                                         self.symtable[sequence].size)
+                    content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0],
+                                                                            self.symtable[sequence].size, left_subs[0])
+                else:
+                    right_exp += "    {}[{}] = {}".format(self.get_main_id(left_id), left_subs[0],
+                                                             right_info.content)
+                    content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
+                                                         self.symtable[sequence].rows)
+                    content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0],
+                                                                            self.symtable[sequence].rows, left_subs[0])
                 content += "    " + right_exp + ";\n"
                 content += '    }\n'
         #
