@@ -100,8 +100,8 @@ class CodeGenNumpy(CodeGen):
                         type_checks.append('    assert {}.shape == ({}, {}, {})'.format(parameter, self.symtable[parameter].size, ele_type.rows, ele_type.cols))
                         size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
                     elif ele_type.is_vector():
-                        type_checks.append('    assert {}.shape == ({}, {})'.format(parameter, self.symtable[parameter].size, ele_type.rows))
-                        size_str = '{}, {}'.format(self.symtable[parameter].size, ele_type.rows)
+                        type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
+                        size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)
                     elif ele_type.is_scalar():
                         type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].size))
                         size_str = '{}'.format(self.symtable[parameter].size)
