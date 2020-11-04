@@ -94,6 +94,7 @@ class TypeWalker(NodeWalker):
         # self.directive_parsing = True   # directives grammar
         self.sum_subs = []
         self.sum_conds = []
+        self.la_content = ''
 
     def filter_symbol(self, symbol):
         if '`' in symbol:
@@ -110,7 +111,7 @@ class TypeWalker(NodeWalker):
     def reset(self):
         self.reset_state()
 
-    def reset_state(self):
+    def reset_state(self, la_content=''):
         self.symtable.clear()
         self.tmp_symtable.clear()
         self.parameters = []
@@ -124,6 +125,7 @@ class TypeWalker(NodeWalker):
         self.sum_subs = []
         self.sum_sym_list = []
         self.sum_conds = []
+        self.la_content = la_content
 
     def get_func_symbols(self):
         ret = {}
