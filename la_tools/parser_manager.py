@@ -192,7 +192,7 @@ def recreate_local_parser_cache():
     print('## Waiting for them to be saved.')
     for thread in PM.save_threads: thread.join()
     
-    print('## Coping the cache dir contents into the local dir.')
+    print('## Copying the cache dir contents into the local dir.')
     for f in Path(PM.cache_dir).glob('*.py'):
         shutil.copy( f, la_local_parsers )
     
