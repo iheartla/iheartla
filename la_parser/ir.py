@@ -225,7 +225,7 @@ class BlockNode(StmtNode):
 class AssignNode(StmtNode):
     def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Assignment, parse_info=parse_info, raw_text=raw_text)
-        self.left = left
+        self.left = left   # IdNode,MatrixIndexNode,VectorIndexNode,VectorIndexNode
         self.right = right
         self.op = None
         self.symbols = None
@@ -537,6 +537,16 @@ class MatrixIndexNode(ExprNode):
         self.main = None
         self.row_index = None
         self.col_index = None
+        self.subs = None
+
+    def contain_subscript(self):
+        return True
+
+    def get_all_ids(self):
+        return [self.main.get_main_id(), [self.row_index.get_main_id(), self.col_index.get_main_id()]]
+
+    def get_main_id(self):
+        return self.main.get_main_id()
 
 
 class VectorIndexNode(ExprNode):
@@ -544,6 +554,15 @@ class VectorIndexNode(ExprNode):
         super().__init__(IRNodeType.VectorIndex, parse_info=parse_info, raw_text=raw_text)
         self.main = None
         self.row_index = None
+
+    def contain_subscript(self):
+        return True
+
+    def get_all_ids(self):
+        return [self.main.get_main_id(), [self.row_index.get_main_id()]]
+
+    def get_main_id(self):
+        return self.main.get_main_id()
 
 
 class SequenceIndexNode(ExprNode):
@@ -554,6 +573,15 @@ class SequenceIndexNode(ExprNode):
         self.row_index = None
         self.col_index = None
         self.slice_matrix = False
+
+    def contain_subscript(self):
+        return True
+
+    def get_all_ids(self):
+        return [self.main.get_main_id(), [self.main_index.get_main_id(), self.row_index.get_main_id(), self.col_index.get_main_id()]]
+
+    def get_main_id(self):
+        return self.main.get_main_id()
 
 
 class SubexpressionNode(ExprNode):

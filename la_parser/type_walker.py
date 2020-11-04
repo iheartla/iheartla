@@ -1206,6 +1206,7 @@ class TypeWalker(NodeWalker):
             elif self.symtable[left_info.content].is_matrix():
                 assert len(node.right) == 2
                 ir_node = MatrixIndexNode()
+                ir_node.subs = get_right_list()
                 ir_node.main = left_info.ir
                 la_type = self.symtable[left_info.content].element_type
                 if '*' in node.right:

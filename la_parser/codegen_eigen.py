@@ -472,16 +472,16 @@ class CodeGenEigen(CodeGen):
         return left_info
 
     def visit_sparse_matrix(self, node, **kwargs):
-        lhs = kwargs[LHS]
+        assign_node = node.get_ancestor(IRNodeType.Assignment)
         type_info = node
         cur_m_id = type_info.symbol
         pre_list = []
         if_info = self.visit(node.ifs, **kwargs)
         pre_list += if_info.content
         pre_list.append(
-            '    {}.setFromTriplets(tripletList_{}.begin(), tripletList_{}.end());\n'.format(self.get_main_id(lhs),
-                                                                                             self.get_main_id(lhs),
-                                                                                             self.get_main_id(lhs)))
+            '    {}.setFromTriplets(tripletList_{}.begin(), tripletList_{}.end());\n'.format(assign_node.left.get_main_id(),
+                                                                                             assign_node.left.get_main_id(),
+                                                                                             assign_node.left.get_main_id()))
         return CodeNodeInfo(cur_m_id, pre_list)
 
     def visit_sparse_ifs(self, node, **kwargs):
@@ -513,7 +513,7 @@ class CodeGenEigen(CodeGen):
         # replace '_ij' with '(i,j)'
         stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '({}, {})'.format(subs[0], subs[1]))
         content.append('if({}){{\n'.format(cond_info.content))
-        content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}, {}, {}));\n'.format(assign_node.left.get_main_id(), subs[0], subs[1], stat_content))
+        content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}, {}, {}));\n'.format(assign_node.left.main.main_id, subs[0], subs[1], stat_content))
         content.append('}\n')
         self.convert_matrix = False
         return CodeNodeInfo(content)
@@ -784,8 +784,8 @@ class CodeGenEigen(CodeGen):
         if right_info.pre_list:
             content += "".join(right_info.pre_list)
         # y_i = stat
-        if self.contain_subscript(left_id):
-            left_ids = self.get_all_ids(left_id)
+        if node.left.contain_subscript():
+            left_ids = node.left.get_all_ids()
             left_subs = left_ids[1]
             if len(left_subs) == 2:  # matrix only
                 sequence = left_ids[0]  # y left_subs[0]
@@ -796,13 +796,11 @@ class CodeGenEigen(CodeGen):
                     # content += right_info.content
                     def_str = ""
                     if node.op != '+=':
-                        def_str = "    Eigen::SparseMatrix<double> {}({}, {});\n".format(self.get_main_id(left_id),
-                                                                                         self.symtable[self.get_main_id(
-                                                                                             left_id)].rows,
-                                                                                         self.symtable[self.get_main_id(
-                                                                                             left_id)].cols)
+                        def_str = "    Eigen::SparseMatrix<double> {}({}, {});\n".format(node.left.get_main_id(),
+                                                                                         self.symtable[node.left.get_main_id()].rows,
+                                                                                         self.symtable[node.left.get_main_id()].cols)
                         def_str += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(
-                            self.get_main_id(left_id))
+                            node.left.get_main_id())
                     content = def_str + content
                     pass
                 elif left_subs[0] == left_subs[1]:
@@ -821,7 +819,7 @@ class CodeGenEigen(CodeGen):
                         if sub_strs in right_var:
                             var_ids = self.get_all_ids(right_var)
                             right_info.content = right_info.content.replace(right_var, "{}({}, {})".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
-                    right_exp += "    {}({}, {}) = {};".format(self.get_main_id(left_id), left_subs[0], left_subs[1],
+                    right_exp += "    {}({}, {}) = {};".format(node.left.get_main_id(), left_subs[0], left_subs[1],
                                                                right_info.content)
                     if self.symtable[sequence].is_matrix():
                         if node.op == '=':
@@ -853,14 +851,14 @@ class CodeGenEigen(CodeGen):
                 ele_type = self.symtable[sequence].element_type
                 # definition
                 if self.symtable[sequence].is_sequence():
-                    right_exp += "    {}.at({}) = {}".format(self.get_main_id(left_id), left_subs[0],
+                    right_exp += "    {}.at({}) = {}".format(node.left.get_main_id(), left_subs[0],
                                                              right_info.content)
                     content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
                                                          self.symtable[sequence].size)
                     content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                             self.symtable[sequence].size, left_subs[0])
                 else:
-                    right_exp += "    {}[{}] = {}".format(self.get_main_id(left_id), left_subs[0],
+                    right_exp += "    {}[{}] = {}".format(node.left.get_main_id(), left_subs[0],
                                                              right_info.content)
                     content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
                                                          self.symtable[sequence].rows)
@@ -877,10 +875,10 @@ class CodeGenEigen(CodeGen):
                 if node.op == '+=':
                     op = ' += '
                 type_def = ""
-                if not self.def_dict[self.get_main_id(left_id)]:
-                    type_def = self.get_ctype(self.symtable[self.get_main_id(left_id)]) + ' '
-                    self.def_dict[self.get_main_id(left_id)] = True
-                right_exp += '    ' + type_def + self.get_main_id(left_id) + op + right_info.content + ';'
+                if not self.def_dict[node.left.get_main_id()]:
+                    type_def = self.get_ctype(self.symtable[node.left.get_main_id()]) + ' '
+                    self.def_dict[node.left.get_main_id()] = True
+                right_exp += '    ' + type_def + node.left.get_main_id() + op + right_info.content + ';'
                 content += right_exp
         content += '\n'
         la_remove_key(LHS, **kwargs)
