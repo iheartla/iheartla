@@ -20,6 +20,7 @@ class LaVarType(object):
         self.desc = desc   # only parameters need description
         self.element_type = element_type
         self.symbol = symbol
+        self.index_type = False
 
     def is_dim_constant(self):
         constant = False

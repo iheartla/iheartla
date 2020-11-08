@@ -303,6 +303,8 @@ class TypeWalker(NodeWalker):
         desc = ':'.join(ret[1:len(ret)])
         ir_node.desc = node.desc
         type_node = self.walk(node.type, **kwargs)
+        if node.index:
+            type_node.la_type.index_type = True
         type_node.parse_info = node.parseinfo
         type_node.la_type.desc = desc
         self.handle_identifier(id0, type_node)
