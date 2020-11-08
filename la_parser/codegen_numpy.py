@@ -688,7 +688,7 @@ class CodeGenNumpy(CodeGen):
                 if ele_type.is_matrix():
                     content += "    {} = np.zeros(({}, {}, {}))\n".format(sequence, self.symtable[sequence].size, ele_type.rows, ele_type.cols)
                 elif ele_type.is_vector():
-                    content += "    {} = np.zeros(({}, {}))\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
+                    content += "    {} = np.zeros(({}, {}, 1))\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
                 else:
                     content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].size)
                 content += "    for {} in range({}):\n".format(left_subs[0], self.symtable[sequence].size)
@@ -899,7 +899,7 @@ class CodeGenNumpy(CodeGen):
     def visit_dot_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("np.dot({}, {})".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
+        return CodeNodeInfo("np.dot(({}).ravel(), ({}).ravel())".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
 
     def visit_math_func(self, node, **kwargs):
         content = ''
