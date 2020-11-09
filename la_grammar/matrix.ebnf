@@ -66,17 +66,17 @@ term_in_matrix
     =
     | multiplication_in_matrix
     | division_in_matrix
-    | factor
+    | factor_in_matrix
     ;
 
 multiplication_in_matrix::Multiply
-    = left:term_in_matrix '⋅' right:factor
-    | left:term_in_matrix right:factor
+    = left:term_in_matrix '⋅' right:factor_in_matrix
+    | left:term_in_matrix right:factor_in_matrix
     ;
 
 division_in_matrix::Divide
     =
-    left:term_in_matrix  '/' right:factor
+    left:term_in_matrix  '/' right:factor_in_matrix
     ;
 
 vdots::MatrixVdots
@@ -99,4 +99,44 @@ number_matrix::NumMatrix
     = left:('0' | '1') '_' id1:(integer | identifier) {',' id2:(integer | identifier)}
     | left:('0' | '1') '_' '(' {hspace}  id1:(integer | identifier) { {hspace} (','|'×') {hspace} id2:(integer | identifier)} {hspace} ')'
     | id:'I' '_' id1:(integer | identifier)
+    ;
+
+
+factor_in_matrix::Factor
+    =
+    | op:operations_in_matrix
+    | sub:subexpression
+    | nm:number_matrix
+    | id:identifier
+    | num:number
+    | m:matrix
+    | s:sparse_matrix
+    | c:constant
+    ;
+
+operations_in_matrix
+    =
+    | power_operator
+    | function_operator
+    | norm_operator
+    #| trace_operator
+    #| eig_operator
+    #| derivative_operator
+    | inner_product_operator
+    | frobenius_product_operator
+    | hadamard_product_operator
+    | cross_product_operator
+    | kronecker_product_operator
+    #| dot_product_operator
+    | sum_in_matrix_operator
+    | integral_operator
+    | trans_operator
+    | solver_operator
+    | builtin_operators
+    ;
+
+sum_in_matrix_operator::Summation
+    = SUM '_' sub:identifier_alone {hspace}+ exp:term_in_matrix
+    | SUM '_' sub:identifier_alone &'(' {hspace} exp:term_in_matrix
+    | SUM '_(' {hspace} id:identifier_alone {hspace} 'for' {hspace} cond:if_condition {hspace} ')' {hspace}+ exp:term_in_matrix
     ;
