@@ -22,6 +22,9 @@ class LaVarType(object):
         self.symbol = symbol
         self.index_type = False
 
+    def is_integer_element(self):
+        return False
+
     def is_dim_constant(self):
         constant = False
         if self.var_type == VarTypeEnum.SEQUENCE:
@@ -91,6 +94,9 @@ class ScalarType(LaVarType):
             return 'scalar:integer'
         return 'scalar:double'
 
+    def is_integer_element(self):
+        return self.is_int
+
 
 class SequenceType(LaVarType):
     def __init__(self, size=0, desc=None, element_type=None, symbol=None):
@@ -99,6 +105,9 @@ class SequenceType(LaVarType):
 
     def get_signature(self):
         return "sequence,ele_type:{}".format(self.element_type.get_signature())
+
+    def is_integer_element(self):
+        return self.element_type.is_integer_element()
 
 
 class MatrixType(LaVarType):
@@ -125,6 +134,9 @@ class MatrixType(LaVarType):
         else:
             return "matrix,rows:{},cols:{}".format(self.rows, self.cols)
 
+    def is_integer_element(self):
+        return self.element_type.is_integer_element()
+
 
 class VectorType(LaVarType):
     def __init__(self, rows=0, desc=None, element_type=ScalarType(), symbol=None):
@@ -138,6 +150,9 @@ class VectorType(LaVarType):
         else:
             return "vector,rows:{}".format(self.rows)
 
+    def is_integer_element(self):
+        return self.element_type.is_integer_element()
+
 
 class SetType(LaVarType):
     def __init__(self, size=0, desc=None, element_type=None, symbol=None, int_list=None):
@@ -147,6 +162,12 @@ class SetType(LaVarType):
 
     def get_signature(self):
         return 'set'
+
+    def is_integer_element(self):
+        for value in self.int_list:
+            if not value:
+                return False
+        return True
 
 
 class IndexType(LaVarType):

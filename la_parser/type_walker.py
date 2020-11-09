@@ -304,6 +304,8 @@ class TypeWalker(NodeWalker):
         ir_node.desc = node.desc
         type_node = self.walk(node.type, **kwargs)
         if node.index:
+            # check index type condition
+            assert type_node.la_type.is_integer_element(), self.get_err_msg_info(node.id.parseinfo, "Invalid index type: element must be integer")
             type_node.la_type.index_type = True
         type_node.parse_info = node.parseinfo
         type_node.la_type.desc = desc
