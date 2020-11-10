@@ -263,9 +263,15 @@ class CodeGenLatex(CodeGen):
             return '{} \\in {} '.format(', '.join(item_list), right_info)
 
     def visit_not_in(self, node, **kwargs):
-        left_info = self.visit(node.left, **kwargs)
-        right_info = self.visit(node.right, **kwargs)
-        return left_info + 'not in' + right_info
+        item_list = []
+        for item in node.items:
+            item_info = self.visit(item, **kwargs)
+            item_list.append(item_info)
+        right_info = self.visit(node.set, **kwargs)
+        if len(item_list) > 1:
+            return '({}) \\notin {} '.format(', '.join(item_list), right_info)
+        else:
+            return '{} \\notin {} '.format(', '.join(item_list), right_info)
 
     def visit_bin_comp(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)

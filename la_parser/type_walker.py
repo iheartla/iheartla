@@ -619,7 +619,7 @@ class TypeWalker(NodeWalker):
             left_ids = self.get_all_ids(id0)
             left_subs = left_ids[1]
             for sub_sym in left_subs:
-                self.symtable[sub_sym] = ScalarType()
+                self.symtable[sub_sym] = ScalarType(index_type=True)
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         # ir

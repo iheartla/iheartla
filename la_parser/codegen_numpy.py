@@ -759,34 +759,57 @@ class CodeGenNumpy(CodeGen):
     def visit_in(self, node, **kwargs):
         item_list = []
         pre_list = []
-        for item in node.items:
-            item_info = self.visit(item, **kwargs)
-            item_list.append(item_info.content)
         right_info = self.visit(node.set, **kwargs)
+        if node.set.la_type.index_type:
+            for item in node.items:
+                item_info = self.visit(item, **kwargs)
+                item_content = item_info.content
+                if not item.la_type.index_type:
+                    item_content = "{}-1".format(item_info.content)
+                item_list.append(item_content)
+        else:
+            for item in node.items:
+                item_info = self.visit(item, **kwargs)
+                if not item.la_type.index_type:
+                    item_content = "{}".format(item_info.content)
+                else:
+                    item_content = "{}+1".format(item_info.content)
+                item_list.append(item_content)
         content = '(' + ', '.join(item_list) + ') in ' + right_info.content
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_not_in(self, node, **kwargs):
         item_list = []
         pre_list = []
-        for item in node.items:
-            item_info = self.visit(item, **kwargs)
-            item_list.append(item_info.content)
         right_info = self.visit(node.set, **kwargs)
+        if node.set.la_type.index_type:
+            for item in node.items:
+                item_info = self.visit(item, **kwargs)
+                item_content = item_info.content
+                if not item.la_type.index_type:
+                    item_content = "{}-1".format(item_info.content)
+                item_list.append(item_content)
+        else:
+            for item in node.items:
+                item_info = self.visit(item, **kwargs)
+                if not item.la_type.index_type:
+                    item_content = "{}".format(item_info.content)
+                else:
+                    item_content = "{}+1".format(item_info.content)
+                item_list.append(item_content)
         content = '(' + ', '.join(item_list) + ') not in ' + right_info.content
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_bin_comp(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
-        right_info = self.visit(node.right, **kwargs)   
-        if node.left.la_type.index_type:
-            left_content = left_info.content
-        else:
-            left_content = "{}-1".format(left_info.content)
-        if node.right.la_type.index_type:
-            right_content = right_info.content
-        else:
-            right_content = "{}-1".format(right_info.content)
+        right_info = self.visit(node.right, **kwargs)
+        left_content = left_info.content
+        right_content = right_info.content
+        if node.left.la_type.index_type or node.right.la_type.index_type:
+            if not node.left.la_type.index_type:
+                left_content = "{}-1".format(left_info.content)
+            if not node.right.la_type.index_type:
+                right_content = "{}-1".format(right_info.content)
         left_info.content = left_content + ' {} '.format(self.get_bin_comp_str(node.comp_type)) + right_content
         left_info.pre_list += right_info.pre_list
         return left_info
