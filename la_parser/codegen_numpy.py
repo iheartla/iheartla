@@ -542,42 +542,76 @@ class CodeGenNumpy(CodeGen):
         main_info = self.visit(node.main, **kwargs)
         if node.row_index is not None:
             row_info = self.visit(node.row_index, **kwargs)
+            if node.row_index.la_type.index_type:
+                row_content = row_info.content
+            else:
+                row_content = "{}-1".format(row_info.content)
             if node.col_index is not None:
                 col_info = self.visit(node.col_index, **kwargs)
-                content = "{}[{}, {}]".format(main_info.content, row_info.content, col_info.content)
+                if node.col_index.la_type.index_type:
+                    col_content = col_info.content
+                else:
+                    col_content = "{}-1".format(col_info.content)
+                content = "{}[{}, {}]".format(main_info.content, row_content, col_content)
             else:
-                content = "{}[{}, :]".format(main_info.content, row_info.content)
+                content = "{}[{}, :]".format(main_info.content, row_content)
         else:
             col_info = self.visit(node.col_index, **kwargs)
-            content = "{}[:, {}]".format(main_info.content, col_info.content)
+            if node.col_index.la_type.index_type:
+                content = "{}[:, {}]".format(main_info.content, col_info.content)
+            else:
+                content = "{}[:, {}-1]".format(main_info.content, col_info.content)
         return CodeNodeInfo(content)
 
     def visit_vector_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
         index_info = self.visit(node.row_index, **kwargs)
-        return CodeNodeInfo("{}[{}]".format(main_info.content, index_info.content))
+        if node.row_index.la_type.index_type:
+            return CodeNodeInfo("{}[{}]".format(main_info.content, index_info.content))
+        else:
+            return CodeNodeInfo("{}[{}-1]".format(main_info.content, index_info.content))
 
     def visit_sequence_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
         main_index_info = self.visit(node.main_index, **kwargs)
+        if node.main_index.la_type.index_type:
+            main_index_content = main_index_info.content
+        else:
+            main_index_content = "{}-1".format(main_index_info.content)
         if node.slice_matrix:
             if node.row_index is not None:
                 row_info = self.visit(node.row_index, **kwargs)
-                content = "{}[{}][{}, :]".format(main_info.content, main_index_info.content, row_info.content)
+                if node.row_index.la_type.index_type:
+                    row_content = row_info.content
+                else:
+                    row_content = "{}-1".format(row_info.content)
+                content = "{}[{}][{}, :]".format(main_info.content, main_index_content, row_content)
             else:
                 col_info = self.visit(node.col_index, **kwargs)
-                content = "{}[{}][:, {}]".format(main_info.content, main_index_info.content, col_info.content)
+                if node.col_index.la_type.index_type:
+                    col_content = col_info.content
+                else:
+                    col_content = "{}-1".format(col_info.content)
+                content = "{}[{}][:, {}]".format(main_info.content, main_index_content, col_content)
         else:
             if node.row_index is not None:
                 row_info = self.visit(node.row_index, **kwargs)
+                if node.row_index.la_type.index_type:
+                    row_content = row_info.content
+                else:
+                    row_content = "{}-1".format(row_info.content)
                 if node.col_index is not None:
                     col_info = self.visit(node.col_index, **kwargs)
-                    content = "{}[{}][{}, {}]".format(main_info.content, main_index_info.content, row_info.content,
-                                                      col_info.content)
+                    if node.col_index.la_type.index_type:
+                        col_content = col_info.content
+                    else:
+                        col_content = "{}-1".format(col_info.content)
+                    content = "{}[{}][{}, {}]".format(main_info.content, main_index_content, row_content,
+                                                      col_content)
                 else:
-                    content = "{}[{}][{}]".format(main_info.content, main_index_info.content, row_info.content)
+                    content = "{}[{}][{}]".format(main_info.content, main_index_content, row_content)
             else:
-                content = "{}[{}]".format(main_info.content, main_index_info.content)
+                content = "{}[{}]".format(main_info.content, main_index_content)
         return CodeNodeInfo(content)
 
     def visit_add(self, node, **kwargs):
