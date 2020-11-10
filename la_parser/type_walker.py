@@ -694,7 +694,6 @@ class TypeWalker(NodeWalker):
             self.sum_subs.append(id_info.content)
             self.sum_conds.append(True)
             ir_node.id = id_info.ir
-            ir_node.cond = self.walk(node.cond, **kwargs).ir
             id_info.ir.set_parent(ir_node)
             subs = id_info.content
             if LHS in kwargs:
@@ -702,6 +701,9 @@ class TypeWalker(NodeWalker):
                 lhs_ids = self.get_all_ids(lhs)
                 # assert lhs_ids[1][0] == lhs_ids[1][1], "multiple subscripts for sum"
             sub_parse_info = node.id.parseinfo
+            assert subs not in self.symtable, self.get_err_msg_info(sub_parse_info, "Subscript has been defined")
+            self.symtable[subs] = ScalarType(index_type=True)  # add subscript to symbol table temporarily
+            ir_node.cond = self.walk(node.cond, **kwargs).ir
         else:
             sub_info = self.walk(node.sub)
             self.sum_subs.append(sub_info.content)
@@ -711,8 +713,8 @@ class TypeWalker(NodeWalker):
             sub_info.ir.set_parent(ir_node)
             subs = sub_info.content
             sub_parse_info = node.sub.parseinfo
-        assert subs not in self.symtable, self.get_err_msg_info(sub_parse_info, "Subscript has been defined")
-        self.symtable[subs] = ScalarType()  # add subscript to symbol table temporarily
+            assert subs not in self.symtable, self.get_err_msg_info(sub_parse_info, "Subscript has been defined")
+            self.symtable[subs] = ScalarType(index_type=True)  # add subscript to symbol table temporarily
         self.logger.debug("new sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         new_id = self.generate_var_name("sum")
         ret_info = self.walk(node.exp, **kwargs)
@@ -1344,7 +1346,7 @@ class TypeWalker(NodeWalker):
 
     def walk_Integer(self, node, **kwargs):
         value = ''.join(node.value)
-        node_type = ScalarType(is_int=True)
+        node_type = ScalarType(is_int=True, is_constant=True)
         node_info = NodeInfo(node_type, content=int(value))
         #
         ir_node = IntegerNode(parse_info=node.parseinfo)
@@ -1928,6 +1930,8 @@ class TypeWalker(NodeWalker):
         elif op == TypeInferenceEnum.INF_MATRIX_ROW:
             # assert left_type.var_type == right_type.var_type
             ret_type = copy.deepcopy(left_type)
+        if left_type.index_type or right_type.index_type:
+            ret_type.index_type = True
         return ret_type
 
     def contain_subscript(self, identifier):

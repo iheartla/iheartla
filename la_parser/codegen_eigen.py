@@ -955,7 +955,15 @@ class CodeGenEigen(CodeGen):
     def visit_bin_comp(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        left_info.content = left_info.content + ' {} '.format(self.get_bin_comp_str(node.comp_type)) + right_info.content
+        if node.left.la_type.index_type:
+            left_content = left_info.content
+        else:
+            left_content = "{}-1".format(left_info.content)
+        if node.right.la_type.index_type:
+            right_content = right_info.content
+        else:
+            right_content = "{}-1".format(right_info.content)
+        left_info.content = left_content + ' {} '.format(self.get_bin_comp_str(node.comp_type)) + right_content
         left_info.pre_list += right_info.pre_list
         return left_info
 
