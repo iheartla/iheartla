@@ -330,7 +330,7 @@ class CodeGenLatex(CodeGen):
     def visit_vector_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
         index_info = self.visit(node.row_index, **kwargs)
-        return "{}_{}".format(main_info, index_info)
+        return "{}_{{ {} }}".format(main_info, index_info)
 
     def visit_sequence_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)

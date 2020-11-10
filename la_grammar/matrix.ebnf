@@ -116,23 +116,58 @@ factor_in_matrix::Factor
 
 operations_in_matrix
     =
-    | power_operator
+    | power_in_matrix_operator
     | function_operator
     | norm_operator
     #| trace_operator
     #| eig_operator
     #| derivative_operator
     | inner_product_operator
-    | frobenius_product_operator
-    | hadamard_product_operator
-    | cross_product_operator
-    | kronecker_product_operator
-    #| dot_product_operator
+    | frobenius_product_in_matrix_operator
+    | hadamard_product_in_matrix_operator
+    | cross_product_in_matrix_operator
+    | kronecker_product_in_matrix_operator
+    #| dot_product_in_matrix_operator
     | sum_in_matrix_operator
     | integral_operator
-    | trans_operator
-    | solver_operator
+    | trans_in_matrix_operator
+    | solver_in_matrix_operator
     | builtin_operators
+    ;
+
+power_in_matrix_operator::Power
+    = base:factor_in_matrix t:'^T'
+    | base:factor_in_matrix r:'^(-1)'
+    | base:factor_in_matrix '^' power:factor_in_matrix
+    ;
+
+
+frobenius_product_in_matrix_operator::FroProduct
+    = left:factor_in_matrix  ':' right:factor_in_matrix
+    ;
+
+hadamard_product_in_matrix_operator::HadamardProduct
+    = left:factor_in_matrix  '○'  right:factor_in_matrix
+    ;
+
+cross_product_in_matrix_operator::CrossProduct
+    = left:factor_in_matrix '×'   right:factor_in_matrix
+    ;
+
+kronecker_product_in_matrix_operator::KroneckerProduct
+    = left:factor_in_matrix '⨂' right:factor_in_matrix
+    ;
+
+dot_product_in_matrix_operator::DotProduct
+    = left:factor_in_matrix '⋅' right:factor_in_matrix
+    ;
+
+trans_in_matrix_operator::Transpose
+    = f:factor_in_matrix 'ᵀ'
+    ;
+
+solver_in_matrix_operator::Solver
+    = left:identifier '\' right:identifier
     ;
 
 sum_in_matrix_operator::Summation

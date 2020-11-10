@@ -14,13 +14,13 @@ class VarTypeEnum(Enum):
 
 
 class LaVarType(object):
-    def __init__(self, var_type, desc=None, element_type=None, symbol=None):
+    def __init__(self, var_type, desc=None, element_type=None, symbol=None, index_type=False):
         super().__init__()
         self.var_type = var_type
         self.desc = desc   # only parameters need description
         self.element_type = element_type
         self.symbol = symbol
-        self.index_type = False
+        self.index_type = index_type
 
     def is_integer_element(self):
         return False
@@ -85,9 +85,10 @@ class LaVarType(object):
 
 
 class ScalarType(LaVarType):
-    def __init__(self, is_int=False, desc=None, element_type=None, symbol=None):
-        LaVarType.__init__(self, VarTypeEnum.SCALAR, desc, element_type, symbol)
+    def __init__(self, is_int=False, desc=None, element_type=None, symbol=None, index_type=False, is_constant=False):
+        LaVarType.__init__(self, VarTypeEnum.SCALAR, desc, element_type, symbol, index_type=index_type)
         self.is_int = is_int
+        self.is_constant = is_constant  # constant number
 
     def get_signature(self):
         if self.is_int:

@@ -849,33 +849,46 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self.name_last_node('exp')
             with self._option():
                 self._SUM_()
-                self._token('_(')
-
-                def block3():
-                    self._hspace_()
-                self._closure(block3)
+                self._token('_')
                 self._identifier_alone_()
-                self.name_last_node('id')
+                self.name_last_node('sub')
+                with self._if():
+                    self._token('(')
 
-                def block5():
+                def block4():
                     self._hspace_()
-                self._closure(block5)
-                self._token('for')
+                self._closure(block4)
+                self._term_()
+                self.name_last_node('exp')
+            with self._option():
+                self._SUM_()
+                self._token('_(')
 
                 def block6():
                     self._hspace_()
                 self._closure(block6)
-                self._if_condition_()
-                self.name_last_node('cond')
+                self._identifier_alone_()
+                self.name_last_node('id')
 
                 def block8():
                     self._hspace_()
                 self._closure(block8)
-                self._token(')')
+                self._token('for')
 
                 def block9():
                     self._hspace_()
-                self._positive_closure(block9)
+                self._closure(block9)
+                self._if_condition_()
+                self.name_last_node('cond')
+
+                def block11():
+                    self._hspace_()
+                self._closure(block11)
+                self._token(')')
+
+                def block12():
+                    self._hspace_()
+                self._positive_closure(block12)
                 self._term_()
                 self.name_last_node('exp')
             self._error('no available options')
@@ -1884,7 +1897,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._division_in_matrix_()
             with self._option():
-                self._factor_()
+                self._factor_in_matrix_()
             self._error('no available options')
 
     @tatsumasu('Multiply')
@@ -1895,12 +1908,12 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._term_in_matrix_()
                 self.name_last_node('left')
                 self._token('⋅')
-                self._factor_()
+                self._factor_in_matrix_()
                 self.name_last_node('right')
             with self._option():
                 self._term_in_matrix_()
                 self.name_last_node('left')
-                self._factor_()
+                self._factor_in_matrix_()
                 self.name_last_node('right')
             self._error('no available options')
         self.ast._define(
@@ -1914,7 +1927,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._term_in_matrix_()
         self.name_last_node('left')
         self._token('/')
-        self._factor_()
+        self._factor_in_matrix_()
         self.name_last_node('right')
         self.ast._define(
             ['left', 'right'],
@@ -2039,6 +2052,249 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             self._error('no available options')
         self.ast._define(
             ['id', 'id1', 'id2', 'left'],
+            []
+        )
+
+    @tatsumasu('Factor')
+    @leftrec
+    def _factor_in_matrix_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._operations_in_matrix_()
+                self.name_last_node('op')
+            with self._option():
+                self._subexpression_()
+                self.name_last_node('sub')
+            with self._option():
+                self._number_matrix_()
+                self.name_last_node('nm')
+            with self._option():
+                self._identifier_()
+                self.name_last_node('id')
+            with self._option():
+                self._number_()
+                self.name_last_node('num')
+            with self._option():
+                self._matrix_()
+                self.name_last_node('m')
+            with self._option():
+                self._sparse_matrix_()
+                self.name_last_node('s')
+            with self._option():
+                self._constant_()
+                self.name_last_node('c')
+            self._error('no available options')
+        self.ast._define(
+            ['c', 'id', 'm', 'nm', 'num', 'op', 's', 'sub'],
+            []
+        )
+
+    @tatsumasu()
+    @nomemo
+    def _operations_in_matrix_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._power_in_matrix_operator_()
+            with self._option():
+                self._function_operator_()
+            with self._option():
+                self._norm_operator_()
+            with self._option():
+                self._inner_product_operator_()
+            with self._option():
+                self._frobenius_product_in_matrix_operator_()
+            with self._option():
+                self._hadamard_product_in_matrix_operator_()
+            with self._option():
+                self._cross_product_in_matrix_operator_()
+            with self._option():
+                self._kronecker_product_in_matrix_operator_()
+            with self._option():
+                self._sum_in_matrix_operator_()
+            with self._option():
+                self._integral_operator_()
+            with self._option():
+                self._trans_in_matrix_operator_()
+            with self._option():
+                self._solver_in_matrix_operator_()
+            with self._option():
+                self._builtin_operators_()
+            self._error('no available options')
+
+    @tatsumasu('Power')
+    @nomemo
+    def _power_in_matrix_operator_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._factor_in_matrix_()
+                self.name_last_node('base')
+                self._token('^T')
+                self.name_last_node('t')
+            with self._option():
+                self._factor_in_matrix_()
+                self.name_last_node('base')
+                self._token('^(-1)')
+                self.name_last_node('r')
+            with self._option():
+                self._factor_in_matrix_()
+                self.name_last_node('base')
+                self._token('^')
+                self._factor_in_matrix_()
+                self.name_last_node('power')
+            self._error('no available options')
+        self.ast._define(
+            ['base', 'power', 'r', 't'],
+            []
+        )
+
+    @tatsumasu('FroProduct')
+    @nomemo
+    def _frobenius_product_in_matrix_operator_(self):  # noqa
+        self._factor_in_matrix_()
+        self.name_last_node('left')
+        self._token(':')
+        self._factor_in_matrix_()
+        self.name_last_node('right')
+        self.ast._define(
+            ['left', 'right'],
+            []
+        )
+
+    @tatsumasu('HadamardProduct')
+    @nomemo
+    def _hadamard_product_in_matrix_operator_(self):  # noqa
+        self._factor_in_matrix_()
+        self.name_last_node('left')
+        self._token('○')
+        self._factor_in_matrix_()
+        self.name_last_node('right')
+        self.ast._define(
+            ['left', 'right'],
+            []
+        )
+
+    @tatsumasu('CrossProduct')
+    @nomemo
+    def _cross_product_in_matrix_operator_(self):  # noqa
+        self._factor_in_matrix_()
+        self.name_last_node('left')
+        self._token('×')
+        self._factor_in_matrix_()
+        self.name_last_node('right')
+        self.ast._define(
+            ['left', 'right'],
+            []
+        )
+
+    @tatsumasu('KroneckerProduct')
+    @nomemo
+    def _kronecker_product_in_matrix_operator_(self):  # noqa
+        self._factor_in_matrix_()
+        self.name_last_node('left')
+        self._token('⨂')
+        self._factor_in_matrix_()
+        self.name_last_node('right')
+        self.ast._define(
+            ['left', 'right'],
+            []
+        )
+
+    @tatsumasu('DotProduct')
+    def _dot_product_in_matrix_operator_(self):  # noqa
+        self._factor_in_matrix_()
+        self.name_last_node('left')
+        self._token('⋅')
+        self._factor_in_matrix_()
+        self.name_last_node('right')
+        self.ast._define(
+            ['left', 'right'],
+            []
+        )
+
+    @tatsumasu('Transpose')
+    @nomemo
+    def _trans_in_matrix_operator_(self):  # noqa
+        self._factor_in_matrix_()
+        self.name_last_node('f')
+        self._token('ᵀ')
+        self.ast._define(
+            ['f'],
+            []
+        )
+
+    @tatsumasu('Solver')
+    def _solver_in_matrix_operator_(self):  # noqa
+        self._identifier_()
+        self.name_last_node('left')
+        self._token('\\')
+        self._identifier_()
+        self.name_last_node('right')
+        self.ast._define(
+            ['left', 'right'],
+            []
+        )
+
+    @tatsumasu('Summation')
+    def _sum_in_matrix_operator_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._SUM_()
+                self._token('_')
+                self._identifier_alone_()
+                self.name_last_node('sub')
+
+                def block1():
+                    self._hspace_()
+                self._positive_closure(block1)
+                self._term_in_matrix_()
+                self.name_last_node('exp')
+            with self._option():
+                self._SUM_()
+                self._token('_')
+                self._identifier_alone_()
+                self.name_last_node('sub')
+                with self._if():
+                    self._token('(')
+
+                def block4():
+                    self._hspace_()
+                self._closure(block4)
+                self._term_in_matrix_()
+                self.name_last_node('exp')
+            with self._option():
+                self._SUM_()
+                self._token('_(')
+
+                def block6():
+                    self._hspace_()
+                self._closure(block6)
+                self._identifier_alone_()
+                self.name_last_node('id')
+
+                def block8():
+                    self._hspace_()
+                self._closure(block8)
+                self._token('for')
+
+                def block9():
+                    self._hspace_()
+                self._closure(block9)
+                self._if_condition_()
+                self.name_last_node('cond')
+
+                def block11():
+                    self._hspace_()
+                self._closure(block11)
+                self._token(')')
+
+                def block12():
+                    self._hspace_()
+                self._positive_closure(block12)
+                self._term_in_matrix_()
+                self.name_last_node('exp')
+            self._error('no available options')
+        self.ast._define(
+            ['cond', 'exp', 'id', 'sub'],
             []
         )
 
@@ -2759,16 +3015,25 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             def block5():
                 self._hspace_()
             self._closure(block5)
+            self._token('index')
+            self.name_last_node('index')
+        self._closure(block4)
+
+        def block7():
+
+            def block8():
+                self._hspace_()
+            self._closure(block8)
             self._token(':')
 
-            def block6():
+            def block9():
                 self._hspace_()
-            self._closure(block6)
+            self._closure(block9)
             self._description_()
             self.name_last_node('desc')
-        self._closure(block4)
+        self._closure(block7)
         self.ast._define(
-            ['desc', 'id', 'type'],
+            ['desc', 'id', 'index', 'type'],
             []
         )
 
@@ -4090,6 +4355,39 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
     def number_matrix(self, ast):  # noqa
         return ast
 
+    def factor_in_matrix(self, ast):  # noqa
+        return ast
+
+    def operations_in_matrix(self, ast):  # noqa
+        return ast
+
+    def power_in_matrix_operator(self, ast):  # noqa
+        return ast
+
+    def frobenius_product_in_matrix_operator(self, ast):  # noqa
+        return ast
+
+    def hadamard_product_in_matrix_operator(self, ast):  # noqa
+        return ast
+
+    def cross_product_in_matrix_operator(self, ast):  # noqa
+        return ast
+
+    def kronecker_product_in_matrix_operator(self, ast):  # noqa
+        return ast
+
+    def dot_product_in_matrix_operator(self, ast):  # noqa
+        return ast
+
+    def trans_in_matrix_operator(self, ast):  # noqa
+        return ast
+
+    def solver_in_matrix_operator(self, ast):  # noqa
+        return ast
+
+    def sum_in_matrix_operator(self, ast):  # noqa
+        return ast
+
     def hspace(self, ast):  # noqa
         return ast
 
@@ -4588,6 +4886,17 @@ class NumMatrix(ModelBase):
     left = None
 
 
+class Factor(ModelBase):
+    c = None
+    id = None
+    m = None
+    nm = None
+    num = None
+    op = None
+    s = None
+    sub = None
+
+
 class IdentifierSubscript(ModelBase):
     left = None
     right = None
@@ -4700,6 +5009,7 @@ class WhereConditions(ModelBase):
 class WhereCondition(ModelBase):
     desc = None
     id = None
+    index = None
     type = None
 
 
@@ -4760,17 +5070,6 @@ class Assignment(ModelBase):
 class IdentifierAlone(ModelBase):
     id = None
     value = None
-
-
-class Factor(ModelBase):
-    c = None
-    id = None
-    m = None
-    nm = None
-    num = None
-    op = None
-    s = None
-    sub = None
 
 
 class Subexpression(ModelBase):
