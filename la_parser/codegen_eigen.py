@@ -984,11 +984,10 @@ class CodeGenEigen(CodeGen):
         right_info = self.visit(node.right, **kwargs)
         left_content = left_info.content
         right_content = right_info.content
-        if node.left.la_type.index_type or node.right.la_type.index_type:
-            if not node.left.la_type.index_type:
-                left_content = "{}-1".format(left_info.content)
-            if not node.right.la_type.index_type:
-                right_content = "{}-1".format(right_info.content)
+        if node.left.la_type.index_type and not node.right.la_type.index_type:
+            left_content = "{}+1".format(left_info.content)
+        if not node.left.la_type.index_type and node.right.la_type.index_type:
+            right_content = "{}+1".format(right_info.content)
         left_info.content = left_content + ' {} '.format(self.get_bin_comp_str(node.comp_type)) + right_content
         left_info.pre_list += right_info.pre_list
         return left_info

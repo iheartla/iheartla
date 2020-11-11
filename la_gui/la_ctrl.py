@@ -21,7 +21,7 @@ class LaTextControl(bc.BaseTextControl):
         self.SetEditable(True)
         self.keywords = ['where', 'trace', 'vec', 'diag', 'Id', 'eig', 'conj', 'Re', 'Im', 'inv', 'sqrt', 'exp',
                          'log', 'det', 'svd', 'rank', 'null', 'orth', 'qr', 'sum', 'symmetric', 'diagonal', 'sparse', 'if',
-                         'otherwise', 'is', 'in']
+                         'otherwise', 'is', 'in', 'index']
         self.unicode_dict = {'R': 'ℝ', 'Z': 'ℤ', 'x': '×', 'times': '×', 'inf': '∞', 'in': '∈', 'sum': '∑',
                              'had': '○', 'kro': '⨂', 'dot': '⋅', 'T': 'ᵀ', 'par': '∂', 'emp': '∅',
                              'arr': '→', 'int': '∫', 'dbl': '‖', 'pi': 'π', 'sig': 'σ', 'row': 'ρ',
