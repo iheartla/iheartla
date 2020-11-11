@@ -388,11 +388,11 @@ class CodeGenEigen(CodeGen):
         sym_info = node.sym_dict[target_var[0]]
         if self.symtable[target_var[0]].is_matrix():  # todo
             if sub == sym_info[0]:
-                content.append("for(int {}=0; {}<{}.rows(); {}++){{\n".format(sub, sub, target_var[0], sub))
+                content.append("for(int {}=1; {}<={}.rows(); {}++){{\n".format(sub, sub, target_var[0], sub))
             else:
-                content.append("for(int {}=0; {}<{}.cols(); {}++){{\n".format(sub, sub, target_var[0], sub))
+                content.append("for(int {}=1; {}<={}.cols(); {}++){{\n".format(sub, sub, target_var[0], sub))
         else:
-            content.append("for(int {}=0; {}<{}.size(); {}++){{\n".format(sub, sub, target_var[0], sub))
+            content.append("for(int {}=1; {}<={}.size(); {}++){{\n".format(sub, sub, target_var[0], sub))
         if exp_info.pre_list:  # catch pre_list
             list_content = "".join(exp_info.pre_list)
             # content += exp_info.pre_list
@@ -488,8 +488,8 @@ class CodeGenEigen(CodeGen):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
         subs = assign_node.left.subs
-        ret = ["    for( int {}=0; {}<{}; {}++){{\n".format(subs[0], subs[0], sparse_node.la_type.rows, subs[0]),
-               "        for( int {}=0; {}<{}; {}++){{\n".format(subs[1], subs[1], sparse_node.la_type.cols, subs[1])]
+        ret = ["    for( int {}=1; {}<={}; {}++){{\n".format(subs[0], subs[0], sparse_node.la_type.rows, subs[0]),
+               "        for( int {}=1; {}<={}; {}++){{\n".format(subs[1], subs[1], sparse_node.la_type.cols, subs[1])]
         pre_list = []
         for cond in node.cond_list:
             cond_info = self.visit(cond, **kwargs)
@@ -513,7 +513,7 @@ class CodeGenEigen(CodeGen):
         # replace '_ij' with '(i,j)'
         stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '({}, {})'.format(subs[0], subs[1]))
         content.append('if({}){{\n'.format(cond_info.content))
-        content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}, {}, {}));\n'.format(assign_node.left.main.main_id, subs[0], subs[1], stat_content))
+        content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(assign_node.left.main.main_id, subs[0], subs[1], stat_content))
         content.append('}\n')
         self.convert_matrix = False
         return CodeNodeInfo(content)
@@ -840,7 +840,7 @@ class CodeGenEigen(CodeGen):
                 elif left_subs[0] == left_subs[1]:
                     # L_ii
                     content = ""
-                    content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0],
+                    content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                             self.symtable[sequence].rows, left_subs[0])
                     if right_info.pre_list:
                         for list in right_info.pre_list:
@@ -863,9 +863,9 @@ class CodeGenEigen(CodeGen):
                                                                                                               sequence].rows,
                                                                                                           self.symtable[
                                                                                                               sequence].cols)
-                    content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0],
+                    content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                             self.symtable[sequence].rows, left_subs[0])
-                    content += "        for( int {}=0; {}<{}; {}++){{\n".format(left_subs[1], left_subs[1],
+                    content += "        for( int {}=1; {}<={}; {}++){{\n".format(left_subs[1], left_subs[1],
                                                                                 self.symtable[sequence].cols,
                                                                                 left_subs[1])
                     content += "        " + right_exp + ";\n"
@@ -889,14 +889,14 @@ class CodeGenEigen(CodeGen):
                                                              right_info.content)
                     content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
                                                          self.symtable[sequence].size)
-                    content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0],
+                    content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                             self.symtable[sequence].size, left_subs[0])
                 else:
                     right_exp += "    {}[{}] = {}".format(node.left.get_main_id(), left_subs[0],
                                                              right_info.content)
                     content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
                                                          self.symtable[sequence].rows)
-                    content += "    for( int {}=0; {}<{}; {}++){{\n".format(left_subs[0], left_subs[0],
+                    content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                             self.symtable[sequence].rows, left_subs[0])
                 content += "    " + right_exp + ";\n"
                 content += '    }\n'

@@ -282,7 +282,7 @@ class CodeGenNumpy(CodeGen):
             content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].size, ele_type.rows, ele_type.cols))
         else:
             content.append("{} = 0\n".format(assign_id))
-        content.append("for {} in range(len({})):\n".format(sub, target_var[0]))
+        content.append("for {} in range(1, len({})+1):\n".format(sub, target_var[0]))
         if exp_info.pre_list:   # catch pre_list
             list_content = "".join(exp_info.pre_list)
             # content += exp_info.pre_list
@@ -384,8 +384,8 @@ class CodeGenNumpy(CodeGen):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
         subs = assign_node.left.subs
-        ret = ["    for {} in range({}):\n".format(subs[0], sparse_node.la_type.rows),
-               "        for {} in range({}):\n".format(subs[1], sparse_node.la_type.cols)]
+        ret = ["    for {} in range(1, {}+1):\n".format(subs[0], sparse_node.la_type.rows),
+               "        for {} in range(1, {}+1):\n".format(subs[1], sparse_node.la_type.cols)]
         pre_list = []
         for cond in node.cond_list:
             cond_info = self.visit(cond, **kwargs)
@@ -407,7 +407,7 @@ class CodeGenNumpy(CodeGen):
         # replace '_ij' with '(i,j)'
         stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '[{}][{}]'.format(subs[0], subs[1]))
         content.append('if {}:\n'.format(cond_info.content))
-        content.append('    {}.append(({}, {}))\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
+        content.append('    {}.append(({}-1, {}-1))\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
         content.append('    {}.append({})\n'.format(sparse_node.la_type.value_var, stat_content))
         self.convert_matrix = False
         return CodeNodeInfo(content)
@@ -687,7 +687,7 @@ class CodeGenNumpy(CodeGen):
                 elif left_subs[0] == left_subs[1]:
                     # L_ii
                     content = ""
-                    content += "    for {} in range({}):\n".format(left_subs[0], self.symtable[sequence].rows)
+                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
                     if right_info.pre_list:
                         for list in right_info.pre_list:
                             lines = list.split('\n')
@@ -705,8 +705,8 @@ class CodeGenNumpy(CodeGen):
                             content += "    {} = np.zeros(({}, {}))\n".format(sequence,
                                                                               self.symtable[sequence].rows,
                                                                               self.symtable[sequence].cols)
-                    content += "    for {} in range({}):\n".format(left_subs[0], self.symtable[sequence].rows)
-                    content += "        for {} in range({}):\n".format(left_subs[1], self.symtable[sequence].cols)
+                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
+                    content += "        for {} in range(1, {}+1):\n".format(left_subs[1], self.symtable[sequence].cols)
                     content += "        " + right_exp
                     # content += '\n'
             elif len(left_subs) == 1: # sequence only
@@ -725,7 +725,7 @@ class CodeGenNumpy(CodeGen):
                     content += "    {} = np.zeros(({}, {}, 1))\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
                 else:
                     content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].size)
-                content += "    for {} in range({}):\n".format(left_subs[0], self.symtable[sequence].size)
+                content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].size)
                 content += "    " + right_exp
                 # content += '\n'
         #

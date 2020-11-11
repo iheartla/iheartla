@@ -619,7 +619,7 @@ class TypeWalker(NodeWalker):
             left_ids = self.get_all_ids(id0)
             left_subs = left_ids[1]
             for sub_sym in left_subs:
-                self.symtable[sub_sym] = ScalarType(index_type=True)
+                self.symtable[sub_sym] = ScalarType(index_type=False)
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         # ir
@@ -702,7 +702,7 @@ class TypeWalker(NodeWalker):
                 # assert lhs_ids[1][0] == lhs_ids[1][1], "multiple subscripts for sum"
             sub_parse_info = node.id.parseinfo
             assert subs not in self.symtable, self.get_err_msg_info(sub_parse_info, "Subscript has been defined")
-            self.symtable[subs] = ScalarType(index_type=True)  # add subscript to symbol table temporarily
+            self.symtable[subs] = ScalarType(index_type=False)  # add subscript to symbol table temporarily
             ir_node.cond = self.walk(node.cond, **kwargs).ir
         else:
             sub_info = self.walk(node.sub)
@@ -714,7 +714,7 @@ class TypeWalker(NodeWalker):
             subs = sub_info.content
             sub_parse_info = node.sub.parseinfo
             assert subs not in self.symtable, self.get_err_msg_info(sub_parse_info, "Subscript has been defined")
-            self.symtable[subs] = ScalarType(index_type=True)  # add subscript to symbol table temporarily
+            self.symtable[subs] = ScalarType(index_type=False)  # add subscript to symbol table temporarily
         self.logger.debug("new sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         new_id = self.generate_var_name("sum")
         ret_info = self.walk(node.exp, **kwargs)
