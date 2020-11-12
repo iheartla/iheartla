@@ -72,7 +72,11 @@ To use the code output for the various backends, you will need:
 
 * LaTeX: A working tex distribution with `xelatex` and `pdfcrop`
 * Python: NumPy and SciPy
-* C++: Eigen. Compilation differs on different platforms. On macOS with Homebrew eigen `c++ -I/usr/local/eigen3 output.cpp -o output`
+* C++: Eigen. Compilation differs on different platforms. On macOS with Homebrew eigen: `c++ -I/usr/local/eigen3 output.cpp -o output`
+
+### Unicode Fonts
+
+`DejaVu Sans Mono` is a font with good Unicode support. Windows users should install it. You can download it [here](https://dejavu-fonts.github.io/Download.html). The I❤️LA GUI will use it if installed.
 
 ### Packaging a release
 
