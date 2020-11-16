@@ -363,7 +363,7 @@ class CodeGenEigen(CodeGen):
         cond_content = ""
         if node.cond:
             cond_info = self.visit(node.cond, **kwargs)
-            cond_content = "if(" + cond_info.content + ")\n"
+            cond_content = "if(" + cond_info.content + "){\n"
         kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
         content = []
         exp_info = self.visit(node.exp)
@@ -404,6 +404,7 @@ class CodeGenEigen(CodeGen):
         if node.cond:
             content.append("    " + cond_content)
             content.append(str("        " + assign_id + " += " + exp_str + ';\n'))
+            content.append("    }\n")
         else:
             content.append(str("    " + assign_id + " += " + exp_str + ';\n'))
         content[0] = "    " + content[0]
