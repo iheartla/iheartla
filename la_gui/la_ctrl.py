@@ -15,7 +15,10 @@ class LaTextControl(bc.BaseTextControl):
     STC_STYLE_LA_ESCAPE_STR , \
     STC_STYLE_LA_ESCAPE_PARAMETER, \
     STC_STYLE_LA_ESCAPE_DESCRIPTION  = range(10)
-
+    
+    SUBSTITUTION_START = '\\'
+    SUBSTITUTION_END = ' '
+    
     def __init__(self, parent):
         super().__init__(parent)
         self.SetEditable(True)
@@ -24,7 +27,7 @@ class LaTextControl(bc.BaseTextControl):
                          'otherwise', 'is', 'in', 'index']
         self.unicode_dict = {'R': 'ℝ', 'Z': 'ℤ', 'x': '×', 'times': '×', 'inf': '∞', 'in': '∈', 'sum': '∑',
                              'had': '○', 'kro': '⨂', 'dot': '⋅', 'T': 'ᵀ', 'par': '∂', 'emp': '∅',
-                             'arr': '→', 'int': '∫', 'dbl': '‖', 'pi': 'π', 'sig': 'σ', 'row': 'ρ',
+                             'arr': '→', 'int': '∫', 'dbl': '‖', 'pi': 'π', 'sig': 'σ', 'rho': 'ρ',
                              'phi': 'ϕ', 'the': 'θ'}
         self.StyleSetSpec(self.STC_STYLE_LA_DEFAULT, "fore:#A9B7C6,back:{}".format(bc.BACKGROUND_COLOR))
         self.StyleSetSpec(self.STC_STYLE_LA_KW, "fore:#94558D,bold,back:{}".format(bc.BACKGROUND_COLOR))
@@ -76,7 +79,7 @@ class LaTextControl(bc.BaseTextControl):
                         self.SetStyling(line_end - start_pos + 1, self.STC_STYLE_LA_ESCAPE_DESCRIPTION)
                         start_pos = line_end
                         continue
-            elif char == '\\':
+            elif char in (self.SUBSTITUTION_START,self.SUBSTITUTION_END):
                 # unicode string
                 match = False
                 index = 1
@@ -84,7 +87,7 @@ class LaTextControl(bc.BaseTextControl):
                 unicode_str = ''
                 while self.is_unicode_prefix(prefix) and start_pos + index < end_pos:
                     if self.is_unicode(prefix):
-                        unicode_str = self.get_unicode(prefix)
+                        unicode_str = self.get_unicode(prefix) + ' '
                         match = True
                         break
                     index += 1
@@ -129,20 +132,20 @@ class LaTextControl(bc.BaseTextControl):
 
     def is_unicode_prefix(self, prefix):
         for unicode in self.unicode_dict:
-            target = '\\' + unicode + '\\'
+            target = self.SUBSTITUTION_START + unicode + self.SUBSTITUTION_END
             if target.startswith(prefix):
                 return True
         return False
 
     def get_unicode(self, unicode):
-        return self.unicode_dict[unicode.replace('\\', '')]
+        return self.unicode_dict[unicode[len(self.SUBSTITUTION_START):-len(self.SUBSTITUTION_END)]]
 
     def is_keyword(self, key):
         return key in self.keywords
 
     def is_unicode(self, prefix):
         for unicode in self.unicode_dict:
-            target = '\\' + unicode + '\\'
+            target = self.SUBSTITUTION_START + unicode + self.SUBSTITUTION_END
             if target == prefix:
                 return True
         return False
