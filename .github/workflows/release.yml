@@ -16,8 +16,8 @@ jobs:
       - run: python3 --version
       - run: python --version
       - run: brew install poetry
-      - run: poetry env use python
-      - run: poetry install --no-root --no-dev
+      - run: poetry env use python3
+      - run: poetry install --no-root
       - run: ls
       - run: poetry run pyinstaller iheartla.spec
       - run: ls
