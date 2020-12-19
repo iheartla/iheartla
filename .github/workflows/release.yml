@@ -6,15 +6,18 @@ name: Upload Release Asset
 jobs:
   build:
     name: Upload Release Asset
-    runs-on: macos-10.15
+    runs-on: macos-10.13
     steps:
       - uses: actions/checkout@v2
+      - run: python3 --version
       - run: brew install pyenv
       - run: pyenv install 3.8.5
       - run: pyenv global 3.8.5
       - run: python3 --version
+      - run: python --version
       - run: brew install poetry
-      - run: poetry env use python3
+      - run: poetry env use python
       - run: poetry install --no-root --no-dev
+      - run: ls
       - run: poetry run pyinstaller iheartla.spec
       - run: ls
