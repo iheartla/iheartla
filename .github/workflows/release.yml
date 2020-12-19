@@ -10,6 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: python3 --version
+      - run: pip3 install --upgrade pip setuptools wheel
       - run: brew install pyenv
       - run: pyenv install 3.8.5
       - run: pyenv global 3.8.5
