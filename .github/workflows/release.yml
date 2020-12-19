@@ -9,7 +9,10 @@ jobs:
     runs-on: macos-10.15
     steps:
       - uses: actions/checkout@v2
-      - run: pip3 install tatsu regex wxpython PyMuPDF graphviz cppyy numpy scipy pyinstaller appdirs
-      - run: python3 la_local_parsers.py
-      - run: pyinstaller iheartla.spec
+      - run: ls
+      - run: pwd
+      - run: pip3 install tatsu regex wxpython PyMuPDF graphviz cppyy numpy scipy pyinstaller 
+      - run: poetry env use python3.9
+      - run: poetry install --no-root --no-dev
+      - run: poetry run pyinstaller iheartla.spec
       - run: ls
