@@ -17,6 +17,8 @@ jobs:
       - run: python3 --version
       - run: python --version
       - run: brew install poetry
+      - run: brew install openblas
+      - run: OPENBLAS="$(brew --prefix openblas)"
       - run: poetry env use python3
       - run: poetry run pip install --upgrade pip setuptools wheel
       - run: poetry run pip install numpy==1.18
