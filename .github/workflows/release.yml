@@ -18,9 +18,10 @@ jobs:
       - run: python --version
       - run: brew install poetry
       - run: poetry env use python3
-      - run: poetry run pip install --upgrade pip setuptools wheel
+      - run: poetry run pip3 install --upgrade --only-binary :all: numpy
+      - run: poetry run pip3 install --upgrade pip setuptools wheel
       - run: poetry install --no-root --no-dev
-      - run: poetry run pip install pyinstaller numpy
+      - run: poetry run pip3 install pyinstaller
       - run: ls
       - run: poetry run pyinstaller iheartla.spec
       - run: ls
