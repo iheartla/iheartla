@@ -12,7 +12,7 @@ jobs:
       - run: brew install pyenv
       - run: pyenv install 3.8.5
       - run: brew install poetry
-      - run: poetry env use python3.8
+      - run: poetry env use python3.8.5
       - run: poetry install --no-root --no-dev
       - run: poetry run pyinstaller iheartla.spec
       - run: ls
