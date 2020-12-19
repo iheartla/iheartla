@@ -20,7 +20,7 @@ jobs:
       - run: poetry env use python3
       - run: poetry run pip install --upgrade pip setuptools wheel
       - run: poetry install --no-root --no-dev
-      - run: poetry run pip install pyinstaller
+      - run: poetry run pip install pyinstaller numpy
       - run: ls
       - run: poetry run pyinstaller iheartla.spec
       - run: ls
