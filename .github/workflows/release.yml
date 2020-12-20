@@ -30,4 +30,8 @@ jobs:
       - run: poetry run pip install pyinstaller
       # - run: ls
       - run: poetry run pyinstaller iheartla.spec
+      - run: cd dist
+      - run: zip iheartla.app.zip iheartla.app/ -r
+      - run: mv iheartla.app.zip ../
+      - run: cd ..
       - run: ls
