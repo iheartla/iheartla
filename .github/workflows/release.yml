@@ -1,5 +1,8 @@
 on:
-  push
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 name: Upload Release Asset
 
@@ -9,33 +12,14 @@ jobs:
     runs-on: macos-10.15
     steps:
       - uses: actions/checkout@v2
-      - run: python3 --version
-      # - run: pip3 install --upgrade pip setuptools wheel
-      # - run: brew install pyenv
-      # - run: pyenv install 3.8.5
-      # - run: pyenv global 3.8.5
-      # - run: python3 --version
-      # - run: python --version
       - run: brew install poetry
-      # - run: brew install openblas
       - run: brew install python@3.8
-      - run: python3 --version
-      # - run: OPENBLAS="$(brew --prefix openblas)"
       - run: poetry env use $(brew --prefix)/opt/python@3.8/bin/python3
       - run: poetry run python3 --version
       - run: poetry run pip install --upgrade pip setuptools wheel
-      # - run: poetry run pip install numpy==1.18
       - run: poetry install --no-root
-      # - run: poetry install --no-root --no-dev
-      - run: poetry run pip install pyinstaller
-      # - run: ls
       - run: poetry run pyinstaller iheartla.spec
-      - run: cd dist
-      - run: ls dist
       - run: zip iheartla.app.zip ./dist/iheartla.app/ -r
-      # - run: mv iheartla.app.zip ../
-      # - run: cd ..
-      - run: ls
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
