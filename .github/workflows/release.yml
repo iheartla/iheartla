@@ -10,20 +10,23 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: python3 --version
-      - run: pip3 install --upgrade pip setuptools wheel
-      - run: brew install pyenv
-      - run: pyenv install 3.8.5
-      - run: pyenv global 3.8.5
-      - run: python3 --version
-      - run: python --version
+      # - run: pip3 install --upgrade pip setuptools wheel
+      # - run: brew install pyenv
+      # - run: pyenv install 3.8.5
+      # - run: pyenv global 3.8.5
+      # - run: python3 --version
+      # - run: python --version
       - run: brew install poetry
-      - run: brew install openblas
-      - run: OPENBLAS="$(brew --prefix openblas)"
-      - run: poetry env use python3
-      - run: poetry run pip install --upgrade pip setuptools wheel
-      - run: poetry run pip install numpy==1.18
-      - run: poetry install --no-root --no-dev
-      - run: poetry run pip install pyinstaller
-      - run: ls
-      - run: poetry run pyinstaller iheartla.spec
+      # - run: brew install openblas
+      - run: brew install python@3.8
+      - run: python3 --version
+      # - run: OPENBLAS="$(brew --prefix openblas)"
+      - run: poetry env use $(brew --prefix)/opt/python@3.8/bin/python3
+      - run: poetry run python3 --version
+      # - run: poetry run pip install --upgrade pip setuptools wheel
+      # - run: poetry run pip install numpy==1.18
+      # - run: poetry install --no-root --no-dev
+      # - run: poetry run pip install pyinstaller
+      # - run: ls
+      # - run: poetry run pyinstaller iheartla.spec
       - run: ls
