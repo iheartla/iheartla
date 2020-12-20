@@ -28,6 +28,6 @@ jobs:
       - run: poetry install --no-root
       # - run: poetry install --no-root --no-dev
       - run: poetry run pip install pyinstaller
-      - run: ls
-      # - run: poetry run pyinstaller iheartla.spec
       # - run: ls
+      - run: poetry run pyinstaller iheartla.spec
+      - run: ls
