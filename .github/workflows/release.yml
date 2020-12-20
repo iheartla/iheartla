@@ -23,10 +23,11 @@ jobs:
       # - run: OPENBLAS="$(brew --prefix openblas)"
       - run: poetry env use $(brew --prefix)/opt/python@3.8/bin/python3
       - run: poetry run python3 --version
-      # - run: poetry run pip install --upgrade pip setuptools wheel
+      - run: poetry run pip install --upgrade pip setuptools wheel
       # - run: poetry run pip install numpy==1.18
+      - run: poetry install --no-root
       # - run: poetry install --no-root --no-dev
       # - run: poetry run pip install pyinstaller
-      # - run: ls
-      # - run: poetry run pyinstaller iheartla.spec
       - run: ls
+      # - run: poetry run pyinstaller iheartla.spec
+      # - run: ls
