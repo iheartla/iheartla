@@ -3,22 +3,22 @@
 # usage: In poetry shell, run "sh  pack_release.sh  msg" in the current directory
 
 # update local parsers
-python la_local_parsers.py
+# python la_local_parsers.py
 # generate zip file
-target='iheartla.app.zip'
-rm -rf ./dist
-rm -rf ./build
-rm "$target"
-pyinstaller iheartla.spec
-cd dist
-zip "$target" iheartla.app/ -r
-mv "$target" ../
-cd ..
+# target='iheartla.app.zip'
+# rm -rf ./dist
+# rm -rf ./build
+# rm "$target"
+# pyinstaller iheartla.spec
+# cd dist
+# zip "$target" iheartla.app/ -r
+# mv "$target" ../
+# cd ..
 # check zip file
-if [[ ! -f "$target" ]]; then
-    echo "$target not exists."
-    exit
-fi
+# if [[ ! -f "$target" ]]; then
+#     echo "$target not exists."
+#     exit
+# fi
 # git tag 
 if [ $# -ge 1 ]
 then
