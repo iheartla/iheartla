@@ -565,7 +565,7 @@ class TypeWalker(NodeWalker):
     def walk_Multiply(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
-        if node.op == '⋅':
+        if node.op and node.op == '⋅':
             if left_info.la_type.is_vector() and right_info.la_type.is_vector() and left_info.la_type.rows == right_info.la_type.rows:
                 return self.walk_DotProduct(node, **kwargs)
         return self.make_mul_info(left_info, right_info)
