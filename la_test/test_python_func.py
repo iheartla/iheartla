@@ -259,7 +259,7 @@ class TestFunction(BasePythonTest):
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
     def test_recursive_func(self):
-        la_str = """A = Pf(P+f(f(P*P))P)
+        la_str = """A = Pf(P+f(f(P⋅P))P)
                     where 
                     P: ℝ ^ (2 × 2): a matrix 
                     f: ℝ^(2 × 2) -> ℝ^(2 × 2): a function"""

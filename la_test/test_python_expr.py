@@ -56,7 +56,7 @@ class TestExpr(BasePythonTest):
 
     def test_multiplication_1(self):
         # star
-        la_str = """c = a * b
+        la_str = """c = a ⋅ b
         where
         a: scalar
         b: scalar"""
@@ -75,7 +75,7 @@ class TestExpr(BasePythonTest):
 
     def test_multiplication_2(self):
         # matrix
-        la_str = """c = a * A
+        la_str = """c = a ⋅ A
                 where
                 a: scalar
                 A: ℝ ^ (2 × 2): a matrix"""
