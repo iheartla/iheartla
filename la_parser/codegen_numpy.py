@@ -262,6 +262,8 @@ class CodeGenNumpy(CodeGen):
                     name_convention[var] = "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1])
                 else:
                     name_convention[var] = "{}[{}]".format(var_ids[0], var_ids[1][0])
+        for sym, subs in node.sym_dict.items():
+            target_var.append(sym)
         self.add_name_conventions(name_convention)
         #
         assign_id = node.symbol
