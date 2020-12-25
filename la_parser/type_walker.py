@@ -422,7 +422,7 @@ class TypeWalker(NodeWalker):
                 int_list = [True] * cnt
             else:
                 int_list = [False] * cnt
-        ir_node.la_type = SetType(size=cnt, int_list=int_list)
+        ir_node.la_type = SetType(size=cnt, int_list=int_list, element_type = ScalarType())
         return ir_node
 
     def get_unicode_number(self, unicode):
