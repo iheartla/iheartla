@@ -4,6 +4,10 @@ matrix::Matrix
     | '⎡' {hspace} value:rows {hspace} '⎦'
     ;
 
+vector::Vector
+    = '(' {hspace} exp+:expression {{hspace} ',' {hspace} exp+:expression}+ ')'
+    ;
+
 sparse_matrix::SparseMatrix
     = '{' {hspace} ifs:sparse_if_conditions
     {{separator_with_space}+ {hspace} other:statement {hspace} OTHERWISE }

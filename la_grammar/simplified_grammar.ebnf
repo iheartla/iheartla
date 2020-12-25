@@ -89,6 +89,7 @@ factor::Factor
     | id:identifier
     | num:number
     | m:matrix
+    | v:vector
     | s:sparse_matrix
     | c:constant
     ;

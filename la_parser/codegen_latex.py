@@ -51,6 +51,8 @@ class CodeGenLatex(CodeGen):
             return self.visit(node.sub, **kwargs)
         elif node.m:
             return self.visit(node.m, **kwargs)
+        elif node.v:
+            return self.visit(node.v, **kwargs)
         elif node.nm:
             return self.visit(node.nm, **kwargs)
         elif node.op:
@@ -362,6 +364,12 @@ class CodeGenLatex(CodeGen):
 
     def visit_matrix(self, node, **kwargs):
         return '\\begin{bmatrix}\n' + self.visit(node.value, **kwargs) + '\\end{bmatrix}'
+
+    def visit_vector(self, node, **kwargs):
+        content_list = []
+        for item in node.items:
+            content_list.append(self.visit(item, **kwargs))
+        return '({})'.format(','.join(content_list))
 
     def visit_MatrixRows(self, node, **kwargs):
         ret = []

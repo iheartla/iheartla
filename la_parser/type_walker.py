@@ -950,9 +950,14 @@ class TypeWalker(NodeWalker):
             ir_node.la_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows)
         elif node.r:
             ir_node.r = node.r
-            assert base_info.la_type.is_matrix(), self.get_err_msg_info(base_info.ir.parse_info,"Inverse matrix error. The base must be a matrix")
-            assert base_info.la_type.rows == base_info.la_type.cols, self.get_err_msg_info(base_info.ir.parse_info,"Inverse matrix error. The rows should be the same as the columns")
-            ir_node.la_type = MatrixType(rows=base_info.la_type.rows, cols=base_info.la_type.rows)
+            if base_info.la_type.is_matrix():
+                assert base_info.la_type.is_matrix(), self.get_err_msg_info(base_info.ir.parse_info,"Inverse matrix error. The base must be a matrix")
+                assert base_info.la_type.rows == base_info.la_type.cols, self.get_err_msg_info(base_info.ir.parse_info,"Inverse matrix error. The rows should be the same as the columns")
+                ir_node.la_type = MatrixType(rows=base_info.la_type.rows, cols=base_info.la_type.rows)
+            else:
+                assert base_info.la_type.is_scalar(), self.get_err_msg_info(base_info.ir.parse_info,
+                                                                            "Inverse error. The base must be a matrix or scalar")
+                ir_node.la_type = ScalarType()
         else:
             power_info = self.walk(node.power, **kwargs)
             symbols = symbols.union(power_info.symbols)
@@ -1156,7 +1161,7 @@ class TypeWalker(NodeWalker):
             if len(self.sum_subs) > 0:
                 # inside summation
                 right_sym_list = get_right_list()
-                print("right_sym_list:{}".format(right_sym_list))
+                # print("right_sym_list:{}".format(right_sym_list))
                 for sub_index in range(len(self.sum_subs)):
                     sub_sym = self.sum_subs[sub_index]
                     if sub_sym in right_sym_list:
@@ -1313,6 +1318,9 @@ class TypeWalker(NodeWalker):
         elif node.m:
             node_info = self.walk(node.m, **kwargs)
             ir_node.m = node_info.ir
+        elif node.v:
+            node_info = self.walk(node.v, **kwargs)
+            ir_node.m = node_info.ir
         elif node.nm:
             node_info = self.walk(node.nm, **kwargs)
             ir_node.nm = node_info.ir
@@ -1463,6 +1471,21 @@ class TypeWalker(NodeWalker):
         stat_info = self.walk(node.stat, **kwargs)
         ir_node.stat = stat_info.ir
         return NodeInfo(ir=ir_node)
+
+    def walk_Vector(self, node, **kwargs):
+        ir_node = VectorNode(parse_info=node.parseinfo, raw_text=node.text)
+        for exp in node.exp:
+            exp_info = self.walk(exp, **kwargs)
+            assert exp_info.la_type.is_scalar(), self.get_err_msg_info(node.parse_info, "Item in vector must be scalar")
+            ir_node.items.append(exp_info.ir)
+        ir_node.la_type = VectorType(rows=len(node.exp))
+        node_info = NodeInfo(ir=ir_node, la_type=ir_node.la_type)
+        if LHS in kwargs:
+            lhs = kwargs[LHS]
+            new_id = self.generate_var_name(lhs)
+            self.symtable[new_id] = ir_node.la_type
+            ir_node.symbol = new_id
+        return node_info
 
     def walk_Matrix(self, node, **kwargs):
         ir_node = MatrixNode(parse_info=node.parseinfo, raw_text=node.text)

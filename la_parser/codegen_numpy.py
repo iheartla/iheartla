@@ -418,6 +418,17 @@ class CodeGenNumpy(CodeGen):
         content = ''
         return CodeNodeInfo('    '.join(content))
 
+    def visit_vector(self, node, **kwargs):
+        cur_m_id = node.symbol
+        ret = []
+        pre_list = []
+        for item in node.items:
+            item_info = self.visit(item, **kwargs)
+            ret.append(item_info.content)
+            pre_list += item_info.pre_list
+        content = '[{}]'.format(", ".join(ret))
+        return CodeNodeInfo(content, pre_list=pre_list)
+
     def visit_matrix(self, node, **kwargs):
         content = "    "
         # lhs = kwargs[LHS]
@@ -1021,6 +1032,8 @@ class CodeGenNumpy(CodeGen):
             return self.visit(node.num, **kwargs)
         elif node.sub:
             return self.visit(node.sub, **kwargs)
+        elif node.v:
+            return self.visit(node.v, **kwargs)
         elif node.m:
             return self.visit(node.m, **kwargs)
         elif node.nm:
