@@ -275,7 +275,10 @@ class CodeGenEigen(CodeGen):
             content += '/**\n * ' + self.func_name + '\n *\n * ' + '\n * '.join(doc) + '\n * @return {}\n */\n'.format(
                 self.ret_symbol)
         ret_type = self.get_ctype(self.symtable[self.ret_symbol])
-        if len(self.parameters) == 1:
+        if len(self.parameters) == 0:
+            content += ret_type + ' ' + self.func_name + '(' + ')\n{\n'  # func name
+            test_function.insert(0, "void {}({})".format(rand_func_name, ', '.join(test_par_list)))
+        elif len(self.parameters) == 1:
             content += ret_type + ' ' + self.func_name + '(' + ', '.join(par_des_list) + ')\n{\n'  # func name
             test_function.insert(0, "void {}({})".format(rand_func_name, ', '.join(test_par_list)))
         else:
@@ -284,7 +287,8 @@ class CodeGenEigen(CodeGen):
         # merge content
         # content += '\n'.join(type_declare) + '\n\n'
         content += dim_content
-        content += '\n'.join(type_checks) + '\n\n'
+        if len(type_checks) > 0:
+            content += '\n'.join(type_checks) + '\n\n'
         # statements
         stats_content = ""
         for index in range(len(node.stmts)):

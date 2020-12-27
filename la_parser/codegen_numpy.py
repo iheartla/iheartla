@@ -203,9 +203,11 @@ class CodeGenNumpy(CodeGen):
         if show_doc:
             content += '    \"\"\"\n' + '\n'.join(doc) + '\n    \"\"\"\n'
         # merge content
-        content += '\n'.join(type_declare) + '\n\n'
+        if len(type_declare) > 0:
+            content += '\n'.join(type_declare) + '\n\n'
         content += dim_content
-        content += '\n'.join(type_checks) + '\n\n'
+        if len(type_checks) > 0:
+            content += '\n'.join(type_checks) + '\n\n'
         #
         # statements
         stats_content = ""
