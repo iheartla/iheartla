@@ -6,7 +6,7 @@ class CodeGenLatex(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.LATEX)
         self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n'''
-        # self.pre_str += ''''\\usepackage{ctex}\n\\setmainfont{Linux Libertine O}\n'''
+        # self.pre_str += '''\\usepackage{ctex}\n\\setmainfont{Linux Libertine O}\n'''
         self.pre_str += '''\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n'''
         self.pre_str += '''\\begin{document}\n'''
         self.post_str = '''\n\end{document}'''
@@ -144,7 +144,9 @@ class CodeGenLatex(CodeGen):
             type_str = '\\mathbb{Z}'
         content = "{}^{{ {} \\times {} }}".format(type_str, id1, id2)
         if node.la_type.sparse:
-            content += " \\textit{{sparse}}"
+            content += " \\textit{{ sparse}}"
+        if node.la_type.index_type:
+            content += " \\textit{{ index}}"
         return content
 
     def visit_vector_type(self, node, **kwargs):
@@ -153,12 +155,16 @@ class CodeGenLatex(CodeGen):
         if node.type == 'ℤ':
             type_str = '\\mathbb{Z}'
         content = "{}^{{ {}}}".format(type_str, id1)
+        if node.la_type.index_type:
+            content += " \\textit{{ index}}"
         return content
 
     def visit_scalar_type(self, node, **kwargs):
         content = "\\mathbb{{R}}"
         if node.is_int:
             content = "\\mathbb{{Z}}"
+        if node.la_type.index_type:
+            content += " \\textit{{ index}}"
         return content
 
     def visit_set_type(self, node, **kwargs):
@@ -184,6 +190,8 @@ class CodeGenLatex(CodeGen):
                 content += '\\mathbb{{Z}}^{{2}}'
             else:
                 content += '\\mathbb{{Z}}^{{2}}'
+        if node.la_type.index_type:
+            content += " \\textit{{ index}}"
         return content
 
     def visit_function_type(self, node, **kwargs):
