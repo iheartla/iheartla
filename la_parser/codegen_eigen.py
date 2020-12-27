@@ -723,9 +723,9 @@ class CodeGenEigen(CodeGen):
         else:
             col_info = self.visit(node.col_index, **kwargs)
             if node.col_index.la_type.index_type:
-                content = "{}.col({})".format(main_info.content, col_info.content)
+                content = "{}.col({}).transpose()".format(main_info.content, col_info.content)
             else:
-                content = "{}.col({}-1)".format(main_info.content, col_info.content)
+                content = "{}.col({}-1).transpose()".format(main_info.content, col_info.content)
         return CodeNodeInfo(content)
 
     def visit_vector_index(self, node, **kwargs):

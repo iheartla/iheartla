@@ -991,7 +991,10 @@ class TypeWalker(NodeWalker):
         f_info = self.walk(node.f, **kwargs)
         ir_node.f = f_info.ir
         assert f_info.la_type.is_matrix() or f_info.la_type.is_vector(), self.get_err_msg_info(f_info.ir.parse_info,"Transpose error. The base must be a matrix or vecotr")
-        node_type = MatrixType(rows=f_info.la_type.cols, cols=f_info.la_type.rows)
+        if f_info.la_type.is_matrix():
+            node_type = MatrixType(rows=f_info.la_type.cols, cols=f_info.la_type.rows)
+        elif f_info.la_type.is_vector():
+            node_type = MatrixType(rows=1, cols=f_info.la_type.rows)
         node_info = NodeInfo(node_type, symbols=f_info.symbols)
         node_info.ir = ir_node
         node_info.la_type = node_type
@@ -1229,7 +1232,7 @@ class TypeWalker(NodeWalker):
                         col_index_info = self.walk(node.right[1])
                         ir_node.col_index = col_index_info.ir
                     else:
-                        la_type = MatrixType(rows=1, cols=self.symtable[left_info.content].cols)
+                        la_type = VectorType(rows=self.symtable[left_info.content].cols)
                         row_index_info = self.walk(node.right[0])
                         ir_node.row_index = row_index_info.ir
                 else:
