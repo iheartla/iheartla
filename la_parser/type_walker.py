@@ -1320,7 +1320,7 @@ class TypeWalker(NodeWalker):
             ir_node.m = node_info.ir
         elif node.v:
             node_info = self.walk(node.v, **kwargs)
-            ir_node.m = node_info.ir
+            ir_node.v = node_info.ir
         elif node.nm:
             node_info = self.walk(node.nm, **kwargs)
             ir_node.nm = node_info.ir
