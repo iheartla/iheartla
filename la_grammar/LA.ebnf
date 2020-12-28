@@ -82,10 +82,10 @@ identifier_alone::IdentifierAlone
 
 factor::Factor
     =
-    | op:operations
+    op:operations
     | sub:subexpression
     | nm:number_matrix
-    | id:identifier
+    | id0:identifier
     | num:number
     | m:matrix
     | v:vector

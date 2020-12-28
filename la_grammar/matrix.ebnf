@@ -74,7 +74,7 @@ term_in_matrix
     ;
 
 multiplication_in_matrix::Multiply
-    = left:term_in_matrix '⋅' right:factor_in_matrix
+    = left:term_in_matrix op:'⋅' right:factor_in_matrix
     | left:term_in_matrix right:factor_in_matrix
     ;
 
@@ -111,9 +111,10 @@ factor_in_matrix::Factor
     | op:operations_in_matrix
     | sub:subexpression
     | nm:number_matrix
-    | id:identifier
+    | id0:identifier
     | num:number
     | m:matrix
+    | v:vector
     | s:sparse_matrix
     | c:constant
     ;

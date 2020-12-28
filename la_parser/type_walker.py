@@ -1294,8 +1294,8 @@ class TypeWalker(NodeWalker):
     def walk_Factor(self, node, **kwargs):
         node_info = None
         ir_node = FactorNode(parse_info=node.parseinfo)
-        if node.id:
-            id0_info = self.walk(node.id, **kwargs)
+        if node.id0:
+            id0_info = self.walk(node.id0, **kwargs)
             id0 = id0_info.content
             id0 = self.get_main_id(id0)
             if not la_is_if(**kwargs):  # symbols in sum don't need to be defined before todo:modify
