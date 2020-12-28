@@ -665,8 +665,18 @@ class TypeWalker(NodeWalker):
                         if self.symtable[main_id].is_sequence():
                             dim = self.symtable[main_id].size
                             self.symtable[sequence] = SequenceType(size=dim, element_type=right_type)
+                            seq_index_node = SequenceIndexNode()
+                            seq_index_node.main = self.walk(node.left.left, **kwargs).ir
+                            seq_index_node.main_index = self.walk(node.left.right[0], **kwargs).ir
+                            seq_index_node.set_parent(assign_node)
+                            assign_node.left = seq_index_node
                         elif self.symtable[main_id].is_vector():
                             self.symtable[sequence] = VectorType(rows=self.symtable[main_id].rows)
+                            vector_index_node = VectorIndexNode()
+                            vector_index_node.main = self.walk(node.left.left, **kwargs).ir
+                            vector_index_node.row_index = self.walk(node.left.right[0], **kwargs).ir
+                            vector_index_node.set_parent(assign_node)
+                            assign_node.left = vector_index_node
                         break
             #
             for sub_sym in left_subs:

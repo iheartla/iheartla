@@ -689,8 +689,8 @@ class CodeGenNumpy(CodeGen):
         if right_info.pre_list:
             content += "".join(right_info.pre_list)
         # y_i = stat
-        if self.contain_subscript(left_id):
-            left_ids = self.get_all_ids(left_id)
+        if node.left.contain_subscript():
+            left_ids = node.left.get_all_ids()
             left_subs = left_ids[1]
             if len(left_subs) == 2: # matrix only
                 sequence = left_ids[0]  # y left_subs[0]
@@ -732,7 +732,7 @@ class CodeGenNumpy(CodeGen):
                         var_ids = self.get_all_ids(right_var)
                         right_info.content = right_info.content.replace(right_var, "{}[{}]".format(var_ids[0], var_ids[1][0]))
 
-                right_exp += "    {}[{}] = {}".format(self.get_main_id(left_id), left_subs[0], right_info.content)
+                right_exp += "    {} = {}".format(left_info.content, right_info.content)
                 ele_type = self.symtable[sequence].element_type
                 if ele_type.is_matrix():
                     content += "    {} = np.zeros(({}, {}, {}))\n".format(sequence, self.symtable[sequence].size, ele_type.rows, ele_type.cols)

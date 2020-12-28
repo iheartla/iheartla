@@ -899,12 +899,10 @@ class CodeGenEigen(CodeGen):
                         right_info.content = right_info.content.replace(right_var,
                                                                         "{}.at({})".format(var_ids[0], var_ids[1][0]))
 
-
                 ele_type = self.symtable[sequence].element_type
                 # definition
                 if self.symtable[sequence].is_sequence():
-                    right_exp += "    {}.at({}) = {}".format(node.left.get_main_id(), left_subs[0],
-                                                             right_info.content)
+                    right_exp += "    {} = {}".format(left_info.content, right_info.content)
                     content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
                                                          self.symtable[sequence].size)
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
