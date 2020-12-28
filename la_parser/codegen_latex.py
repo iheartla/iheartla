@@ -6,14 +6,15 @@ class CodeGenLatex(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.LATEX)
         self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n'''
-        # self.pre_str += '''\\usepackage{ctex}\n\\setmainfont{Linux Libertine O}\n'''
+        self.pre_str += '''\\usepackage{ctex}\n\\setmainfont{Linux Libertine O}\n'''
         self.pre_str += '''\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n'''
         self.pre_str += '''\\begin{document}\n'''
         self.post_str = '''\n\end{document}'''
 
     def convert_unicode(self, name):
         if '`' not in name:
-            return name
+            return "\\textit{{{}}}".format(name)
+            # return name
         text = name.replace('`', '')
         special_list = ['_', '&', '^', '%', '$', '#', '{', '}']
         text = text.replace('\\', '\\textbackslash{}')
