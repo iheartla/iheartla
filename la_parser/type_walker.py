@@ -1909,15 +1909,18 @@ class TypeWalker(NodeWalker):
             if left_type.is_scalar():
                 assert right_type.is_scalar(), error_msg
             elif left_type.is_matrix():
-                assert right_type.is_matrix() or right_type.is_vector(), error_msg
+                assert right_type.is_matrix(), error_msg
+                # assert right_type.is_matrix() or right_type.is_vector(), error_msg
                 assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, error_msg
                 if left_type.sparse and right_type.sparse:
                     ret_type.sparse = True
                 else:
                     ret_type.sparse = False
             elif left_type.is_vector():
-                assert right_type.is_matrix() or right_type.is_vector(), error_msg
-                assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, error_msg
+                assert right_type.is_vector(), error_msg
+                assert left_type.rows == right_type.rows, error_msg
+                # assert right_type.is_matrix() or right_type.is_vector(), error_msg
+                # assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, error_msg
                 if right_type.is_matrix():
                     ret_type = copy.deepcopy(right_type)
             else:
