@@ -453,7 +453,7 @@ class CodeGenLatex(CodeGen):
         return content
 
     def visit_transpose(self, node, **kwargs):
-        return self.visit(node.f, **kwargs)
+        return "{}^T".format(self.visit(node.f, **kwargs))
 
     def visit_derivative(self, node, **kwargs):
         return "\\partial" + self.visit(value, **kwargs)
