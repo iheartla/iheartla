@@ -519,9 +519,7 @@ class TypeWalker(NodeWalker):
 
     def walk_Add(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
-        left_type = left_info.la_type
         right_info = self.walk(node.right, **kwargs)
-        right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_ADD, left_info.ir, right_info.ir)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         ir_node = AddNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
@@ -533,9 +531,7 @@ class TypeWalker(NodeWalker):
 
     def walk_Subtract(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
-        left_type = left_info.la_type
         right_info = self.walk(node.right, **kwargs)
-        right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_SUB, left_info.ir, right_info.ir)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         ir_node = SubNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
@@ -550,9 +546,7 @@ class TypeWalker(NodeWalker):
                                                    self.get_line_info(node.parseinfo).text.find(node.op),
                                                    "{} must be used inside if codition".format(node.op))
         left_info = self.walk(node.left, **kwargs)
-        left_type = left_info.la_type
         right_info = self.walk(node.right, **kwargs)
-        right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_ADD, left_info.ir, right_info.ir)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         ir_node = AddSubNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
@@ -571,8 +565,6 @@ class TypeWalker(NodeWalker):
         return self.make_mul_info(left_info, right_info)
 
     def make_mul_info(self, left_info, right_info):
-        left_type = left_info.la_type
-        right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_MUL, left_info.ir, right_info.ir)
         sym_set = left_info.symbols.union(right_info.symbols)
         # I in block matrix
@@ -590,9 +582,7 @@ class TypeWalker(NodeWalker):
 
     def walk_Divide(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
-        left_type = left_info.la_type
         right_info = self.walk(node.right, **kwargs)
-        right_type = right_info.la_type
         ret_type = self.type_inference(TypeInferenceEnum.INF_DIV, left_info.ir, right_info.ir)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         ir_node = DivNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
