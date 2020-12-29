@@ -562,12 +562,14 @@ class TypeWalker(NodeWalker):
     def walk_Multiply(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
+        op_type = MulOpType.MulOpInvalid
         if node.op and node.op == '⋅':
+            op_type = MulOpType.MulOpDot
             if left_info.la_type.is_vector() and right_info.la_type.is_vector() and left_info.la_type.rows == right_info.la_type.rows:
                 return self.walk_DotProduct(node, **kwargs)
-        return self.make_mul_info(left_info, right_info)
+        return self.make_mul_info(left_info, right_info, op_type)
 
-    def make_mul_info(self, left_info, right_info):
+    def make_mul_info(self, left_info, right_info, op=MulOpType.MulOpInvalid):
         ret_type = self.type_inference(TypeInferenceEnum.INF_MUL, left_info.ir, right_info.ir)
         sym_set = left_info.symbols.union(right_info.symbols)
         # I in block matrix
@@ -576,7 +578,7 @@ class TypeWalker(NodeWalker):
             for sym in sym_set:
                 ret_type.symbol += sym
         ret_info = NodeInfo(ret_type, symbols=sym_set)
-        ir_node = MulNode(left_info.ir, right_info.ir, parse_info=left_info.ir.parse_info)
+        ir_node = MulNode(left_info.ir, right_info.ir, parse_info=left_info.ir.parse_info, op=op)
         ir_node.la_type = ret_type
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)

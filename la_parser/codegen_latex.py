@@ -232,7 +232,10 @@ class CodeGenLatex(CodeGen):
         return self.visit(node.left, **kwargs) + " \\pm " + self.visit(node.right, **kwargs)
 
     def visit_mul(self, node, **kwargs):
-        return self.visit(node.left, **kwargs) + " \\cdot " + self.visit(node.right, **kwargs)
+        if node.op == MulOpType.MulOpDot:
+            return self.visit(node.left, **kwargs) + " \\cdot " + self.visit(node.right, **kwargs)
+        else:
+            return self.visit(node.left, **kwargs) + self.visit(node.right, **kwargs)
 
     def visit_div(self, node, **kwargs):
         return "\\frac{" + self.visit(node.left, **kwargs) + "}{" + self.visit(node.right, **kwargs) + "}"

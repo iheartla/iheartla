@@ -328,11 +328,18 @@ class AddSubNode(ExprNode):
         self.right = right
 
 
+class MulOpType(Enum):
+    # in case there'll be more valid symbols
+    MulOpInvalid = -1
+    MulOpDot = 0
+
+
 class MulNode(ExprNode):
-    def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
+    def __init__(self, left=None, right=None, parse_info=None, raw_text=None, op=MulOpType.MulOpInvalid):
         super().__init__(IRNodeType.Mul, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
+        self.op = op
 
 
 class DivNode(ExprNode):
