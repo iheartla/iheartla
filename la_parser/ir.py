@@ -294,6 +294,18 @@ class IdNode(ExprNode):
         else:
             return self.main_id
 
+    def convert_to_vector_index(self):
+        vector_index_node = VectorIndexNode()
+        vector_index_node.main = self.main_id
+        vector_index_node.row_index = self.subs[0]
+        return vector_index_node
+
+    def convert_to_sequence_index(self):
+        seq_index_node = SequenceIndexNode()
+        seq_index_node.main = self.main_id
+        seq_index_node.main_index = self.subs[0]
+        return seq_index_node
+
 
 class AddNode(ExprNode):
     def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
@@ -586,7 +598,10 @@ class SequenceIndexNode(ExprNode):
         return True
 
     def get_all_ids(self):
-        return [self.main.get_main_id(), [self.main_index.get_main_id(), self.row_index.get_main_id(), self.col_index.get_main_id()]]
+        if self.row_index:
+            return [self.main.get_main_id(), [self.main_index.get_main_id(), self.row_index.get_main_id(), self.col_index.get_main_id()]]
+        else:
+            return [self.main.get_main_id(), [self.main_index.get_main_id()]]
 
     def get_main_id(self):
         return self.main.get_main_id()

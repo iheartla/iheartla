@@ -340,7 +340,10 @@ class CodeGenNumpy(CodeGen):
         if node.t:
             base_info.content = "{}.T".format(base_info.content)
         elif node.r:
-            base_info.content = "np.linalg.inv({})".format(base_info.content)
+            if node.la_type.is_scalar():
+                base_info.content = "1 / ({})".format(base_info.content)
+            else:
+                base_info.content = "np.linalg.inv({})".format(base_info.content)
         else:
             power_info = self.visit(node.power, **kwargs)
             if node.base.la_type.is_scalar():

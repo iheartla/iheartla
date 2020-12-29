@@ -137,7 +137,12 @@ class CodeGenEigen(CodeGen):
                     continue
                 test_content.append("    const int {} = rand()%{};".format(key, rand_int_max))
                 if self.symtable[value[0]].is_sequence():
-                    dim_content += "    const long {} = {}.size();\n".format(key, value[0])
+                    if value[1] == 0:
+                        dim_content += "    const long {} = {}.size();\n".format(key, value[0])
+                    elif value[1] == 1:
+                        dim_content += "    const long {} = {}[0].rows();\n".format(key, value[0])
+                    elif value[1] == 2:
+                        dim_content += "    const long {} = {}[0].cols();\n".format(key, value[0])
                 elif self.symtable[value[0]].is_matrix():
                     if value[1] == 0:
                         dim_content += "    const long {} = {}.rows();\n".format(key, value[0])
@@ -459,7 +464,10 @@ class CodeGenEigen(CodeGen):
         if node.t:
             base_info.content = "{}.transpose()".format(base_info.content)
         elif node.r:
-            base_info.content = "{}.inverse()".format(base_info.content)
+            if node.la_type.is_scalar():
+                base_info.content = "1 / ({})".format(base_info.content)
+            else:
+                base_info.content = "{}.inverse()".format(base_info.content)
         else:
             power_info = self.visit(node.power, **kwargs)
             if node.base.la_type.is_scalar():
