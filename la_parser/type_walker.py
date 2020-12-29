@@ -336,7 +336,10 @@ class TypeWalker(NodeWalker):
             if isinstance(id1, str):
                 if id1 not in self.symtable:
                     self.symtable[id1] = ScalarType(is_int=True)
-                self.dim_dict[id1] = [self.get_main_id(id0), 0]
+                if self.contain_subscript(id0):
+                    self.dim_dict[id1] = [self.get_main_id(id0), 1]
+                else:
+                    self.dim_dict[id1] = [self.get_main_id(id0), 0]
         ir_node.type = type_node
         return ir_node
 
