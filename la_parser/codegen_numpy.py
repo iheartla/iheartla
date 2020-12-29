@@ -280,7 +280,7 @@ class CodeGenNumpy(CodeGen):
         if self.symtable[assign_id].is_matrix():
             content.append("{} = np.zeros(({}, {}))\n".format(assign_id, self.symtable[assign_id].rows, self.symtable[assign_id].cols))
         elif self.symtable[assign_id].is_vector():
-            content.append("{} = np.zeros({})\n".format(assign_id, self.symtable[assign_id].rows))
+            content.append("{} = np.zeros(({}, 1))\n".format(assign_id, self.symtable[assign_id].rows))
         elif self.symtable[assign_id].is_sequence():
             ele_type = self.symtable[assign_id].element_type
             content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].size, ele_type.rows, ele_type.cols))
