@@ -342,11 +342,18 @@ class MulNode(ExprNode):
         self.op = op
 
 
+class DivOpType(Enum):
+    DivOpInvalid = -1
+    DivOpSlash = 0
+    DivOpUnicode = 1
+
+
 class DivNode(ExprNode):
-    def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
+    def __init__(self, left=None, right=None, parse_info=None, raw_text=None, op=DivOpType.DivOpSlash):
         super().__init__(IRNodeType.Div, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
+        self.op = op
 
 
 class MatrixNode(ExprNode):

@@ -590,7 +590,10 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         ret_type = self.type_inference(TypeInferenceEnum.INF_DIV, left_info.ir, right_info.ir)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
-        ir_node = DivNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
+        op_type = DivOpType.DivOpSlash
+        if node.op == '÷':
+            op_type = DivOpType.DivOpUnicode
+        ir_node = DivNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, op=op_type)
         ir_node.la_type = ret_type
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)
