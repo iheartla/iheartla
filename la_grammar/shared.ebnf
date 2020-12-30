@@ -76,6 +76,10 @@ integer::Integer
     value:{digit}+
     ;
 
+sup_integer::SupInteger
+    = value:{/[\u2080-\u2089]/}+
+    ;
+
 digit
     =
     /\d/

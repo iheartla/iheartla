@@ -433,6 +433,11 @@ class TypeWalker(NodeWalker):
         number_dict = {'⁰':0,'¹':1,'²':2, '³':3,'⁴':4,'⁵':5,'⁶':6,'⁷':7,'⁸':8,'⁹':9 }
         return number_dict[unicode]
 
+    def get_unicode_sup_number(self, unicode):
+        # 0-9:[\u2080-\u2089]
+        number_dict = {'₀':0,'₁':1,'₂':2, '₃':3,'₄':4,'₅':5,'₆':6,'₇':7,'₈':8,'₉':9 }
+        return number_dict[unicode]
+
     def walk_FunctionType(self, node, **kwargs):
         ir_node = FunctionTypeNode(parse_info=node.parseinfo)
         ir_node.empty = node.empty
@@ -1181,8 +1186,8 @@ class TypeWalker(NodeWalker):
                         self.sum_sym_list[sub_index] = cur_dict
 
             content_symbol = node.text.replace(' ', '').replace(',', '')
-            split_res = content_symbol.split('_')
-            self.ids_dict[content_symbol] = Identifier(split_res[0], split_res[1])
+            # split_res = content_symbol.split('_')
+            # self.ids_dict[content_symbol] = Identifier(split_res[0], split_res[1])
             assert left_info.content in self.symtable, self.get_err_msg_info(left_info.ir.parse_info,
                                                                                     "Element hasn't been defined")
             if self.symtable[left_info.content].is_sequence():
@@ -1305,7 +1310,7 @@ class TypeWalker(NodeWalker):
         if node.id0:
             id0_info = self.walk(node.id0, **kwargs)
             id0 = id0_info.content
-            id0 = self.get_main_id(id0)
+            id0 = id0_info.ir.get_main_id()
             if not la_is_if(**kwargs):  # symbols in sum don't need to be defined before todo:modify
                 if id0 != 'I':  # special case
                     new_symbol = self.filter_symbol(id0)
@@ -1367,6 +1372,19 @@ class TypeWalker(NodeWalker):
 
     def walk_Integer(self, node, **kwargs):
         value = ''.join(node.value)
+        node_type = ScalarType(is_int=True, is_constant=True)
+        node_info = NodeInfo(node_type, content=int(value))
+        #
+        ir_node = IntegerNode(parse_info=node.parseinfo)
+        ir_node.value = int(value)
+        ir_node.la_type = node_info.la_type
+        node_info.ir = ir_node
+        return node_info
+
+    def walk_SupInteger(self, node, **kwargs):
+        value = 0
+        for index in range(len(node.value)):
+            value += self.get_unicode_sup_number(node.value[len(node.value) - 1 - index]) * 10 ** index
         node_type = ScalarType(is_int=True, is_constant=True)
         node_info = NodeInfo(node_type, content=int(value))
         #
