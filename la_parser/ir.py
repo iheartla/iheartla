@@ -668,6 +668,15 @@ class MathFuncType(IntEnum):
     MathFuncLog = 17
     MathFuncLn = 18
     MathFuncSqrt = 19
+    #
+    MathFuncTrace = 20
+    MathFuncDiag = 21
+    MathFuncVec = 22
+    MathFuncDet = 23
+    MathFuncRank = 24
+    MathFuncNull = 25
+    MathFuncOrth = 26
+    MathFuncInv = 27
 
 
 class MathFuncNode(ExprNode):

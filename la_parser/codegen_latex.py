@@ -576,4 +576,20 @@ class CodeGenLatex(CodeGen):
             return " \ln{{({})}}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncSqrt:
             return " \sqrt{{{}}}".format(param_info)
+        elif node.func_type == MathFuncType.MathFuncTrace:
+            content = 'trace'
+        elif node.func_type == MathFuncType.MathFuncDiag:
+            content = 'diag'
+        elif node.func_type == MathFuncType.MathFuncVec:
+            content = 'vec'
+        elif node.func_type == MathFuncType.MathFuncDet:
+            content = 'det'
+        elif node.func_type == MathFuncType.MathFuncRank:
+            content = 'rank'
+        elif node.func_type == MathFuncType.MathFuncNull:
+            content = 'null'
+        elif node.func_type == MathFuncType.MathFuncOrth:
+            content = 'orth'
+        elif node.func_type == MathFuncType.MathFuncInv:
+            content = 'inv'
         return "{}({})".format(content, param_info)

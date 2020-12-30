@@ -1028,6 +1028,22 @@ class CodeGenNumpy(CodeGen):
             content = 'np.log'
         elif node.func_type == MathFuncType.MathFuncSqrt:
             content = 'np.sqrt'
+        elif node.func_type == MathFuncType.MathFuncTrace:
+            content = 'np.trace'
+        elif node.func_type == MathFuncType.MathFuncDiag:
+            content = 'np.diag'
+        elif node.func_type == MathFuncType.MathFuncVec:
+            content = 'np.matrix.flatten'
+        elif node.func_type == MathFuncType.MathFuncDet:
+            content = 'scipy.linalg.det'
+        elif node.func_type == MathFuncType.MathFuncRank:
+            content = 'np.linalg.matrix_rank'
+        elif node.func_type == MathFuncType.MathFuncNull:
+            content = 'scipy.linalg.null_space'
+        elif node.func_type == MathFuncType.MathFuncOrth:
+            content = 'scipy.linalg.orth'
+        elif node.func_type == MathFuncType.MathFuncInv:
+            content = 'scipy.linalg.inv'
         return CodeNodeInfo("{}({})".format(content, params_content))
 
     def visit_factor(self, node, **kwargs):

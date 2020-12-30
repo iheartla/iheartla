@@ -1129,16 +1129,38 @@ class CodeGenEigen(CodeGen):
             content = 'log'
         elif node.func_type == MathFuncType.MathFuncSqrt:
             content = 'sqrt'
-        if node.param.la_type.is_scalar():
-            content = "{}({})".format(content, params_content)
+        if node.func_type < MathFuncType.MathFuncTrace:
+            if node.param.la_type.is_scalar():
+                content = "{}({})".format(content, params_content)
+            else:
+                content = "{}.unaryExpr<double(*)(double)>(&std::{})".format(params_content, content)
+                if node.func_type == MathFuncType.MathFuncCot:
+                    content = "{}.unaryExpr<double(*)(double)>(&std::tan).cwiseInverse()".format(params_content)
+                elif node.func_type == MathFuncType.MathFuncSec:
+                    content = "{}.unaryExpr<double(*)(double)>(&std::cos).cwiseInverse()".format(params_content)
+                elif node.func_type == MathFuncType.MathFuncCsc:
+                    content = "{}.unaryExpr<double(*)(double)>(&std::sin).cwiseInverse()".format(params_content)
         else:
-            content = "{}.unaryExpr<double(*)(double)>(&std::{})".format(params_content, content)
-            if node.func_type == MathFuncType.MathFuncCot:
-                content = "{}.unaryExpr<double(*)(double)>(&std::tan).cwiseInverse()".format(params_content)
-            elif node.func_type == MathFuncType.MathFuncSec:
-                content = "{}.unaryExpr<double(*)(double)>(&std::cos).cwiseInverse()".format(params_content)
-            elif node.func_type == MathFuncType.MathFuncCsc:
-                content = "{}.unaryExpr<double(*)(double)>(&std::sin).cwiseInverse()".format(params_content)
+            # linear algebra
+            if node.func_type == MathFuncType.MathFuncTrace:
+                content = "({}).trace()".format(params_content)
+            elif node.func_type == MathFuncType.MathFuncDiag:
+                if node.param.la_type.is_vector():
+                    content = "({}).asDiagonal()".format(params_content)
+                else:
+                    content = "({}).diagonal()".format(params_content)
+            elif node.func_type == MathFuncType.MathFuncVec:
+                content = 'vec'
+            elif node.func_type == MathFuncType.MathFuncDet:
+                content = "({}).determinant()".format(params_content)
+            elif node.func_type == MathFuncType.MathFuncRank:
+                content = 'rank'
+            elif node.func_type == MathFuncType.MathFuncNull:
+                content = 'null'
+            elif node.func_type == MathFuncType.MathFuncOrth:
+                content = 'orth'
+            elif node.func_type == MathFuncType.MathFuncInv:
+                content = "({}).inverse()".format(params_content)
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_factor(self, node, **kwargs):

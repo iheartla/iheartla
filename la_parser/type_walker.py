@@ -87,7 +87,8 @@ class TypeWalker(NodeWalker):
         self.ret_symbol = None
         self.packages = {'trigonometry': ['sin', 'asin', 'cos', 'acos', 'tan', 'atan', 'atan2',
                                           'sinh', 'asinh', 'cosh', 'acosh', 'tanh', 'atanh', 'cot',
-                                          'sec', 'csc', 'e']}
+                                          'sec', 'csc', 'e'],
+                         'linearalgebra': ['trace', 'diag', 'vec', 'det', 'rank', 'null', 'orth', 'inv']}
         self.constants = ['π']
         self.pattern = re.compile("[A-Za-z]+")
         self.multi_lhs_list = []
@@ -1692,21 +1693,52 @@ class TypeWalker(NodeWalker):
 
     def create_math_node_info(self, func_type, param_info, remains=[]):
         param = param_info.ir
+        ret_type = param.la_type
         symbols = param_info.symbols
         remain_list = []
         if MathFuncType.MathFuncInvalid < func_type < MathFuncType.MathFuncAtan2:
             assert param.la_type.is_scalar() or param.la_type.is_matrix() or param.la_type.is_vector(), \
                 self.get_err_msg_info(param.parse_info, "Parameter must be scalar, vector or matrix type")
-        else:
+        elif func_type < MathFuncType.MathFuncTrace:
             assert param.la_type.is_scalar(), self.get_err_msg_info(param.parse_info, "Parameter must be scalar type")
             for par_info in remains:
                 par = par_info.ir
                 remain_list.append(par)
                 assert par.la_type.is_scalar(), self.get_err_msg_info(par.parse_info, "Parameter must be scalar type")
                 symbols = symbols.union(par_info.symbols)
+        elif func_type == MathFuncType.MathFuncTrace:
+            assert param.la_type.is_matrix() and param.la_type.rows == param.la_type.cols, self.get_err_msg_info(param.parse_info, "Parameter must be valid matrix type")
+            ret_type = ScalarType()
+        elif func_type == MathFuncType.MathFuncDiag:
+            assert (param.la_type.is_matrix() and param.la_type.rows == param.la_type.cols) or param.la_type.is_vector(), self.get_err_msg_info(param.parse_info, "Parameter must be valid matrix or vector type")
+            if param.la_type.is_matrix():
+                ret_type = VectorType(rows=param.la_type.rows)
+            else:
+                ret_type = MatrixType(rows=param.la_type.rows, cols=param.la_type.rows)
+        elif func_type == MathFuncType.MathFuncVec:
+            assert param.la_type.is_matrix(), self.get_err_msg_info(param.parse_info, "Parameter must be valid matrix type")
+            ret_type = VectorType(rows=param.la_type.rows*param.la_type.cols)
+        elif func_type == MathFuncType.MathFuncDet:
+            assert param.la_type.is_matrix(), self.get_err_msg_info(param.parse_info, "Parameter must be valid matrix type")
+            ret_type = ScalarType()
+        elif func_type == MathFuncType.MathFuncRank:
+            assert param.la_type.is_matrix(), self.get_err_msg_info(param.parse_info,
+                                                                    "Parameter must be valid matrix type")
+            ret_type = ScalarType()
+        elif func_type == MathFuncType.MathFuncNull:
+            assert param.la_type.is_matrix(), self.get_err_msg_info(param.parse_info,
+                                                                    "Parameter must be valid matrix type")
+            ret_type = MatrixType(rows=param.la_type.cols)  # dynamic dims
+        elif func_type == MathFuncType.MathFuncOrth:
+            assert param.la_type.is_matrix(), self.get_err_msg_info(param.parse_info,
+                                                                    "Parameter must be valid matrix type")
+            ret_type = MatrixType(rows=param.la_type.rows)  # dynamic dims
+        elif func_type == MathFuncType.MathFuncInv:
+            assert param.la_type.is_matrix() and param.la_type.rows == param.la_type.cols, self.get_err_msg_info(param.parse_info, "Parameter must be valid matrix type")
+            ret_type = MatrixType(rows=param.la_type.rows, cols=param.la_type.cols)
         tri_node = MathFuncNode(param, func_type, remain_list)
-        node_info = NodeInfo(param.la_type, symbols=symbols)
-        tri_node.la_type = param.la_type
+        node_info = NodeInfo(ret_type, symbols=symbols)
+        tri_node.la_type = ret_type
         node_info.ir = tri_node
         return node_info
 
@@ -1797,6 +1829,27 @@ class TypeWalker(NodeWalker):
 
     def walk_SqrtFunc(self, node, **kwargs):
         return self.create_math_node_info(MathFuncType.MathFuncSqrt, self.walk(node.param, **kwargs))
+
+    def walk_TraceFunc(self, node, **kwargs):
+        return self.create_math_node_info(MathFuncType.MathFuncTrace, self.walk(node.param, **kwargs))
+
+    def walk_DiagFunc(self, node, **kwargs):
+        return self.create_math_node_info(MathFuncType.MathFuncDiag, self.walk(node.param, **kwargs))
+
+    def walk_VecFunc(self, node, **kwargs):
+        return self.create_math_node_info(MathFuncType.MathFuncVec, self.walk(node.param, **kwargs))
+
+    def walk_RankFunc(self, node, **kwargs):
+        return self.create_math_node_info(MathFuncType.MathFuncRank, self.walk(node.param, **kwargs))
+
+    def walk_NullFunc(self, node, **kwargs):
+        return self.create_math_node_info(MathFuncType.MathFuncNull, self.walk(node.param, **kwargs))
+
+    def walk_OrthFunc(self, node, **kwargs):
+        return self.create_math_node_info(MathFuncType.MathFuncOrth, self.walk(node.param, **kwargs))
+
+    def walk_InvFunc(self, node, **kwargs):
+        return self.create_math_node_info(MathFuncType.MathFuncInv, self.walk(node.param, **kwargs))
 
     ###################################################################
     def check_bmat_validity(self, type_array, mat_size):

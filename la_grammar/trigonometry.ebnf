@@ -19,6 +19,7 @@
 #    | csc_func
 #    ;
 
+### trigonometry function
 
 sin_func::SinFunc
     = SIN {'^' power:integer} '(' {hspace} param:expression {hspace} ')'
@@ -82,4 +83,37 @@ csc_func::CscFunc
 
 atan2_func::Atan2Func
     = ATAN2 '(' {hspace} param:expression {hspace} separator:params_separator {hspace} second:expression {hspace} ')'
+    ;
+
+### linear algebra function
+trace_func::TraceFunc
+    = ('trace'|'tr') '(' {hspace} param:expression {hspace} ')'
+    ;
+
+diag_func::DiagFunc
+    = 'diag' '(' {hspace} param:expression {hspace} ')'
+    ;
+
+vec_func::VecFunc
+    = 'vec' '(' {hspace} param:expression {hspace} ')'
+    ;
+
+det_func::DetFunc
+    = 'det' '(' {hspace} param:expression {hspace} ')'
+    ;
+
+rank_func::RankFunc
+    = 'rank' '(' {hspace} param:expression {hspace} ')'
+    ;
+
+null_func::NullFunc
+    = 'null' '(' {hspace} param:expression {hspace} ')'
+    ;
+
+orth_func::OrthFunc
+    = 'orth' '(' {hspace} param:expression {hspace} ')'
+    ;
+
+inv_func::InvFunc
+    = 'inv' '(' {hspace} param:expression {hspace} ')'
     ;
