@@ -56,7 +56,8 @@ class LaVarType(object):
         return self.var_type == VarTypeEnum.SEQUENCE and self.element_type.is_scalar()
 
     def is_vector(self):
-        return self.var_type == VarTypeEnum.VECTOR or (self.var_type == VarTypeEnum.MATRIX and self.cols == 1)
+        return self.var_type == VarTypeEnum.VECTOR
+        # return self.var_type == VarTypeEnum.VECTOR or (self.var_type == VarTypeEnum.MATRIX and self.cols == 1)
 
     def is_scalar(self):
         return self.var_type == VarTypeEnum.SCALAR

@@ -731,13 +731,13 @@ class CodeGenEigen(CodeGen):
                     col_content = "{}-1".format(col_info.content)
                 content = "{}({}, {})".format(main_info.content, row_content, col_content)
             else:
-                content = "{}.row({})".format(main_info.content, row_content)
+                content = "{}.row({}).transpose()".format(main_info.content, row_content)
         else:
             col_info = self.visit(node.col_index, **kwargs)
             if node.col_index.la_type.index_type:
-                content = "{}.col({}).transpose()".format(main_info.content, col_info.content)
+                content = "{}.col({})".format(main_info.content, col_info.content)
             else:
-                content = "{}.col({}-1).transpose()".format(main_info.content, col_info.content)
+                content = "{}.col({}-1)".format(main_info.content, col_info.content)
         return CodeNodeInfo(content)
 
     def visit_vector_index(self, node, **kwargs):
