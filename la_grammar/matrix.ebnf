@@ -142,7 +142,7 @@ operations_in_matrix
 
 power_in_matrix_operator::Power
     = base:factor_in_matrix t:'^T'
-    | base:factor_in_matrix r:'^(-1)'
+    | base:factor_in_matrix r:('^(-1)' | '⁻¹')
     | base:factor_in_matrix '^' power:factor_in_matrix
     ;
 
@@ -168,7 +168,7 @@ dot_product_in_matrix_operator::DotProduct
     ;
 
 trans_in_matrix_operator::Transpose
-    = f:factor_in_matrix 'ᵀ'
+    = f:factor_in_matrix /[\u1d40]/
     ;
 
 solver_in_matrix_operator::Solver

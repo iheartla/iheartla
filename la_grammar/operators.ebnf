@@ -144,7 +144,8 @@ dot_product_operator::DotProduct
     ;
 
 trans_operator::Transpose
-    = f:factor 'ᵀ'
+    #= f:factor 'ᵀ'
+    = f:factor {hspace} /[\u1d40]/
     ;
 
 function_operator::Function
