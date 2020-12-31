@@ -77,6 +77,10 @@ integer::Integer
     ;
 
 sup_integer::SupInteger
+    = value:{/[\u2070\u00B9\u00B2\u00B3\u2074-\u2079]/}+
+    ;
+
+sub_integer::SubInteger
     = value:{/[\u2080-\u2089]/}+
     ;
 

@@ -75,6 +75,7 @@ power_operator::Power
     = base:factor {hspace} t:'^T'
     | base:factor {hspace} r:('^(-1)' | '⁻¹')
     | base:factor {hspace} '^' {hspace} power:factor
+    | base:factor {hspace} power:sup_integer
     ;
 
 solver_operator::Solver

@@ -434,7 +434,7 @@ class TypeWalker(NodeWalker):
         number_dict = {'⁰':0,'¹':1,'²':2, '³':3,'⁴':4,'⁵':5,'⁶':6,'⁷':7,'⁸':8,'⁹':9 }
         return number_dict[unicode]
 
-    def get_unicode_sup_number(self, unicode):
+    def get_unicode_sub_number(self, unicode):
         # 0-9:[\u2080-\u2089]
         number_dict = {'₀':0,'₁':1,'₂':2, '₃':3,'₄':4,'₅':5,'₆':6,'₇':7,'₈':8,'₉':9 }
         return number_dict[unicode]
@@ -1382,10 +1382,23 @@ class TypeWalker(NodeWalker):
         node_info.ir = ir_node
         return node_info
 
+    def walk_SubInteger(self, node, **kwargs):
+        value = 0
+        for index in range(len(node.value)):
+            value += self.get_unicode_sub_number(node.value[len(node.value) - 1 - index]) * 10 ** index
+        node_type = ScalarType(is_int=True, is_constant=True)
+        node_info = NodeInfo(node_type, content=int(value))
+        #
+        ir_node = IntegerNode(parse_info=node.parseinfo)
+        ir_node.value = int(value)
+        ir_node.la_type = node_info.la_type
+        node_info.ir = ir_node
+        return node_info
+
     def walk_SupInteger(self, node, **kwargs):
         value = 0
         for index in range(len(node.value)):
-            value += self.get_unicode_sup_number(node.value[len(node.value) - 1 - index]) * 10 ** index
+            value += self.get_unicode_number(node.value[len(node.value) - 1 - index]) * 10 ** index
         node_type = ScalarType(is_int=True, is_constant=True)
         node_info = NodeInfo(node_type, content=int(value))
         #
