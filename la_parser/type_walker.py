@@ -85,10 +85,10 @@ class TypeWalker(NodeWalker):
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
         self.la_msg = LaMsg.getInstance()
         self.ret_symbol = None
-        self.packages = {'trigonometry': ['sin', 'asin', 'cos', 'acos', 'tan', 'atan', 'atan2',
-                                          'sinh', 'asinh', 'cosh', 'acosh', 'tanh', 'atanh', 'cot',
+        self.packages = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', 'arccos', 'tan', 'atan', 'arctan', 'atan2',
+                                          'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh', 'cot',
                                           'sec', 'csc', 'e'],
-                         'linearalgebra': ['trace', 'diag', 'vec', 'det', 'rank', 'null', 'orth', 'inv']}
+                         'linearalgebra': ['trace', 'tr', 'diag', 'vec', 'det', 'rank', 'null', 'orth', 'inv']}
         self.constants = ['π']
         self.pattern = re.compile("[A-Za-z]+")
         self.multi_lhs_list = []
@@ -1831,7 +1831,9 @@ class TypeWalker(NodeWalker):
         return self.create_math_node_info(MathFuncType.MathFuncSqrt, self.walk(node.param, **kwargs))
 
     def walk_TraceFunc(self, node, **kwargs):
-        return self.create_math_node_info(MathFuncType.MathFuncTrace, self.walk(node.param, **kwargs))
+        node_info = self.create_math_node_info(MathFuncType.MathFuncTrace, self.walk(node.param, **kwargs))
+        node_info.ir.func_name = node.name
+        return node_info
 
     def walk_DiagFunc(self, node, **kwargs):
         return self.create_math_node_info(MathFuncType.MathFuncDiag, self.walk(node.param, **kwargs))

@@ -26,7 +26,11 @@ sin_func::SinFunc
     ;
 
 asin_func::AsinFunc
-    = name:(ASIN|ARCSIN) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    = name:ASIN {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    ;
+
+arcsin_func::AsinFunc
+    = name:ARCSIN {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 cos_func::CosFunc
@@ -34,7 +38,11 @@ cos_func::CosFunc
     ;
 
 acos_func::AcosFunc
-    = name:(ACOS|ARCCOS) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    = name:ACOS {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    ;
+
+arccos_func::AcosFunc
+    = name:ARCCOS {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 tan_func::TanFunc
@@ -42,7 +50,11 @@ tan_func::TanFunc
     ;
 
 atan_func::AtanFunc
-    = name:(ATAN|ARCTAN) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    = name:ATAN {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    ;
+
+arctan_func::AtanFunc
+    = name:ARCTAN {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 sinh_func::SinhFunc
@@ -50,7 +62,11 @@ sinh_func::SinhFunc
     ;
 
 asinh_func::AsinhFunc
-    = name:(ASINH|ARSINH) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    = name:ASINH {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    ;
+
+arsinh_func::AsinhFunc
+    = name:ARSINH {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 cosh_func::CoshFunc
@@ -58,7 +74,11 @@ cosh_func::CoshFunc
     ;
 
 acosh_func::AcoshFunc
-    = name:(ACOSH|ARCOSH) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    = name:ACOSH {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    ;
+
+arcosh_func::AcoshFunc
+    = name:ARCOSH {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 tanh_func::TanhFunc
@@ -66,7 +86,11 @@ tanh_func::TanhFunc
     ;
 
 atanh_func::AtanhFunc
-    = name:(ATANH|ARTANH) {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    = name:ATANH {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
+    ;
+
+artanh_func::AtanhFunc
+    = name:ARTANH {'^' power:integer}  '(' {hspace} param:expression {hspace} ')'
     ;
 
 cot_func::CotFunc
@@ -87,7 +111,11 @@ atan2_func::Atan2Func
 
 ### linear algebra function
 trace_func::TraceFunc
-    = ('trace'|'tr') '(' {hspace} param:expression {hspace} ')'
+    = name:'trace' '(' {hspace} param:expression {hspace} ')'
+    ;
+
+tr_func::TraceFunc
+    = name:'tr' '(' {hspace} param:expression {hspace} ')'
     ;
 
 diag_func::DiagFunc

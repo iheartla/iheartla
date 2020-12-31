@@ -577,7 +577,7 @@ class CodeGenLatex(CodeGen):
         elif node.func_type == MathFuncType.MathFuncSqrt:
             return " \sqrt{{{}}}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncTrace:
-            content = 'trace'
+            content = node.func_name
         elif node.func_type == MathFuncType.MathFuncDiag:
             content = 'diag'
         elif node.func_type == MathFuncType.MathFuncVec:
