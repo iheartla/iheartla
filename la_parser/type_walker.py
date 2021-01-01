@@ -672,6 +672,7 @@ class TypeWalker(NodeWalker):
                             seq_index_node = SequenceIndexNode()
                             seq_index_node.main = self.walk(node.left.left, **kwargs).ir
                             seq_index_node.main_index = self.walk(node.left.right[0], **kwargs).ir
+                            seq_index_node.la_type = right_type
                             seq_index_node.set_parent(assign_node)
                             assign_node.left = seq_index_node
                         elif self.symtable[main_id].is_vector():
@@ -680,6 +681,7 @@ class TypeWalker(NodeWalker):
                             vector_index_node.main = self.walk(node.left.left, **kwargs).ir
                             vector_index_node.row_index = self.walk(node.left.right[0], **kwargs).ir
                             vector_index_node.set_parent(assign_node)
+                            vector_index_node.la_type = right_type
                             assign_node.left = vector_index_node
                         break
             #
@@ -1686,7 +1688,13 @@ class TypeWalker(NodeWalker):
             ir_node.id = node.id
             if 'I' in self.symtable and self.symtable['I'].is_sequence():
                 # I_i, sequence
-                return self.create_id_node_info('I', [id1], node.parseinfo)
+                seq_index_node = SequenceIndexNode()
+                seq_index_node.main = IdNode('I', parse_info=node.parseinfo)
+                seq_index_node.main_index = id1_info.ir
+                seq_index_node.la_type = self.symtable['I'].element_type
+                # return self.create_id_node_info('I', [id1], node.parseinfo)
+                node_info = NodeInfo(seq_index_node.la_type, "I_{}".format(id1), {"I_{}".format(id1)}, seq_index_node)
+                return node_info
             if isinstance(id1, str):
                 assert id1 in self.symtable, self.get_err_msg_info(id1_info.ir.parse_info, "{} unknown".format(id1))
             # 'I' symbol
