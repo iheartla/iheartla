@@ -283,7 +283,8 @@ class CodeGenNumpy(CodeGen):
         if self.symtable[assign_id].is_matrix():
             content.append("{} = np.zeros(({}, {}))\n".format(assign_id, self.symtable[assign_id].rows, self.symtable[assign_id].cols))
         elif self.symtable[assign_id].is_vector():
-            content.append("{} = np.zeros(({}, 1))\n".format(assign_id, self.symtable[assign_id].rows))
+            content.append("{} = np.zeros(({}, ))\n".format(assign_id, self.symtable[assign_id].rows))
+            # content.append("{} = np.zeros(({}, 1))\n".format(assign_id, self.symtable[assign_id].rows))
         elif self.symtable[assign_id].is_sequence():
             ele_type = self.symtable[assign_id].element_type
             content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].size, ele_type.rows, ele_type.cols))
@@ -692,8 +693,8 @@ class CodeGenNumpy(CodeGen):
         # self left-hand-side symbol
         right_info = self.visit(node.right, **kwargs)
         right_exp = ""
-        if right_info.pre_list:
-            content += "".join(right_info.pre_list)
+        # if right_info.pre_list:
+        #     content += "".join(right_info.pre_list)
         # y_i = stat
         if node.left.contain_subscript():
             left_ids = node.left.get_all_ids()
@@ -743,14 +744,22 @@ class CodeGenNumpy(CodeGen):
                 if ele_type.is_matrix():
                     content += "    {} = np.zeros(({}, {}, {}))\n".format(sequence, self.symtable[sequence].size, ele_type.rows, ele_type.cols)
                 elif ele_type.is_vector():
-                    content += "    {} = np.zeros(({}, {}, 1))\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
+                    content += "    {} = np.zeros(({}, {}, ))\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
+                    # content += "    {} = np.zeros(({}, {}, 1))\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
                 else:
                     content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].size)
                 content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].size)
-                content += "    " + right_exp
-                # content += '\n'
+                if right_info.pre_list:
+                    for line in right_info.pre_list:
+                        lines = line.split('\n')
+                        content += "    " + "\n    ".join(lines)
+                    content += right_exp
+                else:
+                    content += "    " + right_exp
         #
         else:
+            if right_info.pre_list:
+                content += "".join(right_info.pre_list)
             op = ' = '
             if node.op == '+=':
                 op = ' += '

@@ -96,6 +96,7 @@ class TypeWalker(NodeWalker):
         self.sum_subs = []
         self.sum_conds = []
         self.la_content = ''
+        self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
 
     def filter_symbol(self, symbol):
         if '`' in symbol:
@@ -626,6 +627,7 @@ class TypeWalker(NodeWalker):
             left_subs = left_ids[1]
             for sub_sym in left_subs:
                 self.symtable[sub_sym] = ScalarType(index_type=False)
+                self.lhs_sub_dict[sub_sym] = []  # init empty list
         right_info = self.walk(node.right, **kwargs)
         right_type = right_info.la_type
         # ir
@@ -649,7 +651,7 @@ class TypeWalker(NodeWalker):
                     if sequence in self.parameters:
                         err_msg = "{} is a parameter, can not be assigned".format(id0)
                     assert False, self.get_err_msg_info(id0_info.ir.parse_info, err_msg)
-            if len(left_subs) == 2: # matrix
+            if len(left_subs) == 2:  # matrix
                 if right_info.la_type is not None and right_info.la_type.is_matrix():
                     # sparse mat assign
                     if right_info.la_type.sparse:
@@ -663,32 +665,53 @@ class TypeWalker(NodeWalker):
                             break
                     self.symtable[sequence] = MatrixType(rows=rows, cols=cols, element_type=right_type)
             elif len(left_subs) == 1:  # sequence or vector
-                for symbol in right_info.symbols:
-                    if left_subs[0] in symbol:
-                        main_id = self.get_main_id(symbol)
-                        if self.symtable[main_id].is_sequence():
-                            dim = self.symtable[main_id].size
-                            self.symtable[sequence] = SequenceType(size=dim, element_type=right_type)
-                            seq_index_node = SequenceIndexNode()
-                            seq_index_node.main = self.walk(node.left.left, **kwargs).ir
-                            seq_index_node.main_index = self.walk(node.left.right[0], **kwargs).ir
-                            seq_index_node.la_type = right_type
-                            seq_index_node.set_parent(assign_node)
-                            assign_node.left = seq_index_node
-                        elif self.symtable[main_id].is_vector():
-                            self.symtable[sequence] = VectorType(rows=self.symtable[main_id].rows)
-                            vector_index_node = VectorIndexNode()
-                            vector_index_node.main = self.walk(node.left.left, **kwargs).ir
-                            vector_index_node.row_index = self.walk(node.left.right[0], **kwargs).ir
-                            vector_index_node.set_parent(assign_node)
-                            vector_index_node.la_type = right_type
-                            assign_node.left = vector_index_node
+                cur_sub = left_subs[0]
+                sequence_type = True   # default type: sequence
+                for cur_node in self.lhs_sub_dict[cur_sub]:  # all nodes containing the subscript
+                    if self.symtable[cur_node.get_main_id()].is_vector():
+                        sequence_type = False
+                        dim = self.symtable[cur_node.get_main_id()].rows
                         break
-            #
+                    elif self.symtable[cur_node.get_main_id()].is_sequence():
+                        dim = self.symtable[cur_node.get_main_id()].size
+                        if cur_node.same_as_row_sym(cur_sub):
+                            dim = self.symtable[cur_node.get_main_id()].rows
+                        elif cur_node.same_as_col_sym(cur_sub):
+                            dim = self.symtable[cur_node.get_main_id()].cols
+                    elif self.symtable[cur_node.get_main_id()].is_matrix():
+                        # matrix
+                        dim = self.symtable[cur_node.get_main_id()].rows
+                        if cur_node.same_as_col_sym(cur_sub):
+                            dim = self.symtable[cur_node.get_main_id()].cols
+                if right_type.is_matrix():
+                    sequence_type = True
+                if sequence_type:
+                    self.symtable[sequence] = SequenceType(size=dim, element_type=right_type)
+                    seq_index_node = SequenceIndexNode()
+                    seq_index_node.main = self.walk(node.left.left, **kwargs).ir
+                    seq_index_node.main_index = self.walk(node.left.right[0], **kwargs).ir
+                    seq_index_node.la_type = right_type
+                    seq_index_node.set_parent(assign_node)
+                    assign_node.left = seq_index_node
+                else:
+                    # vector
+                    self.symtable[sequence] = VectorType(rows=dim)
+                    vector_index_node = VectorIndexNode()
+                    vector_index_node.main = self.walk(node.left.left, **kwargs).ir
+                    vector_index_node.row_index = self.walk(node.left.right[0], **kwargs).ir
+                    vector_index_node.set_parent(assign_node)
+                    vector_index_node.la_type = right_type
+                    assign_node.left = vector_index_node
+            # remove temporary subscripts(from LHS) in symtable
             for sub_sym in left_subs:
                 if sub_sym in self.symtable:
                     # multiple same sub_sym
                     del self.symtable[sub_sym]
+            if len(self.lhs_sub_dict) > 0:
+                assign_node.lhs_sub_dict = self.lhs_sub_dict
+                self.lhs_sub_dict = {}
+            else:
+                self.lhs_sub_dict.clear()
         else:
             if node.op != '=':
                 assert id0 in self.symtable, self.get_err_msg_info(id0_info.ir.parse_info, "{} hasn't been defined".format(id0))
@@ -1234,6 +1257,7 @@ class TypeWalker(NodeWalker):
                         ir_node.col_index = col_index_info.ir
                         la_type = self.symtable[left_info.content].element_type.element_type
                 ir_node.la_type = la_type
+                ir_node.process_subs_dict(self.lhs_sub_dict)
                 return NodeInfo(la_type, content_symbol,
                                          {content_symbol},
                                          ir_node)
@@ -1259,6 +1283,7 @@ class TypeWalker(NodeWalker):
                     ir_node.row_index = row_index_info.ir
                     ir_node.col_index = col_index_info.ir
                 ir_node.la_type = la_type
+                ir_node.process_subs_dict(self.lhs_sub_dict)
                 node_info = NodeInfo(la_type, content_symbol, {content_symbol},
                                      ir_node)
                 return node_info
@@ -1271,6 +1296,7 @@ class TypeWalker(NodeWalker):
                 ir_node.main = left_info.ir
                 ir_node.row_index = index_info.ir
                 ir_node.la_type = self.symtable[left_info.content].element_type
+                ir_node.process_subs_dict(self.lhs_sub_dict)
                 node_info = NodeInfo(self.symtable[left_info.content].element_type, content_symbol, {content_symbol}, ir_node)
                 return node_info
         #

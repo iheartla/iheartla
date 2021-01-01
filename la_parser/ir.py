@@ -114,6 +114,12 @@ class ExprNode(IRNode):
         super().__init__(node_type, parse_info=parse_info, raw_text=raw_text)
 
 
+class LhsNode(ExprNode):
+    def __init__(self, node_type=IRNodeType.INVALID, parse_info=None, raw_text=None):
+        super().__init__(node_type=node_type, parse_info=parse_info, raw_text=raw_text)
+        self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
+
+
 class StartNode(StmtNode):
     def __init__(self, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Start, parse_info=parse_info, raw_text=raw_text)
@@ -230,6 +236,7 @@ class AssignNode(StmtNode):
         self.right = right
         self.op = None
         self.symbols = None
+        self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
 
 
 class IfNode(StmtNode):
@@ -565,7 +572,23 @@ class NumMatrixNode(ExprNode):
         self.left = None
 
 
-class MatrixIndexNode(ExprNode):
+class IndexNode(ExprNode):
+    def __init__(self, node_type=IRNodeType.INVALID, parse_info=None, raw_text=None):
+        super().__init__(node_type, parse_info=parse_info, raw_text=raw_text)
+
+    def contain_sub_sym(self, sym):
+        return False
+
+    def process_subs_dict(self, subs_dict):
+        if len(subs_dict) == 0:
+            return
+        for key in subs_dict.keys():
+            if self.contain_sub_sym(key):
+                subs_dict[key].append(self)
+                break
+
+
+class MatrixIndexNode(IndexNode):
     def __init__(self, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.MatrixIndex, parse_info=parse_info, raw_text=raw_text)
         self.main = None
@@ -582,8 +605,25 @@ class MatrixIndexNode(ExprNode):
     def get_main_id(self):
         return self.main.get_main_id()
 
+    def contain_sub_sym(self, sym):
+        if self.row_index and self.row_index.get_main_id() == sym:
+            return True
+        if self.col_index and self.col_index.get_main_id() == sym:
+            return True
+        return False
 
-class VectorIndexNode(ExprNode):
+    def same_as_row_sym(self, sym):
+        if self.row_index and self.row_index.get_main_id() == sym:
+            return True
+        return False
+
+    def same_as_col_sym(self, sym):
+        if self.col_index and self.col_index.get_main_id() == sym:
+            return True
+        return False
+
+
+class VectorIndexNode(IndexNode):
     def __init__(self, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.VectorIndex, parse_info=parse_info, raw_text=raw_text)
         self.main = None
@@ -598,8 +638,13 @@ class VectorIndexNode(ExprNode):
     def get_main_id(self):
         return self.main.get_main_id()
 
+    def contain_sub_sym(self, sym):
+        if self.row_index and self.row_index.get_main_id() == sym:
+            return True
+        return False
 
-class SequenceIndexNode(ExprNode):
+
+class SequenceIndexNode(IndexNode):
     def __init__(self, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.SequenceIndex, parse_info=parse_info, raw_text=raw_text)
         self.main = None
@@ -619,6 +664,30 @@ class SequenceIndexNode(ExprNode):
 
     def get_main_id(self):
         return self.main.get_main_id()
+
+    def contain_sub_sym(self, sym):
+        if self.main_index and self.main_index.get_main_id() == sym:
+            return True
+        if self.row_index and self.row_index.get_main_id() == sym:
+            return True
+        if self.col_index and self.col_index.get_main_id() == sym:
+            return True
+        return False
+
+    def same_as_size_sym(self, sym):
+        if self.main_index and self.main_index.get_main_id() == sym:
+            return True
+        return False
+
+    def same_as_row_sym(self, sym):
+        if self.row_index and self.row_index.get_main_id() == sym:
+            return True
+        return False
+
+    def same_as_col_sym(self, sym):
+        if self.col_index and self.col_index.get_main_id() == sym:
+            return True
+        return False
 
 
 class SubexpressionNode(ExprNode):

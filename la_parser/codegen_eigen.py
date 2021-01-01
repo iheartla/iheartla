@@ -841,8 +841,6 @@ class CodeGenEigen(CodeGen):
         # self left-hand-side symbol
         right_info = self.visit(node.right, **kwargs)
         right_exp = ""
-        if right_info.pre_list:
-            content += "".join(right_info.pre_list)
         # y_i = stat
         if node.left.contain_subscript():
             left_ids = node.left.get_all_ids()
@@ -922,10 +920,18 @@ class CodeGenEigen(CodeGen):
                                                          self.symtable[sequence].rows)
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                             self.symtable[sequence].rows, left_subs[0])
-                content += "    " + right_exp + ";\n"
+                if right_info.pre_list:
+                    for line in right_info.pre_list:
+                        lines = line.split('\n')
+                        content += "    " + "\n    ".join(lines)
+                    content += right_exp + ";\n"
+                else:
+                    content += "    " + right_exp + ";\n"
                 content += '    }\n'
         #
         else:
+            if right_info.pre_list:
+                content = "".join(right_info.pre_list) + content
             if type(node.right).__name__ == 'SparseMatrix':
                 content = right_info.content
             else:
