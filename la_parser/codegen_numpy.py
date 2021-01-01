@@ -713,7 +713,7 @@ class CodeGenNumpy(CodeGen):
                         for list in right_info.pre_list:
                             lines = list.split('\n')
                             content += "    " + "\n    ".join(lines)
-                    content += "    {}[{}][{}] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
+                    content += "    {}[{}-1][{}-1] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
                 else:
                     for right_var in type_info.symbols:
                         if sub_strs in right_var:

@@ -12,7 +12,7 @@ cppyy.add_include_path(eigen_path)
 class TestConditions(BasePythonTest):
     def test_cond_gt(self):
         la_str = """Q = A
-                Q_ii = sum_(j for j >1 ) Q_ij
+                Q_ii = sum_(j for j >2 ) Q_ij
                 where
                 A: ℝ ^ (3 × 3): a matrix"""
         func_info = self.gen_func_info(la_str)
@@ -34,7 +34,7 @@ class TestConditions(BasePythonTest):
 
     def test_cond_ge(self):
         la_str = """Q = A
-                Q_ii = sum_(j for j >= 1 ) Q_ij
+                Q_ii = sum_(j for j >= 2 ) Q_ij
                 where
                 A: ℝ ^ (3 × 3): a matrix"""
         func_info = self.gen_func_info(la_str)
@@ -56,7 +56,7 @@ class TestConditions(BasePythonTest):
 
     def test_cond_le(self):
         la_str = """Q = A
-                Q_ii = sum_(j for j <= 2 ) Q_ij
+                Q_ii = sum_(j for j <= 3 ) Q_ij
                 where
                 A: ℝ ^ (3 × 3): a matrix"""
         func_info = self.gen_func_info(la_str)
@@ -78,7 +78,7 @@ class TestConditions(BasePythonTest):
 
     def test_cond_lt(self):
         la_str = """Q = A
-                Q_ii = sum_(j for j < 2 ) Q_ij
+                Q_ii = sum_(j for j < 3 ) Q_ij
                 where
                 A: ℝ ^ (3 × 3): a matrix"""
         func_info = self.gen_func_info(la_str)
@@ -100,7 +100,7 @@ class TestConditions(BasePythonTest):
 
     def test_cond_eq(self):
         la_str = """Q = A
-                Q_ii = sum_(j for j = 1 ) Q_ij
+                Q_ii = sum_(j for j = 2 ) Q_ij
                 where
                 A: ℝ ^ (3 × 3): a matrix"""
         func_info = self.gen_func_info(la_str)
@@ -122,7 +122,7 @@ class TestConditions(BasePythonTest):
 
     def test_cond_ineq(self):
         la_str = """Q = A
-                Q_ii = sum_(j for j != 1 ) Q_ij
+                Q_ii = sum_(j for j != 2 ) Q_ij
                 where
                 A: ℝ ^ (3 × 3): a matrix"""
         func_info = self.gen_func_info(la_str)

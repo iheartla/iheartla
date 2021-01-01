@@ -872,7 +872,7 @@ class CodeGenEigen(CodeGen):
                         for list in right_info.pre_list:
                             lines = list.split('\n')
                             content += "    " + "\n    ".join(lines)
-                    content += "    {}({}, {}) = {};\n".format(sequence, left_subs[0], left_subs[0], right_info.content)
+                    content += "    {}({}-1, {}-1) = {};\n".format(sequence, left_subs[0], left_subs[0], right_info.content)
                     content += "    }"
                 else:
                     for right_var in type_info.symbols:

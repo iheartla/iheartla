@@ -686,7 +686,9 @@ class TypeWalker(NodeWalker):
                         break
             #
             for sub_sym in left_subs:
-                del self.symtable[sub_sym]
+                if sub_sym in self.symtable:
+                    # multiple same sub_sym
+                    del self.symtable[sub_sym]
         else:
             if node.op != '=':
                 assert id0 in self.symtable, self.get_err_msg_info(id0_info.ir.parse_info, "{} hasn't been defined".format(id0))

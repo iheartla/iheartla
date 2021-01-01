@@ -72,10 +72,11 @@ class TestFunction(BasePythonTest):
                     Q: ℝ ^(2×2): a matrix 
                     f: ℝ^(2) -> ℝ^(2 × 2): a function"""
         func_info = self.gen_func_info(la_str)
-        P = np.array([[1], [4]])
-        P.reshape((2, 1))
+        P = np.array([1, 4])
+        # P.reshape((2, 1))
         Q = np.array([[1, 2], [4, 3]])
-        f = lambda p : np.hstack((p, p))
+        # f = lambda p : np.hstack((p, p))
+        f = lambda p: [[1, 1], [4, 4]]
         A = np.array([[9, 9], [16, 16]])
         self.assertDMatrixEqual(func_info.numpy_func(P, Q, f), A)
         # eigen test
