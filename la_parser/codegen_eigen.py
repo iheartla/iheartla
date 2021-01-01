@@ -1076,7 +1076,7 @@ class CodeGenEigen(CodeGen):
         pre_list.append("    for( int {}=0; {}<{}; {}++){{\n".format(index_i, index_i, node.left.la_type.rows, index_i))
         pre_list.append("        for( int {}=0; {}<{}; {}++){{\n".format(index_j, index_j, node.left.la_type.cols, index_j))
         pre_list.append("            {}.block({}*{},{}*{},{},{}) = ({})({}, {})*({});\n".format(kronecker, index_i, node.left.la_type.rows, index_j, node.left.la_type.cols,
-                                                                                           node.left.la_type.rows, node.left.la_type.cols,
+                                                                                           node.right.la_type.rows, node.right.la_type.cols,
                                                                                          left_info.content, index_i, index_j, right_info.content))
         pre_list.append("        }\n")
         pre_list.append("    }\n")

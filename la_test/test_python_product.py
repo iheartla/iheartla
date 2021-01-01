@@ -131,23 +131,29 @@ class TestProduct(BasePythonTest):
     def test_kronecker_product(self):
         la_str = """A = T ⨂ P
                     where 
-                    T: ℝ ^ (2×2): a sequence
-                    P: ℝ ^ (2×2): a sequence"""
+                    T: ℝ ^ (2×3): a sequence
+                    P: ℝ ^ (2×3): a sequence"""
         func_info = self.gen_func_info(la_str)
-        T = np.array([[1, 2], [3, 4]])
-        P = np.array([[5, 6], [7, 8]])
-        A = np.array([[5, 6, 10, 12], [7, 8, 14, 16], [15, 18, 20, 24], [21, 24, 28, 32]])
+        T = np.array([[1, 2, 3], [3, 4, 5]])
+        P = np.array([[5, 6, 7], [7, 8, 9]])
+        A = np.array([[5, 6, 7, 10, 12, 14, 15, 18, 21],
+                      [7, 8, 9, 14, 16, 18, 21, 24, 27],
+                      [15, 18, 21, 20, 24, 28, 25, 30, 35],
+                      [21, 24, 27, 28, 32, 36, 35, 40, 45]])
         self.assertDMatrixEqual(func_info.numpy_func(T, P), A)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
-                     "    Eigen::Matrix<double, 2, 2> T;",
-                     "    T << 1, 2, 3, 4;",
-                     "    Eigen::Matrix<double, 2, 2> P;",
-                     "    P << 5, 6, 7, 8;",
-                     "    Eigen::Matrix<double, 4, 4> A;",
-                     "    A << 5, 6, 10, 12, 7, 8, 14, 16, 15, 18, 20, 24, 21, 24, 28, 32;",
-                     "   Eigen::Matrix<double, 4, 4> B = {}(T, P);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 3> T;",
+                     "    T << 1, 2, 3, 3, 4, 5;",
+                     "    Eigen::Matrix<double, 2, 3> P;",
+                     "    P << 5, 6, 7, 7, 8, 9;",
+                     "    Eigen::Matrix<double, 4, 9> A;",
+                     "    A << 5, 6, 7, 10, 12, 14, 15, 18, 21,"
+                     "    7, 8, 9, 14, 16, 18, 21, 24, 27,"
+                     "    15, 18, 21, 20, 24, 28, 25, 30, 35,"
+                     "    21, 24, 27, 28, 32, 36, 35, 40, 45;",
+                     "   Eigen::Matrix<double, 4, 9> B = {}(T, P);".format(func_info.eig_func_name),
                      "    return ((B - A).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
