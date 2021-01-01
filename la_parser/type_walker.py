@@ -1187,8 +1187,8 @@ class TypeWalker(NodeWalker):
                         self.sum_sym_list[sub_index] = cur_dict
 
             content_symbol = node.text.replace(' ', '').replace(',', '')
-            # split_res = content_symbol.split('_')
-            # self.ids_dict[content_symbol] = Identifier(split_res[0], split_res[1])
+            split_res = content_symbol.split('_')
+            self.ids_dict[content_symbol] = Identifier(split_res[0], split_res[1])
             assert left_info.content in self.symtable, self.get_err_msg_info(left_info.ir.parse_info,
                                                                                     "Element hasn't been defined")
             if self.symtable[left_info.content].is_sequence():
@@ -1480,14 +1480,22 @@ class TypeWalker(NodeWalker):
             assert all_ids[0] in self.symtable, self.get_err_msg_info(node.parseinfo, "{} is not defined".format(all_ids[0]))
             la_type = self.symtable[all_ids[0]]
             id_name = all_ids[0]
-            if node.id1:
-                id1_info = self.walk(node.id1, **kwargs)
-                id1 = id1_info.content
-                ir_node.id1 = id1_info.ir
-                id2_info = self.walk(node.id2, **kwargs)
-                id2 = id2_info.content
-                ir_node.id2 = id2_info.ir
-                assert id1 == la_type.rows and id2 == la_type.cols, self.get_err_msg_info(node.parseinfo, "Sparse matrix: dim mismatch")
+            id1 = self.symtable[all_ids[0]].rows
+            if not isinstance(id1, int):
+                assert id1 in self.symtable, self.get_err_msg_info(node.parseinfo,
+                                                                   "Sparse matrix: dim {} is not defined".format(id1))
+            id2 = self.symtable[all_ids[0]].cols
+            if not isinstance(id2, int):
+                assert id2 in self.symtable, self.get_err_msg_info(node.parseinfo,
+                                                                   "Sparse matrix: dim {} is not defined".format(id2))
+            # if node.id1:
+            #     id1_info = self.walk(node.id1, **kwargs)
+            #     id1 = id1_info.content
+            #     ir_node.id1 = id1_info.ir
+            #     id2_info = self.walk(node.id2, **kwargs)
+            #     id2 = id2_info.content
+            #     ir_node.id2 = id2_info.ir
+            #     assert id1 == la_type.rows and id2 == la_type.cols, self.get_err_msg_info(node.parseinfo, "Sparse matrix: dim mismatch")
 
         node_info = NodeInfo(la_type)
         node_info.symbol = id_name

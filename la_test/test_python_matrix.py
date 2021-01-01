@@ -290,11 +290,12 @@ class TestMatrix(BasePythonTest):
         # sparse matrix: =
         la_str = """G_ij = { P_ij + J_ij  if  ( i , j ) ∈ E
         0 otherwise
-        is 10  × 10
+
         where
         P: ℝ ^ (4 × 4): a matrix
         J: ℝ ^ (4 × 4): a matrix
-        E: { ℤ × ℤ } 
+        G: ℝ ^ (10 × 10): a matrix
+        E: { ℤ × ℤ } index
         """
         func_info = self.gen_func_info(la_str)
         P = np.array([[-6, 9, -1, -11], [17, 14, 0, 0], [6, -2, 11, 0], [2, -9, -2, -9]])
@@ -338,16 +339,16 @@ class TestMatrix(BasePythonTest):
         # sparse matrix: +=
         la_str = """G_ij = { P_ij + J_ij  if  ( i , j ) ∈ E
         0 otherwise
-        is 10  × 10
 
         G_jk += { ( j , k ) ∈ F : P_jk + J_jk
         0 otherwise
-        is 10 × 10
+
         where
         P: ℝ ^ (4 × 4): a matrix
         J: ℝ ^ (4 × 4): a matrix
-        E: { ℤ × ℤ }
-        F: { ℤ × ℤ }"""
+        G: ℝ ^ (10 × 10): a matrix
+        E: { ℤ × ℤ } index
+        F: { ℤ × ℤ } index"""
         func_info = self.gen_func_info(la_str)
         P = np.array([[-6, 9, -1, -11], [17, 14, 0, 0], [6, -2, 11, 0], [2, -9, -2, -9]])
         J = np.array([[-9, -6, 0, -3], [1, 10, 0, 14], [-14, -2, 10, 13], [5, 9, 0, -10]])

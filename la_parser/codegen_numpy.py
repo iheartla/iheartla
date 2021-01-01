@@ -100,8 +100,10 @@ class CodeGenNumpy(CodeGen):
                         type_checks.append('    assert {}.shape == ({}, {}, {})'.format(parameter, self.symtable[parameter].size, ele_type.rows, ele_type.cols))
                         size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
                     elif ele_type.is_vector():
-                        type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
-                        size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)
+                        # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
+                        # size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)
+                        type_checks.append('    assert {}.shape == ({}, {}, )'.format(parameter, self.symtable[parameter].size, ele_type.rows))
+                        size_str = '{}, {}, '.format(self.symtable[parameter].size, ele_type.rows)
                     elif ele_type.is_scalar():
                         type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].size))
                         size_str = '{}'.format(self.symtable[parameter].size)
@@ -156,8 +158,9 @@ class CodeGenNumpy(CodeGen):
                 else:
                     type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
                     test_content.append('    {} = np.random.randn({})'.format(parameter, self.symtable[parameter].rows))
-                type_checks.append('    assert {}.shape == ({}, 1)'.format(parameter, self.symtable[parameter].rows))
-                test_content.append('    {} = {}.reshape(({}, 1))'.format(parameter, parameter, self.symtable[parameter].rows))
+                type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].rows))
+                # type_checks.append('    assert {}.shape == ({}, 1)'.format(parameter, self.symtable[parameter].rows))
+                # test_content.append('    {} = {}.reshape(({}, 1))'.format(parameter, parameter, self.symtable[parameter].rows))
             elif self.symtable[parameter].is_scalar():
                 type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
                 if self.symtable[parameter].is_int:
@@ -378,8 +381,8 @@ class CodeGenNumpy(CodeGen):
             # left_ids = self.get_all_ids(lhs)
             # left_subs = left_ids[1]
             pre_list.append(
-                "    {} = scipy.sparse.coo_matrix(({}+{}.data.tolist(), np.hstack((np.asarray({}).T, np.asarray(({}.row, {}.col))))), shape=({}, {}))\n".format(cur_m_id, value_var, self.get_main_id(lhs),
-                                                                                                    index_var, self.get_main_id(lhs), self.get_main_id(lhs),
+                "    {} = scipy.sparse.coo_matrix(({}+{}.data.tolist(), np.hstack((np.asarray({}).T, np.asarray(({}.row, {}.col))))), shape=({}, {}))\n".format(cur_m_id, value_var, cur_m_id,
+                                                                                                    index_var, cur_m_id, cur_m_id,
                                                                                                     self.symtable[
                                                                                                         cur_m_id].rows,
                                                                                                     self.symtable[
