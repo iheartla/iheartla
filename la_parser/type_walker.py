@@ -1785,11 +1785,11 @@ class TypeWalker(NodeWalker):
         elif func_type == MathFuncType.MathFuncNull:
             assert param.la_type.is_matrix(), self.get_err_msg_info(param.parse_info,
                                                                     "Parameter must be valid matrix type")
-            ret_type = MatrixType(rows=param.la_type.cols)  # dynamic dims
+            ret_type = MatrixType(rows=param.la_type.cols, dynamic=DynamicTypeEnum.DYN_MAT_COL)  # dynamic dims
         elif func_type == MathFuncType.MathFuncOrth:
             assert param.la_type.is_matrix(), self.get_err_msg_info(param.parse_info,
                                                                     "Parameter must be valid matrix type")
-            ret_type = MatrixType(rows=param.la_type.rows)  # dynamic dims
+            ret_type = MatrixType(rows=param.la_type.rows, dynamic=DynamicTypeEnum.DYN_MAT_COL)  # dynamic dims
         elif func_type == MathFuncType.MathFuncInv:
             assert param.la_type.is_matrix() and param.la_type.rows == param.la_type.cols, self.get_err_msg_info(param.parse_info, "Parameter must be valid matrix type")
             ret_type = MatrixType(rows=param.la_type.rows, cols=param.la_type.cols)
@@ -2076,6 +2076,8 @@ class TypeWalker(NodeWalker):
                     ret_type = MatrixType(rows=left_type.rows, cols=right_type.cols)
                     if left_type.sparse and right_type.sparse:
                         ret_type.sparse = True
+                    # if left_type.rows == 1 and right_type.cols == 1:
+                    #     ret_type = ScalarType()
                 elif right_type.is_vector():
                     assert left_type.cols == right_type.rows, error_msg
                     if left_type.rows == 1:

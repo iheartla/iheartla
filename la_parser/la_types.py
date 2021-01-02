@@ -13,17 +13,32 @@ class VarTypeEnum(Enum):
     INDEX = 7
 
 
+class DynamicTypeEnum(Enum):
+    DYN_INVALID = 0
+    DYN_VEC_ROW = 1
+    DYN_MAT_ROW = 2
+    DYN_MAT_COL = 4
+    DYN_SEQ_DIM = 8
+    DYN_SEQ_ROW = 16
+    DYN_SEQ_COL = 32
+    DYN_SET = 128
+
+
 class LaVarType(object):
-    def __init__(self, var_type, desc=None, element_type=None, symbol=None, index_type=False):
+    def __init__(self, var_type, desc=None, element_type=None, symbol=None, index_type=False, dynamic=DynamicTypeEnum.DYN_INVALID):
         super().__init__()
         self.var_type = var_type
         self.desc = desc   # only parameters need description
         self.element_type = element_type
         self.symbol = symbol
         self.index_type = index_type
+        self.dynamic = dynamic  # related to type inference, no need to check if True
 
     def is_integer_element(self):
         return False
+
+    def is_dynamic(self):
+        return self.dynamic != DynamicTypeEnum.DYN_INVALID
 
     def is_dim_constant(self):
         constant = False
@@ -86,8 +101,8 @@ class LaVarType(object):
 
 
 class ScalarType(LaVarType):
-    def __init__(self, is_int=False, desc=None, element_type=None, symbol=None, index_type=False, is_constant=False):
-        LaVarType.__init__(self, VarTypeEnum.SCALAR, desc, element_type, symbol, index_type=index_type)
+    def __init__(self, is_int=False, desc=None, element_type=None, symbol=None, index_type=False, is_constant=False, dynamic=DynamicTypeEnum.DYN_INVALID):
+        LaVarType.__init__(self, VarTypeEnum.SCALAR, desc, element_type, symbol, index_type=index_type, dynamic=dynamic)
         self.is_int = is_int
         self.is_constant = is_constant  # constant number
 
@@ -101,8 +116,8 @@ class ScalarType(LaVarType):
 
 
 class SequenceType(LaVarType):
-    def __init__(self, size=0, desc=None, element_type=None, symbol=None):
-        LaVarType.__init__(self, VarTypeEnum.SEQUENCE, desc, element_type, symbol)
+    def __init__(self, size=0, desc=None, element_type=None, symbol=None, dynamic=False):
+        LaVarType.__init__(self, VarTypeEnum.SEQUENCE, desc, element_type, symbol, dynamic=dynamic)
         self.size = size
 
     def get_signature(self):
@@ -113,8 +128,8 @@ class SequenceType(LaVarType):
 
 
 class MatrixType(LaVarType):
-    def __init__(self, rows=0, cols=0, desc=None, element_type=ScalarType(), symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=None, list_dim=None, index_var=None, value_var=None, item_types=None):
-        LaVarType.__init__(self, VarTypeEnum.MATRIX, desc, element_type, symbol)
+    def __init__(self, rows=0, cols=0, desc=None, element_type=ScalarType(), symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=None, list_dim=None, index_var=None, value_var=None, item_types=None, dynamic=DynamicTypeEnum.DYN_INVALID):
+        LaVarType.__init__(self, VarTypeEnum.MATRIX, desc, element_type, symbol, dynamic=dynamic)
         self.rows = rows
         self.cols = cols
         # attributes
@@ -141,8 +156,8 @@ class MatrixType(LaVarType):
 
 
 class VectorType(LaVarType):
-    def __init__(self, rows=0, desc=None, element_type=ScalarType(), symbol=None):
-        LaVarType.__init__(self, VarTypeEnum.VECTOR, desc, element_type, symbol)
+    def __init__(self, rows=0, desc=None, element_type=ScalarType(), symbol=None, dynamic=DynamicTypeEnum.DYN_INVALID):
+        LaVarType.__init__(self, VarTypeEnum.VECTOR, desc, element_type, symbol, dynamic=dynamic)
         self.rows = rows
         self.cols = 1
 
@@ -157,8 +172,8 @@ class VectorType(LaVarType):
 
 
 class SetType(LaVarType):
-    def __init__(self, size=0, desc=None, element_type=None, symbol=None, int_list=None):
-        LaVarType.__init__(self, VarTypeEnum.SET, desc, element_type, symbol)
+    def __init__(self, size=0, desc=None, element_type=None, symbol=None, int_list=None, dynamic=DynamicTypeEnum.DYN_INVALID):
+        LaVarType.__init__(self, VarTypeEnum.SET, desc, element_type, symbol, dynamic=dynamic)
         self.size = size
         self.int_list = int_list     # whether the element is real number or integer
 
