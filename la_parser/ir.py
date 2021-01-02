@@ -606,19 +606,19 @@ class MatrixIndexNode(IndexNode):
         return self.main.get_main_id()
 
     def contain_sub_sym(self, sym):
-        if self.row_index and self.row_index.get_main_id() == sym:
+        if self.row_index and self.row_index.node_type == IRNodeType.Id and self.row_index.get_main_id() == sym:
             return True
-        if self.col_index and self.col_index.get_main_id() == sym:
+        if self.col_index and self.col_index.node_type == IRNodeType.Id and self.col_index.get_main_id() == sym:
             return True
         return False
 
     def same_as_row_sym(self, sym):
-        if self.row_index and self.row_index.get_main_id() == sym:
+        if self.row_index and self.row_index.node_type == IRNodeType.Id and self.row_index.get_main_id() == sym:
             return True
         return False
 
     def same_as_col_sym(self, sym):
-        if self.col_index and self.col_index.get_main_id() == sym:
+        if self.col_index and self.col_index.node_type == IRNodeType.Id and self.col_index.get_main_id() == sym:
             return True
         return False
 
@@ -639,7 +639,7 @@ class VectorIndexNode(IndexNode):
         return self.main.get_main_id()
 
     def contain_sub_sym(self, sym):
-        if self.row_index and self.row_index.get_main_id() == sym:
+        if self.row_index and self.row_index.node_type == IRNodeType.Id and self.row_index.get_main_id() == sym:
             return True
         return False
 
@@ -666,26 +666,26 @@ class SequenceIndexNode(IndexNode):
         return self.main.get_main_id()
 
     def contain_sub_sym(self, sym):
-        if self.main_index and self.main_index.get_main_id() == sym:
+        if self.main_index and self.main_index.node_type == IRNodeType.Id and self.main_index.get_main_id() == sym:
             return True
-        if self.row_index and self.row_index.get_main_id() == sym:
+        if self.row_index and self.row_index.node_type == IRNodeType.Id and self.row_index.get_main_id() == sym:
             return True
-        if self.col_index and self.col_index.get_main_id() == sym:
+        if self.col_index and self.col_index.node_type == IRNodeType.Id and self.col_index.get_main_id() == sym:
             return True
         return False
 
     def same_as_size_sym(self, sym):
-        if self.main_index and self.main_index.get_main_id() == sym:
+        if self.main_index and self.main_index.node_type == IRNodeType.Id and self.main_index.get_main_id() == sym:
             return True
         return False
 
     def same_as_row_sym(self, sym):
-        if self.row_index and self.row_index.get_main_id() == sym:
+        if self.row_index and self.row_index.node_type == IRNodeType.Id and self.row_index.get_main_id() == sym:
             return True
         return False
 
     def same_as_col_sym(self, sym):
-        if self.col_index and self.col_index.get_main_id() == sym:
+        if self.col_index and self.col_index.node_type == IRNodeType.Id and self.col_index.get_main_id() == sym:
             return True
         return False
 
