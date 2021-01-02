@@ -1214,7 +1214,11 @@ class TypeWalker(NodeWalker):
                         self.sum_sym_list[sub_index] = cur_dict
 
             content_symbol = node.text.replace(' ', '').replace(',', '')
-            split_res = content_symbol.split('_')
+            if '_' not in content_symbol:
+                # unicode subscript
+                split_res = [left_info.content, content_symbol.replace(left_info.content, '')]
+            else:
+                split_res = content_symbol.split('_')
             self.ids_dict[content_symbol] = Identifier(split_res[0], split_res[1])
             assert left_info.content in self.symtable, self.get_err_msg_info(left_info.ir.parse_info,
                                                                                     "Element hasn't been defined")
