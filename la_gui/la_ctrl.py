@@ -42,6 +42,7 @@ class LaTextControl(bc.BaseTextControl):
         self.Bind(wx.stc.EVT_STC_MARGINCLICK, self.OnMarginClick)
         self.Bind(wx.stc.EVT_STC_STYLENEEDED, self.OnStyleNeeded)
 
+
     def OnStyleNeeded(self, event):
         where_block = False
         last_styled_pos = self.GetEndStyled()
@@ -81,7 +82,7 @@ class LaTextControl(bc.BaseTextControl):
                         self.SetStyling(line_end - start_pos + 1, self.STC_STYLE_LA_ESCAPE_DESCRIPTION)
                         start_pos = line_end
                         continue
-            elif char in (self.SUBSTITUTION_START,self.SUBSTITUTION_END):
+            elif char in (self.SUBSTITUTION_START, self.SUBSTITUTION_END):
                 # unicode string
                 match = False
                 index = 1
@@ -89,7 +90,7 @@ class LaTextControl(bc.BaseTextControl):
                 unicode_str = ''
                 while self.is_unicode_prefix(prefix) and start_pos + index < end_pos:
                     if self.is_unicode(prefix):
-                        unicode_str = self.get_unicode(prefix) + ' '
+                        unicode_str = self.get_unicode(prefix)
                         match = True
                         break
                     index += 1
