@@ -1164,7 +1164,9 @@ class CodeGenEigen(CodeGen):
                 else:
                     content = "({}).diagonal()".format(params_content)
             elif node.func_type == MathFuncType.MathFuncVec:
-                content = 'vec'
+                vec_name = self.generate_var_name("vec")
+                content = '{}'.format(vec_name)
+                pre_list.append('    Eigen::VectorXd {}(Eigen::Map<Eigen::VectorXd>(((Eigen::MatrixXd)({})).data(), ({}).cols()*({}).rows()));;\n'.format(vec_name,params_content,params_content,params_content))
             elif node.func_type == MathFuncType.MathFuncDet:
                 content = "({}).determinant()".format(params_content)
             elif node.func_type == MathFuncType.MathFuncRank:

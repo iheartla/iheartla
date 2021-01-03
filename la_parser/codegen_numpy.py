@@ -1045,7 +1045,7 @@ class CodeGenNumpy(CodeGen):
         elif node.func_type == MathFuncType.MathFuncDiag:
             content = 'np.diag'
         elif node.func_type == MathFuncType.MathFuncVec:
-            content = 'np.matrix.flatten'
+            return CodeNodeInfo("np.matrix.flatten({}, order='F')".format(params_content))  # column-major
         elif node.func_type == MathFuncType.MathFuncDet:
             content = 'scipy.linalg.det'
         elif node.func_type == MathFuncType.MathFuncRank:
