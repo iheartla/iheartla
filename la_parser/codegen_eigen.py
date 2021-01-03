@@ -1168,9 +1168,13 @@ class CodeGenEigen(CodeGen):
             elif node.func_type == MathFuncType.MathFuncDet:
                 content = "({}).determinant()".format(params_content)
             elif node.func_type == MathFuncType.MathFuncRank:
-                content = 'rank'
+                rank_name = self.generate_var_name("rank")
+                content = '{}.rank()'.format(rank_name)
+                pre_list.append('    Eigen::FullPivLU<Eigen::MatrixXd> {}({});\n'.format(rank_name, params_content))
             elif node.func_type == MathFuncType.MathFuncNull:
-                content = 'null'
+                null_name = self.generate_var_name("null")
+                content = '{}.kernel()'.format(null_name)
+                pre_list.append('    Eigen::FullPivLU<Eigen::MatrixXd> {}({});\n'.format(null_name, params_content))
             elif node.func_type == MathFuncType.MathFuncOrth:
                 content = 'orth'
             elif node.func_type == MathFuncType.MathFuncInv:
