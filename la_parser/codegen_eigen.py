@@ -334,6 +334,12 @@ class CodeGenEigen(CodeGen):
                                                  ', '.join(self.parameters)))
         if self.symtable[self.ret_symbol].is_matrix() or self.symtable[self.ret_symbol].is_vector() or self.symtable[self.ret_symbol].is_scalar():
             main_content.append('    std::cout<<"func_value:\\n"<<func_value<<std::endl;')
+        else:
+            # sequence
+            main_content.append('    std::cout<<"vector func_value:"<<std::endl;')
+            main_content.append('    for(int i=0; i<func_value.size(); i++){')
+            main_content.append('        std::cout<<"i:"<<i<<", value:\\n"<<func_value.at(i)<<std::endl;')
+            main_content.append('    }')
         main_content.append('    return 0;')
         main_content.append('}')
         content += '\n\n' + '\n'.join(test_function) + '\n\n\n' + '\n'.join(main_content)
