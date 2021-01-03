@@ -203,6 +203,8 @@ class CodeGenEigen(CodeGen):
                 elif ele_type.is_scalar():
                     type_checks.append(
                         '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
+                    test_content.append(
+                        '        {}[i] = rand() % {};'.format(parameter, rand_int_max))
                 test_content.append('    }')
             elif self.symtable[parameter].is_matrix():
                 element_type = self.symtable[parameter].element_type
