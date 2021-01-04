@@ -29,6 +29,7 @@ from la_tools.la_helper import *
 from la_tools.parser_manager import ParserManager
 import subprocess
 import threading
+import regex as re
 
 ## We don't need wx to run in command-line mode. This makes it optional.
 try:
@@ -45,6 +46,7 @@ import tempfile
 import io
 
 
+_id_pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*")
 _codegen_dict = {}
 def get_codegen(parser_type):
     if parser_type not in _codegen_dict:
@@ -195,9 +197,15 @@ def parse_ir_node(content, model):
     multi_list = []
     parse_key = _default_key
     for parameter in type_walker.parameters:
+        if _id_pattern.fullmatch(parameter):
+            continue  # valid single identifier
         if len(parameter) > 1 and '_' not in parameter and '`' not in parameter:
             multi_list.append(parameter)
-    multi_list += type_walker.multi_lhs_list
+    # multi_list += type_walker.multi_lhs_list
+    for multi_lhs in type_walker.multi_lhs_list:
+        if _id_pattern.fullmatch(multi_lhs):
+            continue  # valid single identifier
+        multi_list.append(multi_lhs)
     if len(multi_list) > 0:
         multi_list = sorted(multi_list, key=len, reverse=True)
         keys_rule = "'" + "'|'".join(multi_list) + "'"
