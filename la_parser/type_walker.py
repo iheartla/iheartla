@@ -1739,6 +1739,7 @@ class TypeWalker(NodeWalker):
                 seq_index_node.main = IdNode('I', parse_info=node.parseinfo)
                 seq_index_node.main_index = id1_info.ir
                 seq_index_node.la_type = self.symtable['I'].element_type
+                seq_index_node.process_subs_dict(self.lhs_sub_dict)
                 # return self.create_id_node_info('I', [id1], node.parseinfo)
                 node_info = NodeInfo(seq_index_node.la_type, "I_{}".format(id1), {"I_{}".format(id1)}, seq_index_node)
                 return node_info
