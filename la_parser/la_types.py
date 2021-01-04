@@ -1,4 +1,4 @@
-from enum import Enum, IntEnum
+from enum import Enum, IntEnum, IntFlag
 
 
 class VarTypeEnum(Enum):
@@ -13,15 +13,11 @@ class VarTypeEnum(Enum):
     INDEX = 7
 
 
-class DynamicTypeEnum(Enum):
+class DynamicTypeEnum(IntFlag):
     DYN_INVALID = 0
-    DYN_VEC_ROW = 1
-    DYN_MAT_ROW = 2
-    DYN_MAT_COL = 4
-    DYN_SEQ_DIM = 8
-    DYN_SEQ_ROW = 16
-    DYN_SEQ_COL = 32
-    DYN_SET = 128
+    DYN_ROW = 1
+    DYN_COL = 2
+    DYN_DIM = 4
 
 
 class LaVarType(object):
@@ -39,6 +35,24 @@ class LaVarType(object):
 
     def is_dynamic(self):
         return self.dynamic != DynamicTypeEnum.DYN_INVALID
+
+    def is_dynamic_row(self):
+        return self.dynamic & DynamicTypeEnum.DYN_ROW
+
+    def is_dynamic_col(self):
+        return self.dynamic & DynamicTypeEnum.DYN_COL
+
+    def is_dynamic_dim(self):
+        return self.dynamic & DynamicTypeEnum.DYN_DIM
+
+    def set_dynamic_type(self, dynamic_type):
+        self.dynamic = dynamic_type
+
+    def add_dynamic_type(self, dynamic_type):
+        if dynamic_type == DynamicTypeEnum.DYN_INVALID:
+            self.dynamic = dynamic_type
+        else:
+            self.dynamic |= dynamic_type
 
     def is_dim_constant(self):
         constant = False

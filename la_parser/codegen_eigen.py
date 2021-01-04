@@ -50,27 +50,39 @@ class CodeGenEigen(CodeGen):
                     else:
                         type_str = "Eigen::SparseMatrix<double>"
             else:
-                if la_type.is_dim_constant():
-                    if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
-                        type_str = "Eigen::Matrix<int, {}, {}>".format(la_type.rows, la_type.cols)
-                    else:
-                        type_str = "Eigen::Matrix<double, {}, {}>".format(la_type.rows, la_type.cols)
-                else:
+                if la_type.is_dynamic():
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::MatrixXi"
                     else:
                         type_str = "Eigen::MatrixXd"
-        elif la_type.is_vector():
-            if la_type.is_dim_constant():
-                if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
-                    type_str = "Eigen::Matrix<int, {}, 1>".format(la_type.rows)
                 else:
-                    type_str = "Eigen::Matrix<double, {}, 1>".format(la_type.rows)
-            else:
+                    if la_type.is_dim_constant():
+                        if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
+                            type_str = "Eigen::Matrix<int, {}, {}>".format(la_type.rows, la_type.cols)
+                        else:
+                            type_str = "Eigen::Matrix<double, {}, {}>".format(la_type.rows, la_type.cols)
+                    else:
+                        if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
+                            type_str = "Eigen::MatrixXi"
+                        else:
+                            type_str = "Eigen::MatrixXd"
+        elif la_type.is_vector():
+            if la_type.is_dynamic():
                 if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                     type_str = "Eigen::VectorXi"
                 else:
                     type_str = "Eigen::VectorXd"
+            else:
+                if la_type.is_dim_constant():
+                    if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
+                        type_str = "Eigen::Matrix<int, {}, 1>".format(la_type.rows)
+                    else:
+                        type_str = "Eigen::Matrix<double, {}, 1>".format(la_type.rows)
+                else:
+                    if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
+                        type_str = "Eigen::VectorXi"
+                    else:
+                        type_str = "Eigen::VectorXd"
         elif la_type.is_scalar():
             if la_type.is_scalar() and la_type.is_int:
                 type_str = "int"

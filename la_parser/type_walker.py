@@ -170,9 +170,20 @@ class TypeWalker(NodeWalker):
         if la_type.is_sequence():
             desc = "sequence"
         elif la_type.is_matrix():
-            desc = "matrix"
+            dim_str = "{}, {}".format(la_type.rows, la_type.cols)
+            if la_type.is_dynamic():
+                if la_type.is_dynamic_row() and la_type.is_dynamic_col():
+                    dim_str = "*,*"
+                elif la_type.is_dynamic_row():
+                    dim_str = "*,{}".format(la_type.cols)
+                elif la_type.is_dynamic_col():
+                    dim_str = "{},*".format(la_type.rows)
+            desc = "matrix({})".format(dim_str)
         elif la_type.is_vector():
-            desc = "vector"
+            dim_str = "{}".format(la_type.rows)
+            if la_type.is_dynamic_row():
+                dim_str = "*"
+            desc = "vector({})".format(dim_str)
         elif la_type.is_scalar():
             desc = "scalar"
         elif la_type.is_set():
@@ -1034,6 +1045,10 @@ class TypeWalker(NodeWalker):
         assert f_info.la_type.is_matrix() or f_info.la_type.is_vector(), self.get_err_msg_info(f_info.ir.parse_info,"Transpose error. The base must be a matrix or vecotr")
         if f_info.la_type.is_matrix():
             node_type = MatrixType(rows=f_info.la_type.cols, cols=f_info.la_type.rows)
+            if f_info.la_type.is_dynamic_row():
+                node_type.set_dynamic_type(DynamicTypeEnum.DYN_COL)
+            if f_info.la_type.is_dynamic_col():
+                node_type.set_dynamic_type(DynamicTypeEnum.DYN_ROW)
         elif f_info.la_type.is_vector():
             node_type = MatrixType(rows=1, cols=f_info.la_type.rows)
         node_info = NodeInfo(node_type, symbols=f_info.symbols)
@@ -1789,11 +1804,11 @@ class TypeWalker(NodeWalker):
         elif func_type == MathFuncType.MathFuncNull:
             assert param.la_type.is_matrix(), self.get_err_msg_info(param.parse_info,
                                                                     "Parameter must be valid matrix type")
-            ret_type = MatrixType(rows=param.la_type.cols, dynamic=DynamicTypeEnum.DYN_MAT_COL)  # dynamic dims
+            ret_type = MatrixType(rows=param.la_type.cols, dynamic=DynamicTypeEnum.DYN_COL)  # dynamic dims
         elif func_type == MathFuncType.MathFuncOrth:
             assert param.la_type.is_matrix(), self.get_err_msg_info(param.parse_info,
                                                                     "Parameter must be valid matrix type")
-            ret_type = MatrixType(rows=param.la_type.rows, dynamic=DynamicTypeEnum.DYN_MAT_COL)  # dynamic dims
+            ret_type = MatrixType(rows=param.la_type.rows, dynamic=DynamicTypeEnum.DYN_COL)  # dynamic dims
         elif func_type == MathFuncType.MathFuncInv:
             assert param.la_type.is_matrix() and param.la_type.rows == param.la_type.cols, self.get_err_msg_info(param.parse_info, "Parameter must be valid matrix type")
             ret_type = MatrixType(rows=param.la_type.rows, cols=param.la_type.cols)
@@ -2053,11 +2068,54 @@ class TypeWalker(NodeWalker):
             elif left_type.is_matrix():
                 assert right_type.is_matrix(), error_msg
                 # assert right_type.is_matrix() or right_type.is_vector(), error_msg
-                assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, error_msg
-                if left_type.sparse and right_type.sparse:
-                    ret_type.sparse = True
+                if left_type.is_dynamic() or right_type.is_dynamic():
+                    if left_type.is_dynamic() and right_type.is_dynamic():
+                        if left_type.is_dynamic_row() and left_type.is_dynamic_col():
+                            ret_type = copy.deepcopy(right_type)
+                        elif left_type.is_dynamic_row():
+                            if right_type.is_dynamic_row() and right_type.is_dynamic_col():
+                                ret_type = copy.deepcopy(left_type)
+                            elif right_type.is_dynamic_row():
+                                assert left_type.cols == right_type.cols, error_msg
+                                ret_type = copy.deepcopy(left_type)
+                            elif right_type.is_dynamic_col():
+                                ret_type = copy.deepcopy(left_type)
+                                ret_type.rows = right_type.rows
+                                ret_type.set_dynamic_type(DynamicTypeEnum.DYN_INVALID)  # change to static type
+                        elif left_type.is_dynamic_col():
+                            if right_type.is_dynamic_row() and right_type.is_dynamic_col():
+                                ret_type = copy.deepcopy(left_type)
+                            elif right_type.is_dynamic_row():
+                                ret_type = copy.deepcopy(left_type)
+                                ret_type.cols = right_type.cols
+                                ret_type.set_dynamic_type(DynamicTypeEnum.DYN_INVALID)  # change to static type
+                            elif right_type.is_dynamic_col():
+                                assert left_type.rows == right_type.rows, error_msg
+                                ret_type = copy.deepcopy(left_type)
+                    else:
+                        if left_type.is_dynamic():
+                            if left_type.is_dynamic_row() and left_type.is_dynamic_col():
+                                ret_type = copy.deepcopy(right_type)
+                            else:
+                                if left_type.is_dynamic_row():
+                                    assert left_type.cols == right_type.cols, error_msg
+                                else:
+                                    assert left_type.rows == right_type.rows, error_msg
+                        else:
+                            if right_type.is_dynamic_row() and right_type.is_dynamic_col():
+                                ret_type = copy.deepcopy(left_type)
+                            else:
+                                if right_type.is_dynamic_row():
+                                    assert left_type.cols == right_type.cols, error_msg
+                                else:
+                                    assert left_type.rows == right_type.rows, error_msg
                 else:
-                    ret_type.sparse = False
+                    # static
+                    assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, error_msg
+                    if left_type.sparse and right_type.sparse:
+                        ret_type.sparse = True
+                    else:
+                        ret_type.sparse = False
             elif left_type.is_vector():
                 assert right_type.is_vector(), error_msg
                 assert left_type.rows == right_type.rows, error_msg
