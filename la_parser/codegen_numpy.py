@@ -470,9 +470,13 @@ class CodeGenNumpy(CodeGen):
                                 func_name = ret[i][j] + ' * np.ones'
                             if dims[1] == 1:
                                 # vector
-                                ret[i][j] = '{}({})'.format(func_name, dims[0])
+                                ret[i][j] = '{}(({}, 1))'.format(func_name, dims[0])
                             else:
                                 ret[i][j] = '{}(({}, {}))'.format(func_name, dims[0], dims[1])
+                for j in range(len(ret[i])):
+                    # vector type needs to be reshaped as matrix inside block matrix
+                    if node.la_type.item_types and node.la_type.item_types[i][j].la_type.is_vector():
+                        ret[i][j] = '({}).reshape({}, 1)'.format(ret[i][j], node.la_type.item_types[i][j].la_type.rows)
                 all_rows.append('[' + ', '.join(ret[i]) + ']')
             m_content += 'np.block([{}])'.format(', '.join(all_rows))
             if len(ret) > 1 and len(ret[0]) > 1:
