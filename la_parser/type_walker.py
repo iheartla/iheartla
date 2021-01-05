@@ -767,7 +767,8 @@ class TypeWalker(NodeWalker):
             sub_info.ir.set_parent(ir_node)
             subs = sub_info.content
             sub_parse_info = node.sub.parseinfo
-            assert subs not in self.symtable, self.get_err_msg_info(sub_parse_info, "Subscript has been defined")
+            if subs not in self.lhs_sub_dict:
+                assert subs not in self.symtable, self.get_err_msg_info(sub_parse_info, "Subscript has been defined")
             self.symtable[subs] = ScalarType(index_type=False)  # add subscript to symbol table temporarily
         self.logger.debug("new sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         new_id = self.generate_var_name("sum")
