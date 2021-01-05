@@ -1919,6 +1919,9 @@ class TypeWalker(NodeWalker):
     def walk_VecFunc(self, node, **kwargs):
         return self.create_math_node_info(MathFuncType.MathFuncVec, self.walk(node.param, **kwargs))
 
+    def walk_DetFunc(self, node, **kwargs):
+        return self.create_math_node_info(MathFuncType.MathFuncDet, self.walk(node.param, **kwargs))
+
     def walk_RankFunc(self, node, **kwargs):
         return self.create_math_node_info(MathFuncType.MathFuncRank, self.walk(node.param, **kwargs))
 
