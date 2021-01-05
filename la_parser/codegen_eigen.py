@@ -869,6 +869,8 @@ class CodeGenEigen(CodeGen):
                 sequence = left_ids[0]  # y left_subs[0]
                 sub_strs = left_subs[0] + left_subs[1]
                 if self.symtable[sequence].is_matrix() and self.symtable[sequence].sparse:
+                    if right_info.pre_list:
+                        content = "".join(right_info.pre_list) + content
                     # sparse mat assign
                     # right_exp += '    ' + sequence + ' = ' + right_info.content
                     # content += right_info.content
@@ -893,6 +895,8 @@ class CodeGenEigen(CodeGen):
                     content += "    {}({}-1, {}-1) = {};\n".format(sequence, left_subs[0], left_subs[0], right_info.content)
                     content += "    }"
                 else:
+                    if right_info.pre_list:
+                        content = "".join(right_info.pre_list) + content
                     for right_var in type_info.symbols:
                         if sub_strs in right_var:
                             var_ids = self.get_all_ids(right_var)

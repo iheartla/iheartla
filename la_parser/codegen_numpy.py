@@ -710,6 +710,8 @@ class CodeGenNumpy(CodeGen):
                 sequence = left_ids[0]  # y left_subs[0]
                 sub_strs = left_subs[0] + left_subs[1]
                 if self.symtable[sequence].is_matrix() and self.symtable[sequence].sparse:
+                    if right_info.pre_list:
+                        content += "".join(right_info.pre_list)
                     # sparse mat assign
                     right_exp += '    ' + sequence + ' = ' + right_info.content
                     content += right_exp
@@ -723,6 +725,8 @@ class CodeGenNumpy(CodeGen):
                             content += "    " + "\n    ".join(lines)
                     content += "    {}[{}-1][{}-1] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
                 else:
+                    if right_info.pre_list:
+                        content += "".join(right_info.pre_list)
                     for right_var in type_info.symbols:
                         if sub_strs in right_var:
                             var_ids = self.get_all_ids(right_var)
