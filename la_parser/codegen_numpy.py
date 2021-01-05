@@ -336,7 +336,10 @@ class CodeGenNumpy(CodeGen):
 
     def visit_transpose(self, node, **kwargs):
         f_info = self.visit(node.f, **kwargs)
-        f_info.content = "{}.T".format(f_info.content)
+        if node.f.la_type.is_vector():
+            f_info.content = "{}.T.reshape(1, {})".format(f_info.content, node.f.la_type.rows)
+        else:
+            f_info.content = "{}.T".format(f_info.content)
         return f_info
 
     def visit_power(self, node, **kwargs):
