@@ -18,12 +18,12 @@ identifier
 
 identifier_with_subscript::IdentifierSubscript
     = (left:identifier_alone '_' right+:(integer | '*' | identifier_alone) {
-    ({hspace} ',' {hspace} right+:'*')
-    | ({{hspace} ',' {hspace}} right+:(integer | identifier_alone)) } )
+    (',' right+:'*')
+    | ({','} right+:(integer | identifier_alone)) } )
     |
     ( left:identifier_alone right+:sub_integer {
-    ({hspace} ',' {hspace} right+:'*')
-    | ({{hspace} ',' {hspace}} right+:(sub_integer)) } )
+    (',' right+:'*')
+    | ({','} right+:(sub_integer)) } )
     ;
 
 
