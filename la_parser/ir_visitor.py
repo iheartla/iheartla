@@ -30,6 +30,8 @@ class IRVisitor(object):
         self.convert_matrix = False
         self.pattern = re.compile("[A-Za-z]+")
         self.la_content = ''
+        self.uni_num_dict = {'₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9',
+                             '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9'}
 
     def add_name_conventions(self, con_dict):
         for key, value in con_dict.items():
@@ -330,6 +332,10 @@ class IRVisitor(object):
         new_list = []
         pre_unicode = False
         for e in content:
+            if self.parse_type == ParserTypeEnum.NUMPY:
+                # make sure identifier is valid in numpy
+                if e.isnumeric() and e in self.uni_num_dict:
+                    e = self.uni_num_dict[e]
             if e.isalnum() or e == '_':
                 if pre_unicode:
                     new_list.append('_')
