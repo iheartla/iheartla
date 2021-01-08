@@ -841,7 +841,7 @@ class CodeGenEigen(CodeGen):
     def visit_div(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        left_info.content = left_info.content + ' / ' + right_info.content
+        left_info.content = "{} / double({})".format(left_info.content, right_info.content)
         left_info.pre_list += right_info.pre_list
         return left_info
 
