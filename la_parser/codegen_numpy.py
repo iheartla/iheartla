@@ -481,7 +481,7 @@ class CodeGenNumpy(CodeGen):
             m_content += 'np.block([{}])'.format(', '.join(all_rows))
             if len(ret) > 1 and len(ret[0]) > 1:
                 content += '{} = {}\n'.format(cur_m_id, m_content)
-            elif len(ret) == 1:
+            elif len(ret) == 1 and len(ret[0]) != 1:  # one row one col -> vstack
                 # single row
                 content += '{} = np.hstack(({}))\n'.format(cur_m_id, ', '.join(ret[0]))
             else:
