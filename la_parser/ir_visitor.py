@@ -156,6 +156,7 @@ class IRVisitor(object):
             IRNodeType.SparseOther: "visit_sparse_other",
             IRNodeType.NumMatrix: "visit_num_matrix",
             IRNodeType.Vector: "visit_vector",
+            IRNodeType.ToMatrix: "visit_to_matrix",
             #
             IRNodeType.MatrixIndex: "visit_matrix_index",
             IRNodeType.VectorIndex: "visit_vector_index",
@@ -232,6 +233,9 @@ class IRVisitor(object):
 
     def visit_vector(self, node, **kwargs):
         pass
+
+    def visit_to_matrix(self, node, **kwargs):
+        return self.visit(node.item, **kwargs)
 
     def visit_sparse_matrix(self, node, **kwargs):
         pass

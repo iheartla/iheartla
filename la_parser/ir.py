@@ -62,6 +62,7 @@ class IRNodeType(Enum):
     SparseOther = 308
     NumMatrix = 309
     Vector = 310
+    ToMatrix = 311
     #
     MatrixIndex = 320
     VectorIndex = 321
@@ -376,6 +377,12 @@ class VectorNode(ExprNode):
         super().__init__(IRNodeType.Vector, parse_info=parse_info, raw_text=raw_text)
         self.items = []
         self.symbol = None
+
+
+class ToMatrixNode(ExprNode):
+    def __init__(self, parse_info=None, raw_text=None, item=None):
+        super().__init__(IRNodeType.ToMatrix, parse_info=parse_info, raw_text=raw_text)
+        self.item = item
 
 
 class MatrixRowsNode(ExprNode):

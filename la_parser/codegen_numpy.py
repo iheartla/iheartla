@@ -441,6 +441,11 @@ class CodeGenNumpy(CodeGen):
         content = 'np.array([{}])'.format(", ".join(ret))
         return CodeNodeInfo(content, pre_list=pre_list)
 
+    def visit_to_matrix(self, node, **kwargs):
+        node_info = self.visit(node.item, **kwargs)
+        node_info.content = "({}).reshape({}, 1)".format(node_info.content, node.item.la_type.rows)
+        return node_info
+
     def visit_matrix(self, node, **kwargs):
         content = "    "
         # lhs = kwargs[LHS]
