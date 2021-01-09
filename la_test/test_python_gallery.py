@@ -49,14 +49,25 @@ class TestGallery(BasePythonTest):
         # sequence
         la_str = """min_(u ∈ ℝ^6) uᵀ(∑_i [x_i×n̂_i; n̂_i][(x_i×n̂_i)ᵀ n̂_iᵀ])u - 2uᵀ(∑_i [x_i×n̂_i; n̂_i]n̂_iᵀ(p_i-x_i)) + ∑_i(p_i-x_i)ᵀn̂_i n̂_iᵀ(p_i-x_i)
         where
-        x_i: ℝ^3 
-        n̂_i: ℝ^3  
+        x_i: ℝ^3
+        n̂_i: ℝ^3
         p_i: ℝ^3  """
         func_info = self.gen_func_info(la_str)
         x = np.array([[-11, 2, 3], [4, 5, 6], [17, 8, 9]])
         n̂ = np.array([[4, 15, 6], [7, -18, 9], [1, 22, 3]])
         p = np.array([[7, -8, 9], [1, 12, 3], [4, -5, 6]])
         self.assertTrue(np.isclose(func_info.numpy_func(x, n̂ , p), 0))
+
+    def test_gallery_1_2(self):
+        # sequence
+        la_str = """min_(C ∈ ℝ^3) ∑_i ||x_i + (R_i - I_3)C ||²
+        where
+        x_i: ℝ^3
+        R_i: ℝ^(3×3)"""
+        func_info = self.gen_func_info(la_str)
+        x = np.array([[1, 2, 3], [3, 6, 5]])
+        R = np.array([[[1, 2, 3], [3, 6, 5], [6, 3, 2]], [[2, 2, 1], [2, 3, 5], [9, 3, 1]]])
+        self.assertTrue(np.isclose(func_info.numpy_func(x, R), 11.123203285420))
 
     def test_gallery_2(self):
         # sequence
@@ -497,6 +508,390 @@ class TestGallery(BasePythonTest):
                      "    std::vector<double> ā = {3, 1, 8};",
                      "    double C = {}(3, 4, α, β, σ_S, σ_T, ρ, ρ̄, σ_ρ, ā);".format(func_info.eig_func_name),
                      "    return (abs(9.146235827664398 - C) < {});".format(self.eps),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_gallery_13(self):
+        # sequence
+        la_str = """`C(x,y)` = (∑_n ∑_i c_n,i w_n,i R̂_n) / (∑_n ∑_i w_n,i R̂_n)
+        where
+        c: ℝ^(x×y): the value of the Bayer pixel
+        w: ℝ^(x×y): the local sample weight
+        R̂: ℝ^x: the local robustness"""
+        func_info = self.gen_func_info(la_str)
+        c = np.array([[1, 2], [3, 6]])
+        w = np.array([[2, 2], [2, 4]])
+        R̂ = np.array([2, 4])
+        self.assertTrue(np.isclose(func_info.numpy_func(c, w, R̂), 4.125))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> c;",
+                     "    c << 1, 2, 3, 6;",
+                     "    Eigen::Matrix<double, 2, 2> w;",
+                     "    w << 2, 2, 2, 4;",
+                     "    Eigen::Matrix<double, 2, 1> R;",
+                     "    R << 2, 4;",
+                     "    double C = {}(c, w, R);".format(func_info.eig_func_name),
+                     "    return (abs(4.125 - C) < {});".format(self.eps),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_gallery_14(self):
+        # sequence
+        la_str = """Ω = [`e₁` `e₂`][`k₁`   0
+                 0    `k₂`] [`e₁`ᵀ
+			                 `e₂`ᵀ]
+        where
+        `k₁`: ℝ  : control the desired kernel variance in either edge or orthogonal direction
+        `k₂`: ℝ  : control the desired kernel variance in either edge or orthogonal direction
+        `e₁`: ℝ ^ 3: orthogonal direction vectors
+        `e₂`: ℝ ^ 3: orthogonal direction vectors"""
+        func_info = self.gen_func_info(la_str)
+        k1 = 2
+        k2 = 3
+        e1 = np.array([4, 2, 3])
+        e2 = np.array([1, 5, 2])
+        B = np.array([[35, 31, 30], [31, 83, 42], [30, 42, 30]])
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(k1, k2, e1, e2), B)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 3, 1> e1;",
+                     "    e1 << 4, 2, 3;",
+                     "    Eigen::Matrix<double, 3, 1> e2;",
+                     "    e2 << 1, 5, 2;",
+                     "    Eigen::Matrix<double, 3, 3> B;",
+                     "    B << 35, 31, 30, 31, 83, 42, 30, 42, 30;",
+                     "    Eigen::Matrix<double, 3, 3> C = {}(2, 3, e1, e2);".format(func_info.eig_func_name),
+                     "    return ((B - C).norm() < {});".format(self.eps),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_gallery_15(self):
+        # sequence
+        la_str = """`G_σ(s_i^k)` = ∑_j l_j exp(-dist(`b_i`, b_j)/(2σ²))(s_j)^k
+        where
+        l_j: ℝ : the length of bj
+        dist: ℝ^n, ℝ^n -> ℝ : measures the geodesic distance between the centers of bi and bj along the boundary
+        σ: ℝ
+        `b_i`: ℝ^n
+        b_j: ℝ^n
+        s_j: ℝ : unit direction vector of bi
+        k: ℝ : iteration number"""
+        func_info = self.gen_func_info(la_str)
+        l = np.array([1, 4, 6])
+        def dist(p0, p1):
+            return p0[0] + p1[0]
+        σ = 2
+        b_i = np.array([3, 2, 1])
+        b = np.array([[10, 5, 2], [2, 4, 2], [3, 8, 5]])
+        s = np.array([9, 9, 8])
+        k = 4
+        self.assertTrue(np.isclose(func_info.numpy_func(l, dist, σ, b_i, b, s, k), 26948.21883123))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::vector<double> l = {1, 4, 6};",
+                     "    double σ = 2;",
+                     "    std::vector<double> s = {9, 9, 8};",
+                     "    std::function<double(Eigen::VectorXd, Eigen::VectorXd)> dist;"
+                     "    dist = [](Eigen::VectorXd p1, Eigen::VectorXd p2)->double{",
+                     "        return p1(0) + p2(0);"
+                     "    };",
+                     "    Eigen::VectorXd b_i(3);",
+                     "    b_i << 3, 2, 1;",
+                     "    std::vector<Eigen::VectorXd> b;",
+                     "    Eigen::VectorXd n1(3);",
+                     "    n1 << 10, 5, 2;",
+                     "    Eigen::VectorXd n2(3);",
+                     "    n2 << 2, 4, 2;",
+                     "    Eigen::VectorXd n3(3);",
+                     "    n3 << 3, 8, 5;",
+                     "    b.push_back(n1);",
+                     "    b.push_back(n2);",
+                     "    b.push_back(n3);",
+                     "    double k = 4;",
+                     "    double C = {}(l, dist, σ, b_i, b, s, k);".format(func_info.eig_func_name),
+                     "    return (abs(26948.21883123 - C) < {});".format(self.eps),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_gallery_16(self):
+        # sequence
+        la_str = """∑_i α_i + 1/M ∑_i ∑_j (f(X_i,j)/`p_c`(X_i,j) - (∑_k α_k p_k X_i,j)/`p_c`(X_i,j))
+        where
+        α: ℝ^m
+        p: ℝ^m
+        X: ℝ^(m×n)
+        M: ℝ
+        f: ℝ -> ℝ
+        `p_c`: ℝ -> ℝ """
+        func_info = self.gen_func_info(la_str)
+        α = np.array([1, 2])
+        p = np.array([4, 3])
+        X = np.array([[2, 2], [2, 4]])
+        M = 4
+        def f(p0):
+            return 2 * p0 - 1
+        def p_c(p0):
+            return p0 + 1
+        self.assertTrue(np.isclose(func_info.numpy_func(α, p, X, M, f, p_c), -2.9))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::vector<double> l = {1, 4, 6};",
+                     "    double σ = 2;",
+                     "    std::vector<double> s = {9, 9, 8};",
+                     "    std::function<double(Eigen::VectorXd, Eigen::VectorXd)> dist;"
+                     "    dist = [](Eigen::VectorXd p1, Eigen::VectorXd p2)->double{",
+                     "        return p1(0) + p2(0);"
+                     "    };",
+                     "    Eigen::VectorXd α(2);",
+                     "    α << 1, 2;",
+                     "    Eigen::VectorXd p(2);",
+                     "    p << 4, 3;",
+                     "    Eigen::MatrixXd X(2,2);",
+                     "    X << 2, 2, 2, 4;",
+                     "    double M = 4;",
+                     "    std::function<double(double)> f;",
+                     "    f = [](double p1)->double{",
+                     "        return p1*2-1;",
+                     "    };",
+                     "    std::function<double(double)> p_c;",
+                     "    p_c = [](double p1)->double{",
+                     "        return p1+1;",
+                     "    };",
+                     "    double C = {}(α, p, X, M, f, p_c);".format(func_info.eig_func_name),
+                     "    return (abs(-2.9 - C) < {});".format(self.eps),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_gallery_17(self):
+        # sequence
+        la_str = """v_i = ∑_j w_i,j M_j u_i
+        where
+        w: ℝ^(4×4)
+        M_j: ℝ^(4×4)
+        u_i: ℝ^4"""
+        w = np.array([[1, 2, 3, 4], [3, 4, 5, 6], [5, 3, 5, 6], [9, 1, 3, 2]])
+        M = np.array([[[2, 2, 1, 4], [2, 1, 1, 2], [4, 3, 5, 1], [1, 1, 2, 2]],
+                      [[4, 2, 3, 4], [3, 1, 2, 1], [2, 3, 2, 2], [3, 4, 3, 4]],
+                      [[1, 2, 2, 4], [2, 1, 5, 1], [1, 3, 2, 2], [3, 4, 9, 4]],
+                      [[2, 2, 2, 4], [5, 1, 2, 1], [2, 3, 2, 1], [2, 4, 1, 4]]])
+        u = np.array([[2, 1, 4, 3], [3, 1, 2, 6]])
+        B = np.array([[266, 223, 205, 355], [659, 414, 417, 723]])
+        func_info = self.gen_func_info(la_str)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(w, M, u), B)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 4, 4> w;",
+                     "    w << 1, 2, 3, 4, 3, 4, 5, 6, 5, 3, 5, 6, 9, 1, 3, 2;",
+                     "    std::vector<Eigen::Matrix<double, 4, 4>> M;",
+                     "    Eigen::Matrix<double, 4, 4> M1;"
+                     "    M1 << 2, 2, 1, 4, 2, 1, 1, 2, 4, 3, 5, 1, 1, 1, 2, 2;",
+                     "    Eigen::Matrix<double, 4, 4> M2;"
+                     "    M2 << 4, 2, 3, 4, 3, 1, 2, 1, 2, 3, 2, 2, 3, 4, 3, 4;",
+                     "    Eigen::Matrix<double, 4, 4> M3;"
+                     "    M3 << 1, 2, 2, 4, 2, 1, 5, 1, 1, 3, 2, 2, 3, 4, 9, 4;",
+                     "    Eigen::Matrix<double, 4, 4> M4;"
+                     "    M4 << 2, 2, 2, 4, 5, 1, 2, 1, 2, 3, 2, 1, 2, 4, 1, 4;",
+                     "    M.push_back(M1);",
+                     "    M.push_back(M2);",
+                     "    M.push_back(M3);",
+                     "    M.push_back(M4);",
+                     "    std::vector<Eigen::Matrix<double, 4, 1>> u;"
+                     "    Eigen::Matrix<double, 4, 1> u1;"
+                     "    u1 << 2, 1, 4, 3;",
+                     "    Eigen::Matrix<double, 4, 1> u2;"
+                     "    u2 << 3, 1, 2, 6;",
+                     "    u.push_back(u1);",
+                     "    u.push_back(u2);",
+                     "    Eigen::Matrix<double, 4, 1> B1;"
+                     "    B1 << 266, 223, 205, 355;",
+                     "    Eigen::Matrix<double, 4, 1> B2;"
+                     "    B2 << 659, 414, 417, 723;",
+                     "    std::vector<Eigen::Matrix<double, 4, 1> > A = {}(w, M, u);".format(func_info.eig_func_name),
+                     "    if((A[0] - B1).norm() < {} && (A[1] - B2).norm() < {}){{".format(self.eps, self.eps),
+                     "        return true;",
+                     "    }",
+                     "    return false;",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_gallery_18(self):
+        # sequence
+        la_str = """n = ∑_T A_T||M_T v_T - [0 -1
+                        1  0] M_T u_T||²
+        where
+        v_i: ℝ^3
+        u_i: ℝ^3
+        M_i: ℝ^(2×3)
+        A_i: ℝ"""
+        v = np.array([[1, 2, 3], [3, 4, 5]])
+        u = np.array([[2, 1, 3], [5, 8, 1]])
+        M = np.array([[[2, 2, 1], [2, 1, 1]],
+                      [[4, 2, 3], [3, 1, 2]]])
+        A = np.array([2, 6])
+        func_info = self.gen_func_info(la_str)
+        self.assertTrue(np.isclose(func_info.numpy_func(v, u, M, A), 23722))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::vector<Eigen::Matrix<double, 3, 1> > v;",
+                     "    Eigen::Matrix<double, 3, 1> v1;"
+                     "    v1 << 1, 2, 3;",
+                     "    Eigen::Matrix<double, 3, 1> v2;"
+                     "    v2 << 3, 4, 5;",
+                     "    v.push_back(v1);",
+                     "    v.push_back(v2);",
+                     "    std::vector<Eigen::Matrix<double, 3, 1> > u;",
+                     "    Eigen::Matrix<double, 3, 1> u1;"
+                     "    u1 << 2, 1, 3;",
+                     "    Eigen::Matrix<double, 3, 1> u2;"
+                     "    u2 << 5, 8, 1;",
+                     "    u.push_back(u1);",
+                     "    u.push_back(u2);",
+                     "    std::vector<Eigen::Matrix<double, 2, 3> > M;",
+                     "    Eigen::Matrix<double, 2, 3> M1;"
+                     "    M1 << 2, 2, 1, 2, 1, 1;",
+                     "    Eigen::Matrix<double, 2, 3> M2;"
+                     "    M2 << 4, 2, 3, 3, 1, 2;",
+                     "    M.push_back(M1);",
+                     "    M.push_back(M2);",
+                     "    std::vector<double> A = {2, 6};",
+                     "    double C = {}(v, u, M, A);".format(func_info.eig_func_name),
+                     "    return (abs(23722 - C) < {});".format(self.eps),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_gallery_19(self):
+        # sequence
+        la_str = """∑_i f_i²p_i - (∑_i f_i p_i)²
+        where
+        f_i: ℝ
+        p_i: ℝ  """
+        func_info = self.gen_func_info(la_str)
+        f = np.array([1, 2, 3, 3, 4, 5])
+        p = np.array([4, 2, 3, 3, 1, 2])
+        self.assertTrue(np.isclose(func_info.numpy_func(f, p), -1468))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::vector<double> f = {1, 2, 3, 3, 4, 5};",
+                     "    std::vector<double> g = {4, 2, 3, 3, 1, 2};",
+                     "    double C = {}(f, g);".format(func_info.eig_func_name),
+                     "    return (abs(-1468 - C) < {});".format(self.eps),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_gallery_20(self):
+        # sequence
+        la_str = """`I(X;Y)` = ∑_i ∑_j x_j p_i,j log(p_i,j/∑_k x_k p_i,k)
+        where
+        x: ℝ^n
+        p: ℝ^(n×m)"""
+        func_info = self.gen_func_info(la_str)
+        x = np.array([1, 2, 3, 4])
+        p = np.array([[1, 2, 3, 4], [3, 4, 5, 6], [5, 3, 5, 6], [9, 1, 3, 2]])
+        self.assertTrue(np.isclose(func_info.numpy_func(x, p), -153.383596580))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::VectorXd x(4);"
+                     "    x << 1, 2, 3, 4;",
+                     "    Eigen::MatrixXd p(4,4);",
+                     "    p << 1, 2, 3, 4, 3, 4, 5, 6, 5, 3, 5, 6, 9, 1, 3, 2;",
+                     "    double C = {}(x, p);".format(func_info.eig_func_name),
+                     "    return (abs(-153.38359658 - C) < {});".format(self.eps),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_gallery_21(self):
+        # sequence
+        la_str = """`L(x,v)` = xᵀWx + ∑_i v_i(x_i²-1)
+        where
+        x: ℝ^n
+        W: ℝ^(n×n)
+        v: ℝ^n"""
+        func_info = self.gen_func_info(la_str)
+        x = np.array([3, 1, 4, 2])
+        W = np.array([[1, 2, 3, 4], [3, 4, 5, 6], [5, 3, 5, 6], [9, 1, 3, 2]])
+        v = np.array([2, 1, 5, 7])
+        self.assertTrue(np.isclose(func_info.numpy_func(x, W, v), 520))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::VectorXd x(4);"
+                     "    x << 3, 1, 4, 2;",
+                     "    Eigen::MatrixXd W(4,4);",
+                     "    W << 1, 2, 3, 4, 3, 4, 5, 6, 5, 3, 5, 6, 9, 1, 3, 2;",
+                     "    Eigen::VectorXd v(4);"
+                     "    v << 2, 1, 5, 7;",
+                     "    double C = {}(x, W, v);".format(func_info.eig_func_name),
+                     "    return (abs(520 - C) < {});".format(self.eps),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_gallery_22(self):
+        # sequence
+        la_str = """given
+        p_i: ℝ^3: points on lines
+        d_i: ℝ^3: unit directions along lines
+        k_i = (p_i - (p_i⋅d_i)d_i)
+        a_i = (1,0,0) - d_i,1 d_i
+        b_i = (0,1,0) - d_i,2 d_i
+        c_i = (0,0,1) - d_i,3 d_i
+        M = [ ∑_i( a_i,1 - d_i,1 (d_i⋅a_i) )    ∑_i( a_i,2 - d_i,2 (d_i⋅a_i) )    ∑_i( a_i,3 - d_i,3 (d_i⋅a_i) )
+              ∑_i( b_i,1 - d_i,1 (d_i⋅b_i) )    ∑_i( b_i,2 - d_i,2 (d_i⋅b_i) )    ∑_i( b_i,3 - d_i,3 (d_i⋅b_i) )
+              ∑_i( c_i,1 - d_i,1 (d_i⋅c_i) )    ∑_i( c_i,2 - d_i,2 (d_i⋅c_i) )    ∑_i( c_i,3 - d_i,3 (d_i⋅c_i) ) ]
+        r = [ ∑_i( k_i⋅a_i )
+              ∑_i( k_i⋅b_i )
+              ∑_i( k_i⋅c_i ) ]
+        q = M^(-1) r"""
+        func_info = self.gen_func_info(la_str)
+        p = np.array([[1, 2, 3], [4, 7, 6], [5, 3, 2]])
+        d = np.array([[2, 5, 4], [3, 5, 6], [9, 3, 2]])
+        B = np.array([[6.74855046], [-17.5092147], [24.91003206]])
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(p, d), B)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::vector<Eigen::Matrix<double, 3, 1>> p;",
+                     "    Eigen::Matrix<double, 3, 1> p1;",
+                     "    p1 << 1, 2, 3;",
+                     "    Eigen::Matrix<double, 3, 1> p2;",
+                     "    p2 << 4, 7, 6;",
+                     "    Eigen::Matrix<double, 3, 1> p3;",
+                     "    p3 << 5, 3, 2;",
+                     "    p.push_back(p1);",
+                     "    p.push_back(p2);",
+                     "    p.push_back(p3);",
+                     "    std::vector<Eigen::Matrix<double, 3, 1>> d;",
+                     "    Eigen::Matrix<double, 3, 1> d1;",
+                     "    d1 << 2, 5, 4;",
+                     "    Eigen::Matrix<double, 3, 1> d2;",
+                     "    d2 << 3, 5, 6;",
+                     "    Eigen::Matrix<double, 3, 1> d3;",
+                     "    d3 << 9, 3, 2;",
+                     "    d.push_back(d1);",
+                     "    d.push_back(d2);",
+                     "    d.push_back(d3);",
+                     "    Eigen::Matrix<double, 3, 1> B;",
+                     "    B << 6.74855046, -17.5092147, 24.91003206;",
+                     "    Eigen::Matrix<double, 3, 1> C = {}(p, d);".format(func_info.eig_func_name),
+                     "    return ((B - C).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())

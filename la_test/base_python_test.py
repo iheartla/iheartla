@@ -28,7 +28,7 @@ class BasePythonTest(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super(BasePythonTest, self).__init__(*args, **kwargs)
-        self.eps = 1e-10
+        self.eps = 1e-7
         self.import_trig = "from trigonometry: sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc\n"
         self.import_trig += "from linearalgebra: trace,tr,trace,tr,diag,vec,det,rank,null,orth,inv\n"
         if BasePythonTest.cnt == 0:
