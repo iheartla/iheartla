@@ -5,6 +5,7 @@ from la_parser.type_walker import *
 class CodeGenLatex(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.LATEX)
+        self.uni_convert_dict = {'ᵢ': '\\textsubscript{i}', 'ⱼ': '\\textsubscript{j}', 'ᵣ': '\\textsubscript{r}', 'ᵤ': '\\textsubscript{u}', 'ᵥ': '\\textsubscript{v}'}
         self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n'''
         self.pre_str += '''\\usepackage{ctex}\n\\setmainfont{Linux Libertine O}\n'''
         self.pre_str += '''\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n'''
@@ -107,6 +108,10 @@ class CodeGenLatex(CodeGen):
                 content += "\\[\n" + self.visit(vblock, **kwargs) + "\n\\]\n"
             else:
                 content += self.visit(vblock, **kwargs)
+        # handle unicode special characters
+        for key, value in self.uni_convert_dict.items():
+            if key in content:
+                content = content.replace(key, value)
         return content
 
     def visit_block(self, node, **kwargs):
