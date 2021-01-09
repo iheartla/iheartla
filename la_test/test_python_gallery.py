@@ -74,37 +74,35 @@ class TestGallery(BasePythonTest):
         la_str = """y_i = (a_i)ᵀ x + w_i
         x̂ = (∑_i a_i(a_i)ᵀ)⁻¹ ∑_i y_i a_i
         where
-        a_i: ℝ^(n×1): the measurement vectors
+        a_i: ℝ^n: the measurement vectors
         w_i: ℝ: measurement noise
         x: ℝ^n: measurement noise """
         func_info = self.gen_func_info(la_str)
-        A = np.array([[[1], [8], [3]], [[2], [9], [2]]])
-        x = [4, 3, 9]
-        w = [1, 4]
-        b = np.array([[-16], [-4], [8]])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(A, w, x), b)
+        a = np.array([[10, 4], [8, 6]])
+        w = np.array([3, 2])
+        x = np.array([2, 3])
+        b = np.array([2.35714286, 2.85714286])
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(a, w, x), b)
         # eigen test
-        # cppyy.include(func_info.eig_file_name)
-        # func_list = ["bool {}(){{".format(func_info.eig_test_name),
-        #              "    Eigen::Matrix<double, 3, 1> A1;",
-        #              "    A1 << 1, 8, 3;",
-        #              "    Eigen::Matrix<double, 3, 1> A2;",
-        #              "    A2 << 2, 9, 2;",
-        #              "    Eigen::Matrix<double, 3, 1> B;",
-        #              "    B << -16, -4, 8;",
-        #              "    Eigen::Matrix<double, 3, 1> x;",
-        #              "    x << 4, 3, 9;",
-        #              "    std::vector<Eigen::Matrix<double, 3, 1> > A;",
-        #              "    A.push_back(A1);",
-        #              "    A.push_back(A2);",
-        #              "    std::vector<double> w;",
-        #              "    w.push_back(1);",
-        #              "    w.push_back(4);",
-        #              "    Eigen::Matrix<double, 3, 1> C = {}(A, w, x);".format(func_info.eig_func_name),
-        #              "    return ((C - B).norm() < {});".format(self.eps),
-        #              "}"]
-        # cppyy.cppdef('\n'.join(func_list))
-        # self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::vector<Eigen::VectorXd > a;",
+                     "    Eigen::VectorXd a1(2);",
+                     "    a1 << 10, 4;",
+                     "    Eigen::VectorXd a2(2);",
+                     "    a2 << 8, 6;",
+                     "    a.push_back(a1);",
+                     "    a.push_back(a2);",
+                     "    std::vector<double> w = {3, 2};",
+                     "    Eigen::VectorXd x(2);",
+                     "    x << 2, 3;",
+                     "    Eigen::VectorXd B(2);",
+                     "    B << 2.35714286, 2.85714286;",
+                     "    Eigen::Matrix<double, 2, 1> C = {}(a, w, x);".format(func_info.eig_func_name),
+                     "    return ((C - B).norm() < {});".format(self.eps),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
     def test_gallery_3(self):
         # sequence
