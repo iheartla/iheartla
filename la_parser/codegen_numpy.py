@@ -1010,6 +1010,7 @@ class CodeGenNumpy(CodeGen):
         content = ''
         param_info = self.visit(node.param, **kwargs)
         params_content = param_info.content
+        pre_list = param_info.pre_list
         if node.func_type == MathFuncType.MathFuncSin:
             content = 'np.sin'
         elif node.func_type == MathFuncType.MathFuncAsin:
@@ -1042,7 +1043,9 @@ class CodeGenNumpy(CodeGen):
             content = '1/np.sin'
         elif node.func_type == MathFuncType.MathFuncAtan2:
             content = 'np.arctan2'
-            params_content += ', ' + self.visit(node.remain_params[0], **kwargs).content
+            remain_info = self.visit(node.remain_params[0], **kwargs)
+            params_content += ', ' + remain_info.content
+            pre_list += remain_info.pre_list
         elif node.func_type == MathFuncType.MathFuncExp:
             content = 'np.exp'
         elif node.func_type == MathFuncType.MathFuncLog:
@@ -1067,7 +1070,7 @@ class CodeGenNumpy(CodeGen):
             content = 'scipy.linalg.orth'
         elif node.func_type == MathFuncType.MathFuncInv:
             content = 'scipy.linalg.inv'
-        return CodeNodeInfo("{}({})".format(content, params_content))
+        return CodeNodeInfo("{}({})".format(content, params_content), pre_list=pre_list)
 
     def visit_factor(self, node, **kwargs):
         if node.id:
