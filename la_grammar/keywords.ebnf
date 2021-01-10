@@ -40,7 +40,7 @@ BUILTIN_KEYWORDS
     | FROM
     | PI
     | '|'
-    | 'ℝ'|'ℤ'
+    | 'ℝ'|'ℤ' | /[\u1d40]/ | 'ᵀ' | '∂'
     #| SIN | COS | ASIN | ARCSIN | ACOS | ARCCOS | TAN | ATAN | ARCTAN | ATAN2
     ;
 

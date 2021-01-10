@@ -74,7 +74,7 @@ term
 func_id=identifier_alone;
 
 identifier_alone::IdentifierAlone
-    = !KEYWORDS(  value:/([A-Za-z\p{Ll}\p{Lu}\p{Lo}\p{Lm}]\p{M}*)+/ | '`' id:/[^`]*/ '`')
+    = !KEYWORDS(  value:/([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)+/ | '`' id:/[^`]*/ '`')
     # = !KEYWORDS(  value:/([\p{Ll}\p{Lu}\p{Lo}|\u006d|ᵢ]\p{M}*)+/ | '`' id:/[^`]*/ '`')
     # = !KEYWORDS(  value:/([A-Za-z\p{Ll}\p{Lu}\p{Lo}\p{Lm}]\p{M}*)([A-Za-z\p{Ll}\p{Lu}\p{Lo}\p{Lm}]\p{M}*)*/ | '`' id:/[^`]*/ '`')
     #= !KEYWORDS(  value:/([A-Za-z\p{Ll}\p{Lu}\p{Lo}\p{Lm}\p{No}]\p{M}*)+/ | '`' id:/[^`]*/ '`')

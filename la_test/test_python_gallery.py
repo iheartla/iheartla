@@ -237,9 +237,9 @@ class TestGallery(BasePythonTest):
         # sequence
         la_str = """from linearalgebra: tr
         `J₃` = [1_3,3]
-        `k_angle(Dₘ)` = 3(sqrt(2)v)^(2/3)(7/4||Dₘ||_F^2-1/4tr(`J₃` (Dₘ)ᵀDₘ))⁻¹
+        `k_angle(Dₘ)` = 3(sqrt(2)v)^(2/3)(7/4||`Dₘ`||_F^2-1/4tr(`J₃``Dₘ`ᵀ`Dₘ`))⁻¹
         where
-        Dₘ: ℝ^(3×3)
+        `Dₘ`: ℝ^(3×3)  
         v: ℝ"""
         func_info = self.gen_func_info(la_str)
         A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
@@ -258,10 +258,10 @@ class TestGallery(BasePythonTest):
 
     def test_gallery_7(self):
         # sequence
-        la_str = """xᵢ = T_*,1
-        xⱼ = T_*,2
-        xₖ = T_*,3
-        `n(T)` = (xⱼ-xᵢ)×(xₖ-xᵢ)/||(xⱼ-xᵢ)×(xₖ-xᵢ)||
+        la_str = """`xᵢ` = T_*,1
+        `xⱼ` = T_*,2
+        `xₖ` = T_*,3
+        `n(T)` = (`xⱼ`-`xᵢ`)×(`xₖ`-`xᵢ`)/||(`xⱼ`-`xᵢ`)×(`xₖ`-`xᵢ`)||
         where
         T: ℝ^(3×3)"""
         func_info = self.gen_func_info(la_str)
@@ -410,19 +410,19 @@ class TestGallery(BasePythonTest):
         la_str = """r̄ = v̄×ō
         s̄ = ō×ū
         n̄ = ū×v̄
-        `k_r` = r̄⋅(`C̄ₐ`-V̄)
-        `k_s` = s̄⋅(`C̄ₐ`-V̄)
-        `k_n` = n̄⋅(`C̄ₐ`-V̄)
-        `x(θ,v)` =  (r̄⋅`D_A`(θ, v)+`k_r`δ(θ, v))/(n̄⋅`D_A`(θ, v)+`k_n`δ(θ, v))
-        `y(θ,v)` =  (s̄⋅`D_A`(θ, v)+`k_s`δ(θ, v))/(n̄⋅`D_A`(θ, v)+`k_n`δ(θ, v))
+        `kᵣ` = r̄⋅(`C̄ₐ`-V̄)
+        `kₛ` = s̄⋅(`C̄ₐ`-V̄)
+        `kₙ` = n̄⋅(`C̄ₐ`-V̄)
+        `x(θ,v)` =  (r̄⋅`D_A`(θ, v)+`kᵣ`δ(θ, v))/(n̄⋅`D_A`(θ, v)+`kₙ`δ(θ, v))
+        `y(θ,v)` =  (s̄⋅`D_A`(θ, v)+`kₛ`δ(θ, v))/(n̄⋅`D_A`(θ, v)+`kₙ`δ(θ, v))
         where
         v̄: ℝ^3
         ō: ℝ^3
         ū: ℝ^3
         V̄: ℝ^3
         `C̄ₐ`: ℝ^3
-        θ: ℝ
-        v: ℝ
+        θ: ℝ 
+        v: ℝ 
         `D_A`: ℝ,ℝ->ℝ^3
         δ: ℝ,ℝ->ℝ """
         func_info = self.gen_func_info(la_str)
@@ -571,12 +571,12 @@ class TestGallery(BasePythonTest):
 
     def test_gallery_15(self):
         # sequence
-        la_str = """`G_σ(s_i^k)` = ∑_j l_j exp(-dist(`b_i`, b_j)/(2σ²))(s_j)^k
+        la_str = """`G_σ(s_i^k)` = ∑_j l_j exp(-dist(`bᵢ`, b_j)/(2σ²))(s_j)^k
         where
         l_j: ℝ : the length of bj
         dist: ℝ^n, ℝ^n -> ℝ : measures the geodesic distance between the centers of bi and bj along the boundary
         σ: ℝ
-        `b_i`: ℝ^n
+        `bᵢ`: ℝ^n
         b_j: ℝ^n
         s_j: ℝ : unit direction vector of bi
         k: ℝ : iteration number"""
