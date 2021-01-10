@@ -141,7 +141,8 @@ class CodeGenEigen(CodeGen):
         main_declaration = []
         main_print = []
         main_content = ["int main(int argc, char *argv[])",
-                        "{"]
+                        "{",
+                        "    srand((int)time(NULL));"]
         dim_content = ""
         if self.dim_dict:
             for key, value in self.dim_dict.items():
