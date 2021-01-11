@@ -750,7 +750,10 @@ class CodeGenEigen(CodeGen):
                     col_content = col_info.content
                 else:
                     col_content = "{}-1".format(col_info.content)
-                content = "{}({}, {})".format(main_info.content, row_content, col_content)
+                if self.symtable[main_info.content].sparse:
+                    content = "{}.coeff({}, {})".format(main_info.content, row_content, col_content)
+                else:
+                    content = "{}({}, {})".format(main_info.content, row_content, col_content)
             else:
                 content = "{}.row({}).transpose()".format(main_info.content, row_content)
         else:
@@ -870,20 +873,34 @@ class CodeGenEigen(CodeGen):
                 sequence = left_ids[0]  # y left_subs[0]
                 sub_strs = left_subs[0] + left_subs[1]
                 if self.symtable[sequence].is_matrix() and self.symtable[sequence].sparse:
-                    if right_info.pre_list:
-                        content = "".join(right_info.pre_list) + content
-                    # sparse mat assign
-                    # right_exp += '    ' + sequence + ' = ' + right_info.content
-                    # content += right_info.content
-                    def_str = ""
-                    if node.op != '+=':
-                        def_str = "    Eigen::SparseMatrix<double> {}({}, {});\n".format(node.left.get_main_id(),
-                                                                                         self.symtable[node.left.get_main_id()].rows,
-                                                                                         self.symtable[node.left.get_main_id()].cols)
-                        def_str += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(
-                            node.left.get_main_id())
-                    content = def_str + content
-                    pass
+                    if left_subs[0] == left_subs[1]:  # L_ii
+                        content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
+                                                                                 self.symtable[sequence].rows,
+                                                                                 left_subs[0])
+                        if right_info.pre_list:
+                            for list in right_info.pre_list:
+                                lines = list.split('\n')
+                                content += "    " + "\n    ".join(lines)
+                        content += '    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(
+                            sequence, left_subs[0], left_subs[0], right_info.content)
+                        content += "    }\n"
+                        content += '    {}.setFromTriplets(tripletList_{}.begin(), tripletList_{}.end());\n'.format(sequence, sequence,
+                                                                                            sequence)
+                    else:  # L_ij
+                        if right_info.pre_list:
+                            content = "".join(right_info.pre_list) + content
+                        # sparse mat assign
+                        # right_exp += '    ' + sequence + ' = ' + right_info.content
+                        # content += right_info.content
+                        def_str = ""
+                        if node.op != '+=':
+                            def_str = "    Eigen::SparseMatrix<double> {}({}, {});\n".format(node.left.get_main_id(),
+                                                                                             self.symtable[node.left.get_main_id()].rows,
+                                                                                             self.symtable[node.left.get_main_id()].cols)
+                            def_str += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(
+                                node.left.get_main_id())
+                        content = def_str + content
+                        pass
                 elif left_subs[0] == left_subs[1]:
                     # L_ii
                     content = ""
@@ -1155,6 +1172,10 @@ class CodeGenEigen(CodeGen):
         elif node.func_type == MathFuncType.MathFuncExp:
             content = 'exp'
         elif node.func_type == MathFuncType.MathFuncLog:
+            content = 'log'
+        elif node.func_type == MathFuncType.MathFuncLog2:
+            return CodeNodeInfo('(log10({}) / log10(2))'.format(params_content), pre_list=pre_list)
+        elif node.func_type == MathFuncType.MathFuncLog10:
             content = 'log10'
         elif node.func_type == MathFuncType.MathFuncLn:
             content = 'log'

@@ -290,7 +290,10 @@ class CodeGenNumpy(CodeGen):
             content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].size, ele_type.rows, ele_type.cols))
         else:
             content.append("{} = 0\n".format(assign_id))
-        content.append("for {} in range(1, len({})+1):\n".format(sub, target_var[0]))
+        if self.symtable[target_var[0]].sparse:
+            content.append("for {} in range(1, {}.shape[0]+1):\n".format(sub, target_var[0]))
+        else:
+            content.append("for {} in range(1, len({})+1):\n".format(sub, target_var[0]))
         if exp_info.pre_list:   # catch pre_list
             list_content = "".join(exp_info.pre_list)
             # content += exp_info.pre_list
@@ -586,7 +589,10 @@ class CodeGenNumpy(CodeGen):
                     col_content = col_info.content
                 else:
                     col_content = "{}-1".format(col_info.content)
-                content = "{}[{}, {}]".format(main_info.content, row_content, col_content)
+                if self.symtable[main_info.content].sparse:
+                    content = "{}.tocsr()[{}, {}]".format(main_info.content, row_content, col_content)
+                else:
+                    content = "{}[{}, {}]".format(main_info.content, row_content, col_content)
             else:
                 content = "{}[{}, :]".format(main_info.content, row_content)
         else:
@@ -715,11 +721,28 @@ class CodeGenNumpy(CodeGen):
                 sequence = left_ids[0]  # y left_subs[0]
                 sub_strs = left_subs[0] + left_subs[1]
                 if self.symtable[sequence].is_matrix() and self.symtable[sequence].sparse:
-                    if right_info.pre_list:
-                        content += "".join(right_info.pre_list)
-                    # sparse mat assign
-                    right_exp += '    ' + sequence + ' = ' + right_info.content
-                    content += right_exp
+                    if left_subs[0] == left_subs[1]:  # L_ii
+                        content = ""
+                        content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
+                        if right_info.pre_list:
+                            for list in right_info.pre_list:
+                                lines = list.split('\n')
+                                content += "    " + "\n    ".join(lines)
+                        content += "    {}.append(({} - 1, {} - 1))\n".format(self.symtable[sequence].index_var, left_subs[0], left_subs[0])
+                        content += "        {}.append({})\n".format(self.symtable[sequence].value_var, right_info.content)
+                        content += "    {} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(sequence,
+                                                                                                            self.symtable[sequence].value_var,
+                                                                                                            self.symtable[sequence].index_var,
+                                                                                                            self.symtable[
+                                                                                                                sequence].rows,
+                                                                                                            self.symtable[
+                                                                                                                sequence].cols)
+                    else:  # L_ij
+                        if right_info.pre_list:
+                            content += "".join(right_info.pre_list)
+                        # sparse mat assign
+                        right_exp += '    ' + sequence + ' = ' + right_info.content
+                        content += right_exp
                 elif left_subs[0] == left_subs[1]:
                     # L_ii
                     content = ""
@@ -1054,6 +1077,10 @@ class CodeGenNumpy(CodeGen):
         elif node.func_type == MathFuncType.MathFuncExp:
             content = 'np.exp'
         elif node.func_type == MathFuncType.MathFuncLog:
+            content = 'np.log'
+        elif node.func_type == MathFuncType.MathFuncLog2:
+            content = 'np.log2'
+        elif node.func_type == MathFuncType.MathFuncLog10:
             content = 'np.log10'
         elif node.func_type == MathFuncType.MathFuncLn:
             content = 'np.log'
