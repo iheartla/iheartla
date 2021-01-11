@@ -166,7 +166,8 @@ exp_func::ExpFunc
     ;
 
 log_func::LogFunc
-    = LOG '(' {hspace} param:expression {hspace} ')'
+    = ( (f:/log[\u2082]/ | s: /log[\u2081][\u2080]/) '(' {hspace} param:expression {hspace} ')')
+    | ( LOG [f:'_2' | s:'_10'] '(' {hspace} param:expression {hspace} ')')
     ;
 
 ln_func::LnFunc

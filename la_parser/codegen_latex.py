@@ -576,7 +576,11 @@ class CodeGenLatex(CodeGen):
         elif node.func_type == MathFuncType.MathFuncExp:
             content = 'exp'
         elif node.func_type == MathFuncType.MathFuncLog:
+            return " \log{{ {} }}".format(param_info)
+        elif node.func_type == MathFuncType.MathFuncLog2:
             return " \log_2{{ {} }}".format(param_info)
+        elif node.func_type == MathFuncType.MathFuncLog10:
+            return " \log_{{10}}{{ {} }}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncLn:
             return " \ln{{ {} }}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncSqrt:

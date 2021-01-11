@@ -794,14 +794,14 @@ class TestGallery(BasePythonTest):
 
     def test_gallery_20(self):
         # sequence
-        la_str = """`I(X;Y)` = ∑_i ∑_j x_j p_i,j log(p_i,j/∑_k x_k p_i,k)
+        la_str = """`I(X;Y)` = ∑_i ∑_j x_j p_i,j log_2(p_i,j/∑_k x_k p_i,k)
         where
         x: ℝ^n
         p: ℝ^(n×m)"""
         func_info = self.gen_func_info(la_str)
         x = np.array([1, 2, 3, 4])
         p = np.array([[1, 2, 3, 4], [3, 4, 5, 6], [5, 3, 5, 6], [9, 1, 3, 2]])
-        self.assertTrue(np.isclose(func_info.numpy_func(x, p), -153.383596580))
+        self.assertTrue(np.isclose(func_info.numpy_func(x, p), -509.52927877))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -810,7 +810,7 @@ class TestGallery(BasePythonTest):
                      "    Eigen::MatrixXd p(4,4);",
                      "    p << 1, 2, 3, 4, 3, 4, 5, 6, 5, 3, 5, 6, 9, 1, 3, 2;",
                      "    double C = {}(x, p);".format(func_info.eig_func_name),
-                     "    return (abs(-153.38359658 - C) < {});".format(self.eps),
+                     "    return (abs(-509.52927877 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())

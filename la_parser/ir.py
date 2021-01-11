@@ -742,17 +742,19 @@ class MathFuncType(IntEnum):
     MathFuncAtan2 = 15
     MathFuncExp = 16
     MathFuncLog = 17
-    MathFuncLn = 18
-    MathFuncSqrt = 19
+    MathFuncLog2 = 18
+    MathFuncLog10 = 19
+    MathFuncLn = 20
+    MathFuncSqrt = 21
     #
-    MathFuncTrace = 20
-    MathFuncDiag = 21
-    MathFuncVec = 22
-    MathFuncDet = 23
-    MathFuncRank = 24
-    MathFuncNull = 25
-    MathFuncOrth = 26
-    MathFuncInv = 27
+    MathFuncTrace = 22
+    MathFuncDiag = 23
+    MathFuncVec = 24
+    MathFuncDet = 25
+    MathFuncRank = 26
+    MathFuncNull = 27
+    MathFuncOrth = 28
+    MathFuncInv = 29
 
 
 class MathFuncNode(ExprNode):

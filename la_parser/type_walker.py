@@ -1771,7 +1771,7 @@ class TypeWalker(NodeWalker):
 
     def create_math_node_info(self, func_type, param_info, remains=[]):
         param = param_info.ir
-        ret_type = param.la_type
+        ret_type = ScalarType()
         symbols = param_info.symbols
         remain_list = []
         if MathFuncType.MathFuncInvalid < func_type < MathFuncType.MathFuncAtan2:
@@ -1900,7 +1900,12 @@ class TypeWalker(NodeWalker):
         return self.create_math_node_info(MathFuncType.MathFuncExp, self.walk(node.param, **kwargs))
 
     def walk_LogFunc(self, node, **kwargs):
-        return self.create_math_node_info(MathFuncType.MathFuncLog, self.walk(node.param, **kwargs))
+        func_type = MathFuncType.MathFuncLog
+        if node.f:
+            func_type = MathFuncType.MathFuncLog2
+        elif node.s:
+            func_type = MathFuncType.MathFuncLog10
+        return self.create_math_node_info(func_type, self.walk(node.param, **kwargs))
 
     def walk_LnFunc(self, node, **kwargs):
         return self.create_math_node_info(MathFuncType.MathFuncLn, self.walk(node.param, **kwargs))
