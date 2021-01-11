@@ -844,20 +844,25 @@ class TestGallery(BasePythonTest):
 
     def test_gallery_22(self):
         # sequence
+        # la_str = """given
+        # p_i: ℝ^3: points on lines
+        # d_i: ℝ^3: unit directions along lines
+        # k_i = (p_i - (p_i⋅d_i)d_i)
+        # a_i = (1,0,0) - d_i,1 d_i
+        # b_i = (0,1,0) - d_i,2 d_i
+        # c_i = (0,0,1) - d_i,3 d_i
+        # M = [ ∑_i( a_i,1 - d_i,1 (d_i⋅a_i) )    ∑_i( a_i,2 - d_i,2 (d_i⋅a_i) )    ∑_i( a_i,3 - d_i,3 (d_i⋅a_i) )
+        #       ∑_i( b_i,1 - d_i,1 (d_i⋅b_i) )    ∑_i( b_i,2 - d_i,2 (d_i⋅b_i) )    ∑_i( b_i,3 - d_i,3 (d_i⋅b_i) )
+        #       ∑_i( c_i,1 - d_i,1 (d_i⋅c_i) )    ∑_i( c_i,2 - d_i,2 (d_i⋅c_i) )    ∑_i( c_i,3 - d_i,3 (d_i⋅c_i) ) ]
+        # r = [ ∑_i( k_i⋅a_i )
+        #       ∑_i( k_i⋅b_i )
+        #       ∑_i( k_i⋅c_i ) ]
+        # q = M^(-1) r"""
         la_str = """given
         p_i: ℝ^3: points on lines
         d_i: ℝ^3: unit directions along lines
-        k_i = (p_i - (p_i⋅d_i)d_i)
-        a_i = (1,0,0) - d_i,1 d_i
-        b_i = (0,1,0) - d_i,2 d_i
-        c_i = (0,0,1) - d_i,3 d_i
-        M = [ ∑_i( a_i,1 - d_i,1 (d_i⋅a_i) )    ∑_i( a_i,2 - d_i,2 (d_i⋅a_i) )    ∑_i( a_i,3 - d_i,3 (d_i⋅a_i) )
-              ∑_i( b_i,1 - d_i,1 (d_i⋅b_i) )    ∑_i( b_i,2 - d_i,2 (d_i⋅b_i) )    ∑_i( b_i,3 - d_i,3 (d_i⋅b_i) )
-              ∑_i( c_i,1 - d_i,1 (d_i⋅c_i) )    ∑_i( c_i,2 - d_i,2 (d_i⋅c_i) )    ∑_i( c_i,3 - d_i,3 (d_i⋅c_i) ) ]
-        r = [ ∑_i( k_i⋅a_i )
-              ∑_i( k_i⋅b_i )
-              ∑_i( k_i⋅c_i ) ]
-        q = M^(-1) r"""
+        P_i = ( I_3 - d_i d_iᵀ )
+        q = ( ∑_i P_iᵀP_i )⁻¹ ( ∑_i P_iᵀP_i p_i )"""
         func_info = self.gen_func_info(la_str)
         p = np.array([[1, 2, 3], [4, 7, 6], [5, 3, 2]])
         d = np.array([[2, 5, 4], [3, 5, 6], [9, 3, 2]])
