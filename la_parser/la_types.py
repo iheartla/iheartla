@@ -148,7 +148,7 @@ class MatrixType(LaVarType):
         self.cols = cols
         # attributes
         self.need_exp = need_exp      # need expression
-        self.diagonal = diagonal
+        self.diagonal = diagonal      # L_ii assignment
         self.subs = subs or []
         # block matrix
         self.block = block

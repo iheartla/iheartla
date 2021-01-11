@@ -723,6 +723,10 @@ class CodeGenNumpy(CodeGen):
                 if self.symtable[sequence].is_matrix() and self.symtable[sequence].sparse:
                     if left_subs[0] == left_subs[1]:  # L_ii
                         content = ""
+                        if self.symtable[sequence].diagonal:
+                            # add definition
+                            content += "    {} = []\n".format(self.symtable[sequence].index_var)
+                            content += "    {} = []\n".format(self.symtable[sequence].value_var)
                         content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
                         if right_info.pre_list:
                             for list in right_info.pre_list:

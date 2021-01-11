@@ -668,13 +668,20 @@ class TypeWalker(NodeWalker):
                     if right_info.la_type.sparse:
                         self.symtable[sequence] = right_type
                 if sequence not in self.symtable:
+                    sparse = False
+                    index_var = None
+                    value_var = None
                     for symbol in right_info.symbols:
+                        if left_subs[0] == left_subs[1]:  # diagonal matrix
+                            sparse = True
+                            index_var = self.generate_var_name("{}{}{}".format(sequence, left_subs[0], left_subs[1]))
+                            value_var = self.generate_var_name("{}vals".format(sequence))
                         if left_subs[0] in symbol and left_subs[1] in symbol:
                             main_id = self.get_main_id(symbol)
                             rows = self.symtable[main_id].rows
                             cols = self.symtable[main_id].cols
                             break
-                    self.symtable[sequence] = MatrixType(rows=rows, cols=cols, element_type=right_type)
+                    self.symtable[sequence] = MatrixType(rows=rows, cols=cols, element_type=right_type, sparse=sparse, diagonal=sparse, index_var=index_var, value_var=value_var)
             elif len(left_subs) == 1:  # sequence or vector
                 cur_sub = left_subs[0]
                 sequence_type = True   # default type: sequence

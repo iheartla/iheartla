@@ -874,6 +874,12 @@ class CodeGenEigen(CodeGen):
                 sub_strs = left_subs[0] + left_subs[1]
                 if self.symtable[sequence].is_matrix() and self.symtable[sequence].sparse:
                     if left_subs[0] == left_subs[1]:  # L_ii
+                        if self.symtable[sequence].diagonal:
+                            # add definition
+                            content += "    Eigen::SparseMatrix<double> {}({}, {});\n".format(sequence,
+                                                                                             self.symtable[sequence].rows,
+                                                                                             self.symtable[sequence].cols)
+                            content += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(sequence)
                         content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                                  self.symtable[sequence].rows,
                                                                                  left_subs[0])
