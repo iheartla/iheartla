@@ -563,11 +563,12 @@ class CodeGenEigen(CodeGen):
         subs = assign_node.left.subs
         cond_info = self.visit(node.cond, **kwargs)
         stat_info = self.visit(node.stat, **kwargs)
-        content = []
+        content = cond_info.pre_list
         stat_content = stat_info.content
         # replace '_ij' with '(i,j)'
         stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '({}, {})'.format(subs[0], subs[1]))
         content.append('if({}){{\n'.format(cond_info.content))
+        content += stat_info.pre_list
         content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(assign_node.left.main.main_id, subs[0], subs[1], stat_content))
         content.append('}\n')
         self.convert_matrix = False
@@ -1053,7 +1054,12 @@ class CodeGenEigen(CodeGen):
                 else:
                     item_content = "{}+1".format(item_info.content)
                 item_list.append(item_content)
-        content = '{}.find({}({})) != {}.end()'.format(right_info.content, self.get_set_item_str(node.set.la_type), ', '.join(item_list),right_info.content)
+        if node.set.node_type != IRNodeType.Id:
+            set_name = self.generate_var_name('set')
+            pre_list.append('{} {} = {};\n'.format(self.get_ctype(node.set.la_type), set_name, right_info.content))
+            content = '{}.find({}({})) != {}.end()'.format(set_name, self.get_set_item_str(node.set.la_type), ', '.join(item_list), set_name)
+        else:
+            content = '{}.find({}({})) != {}.end()'.format(right_info.content, self.get_set_item_str(node.set.la_type), ', '.join(item_list),right_info.content)
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_not_in(self, node, **kwargs):

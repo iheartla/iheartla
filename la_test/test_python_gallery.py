@@ -868,7 +868,7 @@ class TestGallery(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         p = np.array([[1, 2, 3], [4, 7, 6], [5, 3, 2]])
         d = np.array([[2, 5, 4], [3, 5, 6], [9, 3, 2]])
-        B = np.array([[6.74855046], [-17.5092147], [24.91003206]])
+        B = np.array([6.74855046, -17.5092147, 24.91003206])
         self.assertDMatrixApproximateEqual(func_info.numpy_func(p, d), B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
@@ -957,8 +957,6 @@ class TestGallery(BasePythonTest):
                      "    Eigen::SparseMatrix<double> A(3, 3);",
                      "    A.setFromTriplets(t1.begin(), t1.end());"
                      "    Eigen::SparseMatrix<double> B = {}(α, β, N);".format(func_info.eig_func_name),
-                     "    std::cout<<A<<std::endl;",
-                     "    std::cout<<B<<std::endl;",
                      "    return A.isApprox(B);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))

@@ -120,13 +120,13 @@ if_condition::IfCondition
     ;
 
 in::InCondition
-    = '(' {hspace} left+:expression {hspace} {',' {hspace} left+:expression {hspace}} ')' {hspace} IN {hspace} right:expression
-    | left+:expression {hspace} IN {hspace} right:expression
+    = '(' {hspace} left+:expression {hspace} {',' {hspace} left+:expression {hspace}} ')' {hspace} IN {hspace} right:(function_operator | identifier)
+    | left+:expression {hspace} IN {hspace} right:(function_operator | identifier)
     ;
 
 not_in::NotInCondition
-    = '(' {hspace} left+:expression {hspace} {',' {hspace} left+:expression {hspace}} ')' {hspace} '∉' {hspace} right:expression
-    | left+:expression {hspace} '∉' {hspace} right:expression
+    = '(' {hspace} left+:expression {hspace} {',' {hspace} left+:expression {hspace}} ')' {hspace} '∉' {hspace} right:(function_operator | identifier)
+    | left+:expression {hspace} '∉' {hspace} right:(function_operator | identifier)
     ;
 
 not_equal::NeCondition
