@@ -84,6 +84,7 @@ class BasePythonTest(unittest.TestCase):
     def assertSMatrixEqual(self, A, B):
         # coo matrix comparision
         assert A.shape == B.shape
-        assert (A.data == B.data).all()
+        # assert (A.data == B.data).all()
+        assert np.allclose(A.data, B.data, rtol=0, atol=self.eps)
         assert (A.row == B.row).all()
         assert (A.col == B.col).all()

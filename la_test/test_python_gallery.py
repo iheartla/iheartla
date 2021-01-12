@@ -2,6 +2,8 @@ import sys
 sys.path.append('./')
 from la_test.base_python_test import BasePythonTest, eigen_path, TestFuncInfo
 from la_parser.parser import parse_la, ParserTypeEnum
+import scipy
+from scipy import sparse
 import numpy as np
 import cppyy
 cppyy.add_include_path(eigen_path)
@@ -239,7 +241,7 @@ class TestGallery(BasePythonTest):
         `J₃` = [1_3,3]
         `k_angle(Dₘ)` = 3(sqrt(2)v)^(2/3)(7/4||`Dₘ`||_F^2-1/4tr(`J₃``Dₘ`ᵀ`Dₘ`))⁻¹
         where
-        `Dₘ`: ℝ^(3×3)  
+        `Dₘ`: ℝ^(3×3)
         v: ℝ"""
         func_info = self.gen_func_info(la_str)
         A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
@@ -421,8 +423,8 @@ class TestGallery(BasePythonTest):
         ū: ℝ^3
         V̄: ℝ^3
         `C̄ₐ`: ℝ^3
-        θ: ℝ 
-        v: ℝ 
+        θ: ℝ
+        v: ℝ
         `D_A`: ℝ,ℝ->ℝ^3
         δ: ℝ,ℝ->ℝ """
         func_info = self.gen_func_info(la_str)
@@ -895,6 +897,69 @@ class TestGallery(BasePythonTest):
                      "    B << 6.74855046, -17.5092147, 24.91003206;",
                      "    Eigen::Matrix<double, 3, 1> C = {}(p, d);".format(func_info.eig_func_name),
                      "    return ((B - C).norm() < {});".format(self.eps),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_laplacian(self):
+        # sparse matrix
+        la_str = """from trigonometry: cot
+        L_i,j = { cot(α_ij) + cot(β_ij) if j ∈ N(i)
+        L_i,i = -sum_(k for k != i) L_i,k
+        where
+        L: ℝ^(n×n)
+        α: ℝ^(n×n)
+        β: ℝ^(n×n)
+        N: ℤ -> {ℤ}
+        """
+        func_info = self.gen_func_info(la_str)
+        α = np.array([[1, 2, 3], [4, 7, 6], [5, 3, 2]])
+        β = np.array([[2, 5, 4], [3, 5, 6], [9, 3, 2]])
+        def N(p0):
+            if p0 == 1:
+                return [2]
+            elif p0 == 2:
+                return [1]
+            return [1, 2]
+        G = [(0, 1), (1, 0), (2, 0), (2, 1), (0, 0), (1, 1), (2, 2)]
+        value = np.array([-0.75347046989, -6.151561396983, -2.506658326531, -14.0305051028690, 0.7534704698930, 6.15156139698, 16.5371634294])
+        B = scipy.sparse.coo_matrix((value, np.asarray(G).T), shape=(3, 3))
+        self.assertSMatrixEqual(func_info.numpy_func(α, β, N), B)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 3, 3> α;",
+                     "    α << 1, 2, 3, 4, 7, 6, 5, 3, 2;",
+                     "    Eigen::Matrix<double, 3, 3> β;",
+                     "    β << 2, 5, 4, 3, 5, 6, 9, 3, 2;",
+                     "    std::function<std::set<std::tuple< int > >(int)> N = [](int p)->std::set<std::tuple< int > >{",
+                     "        std::set<std::tuple< int > > tmp;",
+                     "        if(p == 1){",
+                     "            tmp.insert(2);",
+                     "        }",
+                     "        else if(p == 2){",
+                     "            tmp.insert(1);",
+                     "        }",
+                     "        else{",
+                     "            tmp.insert(1);",
+                     "            tmp.insert(2);",
+                     "        }",
+                     "        return tmp;",
+                     "    };",
+                     "    std::vector<Eigen::Triplet<double> > t1;",
+                     "    t1.push_back(Eigen::Triplet<double>(0, 1, -0.75347046989));",
+                     "    t1.push_back(Eigen::Triplet<double>(1, 0, -6.151561396983));",
+                     "    t1.push_back(Eigen::Triplet<double>(2, 0, -2.506658326531));",
+                     "    t1.push_back(Eigen::Triplet<double>(2, 1, -14.0305051028690));",
+                     "    t1.push_back(Eigen::Triplet<double>(0, 0, 0.7534704698930));",
+                     "    t1.push_back(Eigen::Triplet<double>(1, 1, 6.15156139698));",
+                     "    t1.push_back(Eigen::Triplet<double>(2, 2, 16.5371634294));",
+                     "    Eigen::SparseMatrix<double> A(3, 3);",
+                     "    A.setFromTriplets(t1.begin(), t1.end());"
+                     "    Eigen::SparseMatrix<double> B = {}(α, β, N);".format(func_info.eig_func_name),
+                     "    std::cout<<A<<std::endl;",
+                     "    std::cout<<B<<std::endl;",
+                     "    return A.isApprox(B);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
