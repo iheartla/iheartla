@@ -1106,6 +1106,9 @@ class TypeWalker(NodeWalker):
                         convertion_dict[name_type.params[index].cols] = param_info.ir.la_type.cols
                     else:
                         assert name_type.params[index].cols == param_info.ir.la_type.cols, self.get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch")
+                elif name_type.params[index].is_set():
+                    assert param_info.ir.la_type.is_set(), self.get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch")
+                    assert name_type.params[index].size == param_info.ir.la_type.size, self.get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch")
             ir_node.params = param_list
             ir_node.separators = node.separators
             self.logger.debug("convertion_dict:{}".format(convertion_dict))
@@ -1126,6 +1129,8 @@ class TypeWalker(NodeWalker):
                     ret_type.cols = convertion_dict[name_type.ret.cols]
                 else:
                     ret_type.cols = name_type.ret.cols
+            elif name_type.ret.is_set():
+                ret_type = SetType(size=name_type.ret.size, int_list=name_type.ret.int_list)
             node_info = NodeInfo(ret_type, symbols=symbols)
             ir_node.la_type = ret_type
             node_info.ir = ir_node

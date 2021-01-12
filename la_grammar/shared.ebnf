@@ -62,6 +62,7 @@ params_type
     = matrix_type
     | vector_type
     | scalar_type
+    | set_type
     ;
 
 function_type::FunctionType

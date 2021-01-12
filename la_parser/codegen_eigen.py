@@ -112,6 +112,22 @@ class CodeGenEigen(CodeGen):
             rand_test = 'rand() % {};'.format(rand_int_max)
         return rand_test
 
+    def get_set_test_list(self, parameter, la_type, rand_int_max, pre='    '):
+        test_content = []
+        test_content.append('const int {}_0 = rand()%10;'.format(parameter, rand_int_max))
+        test_content.append('for(int i=0; i<{}_0; i++){{'.format(parameter))
+        gen_list = []
+        for i in range(la_type.size):
+            if la_type.int_list[i]:
+                gen_list.append('rand()%{}'.format(rand_int_max))
+            else:
+                gen_list.append('rand()%10')
+        test_content.append(
+            '    {}.insert(std::make_tuple('.format(parameter) + ', '.join(gen_list) + '));')
+        test_content.append('}')
+        test_content = ['{}{}'.format(pre, line) for line in test_content]
+        return test_content
+
     def visit_id(self, node, **kwargs):
         content = node.get_name()
         content = self.filter_symbol(content)
@@ -287,7 +303,12 @@ class CodeGenEigen(CodeGen):
                                 dim_definition.append('        long {} = {}{}.cols();'.format(ret_dim, self.param_name_test, param_i))
                 test_content.append('    {} = []({})->{}{{'.format(parameter, self.get_func_params_str(self.symtable[parameter], name_required), self.get_ctype(self.symtable[parameter].ret)))
                 test_content += dim_definition
-                test_content.append('        return {}'.format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
+                if self.symtable[parameter].ret.is_set():
+                    test_content.append('        {} tmp;'.format(self.get_ctype(self.symtable[parameter].ret)))
+                    test_content += self.get_set_test_list('tmp', self.symtable[parameter].ret, rand_int_max, '        ')
+                    test_content.append('        return tmp;')
+                else:
+                    test_content.append('        return {}'.format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
                 test_content.append('    };')
             # main_print.append('    std::cout<<"{}:\\n"<<{}<<std::endl;'.format(parameter, parameter))
         content = ""
@@ -1032,7 +1053,7 @@ class CodeGenEigen(CodeGen):
                 else:
                     item_content = "{}+1".format(item_info.content)
                 item_list.append(item_content)
-        content = '{}.find({}({})) != {}.end()'.format(right_info.content, self.get_set_item_str(self.symtable[right_info.content]), ', '.join(item_list),right_info.content)
+        content = '{}.find({}({})) != {}.end()'.format(right_info.content, self.get_set_item_str(node.set.la_type), ', '.join(item_list),right_info.content)
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_not_in(self, node, **kwargs):

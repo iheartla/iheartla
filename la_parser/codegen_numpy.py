@@ -33,6 +33,21 @@ class CodeGenNumpy(CodeGen):
             rand_test = 'np.random.randn()'
         return rand_test
 
+    def get_set_test_list(self, parameter, la_type, rand_int_max, pre='    '):
+        test_content = []
+        test_content.append('{} = []'.format(parameter))
+        test_content.append('{}_0 = np.random.randint(1, {})'.format(parameter, rand_int_max))
+        test_content.append('for i in range({}_0):'.format(parameter))
+        gen_list = []
+        for i in range(la_type.size):
+            if la_type.int_list[i]:
+                gen_list.append('np.random.randint({})'.format(rand_int_max))
+            else:
+                gen_list.append('np.random.randn()')
+        test_content.append('    {}.append(('.format(parameter) + ', '.join(gen_list) + '))')
+        test_content = ['{}{}'.format(pre, line) for line in test_content]
+        return test_content
+
     def visit_id(self, node, **kwargs):
         content = node.get_name()
         content = self.filter_symbol(content)
@@ -198,7 +213,11 @@ class CodeGenNumpy(CodeGen):
                     param_list.append('{}{}'.format(self.param_name_test, index))
                 test_content.append("    def {}({}):".format(parameter, ', '.join(param_list)))
                 test_content += dim_definition
-                test_content.append("        return {}".format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
+                if self.symtable[parameter].ret.is_set():
+                    test_content += self.get_set_test_list('tmp', self.symtable[parameter].ret, rand_int_max, '        ')
+                    test_content.append('        return tmp')
+                else:
+                    test_content.append("        return {}".format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
                 # test_content.append('    {} = lambda {}: {}'.format(parameter, ', '.join(param_list), self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
 
             main_content.append('    print("{}:", {})'.format(parameter, parameter))
