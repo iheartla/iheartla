@@ -11,7 +11,7 @@ where_conditions::WhereConditions
     ;
 
 where_condition::WhereCondition
-    = id:identifier {hspace} ':' {hspace} type:la_type {{hspace} index:'index'} { {hspace} ':' {hspace} desc:description}
+    = id:identifier {hspace} (':'| IN) {hspace} type:la_type {{hspace} index:'index'} { {hspace} ':' {hspace} desc:description}
     ;
 
 matrix_type::MatrixType

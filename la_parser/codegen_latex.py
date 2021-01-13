@@ -243,7 +243,7 @@ class CodeGenLatex(CodeGen):
         if node.right.node_type == IRNodeType.Optimize:
             return self.visit(node.right, **kwargs)
         else:
-            return self.visit(node.left, **kwargs) + " = " + self.visit(node.right, **kwargs)
+            return self.visit(node.left, **kwargs) + " & = " + self.visit(node.right, **kwargs)
 
     def visit_expression(self, node, **kwargs):
         value = self.visit(node.value, **kwargs)
