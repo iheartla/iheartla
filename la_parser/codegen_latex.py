@@ -115,11 +115,23 @@ class CodeGenLatex(CodeGen):
         content = ""
         for directive in node.directives:
             content += self.visit(directive, **kwargs) + '\n'
+        pre_param = False
+        pre_exp = False
         for vblock in node.vblock:
             if vblock.node_type != IRNodeType.ParamsBlock:
-                content += "\\[\n" + self.visit(vblock, **kwargs) + "\n\\]\n"
-            else:
+                if pre_param or (not pre_param and not pre_exp):
+                    content += "\\begin{align*}\n"
+                elif pre_exp:
+                    content += " \\\\\n"
                 content += self.visit(vblock, **kwargs)
+            else:
+                if pre_exp:
+                    content += "\n\\end{align*}\n"
+                content += self.visit(vblock, **kwargs)
+            pre_param = vblock.node_type == IRNodeType.ParamsBlock
+            pre_exp = vblock.node_type != IRNodeType.ParamsBlock
+        if pre_exp:
+            content += "\n\\end{align*}\n"
         # handle unicode special characters
         for key, value in self.uni_convert_dict.items():
             if key in content:
@@ -130,7 +142,7 @@ class CodeGenLatex(CodeGen):
         ret = []
         for stmt in node.stmts:
             ret.append(self.visit(stmt, **kwargs))
-        return '\\]\n\\[\n'.join(ret)
+        return '\\\\'.join(ret)
 
     def visit_params_block(self, node, **kwargs):
         content = "\\begin{itemize}\n" + self.visit(node.conds, **kwargs) + '\\end{itemize}\n\n'
