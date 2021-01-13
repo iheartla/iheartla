@@ -6,11 +6,23 @@ class CodeGenLatex(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.LATEX)
         self.uni_convert_dict = {'ᵢ': '\\textsubscript{i}', 'ⱼ': '\\textsubscript{j}', 'ᵣ': '\\textsubscript{r}', 'ᵤ': '\\textsubscript{u}', 'ᵥ': '\\textsubscript{v}'}
-        self.pre_str = '''\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n'''
-        self.pre_str += '''\\usepackage{ctex}\n\\setmainfont{Linux Libertine O}\n'''
-        self.pre_str += '''\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n'''
+        self.pre_str = r'''
+\documentclass[12pt]{article}
+\usepackage{mathdots}
+\usepackage[bb=boondox]{mathalfa}
+\usepackage{mathtools}
+\usepackage{amssymb}
+'''[1:]
+        self.pre_str += r'''
+\usepackage{ctex}
+\setmainfont{Linux Libertine O}
+'''[1:]
+        self.pre_str += r'''
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+'''[1:]
         self.pre_str += '''\\begin{document}\n'''
-        self.post_str = '''\n\end{document}'''
+        self.post_str = '''\n\\end{document}\n'''
 
     def convert_unicode(self, name):
         if '`' not in name:
@@ -137,7 +149,7 @@ class CodeGenLatex(CodeGen):
         type_content = self.visit(node.type, **kwargs)
         content = "\\item ${} \\in {}".format(id0, type_content)
         if node.desc:
-            content += ":${}\n".format(node.desc)
+            content += "$ {}\n".format(node.desc)
         else:
             content += "$\n"
         return content
