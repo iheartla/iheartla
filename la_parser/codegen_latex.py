@@ -278,7 +278,7 @@ class CodeGenLatex(CodeGen):
                 params_str += self.visit(node.params[index], **kwargs)
                 if index < len(node.params)-1:
                     params_str += node.separators[index] + ''
-        return self.visit(node.name, **kwargs) + '(' + params_str + ')'
+        return self.visit(node.name, **kwargs) + '\\left( ' + params_str + ' \\right)'
 
     def visit_if(self, node, **kwargs):
         ret_info = self.visit(node.cond)
@@ -292,7 +292,7 @@ class CodeGenLatex(CodeGen):
             item_list.append(item_info)
         right_info = self.visit(node.set, **kwargs)
         if len(item_list) > 1:
-            return '({}) \\in {} '.format(', '.join(item_list), right_info)
+            return '\\left( {} \\right) \\in {} '.format(', '.join(item_list), right_info)
         else:
             return '{} \\in {} '.format(', '.join(item_list), right_info)
 
@@ -303,7 +303,7 @@ class CodeGenLatex(CodeGen):
             item_list.append(item_info)
         right_info = self.visit(node.set, **kwargs)
         if len(item_list) > 1:
-            return '({}) \\notin {} '.format(', '.join(item_list), right_info)
+            return '\\left( {} \\right) \\notin {} '.format(', '.join(item_list), right_info)
         else:
             return '{} \\notin {} '.format(', '.join(item_list), right_info)
 
@@ -313,7 +313,7 @@ class CodeGenLatex(CodeGen):
         return left_info + ' {} '.format(self.get_bin_comp_str(node.comp_type)) + right_info
 
     def visit_sub_expr(self, node, **kwargs):
-        return '(' + self.visit(node.value, **kwargs) + ')'
+        return '\\left( ' + self.visit(node.value, **kwargs) + ' \\right)'
 
     def visit_sparse_matrix(self, node, **kwargs):
         if node.id1:
@@ -401,7 +401,7 @@ class CodeGenLatex(CodeGen):
         content_list = []
         for item in node.items:
             content_list.append(self.visit(item, **kwargs))
-        return '({})'.format(','.join(content_list))
+        return '\\left( {} \\right)'.format(','.join(content_list))
 
     def visit_MatrixRows(self, node, **kwargs):
         ret = []
@@ -613,4 +613,4 @@ class CodeGenLatex(CodeGen):
             content = 'orth'
         elif node.func_type == MathFuncType.MathFuncInv:
             content = 'inv'
-        return "{}({})".format(content, param_info)
+        return "{}\\left( {} \\right)".format(content, param_info)
