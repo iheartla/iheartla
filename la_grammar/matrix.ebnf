@@ -144,6 +144,7 @@ power_in_matrix_operator::Power
     = base:factor_in_matrix t:'^T'
     | base:factor_in_matrix r:('^(-1)' | '⁻¹')
     | base:factor_in_matrix '^' power:factor_in_matrix
+    | base:factor_in_matrix power:sup_integer
     ;
 
 
