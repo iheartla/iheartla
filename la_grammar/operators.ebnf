@@ -113,8 +113,10 @@ norm_operator::Norm
     [
     ( '_' sub:(integer|'F'|'*'|'∞'|identifier_alone) '^' power:factor)
     | ( '_' sub:(integer|'F'|'*'|'∞'|identifier) )
+    | ( sub:sub_integer ['^' power:factor])
     | ( '_(' sub:(integer|'F'|'*'|'∞'|identifier) ')' ['^' power:factor])
     | ( '^' power:factor ['_' sub:(integer|identifier|'*'|'∞')] )
+    | ( power:sup_integer [sub:sub_integer] )
     ]
     ;
 
