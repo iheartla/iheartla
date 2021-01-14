@@ -237,10 +237,11 @@ def parse_ir_node(content, model):
                 parse_key += 'e;'
             for name in name_list:
                 key_names.append("{}_func".format(name))
-        # add new rules
-        keyword_index = current_content.find('predefined_built_operators\n')
-        current_content = current_content[:keyword_index] + '|'.join(key_names) + '|' + current_content[keyword_index:]
-        parse_key += ';'.join(key_names)
+        if len(key_names) > 0:
+            # add new rules
+            keyword_index = current_content.find('predefined_built_operators\n')
+            current_content = current_content[:keyword_index] + '|'.join(key_names) + '|' + current_content[keyword_index:]
+            parse_key += ';'.join(key_names)
     # get new parser
     parser = get_compiled_parser(current_content, parse_key)
     model = parser.parse(content, parseinfo=True)
