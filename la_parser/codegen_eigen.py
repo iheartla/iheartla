@@ -746,9 +746,9 @@ class CodeGenEigen(CodeGen):
                 func_name = "Eigen::MatrixXd::Zero"
             elif node.left == '1':
                 func_name = "Eigen::MatrixXd::Ones"
-            else:
-                func_name = "({} * Eigen::MatrixXd::Ones".format(left_info.content)
-                post_s = ')'
+            # else:
+            #     func_name = "({} * Eigen::MatrixXd::Ones".format(left_info.content)
+            #     post_s = ')'
         id1_info = self.visit(node.id1, **kwargs)
         if node.id2:
             id2_info = self.visit(node.id2, **kwargs)

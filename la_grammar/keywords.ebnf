@@ -4,8 +4,8 @@ BUILTIN_KEYWORDS
     #| VEC
     #| DIAG
     #| ID
-    | EIG
-    | CONJ
+    #| EIG
+    #| CONJ
     #| RE
     #| IM
     #| INV
@@ -16,10 +16,10 @@ BUILTIN_KEYWORDS
     #| ORTH
     #| QR
     | DERIVATIVE
-    | VDOTS
-    | CDOTS
-    | IDDOTS
-    | DDOTS
+    #| VDOTS
+    #| CDOTS
+    #| IDDOTS
+    #| DDOTS
     | WHERE
     | GIVEN
     | SUM

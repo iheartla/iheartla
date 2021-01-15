@@ -582,9 +582,9 @@ class CodeGenNumpy(CodeGen):
                 func_name = "np.zeros"
             elif node.left == '1':
                 func_name = "np.ones"
-            else:
-                func_name = "({} * np.ones".format(left_info.content)
-                post_s = ')'
+            # else:
+            #     func_name = "({} * np.ones".format(left_info.content)
+            #     post_s = ')'
         id1_info = self.visit(node.id1, **kwargs)
         if node.id2:
             id2_info = self.visit(node.id2, **kwargs)

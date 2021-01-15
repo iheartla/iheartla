@@ -499,7 +499,7 @@ class CodeGenLatex(CodeGen):
         return "{}^T".format(self.visit(node.f, **kwargs))
 
     def visit_derivative(self, node, **kwargs):
-        return "\\partial" + self.visit(value, **kwargs)
+        return "\\partial" + self.visit(node.value, **kwargs)
 
     def visit_optimize(self, node, **kwargs):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
