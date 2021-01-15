@@ -10,6 +10,7 @@ class CustomLexer(ExtendedRegexLexer):
     name = "A Lexer for IHeartLA"
     functions = [
         'trace',
+        'tr',
         'vec',
         'diag',
         'eig',
@@ -52,26 +53,29 @@ class CustomLexer(ExtendedRegexLexer):
     ]
 
     def ident_callback(lexer, match, ctx):
+        print(match)
         m = regex.match(r'[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*', ctx.text[ctx.pos:ctx.end])
         if m:
             yield ctx.pos+m.start(), Name.Variable, m[0]
             ctx.pos += m.end()
             return
         else:
-            print("Unable to treat %s as identifier\n" % m)
+            print("Unable to treat %s as identifier\n" % match)
+            raise
             return
 
 
     tokens = {
         'root': [
-            (r'where', Keyword.Namespace),
+            (r'where|given', Keyword.Namespace),
+            (r'from', Keyword.Namespace, 'import_state'),
             (r'\s=\s', Keyword.Declaration), # a bit of a stretch, but it should be colored differently
-            (r'->|[\+\-±⋅×/÷\^_><]', Operator), # non-word operators
+            (r'->|⁻¹|\|\||[\+\-±⋅×/÷\^_><ᵀ∈‖\|\*]', Operator), # non-word operators
             (words(word_operators), Operator.Word),
             (r':', Keyword, 'where_rhs'),
             (words(functions), Name.Function),
-            (r'[()\[\],]', Punctuation),
-            (r'ℝ', Name.Builtin),
+            (r'[()\[\],{};]', Punctuation),
+            (r'ℝ|ℤ', Name.Builtin),
             (r'(`)(.*?)(`)', bygroups(Comment, Name.Variable, Comment)), # make backticks separate color
             (r'[\u2070\u00B9\u00B2\u00B3\u2074-\u2079]|[\u2080-\u2089]|\d+', Literal.Number),
             (r'\w', ident_callback),
@@ -85,5 +89,8 @@ class CustomLexer(ExtendedRegexLexer):
         ],
         'comment': [
             (r'.*$', Comment, '#pop:2')
+        ],
+        'import_state': [
+            (r'([^:]+?)(\s*:\s*)(.*$)', bygroups(Name.Class, Keyword, Name.Function), '#pop')
         ]
     }
