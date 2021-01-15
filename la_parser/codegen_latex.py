@@ -268,7 +268,15 @@ class CodeGenLatex(CodeGen):
 
     def visit_div(self, node, **kwargs):
         if node.op == DivOpType.DivOpSlash:
-            return "\\frac{" + self.visit(node.left, **kwargs) + "}{" + self.visit(node.right, **kwargs) + "}"
+            if node.left.node_type == IRNodeType.Factor and node.left.sub:  # sub expression
+                left_content = self.visit(node.left.sub.value, **kwargs)
+            else:
+                left_content = self.visit(node.left, **kwargs)
+            if node.right.node_type == IRNodeType.Factor and node.right.sub:  # sub expression
+                right_content = self.visit(node.right.sub.value, **kwargs)
+            else:
+                right_content = self.visit(node.right, **kwargs)
+            return "\\frac{" + left_content + "}{" +right_content + "}"
         else:
             return self.visit(node.left, **kwargs) + "÷" + self.visit(node.right, **kwargs)
 
