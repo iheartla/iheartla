@@ -661,7 +661,7 @@ class TypeWalker(NodeWalker):
                     err_msg = "{} has been assigned before".format(id0)
                     if sequence in self.parameters:
                         err_msg = "{} is a parameter, can not be assigned".format(id0)
-                    assert False, self.get_err_msg_info(id0_info.ir.parse_info, err_msg)
+                    # assert False, self.get_err_msg_info(id0_info.ir.parse_info, err_msg)
             if len(left_subs) == 2:  # matrix
                 if right_info.la_type is not None and right_info.la_type.is_matrix():
                     # sparse mat assign
@@ -1005,9 +1005,17 @@ class TypeWalker(NodeWalker):
         ir_node.base = base_info.ir
         symbols = base_info.symbols
         if node.t:
-            ir_node.t = node.t
-            assert base_info.la_type.is_matrix() or base_info.la_type.is_vector(), self.get_err_msg_info(base_info.ir.parse_info,"Transpose error. The base must be a matrix or vecotr")
-            ir_node.la_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows)
+            if 'T' in self.symtable:
+                # normal pow
+                power_ir = IdNode('T', parse_info=node.parseinfo)
+                power_ir.la_type = self.symtable['T']
+                symbols = symbols.union('T')
+                ir_node = self.create_power_node(base_info.ir, power_ir)
+            else:
+                # transpose
+                ir_node.t = node.t
+                assert base_info.la_type.is_matrix() or base_info.la_type.is_vector(), self.get_err_msg_info(base_info.ir.parse_info,"Transpose error. The base must be a matrix or vecotr")
+                ir_node.la_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows)
         elif node.r:
             ir_node.r = node.r
             if base_info.la_type.is_matrix():
