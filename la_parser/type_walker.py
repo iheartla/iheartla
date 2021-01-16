@@ -2060,11 +2060,27 @@ class TypeWalker(NodeWalker):
                         type_array[i][j] = MatrixType(rows=row_dim[i], cols=col_dim[j])
                 else:
                     valid = False
+        def get_sum_value(dim_list):
+            int_list = []
+            str_list = []
+            for d_item in dim_list:
+                if isinstance(d_item, int):
+                    int_list.append(d_item)
+                else:
+                    str_list.append(d_item)
+            if len(int_list) > 0:
+                if len(str_list) > 0:
+                    sum_value = "{}+{}".format('+'.join(str_list), sum(int_list))
+                else:
+                    sum_value = sum(int_list)
+            else:
+                sum_value = '+'.join(str_list)
+            return sum_value
         # check total dimensions bound
         real_dims = (0, 0)
         if valid:
-            row_sum = sum(row_dim)
-            col_sum = sum(col_dim)
+            row_sum = get_sum_value(row_dim)
+            col_sum = get_sum_value(col_dim)
             real_dims = (row_sum, col_sum)
             if mat_size is not None:
                 if row_sum != mat_size[0] or col_sum != mat_size[1]:

@@ -671,8 +671,12 @@ class CodeGenEigen(CodeGen):
             cur_m_id = sparse_id
         else:
             # dense
-            content += 'Eigen::Matrix<double, {}, {}> {};\n'.format(self.symtable[cur_m_id].rows,
-                                                                    self.symtable[cur_m_id].cols, cur_m_id)
+            if self.symtable[cur_m_id].is_dim_constant():
+                content += 'Eigen::Matrix<double, {}, {}> {};\n'.format(self.symtable[cur_m_id].rows,
+                                                                        self.symtable[cur_m_id].cols, cur_m_id)
+            else:
+                content += 'Eigen::MatrixXd {}({}, {});\n'.format(cur_m_id, self.symtable[cur_m_id].rows,
+                                                                    self.symtable[cur_m_id].cols)
             if type_info.la_type:
                 all_rows = []
                 m_content = ""
