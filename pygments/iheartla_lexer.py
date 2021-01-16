@@ -53,7 +53,6 @@ class CustomLexer(ExtendedRegexLexer):
     ]
 
     def ident_callback(lexer, match, ctx):
-        print(match)
         m = regex.match(r'[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*', ctx.text[ctx.pos:ctx.end])
         if m:
             yield ctx.pos+m.start(), Name.Variable, m[0]
