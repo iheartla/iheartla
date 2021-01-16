@@ -345,11 +345,11 @@ class TestBuiltinFunctions(BasePythonTest):
         where
         a: scalar"""
         func_info = self.gen_func_info(la_str)
-        self.assertEqual(func_info.numpy_func(3), np.log10(3))
+        self.assertEqual(func_info.numpy_func(3), np.log(3))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
-                     "    return {}(3) == log10(3);".format(func_info.eig_func_name),
+                     "    return {}(3) == log(3);".format(func_info.eig_func_name),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
 

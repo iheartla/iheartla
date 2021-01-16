@@ -1791,7 +1791,7 @@ class TypeWalker(NodeWalker):
 
     def create_math_node_info(self, func_type, param_info, remains=[]):
         param = param_info.ir
-        ret_type = ScalarType()
+        ret_type = copy.deepcopy(param.la_type)
         symbols = param_info.symbols
         remain_list = []
         if MathFuncType.MathFuncInvalid < func_type < MathFuncType.MathFuncAtan2:
