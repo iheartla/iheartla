@@ -12,12 +12,12 @@ import importlib.util
 import threading
 import shutil
 from datetime import datetime
-MAXIMUM_SIZE = 12  # 10 + 2 default
 
 
 class ParserManager(object):
     def __init__(self, grammar_dir):
         self.grammar_dir = Path(grammar_dir)
+        self.max_size = 12  # 10 + 2 default
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
         self.parser_dict = {}
         self.prefix = "parser"
@@ -38,6 +38,9 @@ class ParserManager(object):
         self.parser_dict = {}
         self.init_cache()
         self.load_parsers()
+
+    def set_test_mode(self):
+        self.max_size = 1000
 
     def separate_parser_file(self, parser_file):
         """
@@ -137,8 +140,8 @@ class ParserManager(object):
 
     def check_parser_cnt(self):
         parser_size = len(self.parser_dict)
-        self.logger.debug("check_parser_cnt, self.parser_dict:{}, max:{}".format(self.parser_dict, MAXIMUM_SIZE))
-        while parser_size > MAXIMUM_SIZE:
+        self.logger.debug("check_parser_cnt, self.parser_dict:{}, max:{}".format(self.parser_dict, self.max_size))
+        while parser_size > self.max_size:
             earliest_time = time.time()
             earliest_file = None
             earliest_hash = None

@@ -326,6 +326,7 @@ def parse_la(content, parser_type):
     """
     used for testing
     """
+    _parser_manager.set_test_mode()
     parser = get_default_parser()
     model = parser.parse(content, parseinfo=True)
     type_walker, node_info = parse_ir_node(content, model)
