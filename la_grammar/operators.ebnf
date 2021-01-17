@@ -103,7 +103,7 @@ integral_operator::Integral
     ;
 
 domain::Domain
-    = '[' {hspace} lower:(integer|identifier_alone) {hspace} ',' {hspace} upper:(integer|identifier_alone) ']'
+    = '[' {hspace} lower:expression {hspace} ',' {hspace} upper:expression ']'
     ;
 
 norm_operator::Norm
