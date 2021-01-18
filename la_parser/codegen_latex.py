@@ -220,6 +220,7 @@ class CodeGenLatex(CodeGen):
                 content += '\\mathbb{{Z}}^{{2}}'
             else:
                 content += '\\mathbb{{Z}}^{{2}}'
+        content = '\\{' + content + '\\}'
         if node.la_type.index_type:
             content += " \\textit{{ index}}"
         return content
