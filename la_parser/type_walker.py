@@ -2172,8 +2172,13 @@ class TypeWalker(NodeWalker):
             else:
                 # sequence et al.
                 assert left_type.var_type == right_type.var_type, error_msg
+            # index type checking
+            assert not (left_type.index_type and right_type.index_type), error_msg
+            if left_type.index_type or right_type.index_type:
+                ret_type.index_type = True
         elif op == TypeInferenceEnum.INF_MUL:
             assert left_type.var_type != VarTypeEnum.SEQUENCE and right_type.var_type != VarTypeEnum.SEQUENCE, 'error: sequence can not be operated'
+            assert not left_type.index_type and not right_type.index_type, error_msg
             if left_type.is_scalar():
                 ret_type = copy.deepcopy(right_type)
             elif left_type.is_matrix():
@@ -2208,12 +2213,11 @@ class TypeWalker(NodeWalker):
             # assert left_type.is_scalar() and right_type.is_scalar(), error_msg
             assert left_type.is_scalar() or left_type.is_vector() or left_type.is_matrix(), error_msg
             assert right_type.is_scalar(), error_msg
+            assert not left_type.index_type and not right_type.index_type, error_msg
             ret_type = copy.deepcopy(left_type)
         elif op == TypeInferenceEnum.INF_MATRIX_ROW:
             # assert left_type.var_type == right_type.var_type
             ret_type = copy.deepcopy(left_type)
-        if left_type.index_type or right_type.index_type:
-            ret_type.index_type = True
         return ret_type
 
     def contain_subscript(self, identifier):
