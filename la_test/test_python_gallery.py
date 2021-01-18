@@ -961,3 +961,76 @@ class TestGallery(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_laplacian_1(self):
+        # sparse matrix
+        la_str = """L_i,j = { w_i,j if (i,j) ∈ E
+        L_i,i = -sum_(l for l != i) L_i,l
+        where
+        L: ℝ^(n×n)
+        w: ℝ^(n×n): edge weight matrix
+        E: {ℤ²} index: edges
+        """
+        func_info = self.gen_func_info(la_str)
+        w = np.array([[-6, 9, -1, -11], [17, 14, 0, 0], [6, -2, 11, 0], [2, -9, -2, -9]])
+        E = [(0, 1), (0, 2), (1, 2), (2, 0), (3, 0), (3, 1), (3, 2)]
+        F = [(0, 1), (0, 2), (1, 2), (2, 0), (3, 0), (3, 1), (3, 2), (0, 0), (1, 1), (2, 2), (3, 3)]
+        value = np.array([9, -1, 0, 6, 2, -9, -2, -8, 0, -6, 9])
+        B = scipy.sparse.coo_matrix((value, np.asarray(F).T), shape=(4, 4), dtype=np.float64)
+        self.assertSMatrixEqual(func_info.numpy_func(w, E), B)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 4, 4> w;",
+                     "    w << -6, 9, -1, -11, 17, 14, 0, 0, 6, -2, 11, 0, 2, -9, -2, -9;",
+                     "    std::set< std::tuple< int, int > > E;",
+                     "    E.insert(std::make_tuple(0, 1));",
+                     "    E.insert(std::make_tuple(0, 2));",
+                     "    E.insert(std::make_tuple(1, 2));",
+                     "    E.insert(std::make_tuple(2, 0));",
+                     "    E.insert(std::make_tuple(3, 0));",
+                     "    E.insert(std::make_tuple(3, 1));",
+                     "    E.insert(std::make_tuple(3, 2));",
+                     "    std::set< std::tuple< int, int > > F;",
+                     "    F.insert(std::make_tuple(0, 1));",
+                     "    F.insert(std::make_tuple(0, 2));",
+                     "    F.insert(std::make_tuple(1, 2));",
+                     "    F.insert(std::make_tuple(2, 0));",
+                     "    F.insert(std::make_tuple(3, 0));",
+                     "    F.insert(std::make_tuple(3, 1));",
+                     "    F.insert(std::make_tuple(3, 2));",
+                     "    F.insert(std::make_tuple(0, 0));",
+                     "    F.insert(std::make_tuple(1, 1));",
+                     "    F.insert(std::make_tuple(2, 2));",
+                     "    F.insert(std::make_tuple(3, 3));",
+                     "    std::vector<Eigen::Triplet<double> > t1;",
+                     "    t1.push_back(Eigen::Triplet<double>(0, 1, 9));",
+                     "    t1.push_back(Eigen::Triplet<double>(0, 2, -1));",
+                     "    t1.push_back(Eigen::Triplet<double>(1, 2, 0));",
+                     "    t1.push_back(Eigen::Triplet<double>(2, 0, 6));",
+                     "    t1.push_back(Eigen::Triplet<double>(3, 0, 2));",
+                     "    t1.push_back(Eigen::Triplet<double>(3, 1, -9));",
+                     "    t1.push_back(Eigen::Triplet<double>(3, 2, -2));",
+                     "    t1.push_back(Eigen::Triplet<double>(0, 0, -8));",
+                     "    t1.push_back(Eigen::Triplet<double>(1, 1, 0));",
+                     "    t1.push_back(Eigen::Triplet<double>(2, 2, -6));",
+                     "    t1.push_back(Eigen::Triplet<double>(3, 3, 9));",
+                     "    Eigen::SparseMatrix<double> A(4, 4);",
+                     "    A.setFromTriplets(t1.begin(), t1.end());"
+                     "    Eigen::SparseMatrix<double> B = {}(w, E);".format(func_info.eig_func_name),
+                     "    return A.isApprox(B);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_integral(self):
+        la_str = """`H(p)` = 1/(2π)int_[0, 2π] `kₙ`(φ, p) ∂φ
+        where 
+        p: ℝ^3 : point on the surface
+        `kₙ`: ℝ,ℝ^3->ℝ : normal curvature
+        """
+        func_info = self.gen_func_info(la_str)
+        def kₙ(p0, p1):
+            return p0 * p1[1]
+        p = np.array([1, 2, 3])
+        self.assertTrue(np.isclose(func_info.numpy_func(p, kₙ), 6.28318530))
