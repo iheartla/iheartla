@@ -794,9 +794,9 @@ class CodeGenEigen(CodeGen):
         main_info = self.visit(node.main, **kwargs)
         index_info = self.visit(node.row_index, **kwargs)
         if node.row_index.la_type.index_type:
-            return CodeNodeInfo("{}({})".format(main_info.content, index_info.content))
+            return CodeNodeInfo("{}[{}]".format(main_info.content, index_info.content))
         else:
-            return CodeNodeInfo("{}({}-1)".format(main_info.content, index_info.content))
+            return CodeNodeInfo("{}[{}-1]".format(main_info.content, index_info.content))
 
     def visit_sequence_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
@@ -835,7 +835,8 @@ class CodeGenEigen(CodeGen):
                         col_content = "{}-1".format(col_info.content)
                     content = "{}.at({})({}, {})".format(main_info.content, main_index_content, row_content, col_content)
                 else:
-                    content = "{}.at({})({})".format(main_info.content, main_index_content, row_content)
+                    # use [] instead of (): vector-like data structure
+                    content = "{}.at({})[{}]".format(main_info.content, main_index_content, row_content)
             else:
                 content = "{}.at({})".format(main_info.content, main_index_content)
         return CodeNodeInfo(content)
