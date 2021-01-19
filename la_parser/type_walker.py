@@ -1597,7 +1597,7 @@ class TypeWalker(NodeWalker):
         ir_node = VectorNode(parse_info=node.parseinfo, raw_text=node.text)
         for exp in node.exp:
             exp_info = self.walk(exp, **kwargs)
-            assert exp_info.la_type.is_scalar(), self.get_err_msg_info(node.parse_info, "Item in vector must be scalar")
+            assert exp_info.la_type.is_scalar(), self.get_err_msg_info(node.parseinfo, "Item in vector must be scalar")
             ir_node.items.append(exp_info.ir)
         ir_node.la_type = VectorType(rows=len(node.exp))
         node_info = NodeInfo(ir=ir_node, la_type=ir_node.la_type)
