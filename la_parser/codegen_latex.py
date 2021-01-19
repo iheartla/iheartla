@@ -544,7 +544,7 @@ class CodeGenLatex(CodeGen):
     def visit_inner_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        content = "\\langle\\ {} , {}\\rangle".format(left_info, right_info)
+        content = "\\langle {} , {}\\rangle".format(left_info, right_info)
         if node.sub:
             content = "{{{}}}_{}".format(content, self.visit(node.sub, **kwargs))
         return content

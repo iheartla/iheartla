@@ -1124,7 +1124,7 @@ class CodeGenEigen(CodeGen):
     def visit_inner_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        content = "{}.dot({})".format(left_info.content, right_info.content)
+        content = "({}).dot({})".format(left_info.content, right_info.content)
         if node.sub:
             sub_info = self.visit(node.sub, **kwargs)
             content = "({}).transpose() * ({}) * ({})".format(right_info.content, sub_info.content, left_info.content)
