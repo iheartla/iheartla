@@ -748,7 +748,7 @@ class CodeGenEigen(CodeGen):
         else:
             if node.left == '0':
                 func_name = "Eigen::MatrixXd::Zero"
-            elif node.left == '1':
+            elif node.left == '1' or node.left == '𝟙':
                 func_name = "Eigen::MatrixXd::Ones"
             # else:
             #     func_name = "({} * Eigen::MatrixXd::Ones".format(left_info.content)

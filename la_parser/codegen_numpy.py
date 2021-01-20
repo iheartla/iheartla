@@ -580,7 +580,7 @@ class CodeGenNumpy(CodeGen):
         else:
             if node.left == '0':
                 func_name = "np.zeros"
-            elif node.left == '1':
+            elif node.left == '1' or node.left == '𝟙':
                 func_name = "np.ones"
             # else:
             #     func_name = "({} * np.ones".format(left_info.content)

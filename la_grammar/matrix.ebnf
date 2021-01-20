@@ -100,9 +100,9 @@ ddots::MatrixDdots
     ;
 
 number_matrix::NumMatrix
-    = left:('0' | '1') '_' id1:(integer | identifier) {',' id2:(integer | identifier)}
-    | left:/[01]/ id1:sub_integer {',' id2:sub_integer}
-    | left:('0' | '1') '_' '(' {hspace}  id1:(integer | identifier) { {hspace} (','|'×') {hspace} id2:(integer | identifier)} {hspace} ')'
+    = left:('0' | '1' | '𝟙') '_' id1:(integer | identifier) {',' id2:(integer | identifier)}
+    | left:/[01\u1D7D9]/ id1:sub_integer {',' id2:sub_integer}
+    | left:('0' | '1' | '𝟙') '_' '(' {hspace}  id1:(integer | identifier) { {hspace} (','|'×') {hspace} id2:(integer | identifier)} {hspace} ')'
     | id:'I' '_' id1:(integer | identifier)
     | id:/[I]/ id1:sub_integer
     ;

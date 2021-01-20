@@ -5,7 +5,8 @@ from la_parser.type_walker import *
 class CodeGenLatex(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.LATEX)
-        self.uni_convert_dict = {'ᵢ': '\\textsubscript{i}', 'ⱼ': '\\textsubscript{j}', 'ᵣ': '\\textsubscript{r}', 'ᵤ': '\\textsubscript{u}', 'ᵥ': '\\textsubscript{v}'}
+        self.uni_convert_dict = {'ᵢ': '\\textsubscript{i}', 'ⱼ': '\\textsubscript{j}', 'ᵣ': '\\textsubscript{r}',
+                                 'ᵤ': '\\textsubscript{u}', 'ᵥ': '\\textsubscript{v}', '𝟙': '\\mathbb{ 1 }'}
         self.pre_str = r'''
 \documentclass[12pt]{article}
 \usepackage{mathdots}
