@@ -63,7 +63,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU_OPEN, self.OnMenuOpen)
         # languages
         menu_language = wx.Menu()
-        py_lang = menu_language.AppendRadioItem(wx.NewId(), "&Python with Numpy")
+        py_lang = menu_language.AppendRadioItem(wx.NewId(), "&Python with NumPy")
         cpp_lang = menu_language.AppendRadioItem(wx.NewId(), "&C++ with Eigen")
         cpp_lang.Check(True)
         # view
