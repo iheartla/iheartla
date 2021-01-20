@@ -112,6 +112,7 @@ class IRVisitor(object):
             IRNodeType.Expression: "visit_expression",
             IRNodeType.Subexpression: "visit_sub_expr",
             IRNodeType.Constant: "visit_constant",
+            IRNodeType.Cast: "visit_cast",
             # control
             IRNodeType.Start: "visit_start",
             IRNodeType.Block: "visit_block",
@@ -216,6 +217,9 @@ class IRVisitor(object):
         pass
 
     def visit_sub_expr(self, node, **kwargs):
+        pass
+
+    def visit_cast(self, node, **kwargs):
         pass
 
     def visit_in(self, node, **kwargs):

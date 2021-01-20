@@ -541,7 +541,7 @@ class TypeWalker(NodeWalker):
     def walk_Add(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
-        ret_type = self.type_inference(TypeInferenceEnum.INF_ADD, left_info, right_info)
+        ret_type, need_cast = self.type_inference(TypeInferenceEnum.INF_ADD, left_info, right_info)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         ir_node = AddNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
         ir_node.la_type = ret_type
@@ -553,7 +553,7 @@ class TypeWalker(NodeWalker):
     def walk_Subtract(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
-        ret_type = self.type_inference(TypeInferenceEnum.INF_SUB, left_info, right_info)
+        ret_type, need_cast = self.type_inference(TypeInferenceEnum.INF_SUB, left_info, right_info)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         ir_node = SubNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
         ir_node.la_type = ret_type
@@ -568,7 +568,7 @@ class TypeWalker(NodeWalker):
                                                    "{} must be used inside if codition".format(node.op))
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
-        ret_type = self.type_inference(TypeInferenceEnum.INF_ADD, left_info, right_info)
+        ret_type, need_cast = self.type_inference(TypeInferenceEnum.INF_ADD, left_info, right_info)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         ir_node = AddSubNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
         ir_node.la_type = ret_type
@@ -588,7 +588,7 @@ class TypeWalker(NodeWalker):
         return self.make_mul_info(left_info, right_info, op_type)
 
     def make_mul_info(self, left_info, right_info, op=MulOpType.MulOpInvalid):
-        ret_type = self.type_inference(TypeInferenceEnum.INF_MUL, left_info, right_info)
+        ret_type, need_cast = self.type_inference(TypeInferenceEnum.INF_MUL, left_info, right_info)
         sym_set = left_info.symbols.union(right_info.symbols)
         # I in block matrix
         if ret_type is not None:
@@ -600,13 +600,15 @@ class TypeWalker(NodeWalker):
         ir_node.la_type = ret_type
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)
+        if need_cast:
+            ir_node = CastNode(value=ir_node)
         ret_info.ir = ir_node
         return ret_info
 
     def walk_Divide(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
-        ret_type = self.type_inference(TypeInferenceEnum.INF_DIV, left_info, right_info)
+        ret_type, need_cast = self.type_inference(TypeInferenceEnum.INF_DIV, left_info, right_info)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         op_type = DivOpType.DivOpSlash
         if node.op == '÷':
@@ -1708,7 +1710,7 @@ class TypeWalker(NodeWalker):
                 ret_info = exp_info
                 ret_info.content = [exp_info.ir]
             else:
-                new_type = self.type_inference(TypeInferenceEnum.INF_MATRIX_ROW, ret_info, exp_info)
+                new_type, need_cast = self.type_inference(TypeInferenceEnum.INF_MATRIX_ROW, ret_info, exp_info)
                 ret_info.la_type = new_type
                 items.append(exp_info.ir)
                 ret_info.content = items
@@ -1734,7 +1736,7 @@ class TypeWalker(NodeWalker):
                 ret_info = exp_info
                 ret_info.content = [exp_info.ir]
             else:
-                new_type = self.type_inference(TypeInferenceEnum.INF_MATRIX_ROW, ret_info, exp_info)
+                new_type, need_cast = self.type_inference(TypeInferenceEnum.INF_MATRIX_ROW, ret_info, exp_info)
                 ret_info.la_type = new_type
                 items.append(exp_info.ir)
                 ret_info.content = items
@@ -2099,6 +2101,7 @@ class TypeWalker(NodeWalker):
         return valid, undef_list, type_array, real_dims
 
     def type_inference(self, op, left_info, right_info):
+        need_cast = False
         left_type = left_info.ir.la_type
         right_type = right_info.ir.la_type
         # todo:delete
@@ -2207,6 +2210,7 @@ class TypeWalker(NodeWalker):
                     if left_type.rows == 1:
                         # scalar
                         ret_type = ScalarType()
+                        need_cast = True
                     else:
                         ret_type = VectorType(rows=left_type.rows)
             elif left_type.is_vector():
@@ -2229,7 +2233,7 @@ class TypeWalker(NodeWalker):
         elif op == TypeInferenceEnum.INF_MATRIX_ROW:
             # assert left_type.var_type == right_type.var_type
             ret_type = copy.deepcopy(left_type)
-        return ret_type
+        return ret_type, need_cast
 
     def contain_subscript(self, identifier):
         if identifier in self.ids_dict:

@@ -341,6 +341,9 @@ class CodeGenLatex(CodeGen):
     def visit_sub_expr(self, node, **kwargs):
         return '\\left( ' + self.visit(node.value, **kwargs) + ' \\right)'
 
+    def visit_cast(self, node, **kwargs):
+        return self.visit(node.value, **kwargs)
+
     def visit_sparse_matrix(self, node, **kwargs):
         if node.id1:
             id1_info = self.visit(node.id1, **kwargs)

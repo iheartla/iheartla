@@ -12,6 +12,7 @@ class IRNodeType(Enum):
     Expression = 4
     Subexpression = 5
     Constant = 6
+    Cast = 7
     # control
     Start = 50
     Block = 51
@@ -276,6 +277,17 @@ class ExpressionNode(ExprNode):
         super().__init__(IRNodeType.Expression, parse_info=parse_info, raw_text=raw_text)
         self.value = None
         self.sign = None
+
+
+class CastNode(ExprNode):
+    def __init__(self, parse_info=None, raw_text=None, value=None):
+        super().__init__(IRNodeType.Cast, parse_info=parse_info, raw_text=raw_text)
+        # current: 1x1 matrix -> scalar
+        self.value = value
+        if self.value:
+            self.parse_info = value.parse_info
+            self.raw_text = value.raw_text
+            self.la_type = value.la_type
 
 
 class IdNode(ExprNode):

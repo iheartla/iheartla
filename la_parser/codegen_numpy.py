@@ -722,6 +722,12 @@ class CodeGenNumpy(CodeGen):
         value_info.content = '(' + value_info.content + ')'
         return value_info
 
+    def visit_cast(self, node, **kwargs):
+        value_info = self.visit(node.value, **kwargs)
+        if node.la_type.is_scalar():
+            value_info.content = "({}).item()".format(value_info.content)
+        return value_info
+
     def visit_assignment(self, node, **kwargs):
         type_info = node
         # visit matrix first
