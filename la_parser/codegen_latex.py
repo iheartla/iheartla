@@ -471,8 +471,12 @@ class CodeGenLatex(CodeGen):
         elif node.r:
             base_info = base_info + "^{-1}"
         else:
-            power_info = self.visit(node.power, **kwargs)
-            base_info = "{}^{{{}}}".format(base_info, power_info)
+            if node.power.node_type == IRNodeType.Factor and node.power.sub:  # sub expression
+                power_info = self.visit(node.power.sub.value, **kwargs)
+                base_info = "{}^{{{}}}".format(base_info, power_info)
+            else:
+                power_info = self.visit(node.power, **kwargs)
+                base_info = "{}^{{{}}}".format(base_info, power_info)
         return base_info
 
     def visit_solver(self, node, **kwargs):
