@@ -806,14 +806,19 @@ class CodeGenNumpy(CodeGen):
 
                 right_exp += "    {} = {}".format(left_info.content, right_info.content)
                 ele_type = self.symtable[sequence].element_type
-                if ele_type.is_matrix():
-                    content += "    {} = np.zeros(({}, {}, {}))\n".format(sequence, self.symtable[sequence].size, ele_type.rows, ele_type.cols)
-                elif ele_type.is_vector():
-                    content += "    {} = np.zeros(({}, {}, ))\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
-                    # content += "    {} = np.zeros(({}, {}, 1))\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
+                if self.symtable[sequence].is_sequence():
+                    if ele_type.is_matrix():
+                        content += "    {} = np.zeros(({}, {}, {}))\n".format(sequence, self.symtable[sequence].size, ele_type.rows, ele_type.cols)
+                    elif ele_type.is_vector():
+                        content += "    {} = np.zeros(({}, {}, ))\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
+                        # content += "    {} = np.zeros(({}, {}, 1))\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
+                    else:
+                        content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].size)
+                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].size)
                 else:
-                    content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].size)
-                content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].size)
+                    # vector
+                    content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].rows)
+                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
                 if right_info.pre_list:
                     for line in right_info.pre_list:
                         lines = line.split('\n')

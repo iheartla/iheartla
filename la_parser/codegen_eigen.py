@@ -995,8 +995,7 @@ class CodeGenEigen(CodeGen):
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                             self.symtable[sequence].size, left_subs[0])
                 else:
-                    right_exp += "    {}[{}] = {}".format(node.left.get_main_id(), left_subs[0],
-                                                             right_info.content)
+                    right_exp += "    {} = {}".format(left_info.content, right_info.content)
                     content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
                                                          self.symtable[sequence].rows)
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],

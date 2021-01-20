@@ -57,6 +57,25 @@ class TestSubscript(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_vector_assignment(self):
+        # matrix
+        la_str = """q_i = p_i
+        where
+        p ∈ ℝ^3"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([1, 2, 3])
+        self.assertDMatrixEqual(func_info.numpy_func(A), A)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 3, 1> A;",
+                     "    A << 1, 2, 3;",
+                     "    Eigen::Matrix<double, 3, 1> C = {}(A);".format(func_info.eig_func_name),
+                     "    return ((C - A).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_subscript_I(self):
         # sequence
         la_str = """B_i = I_i
