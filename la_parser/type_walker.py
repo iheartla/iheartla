@@ -1595,11 +1595,16 @@ class TypeWalker(NodeWalker):
 
     def walk_Vector(self, node, **kwargs):
         ir_node = VectorNode(parse_info=node.parseinfo, raw_text=node.text)
+        dim_list = []
         for exp in node.exp:
             exp_info = self.walk(exp, **kwargs)
-            assert exp_info.la_type.is_scalar(), self.get_err_msg_info(node.parseinfo, "Item in vector must be scalar")
+            assert exp_info.la_type.is_scalar() or exp_info.la_type.is_vector(), self.get_err_msg_info(node.parseinfo, "Item in vector must be scalar or vector")
             ir_node.items.append(exp_info.ir)
-        ir_node.la_type = VectorType(rows=len(node.exp))
+            if exp_info.la_type.is_vector():
+                dim_list.append(exp_info.la_type.rows)
+            else:
+                dim_list.append(1)
+        ir_node.la_type = VectorType(rows=self.get_sum_value(dim_list))
         node_info = NodeInfo(ir=ir_node, la_type=ir_node.la_type)
         if LHS in kwargs:
             lhs = kwargs[LHS]
@@ -1961,6 +1966,23 @@ class TypeWalker(NodeWalker):
         return self.create_math_node_info(MathFuncType.MathFuncInv, self.walk(node.param, **kwargs))
 
     ###################################################################
+    def get_sum_value(self, dim_list):
+        int_list = []
+        str_list = []
+        for d_item in dim_list:
+            if isinstance(d_item, int):
+                int_list.append(d_item)
+            else:
+                str_list.append(d_item)
+        if len(int_list) > 0:
+            if len(str_list) > 0:
+                sum_value = "{}+{}".format('+'.join(str_list), sum(int_list))
+            else:
+                sum_value = sum(int_list)
+        else:
+            sum_value = '+'.join(str_list)
+        return sum_value
+
     def check_bmat_validity(self, type_array, mat_size):
         """
         check the validity of block matrix
@@ -2065,27 +2087,11 @@ class TypeWalker(NodeWalker):
                         type_array[i][j] = MatrixType(rows=row_dim[i], cols=col_dim[j])
                 else:
                     valid = False
-        def get_sum_value(dim_list):
-            int_list = []
-            str_list = []
-            for d_item in dim_list:
-                if isinstance(d_item, int):
-                    int_list.append(d_item)
-                else:
-                    str_list.append(d_item)
-            if len(int_list) > 0:
-                if len(str_list) > 0:
-                    sum_value = "{}+{}".format('+'.join(str_list), sum(int_list))
-                else:
-                    sum_value = sum(int_list)
-            else:
-                sum_value = '+'.join(str_list)
-            return sum_value
         # check total dimensions bound
         real_dims = (0, 0)
         if valid:
-            row_sum = get_sum_value(row_dim)
-            col_sum = get_sum_value(col_dim)
+            row_sum = self.get_sum_value(row_dim)
+            col_sum = self.get_sum_value(col_dim)
             real_dims = (row_sum, col_sum)
             if mat_size is not None:
                 if row_sum != mat_size[0] or col_sum != mat_size[1]:

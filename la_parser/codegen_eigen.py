@@ -586,7 +586,10 @@ class CodeGenEigen(CodeGen):
             item_info = self.visit(item, **kwargs)
             ret.append(item_info.content)
             pre_list += item_info.pre_list
-        content = '    Eigen::Matrix<double, {}, 1> {};\n'.format(self.symtable[cur_m_id].rows, cur_m_id)
+        if self.symtable[cur_m_id].is_dim_constant():
+            content = '    Eigen::Matrix<double, {}, 1> {};\n'.format(self.symtable[cur_m_id].rows, cur_m_id)
+        else:
+            content = '    Eigen::VectorXd {}({});\n'.format(cur_m_id, self.symtable[cur_m_id].rows)
         content += '    {} << {};\n'.format(cur_m_id, ", ".join(ret))
         pre_list.append(content)
         return CodeNodeInfo(cur_m_id, pre_list=pre_list)
