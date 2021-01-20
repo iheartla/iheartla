@@ -1647,7 +1647,8 @@ class TypeWalker(NodeWalker):
                     if 'I' in cur_ir.raw_text:
                         pass
                     else:
-                        assert '0' in cur_ir.raw_text or '1' in cur_ir.raw_text, self.get_err_msg_info(cur_ir.parse_info, "Can not lift {}".format(cur_ir.raw_text))
+                        if not (type_array[i][j].rows == 1 and type_array[i][j].cols == 1):
+                            assert '0' == cur_ir.raw_text or '1' == cur_ir.raw_text, self.get_err_msg_info(cur_ir.parse_info, "Can not lift {}".format(cur_ir.raw_text))
                     list_dim[(i, j)] = [type_array[i][j].rows, type_array[i][j].cols]
         node_type = MatrixType(rows=rows, cols=cols, block=block, sparse=sparse, list_dim=list_dim, item_types=node_info.content)
         node_info = NodeInfo(node_type)
@@ -1999,6 +2000,10 @@ class TypeWalker(NodeWalker):
                     undef_list.append((i, j))
             if not valid:
                 break
+        # only scalar value in a row or col
+        if valid:
+            row_dim = [i if i else 1 for i in row_dim]
+            col_dim = [i if i else 1 for i in col_dim]
         # check Identity, fills dim if possible
         self.logger.debug("identity_list: {}".format(identity_list))
         if len(identity_list) > 0:

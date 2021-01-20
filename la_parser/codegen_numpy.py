@@ -484,6 +484,9 @@ class CodeGenNumpy(CodeGen):
                     for j in range(len(ret[i])):
                         if (i, j) in type_info.la_type.list_dim:
                             dims = type_info.la_type.list_dim[(i, j)]
+                            if dims[0] == 1 and dims[1] == 1:
+                                # scalar value
+                                continue
                             if ret[i][j] == '0':
                                 func_name = 'np.zeros'
                             elif ret[i][j] == '1':
