@@ -2022,10 +2022,6 @@ class TypeWalker(NodeWalker):
                     undef_list.append((i, j))
             if not valid:
                 break
-        # only scalar value in a row or col
-        if valid:
-            row_dim = [i if i else 1 for i in row_dim]
-            col_dim = [i if i else 1 for i in col_dim]
         # check Identity, fills dim if possible
         self.logger.debug("identity_list: {}".format(identity_list))
         if len(identity_list) > 0:
@@ -2040,6 +2036,10 @@ class TypeWalker(NodeWalker):
                         if row_dim[i] != col_dim[j]:
                             valid = False
                             break
+        # only scalar value in a row or col
+        if valid:
+            row_dim = [i if i else 1 for i in row_dim]
+            col_dim = [i if i else 1 for i in col_dim]
         self.logger.debug("undef_list: {}".format(undef_list))
         self.logger.debug("row_dim: {}".format(row_dim))
         self.logger.debug("col_dim: {}".format(col_dim))

@@ -241,6 +241,50 @@ class TestMatrix(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_block_matrix_6(self):
+        # scalar value
+        la_str = """B = [ A 1 ]
+        where
+        A: ℝ ^ 2: a matrix"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([3, 4])
+        B = np.array([[3, 1], [4, 1]])
+        self.assertDMatrixEqual(func_info.numpy_func(A), B)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 1> A;",
+                     "    A << 3, 4;",
+                     "    Eigen::Matrix<double, 2, 2> B;",
+                     "    B << 3, 1, 4, 1;",
+                     "    Eigen::Matrix<double, 2, 2> C = {}(A);".format(func_info.eig_func_name),
+                     "    return ((B - C).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_block_matrix_7(self):
+        # scalar value
+        la_str = """B = [ A ; 1 ]
+        where
+        A: ℝ ^ 2: a matrix"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([3, 4])
+        B = np.array([[3], [4], [1]])
+        self.assertDMatrixEqual(func_info.numpy_func(A), B)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 1> A;",
+                     "    A << 3, 4;",
+                     "    Eigen::Matrix<double, 3, 1> B;",
+                     "    B << 3, 4, 1;",
+                     "    Eigen::Matrix<double, 3, 1> C = {}(A);".format(func_info.eig_func_name),
+                     "    return ((B - C).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_identity_matrix_0(self):
         # outside matrix
         la_str = """C = I_2 + A
@@ -392,6 +436,28 @@ class TestMatrix(BasePythonTest):
                      "    A.setFromTriplets(t1.begin(), t1.end());"
                      "    Eigen::SparseMatrix<double> B = {}(P, J, E, F);".format(func_info.eig_func_name),
                      "    return A.isApprox(B);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_vector_1(self):
+        # vector
+        la_str = """B = (1, A, 4) + (1, 1, 1, 1)
+        where
+        A: ℝ ^ 2: a vector"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([1, 2])
+        B = np.array([2, 2, 3, 5])
+        self.assertDMatrixEqual(func_info.numpy_func(A), B)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 1> A;",
+                     "    A << 1, 2;",
+                     "    Eigen::Matrix<double, 4, 1> B;",
+                     "    B << 2, 2, 3, 5;",
+                     "    Eigen::Matrix<double, 4, 1> C = {}(A);".format(func_info.eig_func_name),
+                     "    return ((B - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
