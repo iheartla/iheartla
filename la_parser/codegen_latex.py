@@ -6,7 +6,13 @@ class CodeGenLatex(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.LATEX)
         self.uni_convert_dict = {'ᵢ': '\\textsubscript{i}', 'ⱼ': '\\textsubscript{j}', 'ᵣ': '\\textsubscript{r}',
-                                 'ᵤ': '\\textsubscript{u}', 'ᵥ': '\\textsubscript{v}', '𝟙': '\\mathbb{ 1 }'}
+                                 'ᵤ': '\\textsubscript{u}', 'ᵥ': '\\textsubscript{v}', '𝟙': '\\mathbb{ 1 }',
+                                 '𝐚': '\\textbf{a}', '𝐛': '\\textbf{b}', '𝐜': '\\textbf{c}', '𝐝': '\\textbf{d}', '𝐞': '\\textbf{e}',
+                                 '𝐟': '\\textbf{f}', '𝐠': '\\textbf{g}', '𝐡': '\\textbf{h}', '𝐢': '\\textbf{i}', '𝐣': '\\textbf{j}',
+                                 '𝐤': '\\textbf{k}', '𝐥': '\\textbf{l}', '𝐦': '\\textbf{m}', '𝐧': '\\textbf{n}', '𝐨': '\\textbf{o}',
+                                 '𝐩': '\\textbf{p}', '𝐪': '\\textbf{q}', '𝐫': '\\textbf{r}', '𝐬': '\\textbf{s}', '𝐭': '\\textbf{t}',
+                                 '𝐮': '\\textbf{u}', '𝐯': '\\textbf{v}', '𝐰': '\\textbf{w}', '𝐱': '\\textbf{x}', '𝐲': '\\textbf{y}',
+                                 '𝐳': '\\textbf{z}'}
         self.pre_str = r'''
 \documentclass[12pt]{article}
 \usepackage{mathdots}
