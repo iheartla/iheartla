@@ -2112,21 +2112,24 @@ class TypeWalker(NodeWalker):
         # error msg
         left_line = get_parse_info_buffer(left_info.ir.parse_info).line_info(left_info.ir.parse_info.pos)
         right_line = get_parse_info_buffer(right_info.ir.parse_info).line_info(right_info.ir.parse_info.pos)
-        error_msg = '{}. Dimension mismatch. Can\'t {} {} {} and {} {}.\n'.format(self.la_msg.get_line_desc(left_line),
-                                                                            self.get_op_desc(op),
-                                                                            self.get_type_desc(left_type),
-                                                                            get_parse_info_buffer(left_info.ir.parse_info).text[left_info.ir.parse_info.pos:left_info.ir.parse_info.endpos],
-                                                                            self.get_type_desc(right_type),
-                                                                                  get_parse_info_buffer(right_info.ir.parse_info).text[right_info.ir.parse_info.pos:right_info.ir.parse_info.endpos])
-        error_msg += left_line.text
-        error_msg += self.la_msg.get_pos_marker(left_line.col)
+        def get_err_msg(extra_msg=''):
+            error_msg = '{}. Dimension mismatch. Can\'t {} {} {} and {} {}. {}\n'.format(self.la_msg.get_line_desc(left_line),
+                                                                                self.get_op_desc(op),
+                                                                                self.get_type_desc(left_type),
+                                                                                get_parse_info_buffer(left_info.ir.parse_info).text[left_info.ir.parse_info.pos:left_info.ir.parse_info.endpos],
+                                                                                self.get_type_desc(right_type),
+                                                                                      get_parse_info_buffer(right_info.ir.parse_info).text[right_info.ir.parse_info.pos:right_info.ir.parse_info.endpos],
+                                                                                extra_msg)
+            error_msg += left_line.text
+            error_msg += self.la_msg.get_pos_marker(left_line.col)
+            return error_msg
         ret_type = None
         if op == TypeInferenceEnum.INF_ADD or op == TypeInferenceEnum.INF_SUB:
             ret_type = copy.deepcopy(left_type)  # default type
             if left_type.is_scalar():
-                assert right_type.is_scalar(), error_msg
+                assert right_type.is_scalar(), get_err_msg()
             elif left_type.is_matrix():
-                assert right_type.is_matrix(), error_msg
+                assert right_type.is_matrix(), get_err_msg()
                 # assert right_type.is_matrix() or right_type.is_vector(), error_msg
                 if left_type.is_dynamic() or right_type.is_dynamic():
                     if left_type.is_dynamic() and right_type.is_dynamic():
@@ -2136,7 +2139,7 @@ class TypeWalker(NodeWalker):
                             if right_type.is_dynamic_row() and right_type.is_dynamic_col():
                                 ret_type = copy.deepcopy(left_type)
                             elif right_type.is_dynamic_row():
-                                assert left_type.cols == right_type.cols, error_msg
+                                assert left_type.cols == right_type.cols, get_err_msg()
                                 ret_type = copy.deepcopy(left_type)
                             elif right_type.is_dynamic_col():
                                 ret_type = copy.deepcopy(left_type)
@@ -2150,7 +2153,7 @@ class TypeWalker(NodeWalker):
                                 ret_type.cols = right_type.cols
                                 ret_type.set_dynamic_type(DynamicTypeEnum.DYN_INVALID)  # change to static type
                             elif right_type.is_dynamic_col():
-                                assert left_type.rows == right_type.rows, error_msg
+                                assert left_type.rows == right_type.rows, get_err_msg()
                                 ret_type = copy.deepcopy(left_type)
                     else:
                         if left_type.is_dynamic():
@@ -2158,55 +2161,56 @@ class TypeWalker(NodeWalker):
                                 ret_type = copy.deepcopy(right_type)
                             else:
                                 if left_type.is_dynamic_row():
-                                    assert left_type.cols == right_type.cols, error_msg
+                                    assert left_type.cols == right_type.cols, get_err_msg()
                                 else:
-                                    assert left_type.rows == right_type.rows, error_msg
+                                    assert left_type.rows == right_type.rows, get_err_msg()
                         else:
                             if right_type.is_dynamic_row() and right_type.is_dynamic_col():
                                 ret_type = copy.deepcopy(left_type)
                             else:
                                 if right_type.is_dynamic_row():
-                                    assert left_type.cols == right_type.cols, error_msg
+                                    assert left_type.cols == right_type.cols, get_err_msg()
                                 else:
-                                    assert left_type.rows == right_type.rows, error_msg
+                                    assert left_type.rows == right_type.rows, get_err_msg()
                 else:
                     # static
-                    assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, error_msg
+                    assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, get_err_msg()
                     if left_type.sparse and right_type.sparse:
                         ret_type.sparse = True
                     else:
                         ret_type.sparse = False
             elif left_type.is_vector():
-                assert right_type.is_vector(), error_msg
-                assert left_type.rows == right_type.rows, error_msg
+                assert right_type.is_vector(), get_err_msg()
+                assert left_type.rows == right_type.rows, get_err_msg()
                 # assert right_type.is_matrix() or right_type.is_vector(), error_msg
                 # assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, error_msg
                 if right_type.is_matrix():
                     ret_type = copy.deepcopy(right_type)
             else:
                 # sequence et al.
-                assert left_type.var_type == right_type.var_type, error_msg
+                assert left_type.var_type == right_type.var_type, get_err_msg()
             # index type checking
-            assert not (left_type.index_type and right_type.index_type), error_msg
+            assert not (left_type.index_type and right_type.index_type), get_err_msg()
             if left_type.index_type or right_type.index_type:
+                assert left_type.is_integer_element() and right_type.is_integer_element(), get_err_msg("Operand must be integer.")
                 ret_type.index_type = True
         elif op == TypeInferenceEnum.INF_MUL:
             assert left_type.var_type != VarTypeEnum.SEQUENCE and right_type.var_type != VarTypeEnum.SEQUENCE, 'error: sequence can not be operated'
-            assert not left_type.index_type and not right_type.index_type, error_msg
+            assert not left_type.index_type and not right_type.index_type, get_err_msg()
             if left_type.is_scalar():
                 ret_type = copy.deepcopy(right_type)
             elif left_type.is_matrix():
                 if right_type.is_scalar():
                     ret_type = copy.deepcopy(left_type)
                 elif right_type.is_matrix():
-                    assert left_type.cols == right_type.rows, error_msg
+                    assert left_type.cols == right_type.rows, get_err_msg()
                     ret_type = MatrixType(rows=left_type.rows, cols=right_type.cols)
                     if left_type.sparse and right_type.sparse:
                         ret_type.sparse = True
                     # if left_type.rows == 1 and right_type.cols == 1:
                     #     ret_type = ScalarType()
                 elif right_type.is_vector():
-                    assert left_type.cols == right_type.rows, error_msg
+                    assert left_type.cols == right_type.rows, get_err_msg()
                     if left_type.rows == 1:
                         # scalar
                         ret_type = ScalarType()
@@ -2217,18 +2221,18 @@ class TypeWalker(NodeWalker):
                 if right_type.is_scalar():
                     ret_type = copy.deepcopy(left_type)
                 elif right_type.is_matrix():
-                    assert 1 == right_type.rows, error_msg
+                    assert 1 == right_type.rows, get_err_msg()
                     ret_type = MatrixType(rows=left_type.rows, cols=right_type.cols)
                     new_node = ToMatrixNode(parse_info=left_info.ir.parse_info, item=left_info.ir)
                     new_node.la_type = MatrixType(rows=left_type.rows, cols=1)
                     left_info.ir = new_node
                 elif right_type.is_vector():
-                    assert left_type.cols == right_type.rows, error_msg
+                    assert left_type.cols == right_type.rows, get_err_msg()
         elif op == TypeInferenceEnum.INF_DIV:
             # assert left_type.is_scalar() and right_type.is_scalar(), error_msg
-            assert left_type.is_scalar() or left_type.is_vector() or left_type.is_matrix(), error_msg
-            assert right_type.is_scalar(), error_msg
-            assert not left_type.index_type and not right_type.index_type, error_msg
+            assert left_type.is_scalar() or left_type.is_vector() or left_type.is_matrix(), get_err_msg()
+            assert right_type.is_scalar(), get_err_msg()
+            assert not left_type.index_type and not right_type.index_type, get_err_msg()
             ret_type = copy.deepcopy(left_type)
         elif op == TypeInferenceEnum.INF_MATRIX_ROW:
             # assert left_type.var_type == right_type.var_type
