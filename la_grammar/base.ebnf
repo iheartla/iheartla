@@ -58,9 +58,9 @@ params_separator
     ;
 
 pi::Pi
-    = 'π'
+    = /π/
     ;
 
 e::E
-    = 'e'
+    = /e/
     ;

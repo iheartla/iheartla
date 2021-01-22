@@ -15,8 +15,8 @@ where_condition::WhereCondition
     ;
 
 matrix_type::MatrixType
-    = 'matrix' {hspace} '(' {hspace} id1:dimension  {hspace} ',' {hspace} id2:dimension {hspace}')'  {{hspace}+ attr+:matrix_attribute}
-    | type:('ℝ'|'ℤ') {hspace} '^' {hspace} '(' {hspace} id1:dimension  {hspace} '×' {hspace} id2:dimension {hspace}')'  {{hspace}+ attr+:matrix_attribute}
+    = /matrix/ {hspace} '(' {hspace} id1:dimension  {hspace} ',' {hspace} id2:dimension {hspace}')'  {{hspace}+ attr+:matrix_attribute}
+    | type:/[ℝℤ]/ {hspace} '^' {hspace} '(' {hspace} id1:dimension  {hspace} '×' {hspace} id2:dimension {hspace}')'  {{hspace}+ attr+:matrix_attribute}
     ;
 
 matrix_attribute
@@ -26,20 +26,21 @@ matrix_attribute
     ;
 
 vector_type::VectorType
-    = 'vector' {hspace} '(' {hspace} id1:dimension {hspace}')'
-    | type:('ℝ'|'ℤ') {hspace} '^' {hspace} '(' {hspace} id1:dimension {hspace}')'
-    | type:('ℝ'|'ℤ') {hspace} '^' {hspace} id1:dimension
+    = /vector/ {hspace} '(' {hspace} id1:dimension {hspace}')'
+    | type:/[ℝℤ]/ {hspace} '^' {hspace} '(' {hspace} id1:dimension {hspace}')'
+    | type:/[ℝℤ]/ {hspace} '^' {hspace} id1:dimension
+    | type:/[ℝℤ]/ id1:sup_integer
     ;
 
 scalar_type::ScalarType
-    = 'scalar'
-    | 'ℝ'
-    | z:'ℤ'
+    = /scalar/
+    | /ℝ/
+    | z:/ℤ/
     ;
 
 set_type::SetType
-    = '{' {hspace} type+:('ℝ'|'ℤ') {hspace} {'×' {hspace} type+:('ℝ'|'ℤ') {hspace} }'}'
-    | '{' {hspace} type1:('ℝ'|'ℤ') {hspace} '^' {hspace} cnt:(integer) {hspace} '}'
+    = '{' {hspace} type+:/[ℝℤ]/ {hspace} {'×' {hspace} type+:/[ℝℤ]/ {hspace} }'}'
+    | '{' {hspace} type1:/[ℝℤ]/ {hspace} '^' {hspace} cnt:(integer) {hspace} '}'
     | '{' {hspace} type2:(/\u211D/ | /\u2124/) cnt:{/[\u2070\u00B9\u00B2\u00B3\u2074-\u2079]/} {hspace} '}'     #  \u2124:ℤ  \u211D:ℝ
     ;
 
