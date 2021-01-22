@@ -208,7 +208,7 @@ def parse_ir_node(content, model):
         multi_list.append(multi_lhs)
     if len(multi_list) > 0:
         multi_list = sorted(multi_list, key=len, reverse=True)
-        keys_rule = "'" + "'|'".join(multi_list) + "'"
+        keys_rule = "/" + "/|/".join(multi_list) + "/"
         log_la("keys_rule:" + keys_rule)
         parse_key += "keys_rule:{};".format(keys_rule)
         current_content = current_content.replace("= !KEYWORDS(", "= const:({}) | (!(KEYWORDS | {} )".format(keys_rule, keys_rule))
@@ -219,7 +219,7 @@ def parse_ir_node(content, model):
             if '`' not in key:
                 extra_list.append('`{}`'.format(key))
         key_list += extra_list
-        func_rule = "'" + "'|'".join(key_list) + "'"
+        func_rule = "/" + "/|/".join(key_list) + "/"
         log_la("func_rule:" + func_rule)
         current_content = current_content.replace("func_id='!!!';", "func_id={};".format(func_rule))
         parse_key += "func symbol:{}, func sig:{}".format(','.join(func_dict.keys()), ";".join(func_dict.values()))
