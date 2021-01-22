@@ -27,9 +27,23 @@ class CodeGenLatex(CodeGen):
         self.pre_str += r'''
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
+\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}
+\begin{document}
+
+\begin{center}
+\resizebox{\textwidth}{!} 
+{
+\begin{minipage}[c]{\textwidth}
+\begin{align*}
 '''[1:]
-        self.pre_str += '''\\begin{document}\n\n'''
-        self.post_str = '''\n\\end{document}\n'''
+        self.post_str = r'''
+\end{align*}
+\end{minipage}
+}
+\end{center}
+
+\end{document}
+'''[1:]
 
     def convert_unicode(self, name):
         if '`' not in name:
@@ -116,37 +130,43 @@ class CodeGenLatex(CodeGen):
         return value
 
     def visit_import(self, node, **kwargs):
-        return "from {} import {}\n".format(node.package, ", ".join(node.names))
+        return "\\text{{from {} import {}}}\\\\\n".format(node.package, ", ".join(node.names))
 
     def visit_start(self, node, **kwargs):
         content = ""
         for directive in node.directives:
-            content += self.visit(directive, **kwargs) + '\n'
+            content += self.visit(directive, **kwargs)
         pre_param = False
         pre_exp = False
-        pre_align = "\\begin{center}\n\\resizebox{\\linewidth}{!}{\n\\begin{minipage}[c]{\\linewidth}\n"
-        post_align = "\\end{minipage}\n}\n\\end{center}\n"
+        # pre_align = "\\begin{center}\n\\resizebox{\\linewidth}{!}{\n\\begin{minipage}[c]{\\linewidth}\n"
+        # post_align = "\\end{minipage}\n}\n\\end{center}\n"
+        pre_align = ""
+        post_align = ""
         for vblock in node.vblock:
             if vblock.node_type != IRNodeType.ParamsBlock:
                 if pre_param or (not pre_param and not pre_exp):
                     content += pre_align
-                    content += "\\begin{align*}\n"
-                elif pre_exp:
-                    content += " \\\\\n"
+                    # content += "\\begin{align*}\n"
+                # elif pre_exp:
+                #     content += " \\\\\n"
                 block_content = self.visit(vblock, **kwargs)
                 if vblock.node_type != IRNodeType.Assignment:
                     # single expression
-                    block_content = " & " + block_content
-                content += block_content
+                    block_content = " \\omit \\span " + block_content
+                content += block_content + " \\\\\n"
             else:
+                # params
+                if not (not pre_param and not pre_exp) and not vblock.annotation:
+                    # params block without 'where'
+                    content += "\\\\\n"
                 if pre_exp:
-                    content += "\n\\end{align*}\n"
+                    # content += "\n\\end{align*}\n"
                     content += post_align
                 content += self.visit(vblock, **kwargs)
             pre_param = vblock.node_type == IRNodeType.ParamsBlock
             pre_exp = vblock.node_type != IRNodeType.ParamsBlock
         if pre_exp:
-            content += "\n\\end{align*}\n"
+            # content += "\n\\end{align*}\n"
             content += post_align
         # handle unicode special characters
         for key, value in self.uni_convert_dict.items():
@@ -161,9 +181,11 @@ class CodeGenLatex(CodeGen):
         return '\\\\'.join(ret)
 
     def visit_params_block(self, node, **kwargs):
-        content = "\\begin{itemize}\n" + self.visit(node.conds, **kwargs) + '\\end{itemize}\n\n'
+        content = self.visit(node.conds, **kwargs)
+        # content = "\\begin{itemize}\n" + self.visit(node.conds, **kwargs) + '\\end{itemize}\n\n'
         if node.annotation:
-            content = "\n" + node.annotation + "\n" + content
+            content = "\\intertext{{{}}} ".format(node.annotation) + "\n" + content
+        content += "\\\\\n"
         return content
 
     def visit_where_conditions(self, node, **kwargs):
@@ -175,11 +197,11 @@ class CodeGenLatex(CodeGen):
     def visit_where_condition(self, node, **kwargs):
         id0 = self.visit(node.id, **kwargs)
         type_content = self.visit(node.type, **kwargs)
-        content = "\\item ${} \\in {}".format(id0, type_content)
+        content = "{} & \\in {}".format(id0, type_content)
         if node.desc:
-            content += "$ {}\n".format(node.desc)
+            content += " \\text{{ {}}} \\\\\n".format(node.desc)
         else:
-            content += "$\n"
+            content += " \\\\\n"
         return content
 
     def visit_matrix_type(self, node, **kwargs):
@@ -190,9 +212,9 @@ class CodeGenLatex(CodeGen):
             type_str = '\\mathbb{Z}'
         content = "{}^{{ {} \\times {} }}".format(type_str, id1, id2)
         if node.la_type.sparse:
-            content += " \\textit{{ sparse}}"
+            content += " \\textit{ sparse}"
         if node.la_type.index_type:
-            content += " \\textit{{ index}}"
+            content += " \\textit{ index}"
         return content
 
     def visit_vector_type(self, node, **kwargs):
@@ -202,15 +224,15 @@ class CodeGenLatex(CodeGen):
             type_str = '\\mathbb{Z}'
         content = "{}^{{ {}}}".format(type_str, id1)
         if node.la_type.index_type:
-            content += " \\textit{{ index}}"
+            content += " \\textit{ index}"
         return content
 
     def visit_scalar_type(self, node, **kwargs):
-        content = "\\mathbb{{R}}"
+        content = "\\mathbb{R}"
         if node.is_int:
-            content = "\\mathbb{{Z}}"
+            content = "\\mathbb{Z}"
         if node.la_type.index_type:
-            content += " \\textit{{ index}}"
+            content += " \\textit{ index}"
         return content
 
     def visit_set_type(self, node, **kwargs):
@@ -260,7 +282,7 @@ class CodeGenLatex(CodeGen):
         if node.right.node_type == IRNodeType.Optimize:
             return self.visit(node.right, **kwargs)
         else:
-            return self.visit(node.left, **kwargs) + " = & " + self.visit(node.right, **kwargs)
+            return self.visit(node.left, **kwargs) + " & = " + self.visit(node.right, **kwargs)
 
     def visit_expression(self, node, **kwargs):
         value = self.visit(node.value, **kwargs)
