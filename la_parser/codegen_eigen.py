@@ -642,9 +642,6 @@ class CodeGenEigen(CodeGen):
                 col_index = 0
                 cur_row_size = 1
                 for j in range(len(ret[i])):
-                    if ret[i][j] == '0':
-                        # no need to handle zero
-                        continue
                     cur_scalar = False   # 1x1
                     # get size for current item
                     cur_col_size = 1
@@ -655,6 +652,10 @@ class CodeGenEigen(CodeGen):
                         if type_info.la_type.item_types[i][j].la_type.is_matrix() or type_info.la_type.item_types[i][j].la_type.is_vector():
                             cur_col_size = type_info.la_type.item_types[i][j].la_type.cols
                             cur_row_size = type_info.la_type.item_types[i][j].la_type.rows
+                    if 'Eigen::MatrixXd::Zero' in ret[i][j]:
+                        # no need to handle zero
+                        col_index += cur_col_size
+                        continue
                     # get content for current item
                     if type_info.la_type.item_types[i][j].la_type.is_matrix() and type_info.la_type.item_types[i][j].la_type.sparse:
                         item_content = ret[i][j]
@@ -679,11 +680,13 @@ class CodeGenEigen(CodeGen):
                         if cur_scalar:
                             content += '    {}.push_back(Eigen::Triplet<double>({}, {}, {}));\n'.format(
                                 sparse_triplet, row_index, col_index, item_content)
+                            col_index += cur_col_size
                             continue
                     else:
                         if cur_scalar:
                             content += '    {}.push_back(Eigen::Triplet<double>({}, {}, {}));\n'.format(
                                 sparse_triplet, row_index, col_index, item_content)
+                            col_index += cur_col_size
                             continue
                         content += '    {} = {};\n'.format(tmp_sparse_name, item_content)
                     content += '    for (int k=0; k < {}.outerSize(); ++k){{\n'.format(tmp_sparse_name)
