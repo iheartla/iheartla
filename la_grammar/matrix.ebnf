@@ -5,7 +5,7 @@ matrix::Matrix
     ;
 
 vector::Vector
-    = '(' {hspace} exp+:expression {{hspace} ',' {hspace} exp+:expression}+ ')'
+    = '(' {hspace} exp+:expression {{hspace} ',' {hspace} exp+:expression}+ {hspace} ')'
     ;
 
 sparse_matrix::SparseMatrix
