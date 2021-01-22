@@ -28,7 +28,7 @@ class CodeGenLatex(CodeGen):
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 '''[1:]
-        self.pre_str += '''\\begin{document}\n'''
+        self.pre_str += '''\\begin{document}\n\n'''
         self.post_str = '''\n\\end{document}\n'''
 
     def convert_unicode(self, name):
@@ -124,9 +124,12 @@ class CodeGenLatex(CodeGen):
             content += self.visit(directive, **kwargs) + '\n'
         pre_param = False
         pre_exp = False
+        pre_align = "\\begin{center}\n\\resizebox{\\linewidth}{!}{\n\\begin{minipage}[c]{\\linewidth}\n"
+        post_align = "\\end{minipage}\n}\n\\end{center}\n"
         for vblock in node.vblock:
             if vblock.node_type != IRNodeType.ParamsBlock:
                 if pre_param or (not pre_param and not pre_exp):
+                    content += pre_align
                     content += "\\begin{align*}\n"
                 elif pre_exp:
                     content += " \\\\\n"
@@ -138,11 +141,13 @@ class CodeGenLatex(CodeGen):
             else:
                 if pre_exp:
                     content += "\n\\end{align*}\n"
+                    content += post_align
                 content += self.visit(vblock, **kwargs)
             pre_param = vblock.node_type == IRNodeType.ParamsBlock
             pre_exp = vblock.node_type != IRNodeType.ParamsBlock
         if pre_exp:
             content += "\n\\end{align*}\n"
+            content += post_align
         # handle unicode special characters
         for key, value in self.uni_convert_dict.items():
             if key in content:
