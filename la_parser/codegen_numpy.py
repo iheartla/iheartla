@@ -104,10 +104,10 @@ class CodeGenNumpy(CodeGen):
                     test_content.append('    for i in range({}):'.format(self.symtable[parameter].size))
                     if isinstance(data_type, LaVarType) and data_type.is_scalar() and data_type.is_int:
                         test_content.append(
-                            '        {}.append(sparse.random({}, {}, dtype=np.integer))'.format(parameter, ele_type.rows, ele_type.cols))
+                            '        {}.append(sparse.random({}, {}, dtype=np.integer, density=0.25))'.format(parameter, ele_type.rows, ele_type.cols))
                     else:
                         test_content.append(
-                            '        {}.append(sparse.random({}, {}, dtype=np.float64))'.format(parameter, ele_type.rows,
+                            '        {}.append(sparse.random({}, {}, dtype=np.float64, density=0.25))'.format(parameter, ele_type.rows,
                                                                                             ele_type.cols))
                 else:
                     size_str = ""
@@ -138,11 +138,11 @@ class CodeGenNumpy(CodeGen):
                     if self.symtable[parameter].sparse:
                         if element_type.is_scalar() and element_type.is_int:
                             test_content.append(
-                                '    {} = sparse.random({}, {}, dtype=np.integer)'.format(parameter, self.symtable[parameter].rows,
+                                '    {} = sparse.random({}, {}, dtype=np.integer, density=0.25)'.format(parameter, self.symtable[parameter].rows,
                                                                           self.symtable[parameter].cols))
                         else:
                             test_content.append(
-                                '    {} = sparse.random({}, {}, dtype=np.float64)'.format(parameter, self.symtable[parameter].rows,
+                                '    {} = sparse.random({}, {}, dtype=np.float64, density=0.25)'.format(parameter, self.symtable[parameter].rows,
                                                                         self.symtable[parameter].cols))
                     else:
                         # dense
@@ -155,7 +155,7 @@ class CodeGenNumpy(CodeGen):
                 else:
                     if self.symtable[parameter].sparse:
                         test_content.append(
-                            '    {} = sparse.random({}, {}, dtype=np.float64)'.format(parameter, self.symtable[parameter].rows,
+                            '    {} = sparse.random({}, {}, dtype=np.float64, density=0.25)'.format(parameter, self.symtable[parameter].rows,
                                                                       self.symtable[parameter].cols))
                     else:
                         type_checks.append('    {} = np.asarray({})'.format(parameter, parameter))
@@ -508,17 +508,32 @@ class CodeGenNumpy(CodeGen):
                     if node.la_type.item_types and node.la_type.item_types[i][j].la_type.is_vector():
                         ret[i][j] = '({}).reshape({}, 1)'.format(ret[i][j], node.la_type.item_types[i][j].la_type.rows)
                 all_rows.append('[' + ', '.join(ret[i]) + ']')
-            m_content += 'np.block([{}])'.format(', '.join(all_rows))
-            if len(ret) > 1 and len(ret[0]) > 1:
-                content += '{} = {}\n'.format(cur_m_id, m_content)
-            elif len(ret) == 1 and len(ret[0]) != 1:  # one row one col -> vstack
-                # single row
-                content += '{} = np.hstack(({}))\n'.format(cur_m_id, ', '.join(ret[0]))
+            # matrix
+            if self.symtable[cur_m_id].sparse and self.symtable[cur_m_id].block:
+                m_content += 'sparse.bmat([{}])'.format(', '.join(all_rows))
+                if len(ret) > 1 and len(ret[0]) > 1:
+                    content += '{} = {}\n'.format(cur_m_id, m_content)
+                elif len(ret) == 1 and len(ret[0]) != 1:  # one row one col -> vstack
+                    # single row
+                    content += '{} = sparse.hstack(({}))\n'.format(cur_m_id, ', '.join(ret[0]))
+                else:
+                    # single col
+                    for i in range(len(ret)):
+                        ret[i] = ''.join(ret[i])
+                    content += '{} = sparse.vstack(({}))\n'.format(cur_m_id, ', '.join(ret))
             else:
-                # single col
-                for i in range(len(ret)):
-                    ret[i] = ''.join(ret[i])
-                content += '{} = np.vstack(({}))\n'.format(cur_m_id, ', '.join(ret))
+                # dense
+                m_content += 'np.block([{}])'.format(', '.join(all_rows))
+                if len(ret) > 1 and len(ret[0]) > 1:
+                    content += '{} = {}\n'.format(cur_m_id, m_content)
+                elif len(ret) == 1 and len(ret[0]) != 1:  # one row one col -> vstack
+                    # single row
+                    content += '{} = np.hstack(({}))\n'.format(cur_m_id, ', '.join(ret[0]))
+                else:
+                    # single col
+                    for i in range(len(ret)):
+                        ret[i] = ''.join(ret[i])
+                    content += '{} = np.vstack(({}))\n'.format(cur_m_id, ', '.join(ret))
         else:
             # dense
             content += '{} = np.zeros(({}, {}))\n'.format(cur_m_id, self.symtable[cur_m_id].rows,

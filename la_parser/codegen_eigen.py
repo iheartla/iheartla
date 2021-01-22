@@ -630,47 +630,78 @@ class CodeGenEigen(CodeGen):
                             ret[i][j] = '{}({}, {})'.format(func_name, dims[0], dims[1])
         # matrix
         if self.symtable[cur_m_id].sparse and self.symtable[cur_m_id].block:
-            all_rows = []
-            m_content = ""
-            sparse_index = []
-            sparse_exp = []
-            row_index = 0
-
+            row_index = 0       # start position for item
             # convert to sparse matrix
             sparse_id = "{}".format(cur_m_id)
             sparse_triplet = "tripletList{}".format(cur_m_id)
-            for i in range(len(ret)):
-                col_index = 0
-                for j in range(len(ret[i])):
-                    sparse_index.append((row_index, col_index))
-                    if type_info.la_type.item_types[i][j].is_matrix() and type_info.la_type.item_types[i][j].sparse:
-                        sparse_exp.append(ret[i][j])
-                    else:
-                        sparse_exp.append('{}.sparseView()'.format(ret[i][j]))
-                    col_index += type_info.la_type.item_types[i][j].cols
-                row_index += type_info.la_type.item_types[i][j].rows
-                all_rows.append(', '.join(ret[i]))
+            tmp_sparse_name = self.generate_var_name("tmp")
             content += 'Eigen::SparseMatrix<double> {}({}, {});\n'.format(cur_m_id, self.symtable[cur_m_id].rows, self.symtable[cur_m_id].cols)
             content += '    std::vector<Eigen::Triplet<double> > {};\n'.format(sparse_triplet)
-            # add all elements
-            for index in range(len(sparse_index)):
-                (i, j) = sparse_index[index]
-                if index == 0:
-                    content += '    Eigen::SparseMatrix<double> tmp = {};\n'.format(sparse_exp[index])
-                else:
-                    content += '    tmp = {};\n'.format(sparse_exp[index])
-                content += '    for (int k=0; k < tmp.outerSize(); ++k){\n'
-                content += '        for (Eigen::SparseMatrix<double>::InnerIterator it(tmp,k); it; ++it){\n'
-                row_str = ''
-                if i > 0:
-                    row_str = "+{}".format(i)
-                col_str = ''
-                if j > 0:
-                    col_str = "+{}".format(j)
-                content += '            {}.push_back(Eigen::Triplet<double>((int)it.row(){}, (int)it.col(){}, it.value()));\n'.format(
-                    sparse_triplet, row_str, col_str)
-                content += '        }\n'
-                content += '    }\n'
+            first_item = True
+            for i in range(len(ret)):
+                col_index = 0
+                cur_row_size = 1
+                for j in range(len(ret[i])):
+                    if ret[i][j] == '0':
+                        # no need to handle zero
+                        continue
+                    cur_scalar = False   # 1x1
+                    # get size for current item
+                    cur_col_size = 1
+                    if type_info.la_type.list_dim and (i, j) in type_info.la_type.list_dim:
+                        cur_col_size = type_info.la_type.list_dim[(i, j)][1]
+                        cur_row_size = type_info.la_type.list_dim[(i, j)][0]
+                    else:
+                        if type_info.la_type.item_types[i][j].la_type.is_matrix() or type_info.la_type.item_types[i][j].la_type.is_vector():
+                            cur_col_size = type_info.la_type.item_types[i][j].la_type.cols
+                            cur_row_size = type_info.la_type.item_types[i][j].la_type.rows
+                    # get content for current item
+                    if type_info.la_type.item_types[i][j].la_type.is_matrix() and type_info.la_type.item_types[i][j].la_type.sparse:
+                        item_content = ret[i][j]
+                    else:
+                        if type_info.la_type.item_types[i][j].la_type.is_matrix() or type_info.la_type.item_types[i][j].la_type.is_vector()\
+                                or (type_info.la_type.list_dim and (i, j) in type_info.la_type.list_dim):
+                            if type_info.la_type.list_dim[(i, j)][0] == 1 and type_info.la_type.list_dim[(i, j)][1] == 1:
+                                # scalar
+                                item_content = ret[i][j]
+                                cur_scalar = True
+                            else:
+                                item_content = '{}.sparseView()'.format(ret[i][j])
+                        else:
+                            # scalar
+                            item_content = ret[i][j]
+                            cur_scalar = True
+                    # set matrix value
+                    if first_item:
+                        first_item = False
+                        # declaration
+                        content += '    Eigen::SparseMatrix<double> {} = {};\n'.format(tmp_sparse_name, item_content)
+                        if cur_scalar:
+                            content += '    {}.push_back(Eigen::Triplet<double>({}, {}, {}));\n'.format(
+                                sparse_triplet, row_index, col_index, item_content)
+                            continue
+                    else:
+                        if cur_scalar:
+                            content += '    {}.push_back(Eigen::Triplet<double>({}, {}, {}));\n'.format(
+                                sparse_triplet, row_index, col_index, item_content)
+                            continue
+                        content += '    {} = {};\n'.format(tmp_sparse_name, item_content)
+                    content += '    for (int k=0; k < {}.outerSize(); ++k){{\n'.format(tmp_sparse_name)
+                    content += '        for (Eigen::SparseMatrix<double>::InnerIterator it({}, k); it; ++it){{\n'.format(
+                        tmp_sparse_name)
+                    row_str = ''
+                    col_str = ''
+                    if not first_item:
+                        row_str = "+{}".format(row_index)
+                        col_str = "+{}".format(col_index)
+                    content += '            {}.push_back(Eigen::Triplet<double>((int)it.row(){}, (int)it.col(){}, it.value()));\n'.format(
+                        sparse_triplet, row_str, col_str)
+                    content += '        }\n'
+                    content += '    }\n'
+                    # update col index
+                    col_index += cur_col_size
+                # update row index
+                row_index += cur_row_size
             # set triplets
             content += '    {}.setFromTriplets({}.begin(), {}.end());\n'.format(sparse_id, sparse_triplet,
                                                                                 sparse_triplet)
