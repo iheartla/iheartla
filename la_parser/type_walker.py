@@ -2213,10 +2213,14 @@ class TypeWalker(NodeWalker):
                 # sequence et al.
                 assert left_type.var_type == right_type.var_type, get_err_msg()
             # index type checking
-            assert not (left_type.index_type and right_type.index_type), get_err_msg()
             if left_type.index_type or right_type.index_type:
                 assert left_type.is_integer_element() and right_type.is_integer_element(), get_err_msg("Operand must be integer.")
                 ret_type.index_type = True
+                if op == TypeInferenceEnum.INF_ADD:
+                    assert not (left_type.index_type and right_type.index_type), get_err_msg("They are both index types.")
+                else:
+                    if left_type.index_type and right_type.index_type:
+                        ret_type.index_type = False
         elif op == TypeInferenceEnum.INF_MUL:
             assert left_type.var_type != VarTypeEnum.SEQUENCE and right_type.var_type != VarTypeEnum.SEQUENCE, 'error: sequence can not be operated'
             assert not left_type.index_type and not right_type.index_type, get_err_msg()
