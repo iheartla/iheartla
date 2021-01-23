@@ -86,11 +86,7 @@ class CodeGenNumpy(CodeGen):
                     continue
                 target = list(target_dict.keys())[0]
                 test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
-                if self.contain_subscript(target):
-                    main_id = self.get_main_id(target)
-                    dim_content += "    {} = {}.shape[{}]\n".format(key, main_id, target_dict[target]+1)
-                else:
-                    dim_content += "    {} = {}.shape[{}]\n".format(key, target, target_dict[target])
+                dim_content += "    {} = {}.shape[{}]\n".format(key, target, target_dict[target])
         for parameter in self.parameters:
             if self.symtable[parameter].desc:
                 show_doc = True

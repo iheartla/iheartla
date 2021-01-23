@@ -371,7 +371,7 @@ class TypeWalker(NodeWalker):
                 if self.contain_subscript(id0):
                     self.update_dim_dict(id1, self.get_main_id(id0), 1)
                 else:
-                    self.update_dim_dict(id1, self.get_main_id(id0), 1)
+                    self.update_dim_dict(id1, self.get_main_id(id0), 0)
         ir_node.type = type_node
         return ir_node
 
