@@ -131,7 +131,7 @@ frobenius_product_operator::FroProduct
     ;
 
 hadamard_product_operator::HadamardProduct
-    = left:factor {hspace} '○' {hspace}  right:factor
+    = left:factor {hspace} '∘' {hspace}  right:factor
     ;
 
 cross_product_operator::CrossProduct
@@ -139,7 +139,7 @@ cross_product_operator::CrossProduct
     ;
 
 kronecker_product_operator::KroneckerProduct
-    = left:factor {hspace} '⨂' {hspace}  right:factor
+    = left:factor {hspace} '⊗' {hspace}  right:factor
     ;
 
 dot_product_operator::DotProduct
