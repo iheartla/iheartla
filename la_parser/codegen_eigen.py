@@ -503,6 +503,7 @@ class CodeGenEigen(CodeGen):
         return f_info
 
     def visit_power(self, node, **kwargs):
+        pre_list = []
         base_info = self.visit(node.base, **kwargs)
         if node.t:
             base_info.content = "{}.transpose()".format(base_info.content)
@@ -510,7 +511,16 @@ class CodeGenEigen(CodeGen):
             if node.la_type.is_scalar():
                 base_info.content = "1 / ({})".format(base_info.content)
             else:
-                base_info.content = "{}.inverse()".format(base_info.content)
+                if node.base.la_type.is_matrix() and node.base.la_type.sparse:
+                    solver_name = self.generate_var_name("solver")
+                    identity_name = self.generate_var_name("I")
+                    pre_list.append("    Eigen::SparseQR <{}, Eigen::COLAMDOrdering<int> > {};\n".format(self.get_ctype(node.base.la_type), solver_name))
+                    pre_list.append("    {}.compute({});\n".format(solver_name, base_info.content))
+                    pre_list.append("    {} {}({}, {});\n".format(self.get_ctype(node.base.la_type), identity_name, node.base.la_type.rows, node.base.la_type.cols))
+                    pre_list.append("    {}.setIdentity();\n".format(identity_name))
+                    base_info.content = "{}.solve({})".format(solver_name, identity_name)
+                else:
+                    base_info.content = "{}.inverse()".format(base_info.content)
         else:
             power_info = self.visit(node.power, **kwargs)
             if node.base.la_type.is_scalar():
@@ -519,12 +529,23 @@ class CodeGenEigen(CodeGen):
                 name = self.generate_var_name('pow')
                 base_info.pre_list.append("    Eigen::MatrixPower<{}> {}({});\n".format(self.get_ctype(node.la_type), name, base_info.content))
                 base_info.content = "{}({})".format(name, power_info.content)
+        base_info.pre_list += pre_list
         return base_info
 
     def visit_solver(self, node, **kwargs):
+        pre_list = []
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        left_info.content = "{}.colPivHouseholderQr().solve({});".format(left_info.content, right_info.content)
+        if node.left.la_type.is_matrix() and node.left.la_type.sparse:
+            solver_name = self.generate_var_name("solver")
+            pre_list.append(
+                "    Eigen::SparseQR <{}, Eigen::COLAMDOrdering<int> > {};\n".format(self.get_ctype(node.left.la_type),
+                    solver_name))
+            pre_list.append("    {}.compute({});\n".format(solver_name, left_info.content))
+            left_info.content = "{}.solve({})".format(solver_name, right_info.content)
+        else:
+            left_info.content = "{}.colPivHouseholderQr().solve({})".format(left_info.content, right_info.content)
+        left_info.pre_list += pre_list
         return left_info
 
     def visit_sparse_matrix(self, node, **kwargs):
