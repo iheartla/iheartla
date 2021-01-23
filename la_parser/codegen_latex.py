@@ -384,7 +384,7 @@ class CodeGenLatex(CodeGen):
         ifs = self.visit(node.ifs, **kwargs)
         if node.other:
             other = self.visit(node.other, **kwargs)
-            content = '{} {} {} & otherwise {}'.format("\\begin{cases}", ifs, other, "\\end{cases}")
+            content = '{} {} {} & \\text{{otherwise}} {}'.format("\\begin{cases}", ifs, other, "\\end{cases}")
         else:
             content = '{} {} {} '.format("\\begin{cases}", ifs, "\\end{cases}")
         return content
@@ -398,7 +398,7 @@ class CodeGenLatex(CodeGen):
     def visit_sparse_if(self, node, **kwargs):
         stat_info = self.visit(node.stat, **kwargs)
         cond_info = self.visit(node.cond, **kwargs)
-        return '{} & \\text{{if}}  {}'.format(stat_info, cond_info)
+        return '{} & \\text{{if }}  {}'.format(stat_info, cond_info)
 
     def visit_sparse_other(self, node, **kwargs):
         content = ''
