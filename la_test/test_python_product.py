@@ -79,7 +79,7 @@ class TestProduct(BasePythonTest):
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
     def test_hadamard_product(self):
-        la_str = """A = T ○ P
+        la_str = """A = T ∘ P
                     where 
                     T: ℝ ^ (2×2): a sequence
                     P: ℝ ^ (2×2): a sequence"""
@@ -129,7 +129,7 @@ class TestProduct(BasePythonTest):
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
     def test_kronecker_product(self):
-        la_str = """A = T ⨂ P
+        la_str = """A = T ⊗ P
                     where 
                     T: ℝ ^ (2×3): a sequence
                     P: ℝ ^ (2×3): a sequence"""

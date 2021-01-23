@@ -1036,13 +1036,13 @@ class TypeWalker(NodeWalker):
                 # transpose
                 ir_node.t = node.t
                 assert base_info.la_type.is_matrix() or base_info.la_type.is_vector(), self.get_err_msg_info(base_info.ir.parse_info,"Transpose error. The base must be a matrix or vecotr")
-                ir_node.la_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows)
+                ir_node.la_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows, sparse=base_info.la_type.sparse)
         elif node.r:
             ir_node.r = node.r
             if base_info.la_type.is_matrix():
                 assert base_info.la_type.is_matrix(), self.get_err_msg_info(base_info.ir.parse_info,"Inverse matrix error. The base must be a matrix")
                 assert base_info.la_type.rows == base_info.la_type.cols, self.get_err_msg_info(base_info.ir.parse_info,"Inverse matrix error. The rows should be the same as the columns")
-                ir_node.la_type = MatrixType(rows=base_info.la_type.rows, cols=base_info.la_type.rows)
+                ir_node.la_type = MatrixType(rows=base_info.la_type.rows, cols=base_info.la_type.rows, sparse=base_info.la_type.sparse)
             else:
                 assert base_info.la_type.is_scalar(), self.get_err_msg_info(base_info.ir.parse_info,
                                                                             "Inverse error. The base must be a matrix or scalar")
@@ -1067,7 +1067,7 @@ class TypeWalker(NodeWalker):
         if left_info.la_type.is_matrix():
             assert left_info.la_type.rows == right_info.la_type.rows, self.get_err_msg_info(left_info.ir.parse_info, "Parameters {} and {} should have the same rows".format(node.left.text, node.right.text))
             if right_info.la_type.is_matrix():
-                node_type = MatrixType(rows=left_info.la_type.cols, cols=left_info.la_type.cols)
+                node_type = MatrixType(rows=left_info.la_type.cols, cols=left_info.la_type.cols, sparse=left_info.la_type.sparse and right_info.la_type.sparse)
             elif right_info.la_type.is_vector():
                 node_type = VectorType(rows=left_info.la_type.cols)
         ir_node.la_type = node_type
@@ -1081,7 +1081,7 @@ class TypeWalker(NodeWalker):
         ir_node.f = f_info.ir
         assert f_info.la_type.is_matrix() or f_info.la_type.is_vector(), self.get_err_msg_info(f_info.ir.parse_info,"Transpose error. The base must be a matrix or vecotr")
         if f_info.la_type.is_matrix():
-            node_type = MatrixType(rows=f_info.la_type.cols, cols=f_info.la_type.rows)
+            node_type = MatrixType(rows=f_info.la_type.cols, cols=f_info.la_type.rows, sparse=f_info.la_type.sparse)
             if f_info.la_type.is_dynamic_row():
                 node_type.set_dynamic_type(DynamicTypeEnum.DYN_COL)
             if f_info.la_type.is_dynamic_col():
