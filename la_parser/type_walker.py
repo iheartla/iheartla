@@ -151,6 +151,25 @@ class TypeWalker(NodeWalker):
         self.name_cnt_dict[base] = index - 1
         return ret
 
+    def update_dim_dict(self, dim, target, pos):
+        if dim not in self.dim_dict:
+            self.dim_dict[dim] = {}
+        self.dim_dict[dim][target] = pos
+
+    def remove_dim(self, dim, target):
+        if dim in self.dim_dict:
+            self.dim_dict[dim].pop(target, None)
+            if len(self.dim_dict[dim]) == 0:
+                del self.dim_dict[dim]
+
+    def remove_target_from_dim_dict(self, target):
+        for key in self.dim_dict.keys():
+            if target in self.dim_dict[key]:
+                del self.dim_dict[key][target]
+                if len(self.dim_dict[key]) == 0:
+                    del self.dim_dict[key]
+                break
+
     def get_op_desc(self, op):
         desc = ""
         if op == TypeInferenceEnum.INF_ADD:
@@ -334,25 +353,25 @@ class TypeWalker(NodeWalker):
                 if id1 not in self.symtable:
                     self.symtable[id1] = ScalarType(is_int=True)
                 if self.contain_subscript(id0):
-                    self.dim_dict[id1] = [self.get_main_id(id0), 1]
+                    self.update_dim_dict(id1, self.get_main_id(id0), 1)
                 else:
-                    self.dim_dict[id1] = [self.get_main_id(id0), 0]
+                    self.update_dim_dict(id1, self.get_main_id(id0), 0)
             if isinstance(id2, str):
                 if id2 not in self.symtable:
                     self.symtable[id2] = ScalarType(is_int=True)
                 if self.contain_subscript(id0):
-                    self.dim_dict[id2] = [self.get_main_id(id0), 2]
+                    self.update_dim_dict(id2, self.get_main_id(id0), 2)
                 else:
-                    self.dim_dict[id2] = [self.get_main_id(id0), 1]
+                    self.update_dim_dict(id2, self.get_main_id(id0), 1)
         elif type_node.la_type.is_vector():
             id1 = type_node.la_type.rows
             if isinstance(id1, str):
                 if id1 not in self.symtable:
                     self.symtable[id1] = ScalarType(is_int=True)
                 if self.contain_subscript(id0):
-                    self.dim_dict[id1] = [self.get_main_id(id0), 1]
+                    self.update_dim_dict(id1, self.get_main_id(id0), 1)
                 else:
-                    self.dim_dict[id1] = [self.get_main_id(id0), 0]
+                    self.update_dim_dict(id1, self.get_main_id(id0), 1)
         ir_node.type = type_node
         return ir_node
 
@@ -1536,6 +1555,7 @@ class TypeWalker(NodeWalker):
             assert all_ids[0] in self.symtable, self.get_err_msg_info(node.parseinfo, "Sparse matrix: need dim")
             if all_ids[0] in self.parameters:
                 self.parameters.remove(all_ids[0])  # not a parameter
+                self.remove_target_from_dim_dict(all_ids[0])
             # assert node.id1 and node.id2, self.get_err_msg_info(node.parseinfo, "Sparse matrix: need dim")
             # id1_info = self.walk(node.id1, **kwargs)
             # id1 = id1_info.content
@@ -2275,7 +2295,7 @@ class TypeWalker(NodeWalker):
                 else:
                     new_var_name = self.generate_var_name("dim")
                     self.sub_name_dict[val] = new_var_name
-                    self.dim_dict[new_var_name] = [arr[0], 0]
+                    self.update_dim_dict(new_var_name, arr[0], 0)
                 if val in self.subscripts:
                     var_list = self.subscripts[val]
                     var_list.append(arr[0])

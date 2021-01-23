@@ -161,24 +161,25 @@ class CodeGenEigen(CodeGen):
                         "    srand((int)time(NULL));"]
         dim_content = ""
         if self.dim_dict:
-            for key, value in self.dim_dict.items():
+            for key, target_dict in self.dim_dict.items():
                 if key in self.parameters:
                     continue
+                target = list(target_dict.keys())[0]
                 test_content.append("    const int {} = rand()%{};".format(key, rand_int_max))
-                if self.symtable[value[0]].is_sequence():
-                    if value[1] == 0:
-                        dim_content += "    const long {} = {}.size();\n".format(key, value[0])
-                    elif value[1] == 1:
-                        dim_content += "    const long {} = {}[0].rows();\n".format(key, value[0])
-                    elif value[1] == 2:
-                        dim_content += "    const long {} = {}[0].cols();\n".format(key, value[0])
-                elif self.symtable[value[0]].is_matrix():
-                    if value[1] == 0:
-                        dim_content += "    const long {} = {}.rows();\n".format(key, value[0])
+                if self.symtable[target].is_sequence():
+                    if target_dict[target] == 0:
+                        dim_content += "    const long {} = {}.size();\n".format(key, target)
+                    elif target_dict[target] == 1:
+                        dim_content += "    const long {} = {}[0].rows();\n".format(key, target)
+                    elif target_dict[target] == 2:
+                        dim_content += "    const long {} = {}[0].cols();\n".format(key, target)
+                elif self.symtable[target].is_matrix():
+                    if target_dict[target] == 0:
+                        dim_content += "    const long {} = {}.rows();\n".format(key, target)
                     else:
-                        dim_content += "    const long {} = {}.cols();\n".format(key, value[0])
-                elif self.symtable[value[0]].is_vector():
-                    dim_content += "    const long {} = {}.size();\n".format(key, value[0])
+                        dim_content += "    const long {} = {}.cols();\n".format(key, target)
+                elif self.symtable[target].is_vector():
+                    dim_content += "    const long {} = {}.size();\n".format(key, target)
         par_des_list = []
         test_par_list = []
         for parameter in self.parameters:

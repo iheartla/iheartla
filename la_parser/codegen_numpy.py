@@ -81,15 +81,16 @@ class CodeGenNumpy(CodeGen):
             main_content.append("    {}()".format(rand_func_name))
         dim_content = ""
         if self.dim_dict:
-            for key, value in self.dim_dict.items():
+            for key, target_dict in self.dim_dict.items():
                 if key in self.parameters:
                     continue
+                target = list(target_dict.keys())[0]
                 test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
-                if self.contain_subscript(value[0]):
-                    main_id = self.get_main_id(value[0])
-                    dim_content += "    {} = {}.shape[{}]\n".format(key, main_id, value[1]+1)
+                if self.contain_subscript(target):
+                    main_id = self.get_main_id(target)
+                    dim_content += "    {} = {}.shape[{}]\n".format(key, main_id, target_dict[target]+1)
                 else:
-                    dim_content += "    {} = {}.shape[{}]\n".format(key, value[0], value[1])
+                    dim_content += "    {} = {}.shape[{}]\n".format(key, target, target_dict[target])
         for parameter in self.parameters:
             if self.symtable[parameter].desc:
                 show_doc = True
