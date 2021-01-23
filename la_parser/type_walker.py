@@ -1524,6 +1524,9 @@ class TypeWalker(NodeWalker):
             ir.set_parent(ifs_node)
         ifs_node.set_parent(ir_node)
         ir_node.ifs = ifs_node
+        # otherwise
+        if node.other:
+            ir_node.other = self.walk(node.other, **kwargs).ir
         # definition
         index_var = self.generate_var_name("{}{}{}".format(all_ids[0], all_ids[1][0], all_ids[1][1]))
         value_var = self.generate_var_name("{}vals".format(all_ids[0]))
