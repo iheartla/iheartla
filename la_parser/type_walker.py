@@ -1,6 +1,6 @@
 import copy
 from tatsu.model import NodeWalker
-import re
+import regex as re
 from tatsu.objectmodel import Node
 from la_parser.la_types import *
 from la_tools.la_logger import *
@@ -90,7 +90,7 @@ class TypeWalker(NodeWalker):
                                           'sec', 'csc', 'e'],
                          'linearalgebra': ['trace', 'tr', 'diag', 'vec', 'det', 'rank', 'null', 'orth', 'inv']}
         self.constants = ['π']
-        self.pattern = re.compile("[A-Za-z]+")
+        self.pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*")
         self.multi_lhs_list = []
         # self.directive_parsing = True   # directives grammar
         self.sum_subs = []
