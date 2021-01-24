@@ -207,6 +207,12 @@ def parse_ir_node(content, model):
         if _id_pattern.fullmatch(multi_lhs):
             continue  # valid single identifier
         multi_list.append(multi_lhs)
+    # not add backticks
+    new_list = []
+    for key in multi_list:
+        if '`' not in key:
+            new_list.append(key)
+    multi_list = new_list
     if len(multi_list) > 0:
         multi_list = [re.escape(item).replace('/', '\\/') for item in multi_list]
         multi_list = sorted(multi_list, key=len, reverse=True)

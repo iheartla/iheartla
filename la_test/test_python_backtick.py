@@ -96,3 +96,40 @@ class TestBacktick(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_backtick_multiletter(self):
+        la_str = """cc = 2 
+        `dd` = 3
+        ee = aa bb cc dd 
+        ff = `aa` `bb` `cc` `dd` 
+        where
+        `aa`: ℝ 
+        bb: ℝ """
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(1, 2), 12)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    double B = {}(1, 2);".format(func_info.eig_func_name),
+                     "    return (B == 12);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_backtick_mixed_symbols(self):
+        la_str = """f = abcabbcd
+        where
+        `abc`: ℝ 
+        ab: ℝ 
+        bc: ℝ 
+        d: ℝ """
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(1, 2, 3, 4), 24)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    double B = {}(1, 2, 3, 4);".format(func_info.eig_func_name),
+                     "    return (B == 24);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
