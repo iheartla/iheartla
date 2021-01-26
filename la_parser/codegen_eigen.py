@@ -536,6 +536,7 @@ class CodeGenEigen(CodeGen):
         pre_list = []
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
+        left_info.pre_list += right_info.pre_list
         if node.left.la_type.is_matrix() and node.left.la_type.sparse:
             solver_name = self.generate_var_name("solver")
             pre_list.append(
