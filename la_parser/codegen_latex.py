@@ -519,6 +519,8 @@ class CodeGenLatex(CodeGen):
     def visit_solver(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
+        if node.pow:
+            return left_info + '^{-1}' + right_info
         return left_info + ' \setminus ' + right_info
 
     def visit_norm(self, node, **kwargs):

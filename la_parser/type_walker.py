@@ -1058,7 +1058,25 @@ class TypeWalker(NodeWalker):
     def walk_Solver(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
+        if node.p:
+            if not left_info.la_type.is_matrix() or not left_info.la_type.sparse:
+                pow_node = PowerNode(parse_info=node.left.parseinfo)
+                pow_node.base = left_info.ir
+                pow_node.r = node.p
+                if left_info.la_type.is_matrix():
+                    assert left_info.la_type.rows == left_info.la_type.cols, self.get_err_msg_info(
+                        left_info.ir.parse_info, "Inverse matrix error. The rows should be the same as the columns")
+                    pow_node.la_type = MatrixType(rows=left_info.la_type.rows, cols=left_info.la_type.rows,
+                                                 sparse=left_info.la_type.sparse)
+                else:
+                    assert left_info.la_type.is_scalar(), self.get_err_msg_info(left_info.ir.parse_info,
+                                                                                "Inverse error. The base must be a matrix or scalar")
+                    pow_node.la_type = ScalarType()
+                pow_info = NodeInfo(pow_node.la_type)
+                pow_info.ir = pow_node
+                return self.make_mul_info(pow_info, right_info)
         ir_node = SolverNode(parse_info=node.parseinfo)
+        ir_node.pow = node.p
         ir_node.left = left_info.ir
         ir_node.right = right_info.ir
         assert left_info.la_type.is_matrix(), self.get_err_msg_info(left_info.ir.parse_info, "Parameter {} must be a matrix".format(node.left.text))

@@ -544,6 +544,7 @@ class SolverNode(ExprNode):
         super().__init__(IRNodeType.Solver, parse_info=parse_info, raw_text=raw_text)
         self.left = None
         self.right = None
+        self.pow = None   # -> pow node
 
 
 class SparseMatrixNode(ExprNode):
