@@ -25,7 +25,7 @@ from tatsu.util import re, generic_main  # noqa
 KEYWORDS = {}  # type: ignore
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
+class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
     def __init__(
         self,
         text,
@@ -37,7 +37,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
         namechars='',
         **kwargs
     ):
-        super(grammare37f0136aa3ffaf149b351f6a4c948e9Buffer, self).__init__(
+        super(grammarc21f969b5f03d33d43e04f8f136e7682Buffer, self).__init__(
             text,
             whitespace=whitespace,
             nameguard=nameguard,
@@ -49,7 +49,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
         )
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
+class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
     def __init__(
         self,
         whitespace=re.compile('(?!.*)'),
@@ -61,12 +61,12 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         parseinfo=True,
         keywords=None,
         namechars='',
-        buffer_class=grammare37f0136aa3ffaf149b351f6a4c948e9Buffer,
+        buffer_class=grammarc21f969b5f03d33d43e04f8f136e7682Buffer,
         **kwargs
     ):
         if keywords is None:
             keywords = KEYWORDS
-        super(grammare37f0136aa3ffaf149b351f6a4c948e9Parser, self).__init__(
+        super(grammarc21f969b5f03d33d43e04f8f136e7682Parser, self).__init__(
             whitespace=whitespace,
             nameguard=nameguard,
             comments_re=comments_re,
@@ -132,45 +132,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def _BUILTIN_KEYWORDS_(self):  # noqa
         with self._choice():
             with self._option():
-                self._TRACE_()
-            with self._option():
-                self._VEC_()
-            with self._option():
-                self._DIAG_()
-            with self._option():
-                self._ID_()
-            with self._option():
-                self._EIG_()
-            with self._option():
-                self._CONJ_()
-            with self._option():
-                self._RE_()
-            with self._option():
-                self._IM_()
-            with self._option():
-                self._INV_()
-            with self._option():
-                self._DET_()
-            with self._option():
-                self._SVD_()
-            with self._option():
-                self._RANK_()
-            with self._option():
-                self._NULL_()
-            with self._option():
-                self._ORTH_()
-            with self._option():
-                self._QR_()
-            with self._option():
                 self._DERIVATIVE_()
-            with self._option():
-                self._VDOTS_()
-            with self._option():
-                self._CDOTS_()
-            with self._option():
-                self._IDDOTS_()
-            with self._option():
-                self._DDOTS_()
             with self._option():
                 self._WHERE_()
             with self._option():
@@ -215,67 +177,73 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 self._token('ℝ')
             with self._option():
                 self._token('ℤ')
+            with self._option():
+                self._pattern('[\\u1d40]')
+            with self._option():
+                self._token('ᵀ')
+            with self._option():
+                self._token('∂')
             self._error('no available options')
 
     @tatsumasu()
     def _TRACE_(self):  # noqa
-        self._token('trace')
+        self._pattern('trace')
 
     @tatsumasu()
     def _VEC_(self):  # noqa
-        self._token('vec')
+        self._pattern('vec')
 
     @tatsumasu()
     def _DIAG_(self):  # noqa
-        self._token('diag')
+        self._pattern('diag')
 
     @tatsumasu()
     def _ID_(self):  # noqa
-        self._token('Id')
+        self._pattern('Id')
 
     @tatsumasu()
     def _EIG_(self):  # noqa
-        self._token('eig')
+        self._pattern('eig')
 
     @tatsumasu()
     def _CONJ_(self):  # noqa
-        self._token('conj')
+        self._pattern('conj')
 
     @tatsumasu()
     def _RE_(self):  # noqa
-        self._token('Re')
+        self._pattern('Re')
 
     @tatsumasu()
     def _IM_(self):  # noqa
-        self._token('Im')
+        self._pattern('Im')
 
     @tatsumasu()
     def _INV_(self):  # noqa
-        self._token('inv')
+        self._pattern('inv')
 
     @tatsumasu()
     def _DET_(self):  # noqa
-        self._token('det')
+        self._pattern('det')
 
     @tatsumasu()
     def _SVD_(self):  # noqa
-        self._token('svd')
+        self._pattern('svd')
 
     @tatsumasu()
     def _RANK_(self):  # noqa
-        self._token('rank')
+        self._pattern('rank')
 
     @tatsumasu()
     def _NULL_(self):  # noqa
-        self._token('null')
+        self._pattern('null')
 
     @tatsumasu()
     def _ORTH_(self):  # noqa
-        self._token('orth')
+        self._pattern('orth')
 
     @tatsumasu()
     def _QR_(self):  # noqa
-        self._token('qr')
+        self._pattern('qr')
 
     @tatsumasu()
     def _DERIVATIVE_(self):  # noqa
@@ -299,189 +267,189 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
 
     @tatsumasu()
     def _WHERE_(self):  # noqa
-        self._token('where')
+        self._pattern('where')
 
     @tatsumasu()
     def _GIVEN_(self):  # noqa
-        self._token('given')
+        self._pattern('given')
 
     @tatsumasu()
     def _SUM_(self):  # noqa
         with self._choice():
             with self._option():
-                self._token('sum')
+                self._pattern('sum')
             with self._option():
-                self._token('∑')
+                self._pattern('∑')
             self._error('no available options')
 
     @tatsumasu()
     def _MIN_(self):  # noqa
-        self._token('min')
+        self._pattern('min')
 
     @tatsumasu()
     def _MAX_(self):  # noqa
-        self._token('max')
+        self._pattern('max')
 
     @tatsumasu()
     def _ARGMIN_(self):  # noqa
-        self._token('argmin')
+        self._pattern('argmin')
 
     @tatsumasu()
     def _ARGMAX_(self):  # noqa
-        self._token('argmax')
+        self._pattern('argmax')
 
     @tatsumasu()
     def _INT_(self):  # noqa
-        self._token('int')
+        self._pattern('int')
 
     @tatsumasu()
     def _SYMMETRIC_(self):  # noqa
-        self._token('symmetric')
+        self._pattern('symmetric')
 
     @tatsumasu()
     def _DIAGONAL_(self):  # noqa
-        self._token('diagonal')
+        self._pattern('diagonal')
 
     @tatsumasu()
     def _SPARSE_(self):  # noqa
-        self._token('sparse')
+        self._pattern('sparse')
 
     @tatsumasu()
     def _IF_(self):  # noqa
-        self._token('if')
+        self._pattern('if')
 
     @tatsumasu()
     def _OTHERWISE_(self):  # noqa
-        self._token('otherwise')
+        self._pattern('otherwise')
 
     @tatsumasu()
     def _IS_(self):  # noqa
-        self._token('is')
+        self._pattern('is')
 
     @tatsumasu()
     def _IN_(self):  # noqa
-        self._token('∈')
+        self._pattern('∈')
 
     @tatsumasu()
     def _SIN_(self):  # noqa
-        self._token('sin')
+        self._pattern('sin')
 
     @tatsumasu()
     def _ASIN_(self):  # noqa
-        self._token('asin')
+        self._pattern('asin')
 
     @tatsumasu()
     def _ARCSIN_(self):  # noqa
-        self._token('arcsin')
+        self._pattern('arcsin')
 
     @tatsumasu()
     def _COS_(self):  # noqa
-        self._token('cos')
+        self._pattern('cos')
 
     @tatsumasu()
     def _ACOS_(self):  # noqa
-        self._token('acos')
+        self._pattern('acos')
 
     @tatsumasu()
     def _ARCCOS_(self):  # noqa
-        self._token('arccos')
+        self._pattern('arccos')
 
     @tatsumasu()
     def _TAN_(self):  # noqa
-        self._token('tan')
+        self._pattern('tan')
 
     @tatsumasu()
     def _ATAN_(self):  # noqa
-        self._token('atan')
+        self._pattern('atan')
 
     @tatsumasu()
     def _ARCTAN_(self):  # noqa
-        self._token('arctan')
+        self._pattern('arctan')
 
     @tatsumasu()
     def _SINH_(self):  # noqa
-        self._token('sinh')
+        self._pattern('sinh')
 
     @tatsumasu()
     def _ASINH_(self):  # noqa
-        self._token('asinh')
+        self._pattern('asinh')
 
     @tatsumasu()
     def _ARSINH_(self):  # noqa
-        self._token('arsinh')
+        self._pattern('arsinh')
 
     @tatsumasu()
     def _COSH_(self):  # noqa
-        self._token('cosh')
+        self._pattern('cosh')
 
     @tatsumasu()
     def _ACOSH_(self):  # noqa
-        self._token('acosh')
+        self._pattern('acosh')
 
     @tatsumasu()
     def _ARCOSH_(self):  # noqa
-        self._token('arcosh')
+        self._pattern('arcosh')
 
     @tatsumasu()
     def _TANH_(self):  # noqa
-        self._token('tanh')
+        self._pattern('tanh')
 
     @tatsumasu()
     def _ATANH_(self):  # noqa
-        self._token('atanh')
+        self._pattern('atanh')
 
     @tatsumasu()
     def _ARTANH_(self):  # noqa
-        self._token('artanh')
+        self._pattern('artanh')
 
     @tatsumasu()
     def _COT_(self):  # noqa
-        self._token('cot')
+        self._pattern('cot')
 
     @tatsumasu()
     def _SEC_(self):  # noqa
-        self._token('sec')
+        self._pattern('sec')
 
     @tatsumasu()
     def _CSC_(self):  # noqa
-        self._token('csc')
+        self._pattern('csc')
 
     @tatsumasu()
     def _ATAN2_(self):  # noqa
-        self._token('atan2')
+        self._pattern('atan2')
 
     @tatsumasu()
     def _EXP_(self):  # noqa
-        self._token('exp')
+        self._pattern('exp')
 
     @tatsumasu()
     def _LOG_(self):  # noqa
-        self._token('log')
+        self._pattern('log')
 
     @tatsumasu()
     def _LN_(self):  # noqa
-        self._token('ln')
+        self._pattern('ln')
 
     @tatsumasu()
     def _SQRT_(self):  # noqa
-        self._token('sqrt')
+        self._pattern('sqrt')
 
     @tatsumasu()
     def _SUBJECT_TO_(self):  # noqa
         with self._choice():
             with self._option():
-                self._token('s.t.')
+                self._pattern('s.t.')
             with self._option():
-                self._token('subject to')
+                self._pattern('subject to')
             self._error('no available options')
 
     @tatsumasu()
     def _FROM_(self):  # noqa
-        self._token('from')
+        self._pattern('from')
 
     @tatsumasu()
     def _PI_(self):  # noqa
-        self._token('π')
+        self._pattern('π')
 
     @tatsumasu('Exponent')
     def _exponent_(self):  # noqa
@@ -570,6 +538,8 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def _operations_(self):  # noqa
         with self._choice():
             with self._option():
+                self._solver_operator_()
+            with self._option():
                 self._power_operator_()
             with self._option():
                 self._function_operator_()
@@ -591,8 +561,6 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 self._integral_operator_()
             with self._option():
                 self._trans_operator_()
-            with self._option():
-                self._solver_operator_()
             with self._option():
                 self._builtin_operators_()
             self._error('no available options')
@@ -712,12 +680,18 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         def block1():
             self._hspace_()
         self._closure(block1)
-        self._token('/')
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._token('/')
+                with self._option():
+                    self._token('÷')
+                self._error('no available options')
         self.name_last_node('op')
 
-        def block3():
+        def block4():
             self._hspace_()
-        self._closure(block3)
+        self._closure(block4)
         self._factor_()
         self.name_last_node('right')
         self.ast._define(
@@ -778,34 +752,29 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             with self._option():
                 self._factor_()
                 self.name_last_node('base')
-
-                def block1():
-                    self._hspace_()
-                self._closure(block1)
                 self._token('^T')
                 self.name_last_node('t')
             with self._option():
                 self._factor_()
                 self.name_last_node('base')
-
-                def block4():
-                    self._hspace_()
-                self._closure(block4)
-                self._token('^(-1)')
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._token('^(-1)')
+                        with self._option():
+                            self._token('⁻¹')
+                        self._error('no available options')
                 self.name_last_node('r')
             with self._option():
                 self._factor_()
                 self.name_last_node('base')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
                 self._token('^')
-
-                def block8():
-                    self._hspace_()
-                self._closure(block8)
                 self._factor_()
+                self.name_last_node('power')
+            with self._option():
+                self._factor_()
+                self.name_last_node('base')
+                self._sup_integer_()
                 self.name_last_node('power')
             self._error('no available options')
         self.ast._define(
@@ -814,22 +783,47 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         )
 
     @tatsumasu('Solver')
+    @nomemo
     def _solver_operator_(self):  # noqa
-        self._identifier_()
-        self.name_last_node('left')
+        with self._choice():
+            with self._option():
+                self._factor_()
+                self.name_last_node('left')
 
-        def block1():
-            self._hspace_()
-        self._closure(block1)
-        self._token('\\')
+                def block1():
+                    self._hspace_()
+                self._closure(block1)
+                self._token('\\')
 
-        def block2():
-            self._hspace_()
-        self._closure(block2)
-        self._identifier_()
-        self.name_last_node('right')
+                def block2():
+                    self._hspace_()
+                self._closure(block2)
+                self._factor_()
+                self.name_last_node('right')
+            with self._option():
+                self._factor_()
+                self.name_last_node('left')
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._token('^(-1)')
+                        with self._option():
+                            self._token('⁻¹')
+                        self._error('no available options')
+                self.name_last_node('p')
+
+                def block8():
+                    self._hspace_()
+                self._closure(block8)
+                self._factor_()
+                self.name_last_node('right')
+            self._error('no available options')
         self.ast._define(
-            ['left', 'right'],
+            ['left', 'p', 'right'],
             []
         )
 
@@ -1093,30 +1087,18 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         def block0():
             self._hspace_()
         self._closure(block0)
-        with self._group():
-            with self._choice():
-                with self._option():
-                    self._integer_()
-                with self._option():
-                    self._identifier_alone_()
-                self._error('no available options')
+        self._expression_()
         self.name_last_node('lower')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._token(',')
 
         def block3():
             self._hspace_()
         self._closure(block3)
-        self._token(',')
-
-        def block4():
-            self._hspace_()
-        self._closure(block4)
-        with self._group():
-            with self._choice():
-                with self._option():
-                    self._integer_()
-                with self._option():
-                    self._identifier_alone_()
-                self._error('no available options')
+        self._expression_()
         self.name_last_node('upper')
         self._token(']')
         self.ast._define(
@@ -1212,6 +1194,14 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                         self.name_last_node('sub')
                 with self._option():
                     with self._group():
+                        self._sub_integer_()
+                        self.name_last_node('sub')
+                        with self._optional():
+                            self._token('^')
+                            self._factor_()
+                            self.name_last_node('power')
+                with self._option():
+                    with self._group():
                         self._token('_(')
                         with self._group():
                             with self._choice():
@@ -1250,6 +1240,13 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                                     with self._option():
                                         self._token('∞')
                                     self._error('no available options')
+                            self.name_last_node('sub')
+                with self._option():
+                    with self._group():
+                        self._sup_integer_()
+                        self.name_last_node('power')
+                        with self._optional():
+                            self._sub_integer_()
                             self.name_last_node('sub')
                 self._error('no available options')
         self.ast._define(
@@ -1353,7 +1350,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         def block1():
             self._hspace_()
         self._closure(block1)
-        self._token('○')
+        self._token('∘')
 
         def block2():
             self._hspace_()
@@ -1395,7 +1392,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         def block1():
             self._hspace_()
         self._closure(block1)
-        self._token('⨂')
+        self._token('⊗')
 
         def block2():
             self._hspace_()
@@ -1432,7 +1429,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def _trans_operator_(self):  # noqa
         self._factor_()
         self.name_last_node('f')
-        self._token('ᵀ')
+
+        def block1():
+            self._hspace_()
+        self._closure(block1)
+        self._pattern('[\\u1d40]')
         self.ast._define(
             ['f'],
             []
@@ -1512,21 +1513,57 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
 
     @tatsumasu('LogFunc')
     def _log_func_(self):  # noqa
-        self._LOG_()
-        self._token('(')
+        with self._choice():
+            with self._option():
+                with self._group():
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._pattern('log[\\u2082]')
+                                self.name_last_node('f')
+                            with self._option():
+                                self._pattern('log[\\u2081][\\u2080]')
+                                self.name_last_node('s')
+                            self._error('no available options')
+                    self._token('(')
 
-        def block0():
-            self._hspace_()
-        self._closure(block0)
-        self._expression_()
-        self.name_last_node('param')
+                    def block3():
+                        self._hspace_()
+                    self._closure(block3)
+                    self._expression_()
+                    self.name_last_node('param')
 
-        def block2():
-            self._hspace_()
-        self._closure(block2)
-        self._token(')')
+                    def block5():
+                        self._hspace_()
+                    self._closure(block5)
+                    self._token(')')
+            with self._option():
+                with self._group():
+                    self._LOG_()
+                    with self._optional():
+                        with self._choice():
+                            with self._option():
+                                self._token('_2')
+                                self.name_last_node('f')
+                            with self._option():
+                                self._token('_10')
+                                self.name_last_node('s')
+                            self._error('no available options')
+                    self._token('(')
+
+                    def block9():
+                        self._hspace_()
+                    self._closure(block9)
+                    self._expression_()
+                    self.name_last_node('param')
+
+                    def block11():
+                        self._hspace_()
+                    self._closure(block11)
+                    self._token(')')
+            self._error('no available options')
         self.ast._define(
-            ['param'],
+            ['f', 'param', 's'],
             []
         )
 
@@ -1628,6 +1665,10 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             self._expression_()
             self.add_last_node_to_name('exp')
         self._positive_closure(block2)
+
+        def block6():
+            self._hspace_()
+        self._closure(block6)
         self._token(')')
         self.ast._define(
             [],
@@ -1653,7 +1694,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             def block4():
                 self._hspace_()
             self._closure(block4)
-            self._statement_()
+            self._expression_()
             self.name_last_node('other')
 
             def block6():
@@ -1990,6 +2031,8 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                             self._token('0')
                         with self._option():
                             self._token('1')
+                        with self._option():
+                            self._token('𝟙')
                         self._error('no available options')
                 self.name_last_node('left')
                 self._token('_')
@@ -2014,20 +2057,33 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                     self.name_last_node('id2')
                 self._closure(block4)
             with self._option():
+                self._pattern('[01\\u1D7D9]')
+                self.name_last_node('left')
+                self._sub_integer_()
+                self.name_last_node('id1')
+
+                def block9():
+                    self._token(',')
+                    self._sub_integer_()
+                    self.name_last_node('id2')
+                self._closure(block9)
+            with self._option():
                 with self._group():
                     with self._choice():
                         with self._option():
                             self._token('0')
                         with self._option():
                             self._token('1')
+                        with self._option():
+                            self._token('𝟙')
                         self._error('no available options')
                 self.name_last_node('left')
                 self._token('_')
                 self._token('(')
 
-                def block9():
+                def block13():
                     self._hspace_()
-                self._closure(block9)
+                self._closure(block13)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -2037,11 +2093,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                         self._error('no available options')
                 self.name_last_node('id1')
 
-                def block12():
+                def block16():
 
-                    def block13():
+                    def block17():
                         self._hspace_()
-                    self._closure(block13)
+                    self._closure(block17)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -2050,9 +2106,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                                 self._token('×')
                             self._error('no available options')
 
-                    def block15():
+                    def block19():
                         self._hspace_()
-                    self._closure(block15)
+                    self._closure(block19)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -2061,11 +2117,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                                 self._identifier_()
                             self._error('no available options')
                     self.name_last_node('id2')
-                self._closure(block12)
+                self._closure(block16)
 
-                def block18():
+                def block22():
                     self._hspace_()
-                self._closure(block18)
+                self._closure(block22)
                 self._token(')')
             with self._option():
                 self._token('I')
@@ -2078,6 +2134,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                         with self._option():
                             self._identifier_()
                         self._error('no available options')
+                self.name_last_node('id1')
+            with self._option():
+                self._pattern('[I]')
+                self.name_last_node('id')
+                self._sub_integer_()
                 self.name_last_node('id1')
             self._error('no available options')
         self.ast._define(
@@ -2166,13 +2227,24 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             with self._option():
                 self._factor_in_matrix_()
                 self.name_last_node('base')
-                self._token('^(-1)')
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._token('^(-1)')
+                        with self._option():
+                            self._token('⁻¹')
+                        self._error('no available options')
                 self.name_last_node('r')
             with self._option():
                 self._factor_in_matrix_()
                 self.name_last_node('base')
                 self._token('^')
                 self._factor_in_matrix_()
+                self.name_last_node('power')
+            with self._option():
+                self._factor_in_matrix_()
+                self.name_last_node('base')
+                self._sup_integer_()
                 self.name_last_node('power')
             self._error('no available options')
         self.ast._define(
@@ -2249,7 +2321,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def _trans_in_matrix_operator_(self):  # noqa
         self._factor_in_matrix_()
         self.name_last_node('f')
-        self._token('ᵀ')
+        self._pattern('[\\u1d40]')
         self.ast._define(
             ['f'],
             []
@@ -2369,59 +2441,72 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
 
     @tatsumasu('IdentifierSubscript')
     def _identifier_with_subscript_(self):  # noqa
-        self._identifier_alone_()
-        self.name_last_node('left')
-        self._token('_')
-        with self._group():
-            with self._choice():
-                with self._option():
-                    self._integer_()
-                with self._option():
-                    self._token('*')
-                with self._option():
+        with self._choice():
+            with self._option():
+                with self._group():
                     self._identifier_alone_()
-                self._error('no available options')
-        self.add_last_node_to_name('right')
-
-        def block3():
-            with self._choice():
-                with self._option():
+                    self.name_last_node('left')
+                    self._token('_')
                     with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._integer_()
+                            with self._option():
+                                self._token('*')
+                            with self._option():
+                                self._identifier_alone_()
+                            self._error('no available options')
+                    self.add_last_node_to_name('right')
 
-                        def block4():
-                            self._hspace_()
-                        self._closure(block4)
-                        self._token(',')
+                    def block3():
+                        with self._choice():
+                            with self._option():
+                                with self._group():
+                                    self._token(',')
+                                    self._token('*')
+                                    self.add_last_node_to_name('right')
+                            with self._option():
+                                with self._group():
 
-                        def block5():
-                            self._hspace_()
-                        self._closure(block5)
-                        self._token('*')
-                        self.add_last_node_to_name('right')
-                with self._option():
-                    with self._group():
+                                    def block5():
+                                        self._token(',')
+                                    self._closure(block5)
+                                    with self._group():
+                                        with self._choice():
+                                            with self._option():
+                                                self._integer_()
+                                            with self._option():
+                                                self._identifier_alone_()
+                                            self._error('no available options')
+                                    self.add_last_node_to_name('right')
+                            self._error('no available options')
+                    self._closure(block3)
+            with self._option():
+                with self._group():
+                    self._identifier_alone_()
+                    self.name_last_node('left')
+                    self._sub_integer_()
+                    self.add_last_node_to_name('right')
 
-                        def block7():
+                    def block11():
+                        with self._choice():
+                            with self._option():
+                                with self._group():
+                                    self._token(',')
+                                    self._token('*')
+                                    self.add_last_node_to_name('right')
+                            with self._option():
+                                with self._group():
 
-                            def block8():
-                                self._hspace_()
-                            self._closure(block8)
-                            self._token(',')
-
-                            def block9():
-                                self._hspace_()
-                            self._closure(block9)
-                        self._closure(block7)
-                        with self._group():
-                            with self._choice():
-                                with self._option():
-                                    self._integer_()
-                                with self._option():
-                                    self._identifier_alone_()
-                                self._error('no available options')
-                        self.add_last_node_to_name('right')
-                self._error('no available options')
-        self._closure(block3)
+                                    def block13():
+                                        self._token(',')
+                                    self._closure(block13)
+                                    with self._group():
+                                        self._sub_integer_()
+                                    self.add_last_node_to_name('right')
+                            self._error('no available options')
+                    self._closure(block11)
+            self._error('no available options')
         self.ast._define(
             ['left'],
             ['right']
@@ -2492,54 +2577,28 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
 
     @tatsumasu('Pi')
     def _pi_(self):  # noqa
-        self._token('π')
+        self._pattern('π')
 
     @tatsumasu('E')
     def _e_(self):  # noqa
-        self._token('e')
+        self._pattern('e')
 
     @tatsumasu('SinFunc')
     def _sin_func_(self):  # noqa
         self._SIN_()
 
         def block0():
-            self._token('^')
-            self._integer_()
-            self.name_last_node('power')
-        self._closure(block0)
-        self._token('(')
-
-        def block2():
-            self._hspace_()
-        self._closure(block2)
-        self._expression_()
-        self.name_last_node('param')
-
-        def block4():
-            self._hspace_()
-        self._closure(block4)
-        self._token(')')
-        self.ast._define(
-            ['param', 'power'],
-            []
-        )
-
-    @tatsumasu('AsinFunc')
-    def _asin_func_(self):  # noqa
-        with self._group():
             with self._choice():
                 with self._option():
-                    self._ASIN_()
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
                 with self._option():
-                    self._ARCSIN_()
+                    self._sup_integer_()
+                    self.name_last_node('power')
                 self._error('no available options')
-        self.name_last_node('name')
-
-        def block2():
-            self._token('^')
-            self._integer_()
-            self.name_last_node('power')
-        self._closure(block2)
+        self._closure(block0)
         self._token('(')
 
         def block4():
@@ -2551,6 +2610,74 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         def block6():
             self._hspace_()
         self._closure(block6)
+        self._token(')')
+        self.ast._define(
+            ['param', 'power'],
+            []
+        )
+
+    @tatsumasu('AsinFunc')
+    def _asin_func_(self):  # noqa
+        self._ASIN_()
+        self.name_last_node('name')
+
+        def block1():
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
+                with self._option():
+                    self._sup_integer_()
+                    self.name_last_node('power')
+                self._error('no available options')
+        self._closure(block1)
+        self._token('(')
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
+        self._token(')')
+        self.ast._define(
+            ['name', 'param', 'power'],
+            []
+        )
+
+    @tatsumasu('AsinFunc')
+    def _arcsin_func_(self):  # noqa
+        self._ARCSIN_()
+        self.name_last_node('name')
+
+        def block1():
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
+                with self._option():
+                    self._sup_integer_()
+                    self.name_last_node('power')
+                self._error('no available options')
+        self._closure(block1)
+        self._token('(')
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
         self._token(')')
         self.ast._define(
             ['name', 'param', 'power'],
@@ -2562,43 +2689,17 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self._COS_()
 
         def block0():
-            self._token('^')
-            self._integer_()
-            self.name_last_node('power')
-        self._closure(block0)
-        self._token('(')
-
-        def block2():
-            self._hspace_()
-        self._closure(block2)
-        self._expression_()
-        self.name_last_node('param')
-
-        def block4():
-            self._hspace_()
-        self._closure(block4)
-        self._token(')')
-        self.ast._define(
-            ['param', 'power'],
-            []
-        )
-
-    @tatsumasu('AcosFunc')
-    def _acos_func_(self):  # noqa
-        with self._group():
             with self._choice():
                 with self._option():
-                    self._ACOS_()
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
                 with self._option():
-                    self._ARCCOS_()
+                    self._sup_integer_()
+                    self.name_last_node('power')
                 self._error('no available options')
-        self.name_last_node('name')
-
-        def block2():
-            self._token('^')
-            self._integer_()
-            self.name_last_node('power')
-        self._closure(block2)
+        self._closure(block0)
         self._token('(')
 
         def block4():
@@ -2610,6 +2711,74 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         def block6():
             self._hspace_()
         self._closure(block6)
+        self._token(')')
+        self.ast._define(
+            ['param', 'power'],
+            []
+        )
+
+    @tatsumasu('AcosFunc')
+    def _acos_func_(self):  # noqa
+        self._ACOS_()
+        self.name_last_node('name')
+
+        def block1():
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
+                with self._option():
+                    self._sup_integer_()
+                    self.name_last_node('power')
+                self._error('no available options')
+        self._closure(block1)
+        self._token('(')
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
+        self._token(')')
+        self.ast._define(
+            ['name', 'param', 'power'],
+            []
+        )
+
+    @tatsumasu('AcosFunc')
+    def _arccos_func_(self):  # noqa
+        self._ARCCOS_()
+        self.name_last_node('name')
+
+        def block1():
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
+                with self._option():
+                    self._sup_integer_()
+                    self.name_last_node('power')
+                self._error('no available options')
+        self._closure(block1)
+        self._token('(')
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
         self._token(')')
         self.ast._define(
             ['name', 'param', 'power'],
@@ -2621,43 +2790,17 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self._TAN_()
 
         def block0():
-            self._token('^')
-            self._integer_()
-            self.name_last_node('power')
-        self._closure(block0)
-        self._token('(')
-
-        def block2():
-            self._hspace_()
-        self._closure(block2)
-        self._expression_()
-        self.name_last_node('param')
-
-        def block4():
-            self._hspace_()
-        self._closure(block4)
-        self._token(')')
-        self.ast._define(
-            ['param', 'power'],
-            []
-        )
-
-    @tatsumasu('AtanFunc')
-    def _atan_func_(self):  # noqa
-        with self._group():
             with self._choice():
                 with self._option():
-                    self._ATAN_()
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
                 with self._option():
-                    self._ARCTAN_()
+                    self._sup_integer_()
+                    self.name_last_node('power')
                 self._error('no available options')
-        self.name_last_node('name')
-
-        def block2():
-            self._token('^')
-            self._integer_()
-            self.name_last_node('power')
-        self._closure(block2)
+        self._closure(block0)
         self._token('(')
 
         def block4():
@@ -2669,6 +2812,74 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         def block6():
             self._hspace_()
         self._closure(block6)
+        self._token(')')
+        self.ast._define(
+            ['param', 'power'],
+            []
+        )
+
+    @tatsumasu('AtanFunc')
+    def _atan_func_(self):  # noqa
+        self._ATAN_()
+        self.name_last_node('name')
+
+        def block1():
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
+                with self._option():
+                    self._sup_integer_()
+                    self.name_last_node('power')
+                self._error('no available options')
+        self._closure(block1)
+        self._token('(')
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
+        self._token(')')
+        self.ast._define(
+            ['name', 'param', 'power'],
+            []
+        )
+
+    @tatsumasu('AtanFunc')
+    def _arctan_func_(self):  # noqa
+        self._ARCTAN_()
+        self.name_last_node('name')
+
+        def block1():
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
+                with self._option():
+                    self._sup_integer_()
+                    self.name_last_node('power')
+                self._error('no available options')
+        self._closure(block1)
+        self._token('(')
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
         self._token(')')
         self.ast._define(
             ['name', 'param', 'power'],
@@ -2680,43 +2891,17 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self._SINH_()
 
         def block0():
-            self._token('^')
-            self._integer_()
-            self.name_last_node('power')
-        self._closure(block0)
-        self._token('(')
-
-        def block2():
-            self._hspace_()
-        self._closure(block2)
-        self._expression_()
-        self.name_last_node('param')
-
-        def block4():
-            self._hspace_()
-        self._closure(block4)
-        self._token(')')
-        self.ast._define(
-            ['param', 'power'],
-            []
-        )
-
-    @tatsumasu('AsinhFunc')
-    def _asinh_func_(self):  # noqa
-        with self._group():
             with self._choice():
                 with self._option():
-                    self._ASINH_()
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
                 with self._option():
-                    self._ARSINH_()
+                    self._sup_integer_()
+                    self.name_last_node('power')
                 self._error('no available options')
-        self.name_last_node('name')
-
-        def block2():
-            self._token('^')
-            self._integer_()
-            self.name_last_node('power')
-        self._closure(block2)
+        self._closure(block0)
         self._token('(')
 
         def block4():
@@ -2728,6 +2913,74 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         def block6():
             self._hspace_()
         self._closure(block6)
+        self._token(')')
+        self.ast._define(
+            ['param', 'power'],
+            []
+        )
+
+    @tatsumasu('AsinhFunc')
+    def _asinh_func_(self):  # noqa
+        self._ASINH_()
+        self.name_last_node('name')
+
+        def block1():
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
+                with self._option():
+                    self._sup_integer_()
+                    self.name_last_node('power')
+                self._error('no available options')
+        self._closure(block1)
+        self._token('(')
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
+        self._token(')')
+        self.ast._define(
+            ['name', 'param', 'power'],
+            []
+        )
+
+    @tatsumasu('AsinhFunc')
+    def _arsinh_func_(self):  # noqa
+        self._ARSINH_()
+        self.name_last_node('name')
+
+        def block1():
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
+                with self._option():
+                    self._sup_integer_()
+                    self.name_last_node('power')
+                self._error('no available options')
+        self._closure(block1)
+        self._token('(')
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
         self._token(')')
         self.ast._define(
             ['name', 'param', 'power'],
@@ -2739,43 +2992,17 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self._COSH_()
 
         def block0():
-            self._token('^')
-            self._integer_()
-            self.name_last_node('power')
-        self._closure(block0)
-        self._token('(')
-
-        def block2():
-            self._hspace_()
-        self._closure(block2)
-        self._expression_()
-        self.name_last_node('param')
-
-        def block4():
-            self._hspace_()
-        self._closure(block4)
-        self._token(')')
-        self.ast._define(
-            ['param', 'power'],
-            []
-        )
-
-    @tatsumasu('AcoshFunc')
-    def _acosh_func_(self):  # noqa
-        with self._group():
             with self._choice():
                 with self._option():
-                    self._ACOSH_()
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
                 with self._option():
-                    self._ARCOSH_()
+                    self._sup_integer_()
+                    self.name_last_node('power')
                 self._error('no available options')
-        self.name_last_node('name')
-
-        def block2():
-            self._token('^')
-            self._integer_()
-            self.name_last_node('power')
-        self._closure(block2)
+        self._closure(block0)
         self._token('(')
 
         def block4():
@@ -2787,6 +3014,74 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         def block6():
             self._hspace_()
         self._closure(block6)
+        self._token(')')
+        self.ast._define(
+            ['param', 'power'],
+            []
+        )
+
+    @tatsumasu('AcoshFunc')
+    def _acosh_func_(self):  # noqa
+        self._ACOSH_()
+        self.name_last_node('name')
+
+        def block1():
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
+                with self._option():
+                    self._sup_integer_()
+                    self.name_last_node('power')
+                self._error('no available options')
+        self._closure(block1)
+        self._token('(')
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
+        self._token(')')
+        self.ast._define(
+            ['name', 'param', 'power'],
+            []
+        )
+
+    @tatsumasu('AcoshFunc')
+    def _arcosh_func_(self):  # noqa
+        self._ARCOSH_()
+        self.name_last_node('name')
+
+        def block1():
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
+                with self._option():
+                    self._sup_integer_()
+                    self.name_last_node('power')
+                self._error('no available options')
+        self._closure(block1)
+        self._token('(')
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
         self._token(')')
         self.ast._define(
             ['name', 'param', 'power'],
@@ -2798,43 +3093,17 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self._TANH_()
 
         def block0():
-            self._token('^')
-            self._integer_()
-            self.name_last_node('power')
-        self._closure(block0)
-        self._token('(')
-
-        def block2():
-            self._hspace_()
-        self._closure(block2)
-        self._expression_()
-        self.name_last_node('param')
-
-        def block4():
-            self._hspace_()
-        self._closure(block4)
-        self._token(')')
-        self.ast._define(
-            ['param', 'power'],
-            []
-        )
-
-    @tatsumasu('AtanhFunc')
-    def _atanh_func_(self):  # noqa
-        with self._group():
             with self._choice():
                 with self._option():
-                    self._ATANH_()
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
                 with self._option():
-                    self._ARTANH_()
+                    self._sup_integer_()
+                    self.name_last_node('power')
                 self._error('no available options')
-        self.name_last_node('name')
-
-        def block2():
-            self._token('^')
-            self._integer_()
-            self.name_last_node('power')
-        self._closure(block2)
+        self._closure(block0)
         self._token('(')
 
         def block4():
@@ -2848,6 +3117,74 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self._closure(block6)
         self._token(')')
         self.ast._define(
+            ['param', 'power'],
+            []
+        )
+
+    @tatsumasu('AtanhFunc')
+    def _atanh_func_(self):  # noqa
+        self._ATANH_()
+        self.name_last_node('name')
+
+        def block1():
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
+                with self._option():
+                    self._sup_integer_()
+                    self.name_last_node('power')
+                self._error('no available options')
+        self._closure(block1)
+        self._token('(')
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
+        self._token(')')
+        self.ast._define(
+            ['name', 'param', 'power'],
+            []
+        )
+
+    @tatsumasu('AtanhFunc')
+    def _artanh_func_(self):  # noqa
+        self._ARTANH_()
+        self.name_last_node('name')
+
+        def block1():
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
+                with self._option():
+                    self._sup_integer_()
+                    self.name_last_node('power')
+                self._error('no available options')
+        self._closure(block1)
+        self._token('(')
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
+        self._token(')')
+        self.ast._define(
             ['name', 'param', 'power'],
             []
         )
@@ -2857,21 +3194,28 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self._COT_()
 
         def block0():
-            self._token('^')
-            self._integer_()
-            self.name_last_node('power')
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
+                with self._option():
+                    self._sup_integer_()
+                    self.name_last_node('power')
+                self._error('no available options')
         self._closure(block0)
         self._token('(')
-
-        def block2():
-            self._hspace_()
-        self._closure(block2)
-        self._expression_()
-        self.name_last_node('param')
 
         def block4():
             self._hspace_()
         self._closure(block4)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block6():
+            self._hspace_()
+        self._closure(block6)
         self._token(')')
         self.ast._define(
             ['param', 'power'],
@@ -2883,21 +3227,28 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self._SEC_()
 
         def block0():
-            self._token('^')
-            self._integer_()
-            self.name_last_node('power')
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
+                with self._option():
+                    self._sup_integer_()
+                    self.name_last_node('power')
+                self._error('no available options')
         self._closure(block0)
         self._token('(')
-
-        def block2():
-            self._hspace_()
-        self._closure(block2)
-        self._expression_()
-        self.name_last_node('param')
 
         def block4():
             self._hspace_()
         self._closure(block4)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block6():
+            self._hspace_()
+        self._closure(block6)
         self._token(')')
         self.ast._define(
             ['param', 'power'],
@@ -2909,21 +3260,28 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self._CSC_()
 
         def block0():
-            self._token('^')
-            self._integer_()
-            self.name_last_node('power')
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._token('^')
+                        self._integer_()
+                        self.name_last_node('power')
+                with self._option():
+                    self._sup_integer_()
+                    self.name_last_node('power')
+                self._error('no available options')
         self._closure(block0)
         self._token('(')
-
-        def block2():
-            self._hspace_()
-        self._closure(block2)
-        self._expression_()
-        self.name_last_node('param')
 
         def block4():
             self._hspace_()
         self._closure(block4)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block6():
+            self._hspace_()
+        self._closure(block6)
         self._token(')')
         self.ast._define(
             ['param', 'power'],
@@ -2959,6 +3317,188 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self._token(')')
         self.ast._define(
             ['param', 'second', 'separator'],
+            []
+        )
+
+    @tatsumasu('TraceFunc')
+    def _trace_func_(self):  # noqa
+        self._token('trace')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+            self._hspace_()
+        self._closure(block1)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block3():
+            self._hspace_()
+        self._closure(block3)
+        self._token(')')
+        self.ast._define(
+            ['name', 'param'],
+            []
+        )
+
+    @tatsumasu('TraceFunc')
+    def _tr_func_(self):  # noqa
+        self._token('tr')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+            self._hspace_()
+        self._closure(block1)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block3():
+            self._hspace_()
+        self._closure(block3)
+        self._token(')')
+        self.ast._define(
+            ['name', 'param'],
+            []
+        )
+
+    @tatsumasu('DiagFunc')
+    def _diag_func_(self):  # noqa
+        self._token('diag')
+        self._token('(')
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._token(')')
+        self.ast._define(
+            ['param'],
+            []
+        )
+
+    @tatsumasu('VecFunc')
+    def _vec_func_(self):  # noqa
+        self._token('vec')
+        self._token('(')
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._token(')')
+        self.ast._define(
+            ['param'],
+            []
+        )
+
+    @tatsumasu('DetFunc')
+    def _det_func_(self):  # noqa
+        self._token('det')
+        self._token('(')
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._token(')')
+        self.ast._define(
+            ['param'],
+            []
+        )
+
+    @tatsumasu('RankFunc')
+    def _rank_func_(self):  # noqa
+        self._token('rank')
+        self._token('(')
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._token(')')
+        self.ast._define(
+            ['param'],
+            []
+        )
+
+    @tatsumasu('NullFunc')
+    def _null_func_(self):  # noqa
+        self._token('null')
+        self._token('(')
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._token(')')
+        self.ast._define(
+            ['param'],
+            []
+        )
+
+    @tatsumasu('OrthFunc')
+    def _orth_func_(self):  # noqa
+        self._token('orth')
+        self._token('(')
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._token(')')
+        self.ast._define(
+            ['param'],
+            []
+        )
+
+    @tatsumasu('InvFunc')
+    def _inv_func_(self):  # noqa
+        self._token('inv')
+        self._token('(')
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._token(')')
+        self.ast._define(
+            ['param'],
             []
         )
 
@@ -3035,36 +3575,42 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         def block1():
             self._hspace_()
         self._closure(block1)
-        self._token(':')
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._token(':')
+                with self._option():
+                    self._IN_()
+                self._error('no available options')
 
-        def block2():
+        def block3():
             self._hspace_()
-        self._closure(block2)
+        self._closure(block3)
         self._la_type_()
         self.name_last_node('type')
 
-        def block4():
+        def block5():
 
-            def block5():
+            def block6():
                 self._hspace_()
-            self._closure(block5)
+            self._closure(block6)
             self._token('index')
             self.name_last_node('index')
-        self._closure(block4)
+        self._closure(block5)
 
-        def block7():
-
-            def block8():
-                self._hspace_()
-            self._closure(block8)
-            self._token(':')
+        def block8():
 
             def block9():
                 self._hspace_()
             self._closure(block9)
+            self._token(':')
+
+            def block10():
+                self._hspace_()
+            self._closure(block10)
             self._description_()
             self.name_last_node('desc')
-        self._closure(block7)
+        self._closure(block8)
         self.ast._define(
             ['desc', 'id', 'index', 'type'],
             []
@@ -3074,7 +3620,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def _matrix_type_(self):  # noqa
         with self._choice():
             with self._option():
-                self._token('matrix')
+                self._pattern('matrix')
 
                 def block0():
                     self._hspace_()
@@ -3112,55 +3658,49 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                     self.add_last_node_to_name('attr')
                 self._closure(block7)
             with self._option():
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            self._token('ℝ')
-                        with self._option():
-                            self._token('ℤ')
-                        self._error('no available options')
+                self._pattern('[ℝℤ]')
                 self.name_last_node('type')
+
+                def block11():
+                    self._hspace_()
+                self._closure(block11)
+                self._token('^')
 
                 def block12():
                     self._hspace_()
                 self._closure(block12)
-                self._token('^')
+                self._token('(')
 
                 def block13():
                     self._hspace_()
                 self._closure(block13)
-                self._token('(')
-
-                def block14():
-                    self._hspace_()
-                self._closure(block14)
                 self._dimension_()
                 self.name_last_node('id1')
+
+                def block15():
+                    self._hspace_()
+                self._closure(block15)
+                self._token('×')
 
                 def block16():
                     self._hspace_()
                 self._closure(block16)
-                self._token('×')
-
-                def block17():
-                    self._hspace_()
-                self._closure(block17)
                 self._dimension_()
                 self.name_last_node('id2')
 
-                def block19():
+                def block18():
                     self._hspace_()
-                self._closure(block19)
+                self._closure(block18)
                 self._token(')')
 
-                def block20():
+                def block19():
 
-                    def block21():
+                    def block20():
                         self._hspace_()
-                    self._positive_closure(block21)
+                    self._positive_closure(block20)
                     self._matrix_attribute_()
                     self.add_last_node_to_name('attr')
-                self._closure(block20)
+                self._closure(block19)
             self._error('no available options')
         self.ast._define(
             ['id1', 'id2', 'type'],
@@ -3175,7 +3715,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def _vector_type_(self):  # noqa
         with self._choice():
             with self._option():
-                self._token('vector')
+                self._pattern('vector')
 
                 def block0():
                     self._hspace_()
@@ -3193,54 +3733,47 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 self._closure(block3)
                 self._token(')')
             with self._option():
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            self._token('ℝ')
-                        with self._option():
-                            self._token('ℤ')
-                        self._error('no available options')
+                self._pattern('[ℝℤ]')
                 self.name_last_node('type')
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._token('^')
 
                 def block6():
                     self._hspace_()
                 self._closure(block6)
-                self._token('^')
+                self._token('(')
 
                 def block7():
                     self._hspace_()
                 self._closure(block7)
-                self._token('(')
-
-                def block8():
-                    self._hspace_()
-                self._closure(block8)
                 self._dimension_()
                 self.name_last_node('id1')
 
-                def block10():
+                def block9():
                     self._hspace_()
-                self._closure(block10)
+                self._closure(block9)
                 self._token(')')
             with self._option():
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            self._token('ℝ')
-                        with self._option():
-                            self._token('ℤ')
-                        self._error('no available options')
+                self._pattern('[ℝℤ]')
                 self.name_last_node('type')
 
-                def block13():
+                def block11():
                     self._hspace_()
-                self._closure(block13)
+                self._closure(block11)
                 self._token('^')
 
-                def block14():
+                def block12():
                     self._hspace_()
-                self._closure(block14)
+                self._closure(block12)
                 self._dimension_()
+                self.name_last_node('id1')
+            with self._option():
+                self._pattern('[ℝℤ]')
+                self.name_last_node('type')
+                self._sup_integer_()
                 self.name_last_node('id1')
             self._error('no available options')
         self.ast._define(
@@ -3252,11 +3785,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def _scalar_type_(self):  # noqa
         with self._choice():
             with self._option():
-                self._token('scalar')
+                self._pattern('scalar')
             with self._option():
-                self._token('ℝ')
+                self._pattern('ℝ')
             with self._option():
-                self._token('ℤ')
+                self._pattern('ℤ')
                 self.name_last_node('z')
             self._error('no available options')
         self.ast._define(
@@ -3273,76 +3806,58 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 def block0():
                     self._hspace_()
                 self._closure(block0)
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            self._token('ℝ')
-                        with self._option():
-                            self._token('ℤ')
-                        self._error('no available options')
+                self._pattern('[ℝℤ]')
                 self.add_last_node_to_name('type')
 
-                def block3():
+                def block2():
                     self._hspace_()
-                self._closure(block3)
+                self._closure(block2)
 
-                def block4():
+                def block3():
                     self._token('×')
 
-                    def block5():
+                    def block4():
                         self._hspace_()
-                    self._closure(block5)
-                    with self._group():
-                        with self._choice():
-                            with self._option():
-                                self._token('ℝ')
-                            with self._option():
-                                self._token('ℤ')
-                            self._error('no available options')
+                    self._closure(block4)
+                    self._pattern('[ℝℤ]')
                     self.add_last_node_to_name('type')
 
-                    def block8():
+                    def block6():
                         self._hspace_()
-                    self._closure(block8)
-                self._closure(block4)
+                    self._closure(block6)
+                self._closure(block3)
                 self._token('}')
             with self._option():
                 self._token('{')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._pattern('[ℝℤ]')
+                self.name_last_node('type1')
 
                 def block9():
                     self._hspace_()
                 self._closure(block9)
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            self._token('ℝ')
-                        with self._option():
-                            self._token('ℤ')
-                        self._error('no available options')
-                self.name_last_node('type1')
-
-                def block12():
-                    self._hspace_()
-                self._closure(block12)
                 self._token('^')
 
-                def block13():
+                def block10():
                     self._hspace_()
-                self._closure(block13)
+                self._closure(block10)
                 with self._group():
                     self._integer_()
                 self.name_last_node('cnt')
 
-                def block15():
+                def block12():
                     self._hspace_()
-                self._closure(block15)
+                self._closure(block12)
                 self._token('}')
             with self._option():
                 self._token('{')
 
-                def block16():
+                def block13():
                     self._hspace_()
-                self._closure(block16)
+                self._closure(block13)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -3352,14 +3867,14 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                         self._error('no available options')
                 self.name_last_node('type2')
 
-                def block20():
+                def block17():
                     self._pattern('[\\u2070\\u00B9\\u00B2\\u00B3\\u2074-\\u2079]')
-                self._closure(block20)
+                self._closure(block17)
                 self.name_last_node('cnt')
 
-                def block21():
+                def block18():
                     self._hspace_()
-                self._closure(block21)
+                self._closure(block18)
                 self._token('}')
             self._error('no available options')
         self.ast._define(
@@ -3400,6 +3915,8 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 self._vector_type_()
             with self._option():
                 self._scalar_type_()
+            with self._option():
+                self._set_type_()
             self._error('no available options')
 
     @tatsumasu('FunctionType')
@@ -3463,6 +3980,30 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
 
         def block1():
             self._digit_()
+        self._positive_closure(block1)
+        self.name_last_node('value')
+        self.ast._define(
+            ['value'],
+            []
+        )
+
+    @tatsumasu('SupInteger')
+    def _sup_integer_(self):  # noqa
+
+        def block1():
+            self._pattern('[\\u2070\\u00B9\\u00B2\\u00B3\\u2074-\\u2079]')
+        self._positive_closure(block1)
+        self.name_last_node('value')
+        self.ast._define(
+            ['value'],
+            []
+        )
+
+    @tatsumasu('SubInteger')
+    def _sub_integer_(self):  # noqa
+
+        def block1():
+            self._pattern('[\\u2080-\\u2089]')
         self._positive_closure(block1)
         self.name_last_node('value')
         self.ast._define(
@@ -3644,7 +4185,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
 
     @tatsumasu()
     def _func_id_(self):  # noqa
-        self._identifier_alone_()
+        self._token('!!!')
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
@@ -3653,10 +4194,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         with self._group():
             with self._choice():
                 with self._option():
-                    self._pattern('[A-Za-z][[A-Za-z0-9]*')
-                    self.name_last_node('value')
-                with self._option():
-                    self._pattern('[A-Za-z\\p{Ll}|\\p{Lu}|\\p{Lo}]')
+                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
                 with self._option():
                     self._token('`')
@@ -3805,21 +4343,33 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 def block8():
                     self._hspace_()
                 self._closure(block8)
-                self._identifier_()
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._function_operator_()
+                        with self._option():
+                            self._identifier_()
+                        self._error('no available options')
                 self.name_last_node('right')
             with self._option():
                 self._expression_()
                 self.add_last_node_to_name('left')
 
-                def block11():
-                    self._hspace_()
-                self._closure(block11)
-                self._IN_()
-
                 def block12():
                     self._hspace_()
                 self._closure(block12)
-                self._identifier_()
+                self._IN_()
+
+                def block13():
+                    self._hspace_()
+                self._closure(block13)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._function_operator_()
+                        with self._option():
+                            self._identifier_()
+                        self._error('no available options')
                 self.name_last_node('right')
             self._error('no available options')
         self.ast._define(
@@ -3866,21 +4416,33 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 def block8():
                     self._hspace_()
                 self._closure(block8)
-                self._identifier_()
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._function_operator_()
+                        with self._option():
+                            self._identifier_()
+                        self._error('no available options')
                 self.name_last_node('right')
             with self._option():
                 self._expression_()
                 self.add_last_node_to_name('left')
 
-                def block11():
-                    self._hspace_()
-                self._closure(block11)
-                self._token('∉')
-
                 def block12():
                     self._hspace_()
                 self._closure(block12)
-                self._identifier_()
+                self._token('∉')
+
+                def block13():
+                    self._hspace_()
+                self._closure(block13)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._function_operator_()
+                        with self._option():
+                            self._identifier_()
+                        self._error('no available options')
                 self.name_last_node('right')
             self._error('no available options')
         self.ast._define(
@@ -4033,7 +4595,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         )
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
+class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
     def start(self, ast):  # noqa
         return ast
 
@@ -4478,10 +5040,16 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
     def asin_func(self, ast):  # noqa
         return ast
 
+    def arcsin_func(self, ast):  # noqa
+        return ast
+
     def cos_func(self, ast):  # noqa
         return ast
 
     def acos_func(self, ast):  # noqa
+        return ast
+
+    def arccos_func(self, ast):  # noqa
         return ast
 
     def tan_func(self, ast):  # noqa
@@ -4490,10 +5058,16 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
     def atan_func(self, ast):  # noqa
         return ast
 
+    def arctan_func(self, ast):  # noqa
+        return ast
+
     def sinh_func(self, ast):  # noqa
         return ast
 
     def asinh_func(self, ast):  # noqa
+        return ast
+
+    def arsinh_func(self, ast):  # noqa
         return ast
 
     def cosh_func(self, ast):  # noqa
@@ -4502,10 +5076,16 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
     def acosh_func(self, ast):  # noqa
         return ast
 
+    def arcosh_func(self, ast):  # noqa
+        return ast
+
     def tanh_func(self, ast):  # noqa
         return ast
 
     def atanh_func(self, ast):  # noqa
+        return ast
+
+    def artanh_func(self, ast):  # noqa
         return ast
 
     def cot_func(self, ast):  # noqa
@@ -4518,6 +5098,33 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
         return ast
 
     def atan2_func(self, ast):  # noqa
+        return ast
+
+    def trace_func(self, ast):  # noqa
+        return ast
+
+    def tr_func(self, ast):  # noqa
+        return ast
+
+    def diag_func(self, ast):  # noqa
+        return ast
+
+    def vec_func(self, ast):  # noqa
+        return ast
+
+    def det_func(self, ast):  # noqa
+        return ast
+
+    def rank_func(self, ast):  # noqa
+        return ast
+
+    def null_func(self, ast):  # noqa
+        return ast
+
+    def orth_func(self, ast):  # noqa
+        return ast
+
+    def inv_func(self, ast):  # noqa
         return ast
 
     def Directive(self, ast):  # noqa
@@ -4560,6 +5167,12 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
         return ast
 
     def integer(self, ast):  # noqa
+        return ast
+
+    def sup_integer(self, ast):  # noqa
+        return ast
+
+    def sub_integer(self, ast):  # noqa
         return ast
 
     def digit(self, ast):  # noqa
@@ -4646,7 +5259,7 @@ def main(filename, start=None, **kwargs):
     else:
         with open(filename) as f:
             text = f.read()
-    parser = grammare37f0136aa3ffaf149b351f6a4c948e9Parser()
+    parser = grammarc21f969b5f03d33d43e04f8f136e7682Parser()
     return parser.parse(text, rule_name=start, filename=filename, **kwargs)
 
 
@@ -4654,7 +5267,7 @@ if __name__ == '__main__':
     import json
     from tatsu.util import asjson
 
-    ast = generic_main(main, grammare37f0136aa3ffaf149b351f6a4c948e9Parser, name='grammare37f0136aa3ffaf149b351f6a4c948e9')
+    ast = generic_main(main, grammarc21f969b5f03d33d43e04f8f136e7682Parser, name='grammarc21f969b5f03d33d43e04f8f136e7682')
     print('AST:')
     print(ast)
     print()
@@ -4683,13 +5296,13 @@ class ModelBase(Node):
     pass
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics(ModelBuilderSemantics):
+class grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics(ModelBuilderSemantics):
     def __init__(self, context=None, types=None):
         types = [
             t for t in globals().values()
             if type(t) is type and issubclass(t, ModelBase)
         ] + (types or [])
-        super(grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics, self).__init__(context=context, types=types)
+        super(grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics, self).__init__(context=context, types=types)
 
 
 class Start(ModelBase):
@@ -4761,6 +5374,7 @@ class Power(ModelBase):
 
 class Solver(ModelBase):
     left = None
+    p = None
     right = None
 
 
@@ -4854,7 +5468,9 @@ class ExpFunc(ModelBase):
 
 
 class LogFunc(ModelBase):
+    f = None
     param = None
+    s = None
 
 
 class LnFunc(ModelBase):
@@ -5044,6 +5660,39 @@ class Atan2Func(ModelBase):
     separator = None
 
 
+class TraceFunc(ModelBase):
+    name = None
+    param = None
+
+
+class DiagFunc(ModelBase):
+    param = None
+
+
+class VecFunc(ModelBase):
+    param = None
+
+
+class DetFunc(ModelBase):
+    param = None
+
+
+class RankFunc(ModelBase):
+    param = None
+
+
+class NullFunc(ModelBase):
+    param = None
+
+
+class OrthFunc(ModelBase):
+    param = None
+
+
+class InvFunc(ModelBase):
+    param = None
+
+
 class Import(ModelBase):
     names = None
     package = None
@@ -5091,6 +5740,14 @@ class FunctionType(ModelBase):
 
 
 class Integer(ModelBase):
+    value = None
+
+
+class SupInteger(ModelBase):
+    value = None
+
+
+class SubInteger(ModelBase):
     value = None
 
 
