@@ -474,7 +474,9 @@ class CodeGenEigen(CodeGen):
         if type_info.la_type.is_scalar():
             content = "abs({})".format(value)
         elif type_info.la_type.is_vector():
-            if node.norm_type == NormType.NormInteger:
+            if node.norm_type == NormType.NormDet:
+                content = "({}).determinant()".format(value)
+            elif node.norm_type == NormType.NormInteger:
                 if node.sub == 0:
                     content = "({}).array().count()".format(value)
                 else:
@@ -489,7 +491,9 @@ class CodeGenEigen(CodeGen):
                 else:
                     content = "sqrt(({}).transpose()*{}*({}))".format(value, sub_info.content, value)
         elif type_info.la_type.is_matrix():
-            if node.norm_type == NormType.NormFrobenius:
+            if node.norm_type == NormType.NormDet:
+                content = "({}).determinant()".format(value)
+            elif node.norm_type == NormType.NormFrobenius:
                 content = "({}).norm()".format(value)
             elif node.norm_type == NormType.NormNuclear:
                 svd_name = self.generate_var_name("svd")
@@ -536,6 +540,7 @@ class CodeGenEigen(CodeGen):
         pre_list = []
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
+        left_info.pre_list += right_info.pre_list
         if node.left.la_type.is_matrix() and node.left.la_type.sparse:
             solver_name = self.generate_var_name("solver")
             pre_list.append(

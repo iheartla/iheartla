@@ -916,10 +916,13 @@ class TypeWalker(NodeWalker):
                 if ir_node.sub.la_type.is_matrix():
                     assert ir_node.sub.la_type.rows == ir_node.sub.la_type.cols and ir_node.sub.la_type.rows == ir_node.value.la_type.rows, self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Dimension error")
         elif ir_node.value.la_type.is_matrix():
-            assert node.single is None, self.get_err_msg_info(node.parseinfo, "Norm error. MATRIX type has to use || rather than |")
-            assert ir_node.norm_type == NormType.NormFrobenius or ir_node.norm_type == NormType.NormNuclear, self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Invalid norm for Matrix")
-            if ir_node.norm_type == NormType.NormNuclear:
-                assert not ir_node.value.la_type.sparse, self.get_err_msg(self.get_line_info(node.parseinfo),
+            if node.single:
+                ir_node.norm_type = NormType.NormDet
+            else:
+                assert node.single is None, self.get_err_msg_info(node.parseinfo, "Norm error. MATRIX type has to use || rather than |")
+                assert ir_node.norm_type == NormType.NormFrobenius or ir_node.norm_type == NormType.NormNuclear, self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Invalid norm for Matrix")
+                if ir_node.norm_type == NormType.NormNuclear:
+                    assert not ir_node.value.la_type.sparse, self.get_err_msg(self.get_line_info(node.parseinfo),
                                                                           self.get_line_info(node.parseinfo).text.find('*'),
                                                                           "Norm error. Nuclear norm is invalid for sparse matrix")
 
@@ -1058,7 +1061,25 @@ class TypeWalker(NodeWalker):
     def walk_Solver(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
+        if node.p:
+            if not left_info.la_type.is_matrix() or not left_info.la_type.sparse:
+                pow_node = PowerNode(parse_info=node.left.parseinfo)
+                pow_node.base = left_info.ir
+                pow_node.r = node.p
+                if left_info.la_type.is_matrix():
+                    assert left_info.la_type.rows == left_info.la_type.cols, self.get_err_msg_info(
+                        left_info.ir.parse_info, "Inverse matrix error. The rows should be the same as the columns")
+                    pow_node.la_type = MatrixType(rows=left_info.la_type.rows, cols=left_info.la_type.rows,
+                                                 sparse=left_info.la_type.sparse)
+                else:
+                    assert left_info.la_type.is_scalar(), self.get_err_msg_info(left_info.ir.parse_info,
+                                                                                "Inverse error. The base must be a matrix or scalar")
+                    pow_node.la_type = ScalarType()
+                pow_info = NodeInfo(pow_node.la_type)
+                pow_info.ir = pow_node
+                return self.make_mul_info(pow_info, right_info)
         ir_node = SolverNode(parse_info=node.parseinfo)
+        ir_node.pow = node.p
         ir_node.left = left_info.ir
         ir_node.right = right_info.ir
         assert left_info.la_type.is_matrix(), self.get_err_msg_info(left_info.ir.parse_info, "Parameter {} must be a matrix".format(node.left.text))

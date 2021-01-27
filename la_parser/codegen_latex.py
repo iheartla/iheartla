@@ -519,15 +519,20 @@ class CodeGenLatex(CodeGen):
     def visit_solver(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
+        if node.pow:
+            return left_info + '^{-1}' + right_info
         return left_info + ' \setminus ' + right_info
 
     def visit_norm(self, node, **kwargs):
         if node.value.la_type.is_scalar():
             content = "|{}|".format(self.visit(node.value, **kwargs))
         else:
-            content = "\\|{}\\|".format(self.visit(node.value, **kwargs))
+            value_content = self.visit(node.value, **kwargs)
+            content = "\\|{}\\|".format(value_content)
             if node.value.la_type.is_vector():
-                if node.norm_type == NormType.NormInteger:
+                if node.norm_type == NormType.NormDet:
+                    content = "|{}|".format(value_content)
+                elif node.norm_type == NormType.NormInteger:
                     content += "_{}".format(node.sub)
                 elif node.norm_type == NormType.NormMax:
                     content += "_\\infty"
@@ -535,7 +540,9 @@ class CodeGenLatex(CodeGen):
                     sub_info = self.visit(node.sub, **kwargs)
                     content += "_{{{}}}".format(sub_info)
             elif node.value.la_type.is_matrix():
-                if node.norm_type == NormType.NormFrobenius:
+                if node.norm_type == NormType.NormDet:
+                    content = "|{}|".format(value_content)
+                elif node.norm_type == NormType.NormFrobenius:
                     content += "_F"
                 elif node.norm_type == NormType.NormNuclear:
                     content += "_*"

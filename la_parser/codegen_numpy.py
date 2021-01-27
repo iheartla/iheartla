@@ -335,7 +335,9 @@ class CodeGenNumpy(CodeGen):
         if type_info.la_type.is_scalar():
             content = "np.absolute({})".format(value)
         elif type_info.la_type.is_vector():
-            if node.norm_type == NormType.NormInteger:
+            if node.norm_type == NormType.NormDet:
+                content = "scipy.linalg.det({})".format(value)
+            elif node.norm_type == NormType.NormInteger:
                 content = "np.linalg.norm({}, {})".format(value, node.sub)
             elif node.norm_type == NormType.NormMax:
                 content = "np.linalg.norm({}, np.inf)".format(value)
@@ -347,7 +349,9 @@ class CodeGenNumpy(CodeGen):
                 else:
                     content = "np.sqrt(({}).T @ {} @ ({}))".format(value, sub_info.content, value)
         elif type_info.la_type.is_matrix():
-            if node.norm_type == NormType.NormFrobenius:
+            if node.norm_type == NormType.NormDet:
+                content = "scipy.linalg.det({})".format(value)
+            elif node.norm_type == NormType.NormFrobenius:
                 content = "np.linalg.norm({}, 'fro')".format(value)
             elif node.norm_type == NormType.NormNuclear:
                 content = "np.linalg.norm({}, 'nuc')".format(value)
@@ -384,6 +388,7 @@ class CodeGenNumpy(CodeGen):
     def visit_solver(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
+        left_info.pre_list += right_info.pre_list
         if (node.left.la_type.is_matrix() and node.left.la_type.sparse) or (node.right.la_type.is_matrix() and node.right.la_type.sparse):
             left_info.content = "sparse.linalg.spsolve({}, {})".format(left_info.content, right_info.content)
         else:

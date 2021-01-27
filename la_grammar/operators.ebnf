@@ -1,6 +1,7 @@
 # operators
 operations
     =
+    | solver_operator
     | power_operator
     | function_operator
     | norm_operator
@@ -16,7 +17,6 @@ operations
     | sum_operator
     | integral_operator
     | trans_operator
-    | solver_operator
     | builtin_operators
     ;
 
@@ -79,7 +79,8 @@ power_operator::Power
     ;
 
 solver_operator::Solver
-    = left:identifier {hspace} '\' {hspace} right:identifier
+    = left:factor {hspace} '\' {hspace} right:factor
+    | left:factor {hspace} p:('^(-1)' | '⁻¹') {hspace} right:factor
     ;
 
 sum_operator::Summation
