@@ -514,6 +514,7 @@ class NormType(Enum):
     NormInteger = 2
     NormIdentifier = 3
     NormMax = 4
+    NormDet = 5  # determinant
 
 
 class NormNode(ExprNode):

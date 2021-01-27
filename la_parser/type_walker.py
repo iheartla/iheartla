@@ -916,10 +916,13 @@ class TypeWalker(NodeWalker):
                 if ir_node.sub.la_type.is_matrix():
                     assert ir_node.sub.la_type.rows == ir_node.sub.la_type.cols and ir_node.sub.la_type.rows == ir_node.value.la_type.rows, self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Dimension error")
         elif ir_node.value.la_type.is_matrix():
-            assert node.single is None, self.get_err_msg_info(node.parseinfo, "Norm error. MATRIX type has to use || rather than |")
-            assert ir_node.norm_type == NormType.NormFrobenius or ir_node.norm_type == NormType.NormNuclear, self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Invalid norm for Matrix")
-            if ir_node.norm_type == NormType.NormNuclear:
-                assert not ir_node.value.la_type.sparse, self.get_err_msg(self.get_line_info(node.parseinfo),
+            if node.single:
+                ir_node.norm_type = NormType.NormDet
+            else:
+                assert node.single is None, self.get_err_msg_info(node.parseinfo, "Norm error. MATRIX type has to use || rather than |")
+                assert ir_node.norm_type == NormType.NormFrobenius or ir_node.norm_type == NormType.NormNuclear, self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Invalid norm for Matrix")
+                if ir_node.norm_type == NormType.NormNuclear:
+                    assert not ir_node.value.la_type.sparse, self.get_err_msg(self.get_line_info(node.parseinfo),
                                                                           self.get_line_info(node.parseinfo).text.find('*'),
                                                                           "Norm error. Nuclear norm is invalid for sparse matrix")
 

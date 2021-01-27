@@ -335,7 +335,9 @@ class CodeGenNumpy(CodeGen):
         if type_info.la_type.is_scalar():
             content = "np.absolute({})".format(value)
         elif type_info.la_type.is_vector():
-            if node.norm_type == NormType.NormInteger:
+            if node.norm_type == NormType.NormDet:
+                content = "scipy.linalg.det({})".format(value)
+            elif node.norm_type == NormType.NormInteger:
                 content = "np.linalg.norm({}, {})".format(value, node.sub)
             elif node.norm_type == NormType.NormMax:
                 content = "np.linalg.norm({}, np.inf)".format(value)
@@ -347,7 +349,9 @@ class CodeGenNumpy(CodeGen):
                 else:
                     content = "np.sqrt(({}).T @ {} @ ({}))".format(value, sub_info.content, value)
         elif type_info.la_type.is_matrix():
-            if node.norm_type == NormType.NormFrobenius:
+            if node.norm_type == NormType.NormDet:
+                content = "scipy.linalg.det({})".format(value)
+            elif node.norm_type == NormType.NormFrobenius:
                 content = "np.linalg.norm({}, 'fro')".format(value)
             elif node.norm_type == NormType.NormNuclear:
                 content = "np.linalg.norm({}, 'nuc')".format(value)
