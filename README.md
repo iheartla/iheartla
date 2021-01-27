@@ -5,8 +5,8 @@ I❤️LA is a compilable markdown for math. It can generate working code in you
 ```
 ∑_i a_i b_i
 where
-a_i: ℝ
-b_i: ℝ
+a_i ∈ ℝ
+b_i ∈ ℝ
 ```
 
 or this:
@@ -62,7 +62,8 @@ or install the [Poetry](https://python-poetry.org/) dependency manager and run:
     poetry install --no-root --no-dev
     poetry shell
 
-**NOTE**: As of this writing (2020-10-14), installing poetry via homebrew has a bug whose workaround is to type `poetry env use python3.8` before you run `poetry install --no-root --no-dev`.
+**NOTE**: As of 2020-10-14, installing poetry via homebrew has a bug whose workaround is to type `poetry env use python3.8` before you run `poetry install --no-root --no-dev`.
+This situation may have changed.
 
 If you are developing I❤️LA, the test suite needs a working C++ compiler and, optionally, the Graphviz graph visualization software (`brew install graphviz`).
 
