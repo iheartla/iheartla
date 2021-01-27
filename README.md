@@ -15,9 +15,9 @@ or this:
 A_ij = { 1 if (i,j) ∈ E
          0 otherwise
 where
-A: ℝ^(n × n)
-E: { ℤ × ℤ }
-n: ℤ
+A ∈ ℝ^(n × n)
+E ∈ { ℤ × ℤ }
+n ∈ ℤ
 ```
 
 or this:
@@ -28,8 +28,8 @@ or this:
                   -3  3  0  0
                    1  0  0  0 ] P
 where
-t: ℝ
-P: ℝ^(4 × d)
+t ∈ ℝ
+P ∈ ℝ^(4 × d)
 ```
 
 In other words, I❤️LA is a linear algebra domain specific language (DSL) that targets other languages. Write once, use everywhere.
