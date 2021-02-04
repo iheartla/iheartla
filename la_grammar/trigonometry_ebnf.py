@@ -1,3 +1,4 @@
+TRIGONOMETRY = r"""
 #@override
 #builtin_operators
 #    =  builtin_operators
@@ -145,3 +146,4 @@ orth_func::OrthFunc
 inv_func::InvFunc
     = 'inv' '(' {hspace} param:expression {hspace} ')'
     ;
+"""

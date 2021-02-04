@@ -1,3 +1,4 @@
+NUMBER = r"""
 # number definition
 
 exponent::Exponent
@@ -22,3 +23,4 @@ number
     | double
     | integer
     ;
+"""

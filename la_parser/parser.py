@@ -30,6 +30,7 @@ from ..la_tools.parser_manager import ParserManager
 import subprocess
 import threading
 import regex as re
+from ..la_grammar import *
 
 ## We don't need wx to run in command-line mode. This makes it optional.
 try:
@@ -101,16 +102,18 @@ def log_la(content):
 def create_parser():
     parser = None
     try:
-        file = open(GRAMMAR_DIR/'LA.ebnf')
-        simplified_file = open(GRAMMAR_DIR/'simplified_grammar.ebnf')
-        grammar = file.read()
-        simplified_grammar = simplified_file.read()
+        # file = open(GRAMMAR_DIR/'LA.ebnf')
+        # simplified_file = open(GRAMMAR_DIR/'simplified_grammar.ebnf')
+        # grammar = file.read()
+        grammar = LA
+        # simplified_grammar = simplified_file.read()
+        simplified_grammar = SIMPLIFIED
         global _grammar_content
         _grammar_content = grammar
         # get init parser
         parser = get_compiled_parser(simplified_grammar)
-        file.close()
-        simplified_file.close()
+        # file.close()
+        # simplified_file.close()
         # get default parser
         get_compiled_parser(_grammar_content, _default_key)
     except IOError:

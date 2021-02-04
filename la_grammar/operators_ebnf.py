@@ -1,3 +1,4 @@
+OPERATORS = r"""
 # operators
 operations
     =
@@ -180,3 +181,4 @@ ln_func::LnFunc
 sqrt_func::SqrtFunc
     = SQRT '(' {hspace} param:expression {hspace} ')'
     ;
+"""

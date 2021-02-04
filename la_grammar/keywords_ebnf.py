@@ -1,3 +1,4 @@
+KEYWORDS = r"""
 BUILTIN_KEYWORDS
     =
     #| TRACE
@@ -108,3 +109,4 @@ SQRT = /sqrt/;
 SUBJECT_TO = /s.t./|/subject to/;
 FROM = /from/;
 PI = /π/;
+"""

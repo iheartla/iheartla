@@ -1,3 +1,4 @@
+BASE = r"""
 #base
 hspace
     = ' ' | '\t'
@@ -64,3 +65,5 @@ pi::Pi
 e::E
     = /e/
     ;
+    
+"""

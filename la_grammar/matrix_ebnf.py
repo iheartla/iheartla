@@ -1,3 +1,4 @@
+MATRIX = r"""
 #matrix
 matrix::Matrix
     = '[' {hspace} value:rows {hspace} ']'
@@ -183,3 +184,4 @@ sum_in_matrix_operator::Summation
     | SUM '_' sub:identifier_alone &'(' {hspace} exp:term_in_matrix
     | SUM '_(' {hspace} id:identifier_alone {hspace} 'for' {hspace} cond:if_condition {hspace} ')' {hspace}+ exp:term_in_matrix
     ;
+"""

@@ -1,3 +1,12 @@
+from .keywords_ebnf import KEYWORDS
+from .number_ebnf import NUMBER
+from .operators_ebnf import OPERATORS
+from .matrix_ebnf import MATRIX
+from .base_ebnf import BASE
+from .trigonometry_ebnf import TRIGONOMETRY
+from .shared_ebnf import SHARED
+
+SIMPLIFIED = r"""
 @@grammar::LA
 @@whitespace :: /(?!.*)/     #parse whitespace manually
 @@left_recursion::True
@@ -6,7 +15,7 @@ start::Start
     = {separator_with_space} {directive+:Directive {{separator_with_space}+ directive+:Directive} {separator_with_space}+}
     {{separator_with_space} vblock+:valid_block {separator_with_space}}+ {blank} $
     ;
-
+""" + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + SHARED
 #include :: "keywords.ebnf"
 #include :: "number.ebnf"
 #include :: "operators.ebnf"
@@ -15,7 +24,7 @@ start::Start
 #include :: "trigonometry.ebnf"
 #include :: "shared.ebnf"
 
-
+SIMPLIFIED += r"""
 valid_block
     = params_block | statements
     ;
@@ -156,3 +165,4 @@ less::LessCondition
 less_equal::LessEqualCondition
     = left:expression {hspace} ('<=' | '⩽') {hspace} right:expression
     ;
+"""
