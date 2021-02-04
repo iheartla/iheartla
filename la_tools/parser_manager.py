@@ -1,5 +1,5 @@
-from la_tools.la_helper import *
-from la_tools.la_logger import *
+from .la_helper import *
+from .la_logger import *
 import pickle
 import tatsu
 import time
@@ -23,7 +23,7 @@ class ParserManager(object):
         self.prefix = "parser"
         self.module_dir = "iheartla"
         self.default_parsers_dict = {hashlib.md5("init".encode()).hexdigest(): 0, hashlib.md5("default".encode()).hexdigest(): 0}
-        for f in (self.grammar_dir.parent / 'la_local_parsers').glob('*.py'):
+        for f in (self.grammar_dir.parent / 'la_local_parsers').glob('parser*.py'):
             name, hash_value, t = self.separate_parser_file(f.name)
             if hash_value in self.default_parsers_dict:
                 self.default_parsers_dict[hash_value] = t
@@ -67,7 +67,7 @@ class ParserManager(object):
             self.clean_parsers()
             # copy default parsers
             dir_path = Path(self.cache_dir)
-            for f in (self.grammar_dir.parent/'la_local_parsers').glob('*.py'):
+            for f in (self.grammar_dir.parent/'la_local_parsers').glob('parser*.py'):
                 if not (dir_path/f.name).exists():
                     shutil.copy(f, dir_path)
 

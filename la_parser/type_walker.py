@@ -2,10 +2,10 @@ import copy
 from tatsu.model import NodeWalker
 import regex as re
 from tatsu.objectmodel import Node
-from la_parser.la_types import *
-from la_tools.la_logger import *
-from la_tools.la_msg import *
-from la_tools.la_helper import *
+from .la_types import *
+from ..la_tools.la_logger import *
+from ..la_tools.la_msg import *
+from ..la_tools.la_helper import *
 
 ## Make the visualizer
 try: from la_tools.la_visualizer import LaVisualizer
@@ -14,7 +14,7 @@ except ImportError:
     class LaVisualizer(object):
         def visualize(self, node): pass
 
-from la_parser.ir import *
+from .ir import *
 from enum import Enum, IntFlag
 
 

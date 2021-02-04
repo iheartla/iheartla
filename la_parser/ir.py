@@ -1,4 +1,4 @@
-from la_parser.la_types import *
+from .la_types import *
 import weakref
 
 

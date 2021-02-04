@@ -1,7 +1,7 @@
 import wx
 from enum import Enum
-from la_gui.python_ctrl import PyTextControl
-from la_gui.cpp_ctrl import CppTextControl
+from ..la_gui.python_ctrl import PyTextControl
+from ..la_gui.cpp_ctrl import CppTextControl
 
 
 class MidPanelEnum(Enum):

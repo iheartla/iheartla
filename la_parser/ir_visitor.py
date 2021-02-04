@@ -1,7 +1,7 @@
 import re
-from la_parser.ir import *
-from la_tools.la_logger import *
-from la_tools.la_helper import *
+from .ir import *
+from ..la_tools.la_logger import *
+from ..la_tools.la_helper import *
 import unicodedata
 
 

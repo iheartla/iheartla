@@ -1,6 +1,6 @@
 import wx
 import wx.stc as stc
-import la_gui.base_ctrl as bc
+from ..la_gui import base_ctrl as bc
 
 
 class CppTextControl(bc.BaseTextControl):

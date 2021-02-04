@@ -4,7 +4,7 @@ from wx.lib.pdfviewer import pdfViewer, pdfButtonPanel
 from wx.lib.pdfviewer import images
 import wx.lib.agw.buttonpanel as bp
 import wx.stc as stc
-import la_gui.base_ctrl as bc
+from ..la_gui import base_ctrl as bc
 
 
 class LatexControl(bc.BaseTextControl):

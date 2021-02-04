@@ -18,15 +18,15 @@ from tatsu.exceptions import (
     OptionSucceeded
 )
 from enum import Enum
-from la_parser.codegen_numpy import CodeGenNumpy
-from la_parser.codegen_eigen import CodeGenEigen
-from la_parser.codegen_latex import CodeGenLatex
-from la_parser.type_walker import *
-from la_parser.ir import *
-from la_parser.ir_visitor import *
-from la_tools.la_msg import *
-from la_tools.la_helper import *
-from la_tools.parser_manager import ParserManager
+from .codegen_numpy import CodeGenNumpy
+from .codegen_eigen import CodeGenEigen
+from .codegen_latex import CodeGenLatex
+from .type_walker import *
+from .ir import *
+from .ir_visitor import *
+from ..la_tools.la_msg import *
+from ..la_tools.la_helper import *
+from ..la_tools.parser_manager import ParserManager
 import subprocess
 import threading
 import regex as re
@@ -307,7 +307,24 @@ def get_file_name(path_name):
     return Path(path_name).stem
 
 
-def compile_la_file(la_file, parser_type):
+def compile_la_content(la_content, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX):
+    parser = get_default_parser()
+    model = parser.parse(la_content, parseinfo=True)
+    type_walker, start_node = parse_ir_node(la_content, model)
+    ret = []
+    if parser_type & ParserTypeEnum.NUMPY:
+        numpy_content = walk_model(ParserTypeEnum.NUMPY, type_walker, start_node)
+        ret.append(numpy_content)
+    if parser_type & ParserTypeEnum.EIGEN:
+        eigen_content = walk_model(ParserTypeEnum.EIGEN, type_walker, start_node)
+        ret.append(eigen_content)
+    if parser_type & ParserTypeEnum.LATEX:
+        tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, start_node)
+        ret.append(tex_content)
+    return ret
+
+
+def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX):
     """
     used for command line
     """

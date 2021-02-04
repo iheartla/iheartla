@@ -1,5 +1,5 @@
-from la_parser.codegen import *
-from la_parser.type_walker import *
+from .codegen import *
+from .type_walker import *
 
 
 class CodeGenLatex(CodeGen):

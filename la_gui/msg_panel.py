@@ -1,6 +1,6 @@
 import wx
 import wx.stc
-import la_gui.base_ctrl as bc
+from ..la_gui import base_ctrl as bc
 
 
 class MsgControl(wx.stc.StyledTextCtrl):

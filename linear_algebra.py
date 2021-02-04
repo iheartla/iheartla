@@ -1,15 +1,19 @@
-from la_parser.parser import compile_la_file, ParserTypeEnum
-from la_tools.la_logger import LaLogger, LoggerTypeEnum
+from .la_parser.parser import compile_la_file, compile_la_content, ParserTypeEnum
+from .la_tools.la_logger import LaLogger, LoggerTypeEnum
 import logging
 import argparse
 DEBUG = False   # log level
 
 
 def show_gui():
-    from la_gui.frame import wx, MainWindow
+    from .la_gui.frame import wx, MainWindow
     app = wx.App(False)
     MainWindow(None, "I❤️LA")
     app.MainLoop()
+
+
+def compile_la(content):
+    return compile_la_content(content, ParserTypeEnum.NUMPY|ParserTypeEnum.EIGEN|ParserTypeEnum.LATEX)
 
 
 if __name__ == '__main__':

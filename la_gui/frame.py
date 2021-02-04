@@ -7,15 +7,15 @@ import threading
 import wx.lib.agw.aui as aui
 from enum import Enum
 
-sys.path.append('../')
-from la_parser.parser import create_parser_background, parse_in_background, ParserTypeEnum, clean_parsers
-from la_gui.la_ctrl import LaTextControl
-from la_gui.python_ctrl import PyTextControl
-from la_gui.cpp_ctrl import CppTextControl
-from la_gui.latex_panel import LatexPanel
-from la_gui.msg_panel import MsgControl
-from la_gui.mid_panel import MidPanel, MidPanelEnum
-from la_tools.la_msg import *
+
+from ..la_parser.parser import create_parser_background, parse_in_background, ParserTypeEnum, clean_parsers
+from ..la_gui.la_ctrl import LaTextControl
+from ..la_gui.python_ctrl import PyTextControl
+from ..la_gui.cpp_ctrl import CppTextControl
+from ..la_gui.latex_panel import LatexPanel
+from ..la_gui.msg_panel import MsgControl
+from ..la_gui.mid_panel import MidPanel, MidPanelEnum
+from ..la_tools.la_msg import *
 
 
 class FileType(Enum):

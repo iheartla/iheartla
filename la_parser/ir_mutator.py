@@ -1,4 +1,4 @@
-from la_parser.ir_visitor import *
+from .ir_visitor import *
 
 
 class IRMutator(IRVisitor):
