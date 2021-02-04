@@ -75,6 +75,10 @@ class ParserManager(object):
         return self.prefix in parser_file and '.py' in parser_file and '_' in parser_file
 
     def init_cache(self):
+        # cache dir may not exist yet
+        if not Path(user_cache_dir()).exists():
+            Path(user_cache_dir()).mkdir()
+        # real dir
         dir_path = Path(self.cache_dir)
         if not dir_path.exists():
             dir_path.mkdir()
