@@ -125,12 +125,15 @@ class ParserManager(object):
             return self.parser_dict[hash_value]
         # os.path.dirname(filename) is used as the prefix for relative #include commands
         # It just needs to be a path inside the directory where all the grammar files are.
-        parser = tatsu.compile(grammar, asmodel=True, filename=self.grammar_dir/'here')
+        parser = tatsu.compile(grammar, asmodel=True)
         self.parser_dict[hash_value] = parser
-        # save to file asynchronously
-        save_thread = threading.Thread(target=self.save_grammar, args=(hash_value, grammar,))
-        save_thread.start()
-        self.save_threads.append( save_thread )
+        try:
+            # save to file asynchronously
+            save_thread = threading.Thread(target=self.save_grammar, args=(hash_value, grammar,))
+            save_thread.start()
+            self.save_threads.append( save_thread )
+        except:
+            self.save_grammar(hash_value, grammar)
         # self.save_dict()
         return parser
 
