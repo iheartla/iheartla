@@ -11,6 +11,7 @@ import importlib
 import importlib.util
 import threading
 import shutil
+import regex as re
 from datetime import datetime
 
 
@@ -22,11 +23,16 @@ class ParserManager(object):
         self.parser_dict = {}
         self.prefix = "parser"
         self.module_dir = "iheartla"
-        self.default_parsers_dict = {hashlib.md5("init".encode()).hexdigest(): 0, hashlib.md5("default".encode()).hexdigest(): 0}
+        self.default_hash_value = hashlib.md5("default".encode()).hexdigest()
+        self.default_parsers_dict = {hashlib.md5("init".encode()).hexdigest(): 0, self.default_hash_value: 0}
         for f in (self.grammar_dir.parent / 'la_local_parsers').glob('parser*.py'):
             name, hash_value, t = self.separate_parser_file(f.name)
             if hash_value in self.default_parsers_dict:
                 self.default_parsers_dict[hash_value] = t
+                if hash_value == self.default_hash_value:
+                    default_file = open(grammar_dir / f)
+                    self.default_parser_content = default_file.read()
+                    default_file.close()
         self.save_threads = []
         # create the user's cache directory (pickle)
         self.cache_dir = os.path.join(user_cache_dir(), self.module_dir)
@@ -119,23 +125,37 @@ class ParserManager(object):
         else:
             print("{} parser loaded".format(len(self.parser_dict)))
 
-    def get_parser(self, key, grammar):
+    def get_parser(self, key, grammar, extra_dict={}):
         hash_value = hashlib.md5(key.encode()).hexdigest()
         if hash_value in self.parser_dict:
             return self.parser_dict[hash_value]
+        # create new parser from default parser
+        rule_content = self.gen_parser_code(hash_value, extra_dict)
+        module_name = "{}_{}_{}".format(self.prefix, hash_value, datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))
+        new_file_name = os.path.join(self.cache_dir, "{}.py".format(module_name))
+        save_to_file(rule_content, new_file_name)
+        # load new parser
+        spec = importlib.util.spec_from_file_location(module_name, new_file_name)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        parser_a = getattr(module, "grammar{}Parser".format(hash_value))
+        parser_semantic = getattr(module, "grammar{}ModelBuilderSemantics".format(hash_value))
+        parser = parser_a(semantics=parser_semantic())
+        self.parser_dict[hash_value] = parser
+        return parser
         # os.path.dirname(filename) is used as the prefix for relative #include commands
         # It just needs to be a path inside the directory where all the grammar files are.
-        parser = tatsu.compile(grammar, asmodel=True)
-        self.parser_dict[hash_value] = parser
-        try:
-            # save to file asynchronously
-            save_thread = threading.Thread(target=self.save_grammar, args=(hash_value, grammar,))
-            save_thread.start()
-            self.save_threads.append( save_thread )
-        except:
-            self.save_grammar(hash_value, grammar)
-        # self.save_dict()
-        return parser
+        # parser = tatsu.compile(grammar, asmodel=True)
+        # self.parser_dict[hash_value] = parser
+        # try:
+        #     # save to file asynchronously
+        #     save_thread = threading.Thread(target=self.save_grammar, args=(hash_value, grammar,))
+        #     save_thread.start()
+        #     self.save_threads.append( save_thread )
+        # except:
+        #     self.save_grammar(hash_value, grammar)
+        # # self.save_dict()
+        # return parser
 
     def save_grammar(self, hash_value, grammar):
         self.check_parser_cnt()
@@ -177,6 +197,134 @@ class ParserManager(object):
                 pickle.dump(self.parser_dict, f, pickle.HIGHEST_PROTOCOL)
         except Exception as e:
             print("IO error:{}".format(e))
+
+    def gen_parser_code(self, hash_value, extra_dict):
+        cur_content = self.default_parser_content.replace(self.default_hash_value, hash_value)
+        if "ids" in extra_dict:
+            id_list = extra_dict["ids"]
+            id_alone_original_rule = r"""class IdentifierAlone(ModelBase):
+    id = None
+    value = None"""
+            id_alone_cur_rule = r"""class IdentifierAlone(ModelBase):
+    const = None
+    id = None
+    value = None"""
+            cur_content = cur_content.replace(id_alone_original_rule, id_alone_cur_rule)
+            id_original_rule = r"""@tatsumasu('IdentifierAlone')
+    def _identifier_alone_(self):  # noqa
+        with self._ifnot():
+            self._KEYWORDS_()
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                    self.name_last_node('value')
+                with self._option():
+                    self._token('`')
+                    self._pattern('[^`]*')
+                    self.name_last_node('id')
+                    self._token('`')
+                self._error('no available options')
+        self.ast._define(
+            ['id', 'value'],
+            []
+        )"""
+            choice_list = [f"""
+                        with self._option():
+                            self._pattern('{item}')""".format(item)[1:] for item in id_list]
+            option_list = [f"""
+                                        with self._option():
+                                            self._pattern('{item}')""".format(item)[1:] for item in id_list]
+            id_rule = """@tatsumasu('IdentifierAlone')
+    def _identifier_alone_(self):  # noqa
+        with self._choice():
+            with self._option():
+                with self._group():
+                    with self._choice():""" + '\n' + '\n'.join(choice_list) + r"""
+                        self._error('no available options')
+                self.name_last_node('const')
+            with self._option():
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            with self._ifnot():
+                                with self._group():
+                                    with self._choice():
+                                        with self._option():
+                                            self._KEYWORDS_()""" + '\n' + '\n'.join(option_list) + r"""
+                                        self._error('no available options')
+                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                            self.name_last_node('value')
+                        with self._option():
+                            self._token('`')
+                            self._pattern('[^`]*')
+                            self.name_last_node('id')
+                            self._token('`')
+                        self._error('no available options')
+            self._error('no available options')
+        self.ast._define(
+            ['const', 'id', 'value'],
+            []
+        )"""
+            cur_content = cur_content.replace(id_original_rule, id_rule)
+        # new function rules
+        if 'funcs' in extra_dict:
+            funcs_list = extra_dict["funcs"]
+            choice_list = [f"""
+            with self._option():
+                self._pattern('{item}')""".format(item)[1:] for item in funcs_list]
+            funcs_original_rule = r"""@tatsumasu()
+    def _func_id_(self):  # noqa
+        self._token('!!!')"""
+            funcs_rule = """@tatsumasu()
+    def _func_id_(self):  # noqa
+        with self._choice():""" + '\n' + '\n'.join(choice_list) + r"""
+            self._error('no available options')"""
+            cur_content = cur_content.replace(funcs_original_rule, funcs_rule)
+        # new packages
+        if 'pkg' in extra_dict:
+            funcs_list = extra_dict["pkg"]
+            if 'e' in funcs_list:
+                funcs_list.remove('e')
+                constant_original = r"""@tatsumasu()
+    def _constant_(self):  # noqa
+        self._pi_()"""
+                constant_new = r"""@tatsumasu()
+    def _constant_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._pi_()
+            with self._option():
+                self._e_()
+            self._error('no available options')"""
+                cur_content = cur_content.replace(constant_original, constant_new)
+                keywords_original = r"""@tatsumasu()
+    def _KEYWORDS_(self):  # noqa
+        self._BUILTIN_KEYWORDS_()"""
+                keywords_new = r"""@tatsumasu()
+    def _KEYWORDS_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._BUILTIN_KEYWORDS_()
+            with self._option():
+                self._e_()
+            self._error('no available options')"""
+                cur_content = cur_content.replace(keywords_original, keywords_new)
+            # normal builtin functions
+            builtin_original_rule = r"""@tatsumasu()
+    def _builtin_operators_(self):  # noqa
+        self._predefined_built_operators_()"""
+            choice_list = [f"""
+            with self._option():
+                self._{item}_()""".format(item)[1:] for item in funcs_list]
+            funcs_rule = """@tatsumasu()
+    def _builtin_operators_(self):  # noqa
+        with self._choice():""" + '\n' + '\n'.join(choice_list) + r"""
+            with self._option():
+                self._predefined_built_operators_()
+            self._error('no available options')"""
+            cur_content = cur_content.replace(builtin_original_rule, funcs_rule)
+        return cur_content
 
 
 def recreate_local_parser_cache():

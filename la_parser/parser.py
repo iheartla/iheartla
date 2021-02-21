@@ -82,9 +82,9 @@ else:
 _grammar_content = None   # content in file
 _default_key = 'default'
 _parser_manager = ParserManager(GRAMMAR_DIR)
-def get_compiled_parser(grammar, keys='init'):
+def get_compiled_parser(grammar, keys='init', extra_dict={}):
     log_la("keys:" + keys)
-    return _parser_manager.get_parser(keys, grammar)
+    return _parser_manager.get_parser(keys, grammar, extra_dict)
 
 
 _type_walker = None
@@ -199,6 +199,7 @@ def parse_ir_node(content, model):
     # deal with function
     func_dict = type_walker.get_func_symbols()
     multi_list = []
+    extra_dict = {}
     parse_key = _default_key
     for parameter in type_walker.parameters:
         if _id_pattern.fullmatch(parameter):
@@ -219,6 +220,7 @@ def parse_ir_node(content, model):
     if len(multi_list) > 0:
         multi_list = [re.escape(item).replace('/', '\\/') for item in multi_list]
         multi_list = sorted(multi_list, key=len, reverse=True)
+        extra_dict['ids'] = multi_list
         keys_rule = "/" + "/|/".join(multi_list) + "/"
         log_la("keys_rule:" + keys_rule)
         parse_key += "keys_rule:{};".format(keys_rule)
@@ -232,6 +234,7 @@ def parse_ir_node(content, model):
         key_list += extra_list
         key_list = [re.escape(item).replace('/', '\\/') for item in key_list]
         func_rule = "/" + "/|/".join(key_list) + "/"
+        extra_dict['funcs'] = key_list
         log_la("func_rule:" + func_rule)
         current_content = current_content.replace("func_id='!!!';", "func_id={};".format(func_rule))
         parse_key += "func symbol:{}, func sig:{}".format(','.join(func_dict.keys()), ";".join(func_dict.values()))
@@ -239,6 +242,7 @@ def parse_ir_node(content, model):
     if len(start_node.directives) > 0:
         # include directives
         package_name_dict = start_node.get_package_dict()
+        package_name_list = []
         key_names = []
         for package in package_name_dict:
             name_list = package_name_dict[package]
@@ -247,15 +251,18 @@ def parse_ir_node(content, model):
                 current_content = current_content.replace("BUILTIN_KEYWORDS;", "BUILTIN_KEYWORDS|e;")
                 name_list.remove('e')
                 parse_key += 'e;'
+                package_name_list.append('e')
             for name in name_list:
                 key_names.append("{}_func".format(name))
+        package_name_list += key_names
         if len(key_names) > 0:
             # add new rules
-            keyword_index = current_content.find('predefined_built_operators\n')
+            keyword_index = current_content.find('predefined_built_operators;')
             current_content = current_content[:keyword_index] + '|'.join(key_names) + '|' + current_content[keyword_index:]
             parse_key += ';'.join(key_names)
+        extra_dict['pkg'] = package_name_list
     # get new parser
-    parser = get_compiled_parser(current_content, parse_key)
+    parser = get_compiled_parser(current_content, parse_key, extra_dict)
     model = parser.parse(content, parseinfo=True)
     # second parsing
     type_walker.reset_state(content)   # reset

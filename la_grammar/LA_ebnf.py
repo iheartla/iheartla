@@ -34,8 +34,7 @@ params_block::ParamsBlock
 
 builtin_operators
     =
-    predefined_built_operators
-    ;
+    predefined_built_operators;
 
 statements::Statements
     =
