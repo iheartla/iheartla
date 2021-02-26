@@ -16,6 +16,7 @@ class ParserTypeEnum(IntFlag):
     PYTORCH = 32
     ARMADILLO = 64
     TENSORFLOW = 128
+    MATHJAX = 256
 
 
 def is_keyword(name, parser_type=ParserTypeEnum.DEFAULT):
