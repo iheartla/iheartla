@@ -65,6 +65,19 @@ class CodeGenNumpy(CodeGen):
     def visit_start(self, node, **kwargs):
         return self.visit(node.stat, **kwargs)
 
+    def get_struct_definition(self):
+        assign_list = []
+        for parameter in self.lhs_list:
+            assign_list.append("self.{} = {}".format(parameter, parameter))
+        content = ["class ResultType:",
+                   "    def __init__( self, {}):".format(', '.join(self.lhs_list)),
+                   "        {}".format('\n        '.join(assign_list)),
+                   "\n"]
+        return "\n".join(content)
+
+    def get_ret_struct(self):
+        return "ResultType({})".format(', '.join(self.lhs_list))
+
     def visit_block(self, node, **kwargs):
         type_checks = []
         type_declare = []
@@ -218,7 +231,8 @@ class CodeGenNumpy(CodeGen):
                 # test_content.append('    {} = lambda {}: {}'.format(parameter, ', '.join(param_list), self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
 
             main_content.append('    print("{}:", {})'.format(parameter, parameter))
-        content = 'def ' + self.func_name + '(' + ', '.join(self.parameters) + '):\n'
+        content = self.get_struct_definition() + '\n'
+        content += 'def ' + self.func_name + '(' + ', '.join(self.parameters) + '):\n'
         if show_doc:
             content += '    \"\"\"\n' + '\n'.join(doc) + '\n    \"\"\"\n'
         # merge content
@@ -246,13 +260,13 @@ class CodeGenNumpy(CodeGen):
             stats_content += ret_str + stat_info.content + '\n'
 
         content += stats_content
-        content += '    return ' + self.ret_symbol
+        content += '    return ' + self.get_ret_struct()
         content += '\n'
         # test
         test_function += test_content
         test_function.append('    return {}'.format(', '.join(self.parameters)))
         main_content.append("    func_value = {}({})".format(self.func_name, ', '.join(self.parameters)))
-        main_content.append('    print("func_value: ", func_value)')
+        main_content.append('    print("return value: ", func_value.{})'.format(self.ret_symbol))
         content += '\n\n' + '\n'.join(test_function) + '\n\n\n' + '\n'.join(main_content)
         # convert special string in identifiers
         content = self.trim_content(content)
