@@ -21,6 +21,7 @@ from enum import Enum
 from .codegen_numpy import CodeGenNumpy
 from .codegen_eigen import CodeGenEigen
 from .codegen_latex import CodeGenLatex
+from .codegen_mathjax import CodeGenMathjax
 from .type_walker import *
 from .ir import *
 from .ir_visitor import *
@@ -58,6 +59,8 @@ def get_codegen(parser_type):
             gen = CodeGenNumpy()
         elif parser_type == ParserTypeEnum.EIGEN:
             gen = CodeGenEigen()
+        elif parser_type == ParserTypeEnum.MATHJAX:
+            gen = CodeGenMathjax()
         _codegen_dict[parser_type] = gen
     return _codegen_dict[parser_type]
 
@@ -317,7 +320,7 @@ def get_file_name(path_name):
     return Path(path_name).stem
 
 
-def compile_la_content(la_content, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX):
+def compile_la_content(la_content, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX| ParserTypeEnum.MATHJAX):
     parser = get_default_parser()
     model = parser.parse(la_content, parseinfo=True)
     type_walker, start_node = parse_ir_node(la_content, model)
@@ -330,6 +333,9 @@ def compile_la_content(la_content, parser_type=ParserTypeEnum.NUMPY | ParserType
         ret.append(eigen_content)
     if parser_type & ParserTypeEnum.LATEX:
         tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, start_node)
+        ret.append(tex_content)
+    if parser_type & ParserTypeEnum.MATHJAX:
+        tex_content = walk_model(ParserTypeEnum.MATHJAX, type_walker, start_node)
         ret.append(tex_content)
     return ret
 

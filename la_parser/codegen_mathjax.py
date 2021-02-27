@@ -2,7 +2,7 @@ from .codegen import *
 from .type_walker import *
 
 
-class CodeGenLatex(CodeGen):
+class CodeGenMathjax(CodeGen):
     def __init__(self):
         super().__init__(ParserTypeEnum.MATHJAX)
         self.uni_convert_dict = {'ᵢ': '\\textsubscript{i}', 'ⱼ': '\\textsubscript{j}', 'ᵣ': '\\textsubscript{r}',
