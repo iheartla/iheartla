@@ -145,6 +145,25 @@ class CodeGenEigen(CodeGen):
     def visit_start(self, node, **kwargs):
         return self.visit(node.stat, **kwargs)
 
+    def get_struct_definition(self):
+        item_list = []
+        def_list = []
+        assign_list = []
+        for parameter in self.lhs_list:
+            item_list.append("    {} {};".format(self.get_ctype(self.symtable[parameter]), parameter))
+            def_list.append("const {} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
+            assign_list.append("{}({})".format(parameter, parameter))
+        content = ["struct ResultType {",
+                   "{}".format('\n'.join(item_list)),
+                   "    ResultType({})".format(',\n               '.join(def_list)),
+                   "    : {}".format(',\n    '.join(assign_list)),
+                   "    {}",
+                   "};\n"]
+        return "\n".join(content)
+
+    def get_ret_struct(self):
+        return "ResultType({})".format(', '.join(self.lhs_list))
+
     def visit_block(self, node, **kwargs):
         type_checks = []
         doc = []
@@ -313,10 +332,12 @@ class CodeGenEigen(CodeGen):
                 test_content.append('    };')
             # main_print.append('    std::cout<<"{}:\\n"<<{}<<std::endl;'.format(parameter, parameter))
         content = ""
+        content += self.get_struct_definition() + '\n'
         if show_doc:
             content += '/**\n * ' + self.func_name + '\n *\n * ' + '\n * '.join(doc) + '\n * @return {}\n */\n'.format(
                 self.ret_symbol)
-        ret_type = self.get_ctype(self.symtable[self.ret_symbol])
+        # ret_type = self.get_ctype(self.symtable[self.ret_symbol])
+        ret_type = "ResultType"
         if len(self.parameters) == 0:
             content += ret_type + ' ' + self.func_name + '(' + ')\n{\n'  # func name
             test_function.insert(0, "void {}({})".format(rand_func_name, ', '.join(test_par_list)))
@@ -339,7 +360,7 @@ class CodeGenEigen(CodeGen):
             if index == len(node.stmts) - 1:
                 if type(node.stmts[index]).__name__ != 'AssignNode':
                     kwargs[LHS] = self.ret_symbol
-                    ret_str = "    " + ret_type + " " + self.ret_symbol + ' = '
+                    ret_str = "    " + self.get_ctype(self.symtable[self.ret_symbol]) + " " + self.ret_symbol + ' = '
                     need_semicolon = True
             else:
                 if type(node.stmts[index]).__name__ != 'AssignNode':
@@ -354,7 +375,10 @@ class CodeGenEigen(CodeGen):
                 stats_content += ret_str + stat_info.content + '\n'
 
         content += stats_content
-        content += '    return ' + self.ret_symbol + ';'
+        # return value
+        # ret_value = self.ret_symbol
+        ret_value = self.get_ret_struct()
+        content += '    return ' + ret_value + ';'
         content += '\n}\n'
         # test
         # test_content.append('    return {}'.format(', '.join(self.parameters)))
@@ -365,15 +389,15 @@ class CodeGenEigen(CodeGen):
         main_content.append("    {}({});".format(rand_func_name, ', '.join(self.parameters)))
         main_content += main_print
         main_content.append(
-            "    {} func_value = {}({});".format(self.get_ctype(self.symtable[self.ret_symbol]), self.func_name,
+            "    {} func_value = {}({});".format("ResultType", self.func_name,
                                                  ', '.join(self.parameters)))
         if self.symtable[self.ret_symbol].is_matrix() or self.symtable[self.ret_symbol].is_vector() or self.symtable[self.ret_symbol].is_scalar():
-            main_content.append('    std::cout<<"func_value:\\n"<<func_value<<std::endl;')
+            main_content.append('    std::cout<<"return value:\\n"<<func_value.{}<<std::endl;'.format(self.ret_symbol))
         else:
             # sequence
-            main_content.append('    std::cout<<"vector func_value:"<<std::endl;')
-            main_content.append('    for(int i=0; i<func_value.size(); i++){')
-            main_content.append('        std::cout<<"i:"<<i<<", value:\\n"<<func_value.at(i)<<std::endl;')
+            main_content.append('    std::cout<<"vector return value:"<<std::endl;')
+            main_content.append('    for(int i=0; i<func_value.{}.size(); i++){'.format(self.ret_symbol))
+            main_content.append('        std::cout<<"i:"<<i<<", value:\\n"<<func_value.{}.at(i)<<std::endl;'.format(self.ret_symbol))
             main_content.append('    }')
         main_content.append('    return 0;')
         main_content.append('}')

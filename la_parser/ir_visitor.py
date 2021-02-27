@@ -28,6 +28,7 @@ class IRVisitor(object):
         self.func_name = 'myExpression'
         self.param_name_test = 'p'  # param name for test function
         self.convert_matrix = False
+        self.lhs_list = []
         self.pattern = re.compile("[A-Za-z]+")
         self.la_content = ''
         self.uni_num_dict = {'₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9',
@@ -93,6 +94,7 @@ class IRVisitor(object):
         self.name_cnt_dict = type_walker.name_cnt_dict
         self.ret_symbol = type_walker.ret_symbol
         self.unofficial_method = type_walker.unofficial_method
+        self.lhs_list = type_walker.lhs_list
         self.la_content = type_walker.la_content
         if func_name is not None:
             self.func_name = func_name

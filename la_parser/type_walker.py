@@ -92,6 +92,7 @@ class TypeWalker(NodeWalker):
         self.constants = ['π']
         self.pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*")
         self.multi_lhs_list = []
+        self.lhs_list = []
         # self.directive_parsing = True   # directives grammar
         self.sum_subs = []
         self.sum_conds = []
@@ -127,6 +128,7 @@ class TypeWalker(NodeWalker):
         self.sum_subs = []
         self.sum_sym_list = []
         self.sum_conds = []
+        self.lhs_list.clear()
         self.la_content = la_content
 
     def get_func_symbols(self):
@@ -256,6 +258,7 @@ class TypeWalker(NodeWalker):
             if isinstance(vblock_info, list) and len(vblock_info) > 0:  # statement list with single statement
                 if type(vblock_info[0]).__name__ == 'Assignment':
                     id_node = self.walk(vblock_info[0].left, **kwargs).ir
+                    self.lhs_list.append(id_node.get_main_id())
                     if len(id_node.get_main_id()) > 1:
                         multi_lhs_list.append(id_node.get_main_id())
         self.multi_lhs_list = multi_lhs_list
@@ -274,6 +277,7 @@ class TypeWalker(NodeWalker):
                     self.ret_symbol = "ret"
                     update_ret_type = True
                     kwargs[LHS] = self.ret_symbol
+                    self.lhs_list.append(self.ret_symbol)
             type_info = self.walk(stat_list[index], **kwargs)
             ir_node.vblock[index_list[index]] = type_info.ir   # latex use
             block_node.add_stmt(type_info.ir)
