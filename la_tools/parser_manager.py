@@ -1,5 +1,7 @@
 from .la_helper import *
 from .la_logger import *
+from ..la_local_parsers.init_parser import grammarinitParser, grammarinitModelBuilderSemantics
+from ..la_local_parsers.default_parser import grammardefaultParser, grammardefaultModelBuilderSemantics
 import pickle
 import tatsu
 import time
@@ -39,6 +41,8 @@ class ParserManager(object):
         # init the cache and load the default parsers
         self.init_cache()
         self.load_parsers()
+        self.init_parser = grammarinitParser(semantics=grammarinitModelBuilderSemantics())
+        self.default_parser = grammardefaultParser(semantics=grammardefaultModelBuilderSemantics())
     
     def reload(self):
         self.parser_dict = {}
@@ -129,6 +133,10 @@ class ParserManager(object):
         hash_value = hashlib.md5(key.encode()).hexdigest()
         if hash_value in self.parser_dict:
             return self.parser_dict[hash_value]
+
+        self.modify_default_parser(extra_dict)
+        return self.default_parser
+
         # create new parser from default parser
         rule_content = self.gen_parser_code(hash_value, extra_dict)
         module_name = "{}_{}_{}".format(self.prefix, hash_value, datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))
@@ -197,6 +205,22 @@ class ParserManager(object):
                 pickle.dump(self.parser_dict, f, pickle.HIGHEST_PROTOCOL)
         except Exception as e:
             print("IO error:{}".format(e))
+
+    def modify_default_parser(self, extra_dict):
+        self.default_parser.new_id_list = []
+        self.default_parser.new_func_list = []
+        self.default_parser.builtin_list = []
+        self.default_parser.const_e = False
+        if "ids" in extra_dict:
+            self.default_parser.new_id_list = extra_dict["ids"]
+        if 'funcs' in extra_dict:
+            self.default_parser.new_func_list = extra_dict["funcs"]
+        if 'pkg' in extra_dict:
+            funcs_list = extra_dict["pkg"]
+            if 'e' in funcs_list:
+                self.default_parser.const_e = True
+                funcs_list.remove('e')
+            self.default_parser.builtin_list = funcs_list
 
     def gen_parser_code(self, hash_value, extra_dict):
         cur_content = self.default_parser_content.replace(self.default_hash_value, hash_value)

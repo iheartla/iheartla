@@ -79,6 +79,10 @@ class grammardefaultParser(Parser):
             buffer_class=buffer_class,
             **kwargs
         )
+        self.new_id_list = []
+        self.new_func_list = []
+        self.builtin_list = []
+        self.const_e = False
 
     @tatsumasu('Start')
     @nomemo
@@ -4051,7 +4055,17 @@ class grammardefaultParser(Parser):
 
     @tatsumasu()
     def _builtin_operators_(self):  # noqa
-        self._predefined_built_operators_()
+        if len(self.builtin_list) > 0:
+            with self._choice():
+                for new_builtin in self.builtin_list:
+                    with self._option():
+                        func = getattr(self, "_{}_".format(new_builtin), None)
+                        func()
+                with self._option():
+                    self._predefined_built_operators_()
+                self._error('no available options')
+        else:
+            self._predefined_built_operators_()
 
     @tatsumasu('Statements')
     @nomemo
@@ -4185,27 +4199,73 @@ class grammardefaultParser(Parser):
 
     @tatsumasu()
     def _func_id_(self):  # noqa
-        self._token('!!!')
+        if len(self.new_func_list) > 0:
+            with self._choice():
+                for new_id in self.new_func_list:
+                    with self._option():
+                        self._pattern(new_id)
+                self._error('no available options')
+        else:
+            # default
+            self._token('!!!')
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
-        with self._ifnot():
-            self._KEYWORDS_()
-        with self._group():
+        if len(self.new_id_list) > 0:
             with self._choice():
                 with self._option():
-                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
-                    self.name_last_node('value')
+                    with self._group():
+                        with self._choice():
+                            for new_id in self.new_id_list:
+                                with self._option():
+                                    self._pattern(new_id)
+                            self._error('no available options')
+                    self.name_last_node('const')
                 with self._option():
-                    self._token('`')
-                    self._pattern('[^`]*')
-                    self.name_last_node('id')
-                    self._token('`')
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                with self._ifnot():
+                                    with self._group():
+                                        with self._choice():
+                                            with self._option():
+                                                self._KEYWORDS_()
+                                            for new_id in self.new_id_list:
+                                                with self._option():
+                                                    self._pattern(new_id)
+                                            self._error('no available options')
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                                self.name_last_node('value')
+                            with self._option():
+                                self._token('`')
+                                self._pattern('[^`]*')
+                                self.name_last_node('id')
+                                self._token('`')
+                            self._error('no available options')
                 self._error('no available options')
-        self.ast._define(
-            ['id', 'value'],
-            []
-        )
+            self.ast._define(
+                ['const', 'id', 'value'],
+                []
+            )
+        else:
+            # default
+            with self._ifnot():
+                self._KEYWORDS_()
+            with self._group():
+                with self._choice():
+                    with self._option():
+                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                        self.name_last_node('value')
+                    with self._option():
+                        self._token('`')
+                        self._pattern('[^`]*')
+                        self.name_last_node('id')
+                        self._token('`')
+                    self._error('no available options')
+            self.ast._define(
+                ['id', 'value'],
+                []
+            )
 
     @tatsumasu('Factor')
     @leftrec
@@ -4246,11 +4306,27 @@ class grammardefaultParser(Parser):
 
     @tatsumasu()
     def _constant_(self):  # noqa
-        self._pi_()
+        if self.const_e:
+            with self._choice():
+                with self._option():
+                    self._pi_()
+                with self._option():
+                    self._e_()
+                self._error('no available options')
+        else:
+            self._pi_()
 
     @tatsumasu()
     def _KEYWORDS_(self):  # noqa
-        self._BUILTIN_KEYWORDS_()
+        if self.const_e:
+            with self._choice():
+                with self._option():
+                    self._BUILTIN_KEYWORDS_()
+                with self._option():
+                    self._e_()
+                self._error('no available options')
+        else:
+            self._BUILTIN_KEYWORDS_()
 
     @tatsumasu('Subexpression')
     def _subexpression_(self):  # noqa
@@ -5774,6 +5850,7 @@ class Assignment(ModelBase):
 class IdentifierAlone(ModelBase):
     id = None
     value = None
+    const = None
 
 
 class Subexpression(ModelBase):
