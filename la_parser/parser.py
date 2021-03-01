@@ -124,31 +124,8 @@ def create_parser():
     return parser
 
 
-_last_parser = None
-_last_parser_mtime = None
-_last_parser_mutex = threading.Lock()
-
 def get_default_parser():
-    '''
-    Equivalent to create_parser(), but stores the result for immediate access in the future.
-    Re-creates the parser if any grammar files change.
-    '''
-    global _last_parser, _last_parser_mtime
-    
-    with _last_parser_mutex:
-        ## Collect all .ebnf file modification times.
-        # print( 'grammar paths:', [ str(f) for f in GRAMMAR_DIR.glob('*.ebnf') ] )
-        mtimes = [os.path.getmtime(path) for path in GRAMMAR_DIR.glob('*.ebnf')]
-        # print( 'mtimes:', mtimes )
-        ## If the parser hasn't been created or a file has changed, re-create it.
-        if _last_parser is None or any([t >= _last_parser_mtime for t in mtimes]):
-            print("Creating parser...")
-            start_time = time.time()
-            _last_parser = create_parser()
-            _last_parser_mtime = time.time()
-            print("------------ %.2f seconds ------------" % (time.time() - start_time))
-    
-        return _last_parser
+    return create_parser()
 
 
 def generate_latex_code(type_walker, node_info, frame):
@@ -227,7 +204,8 @@ def parse_ir_node(content, model):
         keys_rule = "/" + "/|/".join(multi_list) + "/"
         log_la("keys_rule:" + keys_rule)
         parse_key += "keys_rule:{};".format(keys_rule)
-        current_content = current_content.replace("= !KEYWORDS(", "= const:({}) | (!(KEYWORDS | {} )".format(keys_rule, keys_rule))
+        if DEBUG_MODE:
+            current_content = current_content.replace("= !KEYWORDS(", "= const:({}) | (!(KEYWORDS | {} )".format(keys_rule, keys_rule))
     if len(func_dict.keys()) > 0:
         key_list = list(func_dict.keys())
         extra_list = []
@@ -239,7 +217,8 @@ def parse_ir_node(content, model):
         func_rule = "/" + "/|/".join(key_list) + "/"
         extra_dict['funcs'] = key_list
         log_la("func_rule:" + func_rule)
-        current_content = current_content.replace("func_id='!!!';", "func_id={};".format(func_rule))
+        if DEBUG_MODE:
+            current_content = current_content.replace("func_id='!!!';", "func_id={};".format(func_rule))
         parse_key += "func symbol:{}, func sig:{}".format(','.join(func_dict.keys()), ";".join(func_dict.values()))
     # deal with packages
     if len(start_node.directives) > 0:
@@ -250,8 +229,9 @@ def parse_ir_node(content, model):
         for package in package_name_dict:
             name_list = package_name_dict[package]
             if 'e' in name_list:
-                current_content = current_content.replace("pi;", "pi|e;")
-                current_content = current_content.replace("BUILTIN_KEYWORDS;", "BUILTIN_KEYWORDS|e;")
+                if DEBUG_MODE:
+                    current_content = current_content.replace("pi;", "pi|e;")
+                    current_content = current_content.replace("BUILTIN_KEYWORDS;", "BUILTIN_KEYWORDS|e;")
                 name_list.remove('e')
                 parse_key += 'e;'
                 package_name_list.append('e')
@@ -260,8 +240,9 @@ def parse_ir_node(content, model):
         package_name_list += key_names
         if len(key_names) > 0:
             # add new rules
-            keyword_index = current_content.find('predefined_built_operators;')
-            current_content = current_content[:keyword_index] + '|'.join(key_names) + '|' + current_content[keyword_index:]
+            if DEBUG_MODE:
+                keyword_index = current_content.find('predefined_built_operators;')
+                current_content = current_content[:keyword_index] + '|'.join(key_names) + '|' + current_content[keyword_index:]
             parse_key += ';'.join(key_names)
         extra_dict['pkg'] = package_name_list
     # get new parser

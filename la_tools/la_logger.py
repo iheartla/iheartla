@@ -20,7 +20,7 @@ class LaLogger(object):
         if LaLogger.__instance is not None:
             raise Exception("Class LaLogger is a singleton!")
         else:
-            self.level = logging.DEBUG
+            self.level = logging.ERROR
             self.logger_dict = {}
             self.name_dict = {
                 LoggerTypeEnum.DEFAULT: "la_default",

@@ -4,6 +4,7 @@ import sys
 import keyword
 
 
+DEBUG_MODE = False
 class ParserTypeEnum(IntFlag):
     INVALID = 0
     DEFAULT = 7
