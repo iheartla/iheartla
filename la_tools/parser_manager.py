@@ -34,6 +34,10 @@ class ParserManager(object):
             self.modify_default_parser(extra_dict)
             return self.default_parser
 
+    def set_test_mode(self):
+        if DEBUG_MODE:
+            self.parser_file_manager.set_test_mode()
+
     def modify_default_parser(self, extra_dict):
         self.default_parser.new_id_list = []
         self.default_parser.new_func_list = []

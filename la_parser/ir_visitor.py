@@ -408,6 +408,9 @@ class IRVisitor(object):
             subs.append(res[1][index])
         return [res[0], subs]
 
+    def get_result_type(self):
+        return self.func_name + "ResultType"
+
     def get_main_id(self, identifier):
         if identifier in self.ids_dict:
             return self.ids_dict[identifier].get_main_id()

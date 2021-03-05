@@ -153,16 +153,16 @@ class CodeGenEigen(CodeGen):
             item_list.append("    {} {};".format(self.get_ctype(self.symtable[parameter]), parameter))
             def_list.append("const {} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
             assign_list.append("{}({})".format(parameter, parameter))
-        content = ["struct ResultType {",
+        content = ["struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),
-                   "    ResultType({})".format(',\n               '.join(def_list)),
+                   "    {}({})".format(self.get_result_type(), ',\n               '.join(def_list)),
                    "    : {}".format(',\n    '.join(assign_list)),
                    "    {}",
                    "};\n"]
         return "\n".join(content)
 
     def get_ret_struct(self):
-        return "ResultType({})".format(', '.join(self.lhs_list))
+        return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list))
 
     def visit_block(self, node, **kwargs):
         type_checks = []
@@ -337,7 +337,7 @@ class CodeGenEigen(CodeGen):
             content += '/**\n * ' + self.func_name + '\n *\n * ' + '\n * '.join(doc) + '\n * @return {}\n */\n'.format(
                 self.ret_symbol)
         # ret_type = self.get_ctype(self.symtable[self.ret_symbol])
-        ret_type = "ResultType"
+        ret_type = self.get_result_type()
         if len(self.parameters) == 0:
             content += ret_type + ' ' + self.func_name + '(' + ')\n{\n'  # func name
             test_function.insert(0, "void {}({})".format(rand_func_name, ', '.join(test_par_list)))
@@ -389,7 +389,7 @@ class CodeGenEigen(CodeGen):
         main_content.append("    {}({});".format(rand_func_name, ', '.join(self.parameters)))
         main_content += main_print
         main_content.append(
-            "    {} func_value = {}({});".format("ResultType", self.func_name,
+            "    {} func_value = {}({});".format(self.get_result_type(), self.func_name,
                                                  ', '.join(self.parameters)))
         if self.symtable[self.ret_symbol].is_matrix() or self.symtable[self.ret_symbol].is_vector() or self.symtable[self.ret_symbol].is_scalar():
             main_content.append('    std::cout<<"return value:\\n"<<func_value.{}<<std::endl;'.format(self.ret_symbol))

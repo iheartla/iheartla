@@ -69,14 +69,14 @@ class CodeGenNumpy(CodeGen):
         assign_list = []
         for parameter in self.lhs_list:
             assign_list.append("self.{} = {}".format(parameter, parameter))
-        content = ["class ResultType:",
+        content = ["class {}:".format(self.get_result_type()),
                    "    def __init__( self, {}):".format(', '.join(self.lhs_list)),
                    "        {}".format('\n        '.join(assign_list)),
                    "\n"]
         return "\n".join(content)
 
     def get_ret_struct(self):
-        return "ResultType({})".format(', '.join(self.lhs_list))
+        return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list))
 
     def visit_block(self, node, **kwargs):
         type_checks = []
