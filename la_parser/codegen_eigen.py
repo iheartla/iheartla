@@ -396,7 +396,7 @@ class CodeGenEigen(CodeGen):
         else:
             # sequence
             main_content.append('    std::cout<<"vector return value:"<<std::endl;')
-            main_content.append('    for(int i=0; i<func_value.{}.size(); i++){'.format(self.ret_symbol))
+            main_content.append('    for(int i=0; i<func_value.{}.size(); i++){{'.format(self.ret_symbol))
             main_content.append('        std::cout<<"i:"<<i<<", value:\\n"<<func_value.{}.at(i)<<std::endl;'.format(self.ret_symbol))
             main_content.append('    }')
         main_content.append('    return 0;')
