@@ -369,8 +369,8 @@ class ParserFileManager(object):
 
 def recreate_local_parser_cache():
     ### WARNING: This will delete and re-create the cache and 'la_local_parsers' directories.
-    import la_parser.parser
-    PM = la_parser.parser._parser_manager
+    import iheartla.la_parser.parser
+    PM = iheartla.la_parser.parser._parser_manager
     
     print( '## Clearing the cache dir:', PM.cache_dir )
     shutil.rmtree( PM.cache_dir )
@@ -385,7 +385,7 @@ def recreate_local_parser_cache():
     PM.reload()
     
     print('## Re-creating the parsers.')
-    la_parser.parser.create_parser()
+    iheartla.la_parser.parser.create_parser()
     
     print('## Waiting for them to be saved.')
     for thread in PM.save_threads: thread.join()

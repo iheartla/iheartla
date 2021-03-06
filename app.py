@@ -1,26 +1,12 @@
-from .la_parser.parser import compile_la_file, compile_la_content, ParserTypeEnum
-from .la_tools.la_logger import LaLogger, LoggerTypeEnum
+from iheartla.la_parser.parser import compile_la_file, compile_la_content, ParserTypeEnum
+from iheartla.la_tools.la_logger import LaLogger, LoggerTypeEnum
+from iheartla.compiler import show_gui
 import logging
 import argparse
-DEBUG = False   # log level
-
-
-def show_gui():
-    from .la_gui.frame import wx, MainWindow
-    app = wx.App(False)
-    MainWindow(None, "I❤️LA")
-    app.MainLoop()
-
-
-def compile_la(content):
-    return compile_la_content(content, ParserTypeEnum.NUMPY|ParserTypeEnum.EIGEN|ParserTypeEnum.LATEX)
 
 
 if __name__ == '__main__':
-    if DEBUG:
-        LaLogger.getInstance().set_level(logging.INFO)
-    else:
-        LaLogger.getInstance().set_level(logging.ERROR)
+    LaLogger.getInstance().set_level(logging.ERROR)
     arg_parser = argparse.ArgumentParser(description='I Heart LA')
     arg_parser.add_argument('-o', '--output', help='The output language', choices = ['numpy', 'eigen', 'latex'])
     # arg_parser.add_argument('-i', '--input', help='File name containing I heart LA source code')
@@ -31,7 +17,7 @@ if __name__ == '__main__':
         show_gui()
     elif args.input:
         parser_type = ParserTypeEnum.DEFAULT
-        out_dict = {"numpy": ParserTypeEnum.NUMPY, "eigen": ParserTypeEnum.EIGEN, "latex": ParserTypeEnum.LATEX}
+        out_dict = {"numpy": ParserTypeEnum.NUMPY, "eigen": ParserTypeEnum.EIGEN, "latex": ParserTypeEnum.LATEX, "mathjax": ParserTypeEnum.MATHJAX}
         if args.output:
             out_list = args.output.split(",")
             for out in out_list:
