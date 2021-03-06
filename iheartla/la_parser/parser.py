@@ -155,17 +155,17 @@ def generate_latex_code(type_walker, node_info, frame):
                 # If xelatex worked, we have a PDF, even if pdfcrop failed.
                 # if ret.returncode == 0:
                 show_pdf = io.BytesIO( open("{}.pdf".format(template_name),'rb').read() )
-        except subprocess.SubprocessError as e:
-            tex_content = str(e)
-        except FailedParse as e:
-            tex_content = str(e)
-        except FailedCut as e:
-            tex_content = str(e)
-        except Exception as e:
-            tex_content = str(e)
-            exc_info = sys.exc_info()
-            traceback.print_exc()
-            tex_content = str(exc_info[2])
+        # except subprocess.SubprocessError as e:
+        #     tex_content = str(e)
+        # except FailedParse as e:
+        #     tex_content = str(e)
+        # except FailedCut as e:
+        #     tex_content = str(e)
+        # except Exception as e:
+        #     tex_content = str(e)
+        #     exc_info = sys.exc_info()
+        #     traceback.print_exc()
+        #     tex_content = str(exc_info[2])
         finally:
             wx.CallAfter(frame.UpdateTexPanel, tex_content, show_pdf)
 
@@ -273,22 +273,22 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
             parser_type = ParserTypeEnum.NUMPY
         res = walk_model(parser_type, type_walker, start_node, func_name)
         result = (res, 0)
-    except FailedParse as e:
-        tex = LaMsg.getInstance().get_parse_error(e)
-        log_la("FailedParse:" + str(e))
-        result = (tex, 1)
-    except FailedCut as e:
-        tex = "FailedCut: {}".format(str(e))
-        result = (tex, 1)
-    except AssertionError as e:
-        tex = "{}".format(e.args[0])
-        result = (tex, 1)
-    except Exception as e:
-        tex = "Exception: {}".format(str(e))
-        result = (tex, 1)
-    except:
-        tex = str(sys.exc_info()[0])
-        result = (tex, 1)
+    # except FailedParse as e:
+    #     tex = LaMsg.getInstance().get_parse_error(e)
+    #     log_la("FailedParse:" + str(e))
+    #     result = (tex, 1)
+    # except FailedCut as e:
+    #     tex = "FailedCut: {}".format(str(e))
+    #     result = (tex, 1)
+    # except AssertionError as e:
+    #     tex = "{}".format(e.args[0])
+    #     result = (tex, 1)
+    # except Exception as e:
+    #     tex = "Exception: {}".format(str(e))
+    #     result = (tex, 1)
+    # except:
+    #     tex = str(sys.exc_info()[0])
+    #     result = (tex, 1)
     finally:
         wx.CallAfter(frame.UpdateMidPanel, result)
         print("------------ %.2f seconds ------------" % (time.time() - start_time))
