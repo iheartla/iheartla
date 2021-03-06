@@ -3,12 +3,12 @@ import sys
 import importlib
 from importlib import reload
 sys.path.append('./')
-from la_parser.parser import parse_la, ParserTypeEnum
+from iheartla.la_parser.parser import parse_la, ParserTypeEnum
 import subprocess
 from time import sleep
 import numpy as np
 import logging
-from la_tools.la_logger import LaLogger, LoggerTypeEnum
+from iheartla.la_tools.la_logger import LaLogger, LoggerTypeEnum
 eigen_path = "/usr/local/Cellar/eigen/3.3.7/include/eigen3"       # required
 
 

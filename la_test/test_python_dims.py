@@ -1,7 +1,6 @@
 import sys
 sys.path.append('./')
-from la_test.base_python_test import BasePythonTest, eigen_path, TestFuncInfo
-from la_parser.parser import parse_la, ParserTypeEnum
+from la_test.base_python_test import BasePythonTest, eigen_path
 import numpy as np
 import cppyy
 cppyy.add_include_path(eigen_path)
@@ -17,7 +16,7 @@ class TestDims(BasePythonTest):
         P = np.array([[1, 2], [4, 3]])
         Q = np.array([[5, 6], [8, 7]])
         R = np.array([[6, 8], [12, 10]])
-        self.assertDMatrixEqual(func_info.numpy_func(P, Q), R)
+        self.assertDMatrixEqual(func_info.numpy_func(P, Q).ret, R)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -27,7 +26,7 @@ class TestDims(BasePythonTest):
                      "    Q << 5, 6, 8, 7;",
                      "    Eigen::Matrix<double, 2, 2> R;",
                      "    R << 6, 8, 12, 10;",
-                     "    Eigen::Matrix<double, 2, 2> B = {}(P, Q);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 2> B = {}(P, Q).ret;".format(func_info.eig_func_name),
                      "    return ((B - R).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -44,7 +43,7 @@ class TestDims(BasePythonTest):
         P = np.array([[1, 2], [4, 3]])
         Q = np.array([[5, 6], [8, 7]])
         R = np.array([[6, 8], [12, 10]])
-        self.assertDMatrixEqual(func_info.numpy_func(2, P, Q), R)
+        self.assertDMatrixEqual(func_info.numpy_func(2, P, Q).ret, R)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -54,7 +53,7 @@ class TestDims(BasePythonTest):
                      "    Q << 5, 6, 8, 7;",
                      "    Eigen::Matrix<double, 2, 2> R;",
                      "    R << 6, 8, 12, 10;",
-                     "    Eigen::Matrix<double, 2, 2> B = {}(2, P, Q);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 2> B = {}(2, P, Q).ret;".format(func_info.eig_func_name),
                      "    return ((B - R).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -68,7 +67,7 @@ class TestDims(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         P = np.array([[1, 2], [4, 3]])
         f = lambda p : np.trace(p)
-        self.assertEqual(func_info.numpy_func(P, f), 4)
+        self.assertEqual(func_info.numpy_func(P, f).ret, 4)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -78,7 +77,7 @@ class TestDims(BasePythonTest):
                      "    f = [](Eigen::MatrixXd p)->double{",
                      "    return p.trace();"
                      "    };",
-                     "    double B = {}(P, f);".format(func_info.eig_func_name),
+                     "    double B = {}(P, f).ret;".format(func_info.eig_func_name),
                      "    return ((B - 4) == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -92,7 +91,7 @@ class TestDims(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         P = np.array([[1, 2], [4, 3]])
         f = lambda p : np.trace(p)
-        self.assertEqual(func_info.numpy_func(P, f), 4)
+        self.assertEqual(func_info.numpy_func(P, f).ret, 4)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -102,7 +101,7 @@ class TestDims(BasePythonTest):
                      "    f = [](Eigen::MatrixXd p)->double{",
                      "    return p.trace();"
                      "    };",
-                     "    double B = {}(P, f);".format(func_info.eig_func_name),
+                     "    double B = {}(P, f).ret;".format(func_info.eig_func_name),
                      "    return ((B - 4) == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -119,7 +118,7 @@ class TestDims(BasePythonTest):
         Q = np.array([[5, 6], [8, 7]])
         f = lambda p : 2*p
         R = np.array([[12, 16], [24, 20]])
-        self.assertDMatrixEqual(func_info.numpy_func(P, Q, f), R)
+        self.assertDMatrixEqual(func_info.numpy_func(P, Q, f).ret, R)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -133,7 +132,7 @@ class TestDims(BasePythonTest):
                      "    f = [](Eigen::MatrixXd p)->Eigen::MatrixXd{",
                      "    return 2*p;"
                      "    };",
-                     "    Eigen::MatrixXd B = {}(P, Q, f);".format(func_info.eig_func_name),
+                     "    Eigen::MatrixXd B = {}(P, Q, f).ret;".format(func_info.eig_func_name),
                      "    return ((B - R).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))

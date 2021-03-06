@@ -1,7 +1,6 @@
 import sys
 sys.path.append('./')
-from la_test.base_python_test import BasePythonTest, eigen_path, TestFuncInfo
-from la_parser.parser import parse_la, ParserTypeEnum
+from la_test.base_python_test import BasePythonTest, eigen_path
 import numpy as np
 import scipy
 from scipy import sparse
@@ -19,13 +18,13 @@ class TestMatrix(BasePythonTest):
         a = 1
         b = 4
         B = np.array([[1, 2], [4, 3]])
-        self.assertDMatrixEqual(func_info.numpy_func(a, b), B)
+        self.assertDMatrixEqual(func_info.numpy_func(a, b).A, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
                      "    Eigen::Matrix<double, 2, 2> B;",
                      "    B << 1, 2, 4, 3;",
-                     "    Eigen::Matrix<double, 2, 2> C = {}(1, 4);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 2> C = {}(1, 4).A;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -39,7 +38,7 @@ class TestMatrix(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         A = np.array([[1, 2], [4, 3]])
         B = np.array([[1, 4], [2, 3]])
-        self.assertDMatrixEqual(func_info.numpy_func(A), B)
+        self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -47,7 +46,7 @@ class TestMatrix(BasePythonTest):
                      "    A << 1, 2, 4, 3;",
                      "    Eigen::Matrix<double, 2, 2> B;",
                      "    B << 1, 4, 2, 3;",
-                     "    Eigen::Matrix<double, 2, 2> C = {}(A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 2> C = {}(A).B;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -61,7 +60,7 @@ class TestMatrix(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         A = np.array([[1, 2], [4, 3]])
         B = np.array([[1, 4], [2, 3]])
-        self.assertDMatrixEqual(func_info.numpy_func(A), B)
+        self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -69,7 +68,7 @@ class TestMatrix(BasePythonTest):
                      "    A << 1, 2, 4, 3;",
                      "    Eigen::Matrix<double, 2, 2> B;",
                      "    B << 1, 4, 2, 3;",
-                     "    Eigen::Matrix<double, 2, 2> C = {}(A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 2> C = {}(A).B;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -83,7 +82,7 @@ class TestMatrix(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         A = np.array([[4, 0], [0, 0.5]])
         B = np.array([[0.25, 0], [0, 2]])
-        self.assertDMatrixEqual(func_info.numpy_func(A), B)
+        self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -91,7 +90,7 @@ class TestMatrix(BasePythonTest):
                      "    A << 4, 0, 0, 0.5;",
                      "    Eigen::Matrix<double, 2, 2> B;",
                      "    B << 0.25, 0, 0, 2;",
-                     "    Eigen::Matrix<double, 2, 2> C = {}(A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 2> C = {}(A).B;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -107,7 +106,7 @@ class TestMatrix(BasePythonTest):
         A = np.array([[1, 2], [3, 4]])
         B = np.array([[5, 6], [7, 8]])
         C = np.array([[1, 2], [3, 4], [5, 6], [7, 8]])
-        self.assertDMatrixEqual(func_info.numpy_func(A, B), C)
+        self.assertDMatrixEqual(func_info.numpy_func(A, B).C, C)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -117,7 +116,7 @@ class TestMatrix(BasePythonTest):
                      "    B << 5, 6, 7, 8;",
                      "    Eigen::Matrix<double, 4, 2> C;",
                      "    C << 1, 2, 3, 4, 5, 6, 7, 8;",
-                     "    Eigen::Matrix<double, 4, 2> D = {}(A, B);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 4, 2> D = {}(A, B).C;".format(func_info.eig_func_name),
                      "    return ((D - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -132,7 +131,7 @@ class TestMatrix(BasePythonTest):
         A = np.array([[1, 2], [3, 4]])
         B = np.array([[5, 6], [7, 8]])
         C = np.array([[1, 2, 5, 6], [3, 4, 7, 8]])
-        self.assertDMatrixEqual(func_info.numpy_func(A, B), C)
+        self.assertDMatrixEqual(func_info.numpy_func(A, B).C, C)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -142,7 +141,7 @@ class TestMatrix(BasePythonTest):
                      "    B << 5, 6, 7, 8;",
                      "    Eigen::Matrix<double, 2, 4> C;",
                      "    C << 1, 2, 5, 6, 3, 4, 7, 8;",
-                     "    Eigen::Matrix<double, 2, 4> D = {}(A, B);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 4> D = {}(A, B).C;".format(func_info.eig_func_name),
                      "    return ((D - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -158,7 +157,7 @@ class TestMatrix(BasePythonTest):
         A = np.array([[1, 2], [3, 4]])
         B = np.array([[5, 6], [7, 8]])
         C = np.array([[6, 8, -4, -4], [10, 12, -4, -4]])
-        self.assertDMatrixEqual(func_info.numpy_func(A, B), C)
+        self.assertDMatrixEqual(func_info.numpy_func(A, B).C, C)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -168,7 +167,7 @@ class TestMatrix(BasePythonTest):
                      "    B << 5, 6, 7, 8;",
                      "    Eigen::Matrix<double, 2, 4> C;",
                      "    C << 6, 8, -4, -4, 10, 12, -4, -4;",
-                     "    Eigen::Matrix<double, 2, 4> D = {}(A, B);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 4> D = {}(A, B).C;".format(func_info.eig_func_name),
                      "    return ((D - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -182,7 +181,7 @@ class TestMatrix(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         A = np.array([[1, 2], [3, 4]])
         C = np.array([[1, 2, 1, 1], [3, 4, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]])
-        self.assertDMatrixEqual(func_info.numpy_func(A), C)
+        self.assertDMatrixEqual(func_info.numpy_func(A).C, C)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -190,7 +189,7 @@ class TestMatrix(BasePythonTest):
                      "    A << 1, 2, 3, 4;",
                      "    Eigen::Matrix<double, 4, 4> B;",
                      "    B << 1, 2, 1, 1, 3, 4, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0;",
-                     "    Eigen::Matrix<double, 4, 4> C = {}(A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 4, 4> C = {}(A).C;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -204,7 +203,7 @@ class TestMatrix(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         A = np.array([[1, 2], [3, 4]])
         C = np.array([[1, 2, 1, 1], [3, 4, 1, 1], [0, 0, 1, 0], [0, 0, 0, 1]])
-        self.assertDMatrixEqual(func_info.numpy_func(A), C)
+        self.assertDMatrixEqual(func_info.numpy_func(A).C, C)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -212,7 +211,7 @@ class TestMatrix(BasePythonTest):
                      "    A << 1, 2, 3, 4;",
                      "    Eigen::Matrix<double, 4, 4> B;",
                      "    B << 1, 2, 1, 1, 3, 4, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1;",
-                     "    Eigen::Matrix<double, 4, 4> C = {}(A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 4, 4> C = {}(A).C;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -227,7 +226,7 @@ class TestMatrix(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         A = np.array([[1, 2], [3, 4]])
         B = np.array([[1, 2, 1, 2, 1, 0], [3, 4, 3, 4, 0, 1]])
-        self.assertDMatrixEqual(func_info.numpy_func(A, A), B)
+        self.assertDMatrixEqual(func_info.numpy_func(A, A).B, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -235,7 +234,7 @@ class TestMatrix(BasePythonTest):
                      "    A << 1, 2, 3, 4;",
                      "    Eigen::Matrix<double, 2, 6> B;",
                      "    B << 1, 2, 1, 2, 1, 0, 3, 4, 3, 4, 0, 1;",
-                     "    Eigen::Matrix<double, 2, 6> C = {}(A, A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 6> C = {}(A, A).B;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -249,7 +248,7 @@ class TestMatrix(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         A = np.array([3, 4])
         B = np.array([[3, 1], [4, 1]])
-        self.assertDMatrixEqual(func_info.numpy_func(A), B)
+        self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -257,7 +256,7 @@ class TestMatrix(BasePythonTest):
                      "    A << 3, 4;",
                      "    Eigen::Matrix<double, 2, 2> B;",
                      "    B << 3, 1, 4, 1;",
-                     "    Eigen::Matrix<double, 2, 2> C = {}(A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 2> C = {}(A).B;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -271,7 +270,7 @@ class TestMatrix(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         A = np.array([3, 4])
         B = np.array([[3], [4], [1]])
-        self.assertDMatrixEqual(func_info.numpy_func(A), B)
+        self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -279,7 +278,7 @@ class TestMatrix(BasePythonTest):
                      "    A << 3, 4;",
                      "    Eigen::Matrix<double, 3, 1> B;",
                      "    B << 3, 4, 1;",
-                     "    Eigen::Matrix<double, 3, 1> C = {}(A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 3, 1> C = {}(A).B;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -293,7 +292,7 @@ class TestMatrix(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         A = np.array([[1, 2], [3, 4]])
         B = np.array([[2, 2], [3, 5]])
-        self.assertDMatrixEqual(func_info.numpy_func(A), B)
+        self.assertDMatrixEqual(func_info.numpy_func(A).C, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -301,7 +300,7 @@ class TestMatrix(BasePythonTest):
                      "    A << 1, 2, 3, 4;",
                      "    Eigen::Matrix<double, 2, 2> B;",
                      "    B << 2, 2, 3, 5;",
-                     "    Eigen::Matrix<double, 2, 2> C = {}(A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 2> C = {}(A).C;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -316,7 +315,7 @@ class TestMatrix(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         A = np.array([[1, 2], [3, 4]])
         B = np.array([[2, 4], [6, 8]])
-        self.assertDMatrixEqual(func_info.numpy_func(A), B)
+        self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -324,7 +323,7 @@ class TestMatrix(BasePythonTest):
                      "    A << 1, 2, 3, 4;",
                      "    Eigen::Matrix<double, 2, 2> B;",
                      "    B << 2, 4, 6, 8;",
-                     "    Eigen::Matrix<double, 2, 2> C = {}(A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 2> C = {}(A).B;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -347,7 +346,7 @@ class TestMatrix(BasePythonTest):
         E = [(0, 1), (0, 2), (1, 2), (2, 0), (3, 0), (3, 1), (3, 2)]
         value = np.array([3, -1, 0, -8, 7, 0, -2])
         B = scipy.sparse.coo_matrix((value, np.asarray(E).T), shape=(10, 10), dtype=np.float64)
-        self.assertSMatrixEqual(func_info.numpy_func(P, J, E), B)
+        self.assertSMatrixEqual(func_info.numpy_func(P, J, E).G, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -373,7 +372,7 @@ class TestMatrix(BasePythonTest):
                      "    t1.push_back(Eigen::Triplet<double>(2, 0, -8));",
                      "    Eigen::SparseMatrix<double> A(10, 10);",
                      "    A.setFromTriplets(t1.begin(), t1.end());"
-                     "    Eigen::SparseMatrix<double> B = {}(P, J, E);".format(func_info.eig_func_name),
+                     "    Eigen::SparseMatrix<double> B = {}(P, J, E).G;".format(func_info.eig_func_name),
                      "    return A.isApprox(B);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -401,7 +400,7 @@ class TestMatrix(BasePythonTest):
         G = [(1, 1), (2, 2), (3, 3), (0, 1), (0, 2), (1, 2), (2, 0), (3, 0), (3, 1), (3, 2)]
         value = np.array([24, 21, -19, 3, -1, 0, -8, 7, 0, -2])
         B = scipy.sparse.coo_matrix((value, np.asarray(G).T), shape=(10, 10))
-        self.assertSMatrixEqual(func_info.numpy_func(P, J, E, F), B)
+        self.assertSMatrixEqual(func_info.numpy_func(P, J, E, F).G, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -434,7 +433,7 @@ class TestMatrix(BasePythonTest):
                      "    t1.push_back(Eigen::Triplet<double>(3, 3, -19));",
                      "    Eigen::SparseMatrix<double> A(10, 10);",
                      "    A.setFromTriplets(t1.begin(), t1.end());"
-                     "    Eigen::SparseMatrix<double> B = {}(P, J, E, F);".format(func_info.eig_func_name),
+                     "    Eigen::SparseMatrix<double> B = {}(P, J, E, F).G;".format(func_info.eig_func_name),
                      "    return A.isApprox(B);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -453,7 +452,7 @@ class TestMatrix(BasePythonTest):
         value2 = np.array([3, 4, 1, 1])
         A = scipy.sparse.coo_matrix((value, np.asarray(t).T), shape=(2, 2))
         B = scipy.sparse.coo_matrix((value2, np.asarray(t2).T), shape=(4, 4))
-        self.assertSMatrixEqual(func_info.numpy_func(A), B)
+        self.assertSMatrixEqual(func_info.numpy_func(A).ret, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -469,7 +468,7 @@ class TestMatrix(BasePythonTest):
                      "    t2.push_back(Eigen::Triplet<double>(3, 3, 1));",
                      "    Eigen::SparseMatrix<double> C(4, 4);",
                      "    C.setFromTriplets(t2.begin(), t2.end());"
-                     "    Eigen::SparseMatrix<double> B = {}(A);".format(func_info.eig_func_name),
+                     "    Eigen::SparseMatrix<double> B = {}(A).ret;".format(func_info.eig_func_name),
                      "    return C.isApprox(B);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -488,7 +487,7 @@ class TestMatrix(BasePythonTest):
         value2 = np.array([3, 1, 2, 3])
         A = scipy.sparse.coo_matrix((value, np.asarray(t).T), shape=(1, 2))
         B = scipy.sparse.coo_matrix((value2, np.asarray(t2).T), shape=(1, 7))
-        self.assertSMatrixEqual(func_info.numpy_func(A, A), B)
+        self.assertSMatrixEqual(func_info.numpy_func(A, A).C, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -506,7 +505,7 @@ class TestMatrix(BasePythonTest):
                      "    t2.push_back(Eigen::Triplet<double>(0, 6, 0));",
                      "    Eigen::SparseMatrix<double> C(1, 7);",
                      "    C.setFromTriplets(t2.begin(), t2.end());"
-                     "    Eigen::SparseMatrix<double> B = {}(A, A);".format(func_info.eig_func_name),
+                     "    Eigen::SparseMatrix<double> B = {}(A, A).C;".format(func_info.eig_func_name),
                      "    return C.isApprox(B);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -520,7 +519,7 @@ class TestMatrix(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         A = np.array([1, 2])
         B = np.array([2, 2, 3, 5])
-        self.assertDMatrixEqual(func_info.numpy_func(A), B)
+        self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -528,7 +527,7 @@ class TestMatrix(BasePythonTest):
                      "    A << 1, 2;",
                      "    Eigen::Matrix<double, 4, 1> B;",
                      "    B << 2, 2, 3, 5;",
-                     "    Eigen::Matrix<double, 4, 1> C = {}(A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 4, 1> C = {}(A).B;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))

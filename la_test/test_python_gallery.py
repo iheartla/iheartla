@@ -1,7 +1,6 @@
 import sys
 sys.path.append('./')
-from la_test.base_python_test import BasePythonTest, eigen_path, TestFuncInfo
-from la_parser.parser import parse_la, ParserTypeEnum
+from la_test.base_python_test import BasePythonTest, eigen_path
 import scipy
 from scipy import sparse
 import numpy as np
@@ -22,13 +21,13 @@ class TestGallery(BasePythonTest):
         R: ℝ : the radius of the sphere"""
         func_info = self.gen_func_info(la_str)
         A = np.array([[0], [0], [3]])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(np.pi/2, np.pi/2, 3), A)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(np.pi/2, np.pi/2, 3).x_left_parenthesis_θ_comma__ϕ_right_parenthesis, A)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
                      "    Eigen::Matrix<double, 3, 1> A;",
                      "    A << 0, 0, 3;",
-                     "    Eigen::Matrix<double, 3, 1> B = {}(M_PI/2, M_PI/2, 3);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 3, 1> B = {}(M_PI/2, M_PI/2, 3).x_left_parenthesis_θ_comma__ϕ_right_parenthesis;".format(func_info.eig_func_name),
                      "    return ((A - B).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -45,7 +44,7 @@ class TestGallery(BasePythonTest):
         A = np.array([[[1, 2], [4, 3]], [[1, 2], [4, 3]]])
         x0 = [1, 2]
         b = np.array([[1, 2], [4, 3]])
-        self.assertTrue(np.isclose(func_info.numpy_func(A, x0, b), 6.76227768454))
+        self.assertTrue(np.isclose(func_info.numpy_func(A, x0, b).ret, 6.76227768454))
 
     def test_gallery_1_1(self):
         # sequence
@@ -58,7 +57,7 @@ class TestGallery(BasePythonTest):
         x = np.array([[-11, 2, 3], [4, 5, 6], [17, 8, 9]])
         n̂ = np.array([[4, 15, 6], [7, -18, 9], [1, 22, 3]])
         p = np.array([[7, -8, 9], [1, 12, 3], [4, -5, 6]])
-        self.assertTrue(np.isclose(func_info.numpy_func(x, n̂ , p), 0))
+        self.assertTrue(np.isclose(func_info.numpy_func(x, n̂ , p).ret, 0))
 
     def test_gallery_1_2(self):
         # sequence
@@ -69,7 +68,7 @@ class TestGallery(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         x = np.array([[1, 2, 3], [3, 6, 5]])
         R = np.array([[[1, 2, 3], [3, 6, 5], [6, 3, 2]], [[2, 2, 1], [2, 3, 5], [9, 3, 1]]])
-        self.assertTrue(np.isclose(func_info.numpy_func(x, R), 11.123203285420))
+        self.assertTrue(np.isclose(func_info.numpy_func(x, R).ret, 11.123203285420))
 
     def test_gallery_2(self):
         # sequence
@@ -84,7 +83,7 @@ class TestGallery(BasePythonTest):
         w = np.array([3, 2])
         x = np.array([2, 3])
         b = np.array([2.35714286, 2.85714286])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(a, w, x), b)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(a, w, x).x̂ , b)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -100,7 +99,7 @@ class TestGallery(BasePythonTest):
                      "    x << 2, 3;",
                      "    Eigen::VectorXd B(2);",
                      "    B << 2.35714286, 2.85714286;",
-                     "    Eigen::Matrix<double, 2, 1> C = {}(a, w, x);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 1> C = {}(a, w, x).x̂ ;".format(func_info.eig_func_name),
                      "    return ((C - B).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -119,7 +118,7 @@ class TestGallery(BasePythonTest):
         B = np.array([[9, 12], [15, 16]])
         S = np.array([[0, 2], [5, 8]])
         b = np.array([[-9.2, -3.8, 1.6, 0.6], [2.4, 4.6, -0.2, -1.2], [3.6, 0.4, -0.8, 0.2], [-2.25, -0.75, 0.5, 0]])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(A, B, S), b)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(A, B, S).ret, b)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -134,7 +133,7 @@ class TestGallery(BasePythonTest):
                      "    2.4, 4.6, -0.2, -1.2,"
                      "    3.6, 0.4, -0.8, 0.2,"
                      "    -2.25, -0.75, 0.5, 0;",
-                     "    Eigen::Matrix<double, 4, 4> C = {}(A, B, S);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 4, 4> C = {}(A, B, S).ret;".format(func_info.eig_func_name),
                      "    return ((C - D).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -164,7 +163,7 @@ class TestGallery(BasePythonTest):
         U = np.array([[1, 2], [3, 4]])
         Ũ = np.array([[1, 2], [3, 4]])
         R = np.array([[199, 290, 38, 54], [435, 634, 86, 122], [1136, 1612, -1407, -1887], [2568, 3644, -3179, -4263]])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(P, B, C, L, L̃, U, Ũ), R)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(P, B, C, L, L̃, U, Ũ).ret, R)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -189,7 +188,7 @@ class TestGallery(BasePythonTest):
                      "    435, 634, 86, 122,"
                      "    1136, 1612, -1407, -1887,"
                      "    2568, 3644, -3179, -4263;",
-                     "    Eigen::Matrix<double, 4, 4> G = {}(P, B, C, L, L̃, U, Ũ);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 4, 4> G = {}(P, B, C, L, L̃, U, Ũ).ret;".format(func_info.eig_func_name),
                      "    return ((G - R).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -213,7 +212,7 @@ class TestGallery(BasePythonTest):
                       [7, 0, 0, 8, 0, 0, 9, 0, 0],
                       [0, 7, 0, 0, 8, 0, 0, 9, 0],
                       [0, 0, 7, 0, 0, 8, 0, 0, 9]])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(A), B)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(A)._partial_differential_2I5_soliduspartial_differential_f2, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -229,7 +228,7 @@ class TestGallery(BasePythonTest):
                      "    7, 0, 0, 8, 0, 0, 9, 0, 0,"
                      "    0, 7, 0, 0, 8, 0, 0, 9, 0,"
                      "    0, 0, 7, 0, 0, 8, 0, 0, 9;",
-                     "    Eigen::Matrix<double, 9, 9> C = {}(A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 9, 9> C = {}(A)._partial_differential_²I₅_soliduspartial_differential_f²;".format(func_info.eig_func_name),
                      "    return ((2*B - C).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -246,13 +245,13 @@ class TestGallery(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
         v = 10
-        self.assertTrue(np.isclose(func_info.numpy_func(A, v), 0.06060140390))
+        self.assertTrue(np.isclose(func_info.numpy_func(A, v).k_angle_left_parenthesis_Dₘ_right_parenthesis, 0.06060140390))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
                      "    Eigen::Matrix<double, 3, 3> A;",
                      "    A << 1, 2, 3, 4, 5, 6, 7, 8, 9;",
-                     "    double C = {}(A, 10);".format(func_info.eig_func_name),
+                     "    double C = {}(A, 10).k_angle_left_parenthesis_Dₘ_right_parenthesis;".format(func_info.eig_func_name),
                      "    return (abs(0.06060140390 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -269,7 +268,7 @@ class TestGallery(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         A = np.array([[1, 2, 3], [3, 8, 6], [7, 8, 7]])
         B = np.array([-0.38100038, 0.25400025, -0.88900089])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(A), B)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(A).n_left_parenthesis_T_right_parenthesis, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -277,7 +276,7 @@ class TestGallery(BasePythonTest):
                      "    A << 1, 2, 3, 3, 8, 6, 7, 8, 7;",
                      "    Eigen::Matrix<double, 3, 1> B;",
                      "    B << -0.38100038, 0.25400025, -0.88900089;",
-                     "    Eigen::Matrix<double, 3, 1> C = {}(A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 3, 1> C = {}(A).n_left_parenthesis_T_right_parenthesis;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -297,7 +296,7 @@ class TestGallery(BasePythonTest):
         N1 = [1, 2]
         n = lambda p: p[0]
         B = np.array([0.38601376, 0.79776177, 0.46321651])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(T, α, N1, n), B)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(T, α, N1, n).n_left_parenthesis_v_right_parenthesis, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -320,7 +319,7 @@ class TestGallery(BasePythonTest):
                      "    };",
                      "    Eigen::Matrix<double, 3, 1> B;",
                      "    B << 0.38601376, 0.79776177, 0.46321651;",
-                     "    Eigen::Matrix<double, 3, 1> C = {}(T, α, N1, n);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 3, 1> C = {}(T, α, N1, n).n_left_parenthesis_v_right_parenthesis;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -344,7 +343,7 @@ class TestGallery(BasePythonTest):
         n = np.array([[7, 2, 4], [8, 3, 6]])
         ã = np.array([4, 2, 3])
         t̃ = np.array([1, 10, 3])
-        self.assertEqual(func_info.numpy_func(θ, p, q, n, ã, t̃), 5252)
+        self.assertEqual(func_info.numpy_func(θ, p, q, n, ã, t̃).b, 5252)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -373,7 +372,7 @@ class TestGallery(BasePythonTest):
                      "    a << 4, 2, 3;",
                      "    Eigen::Matrix<double, 3, 1> t;",
                      "    t << 1, 10, 3;",
-                     "    double C = {}(0, p, q, n, a, t);".format(func_info.eig_func_name),
+                     "    double C = {}(0, p, q, n, a, t).b;".format(func_info.eig_func_name),
                      "    return ((5252 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -391,7 +390,7 @@ class TestGallery(BasePythonTest):
         U = np.array([[1, 2, 3], [2, 3, 5], [8, 10, 6]])
         V = np.array([[10, 2, 2], [1, 3, 1], [7, 4, 8]])
         B = np.array([[1.41421356, 4.94974747, -2.82842712], [2.82842712, 8.48528137, -2.82842712], [-5.65685425, 5.65685425, -39.59797975]])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(U, V), B)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(U, V).T1, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -401,7 +400,7 @@ class TestGallery(BasePythonTest):
                      "    V << 10, 2, 2, 1, 3, 1, 7, 4, 8;",
                      "    Eigen::Matrix<double, 3, 3> B;",
                      "    B << 1.41421356, 4.94974747, -2.82842712, 2.82842712, 8.48528137, -2.82842712, -5.65685425, 5.65685425, -39.59797975;",
-                     "    Eigen::Matrix<double, 3, 3> C = {}(U, V);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 3, 3> C = {}(U, V).T₁;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -439,7 +438,7 @@ class TestGallery(BasePythonTest):
             return np.array([p0, p1, p0 + p1])
         def δ(p0, p1):
             return p0 + p1
-        self.assertTrue(np.isclose(func_info.numpy_func(v̄, ō, ū, V̄, C_combining_macron_ₐ, θ, v, D_A, δ), -1.2989690721))
+        self.assertTrue(np.isclose(func_info.numpy_func(v̄, ō, ū, V̄, C_combining_macron_ₐ, θ, v, D_A, δ).y_left_parenthesis_θ_comma_v_right_parenthesis, -1.2989690721))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -463,7 +462,7 @@ class TestGallery(BasePythonTest):
                      "    f2 = [](double p1, double p2)->double{",
                      "        return p1 + p2;"
                      "    };",
-                     "    double B = {}(v, o, u, V, C, 2, 3, f1, f2);".format(func_info.eig_func_name),
+                     "    double B = {}(v, o, u, V, C, 2, 3, f1, f2).y_left_parenthesis_θ_comma_v_right_parenthesis;".format(func_info.eig_func_name),
                      "    return (abs(-1.2989690721 - B) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -494,7 +493,7 @@ class TestGallery(BasePythonTest):
         ρ̄ = np.array([5, 2, 7])
         σ_ρ = np.array([2, 3, 5])
         ā = np.array([3, 1, 8])
-        self.assertTrue(np.isclose(func_info.numpy_func(σ_N, E_I, α, β, σ_S, σ_T, ρ, ρ̄, σ_ρ, ā), 9.146235827664398))
+        self.assertTrue(np.isclose(func_info.numpy_func(σ_N, E_I, α, β, σ_S, σ_T, ρ, ρ̄, σ_ρ, ā).E, 9.146235827664398))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -506,7 +505,7 @@ class TestGallery(BasePythonTest):
                      "    std::vector<double> ρ̄ = {5, 2, 7};",
                      "    std::vector<double> σ_ρ = {2, 3, 5};",
                      "    std::vector<double> ā = {3, 1, 8};",
-                     "    double C = {}(3, 4, α, β, σ_S, σ_T, ρ, ρ̄, σ_ρ, ā);".format(func_info.eig_func_name),
+                     "    double C = {}(3, 4, α, β, σ_S, σ_T, ρ, ρ̄, σ_ρ, ā).E;".format(func_info.eig_func_name),
                      "    return (abs(9.146235827664398 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -523,7 +522,7 @@ class TestGallery(BasePythonTest):
         c = np.array([[1, 2], [3, 6]])
         w = np.array([[2, 2], [2, 4]])
         R̂ = np.array([2, 4])
-        self.assertTrue(np.isclose(func_info.numpy_func(c, w, R̂), 4.125))
+        self.assertTrue(np.isclose(func_info.numpy_func(c, w, R̂).C_left_parenthesis_x_comma_y_right_parenthesis, 4.125))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -533,7 +532,7 @@ class TestGallery(BasePythonTest):
                      "    w << 2, 2, 2, 4;",
                      "    Eigen::Matrix<double, 2, 1> R;",
                      "    R << 2, 4;",
-                     "    double C = {}(c, w, R);".format(func_info.eig_func_name),
+                     "    double C = {}(c, w, R).C_left_parenthesis_x_comma_y_right_parenthesis;".format(func_info.eig_func_name),
                      "    return (abs(4.125 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -555,7 +554,7 @@ class TestGallery(BasePythonTest):
         e1 = np.array([4, 2, 3])
         e2 = np.array([1, 5, 2])
         B = np.array([[35, 31, 30], [31, 83, 42], [30, 42, 30]])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(k1, k2, e1, e2), B)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(k1, k2, e1, e2).Ω, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -565,7 +564,7 @@ class TestGallery(BasePythonTest):
                      "    e2 << 1, 5, 2;",
                      "    Eigen::Matrix<double, 3, 3> B;",
                      "    B << 35, 31, 30, 31, 83, 42, 30, 42, 30;",
-                     "    Eigen::Matrix<double, 3, 3> C = {}(2, 3, e1, e2);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 3, 3> C = {}(2, 3, e1, e2).Ω;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -591,7 +590,7 @@ class TestGallery(BasePythonTest):
         b = np.array([[10, 5, 2], [2, 4, 2], [3, 8, 5]])
         s = np.array([9, 9, 8])
         k = 4
-        self.assertTrue(np.isclose(func_info.numpy_func(l, dist, σ, b_i, b, s, k), 26948.21883123))
+        self.assertTrue(np.isclose(func_info.numpy_func(l, dist, σ, b_i, b, s, k).G_σ_left_parenthesis_s_i_circumflex_accent_k_right_parenthesis, 26948.21883123))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -615,7 +614,7 @@ class TestGallery(BasePythonTest):
                      "    b.push_back(n2);",
                      "    b.push_back(n3);",
                      "    double k = 4;",
-                     "    double C = {}(l, dist, σ, b_i, b, s, k);".format(func_info.eig_func_name),
+                     "    double C = {}(l, dist, σ, b_i, b, s, k).G_σ_left_parenthesis_s_i_circumflex_accent_k_right_parenthesis;".format(func_info.eig_func_name),
                      "    return (abs(26948.21883123 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -640,7 +639,7 @@ class TestGallery(BasePythonTest):
             return 2 * p0 - 1
         def p_c(p0):
             return p0 + 1
-        self.assertTrue(np.isclose(func_info.numpy_func(α, p, X, M, f, p_c), -2.9))
+        self.assertTrue(np.isclose(func_info.numpy_func(α, p, X, M, f, p_c).ret, -2.9))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -666,7 +665,7 @@ class TestGallery(BasePythonTest):
                      "    p_c = [](double p1)->double{",
                      "        return p1+1;",
                      "    };",
-                     "    double C = {}(α, p, X, M, f, p_c);".format(func_info.eig_func_name),
+                     "    double C = {}(α, p, X, M, f, p_c).ret;".format(func_info.eig_func_name),
                      "    return (abs(-2.9 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -687,7 +686,7 @@ class TestGallery(BasePythonTest):
         u = np.array([[2, 1, 4, 3], [3, 1, 2, 6]])
         B = np.array([[266, 223, 205, 355], [659, 414, 417, 723]])
         func_info = self.gen_func_info(la_str)
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(w, M, u), B)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(w, M, u).v, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -717,7 +716,7 @@ class TestGallery(BasePythonTest):
                      "    B1 << 266, 223, 205, 355;",
                      "    Eigen::Matrix<double, 4, 1> B2;"
                      "    B2 << 659, 414, 417, 723;",
-                     "    std::vector<Eigen::Matrix<double, 4, 1> > A = {}(w, M, u);".format(func_info.eig_func_name),
+                     "    std::vector<Eigen::Matrix<double, 4, 1> > A = {}(w, M, u).v;".format(func_info.eig_func_name),
                      "    if((A[0] - B1).norm() < {} && (A[1] - B2).norm() < {}){{".format(self.eps, self.eps),
                      "        return true;",
                      "    }",
@@ -741,7 +740,7 @@ class TestGallery(BasePythonTest):
                       [[4, 2, 3], [3, 1, 2]]])
         A = np.array([2, 6])
         func_info = self.gen_func_info(la_str)
-        self.assertTrue(np.isclose(func_info.numpy_func(v, u, M, A), 23722))
+        self.assertTrue(np.isclose(func_info.numpy_func(v, u, M, A).n, 23722))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -767,7 +766,7 @@ class TestGallery(BasePythonTest):
                      "    M.push_back(M1);",
                      "    M.push_back(M2);",
                      "    std::vector<double> A = {2, 6};",
-                     "    double C = {}(v, u, M, A);".format(func_info.eig_func_name),
+                     "    double C = {}(v, u, M, A).n;".format(func_info.eig_func_name),
                      "    return (abs(23722 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -782,13 +781,13 @@ class TestGallery(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         f = np.array([1, 2, 3, 3, 4, 5])
         p = np.array([4, 2, 3, 3, 1, 2])
-        self.assertTrue(np.isclose(func_info.numpy_func(f, p), -1468))
+        self.assertTrue(np.isclose(func_info.numpy_func(f, p).ret, -1468))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
                      "    std::vector<double> f = {1, 2, 3, 3, 4, 5};",
                      "    std::vector<double> g = {4, 2, 3, 3, 1, 2};",
-                     "    double C = {}(f, g);".format(func_info.eig_func_name),
+                     "    double C = {}(f, g).ret;".format(func_info.eig_func_name),
                      "    return (abs(-1468 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -803,7 +802,7 @@ class TestGallery(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         x = np.array([1, 2, 3, 4])
         p = np.array([[1, 2, 3, 4], [3, 4, 5, 6], [5, 3, 5, 6], [9, 1, 3, 2]])
-        self.assertTrue(np.isclose(func_info.numpy_func(x, p), -509.52927877))
+        self.assertTrue(np.isclose(func_info.numpy_func(x, p).I_left_parenthesis_X_semicolon_Y_right_parenthesis, -509.52927877))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -811,7 +810,7 @@ class TestGallery(BasePythonTest):
                      "    x << 1, 2, 3, 4;",
                      "    Eigen::MatrixXd p(4,4);",
                      "    p << 1, 2, 3, 4, 3, 4, 5, 6, 5, 3, 5, 6, 9, 1, 3, 2;",
-                     "    double C = {}(x, p);".format(func_info.eig_func_name),
+                     "    double C = {}(x, p).I_left_parenthesis_X_semicolon_Y_right_parenthesis;".format(func_info.eig_func_name),
                      "    return (abs(-509.52927877 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -828,7 +827,7 @@ class TestGallery(BasePythonTest):
         x = np.array([3, 1, 4, 2])
         W = np.array([[1, 2, 3, 4], [3, 4, 5, 6], [5, 3, 5, 6], [9, 1, 3, 2]])
         v = np.array([2, 1, 5, 7])
-        self.assertTrue(np.isclose(func_info.numpy_func(x, W, v), 520))
+        self.assertTrue(np.isclose(func_info.numpy_func(x, W, v).L_left_parenthesis_x_comma_v_right_parenthesis, 520))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -838,7 +837,7 @@ class TestGallery(BasePythonTest):
                      "    W << 1, 2, 3, 4, 3, 4, 5, 6, 5, 3, 5, 6, 9, 1, 3, 2;",
                      "    Eigen::VectorXd v(4);"
                      "    v << 2, 1, 5, 7;",
-                     "    double C = {}(x, W, v);".format(func_info.eig_func_name),
+                     "    double C = {}(x, W, v).L_left_parenthesis_x_comma_v_right_parenthesis;".format(func_info.eig_func_name),
                      "    return (abs(520 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -869,7 +868,7 @@ class TestGallery(BasePythonTest):
         p = np.array([[1, 2, 3], [4, 7, 6], [5, 3, 2]])
         d = np.array([[2, 5, 4], [3, 5, 6], [9, 3, 2]])
         B = np.array([6.74855046, -17.5092147, 24.91003206])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(p, d), B)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(p, d).q, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -895,7 +894,7 @@ class TestGallery(BasePythonTest):
                      "    d.push_back(d3);",
                      "    Eigen::Matrix<double, 3, 1> B;",
                      "    B << 6.74855046, -17.5092147, 24.91003206;",
-                     "    Eigen::Matrix<double, 3, 1> C = {}(p, d);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 3, 1> C = {}(p, d).q;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -924,7 +923,7 @@ class TestGallery(BasePythonTest):
         G = [(0, 1), (1, 0), (2, 0), (2, 1), (0, 0), (1, 1), (2, 2)]
         value = np.array([-0.75347046989, -6.151561396983, -2.506658326531, -14.0305051028690, 0.7534704698930, 6.15156139698, 16.5371634294])
         B = scipy.sparse.coo_matrix((value, np.asarray(G).T), shape=(3, 3))
-        self.assertSMatrixEqual(func_info.numpy_func(α, β, N), B)
+        self.assertSMatrixEqual(func_info.numpy_func(α, β, N).L, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -956,7 +955,7 @@ class TestGallery(BasePythonTest):
                      "    t1.push_back(Eigen::Triplet<double>(2, 2, 16.5371634294));",
                      "    Eigen::SparseMatrix<double> A(3, 3);",
                      "    A.setFromTriplets(t1.begin(), t1.end());"
-                     "    Eigen::SparseMatrix<double> B = {}(α, β, N);".format(func_info.eig_func_name),
+                     "    Eigen::SparseMatrix<double> B = {}(α, β, N).L;".format(func_info.eig_func_name),
                      "    return A.isApprox(B);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -977,7 +976,7 @@ class TestGallery(BasePythonTest):
         F = [(0, 1), (0, 2), (1, 2), (2, 0), (3, 0), (3, 1), (3, 2), (0, 0), (1, 1), (2, 2), (3, 3)]
         value = np.array([9, -1, 0, 6, 2, -9, -2, -8, 0, -6, 9])
         B = scipy.sparse.coo_matrix((value, np.asarray(F).T), shape=(4, 4), dtype=np.float64)
-        self.assertSMatrixEqual(func_info.numpy_func(w, E), B)
+        self.assertSMatrixEqual(func_info.numpy_func(w, E).L, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -1017,7 +1016,7 @@ class TestGallery(BasePythonTest):
                      "    t1.push_back(Eigen::Triplet<double>(3, 3, 9));",
                      "    Eigen::SparseMatrix<double> A(4, 4);",
                      "    A.setFromTriplets(t1.begin(), t1.end());"
-                     "    Eigen::SparseMatrix<double> B = {}(w, E);".format(func_info.eig_func_name),
+                     "    Eigen::SparseMatrix<double> B = {}(w, E).L;".format(func_info.eig_func_name),
                      "    return A.isApprox(B);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -1033,4 +1032,4 @@ class TestGallery(BasePythonTest):
         def kₙ(p0, p1):
             return p0 * p1[1]
         p = np.array([1, 2, 3])
-        self.assertTrue(np.isclose(func_info.numpy_func(p, kₙ), 6.28318530))
+        self.assertTrue(np.isclose(func_info.numpy_func(p, kₙ).H_left_parenthesis_p_right_parenthesis, 6.28318530))

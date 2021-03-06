@@ -1,7 +1,6 @@
 import sys
 sys.path.append('./')
-from la_test.base_python_test import BasePythonTest, eigen_path, TestFuncInfo
-from la_parser.parser import parse_la, ParserTypeEnum
+from la_test.base_python_test import BasePythonTest, eigen_path
 import numpy as np
 import cppyy
 cppyy.add_include_path(eigen_path)
@@ -14,7 +13,7 @@ class TestOthers(BasePythonTest):
         where 
         a: scalar """
         func_info = self.gen_func_info(la_str)
-        self.assertEqual(func_info.numpy_func(2), 3)
+        self.assertEqual(func_info.numpy_func(2).c, 3)
 
     def test_integral_2(self):
         # no return symbol
@@ -22,7 +21,7 @@ class TestOthers(BasePythonTest):
         where 
         a: scalar """
         func_info = self.gen_func_info(la_str)
-        self.assertEqual(func_info.numpy_func(2), 3)
+        self.assertEqual(func_info.numpy_func(2).c, 3)
 
     def test_nested_integral(self):
         # no return symbol
@@ -30,7 +29,7 @@ class TestOthers(BasePythonTest):
         where 
         a: scalar """
         func_info = self.gen_func_info(la_str)
-        self.assertEqual(func_info.numpy_func(2), 9)
+        self.assertEqual(func_info.numpy_func(2).c, 9)
 
     def test_optimization_argmin(self):
         # no return symbol
@@ -41,7 +40,7 @@ class TestOthers(BasePythonTest):
         where 
         a: scalar """
         func_info = self.gen_func_info(la_str)
-        self.assertTrue(abs(func_info.numpy_func(2) - 4) < 0.00001)
+        self.assertTrue(abs(func_info.numpy_func(2).b - 4) < 0.00001)
 
     def test_optimization_min(self):
         # no return symbol
@@ -52,7 +51,7 @@ class TestOthers(BasePythonTest):
         where 
         a: scalar """
         func_info = self.gen_func_info(la_str)
-        self.assertTrue(abs(func_info.numpy_func(2) - 14) < 0.00001)
+        self.assertTrue(abs(func_info.numpy_func(2).b - 14) < 0.00001)
 
     def test_optimization_argmax(self):
         # no return symbol
@@ -63,7 +62,7 @@ class TestOthers(BasePythonTest):
         where 
         a: scalar """
         func_info = self.gen_func_info(la_str)
-        self.assertTrue(abs(func_info.numpy_func(2) - 9) < 0.00001)
+        self.assertTrue(abs(func_info.numpy_func(2).b - 9) < 0.00001)
 
     def test_optimization_max(self):
         # no return symbol
@@ -74,7 +73,7 @@ class TestOthers(BasePythonTest):
         where 
         a: scalar """
         func_info = self.gen_func_info(la_str)
-        self.assertTrue(abs(func_info.numpy_func(2) - 29) < 0.00001)
+        self.assertTrue(abs(func_info.numpy_func(2).b - 29) < 0.00001)
 
     def test_optimization_argmin_no_st(self):
         # no return symbol
@@ -82,7 +81,7 @@ class TestOthers(BasePythonTest):
         where 
         a: scalar """
         func_info = self.gen_func_info(la_str)
-        self.assertTrue(abs(func_info.numpy_func(2) == 0))
+        self.assertTrue(abs(func_info.numpy_func(2).b == 0))
 
     def test_optimization_argmin_in_cond(self):
         # no return symbol
@@ -92,4 +91,4 @@ class TestOthers(BasePythonTest):
         where 
         s: {ℝ} """
         func_info = self.gen_func_info(la_str)
-        self.assertTrue(abs(func_info.numpy_func([2, 1, 4]) - 1) < 0.00001)
+        self.assertTrue(abs(func_info.numpy_func([2, 1, 4]).b - 1) < 0.00001)
