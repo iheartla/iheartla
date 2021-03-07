@@ -1,6 +1,6 @@
 import sys
 sys.path.append('./')
-from la_test.base_python_test import BasePythonTest, eigen_path
+from .base_python_test import BasePythonTest, eigen_path
 import scipy
 from scipy import sparse
 import numpy as np
