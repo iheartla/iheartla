@@ -14,6 +14,8 @@ class CodeGenMathjax(CodeGen):
                                  '𝐮': '\\textbf{u}', '𝐯': '\\textbf{v}', '𝐰': '\\textbf{w}', '𝐱': '\\textbf{x}', '𝐲': '\\textbf{y}',
                                  '𝐳': '\\textbf{z}'}
         self.pre_str = r'''
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
 \begin{align*}
 '''[1:]
         self.post_str = r'''
@@ -127,7 +129,7 @@ class CodeGenMathjax(CodeGen):
                 block_content = self.visit(vblock, **kwargs)
                 if vblock.node_type != IRNodeType.Assignment:
                     # single expression
-                    block_content = " \\omit \\span " + block_content
+                    block_content = " & " + block_content
                 content += block_content + " \\\\\n"
             else:
                 # params
