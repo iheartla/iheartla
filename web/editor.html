@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Editor</title>
+  <style type="text/css" media="screen">
+    body {
+        overflow: hidden;
+    }
+
+    #editor {
+        margin: 0;
+        position: absolute;
+        width: 500px;
+        height: 200px;
+    }
+    #cpp {
+        left: 0px; 
+        top: 300px;
+        position: absolute;
+        width: 500px;
+        height: 500px;
+    }
+    #python {
+        left: 550px; 
+        top: 300px;
+        position: absolute;
+        width: 500px;
+        height: 500px;
+    }
+    #latex {
+        left: 1100px; 
+        top: 300px;
+        position: absolute;
+        width: 500px;
+        height: 500px;
+    }
+    #compile {
+        left: 520px; 
+        position: absolute;
+    }
+    #output {
+      border: 0px solid grey;
+      left: 650px; 
+      width: 500px;
+      height: 200px;
+      font-size: 120%;
+      position: absolute;
+      box-sizing: border-box;
+    }
+  </style>
+  <script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+</head>
+<body>
+
+  <script type="text/javascript">
+      // set the pyodide files URL (packages.json, pyodide.asm.data etc)
+       window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
+  </script>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/pyodide/v0.16.1/full/pyodide.js"></script> 
+
+  <script>
+    pythonCode = `
+    import micropip
+    #micropip.install('regex')
+    #micropip.install('http://45.77.237.80/static/regex-2020.11.13-cp36-cp36m-manylinux1_i686.whl')
+    micropip.install('appdirs')
+    micropip.install('tatsu')
+    micropip.install('http://45.77.237.80/static/iheartla-0.0.1-py3-none-any.whl')
+    `
+    languagePluginLoader.then(() => { 
+      return pyodide.loadPackage(['micropip'])
+    }).then(() => {
+      pyodide.version();
+      pyodide.runPython(pythonCode);
+    })
+  </script>
+
+  <script>
+    function convert(input) {
+      output = document.getElementById('output');
+      output.innerHTML = '';
+      MathJax.texReset();
+      var options = MathJax.getMetricsFor(output);
+      options.display = 1;
+      MathJax.tex2chtmlPromise(input, options).then(function (node) {
+        output.appendChild(node);
+        MathJax.startup.document.clear();
+        MathJax.startup.document.updateDocument();
+      }).catch(function (err) {
+        output.appendChild(document.createElement('pre')).appendChild(document.createTextNode(err.message));
+      }).then(function () { 
+      });
+    };
+
+    function myFunction(){ 
+      var iheartla = ace.edit("editor");
+      var source = iheartla.getValue();
+      console.log(source)
+      pythonCode = `
+import iheartla.la_parser.parser
+iheartla.la_parser.parser.compile_la_content(r"""` + source + `""")`
+      console.log(pythonCode)
+      var code = pyodide.runPython(pythonCode);
+      console.log(code)
+      var cpp = ace.edit("cpp");
+      cpp.session.setValue(code[1]);
+      var python = ace.edit("python");
+      python.session.setValue(code[0]);
+      var latex = ace.edit("latex");
+      latex.session.setValue(code[2]);
+      convert(code[3]);
+    }
+ 
+  </script>
+
+<pre id="editor">[ t^3 t^2 t 1 ] [ -1  3 -3  1
+                   3 -6  3  0
+                  -3  3  0  0
+                   1  0  0  0 ] P
+where
+t ∈ ℝ
+P ∈ ℝ^(4 × d)</pre>
+<button id="compile" onclick="myFunction()">Compile</button>
+<div id="output"><pre></pre></div>
+<pre id="cpp">cpp</pre>
+<pre id="python">python</pre>
+<pre id="latex">latex</pre>
+
+<script src="src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/twilight");
+    editor.session.setMode("ace/mode/text");
+
+    var cpp = ace.edit("cpp");
+    cpp.setTheme("ace/theme/twilight");
+    cpp.session.setMode("ace/mode/c_cpp");
+    cpp.setOptions({
+      readOnly: true,
+    });
+
+    var python = ace.edit("python");
+    python.setTheme("ace/theme/twilight");
+    python.session.setMode("ace/mode/python");
+    cpp.setOptions({
+      readOnly: true, 
+    });
+
+    var latex = ace.edit("latex");
+    latex.setTheme("ace/theme/twilight");
+    latex.session.setMode("ace/mode/latex");
+    cpp.setOptions({
+      readOnly: true, 
+    });
+</script>
+
+</body>
+</html>
