@@ -1,12 +1,12 @@
 import setuptools
 
 setuptools.setup(
-    name="iheartla", # Replace with your own username
+    name="iheartla",
     version="0.0.1",
     author="Yong Li",
     author_email="pressure36@gmail.com",
     description="I Heart LA package",
-    long_description="DSL for linear algebra",
+    long_description="Compilable Markdown for Math",
     long_description_content_type="text/markdown",
     url="https://github.com/pressureless/linear_algebra",
     packages=setuptools.find_packages(),

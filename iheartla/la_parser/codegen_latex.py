@@ -3,8 +3,8 @@ from .type_walker import *
 
 
 class CodeGenLatex(CodeGen):
-    def __init__(self):
-        super().__init__(ParserTypeEnum.LATEX)
+    def __init__(self, parse_type=ParserTypeEnum.LATEX):
+        super().__init__(parse_type)
         self.uni_convert_dict = {'ᵢ': '\\textsubscript{i}', 'ⱼ': '\\textsubscript{j}', 'ᵣ': '\\textsubscript{r}',
                                  'ᵤ': '\\textsubscript{u}', 'ᵥ': '\\textsubscript{v}', '𝟙': '\\mathbb{ 1 }',
                                  '𝐚': '\\textbf{a}', '𝐛': '\\textbf{b}', '𝐜': '\\textbf{c}', '𝐝': '\\textbf{d}', '𝐞': '\\textbf{e}',
