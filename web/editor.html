@@ -39,6 +39,17 @@
     #compile {
         left: 520px; 
         position: absolute;
+        background-color: #4CAF50; /* Green background */
+        border: none; /* Remove borders */
+        color: white; /* White text */
+        padding: 12px 16px; /* Some padding */
+        font-size: 16px /* Set a font size */
+    }
+    #msg {
+        left: 520px;
+        top: 40px;
+        position: absolute;
+        font-size: 16px /* Set a font size */
     }
     #output {
       border: 0px solid grey;
@@ -53,9 +64,8 @@
   <script type="text/javascript" id="MathJax-script" async
   src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
   </script>
-</head>
-<body>
-
+  <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.4.12/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
   <script type="text/javascript">
       // set the pyodide files URL (packages.json, pyodide.asm.data etc)
        window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
@@ -66,20 +76,21 @@
   <script>
     pythonCode = `
     import micropip
-    #micropip.install('regex')
-    #micropip.install('http://45.77.237.80/static/regex-2020.11.13-cp36-cp36m-manylinux1_i686.whl')
     micropip.install('appdirs')
     micropip.install('tatsu')
     micropip.install('http://45.77.237.80/static/iheartla-0.0.1-py3-none-any.whl')
     `
-    languagePluginLoader.then(() => { 
+    languagePluginLoader.then(() => {
       return pyodide.loadPackage(['micropip'])
     }).then(() => {
       pyodide.version();
       pyodide.runPython(pythonCode);
     })
   </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
 
+<body>
   <script>
     function convert(input) {
       output = document.getElementById('output');
@@ -95,18 +106,79 @@
         output.appendChild(document.createElement('pre')).appendChild(document.createTextNode(err.message));
       }).then(function () { 
       });
-    };
+    }
 
-    function myFunction(){ 
-      var iheartla = ace.edit("editor");
-      var source = iheartla.getValue();
-      console.log(source)
-      pythonCode = `
-import iheartla.la_parser.parser
-iheartla.la_parser.parser.compile_la_content(r"""` + source + `""")`
-      console.log(pythonCode)
-      var code = pyodide.runPython(pythonCode);
-      console.log(code)
+    function checkBrowserVer(){
+      var nVer = navigator.appVersion;
+      var nAgt = navigator.userAgent;
+      var browserName  = navigator.appName;
+      var fullVersion  = ''+parseFloat(navigator.appVersion);
+      var majorVersion = parseInt(navigator.appVersion,10);
+      var nameOffset,verOffset,ix;
+      var validBrowser = false;
+      // In Opera, the true version is after "Opera" or after "Version"
+      if ((verOffset=nAgt.indexOf("Opera"))!=-1) {
+       browserName = "Opera";
+       fullVersion = nAgt.substring(verOffset+6);
+       if ((verOffset=nAgt.indexOf("Version"))!=-1)
+         fullVersion = nAgt.substring(verOffset+8);
+      }
+      // In MSIE, the true version is after "MSIE" in userAgent
+      else if ((verOffset=nAgt.indexOf("MSIE"))!=-1) {
+       browserName = "Microsoft Internet Explorer";
+       fullVersion = nAgt.substring(verOffset+5);
+      }
+      // In Chrome, the true version is after "Chrome"
+      else if ((verOffset=nAgt.indexOf("Chrome"))!=-1) {
+       browserName = "Chrome";
+       fullVersion = nAgt.substring(verOffset+7);
+       validBrowser = true;
+      }
+      // In Safari, the true version is after "Safari" or after "Version"
+      else if ((verOffset=nAgt.indexOf("Safari"))!=-1) {
+       browserName = "Safari";
+       fullVersion = nAgt.substring(verOffset+7);
+       if ((verOffset=nAgt.indexOf("Version"))!=-1)
+         fullVersion = nAgt.substring(verOffset+8);
+      }
+      // In Firefox, the true version is after "Firefox"
+      else if ((verOffset=nAgt.indexOf("Firefox"))!=-1) {
+       browserName = "Firefox";
+       fullVersion = nAgt.substring(verOffset+8);
+       validBrowser = true;
+      }
+      // In most other browsers, "name/version" is at the end of userAgent
+      else if ( (nameOffset=nAgt.lastIndexOf(' ')+1) <
+                (verOffset=nAgt.lastIndexOf('/')) )
+      {
+       browserName = nAgt.substring(nameOffset,verOffset);
+       fullVersion = nAgt.substring(verOffset+1);
+       if (browserName.toLowerCase()==browserName.toUpperCase()) {
+        browserName = navigator.appName;
+       }
+      }
+      // trim the fullVersion string at semicolon/space if present
+      if ((ix=fullVersion.indexOf(";"))!=-1)
+         fullVersion=fullVersion.substring(0,ix);
+      if ((ix=fullVersion.indexOf(" "))!=-1)
+         fullVersion=fullVersion.substring(0,ix);
+
+      majorVersion = parseInt(''+fullVersion,10);
+      if (isNaN(majorVersion)) {
+       fullVersion  = ''+parseFloat(navigator.appVersion);
+       majorVersion = parseInt(navigator.appVersion,10);
+      }
+      if (validBrowser){
+        msg = "Valid browser!";
+      }
+      else{
+        msg = "You are using " + browserName + ", please use Chrome or Firefox!";
+      }
+      console.log(msg);
+      return msg;
+    }
+
+    function updateEditor(code) {
       var cpp = ace.edit("cpp");
       cpp.session.setValue(code[1]);
       var python = ace.edit("python");
@@ -114,6 +186,64 @@ iheartla.la_parser.parser.compile_la_content(r"""` + source + `""")`
       var latex = ace.edit("latex");
       latex.session.setValue(code[2]);
       convert(code[3]);
+      // reset UI
+      document.getElementById("submit_icon").className = "fa fa-refresh";
+      document.getElementById("compile").disabled = false;
+    }
+
+    function updateError(err) {
+      console.log(err);
+    }
+
+    function compileFunction(){
+        var iheartla = ace.edit("editor");
+        var source = iheartla.getValue();
+        console.log(source)
+        pythonCode = `
+import iheartla.la_parser.parser
+iheartla.la_parser.parser.compile_la_content(r"""` + source + `""")`
+        // console.log(pythonCode)
+        // var code = pyodide.runPython(pythonCode);
+        pyodide.runPythonAsync(pythonCode)
+        .then(output => updateEditor(output))
+        .catch((err) => { updateError(err) });
+        console.log("code")
+    }
+
+    function resultReceiver(event) {
+      var n = parseInt(event.data);
+      console.log(event.data);
+    }
+
+    function clickCompile(){
+      try {
+        msg = checkBrowserVer();
+        showMsg(msg);
+        document.getElementById("submit_icon").className = "fa fa-refresh fa-spin";
+        document.getElementById("compile").disabled = true;
+        console.log('start');
+        compileFunction();
+        // var blob = new Blob([
+        //   "onmessage = function(e) { pyodide.runPython('print(2)');; postMessage('msg from worker'); }"
+        // ], { type: "text/javascript" })
+        // var worker = new Worker(window.URL.createObjectURL(blob));
+        // worker.onmessage = function(e) {
+        //   console.log("Received: " + e.data);
+        // }
+        // worker.postMessage("hello"); // Start the worker.
+        console.log('end');
+      } catch (error) {
+        console.error(error);
+        document.getElementById("submit_icon").className = "fa fa-refresh";
+        document.getElementById("compile").disabled = false;
+      }
+      finally {
+      }
+    }
+
+    function showMsg(msg){
+      document.getElementById("msg").innerHTML = msg;
+      setTimeout(function(){ document.getElementById("msg").innerHTML = ''; }, 7000);
     }
  
   </script>
@@ -125,13 +255,19 @@ iheartla.la_parser.parser.compile_la_content(r"""` + source + `""")`
 where
 t ∈ ℝ
 P ∈ ℝ^(4 × d)</pre>
-<button id="compile" onclick="myFunction()">Compile</button>
+
+
+<button id="compile" class="buttonload" onclick="clickCompile()">
+  <i id="submit_icon" class="fa fa-refresh"></i> Compile
+<!--  <i id="submit_icon" class="fa fa-refresh fa-spin"></i> Compile-->
+</button><br>
+<p id="msg">  </p>
 <div id="output"><pre></pre></div>
 <pre id="cpp">cpp</pre>
 <pre id="python">python</pre>
 <pre id="latex">latex</pre>
 
-<script src="https://cdn.jsdelivr.net/npm/ace-builds@1.4.12/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+
 <script>
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/twilight");
