@@ -4,41 +4,53 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <title>Editor</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
   <style type="text/css" media="screen">
     body {
-        overflow: hidden;
+        /* overflow: hidden; */
+        padding-top: 20px;
     }
 
     #editor {
+        /*
         margin: 0;
         position: absolute;
-        width: 500px;
+        */
+        width: 100%;
         height: 200px;
     }
     #cpp {
+        /*
         left: 0px; 
         top: 300px;
         position: absolute;
-        width: 500px;
+        */
+        width: 100%;
         height: 500px;
     }
     #python {
+        /*
         left: 550px; 
         top: 300px;
         position: absolute;
-        width: 500px;
+        */
+        width: 100%;
         height: 500px;
     }
     #latex {
+        /*
         left: 1100px; 
         top: 300px;
         position: absolute;
-        width: 500px;
+        */
+        width: 100%;
         height: 500px;
     }
     #compile {
+        /*
         left: 520px; 
         position: absolute;
+        */
         background-color: #4CAF50; /* Green background */
         border: none; /* Remove borders */
         color: white; /* White text */
@@ -46,18 +58,22 @@
         font-size: 16px /* Set a font size */
     }
     #msg {
+        /*
         left: 520px;
         top: 40px;
         position: absolute;
+        */
         font-size: 16px /* Set a font size */
     }
     #output {
       border: 0px solid grey;
-      left: 650px; 
-      width: 500px;
+      /*
+      position: absolute;
+      left: 650px;
+      */
+      width: 100%;
       height: 200px;
       font-size: 120%;
-      position: absolute;
       box-sizing: border-box;
     }
   </style>
@@ -66,53 +82,9 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.4.12/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-  <script type="text/javascript">
-      // set the pyodide files URL (packages.json, pyodide.asm.data etc)
-       window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
-  </script>
-
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/pyodide/v0.16.1/full/pyodide.js"></script>
-  <script type="text/javascript" src='./py-worker.js'></script>
-  <script src="https://cdn.jsdelivr.net/npm/js-base64@3.6.0/base64.min.js"></script>
-  <script>
-    let iheartla = new URL("./iheartla-0.0.1-py3-none-any.whl", document.baseURI).href;
-    let pythonCode = `
-import micropip
-micropip.install('appdirs')
-micropip.install('tatsu')
-micropip.install('${iheartla}')
-    `
-    // pythonCode = `print("aaaaaa")`
-    // languagePluginLoader.then(() => {
-    //   return pyodide.loadPackage(['micropip'])
-    // }).then(() => {
-    //   pyodide.version();
-    //   pyodide.runPython(pythonCode);
-    // })
-
-    async function background(source, context){
-        try {
-            const {results, error} = await asyncRun(Base64.encode(source), context);
-            if (results) {
-                console.log('pyodideWorker return results: ', results);
-                if (Array.isArray(results)){
-                  updateEditor(results);
-                }
-            } else if (error) {
-                console.log('pyodideWorker error: ', error);
-            }
-        }
-        catch (e){
-            console.log(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`)
-        }
-    }
-
-    background(pythonCode);
-  </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
-<body>
   <script>
     function convert(input) {
       output = document.getElementById('output');
@@ -245,8 +217,6 @@ iheartla.la_parser.parser.compile_la_content(r"""` + source + `""")`
 
     function clickCompile(){
       try {
-        msg = checkBrowserVer();
-        showMsg(msg);
         document.getElementById("submit_icon").className = "fa fa-refresh fa-spin";
         document.getElementById("compile").disabled = true;
         console.log('start');
@@ -276,6 +246,12 @@ iheartla.la_parser.parser.compile_la_content(r"""` + source + `""")`
  
   </script>
 
+<body>
+
+<div class="container">
+<div class="row">
+<div class="col-sm">
+
 <pre id="editor">[ t^3 t^2 t 1 ] [ -1  3 -3  1
                    3 -6  3  0
                   -3  3  0  0
@@ -284,17 +260,41 @@ where
 t ∈ ℝ
 P ∈ ℝ^(4 × d)</pre>
 
+</div>
+<div class="col-sm">
 
-<button id="compile" class="buttonload" onclick="clickCompile()">
+<button id="compile" class="btn btn-success" onclick="clickCompile()">
   <i id="submit_icon" class="fa fa-refresh"></i> Compile
 <!--  <i id="submit_icon" class="fa fa-refresh fa-spin"></i> Compile-->
-</button><br>
-<p id="msg">  </p>
-<div id="output"><pre></pre></div>
-<pre id="cpp">cpp</pre>
-<pre id="python">python</pre>
-<pre id="latex">latex</pre>
+</button>
+<div id="msg" class="alert alert-primary" role="alert"></div>
 
+</div>
+<div class="col-sm">
+<div id="output"></div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-lg">
+    <pre id="cpp">cpp</pre>
+</div>
+<div class="col-lg">
+    <pre id="python">python</pre>
+</div>
+<div class="col-lg">
+    <pre id="latex">latex</pre>
+</div>
+</div>
+
+</div>
+
+</body>
+
+<script>
+msg = checkBrowserVer();
+showMsg(msg);
+</script>
 
 <script>
     var editor = ace.edit("editor");
@@ -323,5 +323,48 @@ P ∈ ℝ^(4 × d)</pre>
     });
 </script>
 
-</body>
+<script type="text/javascript">
+  // set the pyodide files URL (packages.json, pyodide.asm.data etc)
+   window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
+</script>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/pyodide/v0.16.1/full/pyodide.js"></script>
+<script type="text/javascript" src='./py-worker.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/js-base64@3.6.0/base64.min.js"></script>
+<script>
+let iheartla = new URL("./iheartla-0.0.1-py3-none-any.whl", document.baseURI).href;
+let pythonCode = `
+import micropip
+micropip.install('appdirs')
+micropip.install('tatsu')
+micropip.install('${iheartla}')
+`
+// pythonCode = `print("aaaaaa")`
+// languagePluginLoader.then(() => {
+//   return pyodide.loadPackage(['micropip'])
+// }).then(() => {
+//   pyodide.version();
+//   pyodide.runPython(pythonCode);
+// })
+
+async function background(source, context){
+    try {
+        const {results, error} = await asyncRun(Base64.encode(source), context);
+        if (results) {
+            console.log('pyodideWorker return results: ', results);
+            if (Array.isArray(results)){
+              updateEditor(results);
+            }
+        } else if (error) {
+            console.log('pyodideWorker error: ', error);
+        }
+    }
+    catch (e){
+        console.log(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`)
+    }
+}
+
+background(pythonCode);
+</script>
+
 </html>
