@@ -72,20 +72,41 @@
   </script>
 
   <script type="text/javascript" src="https://cdn.jsdelivr.net/pyodide/v0.16.1/full/pyodide.js"></script>
-
+  <script type="text/javascript" src='./py-worker.js'></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-base64@3.6.0/base64.min.js"></script>
   <script>
     pythonCode = `
-    import micropip
-    micropip.install('appdirs')
-    micropip.install('tatsu')
-    micropip.install('http://45.77.237.80/static/iheartla-0.0.1-py3-none-any.whl')
+import micropip
+micropip.install('appdirs')
+micropip.install('tatsu')
+micropip.install('http://45.77.237.80/static/iheartla-0.0.1-py3-none-any.whl')
     `
-    languagePluginLoader.then(() => {
-      return pyodide.loadPackage(['micropip'])
-    }).then(() => {
-      pyodide.version();
-      pyodide.runPython(pythonCode);
-    })
+    // pythonCode = `print("aaaaaa")`
+    // languagePluginLoader.then(() => {
+    //   return pyodide.loadPackage(['micropip'])
+    // }).then(() => {
+    //   pyodide.version();
+    //   pyodide.runPython(pythonCode);
+    // })
+
+    async function background(source, context){
+        try {
+            const {results, error} = await asyncRun(Base64.encode(source), context);
+            if (results) {
+                console.log('pyodideWorker return results: ', results);
+                if (Array.isArray(results)){
+                  updateEditor(results);
+                }
+            } else if (error) {
+                console.log('pyodideWorker error: ', error);
+            }
+        }
+        catch (e){
+            console.log(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`)
+        }
+    }
+
+    background(pythonCode);
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
@@ -195,18 +216,24 @@
       console.log(err);
     }
 
+
     function compileFunction(){
         var iheartla = ace.edit("editor");
         var source = iheartla.getValue();
         console.log(source)
+      // source = 'a=2'
         pythonCode = `
 import iheartla.la_parser.parser
 iheartla.la_parser.parser.compile_la_content(r"""` + source + `""")`
-        // console.log(pythonCode)
+      context = 'ddd'
+
+        console.log(pythonCode)
+      console.log(Base64.encode(pythonCode))
         // var code = pyodide.runPython(pythonCode);
-        pyodide.runPythonAsync(pythonCode)
-        .then(output => updateEditor(output))
-        .catch((err) => { updateError(err) });
+        // pyodide.runPythonAsync(pythonCode)
+        // .then(output => updateEditor(output))
+        // .catch((err) => { updateError(err) });
+        background(pythonCode);
         console.log("code")
     }
 
@@ -243,7 +270,7 @@ iheartla.la_parser.parser.compile_la_content(r"""` + source + `""")`
 
     function showMsg(msg){
       document.getElementById("msg").innerHTML = msg;
-      setTimeout(function(){ document.getElementById("msg").innerHTML = ''; }, 7000);
+      setTimeout(function(){ document.getElementById("msg").innerHTML = ''; }, 2000);
     }
  
   </script>
