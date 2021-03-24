@@ -1,21 +1,13 @@
 const pyodideWorker = new Worker('./webworker.js')
 
-function run(script, context, onSuccess, onError){
+function run(script, onSuccess, onError){
     pyodideWorker.onerror = onError;
     pyodideWorker.onmessage = (e) => onSuccess(e.data);
-    pyodideWorker.postMessage({
-        ...context,
-        python: script,
-    });
+    pyodideWorker.postMessage(script);
 }
 
-// Transform the run (callback) form to a more modern async form.
-// This is what allows to write:
-//    const {results, error} = await asyncRun(script, context);
-// Instead of:
-//    run(script, context, successCallback, errorCallback);
-function asyncRun(script, context) {
+function asyncRun(script) {
     return new Promise(function(onSuccess, onError) {
-        run(script, context, onSuccess, onError);
+        run(script, onSuccess, onError);
     });
 }

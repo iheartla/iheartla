@@ -17,7 +17,7 @@
         position: absolute;
         */
         width: 100%;
-        height: 200px;
+        height: 300px;
     }
     #cpp {
         /*
@@ -72,7 +72,7 @@
       left: 650px;
       */
       width: 100%;
-      height: 200px;
+      height: 300px;
       font-size: 120%;
       box-sizing: border-box;
     }
@@ -189,47 +189,24 @@
       console.log(err);
     }
 
-
     function compileFunction(){
         var iheartla = ace.edit("editor");
         var source = iheartla.getValue();
         console.log(source)
-      // source = 'a=2'
         pythonCode = `
 import iheartla.la_parser.parser
-iheartla.la_parser.parser.compile_la_content(r"""` + source + `""")`
-      context = 'ddd'
-
-        console.log(pythonCode)
-      console.log(Base64.encode(pythonCode))
-        // var code = pyodide.runPython(pythonCode);
-        // pyodide.runPythonAsync(pythonCode)
-        // .then(output => updateEditor(output))
-        // .catch((err) => { updateError(err) });
+source_code = r"""${source}"""
+iheartla.la_parser.parser.compile_la_content(source_code)
+`
         background(pythonCode);
         console.log("code")
-    }
-
-    function resultReceiver(event) {
-      var n = parseInt(event.data);
-      console.log(event.data);
     }
 
     function clickCompile(){
       try {
         document.getElementById("submit_icon").className = "fa fa-refresh fa-spin";
         document.getElementById("compile").disabled = true;
-        console.log('start');
         compileFunction();
-        // var blob = new Blob([
-        //   "onmessage = function(e) { pyodide.runPython('print(2)');; postMessage('msg from worker'); }"
-        // ], { type: "text/javascript" })
-        // var worker = new Worker(window.URL.createObjectURL(blob));
-        // worker.onmessage = function(e) {
-        //   console.log("Received: " + e.data);
-        // }
-        // worker.postMessage("hello"); // Start the worker.
-        console.log('end');
       } catch (error) {
         console.error(error);
         document.getElementById("submit_icon").className = "fa fa-refresh";
@@ -240,8 +217,9 @@ iheartla.la_parser.parser.compile_la_content(r"""` + source + `""")`
     }
 
     function showMsg(msg){
+      document.getElementById("msg").hidden = false;
       document.getElementById("msg").innerHTML = msg;
-      setTimeout(function(){ document.getElementById("msg").innerHTML = ''; }, 2000);
+      setTimeout(function(){ document.getElementById("msg").hidden = true; document.getElementById("msg").innerHTML = ''; }, 2000);
     }
  
   </script>
@@ -322,34 +300,11 @@ showMsg(msg);
       readOnly: true, 
     });
 </script>
-
-<script type="text/javascript">
-  // set the pyodide files URL (packages.json, pyodide.asm.data etc)
-   window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
-</script>
-
-<script type="text/javascript" src="https://cdn.jsdelivr.net/pyodide/v0.16.1/full/pyodide.js"></script>
 <script type="text/javascript" src='./py-worker.js'></script>
-<script src="https://cdn.jsdelivr.net/npm/js-base64@3.6.0/base64.min.js"></script>
 <script>
-let iheartla = new URL("./iheartla-0.0.1-py3-none-any.whl", document.baseURI).href;
-let pythonCode = `
-import micropip
-micropip.install('appdirs')
-micropip.install('tatsu')
-micropip.install('${iheartla}')
-`
-// pythonCode = `print("aaaaaa")`
-// languagePluginLoader.then(() => {
-//   return pyodide.loadPackage(['micropip'])
-// }).then(() => {
-//   pyodide.version();
-//   pyodide.runPython(pythonCode);
-// })
-
-async function background(source, context){
+async function background(source){
     try {
-        const {results, error} = await asyncRun(Base64.encode(source), context);
+        const {results, error} = await asyncRun(source);
         if (results) {
             console.log('pyodideWorker return results: ', results);
             if (Array.isArray(results)){
@@ -363,8 +318,7 @@ async function background(source, context){
         console.log(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`)
     }
 }
-
-background(pythonCode);
+background('');
 </script>
 
 </html>
