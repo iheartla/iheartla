@@ -16,15 +16,16 @@ self.onmessage = async(event) => {
     console.log('code is:' + pythonCode);
     try {
         pyodide.runPythonAsync(pythonCode)
-        .then(output => self.postMessage({
-            'results':  output
-        }))
-        .catch((err) => { console.log(err) });
+        .then(output => {
+            self.postMessage({'results':  output});
+        })
+        .catch((err) => {
+            console.log(err.message)
+            self.postMessage({'results':  'Compile error!'});
+        });
     }
     catch (error){
         console.log('error')
-        self.postMessage(
-            {error : error.message}
-        );
+        self.postMessage({error : error.message});
     }
 }

@@ -155,17 +155,17 @@ def generate_latex_code(type_walker, node_info, frame):
                 # If xelatex worked, we have a PDF, even if pdfcrop failed.
                 # if ret.returncode == 0:
                 show_pdf = io.BytesIO( open("{}.pdf".format(template_name),'rb').read() )
-        # except subprocess.SubprocessError as e:
-        #     tex_content = str(e)
-        # except FailedParse as e:
-        #     tex_content = str(e)
-        # except FailedCut as e:
-        #     tex_content = str(e)
-        # except Exception as e:
-        #     tex_content = str(e)
-        #     exc_info = sys.exc_info()
-        #     traceback.print_exc()
-        #     tex_content = str(exc_info[2])
+        except subprocess.SubprocessError as e:
+            tex_content = str(e)
+        except FailedParse as e:
+            tex_content = str(e)
+        except FailedCut as e:
+            tex_content = str(e)
+        except Exception as e:
+            tex_content = str(e)
+            exc_info = sys.exc_info()
+            traceback.print_exc()
+            tex_content = str(exc_info[2])
         finally:
             wx.CallAfter(frame.UpdateTexPanel, tex_content, show_pdf)
 
@@ -273,22 +273,22 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
             parser_type = ParserTypeEnum.NUMPY
         res = walk_model(parser_type, type_walker, start_node, func_name)
         result = (res, 0)
-    # except FailedParse as e:
-    #     tex = LaMsg.getInstance().get_parse_error(e)
-    #     log_la("FailedParse:" + str(e))
-    #     result = (tex, 1)
-    # except FailedCut as e:
-    #     tex = "FailedCut: {}".format(str(e))
-    #     result = (tex, 1)
-    # except AssertionError as e:
-    #     tex = "{}".format(e.args[0])
-    #     result = (tex, 1)
-    # except Exception as e:
-    #     tex = "Exception: {}".format(str(e))
-    #     result = (tex, 1)
-    # except:
-    #     tex = str(sys.exc_info()[0])
-    #     result = (tex, 1)
+    except FailedParse as e:
+        tex = LaMsg.getInstance().get_parse_error(e)
+        log_la("FailedParse:" + str(e))
+        result = (tex, 1)
+    except FailedCut as e:
+        tex = "FailedCut: {}".format(str(e))
+        result = (tex, 1)
+    except AssertionError as e:
+        tex = "{}".format(e.args[0])
+        result = (tex, 1)
+    except Exception as e:
+        tex = "Exception: {}".format(str(e))
+        result = (tex, 1)
+    except:
+        tex = str(sys.exc_info()[0])
+        result = (tex, 1)
     finally:
         wx.CallAfter(frame.UpdateMidPanel, result)
         print("------------ %.2f seconds ------------" % (time.time() - start_time))
@@ -303,22 +303,34 @@ def get_file_name(path_name):
 
 def compile_la_content(la_content, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX| ParserTypeEnum.MATHJAX):
     parser = get_default_parser()
-    model = parser.parse(la_content, parseinfo=True)
-    type_walker, start_node = parse_ir_node(la_content, model)
-    ret = []
-    if parser_type & ParserTypeEnum.NUMPY:
-        numpy_content = walk_model(ParserTypeEnum.NUMPY, type_walker, start_node)
-        ret.append(numpy_content)
-    if parser_type & ParserTypeEnum.EIGEN:
-        eigen_content = walk_model(ParserTypeEnum.EIGEN, type_walker, start_node)
-        ret.append(eigen_content)
-    if parser_type & ParserTypeEnum.LATEX:
-        tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, start_node)
-        ret.append(tex_content)
-    if parser_type & ParserTypeEnum.MATHJAX:
-        tex_content = walk_model(ParserTypeEnum.MATHJAX, type_walker, start_node)
-        ret.append(tex_content)
-    return ret
+    try:
+        model = parser.parse(la_content, parseinfo=True)
+        type_walker, start_node = parse_ir_node(la_content, model)
+        ret = []
+        if parser_type & ParserTypeEnum.NUMPY:
+            numpy_content = walk_model(ParserTypeEnum.NUMPY, type_walker, start_node)
+            ret.append(numpy_content)
+        if parser_type & ParserTypeEnum.EIGEN:
+            eigen_content = walk_model(ParserTypeEnum.EIGEN, type_walker, start_node)
+            ret.append(eigen_content)
+        if parser_type & ParserTypeEnum.LATEX:
+            tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, start_node)
+            ret.append(tex_content)
+        if parser_type & ParserTypeEnum.MATHJAX:
+            tex_content = walk_model(ParserTypeEnum.MATHJAX, type_walker, start_node)
+            ret.append(tex_content)
+    except FailedParse as e:
+        ret = LaMsg.getInstance().get_parse_error(e)
+    except FailedCut as e:
+        ret = "FailedCut: {}".format(str(e))
+    except AssertionError as e:
+        ret = "{}".format(e.args[0])
+    except Exception as e:
+        ret = "Exception: {}".format(str(e))
+    except:
+        ret = str(sys.exc_info()[0])
+    finally:
+        return ret
 
 
 def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX):

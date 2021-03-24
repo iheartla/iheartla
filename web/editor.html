@@ -187,6 +187,9 @@
 
     function updateError(err) {
       console.log(err);
+      showMsg(err);
+      document.getElementById("submit_icon").className = "fa fa-refresh";
+      document.getElementById("compile").disabled = false;
     }
 
     function compileFunction(){
@@ -310,7 +313,12 @@ async function background(source){
             if (Array.isArray(results)){
               updateEditor(results);
             }
+            else{
+                console.log(results)
+                updateError(results);
+            }
         } else if (error) {
+            updateError(error);
             console.log('pyodideWorker error: ', error);
         }
     }
