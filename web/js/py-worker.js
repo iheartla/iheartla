@@ -1,4 +1,4 @@
-const pyodideWorker = new Worker('./webworker.js')
+const pyodideWorker = new Worker('js/webworker.js')
 
 function run(script, onSuccess, onError){
     pyodideWorker.onerror = onError;

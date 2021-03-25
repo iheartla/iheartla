@@ -1,0 +1,70 @@
+body {
+    /* overflow: hidden; */
+    padding-top: 20px;
+}
+
+#editor {
+    /*
+    margin: 0;
+    position: absolute;
+    */
+    width: 100%;
+    height: 300px;
+}
+#cpp {
+    /*
+    left: 0px; 
+    top: 300px;
+    position: absolute;
+    */
+    width: 100%;
+    height: 500px;
+}
+#python {
+    /*
+    left: 550px; 
+    top: 300px;
+    position: absolute;
+    */
+    width: 100%;
+    height: 500px;
+}
+#latex {
+    /*
+    left: 1100px; 
+    top: 300px;
+    position: absolute;
+    */
+    width: 100%;
+    height: 500px;
+}
+#compile {
+    /*
+    left: 520px; 
+    position: absolute;
+    */
+    background-color: #4CAF50; /* Green background */
+    border: none; /* Remove borders */
+    color: white; /* White text */
+    padding: 12px 16px; /* Some padding */
+    font-size: 16px /* Set a font size */
+}
+#msg {
+    /*
+    left: 520px;
+    top: 40px;
+    position: absolute;
+    */
+    font-size: 16px /* Set a font size */
+}
+#output {
+    border: 0px solid grey;
+    /*
+    position: absolute;
+    left: 650px;
+    */
+    width: 100%;
+    height: 300px;
+    font-size: 120%;
+    box-sizing: border-box;
+}
