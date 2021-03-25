@@ -1,3 +1,19 @@
+let unicode_dict = {'R': 'ℝ', 'Z': 'ℤ', 'x': '×', 'times': '×', 'inf': '∞', 'in': '∈', 'sum': '∑',
+                             'had': '○', 'kro': '⨂', 'dot': '⋅', 'T': 'ᵀ', '^T': 'ᵀ', 'par': '∂', 'emp': '∅',
+                             'arr': '→', 'int': '∫', 'dbl': '‖', 'pi': 'π', 'sig': 'σ', 'rho': 'ρ',
+                             'phi': 'ϕ', 'the': 'θ', 'alp': 'α', 'bet': 'β',  'gam': 'γ',
+                             'u0': '₀', 'u1': '₁', 'u2': '₂', 'u3': '₃', 'u4': '₄', 'u5': '₅', 'u6': '₆', 'u7': '₇', 'u8': '₈', 'u9': '₉',
+                             '_0': '_', '_1': '₁', '_2': '₂', '_3': '₃', '_4': '₄', '_5': '₅', '_6': '₆', '_7': '₇', '_8': '₈', '_9': '₉',
+                             's0': '⁰', 's1': '¹', 's2': '²', 's3': '³', 's4': '⁴', 's5': '⁵', 's6': '⁶', 's7': '⁷', 's8': '⁸', 's9': '⁹', 's-1': '⁻¹',
+                             '^0': '⁰', '^1': '¹', '^2': '²', '^3': '³', '^4': '⁴', '^5': '⁵', '^6': '⁶', '^7': '⁷', '^8': '⁸', '^9': '⁹',
+                             '_a': 'ₐ', '_e': 'ₑ', '_h': 'ₕ', '_i': 'ᵢ', '_j': 'ⱼ', '_k': 'ₖ',
+                             '_l': 'ₗ', '_m': 'ₘ', '_n': 'ₙ', '_o': 'ₒ', '_p': 'ₚ', '_s': 'ₛ', '_t': 'ₜ', '_u': 'ᵤ',
+                             '_v': 'ᵥ', '_x': 'ₓ', '1': '𝟙', 'cdot': '⋅', 'nabla': '∇',
+                             'sqrt': '√', '+-': '±', '<=': '≤', '<=>': '⇔', '>=': '≥', '1/2': '½',
+                             '1/3': '⅓', '1/4': '¼', '1/5': '⅕', '1/6': '⅙', '1/8': '⅛', '2/3': '⅔', '2/5': '⅖',
+                             '3/4': '¾', '3/5': '⅗', '3/8': '⅜', '4/5': '⅘', '5/6': '⅚', '5/8': '⅝', '7/8': '⅞',
+                             'heart': '❤️', 'iheartla': 'I❤️LA'
+                             }
 function checkBrowserVer(){
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
@@ -121,7 +137,6 @@ function updateEditor(code) {
 }
 
 function updateError(err) {
-    console.log(err);
     showMsg(err);
     document.getElementById("submit_icon").className = "fa fa-refresh";
     document.getElementById("compile").disabled = false;
@@ -137,7 +152,6 @@ source_code = r"""${source}"""
 iheartla.la_parser.parser.compile_la_content(source_code)
 `
     background(pythonCode);
-    console.log("code")
 }
 
 function clickCompile(){
@@ -161,9 +175,10 @@ function showMsg(msg){
 }
 
 function onEditIhla(e){
-    console.log('edit'+e)
-    var editor = ace.edit("editor");
-    editor.find('\\R');
-    editor.replaceAll('ℝ');
+    let editor = ace.edit("editor");
+    for (let key in unicode_dict) {
+        editor.find('\\' + key + ' ');
+        editor.replaceAll(unicode_dict[key]);
+    }
 }
 
