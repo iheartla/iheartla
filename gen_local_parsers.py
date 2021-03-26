@@ -1,0 +1,2 @@
+import iheartla.la_tools.parser_manager
+iheartla.la_tools.parser_manager.recreate_local_parser_cache()

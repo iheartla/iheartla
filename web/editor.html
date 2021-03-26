@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Editor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.4.12/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script type="text/javascript" src='js/py-worker.js'></script>
+    <script type="text/javascript" src='js/editor.js'></script>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <pre id="editor">[ t^3 t^2 t 1 ] [ -1  3 -3  1
+                   3 -6  3  0
+                  -3  3  0  0
+                   1  0  0  0 ] P
+where
+t ∈ ℝ
+P ∈ ℝ^(4 × d)</pre>
+        </div>
+        <div class="col-sm">
+            <button id="compile" class="btn btn-success" onclick="clickCompile()">
+                <i id="submit_icon" class="fa fa-refresh"></i> Compile
+            <!--  <i id="submit_icon" class="fa fa-refresh fa-spin"></i> Compile-->
+            </button>
+            <div id="msg" class="alert alert-primary" role="alert"></div>
+        </div>
+        <div class="col-sm">
+            <div id="output"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg">
+            <pre id="cpp">cpp</pre>
+        </div>
+        <div class="col-lg">
+            <pre id="python">python</pre>
+        </div>
+        <div class="col-lg">
+            <pre id="latex">latex</pre>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script>
+    showMsg(checkBrowserVer());
+    background('');
+    //
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/twilight");
+    editor.session.setMode("ace/mode/text");
+    editor.session.on('change', onEditIhla);
+
+    var cpp = ace.edit("cpp");
+    cpp.setTheme("ace/theme/twilight");
+    cpp.session.setMode("ace/mode/c_cpp");
+    cpp.setOptions({
+      readOnly: true,
+    });
+
+    var python = ace.edit("python");
+    python.setTheme("ace/theme/twilight");
+    python.session.setMode("ace/mode/python");
+    cpp.setOptions({
+      readOnly: true, 
+    });
+
+    var latex = ace.edit("latex");
+    latex.setTheme("ace/theme/twilight");
+    latex.session.setMode("ace/mode/latex");
+    cpp.setOptions({
+      readOnly: true, 
+    });
+</script>
+
+</html>

@@ -2,7 +2,7 @@
 
 import os.path
 
-print("Did you forget to re-generate the cached parsers first with `poetry run python la_local_parsers.py`?")
+# print("Did you forget to re-generate the cached parsers first with `poetry run python la_local_parsers.py`?")
 
 '''
 from pathlib import Path
@@ -21,12 +21,12 @@ for f in cached_parsers.glob('*.py'): shutil.copy( f, tmpdir.name )
 
 block_cipher = None
 
-a = Analysis(['linear_algebra.py'],
+a = Analysis(['app.py'],
              ## pyinstaller iheartla.spec must be run from
              ## next to the 'linear_algebra.py' file and the 'la_grammar' directory.
              pathex=[os.path.abspath(os.getcwd())],
              binaries=[],
-             datas=[('la_grammar', 'la_grammar'), ('la_local_parsers', 'la_local_parsers')],
+             datas=[],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],

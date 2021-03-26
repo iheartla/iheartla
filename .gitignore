@@ -17,3 +17,4 @@ la_test/generated_code.py
 /build
 /dist
 /linear_algebra.spec
+iheartla.egg-info
