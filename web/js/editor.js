@@ -177,8 +177,14 @@ function showMsg(msg){
 function onEditIhla(e){
     let editor = ace.edit("editor");
     for (let key in unicode_dict) {
-        editor.find('\\' + key + ' ');
-        editor.replaceAll(unicode_dict[key]);
+        let old_str = '\\' + key + ' ';
+        let result = editor.find(old_str);
+        if (result){
+            editor.replaceAll(unicode_dict[key]);
+            editor.gotoLine(result.start.row+1, result.start.column+unicode_dict[key].length)
+            editor.clearSelection();
+            break;
+        }
     }
 }
 
