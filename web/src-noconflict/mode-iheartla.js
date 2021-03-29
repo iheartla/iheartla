@@ -9,14 +9,40 @@ ace.define("ace/mode/iheartla_highlight_rules",["require","exports","module","ac
         this.$rules = {
             start: [
                 {
-                    token: ['zupfnoter.information.comment.line.percentage', 'information.keyword', 'in formation.keyword.embedded'],
-                    regex: /[\u2070\u00B9\u00B2\u00B3\u2074-\u2079\u2080-\u2089\d]+/,
-                    comment: 'Instruction Comment'
+                    token: ['comment'],
+                    regex: /(?<=.*[:∈].*:)[^`;\n\r\f]*/
                 },
                 {
-                    token: ['information.comment.line.percentage', 'information.keyword.embedded'],
-                    regex: '(:)(.*)',
-                    comment: 'Instruction Comment'
+                    token: ['string'],
+                    regex: /`[^`]*`/
+                },
+                {
+                    token: ['constant.numeric'],
+                    regex: /[\u2070\u00B9\u00B2\u00B3\u2074-\u2079\u2080-\u2089\d]+/
+                },
+                {
+                    token: ['keyword.control'],
+                    regex: /if/
+                },
+                {
+                    token: ['keyword.definition'],
+                    regex: /where|given|from/
+                },
+                {
+                    token: ['keyword.operator'],
+                    regex: /->|⁻¹|\|\||[\+\-±⋅×/÷\^_><ᵀ∈‖\|\*]/
+                },
+                {
+                    token: ['keyword.other'],
+                    regex: /sum|min|max|argmin|argmax|int|otherwise|is|in|subject to|s.t./
+                },
+                {
+                    token: ['support.function'],
+                    regex: /exp|log|ln|sqrt/
+                },
+                {
+                    token: ['support.type'],
+                    regex: /ℝ|ℤ|scalar|vector|matrix/
                 }
 
             ]
