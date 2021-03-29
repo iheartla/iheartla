@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="./src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="./src-noconflict/ext-language_tools.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <script type="text/javascript" src='js/py-worker.js'></script>
     <script type="text/javascript" src='js/editor.js'></script>
@@ -80,30 +81,34 @@ P ∈ ℝ^(4 × d)</pre>
     showMsg(checkBrowserVer());
     background('');
     //
-    var editor = ace.edit("editor");
+    let editor = ace.edit("editor");
     editor.setTheme("ace/theme/twilight");
     editor.session.setMode("ace/mode/iheartla");
     editor.session.on('change', onEditIhla);
+    editor.setOptions({
+        enableBasicAutocompletion: true,
+        enableLiveAutocompletion: true
+    });
 
-    var cpp = ace.edit("cpp");
+    let cpp = ace.edit("cpp");
     cpp.setTheme("ace/theme/twilight");
     cpp.session.setMode("ace/mode/c_cpp");
     cpp.setOptions({
-      readOnly: true,
+        readOnly: true,
     });
 
-    var python = ace.edit("python");
+    let python = ace.edit("python");
     python.setTheme("ace/theme/twilight");
     python.session.setMode("ace/mode/python");
-    cpp.setOptions({
-      readOnly: true, 
+    python.setOptions({
+        readOnly: true,
     });
 
-    var latex = ace.edit("latex");
+    let latex = ace.edit("latex");
     latex.setTheme("ace/theme/twilight");
     latex.session.setMode("ace/mode/latex");
-    cpp.setOptions({
-      readOnly: true, 
+    latex.setOptions({
+        readOnly: true,
     });
 
     $('#keybinding input').click(function() {
