@@ -95,6 +95,7 @@ class TypeWalker(NodeWalker):
         self.lhs_list = []
         # self.directive_parsing = True   # directives grammar
         self.sum_subs = []
+        self.sum_sym_list = []
         self.sum_conds = []
         self.la_content = ''
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
@@ -819,12 +820,23 @@ class TypeWalker(NodeWalker):
         self.sum_subs.pop()
         self.sum_conds.pop()
         cur_sym_dict = self.sum_sym_list.pop()
+        assert self.check_sum_subs(subs, cur_sym_dict), self.get_err_msg_info(sub_parse_info, "Subscript has inconsistent dimensions")
         ir_node.sym_dict = cur_sym_dict
         ret_info.ir = ir_node
         del self.symtable[subs]   # remove subscript from symbol table
         self.logger.debug("cur_sym_dict: {}".format(cur_sym_dict))
         self.logger.debug("summation, symbols: {}".format(ir_node.symbols))
         return ret_info
+
+    def check_sum_subs(self, subs, sym_dict):
+        dim_list = []
+        for k, v in sym_dict.items():
+            cur_type = self.symtable[k]
+            for cur_index in range(len(v)):
+                if v[cur_index] == subs:
+                    cur_dim = cur_type.get_dim_size(cur_index)
+                    dim_list.append(cur_dim)
+        return all(dim == dim_list[0] for dim in dim_list)
 
     def walk_Optimize(self, node, **kwargs):
         opt_type = OptimizeType.OptimizeInvalid
@@ -1288,12 +1300,20 @@ class TypeWalker(NodeWalker):
             if len(self.sum_subs) > 0:
                 # inside summation
                 right_sym_list = get_right_list()
-                # print("right_sym_list:{}".format(right_sym_list))
                 for sub_index in range(len(self.sum_subs)):
                     sub_sym = self.sum_subs[sub_index]
                     if sub_sym in right_sym_list:
                         cur_dict = self.sum_sym_list[sub_index]
-                        cur_dict[left_info.content] = right_sym_list
+                        if left_info.content in cur_dict:
+                            # merge same subscript
+                            old_right_list = copy.deepcopy(cur_dict[left_info.content])
+                            assert len(old_right_list) == len(right_sym_list)
+                            for old_index in range(len(old_right_list)):
+                                if sub_sym != old_right_list[old_index]:
+                                    old_right_list[old_index] = right_sym_list[old_index]
+                            cur_dict[left_info.content] = old_right_list
+                        else:
+                            cur_dict[left_info.content] = right_sym_list
                         self.sum_sym_list[sub_index] = cur_dict
 
             content_symbol = node.text.replace(' ', '').replace(',', '')

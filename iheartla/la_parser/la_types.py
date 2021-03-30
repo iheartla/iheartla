@@ -54,6 +54,23 @@ class LaVarType(object):
         else:
             self.dynamic |= dynamic_type
 
+    def get_dim_size(self, dim_index):
+        dim_size = 0
+        if self.var_type == VarTypeEnum.SEQUENCE:
+            if dim_index == 0:
+                dim_size = self.size
+            else:
+                dim_size = self.element_type.get_dim_size(dim_index-1)
+        elif self.var_type == VarTypeEnum.MATRIX:
+            if dim_index == 0:
+                dim_size = self.rows
+            else:
+                dim_size = self.cols
+        elif self.var_type == VarTypeEnum.VECTOR:
+            if dim_index == 0:
+                dim_size = self.rows
+        return dim_size
+
     def is_dim_constant(self):
         constant = False
         if self.var_type == VarTypeEnum.SEQUENCE:
