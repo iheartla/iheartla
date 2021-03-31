@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -14,6 +13,13 @@
     <script type="text/javascript" src='js/py-worker.js'></script>
     <script type="text/javascript" src='js/editor.js'></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/pyodide/v0.16.1/full/pyodide.js"></script>
+    <script type="text/javascript">
+        if(isChrome()){
+            loadPyodide()
+        }
+    </script>
+
 </head>
 
 <body>
@@ -79,7 +85,9 @@ P ∈ ℝ^(4 × d)</pre>
 
 <script>
     showMsg(checkBrowserVer());
-    background('');
+    if(!isChrome()) {
+        background('');
+    }
     //
     let editor = ace.edit("editor");
     editor.setTheme("ace/theme/twilight");

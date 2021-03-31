@@ -84,6 +84,31 @@ function checkBrowserVer(){
     return msg;
 }
 
+function isChrome(){
+    let nAgt = navigator.userAgent;
+    if (nAgt.indexOf("Chrome")!=-1) {
+        return true;
+    }
+    return false;
+}
+
+function loadPyodide(){
+    window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
+    let wheel = new URL("./iheartla-0.0.1-py3-none-any.whl", document.baseURI).href;
+    pythonCode = `
+    import micropip
+    micropip.install('appdirs')
+    micropip.install('tatsu')
+    micropip.install('${wheel}')
+    `
+    languagePluginLoader.then(() => {
+        return pyodide.loadPackage(['micropip'])
+    }).then(() => {
+        pyodide.version();
+        pyodide.runPython(pythonCode);
+    })
+}
+
 async function background(source){
     try {
         const {results, error} = await asyncRun(source);
@@ -151,7 +176,15 @@ import iheartla.la_parser.parser
 source_code = r"""${source}"""
 iheartla.la_parser.parser.compile_la_content(source_code)
 `
-    background(pythonCode);
+    if (isChrome()){
+        setTimeout(function(){
+            var code = pyodide.runPython(pythonCode);
+            updateEditor(code);
+            }, 1000);
+    }
+    else{
+        background(pythonCode);
+    }
 }
 
 function clickCompile(){
@@ -187,4 +220,5 @@ function onEditIhla(e){
         }
     }
 }
+
 
