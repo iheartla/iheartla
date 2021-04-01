@@ -504,16 +504,16 @@ class CodeGenLatex(CodeGen):
     def visit_power(self, node, **kwargs):
         base_info = self.visit(node.base, **kwargs)
         if node.t:
-            base_info = "{}^T".format(base_info)
+            base_info = "{{{}}}^T".format(base_info)
         elif node.r:
             base_info = base_info + "^{-1}"
         else:
             if node.power.node_type == IRNodeType.Factor and node.power.sub:  # sub expression
                 power_info = self.visit(node.power.sub.value, **kwargs)
-                base_info = "{}^{{{}}}".format(base_info, power_info)
+                base_info = "{{{}}}^{{{}}}".format(base_info, power_info)
             else:
                 power_info = self.visit(node.power, **kwargs)
-                base_info = "{}^{{{}}}".format(base_info, power_info)
+                base_info = "{{{}}}^{{{}}}".format(base_info, power_info)
         return base_info
 
     def visit_solver(self, node, **kwargs):
@@ -549,7 +549,7 @@ class CodeGenLatex(CodeGen):
         return content
 
     def visit_transpose(self, node, **kwargs):
-        return "{}^T".format(self.visit(node.f, **kwargs))
+        return "{{{}}}^T".format(self.visit(node.f, **kwargs))
 
     def visit_derivative(self, node, **kwargs):
         return "\\partial" + self.visit(node.value, **kwargs)
