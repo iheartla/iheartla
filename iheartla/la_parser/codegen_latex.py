@@ -369,7 +369,7 @@ class CodeGenLatex(CodeGen):
     def visit_bin_comp(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return left_info + ' {} '.format(self.get_bin_comp_str(node.comp_type)) + right_info
+        return left_info + ' {} '.format(node.op) + right_info
 
     def visit_sub_expr(self, node, **kwargs):
         return '\\left( ' + self.visit(node.value, **kwargs) + ' \\right)'

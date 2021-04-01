@@ -262,11 +262,12 @@ class NotInNode(StmtNode):
 
 
 class BinCompNode(StmtNode):
-    def __init__(self, comp_type=IRNodeType.INVALID, left=None, right=None, parse_info=None, raw_text=None):
+    def __init__(self, comp_type=IRNodeType.INVALID, left=None, right=None, parse_info=None, raw_text=None, op=None):
         super().__init__(IRNodeType.BinComp, parse_info=parse_info, raw_text=raw_text)
         self.comp_type = comp_type
         self.left = left
         self.right = right
+        self.op = op
 
 
 ####################################################

@@ -136,26 +136,26 @@ not_in::NotInCondition
     ;
 
 not_equal::NeCondition
-    = left:expression {hspace} ('≠' | '!=') {hspace} right:expression
+    = left:expression {hspace} op:('≠' | '!=') {hspace} right:expression
     ;
 
 equal::EqCondition
-    = left:expression {hspace} ('==' | '=') {hspace} right:expression
+    = left:expression {hspace} op:('==' | '=') {hspace} right:expression
     ;
 
 greater::GreaterCondition
-    = left:expression {hspace} '>' {hspace} right:expression
+    = left:expression {hspace} op:'>' {hspace} right:expression
     ;
 
 greater_equal::GreaterEqualCondition
-    = left:expression {hspace} ('>=' | '⩾') {hspace} right:expression
+    = left:expression {hspace} op:('>=' | '⩾') {hspace} right:expression
     ;
 
 less::LessCondition
-    = left:expression {hspace} '<' {hspace} right:expression
+    = left:expression {hspace} op:'<' {hspace} right:expression
     ;
 
 less_equal::LessEqualCondition
-    = left:expression {hspace} ('<=' | '⩽') {hspace} right:expression
+    = left:expression {hspace} op:('<=' | '⩽') {hspace} right:expression
     ;
 """
