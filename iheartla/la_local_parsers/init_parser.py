@@ -4441,14 +4441,15 @@ class grammarinitParser(Parser):
                 with self._option():
                     self._token('!=')
                 self._error('no available options')
+        self.name_last_node('op')
 
-        def block3():
+        def block4():
             self._hspace_()
-        self._closure(block3)
+        self._closure(block4)
         self._expression_()
         self.name_last_node('right')
         self.ast._define(
-            ['left', 'right'],
+            ['left', 'op', 'right'],
             []
         )
 
@@ -4467,14 +4468,15 @@ class grammarinitParser(Parser):
                 with self._option():
                     self._token('=')
                 self._error('no available options')
+        self.name_last_node('op')
 
-        def block3():
+        def block4():
             self._hspace_()
-        self._closure(block3)
+        self._closure(block4)
         self._expression_()
         self.name_last_node('right')
         self.ast._define(
-            ['left', 'right'],
+            ['left', 'op', 'right'],
             []
         )
 
@@ -4487,14 +4489,15 @@ class grammarinitParser(Parser):
             self._hspace_()
         self._closure(block1)
         self._token('>')
+        self.name_last_node('op')
 
-        def block2():
+        def block3():
             self._hspace_()
-        self._closure(block2)
+        self._closure(block3)
         self._expression_()
         self.name_last_node('right')
         self.ast._define(
-            ['left', 'right'],
+            ['left', 'op', 'right'],
             []
         )
 
@@ -4513,14 +4516,15 @@ class grammarinitParser(Parser):
                 with self._option():
                     self._token('⩾')
                 self._error('no available options')
+        self.name_last_node('op')
 
-        def block3():
+        def block4():
             self._hspace_()
-        self._closure(block3)
+        self._closure(block4)
         self._expression_()
         self.name_last_node('right')
         self.ast._define(
-            ['left', 'right'],
+            ['left', 'op', 'right'],
             []
         )
 
@@ -4533,14 +4537,15 @@ class grammarinitParser(Parser):
             self._hspace_()
         self._closure(block1)
         self._token('<')
+        self.name_last_node('op')
 
-        def block2():
+        def block3():
             self._hspace_()
-        self._closure(block2)
+        self._closure(block3)
         self._expression_()
         self.name_last_node('right')
         self.ast._define(
-            ['left', 'right'],
+            ['left', 'op', 'right'],
             []
         )
 
@@ -4559,14 +4564,15 @@ class grammarinitParser(Parser):
                 with self._option():
                     self._token('⩽')
                 self._error('no available options')
+        self.name_last_node('op')
 
-        def block3():
+        def block4():
             self._hspace_()
-        self._closure(block3)
+        self._closure(block4)
         self._expression_()
         self.name_last_node('right')
         self.ast._define(
-            ['left', 'right'],
+            ['left', 'op', 'right'],
             []
         )
 
@@ -5772,29 +5778,35 @@ class NotInCondition(ModelBase):
 
 class NeCondition(ModelBase):
     left = None
+    op = None
     right = None
 
 
 class EqCondition(ModelBase):
     left = None
+    op = None
     right = None
 
 
 class GreaterCondition(ModelBase):
     left = None
+    op = None
     right = None
 
 
 class GreaterEqualCondition(ModelBase):
     left = None
+    op = None
     right = None
 
 
 class LessCondition(ModelBase):
     left = None
+    op = None
     right = None
 
 
 class LessEqualCondition(ModelBase):
     left = None
+    op = None
     right = None

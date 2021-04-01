@@ -1,7 +1,8 @@
 from .la_helper import *
 from .la_logger import *
-from ..la_local_parsers.init_parser import grammarinitParser, grammarinitModelBuilderSemantics
-from ..la_local_parsers.default_parser import grammardefaultParser, grammardefaultModelBuilderSemantics
+if not DEBUG_MODE:
+    from ..la_local_parsers.init_parser import grammarinitParser, grammarinitModelBuilderSemantics
+    from ..la_local_parsers.default_parser import grammardefaultParser, grammardefaultModelBuilderSemantics
 import pickle
 import tatsu
 import time
@@ -21,6 +22,9 @@ class ParserManager(object):
     def __init__(self, grammar_dir):
         if DEBUG_MODE:
             self.parser_file_manager = ParserFileManager(grammar_dir)
+            self.cache_dir = self.parser_file_manager.cache_dir
+            self.grammar_dir = self.parser_file_manager.grammar_dir
+            self.save_threads = self.parser_file_manager.save_threads
         else:
             self.init_parser = grammarinitParser(semantics=grammarinitModelBuilderSemantics())
             self.default_parser = grammardefaultParser(semantics=grammardefaultModelBuilderSemantics())
@@ -37,6 +41,10 @@ class ParserManager(object):
     def set_test_mode(self):
         if DEBUG_MODE:
             self.parser_file_manager.set_test_mode()
+
+    def reload(self):
+        if DEBUG_MODE:
+            self.parser_file_manager.reload()
 
     def modify_default_parser(self, extra_dict):
         self.default_parser.new_id_list = []
@@ -169,33 +177,36 @@ class ParserFileManager(object):
         hash_value = hashlib.md5(key.encode()).hexdigest()
         if hash_value in self.parser_dict:
             return self.parser_dict[hash_value]
-        # create new parser from default parser
-        rule_content = self.gen_parser_code(hash_value, extra_dict)
-        module_name = "{}_{}_{}".format(self.prefix, hash_value, datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))
-        new_file_name = os.path.join(self.cache_dir, "{}.py".format(module_name))
-        save_to_file(rule_content, new_file_name)
-        # load new parser
-        spec = importlib.util.spec_from_file_location(module_name, new_file_name)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        parser_a = getattr(module, "grammar{}Parser".format(hash_value))
-        parser_semantic = getattr(module, "grammar{}ModelBuilderSemantics".format(hash_value))
-        parser = parser_a(semantics=parser_semantic())
-        self.parser_dict[hash_value] = parser
-        return parser
-        # os.path.dirname(filename) is used as the prefix for relative #include commands
-        # It just needs to be a path inside the directory where all the grammar files are.
-        # parser = tatsu.compile(grammar, asmodel=True)
-        # self.parser_dict[hash_value] = parser
-        # try:
-        #     # save to file asynchronously
-        #     save_thread = threading.Thread(target=self.save_grammar, args=(hash_value, grammar,))
-        #     save_thread.start()
-        #     self.save_threads.append( save_thread )
-        # except:
-        #     self.save_grammar(hash_value, grammar)
-        # # self.save_dict()
-        # return parser
+        if not DEBUG_MODE:
+            # create new parser from default parser
+            rule_content = self.gen_parser_code(hash_value, extra_dict)
+            module_name = "{}_{}_{}".format(self.prefix, hash_value, datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))
+            new_file_name = os.path.join(self.cache_dir, "{}.py".format(module_name))
+            save_to_file(rule_content, new_file_name)
+            # load new parser
+            spec = importlib.util.spec_from_file_location(module_name, new_file_name)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            parser_a = getattr(module, "grammar{}Parser".format(hash_value))
+            parser_semantic = getattr(module, "grammar{}ModelBuilderSemantics".format(hash_value))
+            parser = parser_a(semantics=parser_semantic())
+            self.parser_dict[hash_value] = parser
+            return parser
+        else:
+            # os.path.dirname(filename) is used as the prefix for relative #include commands
+            # It just needs to be a path inside the directory where all the grammar files are.
+            parser = tatsu.compile(grammar, asmodel=True)
+            self.parser_dict[hash_value] = parser
+            try:
+                # save to file asynchronously
+                print("hash_value is:{}, grammar:{}".format(hash_value, grammar))
+                save_thread = threading.Thread(target=self.save_grammar, args=(hash_value, grammar,))
+                save_thread.start()
+                self.save_threads.append( save_thread )
+            except:
+                self.save_grammar(hash_value, grammar)
+            # self.save_dict()
+            return parser
 
     def save_grammar(self, hash_value, grammar):
         self.check_parser_cnt()
@@ -388,7 +399,7 @@ def recreate_local_parser_cache():
     iheartla.la_parser.parser.create_parser()
     
     print('## Waiting for them to be saved.')
-    for thread in PM.save_threads: thread.join()
+    for thread in PM.parser_file_manager.save_threads: thread.join()
     
     print('## Copying the cache dir contents into the local dir.')
     for f in Path(PM.cache_dir).glob('*.py'):
