@@ -6,6 +6,7 @@ from .type_walker import *
 class CodeGenMathjax(CodeGenLatex):
     def __init__(self):
         super().__init__(ParserTypeEnum.MATHJAX)
+        self.uni_convert_dict = {}
         self.pre_str = r'''
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
