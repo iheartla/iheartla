@@ -18,7 +18,6 @@ jobs:
       - run: poetry run python3 --version
       - run: poetry run pip install --upgrade pip setuptools wheel
       - run: poetry install --no-root
-      - run: poetry run python la_local_parsers.py
       - run: poetry run pyinstaller iheartla.spec
       - run: zip iheartla.app.zip ./dist/iheartla.app/ -r
       - name: Create Release
