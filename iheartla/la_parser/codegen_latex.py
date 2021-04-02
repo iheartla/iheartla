@@ -47,14 +47,14 @@ class CodeGenLatex(CodeGen):
 
     def convert_unicode(self, name):
         if '`' not in name:
-            return "\\textit{{{}}}".format(name)
+            return "\\mathit{{{}}}".format(name)
             # return name
         text = name.replace('`', '')
         special_list = ['_', '&', '^', '%', '$', '#', '{', '}']
         text = text.replace('\\', '\\textbackslash{}')
         for special in special_list:
             text = text.replace(special, '\\{}'.format(special))
-        value = "\\textit{{{}}}".format(text)
+        value = "\\mathit{{{}}}".format(text)
         return value
 
     def visit_id(self, node, **kwargs):
@@ -126,7 +126,7 @@ class CodeGenLatex(CodeGen):
             text = text.replace('\\', '\\textbackslash{}')
             for special in special_list:
                 text = text.replace(special, '\\{}'.format(special))
-            value = "\\textit{{{}}}".format(text)
+            value = "\\mathit{{{}}}".format(text)
         return value
 
     def visit_import(self, node, **kwargs):
@@ -212,9 +212,9 @@ class CodeGenLatex(CodeGen):
             type_str = '\\mathbb{Z}'
         content = "{}^{{ {} \\times {} }}".format(type_str, id1, id2)
         if node.la_type.sparse:
-            content += " \\textit{ sparse}"
+            content += " \\mathit{ sparse}"
         if node.la_type.index_type:
-            content += " \\textit{ index}"
+            content += " \\mathit{ index}"
         return content
 
     def visit_vector_type(self, node, **kwargs):
@@ -224,7 +224,7 @@ class CodeGenLatex(CodeGen):
             type_str = '\\mathbb{Z}'
         content = "{}^{{ {}}}".format(type_str, id1)
         if node.la_type.index_type:
-            content += " \\textit{ index}"
+            content += " \\mathit{ index}"
         return content
 
     def visit_scalar_type(self, node, **kwargs):
@@ -232,7 +232,7 @@ class CodeGenLatex(CodeGen):
         if node.is_int:
             content = "\\mathbb{Z}"
         if node.la_type.index_type:
-            content += " \\textit{ index}"
+            content += " \\mathit{ index}"
         return content
 
     def visit_set_type(self, node, **kwargs):
@@ -260,7 +260,7 @@ class CodeGenLatex(CodeGen):
                 content += '\\mathbb{{Z}}^{{2}}'
         content = '\\{' + content + '\\}'
         if node.la_type.index_type:
-            content += " \\textit{{ index}}"
+            content += " \\mathit{{ index}}"
         return content
 
     def visit_function_type(self, node, **kwargs):
