@@ -99,6 +99,7 @@ class TypeWalker(NodeWalker):
         self.sum_conds = []
         self.la_content = ''
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
+        self.same_dim_list = []
 
     def filter_symbol(self, symbol):
         if '`' in symbol:
@@ -131,6 +132,7 @@ class TypeWalker(NodeWalker):
         self.sum_conds = []
         self.lhs_list.clear()
         self.la_content = la_content
+        self.same_dim_list.clear()
 
     def get_func_symbols(self):
         ret = {}
@@ -820,7 +822,8 @@ class TypeWalker(NodeWalker):
         self.sum_subs.pop()
         self.sum_conds.pop()
         cur_sym_dict = self.sum_sym_list.pop()
-        assert self.check_sum_subs(subs, cur_sym_dict), self.get_err_msg_info(sub_parse_info, "Subscript has inconsistent dimensions")
+        self.check_sum_subs(subs, cur_sym_dict)
+        # assert self.check_sum_subs(subs, cur_sym_dict), self.get_err_msg_info(sub_parse_info, "Subscript has inconsistent dimensions")
         ir_node.sym_dict = cur_sym_dict
         ret_info.ir = ir_node
         del self.symtable[subs]   # remove subscript from symbol table
@@ -829,14 +832,29 @@ class TypeWalker(NodeWalker):
         return ret_info
 
     def check_sum_subs(self, subs, sym_dict):
-        dim_list = []
+        self.logger.debug("subs:{}, sym_dict:{}".format(subs, sym_dict))
+        dim_set = set()
         for k, v in sym_dict.items():
             cur_type = self.symtable[k]
             for cur_index in range(len(v)):
                 if v[cur_index] == subs:
                     cur_dim = cur_type.get_dim_size(cur_index)
-                    dim_list.append(cur_dim)
-        return all(dim == dim_list[0] for dim in dim_list)
+                    dim_set.add(cur_dim)
+        if len(dim_set) > 1:
+            found = False
+            for cur_index in range(len(self.same_dim_list)):
+                for ele in dim_set:
+                    if ele in self.same_dim_list[cur_index]:
+                        found = True
+                        self.same_dim_list[cur_index].union(dim_set)
+                        break
+                if found:
+                    break
+            if not found:
+                self.same_dim_list.append(dim_set)
+        self.logger.debug("dim_set:{}".format(dim_set))
+        self.logger.debug("self.same_dim_list:{}".format(self.same_dim_list))
+        return True
 
     def walk_Optimize(self, node, **kwargs):
         opt_type = OptimizeType.OptimizeInvalid

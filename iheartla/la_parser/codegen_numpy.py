@@ -15,6 +15,13 @@ class CodeGenNumpy(CodeGen):
         self.pre_str += "\n\n"
         self.post_str = ''''''
 
+    def get_dim_check_str(self):
+        check_list = []
+        if len(self.same_dim_list) > 0:
+            check_list = super().get_dim_check_str()
+            check_list = ['    assert {} '.format(stat) for stat in check_list]
+        return check_list
+
     def get_rand_test_str(self, la_type, rand_int_max):
         rand_test = ''
         if la_type.is_matrix():
@@ -239,6 +246,7 @@ class CodeGenNumpy(CodeGen):
         if len(type_declare) > 0:
             content += '\n'.join(type_declare) + '\n\n'
         content += dim_content
+        type_checks += self.get_dim_check_str()
         if len(type_checks) > 0:
             content += '\n'.join(type_checks) + '\n\n'
         #

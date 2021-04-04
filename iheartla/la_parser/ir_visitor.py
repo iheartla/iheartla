@@ -18,6 +18,7 @@ class IRVisitor(object):
         self.dim_dict = {}
         self.sub_name_dict = {}
         self.name_cnt_dict = {}
+        self.same_dim_list = []
         self.ids_dict = {}  # identifiers with subscripts
         self.ret_symbol = None
         self.unofficial_method = False  # matrix pow only(eigen)
@@ -96,6 +97,7 @@ class IRVisitor(object):
         self.unofficial_method = type_walker.unofficial_method
         self.lhs_list = type_walker.lhs_list
         self.la_content = type_walker.la_content
+        self.same_dim_list = type_walker.same_dim_list
         if func_name is not None:
             self.func_name = func_name
         # self.print_symbols()
@@ -334,6 +336,14 @@ class IRVisitor(object):
         elif comp_type == IRNodeType.Ge:
             op = '>='
         return op
+
+    def get_dim_check_str(self):
+        check_list = []
+        for cur_set in self.same_dim_list:
+            cur_list = list(cur_set)
+            for cur_index in range(1, len(cur_list)):
+                check_list.append("{} == {}".format(cur_list[0], cur_list[cur_index]))
+        return check_list
 
     def convert_unicode(self, name):
         if '`' not in name:
