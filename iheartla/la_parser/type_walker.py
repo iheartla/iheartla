@@ -99,6 +99,7 @@ class TypeWalker(NodeWalker):
         self.sum_conds = []
         self.la_content = ''
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
+        self.visiting_lhs = False
         self.same_dim_list = []
 
     def filter_symbol(self, symbol):
@@ -656,7 +657,9 @@ class TypeWalker(NodeWalker):
         return value_info
 
     def walk_Assignment(self, node, **kwargs):
+        self.visiting_lhs = True
         id0_info = self.walk(node.left, **kwargs)
+        self.visiting_lhs = False
         id0 = id0_info.content
         if SET_RET_SYMBOL in kwargs:
             self.ret_symbol = self.get_main_id(id0)
@@ -1297,10 +1300,14 @@ class TypeWalker(NodeWalker):
 
     def walk_IdentifierSubscript(self, node, **kwargs):
         def get_right_list():
+            # rhs only
             right_list = []
             for right in node.right:
                 if right != '*':
-                    right_list.append(self.walk(right).content)
+                    r_content = self.walk(right).content
+                    right_list.append(r_content)
+                    if not self.visiting_lhs and not isinstance(r_content, int):
+                        assert r_content in self.symtable, self.get_err_msg_info(right.parseinfo, "Subscript has not been defined")
                 else:
                     right_list.append(right)
             return right_list
@@ -1319,9 +1326,9 @@ class TypeWalker(NodeWalker):
         right = []
         left_info = self.walk(node.left, **kwargs)
         if not self.is_param_block and left_info.content in self.symtable:
+            right_sym_list = get_right_list()
             if len(self.sum_subs) > 0:
                 # inside summation
-                right_sym_list = get_right_list()
                 for sub_index in range(len(self.sum_subs)):
                     sub_sym = self.sum_subs[sub_index]
                     if sub_sym in right_sym_list:
@@ -1393,7 +1400,7 @@ class TypeWalker(NodeWalker):
             elif self.symtable[left_info.content].is_matrix():
                 assert len(node.right) == 2
                 ir_node = MatrixIndexNode()
-                ir_node.subs = get_right_list()
+                ir_node.subs = right_sym_list
                 ir_node.main = left_info.ir
                 la_type = self.symtable[left_info.content].element_type
                 if '*' in node.right:
