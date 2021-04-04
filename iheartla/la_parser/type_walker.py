@@ -666,6 +666,7 @@ class TypeWalker(NodeWalker):
             left_ids = self.get_all_ids(id0)
             left_subs = left_ids[1]
             for sub_sym in left_subs:
+                assert sub_sym not in self.symtable, self.get_err_msg_info(node.left.parseinfo, "Subscript has been defined")
                 self.symtable[sub_sym] = ScalarType(index_type=False)
                 self.lhs_sub_dict[sub_sym] = []  # init empty list
         right_info = self.walk(node.right, **kwargs)
@@ -803,8 +804,7 @@ class TypeWalker(NodeWalker):
             sub_info.ir.set_parent(ir_node)
             subs = sub_info.content
             sub_parse_info = node.sub.parseinfo
-            if subs not in self.lhs_sub_dict:
-                assert subs not in self.symtable, self.get_err_msg_info(sub_parse_info, "Subscript has been defined")
+            assert subs not in self.symtable, self.get_err_msg_info(sub_parse_info, "Subscript has been defined")
             self.symtable[subs] = ScalarType(index_type=False)  # add subscript to symbol table temporarily
         self.logger.debug("new sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         new_id = self.generate_var_name("sum")
