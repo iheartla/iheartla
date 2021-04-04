@@ -1057,8 +1057,6 @@ class CodeGenEigen(CodeGen):
                     content += "    {}({}-1, {}-1) = {};\n".format(sequence, left_subs[0], left_subs[0], right_info.content)
                     content += "    }"
                 else:
-                    if right_info.pre_list:
-                        content = "".join(right_info.pre_list) + content
                     for right_var in type_info.symbols:
                         if sub_strs in right_var:
                             var_ids = self.get_all_ids(right_var)
@@ -1078,7 +1076,13 @@ class CodeGenEigen(CodeGen):
                     content += "        for( int {}=1; {}<={}; {}++){{\n".format(left_subs[1], left_subs[1],
                                                                                 self.symtable[sequence].cols,
                                                                                 left_subs[1])
-                    content += "        " + right_exp + ";\n"
+                    if right_info.pre_list:
+                        for line in right_info.pre_list:
+                            lines = line.split('\n')
+                            content += "        " + "\n        ".join(lines)
+                        content += right_exp + "\n"
+                    else:
+                        content += "        " + right_exp + ";\n"
                     content += "        }\n"
                     content += "    }\n"
                     # content += '\n'

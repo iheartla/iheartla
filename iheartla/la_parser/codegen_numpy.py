@@ -830,8 +830,6 @@ class CodeGenNumpy(CodeGen):
                             content += "    " + "\n    ".join(lines)
                     content += "    {}[{}-1][{}-1] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
                 else:
-                    if right_info.pre_list:
-                        content += "".join(right_info.pre_list)
                     for right_var in type_info.symbols:
                         if sub_strs in right_var:
                             var_ids = self.get_all_ids(right_var)
@@ -845,7 +843,13 @@ class CodeGenNumpy(CodeGen):
                                                                               self.symtable[sequence].cols)
                     content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
                     content += "        for {} in range(1, {}+1):\n".format(left_subs[1], self.symtable[sequence].cols)
-                    content += "        " + right_exp
+                    if right_info.pre_list:
+                        for line in right_info.pre_list:
+                            lines = line.split('\n')
+                            content += "        " + "\n        ".join(lines)
+                        content += right_exp
+                    else:
+                        content += "        " + right_exp
                     # content += '\n'
             elif len(left_subs) == 1: # sequence only
                 sequence = left_ids[0]  # y left_subs[0]
