@@ -96,6 +96,8 @@ class TypeWalker(NodeWalker):
         # self.directive_parsing = True   # directives grammar
         self.sum_subs = []
         self.sum_sym_list = []
+        self.lhs_subs = []
+        self.lhs_sym_list = []
         self.sum_conds = []
         self.la_content = ''
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
@@ -670,6 +672,8 @@ class TypeWalker(NodeWalker):
             left_subs = left_ids[1]
             pre_subs = []
             for sub_sym in left_subs:
+                self.lhs_subs.append(sub_sym)
+                self.lhs_sym_list.append({})
                 if sub_sym in pre_subs:
                     continue
                 pre_subs.append(sub_sym)
@@ -677,6 +681,13 @@ class TypeWalker(NodeWalker):
                 self.symtable[sub_sym] = ScalarType(index_type=False)
                 self.lhs_sub_dict[sub_sym] = []  # init empty list
         right_info = self.walk(node.right, **kwargs)
+        if len(self.lhs_subs) > 0:
+            for cur_index in range(len(self.lhs_subs)):
+                cur_sym_dict = self.lhs_sym_list[cur_index]
+                self.check_sum_subs(self.lhs_subs[cur_index], cur_sym_dict)
+        self.lhs_sym_list.clear()
+        self.lhs_subs.clear()
+        #
         right_type = right_info.la_type
         # ir
         assign_node = AssignNode(id0_info.ir, right_info.ir, parse_info=node.parseinfo)
@@ -730,6 +741,7 @@ class TypeWalker(NodeWalker):
                                 dim = self.symtable[cur_node.get_main_id()].rows
                                 if cur_node.same_as_col_sym(cur_sub):
                                     dim = self.symtable[cur_node.get_main_id()].cols
+                            break
                         dim_list.append(dim)
                     self.symtable[sequence] = MatrixType(rows=dim_list[0], cols=dim_list[1], element_type=right_type, sparse=sparse, diagonal=sparse, index_var=index_var, value_var=value_var)
             elif len(left_subs) == 1:  # sequence or vector
@@ -1357,6 +1369,23 @@ class TypeWalker(NodeWalker):
                         else:
                             cur_dict[left_info.content] = right_sym_list
                         self.sum_sym_list[sub_index] = cur_dict
+            if len(self.lhs_subs) > 0:
+                # inside subscript assignment
+                for sub_index in range(len(self.lhs_subs)):
+                    sub_sym = self.lhs_subs[sub_index]
+                    if sub_sym in right_sym_list:
+                        cur_dict = self.lhs_sym_list[sub_index]
+                        if left_info.content in cur_dict:
+                            # merge same subscript
+                            old_right_list = copy.deepcopy(cur_dict[left_info.content])
+                            assert len(old_right_list) == len(right_sym_list)
+                            for old_index in range(len(old_right_list)):
+                                if sub_sym != old_right_list[old_index]:
+                                    old_right_list[old_index] = right_sym_list[old_index]
+                            cur_dict[left_info.content] = old_right_list
+                        else:
+                            cur_dict[left_info.content] = right_sym_list
+                        self.lhs_sym_list[sub_index] = cur_dict
 
             content_symbol = node.text.replace(' ', '').replace(',', '')
             if '_' not in content_symbol:
