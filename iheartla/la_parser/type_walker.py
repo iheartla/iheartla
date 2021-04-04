@@ -665,7 +665,11 @@ class TypeWalker(NodeWalker):
         if self.contain_subscript(id0):
             left_ids = self.get_all_ids(id0)
             left_subs = left_ids[1]
+            pre_subs = []
             for sub_sym in left_subs:
+                if sub_sym in pre_subs:
+                    continue
+                pre_subs.append(sub_sym)
                 assert sub_sym not in self.symtable, self.get_err_msg_info(node.left.parseinfo, "Subscript has been defined")
                 self.symtable[sub_sym] = ScalarType(index_type=False)
                 self.lhs_sub_dict[sub_sym] = []  # init empty list
