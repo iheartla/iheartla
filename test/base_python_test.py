@@ -39,8 +39,8 @@ class BasePythonTest(unittest.TestCase):
         # Numpy
         parse_type = ParserTypeEnum.NUMPY
         content = parse_la(parse_str, parse_type)
-        module_name = 'la_test.generated_code{}'.format(BasePythonTest.cnt)
-        file_name = 'la_test/generated_code{}.py'.format(BasePythonTest.cnt)
+        module_name = 'test.generated_code{}'.format(BasePythonTest.cnt)
+        file_name = 'test/generated_code{}.py'.format(BasePythonTest.cnt)
         try:
             file = open(file_name, 'w')
             file.write(content)
@@ -59,7 +59,7 @@ class BasePythonTest(unittest.TestCase):
         pos += sub_content.find('\n')
         content = content[:pos+1] + 'namespace {}{{\n'.format(namespace) + content[pos+1:] + '\n}'
         try:
-            eig_file_name = 'la_test/generated_code{}.cpp'.format(BasePythonTest.cnt)
+            eig_file_name = 'test/generated_code{}.cpp'.format(BasePythonTest.cnt)
             file = open(eig_file_name, 'w')
             file.write(content)
             file.close()

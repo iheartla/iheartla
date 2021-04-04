@@ -1,6 +1,6 @@
 import sys
 sys.path.append('./')
-from .base_python_test import BasePythonTest, eigen_path
+from test.base_python_test import BasePythonTest, eigen_path
 import numpy as np
 import cppyy
 cppyy.add_include_path(eigen_path)

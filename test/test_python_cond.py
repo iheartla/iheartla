@@ -1,6 +1,6 @@
 import sys
 sys.path.append('./')
-from .base_python_test import BasePythonTest, eigen_path, TestFuncInfo
+from test.base_python_test import BasePythonTest, eigen_path, TestFuncInfo
 from iheartla.la_parser.parser import parse_la, ParserTypeEnum
 import numpy as np
 import scipy

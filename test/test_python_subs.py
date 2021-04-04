@@ -1,6 +1,6 @@
 import sys
 sys.path.append('./')
-from .base_python_test import BasePythonTest, eigen_path
+from test.base_python_test import BasePythonTest, eigen_path
 import numpy as np
 import cppyy
 cppyy.add_include_path(eigen_path)
@@ -299,6 +299,32 @@ class TestSubscript(BasePythonTest):
                      "    P << 5, 2, 3, 4, 10, 6, 7, 8, 15;",
                      "    Eigen::Matrix<double, 3, 3> C = {}(Q).Q;".format(func_info.eig_func_name),
                      "    return ((C - P).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_lhs_and_sum(self):
+        # matrix
+        la_str = """v_ij = sum_k u_k w_i,j
+        where
+        w ∈ ℝ^(2×2)
+        u ∈ ℝ^2"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([[1, 2], [4, 3]])
+        u = np.array([1, 2])
+        B = np.array([[3, 6], [12, 9]])
+        self.assertDMatrixEqual(func_info.numpy_func(A, u).v, B)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> A;",
+                     "    A << 1, 2, 4, 3;",
+                     "    Eigen::Matrix<double, 2, 1> u;",
+                     "    u << 1, 2;",
+                     "    Eigen::Matrix<double, 2, 2> B;",
+                     "    B << 3, 6, 12, 9;",
+                     "    Eigen::Matrix<double, 2, 2> C = {}(A, u).v;".format(func_info.eig_func_name),
+                     "    return ((C - B).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
