@@ -122,7 +122,7 @@ class TypeWalker(NodeWalker):
     def reset_state(self, la_content=''):
         self.symtable.clear()
         self.tmp_symtable.clear()
-        self.parameters = []
+        self.parameters.clear()
         self.subscripts.clear()
         self.sub_name_dict.clear()
         self.name_cnt_dict.clear()
@@ -130,9 +130,11 @@ class TypeWalker(NodeWalker):
         self.ids_dict.clear()
         self.ret_symbol = None
         self.unofficial_method = False
-        self.sum_subs = []
-        self.sum_sym_list = []
-        self.sum_conds = []
+        self.sum_subs.clear()
+        self.sum_sym_list.clear()
+        self.lhs_subs.clear()
+        self.lhs_sym_list.clear()
+        self.sum_conds.clear()
         self.lhs_list.clear()
         self.la_content = la_content
         self.same_dim_list.clear()
