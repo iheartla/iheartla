@@ -1024,10 +1024,8 @@ class CodeGenEigen(CodeGen):
                                                                                  self.symtable[sequence].rows,
                                                                                  left_subs[0])
                         if right_info.pre_list:
-                            for list in right_info.pre_list:
-                                lines = list.split('\n')
-                                content += "    " + "\n    ".join(lines)
-                        content += '    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(
+                            content += self.update_prelist_str(right_info.pre_list, "    ")
+                        content += '        tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(
                             sequence, left_subs[0], left_subs[0], right_info.content)
                         content += "    }\n"
                         content += '    {}.setFromTriplets(tripletList_{}.begin(), tripletList_{}.end());\n'.format(sequence, sequence,
@@ -1053,10 +1051,8 @@ class CodeGenEigen(CodeGen):
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                             self.symtable[sequence].rows, left_subs[0])
                     if right_info.pre_list:
-                        for list in right_info.pre_list:
-                            lines = list.split('\n')
-                            content += "    " + "\n    ".join(lines)
-                    content += "    {}({}-1, {}-1) = {};\n".format(sequence, left_subs[0], left_subs[0], right_info.content)
+                        content += self.update_prelist_str(right_info.pre_list, "    ")
+                    content += "        {}({}-1, {}-1) = {};\n".format(sequence, left_subs[0], left_subs[0], right_info.content)
                     content += "    }"
                 else:
                     for right_var in type_info.symbols:
@@ -1079,12 +1075,8 @@ class CodeGenEigen(CodeGen):
                                                                                 self.symtable[sequence].cols,
                                                                                 left_subs[1])
                     if right_info.pre_list:
-                        for line in right_info.pre_list:
-                            lines = line.split('\n')
-                            content += "        " + "\n        ".join(lines)
-                        content += right_exp + "\n"
-                    else:
-                        content += "        " + right_exp + ";\n"
+                        content += self.update_prelist_str(right_info.pre_list, "        ")
+                    content += "        " + right_exp + ";\n"
                     content += "        }\n"
                     content += "    }\n"
                     # content += '\n'
@@ -1112,12 +1104,8 @@ class CodeGenEigen(CodeGen):
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                             self.symtable[sequence].rows, left_subs[0])
                 if right_info.pre_list:
-                    for line in right_info.pre_list:
-                        lines = line.split('\n')
-                        content += "    " + "\n    ".join(lines)
-                    content += right_exp + ";\n"
-                else:
-                    content += "    " + right_exp + ";\n"
+                    content += self.update_prelist_str(right_info.pre_list, "    ")
+                content += "    " + right_exp + ";\n"
                 content += '    }\n'
         #
         else:

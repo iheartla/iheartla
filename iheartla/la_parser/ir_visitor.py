@@ -345,6 +345,15 @@ class IRVisitor(object):
                 check_list.append("{} == {}".format(cur_list[0], cur_list[cur_index]))
         return check_list
 
+    def update_prelist_str(self, pre_list, prefix):
+        lines = []
+        for line in pre_list:
+            split_list = line.split('\n')
+            for split in split_list:
+                if split != '':
+                    lines.append(split)
+        return prefix + "\n{}".format(prefix).join(lines) + '\n'
+
     def convert_unicode(self, name):
         if '`' not in name:
             return name

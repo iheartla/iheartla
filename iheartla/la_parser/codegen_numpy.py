@@ -802,10 +802,8 @@ class CodeGenNumpy(CodeGen):
                             content += "    {} = []\n".format(self.symtable[sequence].value_var)
                         content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
                         if right_info.pre_list:
-                            for list in right_info.pre_list:
-                                lines = list.split('\n')
-                                content += "    " + "\n    ".join(lines)
-                        content += "    {}.append(({} - 1, {} - 1))\n".format(self.symtable[sequence].index_var, left_subs[0], left_subs[0])
+                            content += self.update_prelist_str(right_info.pre_list, "    ")
+                        content += "        {}.append(({} - 1, {} - 1))\n".format(self.symtable[sequence].index_var, left_subs[0], left_subs[0])
                         content += "        {}.append({})\n".format(self.symtable[sequence].value_var, right_info.content)
                         content += "    {} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(sequence,
                                                                                                             self.symtable[sequence].value_var,
@@ -825,10 +823,8 @@ class CodeGenNumpy(CodeGen):
                     content = ""
                     content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
                     if right_info.pre_list:
-                        for list in right_info.pre_list:
-                            lines = list.split('\n')
-                            content += "    " + "\n    ".join(lines)
-                    content += "    {}[{}-1][{}-1] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
+                        content += self.update_prelist_str(right_info.pre_list, "    ")
+                    content += "        {}[{}-1][{}-1] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
                 else:
                     for right_var in type_info.symbols:
                         if sub_strs in right_var:
@@ -844,12 +840,8 @@ class CodeGenNumpy(CodeGen):
                     content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
                     content += "        for {} in range(1, {}+1):\n".format(left_subs[1], self.symtable[sequence].cols)
                     if right_info.pre_list:
-                        for line in right_info.pre_list:
-                            lines = line.split('\n')
-                            content += "        " + "\n        ".join(lines)
-                        content += right_exp
-                    else:
-                        content += "        " + right_exp
+                        content += self.update_prelist_str(right_info.pre_list, "        ")
+                    content += "        " + right_exp
                     # content += '\n'
             elif len(left_subs) == 1: # sequence only
                 sequence = left_ids[0]  # y left_subs[0]
@@ -875,12 +867,8 @@ class CodeGenNumpy(CodeGen):
                     content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].rows)
                     content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
                 if right_info.pre_list:
-                    for line in right_info.pre_list:
-                        lines = line.split('\n')
-                        content += "    " + "\n    ".join(lines)
-                    content += right_exp
-                else:
-                    content += "    " + right_exp
+                    content += self.update_prelist_str(right_info.pre_list, "    ")
+                content += "    " + right_exp
         #
         else:
             if right_info.pre_list:
