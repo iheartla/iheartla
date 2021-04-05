@@ -186,11 +186,13 @@ class CodeGenEigen(CodeGen):
                         "{",
                         "    srand((int)time(NULL));"]
         dim_content = ""
+        dim_defined_dict = {}
         if self.dim_dict:
             for key, target_dict in self.dim_dict.items():
                 if key in self.parameters:
                     continue
                 target = list(target_dict.keys())[0]
+                dim_defined_dict[target] = target_dict[target]
                 test_content.append("    const int {} = rand()%{};".format(key, rand_int_max))
                 if self.symtable[target].is_sequence():
                     if target_dict[target] == 0:
@@ -224,9 +226,10 @@ class CodeGenEigen(CodeGen):
                 if isinstance(data_type, LaVarType):
                     if data_type.is_scalar() and data_type.is_int:
                         integer_type = True
-                if ele_type.is_matrix():
+                if not (parameter in dim_defined_dict and dim_defined_dict[parameter] == 0):
                     type_checks.append(
                         '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
+                if ele_type.is_matrix():
                     if not ele_type.is_dim_constant():
                         type_checks.append('    for( const auto& el : {} ) {{'.format(parameter))
                         type_checks.append('        assert( el.rows() == {} );'.format(ele_type.rows))
@@ -245,8 +248,6 @@ class CodeGenEigen(CodeGen):
                                                                                       ele_type.cols, sparse_view))
                 elif ele_type.is_vector():
                     if not ele_type.is_dim_constant():
-                        type_checks.append(
-                            '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
                         type_checks.append('    for( const auto& el : {} ) {{'.format(parameter))
                         type_checks.append('        assert( el.size() == {} );'.format(ele_type.rows))
                         type_checks.append('    }')
@@ -257,8 +258,6 @@ class CodeGenEigen(CodeGen):
                         test_content.append(
                             '        {}[i] = Eigen::VectorXd::Random({});'.format(parameter, ele_type.rows))
                 elif ele_type.is_scalar():
-                    type_checks.append(
-                        '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
                     test_content.append(
                         '        {}[i] = rand() % {};'.format(parameter, rand_int_max))
                 test_content.append('    }')
@@ -281,10 +280,12 @@ class CodeGenEigen(CodeGen):
                         '    {} = Eigen::MatrixXd::Random({}, {}){};'.format(parameter, self.symtable[parameter].rows,
                                                                            self.symtable[parameter].cols,sparse_view))
                 if not self.symtable[parameter].is_dim_constant() or self.symtable[parameter].sparse:
-                    type_checks.append(
-                        '    assert( {}.rows() == {} );'.format(parameter, self.symtable[parameter].rows))
-                    type_checks.append(
-                        '    assert( {}.cols() == {} );'.format(parameter, self.symtable[parameter].cols))
+                    if not (parameter in dim_defined_dict and dim_defined_dict[parameter] == 0):
+                        type_checks.append(
+                            '    assert( {}.rows() == {} );'.format(parameter, self.symtable[parameter].rows))
+                    if not (parameter in dim_defined_dict and dim_defined_dict[parameter] == 1):
+                        type_checks.append(
+                            '    assert( {}.cols() == {} );'.format(parameter, self.symtable[parameter].cols))
             elif self.symtable[parameter].is_vector():
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
@@ -298,8 +299,9 @@ class CodeGenEigen(CodeGen):
                     test_content.append(
                         '    {} = Eigen::VectorXd::Random({});'.format(parameter, self.symtable[parameter].rows))
                 if not self.symtable[parameter].is_dim_constant():
-                    type_checks.append(
-                        '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].rows))
+                    if not (parameter in dim_defined_dict and dim_defined_dict[parameter] == 0):
+                        type_checks.append(
+                            '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].rows))
             elif self.symtable[parameter].is_scalar():
                 test_function.append('    {} = rand() % {};'.format(parameter, rand_int_max))
             elif self.symtable[parameter].is_set():
