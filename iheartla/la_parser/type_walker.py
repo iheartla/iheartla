@@ -711,6 +711,7 @@ class TypeWalker(NodeWalker):
                         err_msg = "{} is a parameter, can not be assigned".format(id0)
                     # assert False, self.get_err_msg_info(id0_info.ir.parse_info, err_msg)
             if len(left_subs) == 2:  # matrix
+                assert right_type.is_scalar(), self.get_err_msg_info(right_info.ir.parse_info, "RHS has to be scalar")
                 if right_info.la_type is not None and right_info.la_type.is_matrix():
                     # sparse mat assign
                     if right_info.la_type.sparse:
