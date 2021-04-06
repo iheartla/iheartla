@@ -126,6 +126,8 @@ class CodeGenNumpy(CodeGen):
                                             else:
                                                 test_content.append("    {} = {}".format(same_key, int_dim))
                                 break
+                    else:
+                        has_defined = True
                 if not has_defined:
                     test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
                 dim_content += "    {} = {}.shape[{}]\n".format(key, target, target_dict[target])

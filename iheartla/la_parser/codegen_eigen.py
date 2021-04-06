@@ -215,6 +215,8 @@ class CodeGenEigen(CodeGen):
                                             else:
                                                 test_content.append("    const int {} = {};".format(same_key, int_dim))
                                 break
+                    else:
+                        has_defined = True
                 if not has_defined:
                     test_content.append("    const int {} = rand()%{};".format(key, rand_int_max))
                 if self.symtable[target].is_sequence():
