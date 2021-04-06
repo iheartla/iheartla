@@ -337,6 +337,12 @@ class IRVisitor(object):
             op = '>='
         return op
 
+    def get_int_dim(self, dim_list):
+        for cur_dim in dim_list:
+            if isinstance(cur_dim, int):
+                return cur_dim
+        return -1
+
     def get_dim_check_str(self):
         check_list = []
         for cur_set in self.same_dim_list:

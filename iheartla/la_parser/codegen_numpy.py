@@ -100,12 +100,34 @@ class CodeGenNumpy(CodeGen):
         else:
             main_content.append("    {}()".format(rand_func_name))
         dim_content = ""
+        dim_defined_list = []
         if self.dim_dict:
             for key, target_dict in self.dim_dict.items():
                 if key in self.parameters:
                     continue
                 target = list(target_dict.keys())[0]
-                test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
+                has_defined = False
+                if len(self.same_dim_list) > 0:
+                    if key not in dim_defined_list:
+                        for cur_set in self.same_dim_list:
+                            if key in cur_set:
+                                int_dim = self.get_int_dim(cur_set)
+                                has_defined = True
+                                if int_dim == -1:
+                                    test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
+                                else:
+                                    test_content.append("    {} = {}".format(key, int_dim))
+                                for same_key in cur_set:
+                                    if same_key != key:
+                                        dim_defined_list.append(same_key)
+                                        if not isinstance(same_key, int):
+                                            if int_dim == -1:
+                                                test_content.append("    {} = {}".format(same_key, key))
+                                            else:
+                                                test_content.append("    {} = {}".format(same_key, int_dim))
+                                break
+                if not has_defined:
+                    test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
                 dim_content += "    {} = {}.shape[{}]\n".format(key, target, target_dict[target])
         for parameter in self.parameters:
             if self.symtable[parameter].desc:
