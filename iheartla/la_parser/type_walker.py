@@ -673,19 +673,22 @@ class TypeWalker(NodeWalker):
             left_ids = self.get_all_ids(id0)
             left_subs = left_ids[1]
             pre_subs = []
-            for sub_sym in left_subs:
+            for sub_index in range(len(left_subs)):
+                sub_sym = left_subs[sub_index]
                 self.lhs_subs.append(sub_sym)
                 self.lhs_sym_list.append({})
                 if sub_sym in pre_subs:
                     continue
                 pre_subs.append(sub_sym)
-                assert sub_sym not in self.symtable, self.get_err_msg_info(node.left.parseinfo, "Subscript has been defined")
+                assert sub_sym not in self.symtable, self.get_err_msg_info(node.left.right[sub_index].parseinfo, "Subscript has been defined")
                 self.symtable[sub_sym] = ScalarType(index_type=False)
                 self.lhs_sub_dict[sub_sym] = []  # init empty list
         right_info = self.walk(node.right, **kwargs)
         if len(self.lhs_subs) > 0:
             for cur_index in range(len(self.lhs_subs)):
                 cur_sym_dict = self.lhs_sym_list[cur_index]
+                if self.get_main_id(id0) not in self.symtable:
+                    assert len(cur_sym_dict) > 0, self.get_err_msg_info(node.left.right[cur_index].parseinfo, "Subscript hasn't been used on rhs")
                 self.check_sum_subs(self.lhs_subs[cur_index], cur_sym_dict)
         self.lhs_sym_list.clear()
         self.lhs_subs.clear()
@@ -858,6 +861,7 @@ class TypeWalker(NodeWalker):
         self.sum_subs.pop()
         self.sum_conds.pop()
         cur_sym_dict = self.sum_sym_list.pop()
+        assert len(cur_sym_dict) > 0, self.get_err_msg_info(sub_parse_info, "Subscript hasn't been used in summation")
         self.check_sum_subs(subs, cur_sym_dict)
         # assert self.check_sum_subs(subs, cur_sym_dict), self.get_err_msg_info(sub_parse_info, "Subscript has inconsistent dimensions")
         ir_node.sym_dict = cur_sym_dict
