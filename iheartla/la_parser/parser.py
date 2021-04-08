@@ -22,6 +22,7 @@ from .codegen_numpy import CodeGenNumpy
 from .codegen_eigen import CodeGenEigen
 from .codegen_latex import CodeGenLatex
 from .codegen_mathjax import CodeGenMathjax
+from .codegen_matlab import CodeGenMatlab
 from .type_walker import *
 from .ir import *
 from .ir_visitor import *
@@ -61,6 +62,8 @@ def get_codegen(parser_type):
             gen = CodeGenEigen()
         elif parser_type == ParserTypeEnum.MATHJAX:
             gen = CodeGenMathjax()
+        elif parser_type == ParserTypeEnum.MATLAB:
+            gen = CodeGenMatlab()
         _codegen_dict[parser_type] = gen
     return _codegen_dict[parser_type]
 

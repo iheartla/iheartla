@@ -66,6 +66,7 @@ class MainWindow(wx.Frame):
         py_lang = menu_language.AppendRadioItem(wx.NewId(), "&Python with NumPy")
         cpp_lang = menu_language.AppendRadioItem(wx.NewId(), "&C++ with Eigen")
         mathjax_lang = menu_language.AppendRadioItem(wx.NewId(), "&MathJax")
+        matlab_lang = menu_language.AppendRadioItem(wx.NewId(), "&Matlab")
         cpp_lang.Check(True)
         # view
         menu_view = wx.Menu()
@@ -100,6 +101,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnClickNumpy, py_lang)
         self.Bind(wx.EVT_MENU, self.OnClickEigen, cpp_lang)
         self.Bind(wx.EVT_MENU, self.OnClickMathjax, mathjax_lang)
+        self.Bind(wx.EVT_MENU, self.OnClickMatlab, matlab_lang)
         self.Bind(wx.EVT_MENU, self.OnResetPanel, item_reset)
         self.Bind(wx.EVT_SIZE, self.OnSize)
         # tools
@@ -251,6 +253,10 @@ E: { ℤ × ℤ }''')
     def OnClickMathjax(self, e):
         self.midPanel.set_panel(MidPanelEnum.MATHJAX)
         self.parser_type = ParserTypeEnum.MATHJAX
+
+    def OnClickMatlab(self, e):
+        self.midPanel.set_panel(MidPanelEnum.MATLAB)
+        self.parser_type = ParserTypeEnum.MATLAB
 
     def OnCleanCache(self, e):
         clean_parsers()

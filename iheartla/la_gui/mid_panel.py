@@ -2,6 +2,7 @@ import wx
 from enum import Enum
 from ..la_gui.python_ctrl import PyTextControl
 from ..la_gui.cpp_ctrl import CppTextControl
+from ..la_gui.mat_ctrl import MatlabTextControl
 from ..la_gui.latex_panel import LatexControl
 
 
@@ -9,6 +10,7 @@ class MidPanelEnum(Enum):
     PYTHON = 1
     CPP = 2
     MATHJAX = 3
+    MATLAB = 4
 
 
 class MidPanel(wx.Panel):
@@ -17,11 +19,13 @@ class MidPanel(wx.Panel):
         self.py_ctrl = PyTextControl(self)
         self.cpp_ctrl = CppTextControl(self)
         self.jax_ctrl = LatexControl(self)
+        self.mat_ctrl = MatlabTextControl(self)
         self.cur_type = MidPanelEnum.PYTHON
         self.panel_dict = {
             MidPanelEnum.PYTHON: self.py_ctrl,
             MidPanelEnum.CPP: self.cpp_ctrl,
             MidPanelEnum.MATHJAX: self.jax_ctrl,
+            MidPanelEnum.MATLAB: self.mat_ctrl,
         }
         self.Bind(wx.EVT_SIZE, self.OnSize)
         self.Layout()
@@ -43,12 +47,15 @@ class MidPanel(wx.Panel):
         self.py_ctrl.Hide()
         self.cpp_ctrl.Hide()
         self.jax_ctrl.Hide()
+        self.mat_ctrl.Hide()
         if self.cur_type == MidPanelEnum.PYTHON:
             self.py_ctrl.Show()
         elif self.cur_type == MidPanelEnum.CPP:
             self.cpp_ctrl.Show()
         elif self.cur_type == MidPanelEnum.MATHJAX:
             self.jax_ctrl.Show()
+        elif self.cur_type == MidPanelEnum.MATLAB:
+            self.mat_ctrl.Show()
 
     def OnSize(self, e):
         self.py_ctrl.SetPosition((0, 0))
@@ -57,3 +64,5 @@ class MidPanel(wx.Panel):
         self.cpp_ctrl.SetSize((self.GetSize().width, self.GetSize().height))
         self.jax_ctrl.SetPosition((0, 0))
         self.jax_ctrl.SetSize((self.GetSize().width, self.GetSize().height))
+        self.mat_ctrl.SetPosition((0, 0))
+        self.mat_ctrl.SetSize((self.GetSize().width, self.GetSize().height))
