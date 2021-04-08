@@ -270,11 +270,12 @@ class TypeWalker(NodeWalker):
                         self.lhs_list.append(id_node.get_main_id())
                     if len(id_node.get_main_id()) > 1:
                         multi_lhs_list.append(id_node.get_main_id())
-        self.multi_lhs_list = multi_lhs_list
         ir_node.vblock = vblock_list
+        params_list, stat_list, index_list = ir_node.get_block_list()
+        #
+        self.multi_lhs_list = multi_lhs_list
         if 'pre_walk' in kwargs:
             return ir_node
-        stat_list, index_list = ir_node.get_stat_list()
         block_node = BlockNode()
         for index in range(len(stat_list)):
             update_ret_type = False

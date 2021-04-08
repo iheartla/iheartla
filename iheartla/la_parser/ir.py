@@ -131,7 +131,8 @@ class StartNode(StmtNode):
         self.directives = []
         self.vblock = []
 
-    def get_stat_list(self):
+    def get_block_list(self):
+        params_list = []
         stat_list = []
         index_list = []
         for index in range(len(self.vblock)):
@@ -139,7 +140,9 @@ class StartNode(StmtNode):
             if isinstance(vblock, list):
                 stat_list += vblock
                 index_list.append(index)
-        return stat_list, index_list
+            else:
+                params_list.append(vblock)
+        return params_list, stat_list, index_list
 
     def get_package_dict(self):
         package_func_dict = {}
