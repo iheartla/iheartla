@@ -103,6 +103,7 @@ class TypeWalker(NodeWalker):
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
         self.visiting_lhs = False
         self.same_dim_list = []
+        self.rhs_raw_str_list = []
 
     def filter_symbol(self, symbol):
         if '`' in symbol:
@@ -138,12 +139,17 @@ class TypeWalker(NodeWalker):
         self.lhs_list.clear()
         self.la_content = la_content
         self.same_dim_list.clear()
+        self.rhs_raw_str_list.clear()
 
     def get_func_symbols(self):
         ret = {}
+        seq_func_list = []
         for keys in self.symtable:
-            if self.symtable[keys] and self.symtable[keys].is_function():
-                ret[keys] = self.symtable[keys].get_signature()
+            if self.symtable[keys]:
+                if self.symtable[keys].is_function():
+                    ret[keys] = self.symtable[keys].get_signature()
+                elif self.symtable[keys].is_sequence() and self.symtable[keys].element_type.is_function():
+                    seq_func_list.append(keys)
         return ret
 
     def generate_var_name(self, base):
@@ -252,6 +258,7 @@ class TypeWalker(NodeWalker):
         raise Exception('Unexpected type %s walked', type(o).__name__)
 
     def walk_Start(self, node, **kwargs):
+        self.symtable.clear()
         # self.visualizer.visualize(node)  # visualize
         ir_node = StartNode(parse_info=node.parseinfo)
         if node.directive:
@@ -260,6 +267,7 @@ class TypeWalker(NodeWalker):
         # vblock
         vblock_list = []
         multi_lhs_list = []
+        self.rhs_raw_str_list.clear()
         for vblock in node.vblock:
             vblock_info = self.walk(vblock, **kwargs)
             vblock_list.append(vblock_info)
@@ -270,8 +278,24 @@ class TypeWalker(NodeWalker):
                         self.lhs_list.append(id_node.get_main_id())
                     if len(id_node.get_main_id()) > 1:
                         multi_lhs_list.append(id_node.get_main_id())
+                    self.rhs_raw_str_list.append(vblock_info[0].right.text)
+                else:
+                    self.rhs_raw_str_list.append(vblock_info[0].text)
         ir_node.vblock = vblock_list
         params_list, stat_list, index_list = ir_node.get_block_list()
+        # check function assignment
+        if 'pre_walk' in kwargs:
+            for index in range(len(stat_list)):
+                if type(stat_list[index]).__name__ == 'Assignment':
+                    # check whether rhs is function type
+                    if type(stat_list[index].right.value).__name__ == 'Factor' and stat_list[index].right.value.id0:
+                        # specific stat: lhs = id_subs
+                        assign_node = self.walk(stat_list[index], **kwargs).ir
+                        lhs_id_node = assign_node.left
+                        rhs_id_node = assign_node.right.value.id
+                        if rhs_id_node.la_type.is_function():
+                            if lhs_id_node.contain_subscript():
+                                assert lhs_id_node.node_type == IRNodeType.SequenceIndex, self.get_err_msg_info(lhs_id_node.parseinfo, "Invalid assignment for function")
         #
         self.multi_lhs_list = multi_lhs_list
         if 'pre_walk' in kwargs:
