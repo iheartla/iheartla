@@ -515,9 +515,9 @@ class TestGallery(BasePythonTest):
         # sequence
         la_str = """`C(x,y)` = (∑_n ∑_i c_n,i w_n,i R̂_n) / (∑_n ∑_i w_n,i R̂_n)
         where
-        c: ℝ^(x×y): the value of the Bayer pixel
-        w: ℝ^(x×y): the local sample weight
-        R̂: ℝ^x: the local robustness"""
+        c ∈ ℝ^(f×s): the value of the Bayer pixel
+        w ∈ ℝ^(f×s): the local sample weight
+        R̂ ∈ ℝ^f: the local robustness"""
         func_info = self.gen_func_info(la_str)
         c = np.array([[1, 2], [3, 6]])
         w = np.array([[2, 2], [2, 4]])
@@ -798,7 +798,7 @@ class TestGallery(BasePythonTest):
         la_str = """`I(X;Y)` = ∑_i ∑_j x_j p_i,j log_2(p_i,j/∑_k x_k p_i,k)
         where
         x: ℝ^n
-        p: ℝ^(n×m)"""
+        p: ℝ^(m×n)"""
         func_info = self.gen_func_info(la_str)
         x = np.array([1, 2, 3, 4])
         p = np.array([[1, 2, 3, 4], [3, 4, 5, 6], [5, 3, 5, 6], [9, 1, 3, 2]])
