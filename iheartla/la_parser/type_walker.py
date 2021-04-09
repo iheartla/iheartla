@@ -150,6 +150,13 @@ class TypeWalker(NodeWalker):
                     ret[keys] = self.symtable[keys].get_signature()
                 elif self.symtable[keys].is_sequence() and self.symtable[keys].element_type.is_function():
                     seq_func_list.append(keys)
+        #
+        rhs_str = '\n'.join(self.rhs_raw_str_list)
+        for seq in seq_func_list:
+            results = re.findall(r"("+seq+r"_`[^`]*`|"+seq+r"_[A-Za-z0-9]*)(?=\()", rhs_str)
+            sig = self.symtable[seq].get_signature()
+            for match in results:
+                ret[match] = sig + match
         return ret
 
     def generate_var_name(self, base):
@@ -1216,9 +1223,15 @@ class TypeWalker(NodeWalker):
 
     def walk_Function(self, node, **kwargs):
         if isinstance(node.name, str):
-            ir_node = IdNode(node.name, parse_info=node.parseinfo)
-            node.name = self.filter_symbol(node.name)
-            ir_node.la_type = self.symtable[node.name]
+            if '_' in node.name:
+                split_res = node.name.split('_')
+                name = self.filter_symbol(split_res[0])
+                ir_node = IdNode(name, subs=[split_res[-1]], parse_info=node.parseinfo)
+                ir_node.la_type = self.symtable[name].element_type
+            else:
+                ir_node = IdNode(node.name, parse_info=node.parseinfo)
+                node.name = self.filter_symbol(node.name)
+                ir_node.la_type = self.symtable[node.name]
             name_info = NodeInfo(ir_node.la_type, ir=ir_node)
         else:
             name_info = self.walk(node.name, **kwargs)
