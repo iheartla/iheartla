@@ -1207,7 +1207,7 @@ class TypeWalker(NodeWalker):
         ir_node = TransposeNode(parse_info=node.parseinfo)
         f_info = self.walk(node.f, **kwargs)
         ir_node.f = f_info.ir
-        assert f_info.la_type.is_matrix() or f_info.la_type.is_vector(), self.get_err_msg_info(f_info.ir.parse_info,"Transpose error. The base must be a matrix or vecotr")
+        assert f_info.la_type.is_matrix() or f_info.la_type.is_vector(), self.get_err_msg_info(f_info.ir.parse_info,"Transpose error. The base must be a matrix or vector")
         if f_info.la_type.is_matrix():
             node_type = MatrixType(rows=f_info.la_type.cols, cols=f_info.la_type.rows, sparse=f_info.la_type.sparse)
             if f_info.la_type.is_dynamic_row():
@@ -1226,7 +1226,16 @@ class TypeWalker(NodeWalker):
             if '_' in node.name:
                 split_res = node.name.split('_')
                 name = self.filter_symbol(split_res[0])
-                ir_node = IdNode(name, subs=[split_res[-1]], parse_info=node.parseinfo)
+                ir_node = SequenceIndexNode()
+                ir_node.main = IdNode(name, parse_info=node.parseinfo)
+                ir_node.main.la_type = self.symtable[name]
+                ir_node.main_index = IdNode(split_res[-1], parse_info=node.parseinfo)
+                if split_res[-1].isnumeric():
+                    ir_node.main_index.la_type = ScalarType(is_int=True)
+                else:
+                    assert split_res[-1] in self.symtable, self.get_err_msg_info(node.parseinfo, "Subscript not defined")
+                    assert self.symtable[split_res[-1]].is_int_scalar(), self.get_err_msg_info(node.parseinfo, "Subscript has to be integer")
+                    ir_node.main_index.la_type = self.symtable[split_res[-1]]
                 ir_node.la_type = self.symtable[name].element_type
             else:
                 ir_node = IdNode(node.name, parse_info=node.parseinfo)
