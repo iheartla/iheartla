@@ -108,6 +108,9 @@ class LaVarType(object):
     def is_scalar(self):
         return self.var_type == VarTypeEnum.SCALAR
 
+    def is_int_scalar(self):
+        return self.var_type == VarTypeEnum.SCALAR and self.is_integer_element()
+
     def is_set(self):
         return self.var_type == VarTypeEnum.SET
 

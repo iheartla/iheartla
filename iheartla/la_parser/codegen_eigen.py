@@ -119,6 +119,44 @@ class CodeGenEigen(CodeGen):
             rand_test = 'rand() % {};'.format(rand_int_max)
         return rand_test
 
+    def get_func_test_str(self, var_name, func_type, rand_int_max):
+        """
+        :param var_name: lhs name
+        :param func_type: la_type
+        :param rand_int_max: 10
+        :return:
+        """
+        test_content = []
+        name_required = False
+        dim_definition = []
+        if func_type.ret_template():
+            name_required = True
+            for ret_dim in func_type.ret_symbols:
+                param_i = func_type.template_symbols[ret_dim]
+                if func_type.params[param_i].is_vector():
+                    dim_definition.append(
+                        '        long {} = {}{}.size();'.format(ret_dim, self.param_name_test, param_i))
+                elif func_type.params[param_i].is_matrix():
+                    if ret_dim == func_type.params[param_i].rows:
+                        dim_definition.append(
+                            '        long {} = {}{}.rows();'.format(ret_dim, self.param_name_test, param_i))
+                    else:
+                        dim_definition.append(
+                            '        long {} = {}{}.cols();'.format(ret_dim, self.param_name_test, param_i))
+        test_content.append(
+            '    {} = []({})->{}{{'.format(var_name, self.get_func_params_str(func_type, name_required),
+                                           self.get_ctype(func_type.ret)))
+        test_content += dim_definition
+        if func_type.ret.is_set():
+            test_content.append('        {} tmp;'.format(self.get_ctype(func_type.ret)))
+            test_content += self.get_set_test_list('tmp', func_type.ret, rand_int_max, '        ')
+            test_content.append('        return tmp;')
+        else:
+            test_content.append(
+                '        return {}'.format(self.get_rand_test_str(func_type.ret, rand_int_max)))
+        test_content.append('    };')
+        return test_content
+
     def get_set_test_list(self, parameter, la_type, rand_int_max, pre='    '):
         test_content = []
         test_content.append('const int {}_0 = rand()%10;'.format(parameter, rand_int_max))
@@ -285,6 +323,10 @@ class CodeGenEigen(CodeGen):
                 elif ele_type.is_scalar():
                     test_content.append(
                         '        {}[i] = rand() % {};'.format(parameter, rand_int_max))
+                elif ele_type.is_function():
+                    func_content = self.get_func_test_str("{}[i]".format(parameter), ele_type, rand_int_max)
+                    func_content = ["    {}".format(line) for line in func_content]
+                    test_content += func_content
                 test_content.append('    }')
             elif self.symtable[parameter].is_matrix():
                 element_type = self.symtable[parameter].element_type
@@ -342,28 +384,7 @@ class CodeGenEigen(CodeGen):
                     '        {}.insert(std::make_tuple('.format(parameter) + ', '.join(gen_list) + '));')
                 test_content.append('    }')
             elif self.symtable[parameter].is_function():
-                name_required = False
-                dim_definition = []
-                if self.symtable[parameter].ret_template():
-                    name_required = True
-                    for ret_dim in self.symtable[parameter].ret_symbols:
-                        param_i = self.symtable[parameter].template_symbols[ret_dim]
-                        if self.symtable[parameter].params[param_i].is_vector():
-                            dim_definition.append('        long {} = {}{}.size();'.format(ret_dim, self.param_name_test, param_i))
-                        elif self.symtable[parameter].params[param_i].is_matrix():
-                            if ret_dim == self.symtable[parameter].params[param_i].rows:
-                                dim_definition.append('        long {} = {}{}.rows();'.format(ret_dim, self.param_name_test, param_i))
-                            else:
-                                dim_definition.append('        long {} = {}{}.cols();'.format(ret_dim, self.param_name_test, param_i))
-                test_content.append('    {} = []({})->{}{{'.format(parameter, self.get_func_params_str(self.symtable[parameter], name_required), self.get_ctype(self.symtable[parameter].ret)))
-                test_content += dim_definition
-                if self.symtable[parameter].ret.is_set():
-                    test_content.append('        {} tmp;'.format(self.get_ctype(self.symtable[parameter].ret)))
-                    test_content += self.get_set_test_list('tmp', self.symtable[parameter].ret, rand_int_max, '        ')
-                    test_content.append('        return tmp;')
-                else:
-                    test_content.append('        return {}'.format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
-                test_content.append('    };')
+                test_content += self.get_func_test_str(parameter, self.symtable[parameter], rand_int_max)
             # main_print.append('    std::cout<<"{}:\\n"<<{}<<std::endl;'.format(parameter, parameter))
         content = ""
         content += self.get_struct_definition() + '\n'

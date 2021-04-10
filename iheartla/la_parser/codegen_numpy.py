@@ -40,6 +40,40 @@ class CodeGenNumpy(CodeGen):
             rand_test = 'np.random.randn()'
         return rand_test
 
+    def get_func_test_str(self, var_name, func_type, rand_int_max):
+        """
+        :param var_name: lhs name
+        :param func_type: la_type
+        :param rand_int_max: 10
+        :return:
+        """
+        test_content = []
+        param_list = []
+        dim_definition = []
+        if func_type.ret_template():
+            for ret_dim in func_type.ret_symbols:
+                param_i = func_type.template_symbols[ret_dim]
+                if func_type.params[param_i].is_vector():
+                    dim_definition.append('        {} = {}{}.shape[0]'.format(ret_dim, self.param_name_test, param_i))
+                elif func_type.params[param_i].is_matrix():
+                    if ret_dim == func_type.params[param_i].rows:
+                        dim_definition.append(
+                            '        {} = {}{}.shape[0]'.format(ret_dim, self.param_name_test, param_i))
+                    else:
+                        dim_definition.append(
+                            '        {} = {}{}.shape[1]'.format(ret_dim, self.param_name_test, param_i))
+        for index in range(len(func_type.params)):
+            param_list.append('{}{}'.format(self.param_name_test, index))
+        test_content.append("    def {}({}):".format(var_name, ', '.join(param_list)))
+        test_content += dim_definition
+        if func_type.ret.is_set():
+            test_content += self.get_set_test_list('tmp', func_type.ret, rand_int_max, '        ')
+            test_content.append('        return tmp')
+        else:
+            test_content.append(
+                "        return {}".format(self.get_rand_test_str(func_type.ret, rand_int_max)))
+        return test_content
+
     def get_set_test_list(self, parameter, la_type, rand_int_max, pre='    '):
         test_content = []
         test_content.append('{} = []'.format(parameter))
@@ -171,8 +205,17 @@ class CodeGenNumpy(CodeGen):
                             type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
                             test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
                     else:
-                        type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
-                        test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
+                        if ele_type.is_function():
+                            test_content.append('    {} = []'.format(parameter))
+                            test_content.append('    for i in range({}):'.format(self.symtable[parameter].size))
+                            func_content = self.get_func_test_str("{}_f".format(parameter), ele_type, rand_int_max)
+                            func_content = ["    {}".format(line) for line in func_content]
+                            test_content += func_content
+                            test_content.append('        {}.append({})'.format(parameter, "{}_f".format(parameter)))
+                            test_content.append('    {} = np.asarray({})'.format(parameter, parameter))
+                        else:
+                            type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
+                            test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
             elif self.symtable[parameter].is_matrix():
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
@@ -238,29 +281,7 @@ class CodeGenNumpy(CodeGen):
                         gen_list.append('np.random.randn()')
                 test_content.append('        {}.append(('.format(parameter) + ', '.join(gen_list) + '))')
             elif self.symtable[parameter].is_function():
-                param_list = []
-                dim_definition = []
-                if self.symtable[parameter].ret_template():
-                    for ret_dim in self.symtable[parameter].ret_symbols:
-                        param_i = self.symtable[parameter].template_symbols[ret_dim]
-                        if self.symtable[parameter].params[param_i].is_vector():
-                            dim_definition.append('        {} = {}{}.shape[0]'.format(ret_dim, self.param_name_test, param_i))
-                        elif self.symtable[parameter].params[param_i].is_matrix():
-                            if ret_dim == self.symtable[parameter].params[param_i].rows:
-                                dim_definition.append('        {} = {}{}.shape[0]'.format(ret_dim, self.param_name_test, param_i))
-                            else:
-                                dim_definition.append('        {} = {}{}.shape[1]'.format(ret_dim, self.param_name_test, param_i))
-                for index in range(len(self.symtable[parameter].params)):
-                    param_list.append('{}{}'.format(self.param_name_test, index))
-                test_content.append("    def {}({}):".format(parameter, ', '.join(param_list)))
-                test_content += dim_definition
-                if self.symtable[parameter].ret.is_set():
-                    test_content += self.get_set_test_list('tmp', self.symtable[parameter].ret, rand_int_max, '        ')
-                    test_content.append('        return tmp')
-                else:
-                    test_content.append("        return {}".format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
-                # test_content.append('    {} = lambda {}: {}'.format(parameter, ', '.join(param_list), self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
-
+                test_content += self.get_func_test_str(parameter, self.symtable[parameter], rand_int_max)
             main_content.append('    print("{}:", {})'.format(parameter, parameter))
         content = self.get_struct_definition() + '\n'
         content += 'def ' + self.func_name + '(' + ', '.join(self.parameters) + '):\n'
