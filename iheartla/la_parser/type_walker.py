@@ -1382,6 +1382,34 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         return NodeInfo(ir=BinCompNode(IRNodeType.Le, left_info.ir, right_info.ir, parse_info=node.parseinfo, op=node.op))
 
+    def update_sub_sym_lists(self, main_sym, right_sym_list):
+        self.update_sub_sym_list(main_sym, right_sym_list, False)
+        self.update_sub_sym_list(main_sym, right_sym_list, True)
+
+    def update_sub_sym_list(self, main_sym, right_sym_list, lhs):
+        if lhs:
+            subs_list = self.lhs_subs
+            sub_sym_list = self.lhs_sym_list
+        else:
+            subs_list = self.sum_subs
+            sub_sym_list = self.sum_sym_list
+        # inside summation or lhs
+        for sub_index in range(len(subs_list)):
+            sub_sym = subs_list[sub_index]
+            if sub_sym in right_sym_list:
+                cur_dict = sub_sym_list[sub_index]
+                if main_sym in cur_dict:
+                    # merge same subscript
+                    old_right_list = copy.deepcopy(cur_dict[main_sym])
+                    assert len(old_right_list) == len(right_sym_list)
+                    for old_index in range(len(old_right_list)):
+                        if sub_sym != old_right_list[old_index]:
+                            old_right_list[old_index] = right_sym_list[old_index]
+                    cur_dict[main_sym] = old_right_list
+                else:
+                    cur_dict[main_sym] = right_sym_list
+                sub_sym_list[sub_index] = cur_dict
+
     def walk_IdentifierSubscript(self, node, **kwargs):
         def get_right_list():
             # rhs only
@@ -1411,41 +1439,8 @@ class TypeWalker(NodeWalker):
         left_info = self.walk(node.left, **kwargs)
         if not self.is_param_block and left_info.content in self.symtable:
             right_sym_list = get_right_list()
-            if len(self.sum_subs) > 0:
-                # inside summation
-                for sub_index in range(len(self.sum_subs)):
-                    sub_sym = self.sum_subs[sub_index]
-                    if sub_sym in right_sym_list:
-                        cur_dict = self.sum_sym_list[sub_index]
-                        if left_info.content in cur_dict:
-                            # merge same subscript
-                            old_right_list = copy.deepcopy(cur_dict[left_info.content])
-                            assert len(old_right_list) == len(right_sym_list)
-                            for old_index in range(len(old_right_list)):
-                                if sub_sym != old_right_list[old_index]:
-                                    old_right_list[old_index] = right_sym_list[old_index]
-                            cur_dict[left_info.content] = old_right_list
-                        else:
-                            cur_dict[left_info.content] = right_sym_list
-                        self.sum_sym_list[sub_index] = cur_dict
-            if len(self.lhs_subs) > 0:
-                # inside subscript assignment
-                for sub_index in range(len(self.lhs_subs)):
-                    sub_sym = self.lhs_subs[sub_index]
-                    if sub_sym in right_sym_list:
-                        cur_dict = self.lhs_sym_list[sub_index]
-                        if left_info.content in cur_dict:
-                            # merge same subscript
-                            old_right_list = copy.deepcopy(cur_dict[left_info.content])
-                            assert len(old_right_list) == len(right_sym_list)
-                            for old_index in range(len(old_right_list)):
-                                if sub_sym != old_right_list[old_index]:
-                                    old_right_list[old_index] = right_sym_list[old_index]
-                            cur_dict[left_info.content] = old_right_list
-                        else:
-                            cur_dict[left_info.content] = right_sym_list
-                        self.lhs_sym_list[sub_index] = cur_dict
-
+            # update sym lists
+            self.update_sub_sym_lists(left_info.content, right_sym_list)
             content_symbol = node.text.replace(' ', '').replace(',', '')
             if '_' not in content_symbol:
                 # unicode subscript
@@ -1970,6 +1965,8 @@ class TypeWalker(NodeWalker):
                 seq_index_node.process_subs_dict(self.lhs_sub_dict)
                 # return self.create_id_node_info('I', [id1], node.parseinfo)
                 node_info = NodeInfo(seq_index_node.la_type, "I_{}".format(id1), {"I_{}".format(id1)}, seq_index_node)
+                #
+                self.update_sub_sym_lists('I', [id1])
                 return node_info
             if isinstance(id1, str):
                 assert id1 in self.symtable, self.get_err_msg_info(id1_info.ir.parse_info, "{} unknown".format(id1))
