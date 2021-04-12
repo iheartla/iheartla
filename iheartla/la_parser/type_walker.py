@@ -717,7 +717,7 @@ class TypeWalker(NodeWalker):
                     continue
                 pre_subs.append(sub_sym)
                 assert sub_sym not in self.symtable, self.get_err_msg_info(node.left.right[sub_index].parseinfo, "Subscript has been defined")
-                self.symtable[sub_sym] = ScalarType(index_type=False)
+                self.symtable[sub_sym] = ScalarType(index_type=False, is_int=True)
                 self.lhs_sub_dict[sub_sym] = []  # init empty list
         right_info = self.walk(node.right, **kwargs)
         if len(self.lhs_subs) > 0:
@@ -868,7 +868,7 @@ class TypeWalker(NodeWalker):
                 # assert lhs_ids[1][0] == lhs_ids[1][1], "multiple subscripts for sum"
             sub_parse_info = node.id.parseinfo
             assert subs not in self.symtable, self.get_err_msg_info(sub_parse_info, "Subscript has been defined")
-            self.symtable[subs] = ScalarType(index_type=False)  # add subscript to symbol table temporarily
+            self.symtable[subs] = ScalarType(index_type=False, is_int=True)  # add subscript to symbol table temporarily
             ir_node.cond = self.walk(node.cond, **kwargs).ir
         else:
             sub_info = self.walk(node.sub)
@@ -880,7 +880,7 @@ class TypeWalker(NodeWalker):
             subs = sub_info.content
             sub_parse_info = node.sub.parseinfo
             assert subs not in self.symtable, self.get_err_msg_info(sub_parse_info, "Subscript has been defined")
-            self.symtable[subs] = ScalarType(index_type=False)  # add subscript to symbol table temporarily
+            self.symtable[subs] = ScalarType(index_type=False, is_int=True)  # add subscript to symbol table temporarily
         self.logger.debug("new sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         new_id = self.generate_var_name("sum")
         ret_info = self.walk(node.exp, **kwargs)
@@ -1240,7 +1240,9 @@ class TypeWalker(NodeWalker):
                     assert split_res[-1] in self.symtable, self.get_err_msg_info(node.parseinfo, "Subscript not defined")
                     assert self.symtable[split_res[-1]].is_int_scalar(), self.get_err_msg_info(node.parseinfo, "Subscript has to be integer")
                     ir_node.main_index.la_type = self.symtable[split_res[-1]]
+                    self.update_sub_sym_lists(name, split_res[-1])
                 ir_node.la_type = self.symtable[name].element_type
+                ir_node.process_subs_dict(self.lhs_sub_dict)
             else:
                 ir_node = IdNode(node.name, parse_info=node.parseinfo)
                 node.name = self.filter_symbol(node.name)
