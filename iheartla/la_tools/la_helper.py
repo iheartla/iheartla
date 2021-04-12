@@ -2,6 +2,7 @@ from enum import Enum, IntFlag
 from tatsu._version import __version__
 import sys
 import keyword
+import regex as re
 
 
 DEBUG_MODE = False
@@ -57,3 +58,34 @@ def read_from_file(file_name):
         content = ''
         print("IO Error!:{}".format(e))
     return content
+
+
+def contains_sub_symbol(identifier):
+    # Check whether a raw string contains _
+    if '`' in identifier:
+        new_id = identifier
+        results = re.findall("`[^`]*`", new_id)
+        for item in results:
+            new_id = new_id.replace(item, '')
+        return '_' in new_id
+    return '_' in identifier
+
+
+def split_sub_string(identifier):
+    # Check whether a raw string contains _
+    if '`' in identifier:
+        new_id = identifier
+        results = re.findall("`[^`]*`", new_id)
+        convert_dict = {}
+        for item in results:
+            if '_' in item:
+                new_item = item.replace('_', '``')
+                convert_dict[new_item] = item
+                new_id = new_id.replace(item, new_item)
+        results = new_id.split('_')
+        if len(convert_dict) > 0:
+            for i in range(len(results)):
+                if results[i] in convert_dict:
+                    results[i] = convert_dict[results[i]]
+        return results
+    return identifier.split('_')

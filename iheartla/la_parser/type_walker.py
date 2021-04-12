@@ -295,7 +295,7 @@ class TypeWalker(NodeWalker):
             for index in range(len(stat_list)):
                 if type(stat_list[index]).__name__ == 'Assignment':
                     # check whether rhs is function type
-                    if type(stat_list[index].right.value).__name__ == 'Factor' and stat_list[index].right.value.id0:
+                    if type(stat_list[index].right).__name__ == 'Expression' and type(stat_list[index].right.value).__name__ == 'Factor' and stat_list[index].right.value.id0:
                         # specific stat: lhs = id_subs
                         try:
                             assign_node = self.walk(stat_list[index], **kwargs).ir
@@ -1227,8 +1227,8 @@ class TypeWalker(NodeWalker):
 
     def walk_Function(self, node, **kwargs):
         if isinstance(node.name, str):
-            if '_' in node.name:
-                split_res = node.name.split('_')
+            if contains_sub_symbol(node.name):
+                split_res = split_sub_string(node.name)
                 name = self.filter_symbol(split_res[0])
                 ir_node = SequenceIndexNode()
                 ir_node.main = IdNode(name, parse_info=node.parseinfo)
