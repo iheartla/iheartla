@@ -297,12 +297,16 @@ class TypeWalker(NodeWalker):
                     # check whether rhs is function type
                     if type(stat_list[index].right.value).__name__ == 'Factor' and stat_list[index].right.value.id0:
                         # specific stat: lhs = id_subs
-                        assign_node = self.walk(stat_list[index], **kwargs).ir
-                        lhs_id_node = assign_node.left
-                        rhs_id_node = assign_node.right.value.id
-                        if rhs_id_node.la_type.is_function():
-                            if lhs_id_node.contain_subscript():
-                                assert lhs_id_node.node_type == IRNodeType.SequenceIndex, self.get_err_msg_info(lhs_id_node.parseinfo, "Invalid assignment for function")
+                        try:
+                            assign_node = self.walk(stat_list[index], **kwargs).ir
+                            lhs_id_node = assign_node.left
+                            rhs_id_node = assign_node.right.value.id
+                            if rhs_id_node.la_type.is_function():
+                                if lhs_id_node.contain_subscript():
+                                    assert lhs_id_node.node_type == IRNodeType.SequenceIndex, self.get_err_msg_info(lhs_id_node.parseinfo, "Invalid assignment for function")
+                        except AssertionError as e:
+                            # lhs = symbol
+                            continue
         #
         self.multi_lhs_list = multi_lhs_list
         if 'pre_walk' in kwargs:
