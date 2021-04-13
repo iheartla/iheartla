@@ -153,7 +153,11 @@ class TypeWalker(NodeWalker):
         #
         rhs_str = '\n'.join(self.rhs_raw_str_list)
         for seq in seq_func_list:
-            results = re.findall(r"("+seq+r"_`[^`]*`|"+seq+r"_[A-Za-z0-9]*)(?=\()", rhs_str)
+            # special usage of ?:
+            results = re.findall(r"("
+                                 + seq + r"_`[^`]*`|"
+                                 + seq + r"_[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?:[A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*|"
+                                 + seq + r"_\d*)(?=\()", rhs_str)
             sig = self.symtable[seq].get_signature()
             for match in results:
                 ret[match] = sig + match
