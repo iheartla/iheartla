@@ -904,6 +904,8 @@ class CodeGenNumpy(CodeGen):
                     elif ele_type.is_vector():
                         content += "    {} = np.zeros(({}, {}, ))\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
                         # content += "    {} = np.zeros(({}, {}, 1))\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
+                    elif ele_type.is_function():
+                        content += "    {} = np.zeros({}, dtype=object)\n".format(sequence, self.symtable[sequence].size)
                     else:
                         content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].size)
                     content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].size)
