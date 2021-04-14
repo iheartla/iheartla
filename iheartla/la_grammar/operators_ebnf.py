@@ -6,9 +6,6 @@ operations
     | power_operator
     | function_operator
     | norm_operator
-    #| trace_operator
-    #| eig_operator
-    #| derivative_operator
     | inner_product_operator
     | frobenius_product_operator
     | hadamard_product_operator
@@ -54,21 +51,6 @@ division::Divide
 
 dot_multiplication
     = identifier '.*' identifier
-    ;
-
-
-trace_operator
-    = TRACE '(' {hspace} identifier {hspace} ')'
-    ;
-
-
-eig_operator
-    = EIG '(' {hspace} identifier {hspace} ')'
-    ;
-
-
-derivative_operator::Derivative
-    = DERIVATIVE value:identifier
     ;
 
 

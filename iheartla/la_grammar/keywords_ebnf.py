@@ -1,26 +1,7 @@
 KEYWORDS = r"""
 BUILTIN_KEYWORDS
     =
-    #| TRACE
-    #| VEC
-    #| DIAG
-    #| ID
-    #| EIG
-    #| CONJ
-    #| RE
-    #| IM
-    #| INV
-    #| DET
-    #| SVD
-    #| RANK
-    #| NULL
-    #| ORTH
-    #| QR
     | DERIVATIVE
-    #| VDOTS
-    #| CDOTS
-    #| IDDOTS
-    #| DDOTS
     | WHERE
     | GIVEN
     | SUM

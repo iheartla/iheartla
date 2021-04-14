@@ -1,25 +1,4 @@
 TRIGONOMETRY = r"""
-#@override
-#builtin_operators
-#    =  builtin_operators
-#    | sin_func
-#    | asin_func
-#    | cos_func
-#    | acos_func
-#    | tan_func
-#    | atan_func
-#    | atan2_func
-#    | sinh_func
-#    | asinh_func
-#    | cosh_func
-#    | acosh_func
-#    | tanh_func
-#    | atanh_func
-#    | cot_func
-#    | sec_func
-#    | csc_func
-#    ;
-
 ### trigonometry function
 
 sin_func::SinFunc
