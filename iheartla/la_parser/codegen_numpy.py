@@ -67,18 +67,18 @@ class CodeGenNumpy(CodeGen):
         test_content.append("    def {}({}):".format(var_name, ', '.join(param_list)))
         test_content += dim_definition
         if func_type.ret.is_set():
-            test_content += self.get_set_test_list('tmp', func_type.ret, rand_int_max, '        ')
+            test_content += self.get_set_test_list('tmp', self.generate_var_name("dim"), 'i', func_type.ret, rand_int_max, '        ')
             test_content.append('        return tmp')
         else:
             test_content.append(
                 "        return {}".format(self.get_rand_test_str(func_type.ret, rand_int_max)))
         return test_content
 
-    def get_set_test_list(self, parameter, la_type, rand_int_max, pre='    '):
+    def get_set_test_list(self, parameter, dim_name, ind_name, la_type, rand_int_max, pre='    '):
         test_content = []
         test_content.append('{} = []'.format(parameter))
-        test_content.append('{}_0 = np.random.randint(1, {})'.format(parameter, rand_int_max))
-        test_content.append('for i in range({}_0):'.format(parameter))
+        test_content.append('{} = np.random.randint(1, {})'.format(dim_name, rand_int_max))
+        test_content.append('for {} in range({}):'.format(ind_name, dim_name))
         gen_list = []
         for i in range(la_type.size):
             if la_type.int_list[i]:
@@ -201,6 +201,16 @@ class CodeGenNumpy(CodeGen):
                         if data_type.is_scalar() and data_type.is_int:
                             type_declare.append('    {} = np.asarray({}, dtype=np.int)'.format(parameter, parameter))
                             test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, size_str))
+                        elif ele_type.is_set():
+                            test_content.append('    {} = []'.format(parameter))
+                            test_content.append('    for i in range({}):'.format(self.symtable[parameter].size))
+                            set_content = self.get_set_test_list("{}_tmp".format(parameter),
+                                                                 self.generate_var_name("dim"), 'j', ele_type,
+                                                                 rand_int_max, '    ')
+                            set_content = ["    {}".format(line) for line in set_content]
+                            test_content += set_content
+                            test_content.append('        {}.append({})'.format(parameter, "{}_tmp".format(parameter)))
+                            test_content.append('    {} = np.asarray({})'.format(parameter, parameter))
                         else:
                             type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
                             test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
@@ -270,16 +280,9 @@ class CodeGenNumpy(CodeGen):
                 type_checks.append('    assert isinstance({}, list) and len({}) > 0'.format(parameter, parameter))
                 if self.symtable[parameter].size > 1:
                     type_checks.append('    assert len({}[0]) == {}'.format(parameter, self.symtable[parameter].size))
-                test_content.append('    {} = []'.format(parameter))
-                test_content.append('    {}_0 = np.random.randint(1, {})'.format(parameter, rand_int_max))
-                test_content.append('    for i in range({}_0):'.format(parameter))
-                gen_list = []
-                for i in range(self.symtable[parameter].size):
-                    if self.symtable[parameter].int_list[i]:
-                        gen_list.append('np.random.randint({})'.format(rand_int_max))
-                    else:
-                        gen_list.append('np.random.randn()')
-                test_content.append('        {}.append(('.format(parameter) + ', '.join(gen_list) + '))')
+
+                test_content += self.get_set_test_list(parameter, self.generate_var_name("dim"), 'i', self.symtable[parameter],
+                                                       rand_int_max, '    ')
             elif self.symtable[parameter].is_function():
                 test_content += self.get_func_test_str(parameter, self.symtable[parameter], rand_int_max)
             main_content.append('    print("{}:", {})'.format(parameter, parameter))

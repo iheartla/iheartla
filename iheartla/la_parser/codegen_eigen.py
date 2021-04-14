@@ -149,7 +149,7 @@ class CodeGenEigen(CodeGen):
         test_content += dim_definition
         if func_type.ret.is_set():
             test_content.append('        {} tmp;'.format(self.get_ctype(func_type.ret)))
-            test_content += self.get_set_test_list('tmp', func_type.ret, rand_int_max, '        ')
+            test_content += self.get_set_test_list('tmp', self.generate_var_name("dim"), 'i', func_type.ret, rand_int_max, '        ')
             test_content.append('        return tmp;')
         else:
             test_content.append(
@@ -157,10 +157,10 @@ class CodeGenEigen(CodeGen):
         test_content.append('    };')
         return test_content
 
-    def get_set_test_list(self, parameter, la_type, rand_int_max, pre='    '):
+    def get_set_test_list(self, parameter, dim_name, ind_name, la_type, rand_int_max, pre='    '):
         test_content = []
-        test_content.append('const int {}_0 = rand()%10;'.format(parameter, rand_int_max))
-        test_content.append('for(int i=0; i<{}_0; i++){{'.format(parameter))
+        test_content.append('const int {} = rand()%10;'.format(dim_name, rand_int_max))
+        test_content.append('for(int {}=0; {}<{}; {}++){{'.format(ind_name, ind_name, dim_name, ind_name))
         gen_list = []
         for i in range(la_type.size):
             if la_type.int_list[i]:
@@ -327,6 +327,10 @@ class CodeGenEigen(CodeGen):
                     func_content = self.get_func_test_str("{}[i]".format(parameter), ele_type, rand_int_max)
                     func_content = ["    {}".format(line) for line in func_content]
                     test_content += func_content
+                elif ele_type.is_set():
+                    set_content = self.get_set_test_list("{}[i]".format(parameter), self.generate_var_name("dim"), 'j', ele_type, rand_int_max, '    ')
+                    set_content = ["    {}".format(line) for line in set_content]
+                    test_content += set_content
                 test_content.append('    }')
             elif self.symtable[parameter].is_matrix():
                 element_type = self.symtable[parameter].element_type
@@ -372,17 +376,8 @@ class CodeGenEigen(CodeGen):
             elif self.symtable[parameter].is_scalar():
                 test_function.append('    {} = rand() % {};'.format(parameter, rand_int_max))
             elif self.symtable[parameter].is_set():
-                test_content.append('    const int {}_0 = rand()%10;'.format(parameter, rand_int_max))
-                test_content.append('    for(int i=0; i<{}_0; i++){{'.format(parameter))
-                gen_list = []
-                for i in range(self.symtable[parameter].size):
-                    if self.symtable[parameter].int_list[i]:
-                        gen_list.append('rand()%{}'.format(rand_int_max))
-                    else:
-                        gen_list.append('rand()%10')
-                test_content.append(
-                    '        {}.insert(std::make_tuple('.format(parameter) + ', '.join(gen_list) + '));')
-                test_content.append('    }')
+                test_content += self.get_set_test_list(parameter, self.generate_var_name("dim"), 'i', self.symtable[parameter],
+                                       rand_int_max, '    ')
             elif self.symtable[parameter].is_function():
                 test_content += self.get_func_test_str(parameter, self.symtable[parameter], rand_int_max)
             # main_print.append('    std::cout<<"{}:\\n"<<{}<<std::endl;'.format(parameter, parameter))
