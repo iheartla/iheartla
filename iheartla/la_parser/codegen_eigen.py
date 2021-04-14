@@ -206,6 +206,22 @@ class CodeGenEigen(CodeGen):
                    "};\n"]
         return "\n".join(content)
 
+    def get_ret_display(self):
+        # print return value in main function
+        la_type = self.symtable[self.ret_symbol]
+        main_content = ["    {} func_value = {}({});".format(self.get_result_type(), self.func_name,
+                                                             ', '.join(self.parameters))]
+        if la_type.is_matrix() or la_type.is_vector() or la_type.is_scalar():
+            main_content.append('    std::cout<<"return value:\\n"<<func_value.{}<<std::endl;'.format(self.ret_symbol))
+        elif la_type.is_sequence():
+            # sequence
+            if la_type.element_type.is_matrix() or la_type.element_type.is_vector() or la_type.element_type.is_scalar():
+                main_content.append('    std::cout<<"vector return value:"<<std::endl;')
+                main_content.append('    for(int i=0; i<func_value.{}.size(); i++){{'.format(self.ret_symbol))
+                main_content.append('        std::cout<<"i:"<<i<<", value:\\n"<<func_value.{}.at(i)<<std::endl;'.format(self.ret_symbol))
+                main_content.append('    }')
+        return main_content
+
     def get_ret_struct(self):
         return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list))
 
@@ -219,7 +235,6 @@ class CodeGenEigen(CodeGen):
         rand_int_max = 10
         # main
         main_declaration = []
-        main_print = []
         main_content = ["int main(int argc, char *argv[])",
                         "{",
                         "    srand((int)time(NULL));"]
@@ -380,13 +395,11 @@ class CodeGenEigen(CodeGen):
                                        rand_int_max, '    ')
             elif self.symtable[parameter].is_function():
                 test_content += self.get_func_test_str(parameter, self.symtable[parameter], rand_int_max)
-            # main_print.append('    std::cout<<"{}:\\n"<<{}<<std::endl;'.format(parameter, parameter))
         content = ""
         content += self.get_struct_definition() + '\n'
         if show_doc:
             content += '/**\n * ' + self.func_name + '\n *\n * ' + '\n * '.join(doc) + '\n * @return {}\n */\n'.format(
                 self.ret_symbol)
-        # ret_type = self.get_ctype(self.symtable[self.ret_symbol])
         ret_type = self.get_result_type()
         if len(self.parameters) == 0:
             content += ret_type + ' ' + self.func_name + '(' + ')\n{\n'  # func name
@@ -398,7 +411,6 @@ class CodeGenEigen(CodeGen):
             content += ret_type + ' ' + self.func_name + '(\n    ' + ',\n    '.join(par_des_list) + ')\n{\n'  # func name
             test_function.insert(0, "void {}({})".format(rand_func_name, ',\n    '.join(test_par_list)))
         # merge content
-        # content += '\n'.join(type_declare) + '\n\n'
         content += dim_content
         type_checks += self.get_dim_check_str()
         if len(type_checks) > 0:
@@ -427,29 +439,16 @@ class CodeGenEigen(CodeGen):
 
         content += stats_content
         # return value
-        # ret_value = self.ret_symbol
         ret_value = self.get_ret_struct()
         content += '    return ' + ret_value + ';'
         content += '\n}\n'
-        # test
-        # test_content.append('    return {}'.format(', '.join(self.parameters)))
+        # test function
         test_function += test_content
         test_function.append('}')
-        # main
+        # main function
         main_content += main_declaration
         main_content.append("    {}({});".format(rand_func_name, ', '.join(self.parameters)))
-        main_content += main_print
-        main_content.append(
-            "    {} func_value = {}({});".format(self.get_result_type(), self.func_name,
-                                                 ', '.join(self.parameters)))
-        if self.symtable[self.ret_symbol].is_matrix() or self.symtable[self.ret_symbol].is_vector() or self.symtable[self.ret_symbol].is_scalar():
-            main_content.append('    std::cout<<"return value:\\n"<<func_value.{}<<std::endl;'.format(self.ret_symbol))
-        else:
-            # sequence
-            main_content.append('    std::cout<<"vector return value:"<<std::endl;')
-            main_content.append('    for(int i=0; i<func_value.{}.size(); i++){{'.format(self.ret_symbol))
-            main_content.append('        std::cout<<"i:"<<i<<", value:\\n"<<func_value.{}.at(i)<<std::endl;'.format(self.ret_symbol))
-            main_content.append('    }')
+        main_content += self.get_ret_display()
         main_content.append('    return 0;')
         main_content.append('}')
         content += '\n\n' + '\n'.join(test_function) + '\n\n\n' + '\n'.join(main_content)
