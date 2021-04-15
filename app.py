@@ -1,12 +1,16 @@
 from iheartla.la_parser.parser import compile_la_file, compile_la_content, ParserTypeEnum
-from iheartla.la_tools.la_logger import LaLogger, LoggerTypeEnum
+from iheartla.la_tools.la_helper import DEBUG_MODE
+from iheartla.la_tools.la_logger import LaLogger
 from iheartla.compiler import show_gui
 import logging
 import argparse
 
 
 if __name__ == '__main__':
-    LaLogger.getInstance().set_level(logging.ERROR)
+    if DEBUG_MODE:
+        LaLogger.getInstance().set_level(logging.DEBUG)
+    else:
+        LaLogger.getInstance().set_level(logging.ERROR)
     arg_parser = argparse.ArgumentParser(description='I Heart LA')
     arg_parser.add_argument('-o', '--output', help='The output language', choices = ['numpy', 'eigen', 'latex'])
     # arg_parser.add_argument('-i', '--input', help='File name containing I heart LA source code')

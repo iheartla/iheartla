@@ -1,6 +1,6 @@
 from .la_helper import *
 from .la_logger import *
-if not DEBUG_MODE:
+if not DEBUG_PARSER:
     from ..la_local_parsers.init_parser import grammarinitParser, grammarinitModelBuilderSemantics
     from ..la_local_parsers.default_parser import grammardefaultParser, grammardefaultModelBuilderSemantics
 import pickle
@@ -20,7 +20,7 @@ from datetime import datetime
 
 class ParserManager(object):
     def __init__(self, grammar_dir):
-        if DEBUG_MODE:
+        if DEBUG_PARSER:
             self.parser_file_manager = ParserFileManager(grammar_dir)
             self.cache_dir = self.parser_file_manager.cache_dir
             self.grammar_dir = self.parser_file_manager.grammar_dir
@@ -30,7 +30,7 @@ class ParserManager(object):
             self.default_parser = grammardefaultParser(semantics=grammardefaultModelBuilderSemantics())
 
     def get_parser(self, key, grammar, extra_dict={}):
-        if DEBUG_MODE:
+        if DEBUG_PARSER:
             return self.parser_file_manager.get_parser(key, grammar, extra_dict)
         else:
             if key == 'init':
@@ -39,11 +39,11 @@ class ParserManager(object):
             return self.default_parser
 
     def set_test_mode(self):
-        if DEBUG_MODE:
+        if DEBUG_PARSER:
             self.parser_file_manager.set_test_mode()
 
     def reload(self):
-        if DEBUG_MODE:
+        if DEBUG_PARSER:
             self.parser_file_manager.reload()
 
     def modify_default_parser(self, extra_dict):
@@ -177,7 +177,7 @@ class ParserFileManager(object):
         hash_value = hashlib.md5(key.encode()).hexdigest()
         if hash_value in self.parser_dict:
             return self.parser_dict[hash_value]
-        if not DEBUG_MODE:
+        if not DEBUG_PARSER:
             # create new parser from default parser
             rule_content = self.gen_parser_code(hash_value, extra_dict)
             module_name = "{}_{}_{}".format(self.prefix, hash_value, datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))

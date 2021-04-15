@@ -5,7 +5,8 @@ import keyword
 import regex as re
 
 
-DEBUG_MODE = False
+DEBUG_MODE = True
+DEBUG_PARSER = False  # used for new grammer files
 class ParserTypeEnum(IntFlag):
     INVALID = 0
     DEFAULT = 7
