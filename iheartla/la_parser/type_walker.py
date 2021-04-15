@@ -2330,6 +2330,7 @@ class TypeWalker(NodeWalker):
             ret_type = copy.deepcopy(left_type)  # default type
             if left_type.is_scalar():
                 assert right_type.is_scalar(), get_err_msg()
+                ret_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
             elif left_type.is_matrix():
                 assert right_type.is_matrix(), get_err_msg()
                 # assert right_type.is_matrix() or right_type.is_vector(), error_msg
@@ -2381,6 +2382,7 @@ class TypeWalker(NodeWalker):
                         ret_type.sparse = True
                     else:
                         ret_type.sparse = False
+                ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
             elif left_type.is_vector():
                 assert right_type.is_vector(), get_err_msg()
                 assert left_type.rows == right_type.rows, get_err_msg()
@@ -2388,6 +2390,7 @@ class TypeWalker(NodeWalker):
                 # assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, error_msg
                 if right_type.is_matrix():
                     ret_type = copy.deepcopy(right_type)
+                ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
             else:
                 # sequence et al.
                 assert left_type.var_type == right_type.var_type, get_err_msg()
@@ -2405,6 +2408,7 @@ class TypeWalker(NodeWalker):
             assert not left_type.index_type and not right_type.index_type, get_err_msg()
             if left_type.is_scalar():
                 ret_type = copy.deepcopy(right_type)
+                ret_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
             elif left_type.is_matrix():
                 if right_type.is_scalar():
                     ret_type = copy.deepcopy(left_type)
@@ -2415,6 +2419,7 @@ class TypeWalker(NodeWalker):
                         ret_type.sparse = True
                     # if left_type.rows == 1 and right_type.cols == 1:
                     #     ret_type = ScalarType()
+                    ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
                 elif right_type.is_vector():
                     assert left_type.cols == right_type.rows, get_err_msg()
                     if left_type.rows == 1:
@@ -2423,23 +2428,31 @@ class TypeWalker(NodeWalker):
                         need_cast = True
                     else:
                         ret_type = VectorType(rows=left_type.rows)
+                    ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
             elif left_type.is_vector():
                 if right_type.is_scalar():
                     ret_type = copy.deepcopy(left_type)
+                    ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
                 elif right_type.is_matrix():
                     assert 1 == right_type.rows, get_err_msg()
                     ret_type = MatrixType(rows=left_type.rows, cols=right_type.cols)
                     new_node = ToMatrixNode(parse_info=left_info.ir.parse_info, item=left_info.ir)
                     new_node.la_type = MatrixType(rows=left_type.rows, cols=1)
                     left_info.ir = new_node
+                    ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
                 elif right_type.is_vector():
                     assert left_type.cols == right_type.rows, get_err_msg()
+                    ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
         elif op == TypeInferenceEnum.INF_DIV:
             # assert left_type.is_scalar() and right_type.is_scalar(), error_msg
             assert left_type.is_scalar() or left_type.is_vector() or left_type.is_matrix(), get_err_msg()
             assert right_type.is_scalar(), get_err_msg()
             assert not left_type.index_type and not right_type.index_type, get_err_msg()
             ret_type = copy.deepcopy(left_type)
+            if left_type.is_scalar():
+                ret_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+            else:
+                ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
         elif op == TypeInferenceEnum.INF_MATRIX_ROW:
             # assert left_type.var_type == right_type.var_type
             ret_type = copy.deepcopy(left_type)
