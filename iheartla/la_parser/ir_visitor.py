@@ -32,6 +32,7 @@ class IRVisitor(object):
         self.lhs_list = []
         self.pattern = re.compile("[A-Za-z]+")
         self.la_content = ''
+        self.new_id_prefix = ''  # _
         self.uni_num_dict = {'₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9',
                              '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9'}
 
@@ -56,7 +57,7 @@ class IRVisitor(object):
         valid = False
         ret = ""
         while not valid:
-            ret = "_{}_{}".format(base, index)
+            ret = "{}{}_{}".format(self.new_id_prefix, base, index)
             if ret not in self.symtable:
                 valid = True
             index += 1

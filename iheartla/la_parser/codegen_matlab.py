@@ -9,6 +9,7 @@ class CodeGenMatlab(CodeGen):
 
     def init_type(self, type_walker, func_name):
         super().init_type(type_walker, func_name)
+        self.new_id_prefix = ''
         self.pre_str = '''%{{\n{}\n%}}\n'''.format(self.la_content)
         self.pre_str += "\n\n"
         self.post_str = ''''''
@@ -1087,7 +1088,7 @@ class CodeGenMatlab(CodeGen):
         pre_list += exp_info.pre_list
         base_info = self.visit(node.base, **kwargs)
         pre_list += exp_info.pre_list
-        content = "quad({}, {}, {})[0]".format("lambda {}: {}".format(base_info.content, exp_info.content), lower_info.content, upper_info.content)
+        content = "integral({}, {}, {})".format("lambda {}: {}".format(base_info.content, exp_info.content), lower_info.content, upper_info.content)
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_inner_product(self, node, **kwargs):

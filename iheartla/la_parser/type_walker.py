@@ -171,7 +171,8 @@ class TypeWalker(NodeWalker):
         valid = False
         ret = ""
         while not valid:
-            ret = "_{}_{}".format(base, index)
+            # ret = "_{}_{}".format(base, index)
+            ret = "{}_{}".format(base, index)
             if ret not in self.symtable:
                 valid = True
             index += 1
