@@ -91,38 +91,38 @@ atan2_func::Atan2Func
 
 ### linear algebra function
 trace_func::TraceFunc
-    = name:'trace' '(' {hspace} param:expression {hspace} ')'
+    = name:TRACE '(' {hspace} param:expression {hspace} ')'
     ;
 
 tr_func::TraceFunc
-    = name:'tr' '(' {hspace} param:expression {hspace} ')'
+    = name:TR '(' {hspace} param:expression {hspace} ')'
     ;
 
 diag_func::DiagFunc
-    = 'diag' '(' {hspace} param:expression {hspace} ')'
+    = DIAG '(' {hspace} param:expression {hspace} ')'
     ;
 
 vec_func::VecFunc
-    = 'vec' '(' {hspace} param:expression {hspace} ')'
+    = VEC '(' {hspace} param:expression {hspace} ')'
     ;
 
 det_func::DetFunc
-    = 'det' '(' {hspace} param:expression {hspace} ')'
+    = DET '(' {hspace} param:expression {hspace} ')'
     ;
 
 rank_func::RankFunc
-    = 'rank' '(' {hspace} param:expression {hspace} ')'
+    = RANK '(' {hspace} param:expression {hspace} ')'
     ;
 
 null_func::NullFunc
-    = 'null' '(' {hspace} param:expression {hspace} ')'
+    = NULL '(' {hspace} param:expression {hspace} ')'
     ;
 
 orth_func::OrthFunc
-    = 'orth' '(' {hspace} param:expression {hspace} ')'
+    = ORTH '(' {hspace} param:expression {hspace} ')'
     ;
 
 inv_func::InvFunc
-    = 'inv' '(' {hspace} param:expression {hspace} ')'
+    = INV '(' {hspace} param:expression {hspace} ')'
     ;
 """

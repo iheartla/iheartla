@@ -25,7 +25,7 @@ from tatsu.util import re, generic_main  # noqa
 KEYWORDS = {}  # type: ignore
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
+class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
     def __init__(
         self,
         text,
@@ -37,7 +37,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
         namechars='',
         **kwargs
     ):
-        super(grammarc21f969b5f03d33d43e04f8f136e7682Buffer, self).__init__(
+        super(grammare37f0136aa3ffaf149b351f6a4c948e9Buffer, self).__init__(
             text,
             whitespace=whitespace,
             nameguard=nameguard,
@@ -49,7 +49,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
         )
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
+class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def __init__(
         self,
         whitespace=re.compile('(?!.*)'),
@@ -61,12 +61,12 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         parseinfo=True,
         keywords=None,
         namechars='',
-        buffer_class=grammarc21f969b5f03d33d43e04f8f136e7682Buffer,
+        buffer_class=grammare37f0136aa3ffaf149b351f6a4c948e9Buffer,
         **kwargs
     ):
         if keywords is None:
             keywords = KEYWORDS
-        super(grammarc21f969b5f03d33d43e04f8f136e7682Parser, self).__init__(
+        super(grammare37f0136aa3ffaf149b351f6a4c948e9Parser, self).__init__(
             whitespace=whitespace,
             nameguard=nameguard,
             comments_re=comments_re,
@@ -89,39 +89,47 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block0)
 
         def block1():
+            self._hspace_()
+        self._closure(block1)
+
+        def block2():
             self._Directive_()
             self.add_last_node_to_name('directive')
 
-            def block3():
+            def block4():
 
-                def block4():
+                def block5():
                     self._separator_with_space_()
-                self._positive_closure(block4)
+                self._positive_closure(block5)
                 self._Directive_()
                 self.add_last_node_to_name('directive')
-            self._closure(block3)
+            self._closure(block4)
 
-            def block6():
+            def block7():
                 self._separator_with_space_()
-            self._positive_closure(block6)
-        self._closure(block1)
+            self._positive_closure(block7)
+        self._closure(block2)
 
-        def block7():
+        def block8():
 
-            def block8():
+            def block9():
                 self._separator_with_space_()
-            self._closure(block8)
+            self._closure(block9)
+
+            def block10():
+                self._hspace_()
+            self._closure(block10)
             self._valid_block_()
             self.add_last_node_to_name('vblock')
 
-            def block10():
+            def block12():
                 self._separator_with_space_()
-            self._closure(block10)
-        self._positive_closure(block7)
+            self._closure(block12)
+        self._positive_closure(block8)
 
-        def block11():
+        def block13():
             self._blank_()
-        self._closure(block11)
+        self._closure(block13)
         self._check_eof()
         self.ast._define(
             [],
@@ -154,8 +162,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._OTHERWISE_()
             with self._option():
-                self._IS_()
-            with self._option():
                 self._IN_()
             with self._option():
                 self._EXP_()
@@ -174,20 +180,20 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._token('|')
             with self._option():
-                self._token('ℝ')
+                self._pattern('ℝ')
             with self._option():
-                self._token('ℤ')
+                self._pattern('ℤ')
             with self._option():
-                self._pattern('[\\u1d40]')
-            with self._option():
-                self._token('ᵀ')
-            with self._option():
-                self._token('∂')
+                self._pattern('ᵀ')
             self._error('no available options')
 
     @tatsumasu()
     def _TRACE_(self):  # noqa
         self._pattern('trace')
+
+    @tatsumasu()
+    def _TR_(self):  # noqa
+        self._pattern('tr')
 
     @tatsumasu()
     def _VEC_(self):  # noqa
@@ -198,36 +204,12 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._pattern('diag')
 
     @tatsumasu()
-    def _ID_(self):  # noqa
-        self._pattern('Id')
-
-    @tatsumasu()
-    def _EIG_(self):  # noqa
-        self._pattern('eig')
-
-    @tatsumasu()
-    def _CONJ_(self):  # noqa
-        self._pattern('conj')
-
-    @tatsumasu()
-    def _RE_(self):  # noqa
-        self._pattern('Re')
-
-    @tatsumasu()
-    def _IM_(self):  # noqa
-        self._pattern('Im')
-
-    @tatsumasu()
     def _INV_(self):  # noqa
         self._pattern('inv')
 
     @tatsumasu()
     def _DET_(self):  # noqa
         self._pattern('det')
-
-    @tatsumasu()
-    def _SVD_(self):  # noqa
-        self._pattern('svd')
 
     @tatsumasu()
     def _RANK_(self):  # noqa
@@ -247,23 +229,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu()
     def _DERIVATIVE_(self):  # noqa
-        self._token('∂')
-
-    @tatsumasu()
-    def _VDOTS_(self):  # noqa
-        self._token('⋮')
-
-    @tatsumasu()
-    def _CDOTS_(self):  # noqa
-        self._token('⋯')
-
-    @tatsumasu()
-    def _IDDOTS_(self):  # noqa
-        self._token('⋰')
-
-    @tatsumasu()
-    def _DDOTS_(self):  # noqa
-        self._token('⋱')
+        self._pattern('∂')
 
     @tatsumasu()
     def _WHERE_(self):  # noqa
@@ -303,14 +269,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._pattern('int')
 
     @tatsumasu()
-    def _SYMMETRIC_(self):  # noqa
-        self._pattern('symmetric')
-
-    @tatsumasu()
-    def _DIAGONAL_(self):  # noqa
-        self._pattern('diagonal')
-
-    @tatsumasu()
     def _SPARSE_(self):  # noqa
         self._pattern('sparse')
 
@@ -321,10 +279,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
     @tatsumasu()
     def _OTHERWISE_(self):  # noqa
         self._pattern('otherwise')
-
-    @tatsumasu()
-    def _IS_(self):  # noqa
-        self._pattern('is')
 
     @tatsumasu()
     def _IN_(self):  # noqa
@@ -699,52 +653,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             []
         )
 
-    @tatsumasu()
-    def _dot_multiplication_(self):  # noqa
-        self._identifier_()
-        self._token('.*')
-        self._identifier_()
-
-    @tatsumasu()
-    def _trace_operator_(self):  # noqa
-        self._TRACE_()
-        self._token('(')
-
-        def block0():
-            self._hspace_()
-        self._closure(block0)
-        self._identifier_()
-
-        def block1():
-            self._hspace_()
-        self._closure(block1)
-        self._token(')')
-
-    @tatsumasu()
-    def _eig_operator_(self):  # noqa
-        self._EIG_()
-        self._token('(')
-
-        def block0():
-            self._hspace_()
-        self._closure(block0)
-        self._identifier_()
-
-        def block1():
-            self._hspace_()
-        self._closure(block1)
-        self._token(')')
-
-    @tatsumasu('Derivative')
-    def _derivative_operator_(self):  # noqa
-        self._DERIVATIVE_()
-        self._identifier_()
-        self.name_last_node('value')
-        self.ast._define(
-            ['value'],
-            []
-        )
-
     @tatsumasu('Power')
     @nomemo
     def _power_operator_(self):  # noqa
@@ -1066,13 +974,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         def block11():
             self._hspace_()
         self._closure(block11)
-        with self._group():
-            with self._choice():
-                with self._option():
-                    self._token('d')
-                with self._option():
-                    self._token('∂')
-                self._error('no available options')
+        self._token('∂')
         self._identifier_alone_()
         self.name_last_node('id')
         self.ast._define(
@@ -1404,36 +1306,12 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             []
         )
 
-    @tatsumasu('DotProduct')
-    def _dot_product_operator_(self):  # noqa
-        self._factor_()
-        self.name_last_node('left')
-
-        def block1():
-            self._hspace_()
-        self._closure(block1)
-        self._token('⋅')
-
-        def block2():
-            self._hspace_()
-        self._closure(block2)
-        self._factor_()
-        self.name_last_node('right')
-        self.ast._define(
-            ['left', 'right'],
-            []
-        )
-
     @tatsumasu('Transpose')
     @nomemo
     def _trans_operator_(self):  # noqa
         self._factor_()
         self.name_last_node('f')
-
-        def block1():
-            self._hspace_()
-        self._closure(block1)
-        self._pattern('[\\u1d40]')
+        self._pattern('ᵀ')
         self.ast._define(
             ['f'],
             []
@@ -1911,19 +1789,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self.name_last_node('sign')
                 self._term_in_matrix_()
                 self.name_last_node('value')
-            with self._option():
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            self._vdots_()
-                        with self._option():
-                            self._cdots_()
-                        with self._option():
-                            self._iddots_()
-                        with self._option():
-                            self._ddots_()
-                        self._error('no available options')
-                self.name_last_node('value')
             self._error('no available options')
         self.ast._define(
             ['sign', 'value'],
@@ -2004,22 +1869,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             ['left', 'right'],
             []
         )
-
-    @tatsumasu('MatrixVdots')
-    def _vdots_(self):  # noqa
-        self._VDOTS_()
-
-    @tatsumasu('MatrixCdots')
-    def _cdots_(self):  # noqa
-        self._CDOTS_()
-
-    @tatsumasu('MatrixIddots')
-    def _iddots_(self):  # noqa
-        self._IDDOTS_()
-
-    @tatsumasu('MatrixDdots')
-    def _ddots_(self):  # noqa
-        self._DDOTS_()
 
     @tatsumasu('NumMatrix')
     def _number_matrix_(self):  # noqa
@@ -2172,14 +2021,11 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._vector_()
                 self.name_last_node('v')
             with self._option():
-                self._sparse_matrix_()
-                self.name_last_node('s')
-            with self._option():
                 self._constant_()
                 self.name_last_node('c')
             self._error('no available options')
         self.ast._define(
-            ['c', 'id0', 'm', 'nm', 'num', 'op', 's', 'sub', 'v'],
+            ['c', 'id0', 'm', 'nm', 'num', 'op', 'sub', 'v'],
             []
         )
 
@@ -2304,24 +2150,12 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             []
         )
 
-    @tatsumasu('DotProduct')
-    def _dot_product_in_matrix_operator_(self):  # noqa
-        self._factor_in_matrix_()
-        self.name_last_node('left')
-        self._token('⋅')
-        self._factor_in_matrix_()
-        self.name_last_node('right')
-        self.ast._define(
-            ['left', 'right'],
-            []
-        )
-
     @tatsumasu('Transpose')
     @nomemo
     def _trans_in_matrix_operator_(self):  # noqa
         self._factor_in_matrix_()
         self.name_last_node('f')
-        self._pattern('[\\u1d40]')
+        self._pattern('ᵀ')
         self.ast._define(
             ['f'],
             []
@@ -3322,7 +3156,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu('TraceFunc')
     def _trace_func_(self):  # noqa
-        self._token('trace')
+        self._TRACE_()
         self.name_last_node('name')
         self._token('(')
 
@@ -3343,7 +3177,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu('TraceFunc')
     def _tr_func_(self):  # noqa
-        self._token('tr')
+        self._TR_()
         self.name_last_node('name')
         self._token('(')
 
@@ -3364,7 +3198,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu('DiagFunc')
     def _diag_func_(self):  # noqa
-        self._token('diag')
+        self._DIAG_()
         self._token('(')
 
         def block0():
@@ -3384,7 +3218,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu('VecFunc')
     def _vec_func_(self):  # noqa
-        self._token('vec')
+        self._VEC_()
         self._token('(')
 
         def block0():
@@ -3404,7 +3238,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu('DetFunc')
     def _det_func_(self):  # noqa
-        self._token('det')
+        self._DET_()
         self._token('(')
 
         def block0():
@@ -3424,7 +3258,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu('RankFunc')
     def _rank_func_(self):  # noqa
-        self._token('rank')
+        self._RANK_()
         self._token('(')
 
         def block0():
@@ -3444,7 +3278,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu('NullFunc')
     def _null_func_(self):  # noqa
-        self._token('null')
+        self._NULL_()
         self._token('(')
 
         def block0():
@@ -3464,7 +3298,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu('OrthFunc')
     def _orth_func_(self):  # noqa
-        self._token('orth')
+        self._ORTH_()
         self._token('(')
 
         def block0():
@@ -3484,7 +3318,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu('InvFunc')
     def _inv_func_(self):  # noqa
-        self._token('inv')
+        self._INV_()
         self._token('(')
 
         def block0():
@@ -3858,23 +3692,15 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 def block13():
                     self._hspace_()
                 self._closure(block13)
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            self._pattern('\\u211D')
-                        with self._option():
-                            self._pattern('\\u2124')
-                        self._error('no available options')
+                self._pattern('[ℝℤ]')
                 self.name_last_node('type2')
-
-                def block17():
-                    self._pattern('[\\u2070\\u00B9\\u00B2\\u00B3\\u2074-\\u2079]')
-                self._closure(block17)
+                with self._optional():
+                    self._sup_integer_()
                 self.name_last_node('cnt')
 
-                def block18():
+                def block16():
                     self._hspace_()
-                self._closure(block18)
+                self._closure(block16)
                 self._token('}')
             self._error('no available options')
         self.ast._define(
@@ -4056,16 +3882,8 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
     @tatsumasu('Statements')
     @nomemo
     def _statements_(self):  # noqa
-
-        def block0():
-            self._hspace_()
-        self._closure(block0)
         self._statement_()
         self.name_last_node('stat')
-
-        def block2():
-            self._hspace_()
-        self._closure(block2)
         self.ast._define(
             ['stat'],
             []
@@ -4169,6 +3987,8 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._expression_()
             with self._option():
                 self._optimize_operator_()
+            with self._option():
+                self._sparse_matrix_()
             self._error('no available options')
 
     @tatsumasu()
@@ -4182,30 +4002,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._factor_()
             self._error('no available options')
-
-    @tatsumasu()
-    def _func_id_(self):  # noqa
-        self._token('!!!')
-
-    @tatsumasu('IdentifierAlone')
-    def _identifier_alone_(self):  # noqa
-        with self._ifnot():
-            self._KEYWORDS_()
-        with self._group():
-            with self._choice():
-                with self._option():
-                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
-                    self.name_last_node('value')
-                with self._option():
-                    self._token('`')
-                    self._pattern('[^`]*')
-                    self.name_last_node('id')
-                    self._token('`')
-                self._error('no available options')
-        self.ast._define(
-            ['id', 'value'],
-            []
-        )
 
     @tatsumasu('Factor')
     @leftrec
@@ -4233,14 +4029,11 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._vector_()
                 self.name_last_node('v')
             with self._option():
-                self._sparse_matrix_()
-                self.name_last_node('s')
-            with self._option():
                 self._constant_()
                 self.name_last_node('c')
             self._error('no available options')
         self.ast._define(
-            ['c', 'id0', 'm', 'nm', 'num', 'op', 's', 'sub', 'v'],
+            ['c', 'id0', 'm', 'nm', 'num', 'op', 'sub', 'v'],
             []
         )
 
@@ -4600,8 +4393,32 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             []
         )
 
+    @tatsumasu()
+    def _func_id_(self):  # noqa
+        self._identifier_alone_()
 
-class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
+    @tatsumasu('IdentifierAlone')
+    def _identifier_alone_(self):  # noqa
+        with self._ifnot():
+            self._KEYWORDS_()
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
+                    self.name_last_node('value')
+                with self._option():
+                    self._token('`')
+                    self._pattern('[^`]*')
+                    self.name_last_node('id')
+                    self._token('`')
+                self._error('no available options')
+        self.ast._define(
+            ['id', 'value'],
+            []
+        )
+
+
+class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
     def start(self, ast):  # noqa
         return ast
 
@@ -4611,34 +4428,19 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
     def TRACE(self, ast):  # noqa
         return ast
 
+    def TR(self, ast):  # noqa
+        return ast
+
     def VEC(self, ast):  # noqa
         return ast
 
     def DIAG(self, ast):  # noqa
         return ast
 
-    def ID(self, ast):  # noqa
-        return ast
-
-    def EIG(self, ast):  # noqa
-        return ast
-
-    def CONJ(self, ast):  # noqa
-        return ast
-
-    def RE(self, ast):  # noqa
-        return ast
-
-    def IM(self, ast):  # noqa
-        return ast
-
     def INV(self, ast):  # noqa
         return ast
 
     def DET(self, ast):  # noqa
-        return ast
-
-    def SVD(self, ast):  # noqa
         return ast
 
     def RANK(self, ast):  # noqa
@@ -4654,18 +4456,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
         return ast
 
     def DERIVATIVE(self, ast):  # noqa
-        return ast
-
-    def VDOTS(self, ast):  # noqa
-        return ast
-
-    def CDOTS(self, ast):  # noqa
-        return ast
-
-    def IDDOTS(self, ast):  # noqa
-        return ast
-
-    def DDOTS(self, ast):  # noqa
         return ast
 
     def WHERE(self, ast):  # noqa
@@ -4692,12 +4482,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
     def INT(self, ast):  # noqa
         return ast
 
-    def SYMMETRIC(self, ast):  # noqa
-        return ast
-
-    def DIAGONAL(self, ast):  # noqa
-        return ast
-
     def SPARSE(self, ast):  # noqa
         return ast
 
@@ -4705,9 +4489,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
         return ast
 
     def OTHERWISE(self, ast):  # noqa
-        return ast
-
-    def IS(self, ast):  # noqa
         return ast
 
     def IN(self, ast):  # noqa
@@ -4833,18 +4614,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
     def division(self, ast):  # noqa
         return ast
 
-    def dot_multiplication(self, ast):  # noqa
-        return ast
-
-    def trace_operator(self, ast):  # noqa
-        return ast
-
-    def eig_operator(self, ast):  # noqa
-        return ast
-
-    def derivative_operator(self, ast):  # noqa
-        return ast
-
     def power_operator(self, ast):  # noqa
         return ast
 
@@ -4882,9 +4651,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
         return ast
 
     def kronecker_product_operator(self, ast):  # noqa
-        return ast
-
-    def dot_product_operator(self, ast):  # noqa
         return ast
 
     def trans_operator(self, ast):  # noqa
@@ -4950,18 +4716,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
     def division_in_matrix(self, ast):  # noqa
         return ast
 
-    def vdots(self, ast):  # noqa
-        return ast
-
-    def cdots(self, ast):  # noqa
-        return ast
-
-    def iddots(self, ast):  # noqa
-        return ast
-
-    def ddots(self, ast):  # noqa
-        return ast
-
     def number_matrix(self, ast):  # noqa
         return ast
 
@@ -4984,9 +4738,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
         return ast
 
     def kronecker_product_in_matrix_operator(self, ast):  # noqa
-        return ast
-
-    def dot_product_in_matrix_operator(self, ast):  # noqa
         return ast
 
     def trans_in_matrix_operator(self, ast):  # noqa
@@ -5211,12 +4962,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
     def term(self, ast):  # noqa
         return ast
 
-    def func_id(self, ast):  # noqa
-        return ast
-
-    def identifier_alone(self, ast):  # noqa
-        return ast
-
     def factor(self, ast):  # noqa
         return ast
 
@@ -5256,6 +5001,12 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
     def less_equal(self, ast):  # noqa
         return ast
 
+    def func_id(self, ast):  # noqa
+        return ast
+
+    def identifier_alone(self, ast):  # noqa
+        return ast
+
 
 def main(filename, start=None, **kwargs):
     if start is None:
@@ -5265,7 +5016,7 @@ def main(filename, start=None, **kwargs):
     else:
         with open(filename) as f:
             text = f.read()
-    parser = grammarc21f969b5f03d33d43e04f8f136e7682Parser()
+    parser = grammare37f0136aa3ffaf149b351f6a4c948e9Parser()
     return parser.parse(text, rule_name=start, filename=filename, **kwargs)
 
 
@@ -5273,7 +5024,7 @@ if __name__ == '__main__':
     import json
     from tatsu.util import asjson
 
-    ast = generic_main(main, grammarc21f969b5f03d33d43e04f8f136e7682Parser, name='grammarc21f969b5f03d33d43e04f8f136e7682')
+    ast = generic_main(main, grammare37f0136aa3ffaf149b351f6a4c948e9Parser, name='grammare37f0136aa3ffaf149b351f6a4c948e9')
     print('AST:')
     print(ast)
     print()
@@ -5302,13 +5053,13 @@ class ModelBase(Node):
     pass
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics(ModelBuilderSemantics):
+class grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics(ModelBuilderSemantics):
     def __init__(self, context=None, types=None):
         types = [
             t for t in globals().values()
             if type(t) is type and issubclass(t, ModelBase)
         ] + (types or [])
-        super(grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics, self).__init__(context=context, types=types)
+        super(grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics, self).__init__(context=context, types=types)
 
 
 class Start(ModelBase):
@@ -5365,10 +5116,6 @@ class Divide(ModelBase):
     left = None
     op = None
     right = None
-
-
-class Derivative(ModelBase):
-    value = None
 
 
 class Power(ModelBase):
@@ -5454,11 +5201,6 @@ class KroneckerProduct(ModelBase):
     right = None
 
 
-class DotProduct(ModelBase):
-    left = None
-    right = None
-
-
 class Transpose(ModelBase):
     f = None
 
@@ -5531,22 +5273,6 @@ class ExpInMatrix(ModelBase):
     value = None
 
 
-class MatrixVdots(ModelBase):
-    pass
-
-
-class MatrixCdots(ModelBase):
-    pass
-
-
-class MatrixIddots(ModelBase):
-    pass
-
-
-class MatrixDdots(ModelBase):
-    pass
-
-
 class NumMatrix(ModelBase):
     id = None
     id1 = None
@@ -5561,7 +5287,6 @@ class Factor(ModelBase):
     nm = None
     num = None
     op = None
-    s = None
     sub = None
     v = None
 
@@ -5777,11 +5502,6 @@ class Assignment(ModelBase):
     right = None
 
 
-class IdentifierAlone(ModelBase):
-    id = None
-    value = None
-
-
 class Subexpression(ModelBase):
     value = None
 
@@ -5834,3 +5554,8 @@ class LessEqualCondition(ModelBase):
     left = None
     op = None
     right = None
+
+
+class IdentifierAlone(ModelBase):
+    id = None
+    value = None

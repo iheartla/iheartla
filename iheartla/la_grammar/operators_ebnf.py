@@ -11,7 +11,6 @@ operations
     | hadamard_product_operator
     | cross_product_operator
     | kronecker_product_operator
-    #| dot_product_operator
     | sum_operator
     | integral_operator
     | trans_operator
@@ -49,11 +48,6 @@ division::Divide
     ;
 
 
-dot_multiplication
-    = identifier '.*' identifier
-    ;
-
-
 power_operator::Power
     = base:factor t:'^T'
     | base:factor r:('^(-1)' | '⁻¹')
@@ -83,7 +77,7 @@ multi_cond::MultiCond
     ;
 
 integral_operator::Integral
-    = (INT|'∫') '_' (d:domain | (lower:(integer|identifier_alone) {hspace} '^' {hspace} upper:(integer|identifier_alone) )) {hspace} exp:expression {hspace} ('d'|'∂') id:identifier_alone
+    = (INT|'∫') '_' (d:domain | (lower:(integer|identifier_alone) {hspace} '^' {hspace} upper:(integer|identifier_alone) )) {hspace} exp:expression {hspace} '∂' id:identifier_alone
     ;
 
 domain::Domain
@@ -126,13 +120,8 @@ kronecker_product_operator::KroneckerProduct
     = left:factor {hspace} '⊗' {hspace}  right:factor
     ;
 
-dot_product_operator::DotProduct
-    = left:factor {hspace} '⋅' {hspace}  right:factor
-    ;
-
 trans_operator::Transpose
-    #= f:factor 'ᵀ'
-    = f:factor {hspace} /[\u1d40]/
+    = f:factor /ᵀ/
     ;
 
 function_operator::Function

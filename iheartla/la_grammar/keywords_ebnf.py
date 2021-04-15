@@ -12,7 +12,6 @@ BUILTIN_KEYWORDS
     | INT
     | IF
     | OTHERWISE
-    | IS
     | IN
     | EXP
     | LOG
@@ -22,30 +21,21 @@ BUILTIN_KEYWORDS
     | FROM
     | PI
     | '|'
-    | 'ℝ'|'ℤ' | /[\u1d40]/ | 'ᵀ' | '∂'
+    | /ℝ/|/ℤ/ | /ᵀ/
     #| SIN | COS | ASIN | ARCSIN | ACOS | ARCCOS | TAN | ATAN | ARCTAN | ATAN2
     ;
 
 TRACE = /trace/;
+TR = /tr/;
 VEC = /vec/;
 DIAG = /diag/;
-ID = /Id/;
-EIG = /eig/;
-CONJ = /conj/;
-RE = /Re/;
-IM = /Im/;
 INV = /inv/;
 DET = /det/;
-SVD = /svd/;
 RANK = /rank/;
 NULL = /null/;
 ORTH = /orth/;
 QR = /qr/;
-DERIVATIVE = '\u2202';
-VDOTS = '\u22EE';   #⋮
-CDOTS = '\u22EF';   #⋯
-IDDOTS = '\u22F0';  #⋰
-DDOTS = '\u22F1';   #⋱
+DERIVATIVE = /∂/;
 WHERE = /where/;
 GIVEN = /given/;
 SUM = /sum/ | /∑/;
@@ -54,12 +44,9 @@ MAX = /max/;
 ARGMIN = /argmin/;
 ARGMAX = /argmax/;
 INT = /int/;
-SYMMETRIC = /symmetric/;
-DIAGONAL = /diagonal/;
 SPARSE = /sparse/;
 IF = /if/;
 OTHERWISE = /otherwise/;
-IS = /is/;
 IN = /∈/;
 SIN = /sin/;
 ASIN = /asin/;

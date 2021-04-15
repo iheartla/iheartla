@@ -22,8 +22,6 @@ matrix_type::MatrixType
 
 matrix_attribute
     = SPARSE
-    #| DIAGONAL
-    #| SYMMETRIC
     ;
 
 vector_type::VectorType
@@ -42,13 +40,12 @@ scalar_type::ScalarType
 set_type::SetType
     = '{' {hspace} type+:/[ℝℤ]/ {hspace} {'×' {hspace} type+:/[ℝℤ]/ {hspace} }'}'
     | '{' {hspace} type1:/[ℝℤ]/ {hspace} '^' {hspace} cnt:(integer) {hspace} '}'
-    | '{' {hspace} type2:(/\u211D/ | /\u2124/) cnt:{/[\u2070\u00B9\u00B2\u00B3\u2074-\u2079]/} {hspace} '}'     #  \u2124:ℤ  \u211D:ℝ
+    | '{' {hspace} type2:/[ℝℤ]/ cnt:[sup_integer] {hspace} '}' 
     ;
 
 dimension
     =
     integer | identifier
-    #expression
     ;
 
 la_type
@@ -93,4 +90,131 @@ digit
     ;
 
 #######################################################################################################################
+
+valid_block
+    = params_block | statements
+    ;
+
+
+params_block::ParamsBlock
+    = {annotation:(WHERE | GIVEN ) {separator_with_space}+} conds:where_conditions
+    ;
+
+builtin_operators
+    =
+    predefined_built_operators;
+
+statements::Statements
+    =
+    #| stats:statements {separator_with_space}+ stat:statement
+    stat:statement
+    ;
+
+statement
+    =
+    | assignment
+    | right_hand_side
+    ;
+
+
+expression::Expression
+    =
+    | value:addition
+    | value:subtraction
+    | value:add_sub_operator
+    | sign:['-'] value:term
+    ;
+
+assignment::Assignment
+    =
+    left:identifier {hspace} op:'=' {hspace} {separator_with_space} right:right_hand_side {hspace}
+    | left:identifier {hspace} op:'+=' {hspace} {separator_with_space} right:right_hand_side {hspace}
+    ;
+
+right_hand_side
+    =
+    | expression
+    | optimize_operator
+    | sparse_matrix
+    ;
+
+term
+    =
+    | multiplication
+    | division
+    | factor
+    ;
+
+
+factor::Factor
+    =
+    op:operations
+    | sub:subexpression
+    | nm:number_matrix
+    | id0:identifier
+    | num:number
+    | m:matrix
+    | v:vector
+    | c:constant
+    ;
+
+constant
+    =
+    pi;
+
+KEYWORDS
+    = BUILTIN_KEYWORDS;
+
+subexpression::Subexpression
+    =
+    '(' {hspace} value:expression {hspace} ')'
+    ;
+    
+#######################################################################################################################
+
+if_condition::IfCondition
+    =
+    | cond:not_equal
+    | cond:equal
+    | cond:in
+    | cond:not_in
+    | cond:greater
+    | cond:greater_equal
+    | cond:less
+    | cond:less_equal
+    ;
+
+in::InCondition
+    = '(' {hspace} left+:expression {hspace} {',' {hspace} left+:expression {hspace}} ')' {hspace} IN {hspace} right:(function_operator | identifier)
+    | left+:expression {hspace} IN {hspace} right:(function_operator | identifier)
+    ;
+
+not_in::NotInCondition
+    = '(' {hspace} left+:expression {hspace} {',' {hspace} left+:expression {hspace}} ')' {hspace} '∉' {hspace} right:(function_operator | identifier)
+    | left+:expression {hspace} '∉' {hspace} right:(function_operator | identifier)
+    ;
+
+not_equal::NeCondition
+    = left:expression {hspace} op:('≠' | '!=') {hspace} right:expression
+    ;
+
+equal::EqCondition
+    = left:expression {hspace} op:('==' | '=') {hspace} right:expression
+    ;
+
+greater::GreaterCondition
+    = left:expression {hspace} op:'>' {hspace} right:expression
+    ;
+
+greater_equal::GreaterEqualCondition
+    = left:expression {hspace} op:('>=' | '⩾') {hspace} right:expression
+    ;
+
+less::LessCondition
+    = left:expression {hspace} op:'<' {hspace} right:expression
+    ;
+
+less_equal::LessEqualCondition
+    = left:expression {hspace} op:('<=' | '⩽') {hspace} right:expression
+    ;
 """

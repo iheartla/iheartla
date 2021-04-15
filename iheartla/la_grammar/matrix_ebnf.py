@@ -5,7 +5,7 @@ matrix::Matrix
     | '⎡' {hspace} value:rows {hspace} '⎦'
     ;
 
-vector::Vector
+vector::Vector            
     = '(' {hspace} exp+:expression {{hspace} ',' {hspace} exp+:expression}+ {hspace} ')'
     ;
 
@@ -51,8 +51,6 @@ expr_in_matrix::ExpInMatrix
     | value:addition_in_matrix
     | value:subtraction_in_matrix
     | sign:['-'] value:term_in_matrix
-    | value:(vdots | cdots | iddots | ddots)
-    #| {}
     ;
 
 addition_in_matrix::Add
@@ -84,22 +82,6 @@ division_in_matrix::Divide
     left:term_in_matrix  '/' right:factor_in_matrix
     ;
 
-vdots::MatrixVdots
-    = VDOTS
-    ;
-
-cdots::MatrixCdots
-    = CDOTS
-    ;
-
-iddots::MatrixIddots
-    = IDDOTS
-    ;
-
-ddots::MatrixDdots
-    = DDOTS
-    ;
-
 number_matrix::NumMatrix
     = left:('0' | '1' | '𝟙') '_' id1:(integer | identifier) {',' id2:(integer | identifier)}
     | left:/[01\u1D7D9]/ id1:sub_integer {',' id2:sub_integer}
@@ -107,7 +89,6 @@ number_matrix::NumMatrix
     | id:'I' '_' id1:(integer | identifier)
     | id:/[I]/ id1:sub_integer
     ;
-
 
 factor_in_matrix::Factor
     =
@@ -118,7 +99,6 @@ factor_in_matrix::Factor
     | num:number
     | m:matrix
     | v:vector
-    | s:sparse_matrix
     | c:constant
     ;
 
@@ -127,15 +107,11 @@ operations_in_matrix
     | power_in_matrix_operator
     | function_operator
     | norm_operator
-    #| trace_operator
-    #| eig_operator
-    #| derivative_operator
     | inner_product_operator
     | frobenius_product_in_matrix_operator
     | hadamard_product_in_matrix_operator
     | cross_product_in_matrix_operator
     | kronecker_product_in_matrix_operator
-    #| dot_product_in_matrix_operator
     | sum_in_matrix_operator
     | integral_operator
     | trans_in_matrix_operator
@@ -167,12 +143,8 @@ kronecker_product_in_matrix_operator::KroneckerProduct
     = left:factor_in_matrix '⨂' right:factor_in_matrix
     ;
 
-dot_product_in_matrix_operator::DotProduct
-    = left:factor_in_matrix '⋅' right:factor_in_matrix
-    ;
-
 trans_in_matrix_operator::Transpose
-    = f:factor_in_matrix /[\u1d40]/
+    = f:factor_in_matrix /ᵀ/
     ;
 
 solver_in_matrix_operator::Solver
