@@ -1861,8 +1861,8 @@ class TypeWalker(NodeWalker):
             new_id = self.generate_var_name(lhs)
             self.symtable[new_id] = MatrixType(rows=rows, cols=cols, block=block, sparse=sparse, list_dim=list_dim, item_types=node_info.content)
             node_info.symbol = new_id
+            ir_node.symbol = new_id
         ir_node.la_type = node_info.la_type
-        ir_node.symbol = node_info.symbol
         node_info.ir = ir_node
         return node_info
 
