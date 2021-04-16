@@ -103,9 +103,6 @@ class CodeGenNumpy(CodeGen):
                         content = "{}[{}][{}]".format(node.main_id, node.subs[0], node.subs[1])
         return CodeNodeInfo(content)
 
-    def visit_start(self, node, **kwargs):
-        return self.visit(node.stat, **kwargs)
-
     def get_struct_definition(self):
         assign_list = []
         for parameter in self.lhs_list:
@@ -327,15 +324,6 @@ class CodeGenNumpy(CodeGen):
         # convert special string in identifiers
         content = self.trim_content(content)
         return content
-
-    def visit_WhereConditions(self, node, **kwargs):
-        pass
-
-    def visit_expression(self, node, **kwargs):
-        exp_info = self.visit(node.value, **kwargs)
-        if node.sign:
-            exp_info.content = '-' + exp_info.content
-        return exp_info
 
     def visit_summation(self, node, **kwargs):
         target_var = []
@@ -624,51 +612,6 @@ class CodeGenNumpy(CodeGen):
             pre_list = ret_info.pre_list + pre_list
         return CodeNodeInfo(cur_m_id, pre_list)
 
-    def visit_matrix_rows(self, node, **kwargs):
-        ret = []
-        pre_list = []
-        if node.rs:
-            rs_info = self.visit(node.rs, **kwargs)
-            ret = ret + rs_info.content
-            pre_list += rs_info.pre_list
-        if node.r:
-            r_info = self.visit(node.r, **kwargs)
-            ret.append(r_info.content)
-            pre_list += r_info.pre_list
-        return CodeNodeInfo(ret, pre_list)
-
-    def visit_matrix_row(self, node, **kwargs):
-        ret = []
-        pre_list = []
-        if node.rc:
-            rc_info = self.visit(node.rc, **kwargs)
-            ret += rc_info.content
-            pre_list += rc_info.pre_list
-        if node.exp:
-            exp_info = self.visit(node.exp, **kwargs)
-            ret.append(exp_info.content)
-            pre_list += exp_info.pre_list
-        return CodeNodeInfo(ret, pre_list)
-
-    def visit_matrix_row_commas(self, node, **kwargs):
-        ret = []
-        pre_list = []
-        if node.value:
-            value_info = self.visit(node.value, **kwargs)
-            ret += value_info.content
-            pre_list += value_info.pre_list
-        if node.exp:
-            exp_info = self.visit(node.exp, **kwargs)
-            ret.append(exp_info.content)
-            pre_list += exp_info.pre_list
-        return CodeNodeInfo(ret, pre_list)
-
-    def visit_exp_in_matrix(self, node, **kwargs):
-        exp_info = self.visit(node.value, **kwargs)
-        if node.sign:
-            exp_info.content = '-' + exp_info.content
-        return exp_info
-
     def visit_num_matrix(self, node, **kwargs):
         post_s = ''
         if node.id:
@@ -769,20 +712,6 @@ class CodeGenNumpy(CodeGen):
                 content = "{}[{}]".format(main_info.content, main_index_content)
         return CodeNodeInfo(content)
 
-    def visit_add(self, node, **kwargs):
-        left_info = self.visit(node.left, **kwargs)
-        right_info = self.visit(node.right, **kwargs)
-        left_info.content = left_info.content + ' + ' + right_info.content
-        left_info.pre_list += right_info.pre_list
-        return left_info
-
-    def visit_sub(self, node, **kwargs):
-        left_info = self.visit(node.left, **kwargs)
-        right_info = self.visit(node.right, **kwargs)
-        left_info.content = left_info.content + ' - ' + right_info.content
-        left_info.pre_list += right_info.pre_list
-        return left_info
-
     def visit_add_sub(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
@@ -809,11 +738,6 @@ class CodeGenNumpy(CodeGen):
         left_info.content = left_info.content + ' / ' + right_info.content
         left_info.pre_list += right_info.pre_list
         return left_info
-
-    def visit_sub_expr(self, node, **kwargs):
-        value_info = self.visit(node.value, **kwargs)
-        value_info.content = '(' + value_info.content + ')'
-        return value_info
 
     def visit_cast(self, node, **kwargs):
         value_info = self.visit(node.value, **kwargs)
@@ -931,18 +855,6 @@ class CodeGenNumpy(CodeGen):
         content += '\n'
         la_remove_key(LHS, **kwargs)
         return CodeNodeInfo(content)
-
-    def visit_function(self, node, **kwargs):
-        name_info = self.visit(node.name, **kwargs)
-        pre_list = []
-        params = []
-        if node.params:
-            for param in node.params:
-                param_info = self.visit(param, **kwargs)
-                params.append(param_info.content)
-                pre_list += param_info.pre_list
-        content = "{}({})".format(name_info.content, ', '.join(params))
-        return CodeNodeInfo(content, pre_list)
 
     def visit_if(self, node, **kwargs):
         ret_info = self.visit(node.cond)
@@ -1228,40 +1140,12 @@ class CodeGenNumpy(CodeGen):
             content = 'scipy.linalg.inv'
         return CodeNodeInfo("{}({})".format(content, params_content), pre_list=pre_list)
 
-    def visit_factor(self, node, **kwargs):
-        if node.id:
-            return self.visit(node.id, **kwargs)
-        elif node.num:
-            return self.visit(node.num, **kwargs)
-        elif node.sub:
-            return self.visit(node.sub, **kwargs)
-        elif node.v:
-            return self.visit(node.v, **kwargs)
-        elif node.m:
-            return self.visit(node.m, **kwargs)
-        elif node.nm:
-            return self.visit(node.nm, **kwargs)
-        elif node.op:
-            return self.visit(node.op, **kwargs)
-        elif node.s:
-            return self.visit(node.s, **kwargs)
-        elif node.c:
-            return self.visit(node.c, **kwargs)
-
     def visit_constant(self, node, **kwargs):
         content = ''
         if node.c_type == ConstantType.ConstantPi:
             content = 'np.pi'
         elif node.c_type == ConstantType.ConstantE:
             content = 'np.e'
-        return CodeNodeInfo(content)
-
-    def visit_double(self, node, **kwargs):
-        content = str(node.value)
-        return CodeNodeInfo(content)
-
-    def visit_integer(self, node, **kwargs):
-        content = str(node.value)
         return CodeNodeInfo(content)
 
     ###################################################################

@@ -504,9 +504,10 @@ class TypeWalker(NodeWalker):
                 int_list = [False] * cnt
         elif node.type2:
             ir_node.type2 = node.type2
-            cnt = 0
-            for index in range(len(node.cnt)):
-                cnt += self.get_unicode_number(node.cnt[len(node.cnt)-1-index]) * 10 ** index
+            if node.cnt:
+                cnt_info = self.walk(node.cnt, **kwargs)
+                cnt = cnt_info.content
+                ir_node.cnt = cnt
             if node.type2 == 'ℤ':
                 int_list = [True] * cnt
             else:
@@ -1612,10 +1613,6 @@ class TypeWalker(NodeWalker):
         elif node.op:
             node_info = self.walk(node.op, **kwargs)
             ir_node.op = node_info.ir
-        elif node.s:
-            node_info = self.walk(node.s, **kwargs)
-            node_info.ir.set_parent(ir_node)
-            ir_node.s = node_info.ir
         elif node.c:
             node_info = self.walk(node.c, **kwargs)
             node_info.ir.set_parent(ir_node)
@@ -2426,9 +2423,10 @@ class TypeWalker(NodeWalker):
                         # scalar
                         ret_type = ScalarType()
                         need_cast = True
+                        ret_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
                     else:
                         ret_type = VectorType(rows=left_type.rows)
-                    ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+                        ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
             elif left_type.is_vector():
                 if right_type.is_scalar():
                     ret_type = copy.deepcopy(left_type)

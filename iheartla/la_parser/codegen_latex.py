@@ -77,26 +77,6 @@ class CodeGenLatex(CodeGen):
     def visit_MatrixDdots(self, node, **kwargs):
         return "\\ddots"
 
-    def visit_factor(self, node, **kwargs):
-        if node.id:
-            return self.visit(node.id, **kwargs)
-        elif node.num:
-            return self.visit(node.num, **kwargs)
-        elif node.sub:
-            return self.visit(node.sub, **kwargs)
-        elif node.m:
-            return self.visit(node.m, **kwargs)
-        elif node.v:
-            return self.visit(node.v, **kwargs)
-        elif node.nm:
-            return self.visit(node.nm, **kwargs)
-        elif node.op:
-            return self.visit(node.op, **kwargs)
-        elif node.s:
-            return self.visit(node.s, **kwargs)
-        elif node.c:
-            return self.visit(node.c, **kwargs)
-
     def visit_constant(self, node, **kwargs):
         content = ''
         if node.c_type == ConstantType.ConstantPi:
@@ -251,13 +231,13 @@ class CodeGenLatex(CodeGen):
             if node.type1 == 'ℤ':
                 content += '\\mathbb{{Z}}^{{ {} }}'.format(cnt)
             else:
-                content += '\\mathbb{{Z}}^{{ {} }}'.format(cnt)
+                content += '\\mathbb{{R}}^{{ {} }}'.format(cnt)
         elif node.type2:
-            cnt = 2
-            if node.type2 == 'ℤ²':
-                content += '\\mathbb{{Z}}^{{2}}'
+            cnt = node.cnt
+            if node.type2 == 'ℤ':
+                content += '\\mathbb{{Z}}^{{ {} }}'.format(cnt)
             else:
-                content += '\\mathbb{{Z}}^{{2}}'
+                content += '\\mathbb{{R}}^{{ {} }}'.format(cnt)
         content = '\\{' + content + '\\}'
         if node.la_type.index_type:
             content += " \\mathit{{ index}}"
