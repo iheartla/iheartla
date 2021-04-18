@@ -861,6 +861,21 @@ class CodeGenNumpy(CodeGen):
         # ret_info.content = "if " + ret_info.content + ":\n"
         return ret_info
 
+    def visit_condition(self, node, **kwargs):
+        if len(node.cond_list) > 1:
+            pre_list = []
+            content_list = []
+            for condition in node.cond_list:
+                info = self.visit(condition)
+                pre_list += info.pre_list
+                content_list.append('(' + info.content + ')')
+            if node.cond_type == ConditionType.ConditionAnd:
+                content = ' and '.join(content_list)
+            else:
+                content = ' or '.join(content_list)
+            return CodeNodeInfo(content=content, pre_list=pre_list)
+        return self.visit(node.cond)
+
     def visit_in(self, node, **kwargs):
         item_list = []
         pre_list = []

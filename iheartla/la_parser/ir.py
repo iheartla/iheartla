@@ -20,6 +20,7 @@ class IRNodeType(Enum):
     If = 53
     Function = 54
     # if condition
+    Condition = 99
     In = 100
     NotIn = 101
     BinComp = 102
@@ -104,6 +105,9 @@ class IRNode(object):
                 else:
                     parent = parent.parent()
         return None
+
+    def is_ancestor(self, node_type):
+        return False
 
 
 class StmtNode(IRNode):
@@ -250,6 +254,19 @@ class IfNode(StmtNode):
         self.cond = None
 
 
+class ConditionType(IntEnum):
+    ConditionInvalid = -1
+    ConditionAnd = 0
+    ConditionOr = 1
+
+
+class ConditionNode(StmtNode):
+    def __init__(self, parse_info=None, raw_text=None, cond_type=ConditionType.ConditionAnd):
+        super().__init__(IRNodeType.If, parse_info=parse_info, raw_text=raw_text)
+        self.cond_list = []
+        self.cond_type = cond_type
+
+
 class InNode(StmtNode):
     def __init__(self, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.In, parse_info=parse_info, raw_text=raw_text)
@@ -346,8 +363,8 @@ class SubNode(ExprNode):
 
 
 class AddSubNode(ExprNode):
-    def __init__(self, left=None, right=None):
-        super().__init__(IRNodeType.AddSub)
+    def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.AddSub, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
 

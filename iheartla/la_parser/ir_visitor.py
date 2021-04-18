@@ -125,6 +125,7 @@ class IRVisitor(object):
             IRNodeType.If: "visit_if",
             IRNodeType.Function: "visit_function",
             # if condition
+            IRNodeType.Condition: "visit_condition",
             IRNodeType.In: "visit_in",
             IRNodeType.NotIn: "visit_not_in",
             IRNodeType.BinComp: "visit_bin_comp",
@@ -235,6 +236,9 @@ class IRVisitor(object):
         return value_info
 
     def visit_cast(self, node, **kwargs):
+        pass
+
+    def visit_condition(self, node, **kwargs):
         pass
 
     def visit_in(self, node, **kwargs):
