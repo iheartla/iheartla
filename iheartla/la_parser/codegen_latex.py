@@ -320,9 +320,12 @@ class CodeGenLatex(CodeGen):
         return self.visit(node.name, **kwargs) + '\\left( ' + params_str + ' \\right)'
 
     def visit_if(self, node, **kwargs):
-        ret_info = self.visit(node.cond)
+        ret_info = self.visit(node.cond, **kwargs)
         # ret_info = "if " + ret_info + ":\n"
         return ret_info
+
+    def visit_condition(self, node, **kwargs):
+        return self.visit(node.cond_list[0], **kwargs)
 
     def visit_in(self, node, **kwargs):
         item_list = []

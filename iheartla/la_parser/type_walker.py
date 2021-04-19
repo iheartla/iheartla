@@ -1329,6 +1329,20 @@ class TypeWalker(NodeWalker):
         node_info = self.walk(node.cond, **kwargs)
         ir_node.cond = node_info.ir
         ir_node.la_type = node_info.la_type
+        # check special nodes
+        add_sub_node = ir_node.get_child(IRNodeType.AddSub)
+        if add_sub_node is not None:
+            new_nodes = add_sub_node.split_node()
+            add_sub_node.parent().value = new_nodes[0]
+            #
+            sec_node = copy.deepcopy(node_info.ir)
+            add_node = sec_node.get_child(IRNodeType.Add)
+            add_node.parent().value = new_nodes[1]
+            #
+            condition_node = ConditionNode(cond_type=ConditionType.ConditionOr)
+            condition_node.cond_list.append(node_info.ir)
+            condition_node.cond_list.append(sec_node)
+            ir_node.cond = condition_node
         node_info.ir = ir_node
         return node_info
 

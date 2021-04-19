@@ -1101,7 +1101,7 @@ class CodeGenEigen(CodeGen):
             for condition in node.cond_list:
                 info = self.visit(condition)
                 pre_list += info.pre_list
-                content_list.append(info.content)
+                content_list.append("({})".format(info.content))
             if node.cond_type == ConditionType.ConditionAnd:
                 content = ' && '.join(content_list)
             else:

@@ -92,6 +92,9 @@ class IRNode(object):
         self.parse_info = parse_info
         self.raw_text = raw_text
 
+    def is_node(self, node_type):
+        return self.node_type == node_type
+
     def set_parent(self, parent):
         if parent:
             self.parent = weakref.ref(parent)
@@ -106,9 +109,8 @@ class IRNode(object):
                     parent = parent.parent()
         return None
 
-    def is_ancestor(self, node_type):
-        return False
-
+    def get_child(self, node_type):
+        return None
 
 class StmtNode(IRNode):
     def __init__(self, node_type=None, parse_info=None, raw_text=None):
@@ -253,6 +255,13 @@ class IfNode(StmtNode):
         super().__init__(IRNodeType.If, parse_info=parse_info, raw_text=raw_text)
         self.cond = None
 
+    def get_child(self, node_type):
+        if self.cond.is_node(node_type):
+            child_node = self.cond
+        else:
+            child_node = self.cond.get_child(node_type)
+        return child_node
+
 
 class ConditionType(IntEnum):
     ConditionInvalid = -1
@@ -262,7 +271,7 @@ class ConditionType(IntEnum):
 
 class ConditionNode(StmtNode):
     def __init__(self, parse_info=None, raw_text=None, cond_type=ConditionType.ConditionAnd):
-        super().__init__(IRNodeType.If, parse_info=parse_info, raw_text=raw_text)
+        super().__init__(IRNodeType.Condition, parse_info=parse_info, raw_text=raw_text)
         self.cond_list = []
         self.cond_type = cond_type
 
@@ -289,6 +298,17 @@ class BinCompNode(StmtNode):
         self.right = right
         self.op = op
 
+    def get_child(self, node_type):
+        if self.left.is_node(node_type):
+            child_node = self.left
+        elif self.right.is_node(node_type):
+            child_node = self.right
+        else:
+            child_node = self.left.get_child(node_type)
+            if child_node is None:
+                child_node = self.right.get_child(node_type)
+        return child_node
+
 
 ####################################################
 
@@ -298,6 +318,13 @@ class ExpressionNode(ExprNode):
         super().__init__(IRNodeType.Expression, parse_info=parse_info, raw_text=raw_text)
         self.value = None
         self.sign = None
+
+    def get_child(self, node_type):
+        if self.value.is_node(node_type):
+            child_node = self.value
+        else:
+            child_node = self.value.get_child(node_type)
+        return child_node
 
 
 class CastNode(ExprNode):
@@ -354,12 +381,34 @@ class AddNode(ExprNode):
         self.left = left
         self.right = right
 
+    def get_child(self, node_type):
+        if self.left.is_node(node_type):
+            child_node = self.left
+        elif self.right.is_node(node_type):
+            child_node = self.right
+        else:
+            child_node = self.left.get_child(node_type)
+            if child_node is None:
+                child_node = self.right.get_child(node_type)
+        return child_node
+
 
 class SubNode(ExprNode):
     def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Sub, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
+
+    def get_child(self, node_type):
+        if self.left.is_node(node_type):
+            child_node = self.left
+        elif self.right.is_node(node_type):
+            child_node = self.right
+        else:
+            child_node = self.left.get_child(node_type)
+            if child_node is None:
+                child_node = self.right.get_child(node_type)
+        return child_node
 
 
 class AddSubNode(ExprNode):
@@ -368,6 +417,12 @@ class AddSubNode(ExprNode):
         self.left = left
         self.right = right
 
+    def split_node(self):
+        add_node = AddNode(self.left, self.right)
+        add_node.set_parent(self.parent())
+        sub_node = SubNode(self.left, self.right)
+        sub_node.set_parent(self.parent())
+        return [add_node, sub_node]
 
 class MulOpType(Enum):
     # in case there'll be more valid symbols
