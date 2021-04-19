@@ -22,11 +22,11 @@ ace.define("ace/mode/iheartla_highlight_rules",["require","exports","module","ac
                 },
                 {
                     token: ['keyword.control'],
-                    regex: /if/
+                    regex: /(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])if(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])/
                 },
                 {
                     token: ['keyword.definition'],
-                    regex: /where|given|from/
+                    regex: /(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])where(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])|(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])given(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])|(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])from(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])/
                 },
                 {
                     token: ['keyword.operator'],
@@ -34,15 +34,15 @@ ace.define("ace/mode/iheartla_highlight_rules",["require","exports","module","ac
                 },
                 {
                     token: ['keyword.other'],
-                    regex: /sum|min|max|argmin|argmax|int|otherwise|is|in|subject to|s.t./
+                    regex: /(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])sum(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])|(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])min(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])|(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])max(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])|(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])argmin(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])|(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])argmax(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])|(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])otherwise(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])|(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])subject to(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])|(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])s.t.(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])/
                 },
                 {
                     token: ['support.function'],
-                    regex: /exp|log|ln|sqrt/
+                    regex: /(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])exp(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])|(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])log(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])|(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])ln(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])|(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])sqrt(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])/
                 },
                 {
                     token: ['support.type'],
-                    regex: /ℝ|ℤ|scalar|vector|matrix/
+                    regex: /ℝ|ℤ|(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])scalar(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])|(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])vector(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])|(?<![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])matrix(?![A-Za-z\p{Ll}\p{Lu}\p{Lo}\d])/
                 }
 
             ]
