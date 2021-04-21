@@ -35,6 +35,7 @@ class IRVisitor(object):
         self.new_id_prefix = ''  # _
         self.uni_num_dict = {'₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9',
                              '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9'}
+        self.declared_symbols = set()
 
     def add_name_conventions(self, con_dict):
         for key, value in con_dict.items():
@@ -102,6 +103,7 @@ class IRVisitor(object):
         if func_name is not None:
             self.func_name = func_name
         # self.print_symbols()
+        self.declared_symbols.clear()
 
     def visit_code(self, node, **kwargs):
         self.content = ''

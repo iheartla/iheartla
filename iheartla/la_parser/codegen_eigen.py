@@ -972,10 +972,13 @@ class CodeGenEigen(CodeGen):
                     if left_subs[0] == left_subs[1]:  # L_ii
                         if self.symtable[sequence].diagonal:
                             # add definition
-                            content += "    Eigen::SparseMatrix<double> {}({}, {});\n".format(sequence,
-                                                                                             self.symtable[sequence].rows,
-                                                                                             self.symtable[sequence].cols)
-                            content += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(sequence)
+                            if sequence not in self.declared_symbols:
+                                content += "    Eigen::SparseMatrix<double> {}({}, {});\n".format(sequence,
+                                                                                                 self.symtable[sequence].rows,
+                                                                                                 self.symtable[sequence].cols)
+                                content += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(sequence)
+                            else:
+                                content += '    tripletList_{}.clear();\n'.format(sequence)
                         content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                                  self.symtable[sequence].rows,
                                                                                  left_subs[0])
@@ -994,11 +997,14 @@ class CodeGenEigen(CodeGen):
                         # content += right_info.content
                         def_str = ""
                         if node.op != '+=':
-                            def_str = "    Eigen::SparseMatrix<double> {}({}, {});\n".format(node.left.get_main_id(),
-                                                                                             self.symtable[node.left.get_main_id()].rows,
-                                                                                             self.symtable[node.left.get_main_id()].cols)
-                            def_str += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(
+                            if node.left.get_main_id() not in self.declared_symbols:
+                                def_str = "    Eigen::SparseMatrix<double> {}({}, {});\n".format(node.left.get_main_id(),
+                                                                                                 self.symtable[node.left.get_main_id()].rows,
+                                                                                                 self.symtable[node.left.get_main_id()].cols)
+                                def_str += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(
                                 node.left.get_main_id())
+                            else:
+                                content += '    tripletList_{}.clear();\n'.format(node.left.get_main_id())
                         content = def_str + content
                         pass
                 elif left_subs[0] == left_subs[1]:
@@ -1020,11 +1026,12 @@ class CodeGenEigen(CodeGen):
                     if self.symtable[sequence].is_matrix():
                         if node.op == '=':
                             # declare
-                            content += "    Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".format(sequence,
-                                                                                                          self.symtable[
-                                                                                                              sequence].rows,
-                                                                                                          self.symtable[
-                                                                                                              sequence].cols)
+                            if sequence not in self.declared_symbols:
+                                content += "    Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".format(sequence,
+                                                                                                              self.symtable[
+                                                                                                                  sequence].rows,
+                                                                                                              self.symtable[
+                                                                                                                  sequence].cols)
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                             self.symtable[sequence].rows, left_subs[0])
                     content += "        for( int {}=1; {}<={}; {}++){{\n".format(left_subs[1], left_subs[1],
@@ -1080,6 +1087,7 @@ class CodeGenEigen(CodeGen):
                 right_exp += '    ' + type_def + node.left.get_main_id() + op + right_info.content + ';'
                 content += right_exp + '\n'
         la_remove_key(LHS, **kwargs)
+        self.declared_symbols.add(node.left.get_main_id())
         return CodeNodeInfo(content)
 
     def visit_if(self, node, **kwargs):

@@ -763,8 +763,9 @@ class CodeGenNumpy(CodeGen):
                         content = ""
                         if self.symtable[sequence].diagonal:
                             # add definition
-                            content += "    {} = []\n".format(self.symtable[sequence].index_var)
-                            content += "    {} = []\n".format(self.symtable[sequence].value_var)
+                            if sequence not in self.declared_symbols:
+                                content += "    {} = []\n".format(self.symtable[sequence].index_var)
+                                content += "    {} = []\n".format(self.symtable[sequence].value_var)
                         content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
                         if right_info.pre_list:
                             content += self.update_prelist_str(right_info.pre_list, "    ")
@@ -799,9 +800,10 @@ class CodeGenNumpy(CodeGen):
                     if self.symtable[sequence].is_matrix():
                         if node.op == '=':
                             # declare
-                            content += "    {} = np.zeros(({}, {}))\n".format(sequence,
-                                                                              self.symtable[sequence].rows,
-                                                                              self.symtable[sequence].cols)
+                            if sequence not in self.declared_symbols:
+                                content += "    {} = np.zeros(({}, {}))\n".format(sequence,
+                                                                                  self.symtable[sequence].rows,
+                                                                                  self.symtable[sequence].cols)
                     content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
                     content += "        for {} in range(1, {}+1):\n".format(left_subs[1], self.symtable[sequence].cols)
                     if right_info.pre_list:
@@ -847,6 +849,7 @@ class CodeGenNumpy(CodeGen):
             content += right_exp
         content += '\n'
         la_remove_key(LHS, **kwargs)
+        self.declared_symbols.add(node.left.get_main_id())
         return CodeNodeInfo(content)
 
     def visit_if(self, node, **kwargs):
