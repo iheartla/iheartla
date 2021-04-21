@@ -2038,6 +2038,8 @@ class grammardefaultParser(Parser):
     def _operations_in_matrix_(self):  # noqa
         with self._choice():
             with self._option():
+                self._solver_in_matrix_operator_()
+            with self._option():
                 self._power_in_matrix_operator_()
             with self._option():
                 self._function_operator_()
@@ -2059,8 +2061,6 @@ class grammardefaultParser(Parser):
                 self._integral_operator_()
             with self._option():
                 self._trans_in_matrix_operator_()
-            with self._option():
-                self._solver_in_matrix_operator_()
             with self._option():
                 self._builtin_operators_()
             self._error('no available options')
@@ -2120,7 +2120,7 @@ class grammardefaultParser(Parser):
     def _hadamard_product_in_matrix_operator_(self):  # noqa
         self._factor_in_matrix_()
         self.name_last_node('left')
-        self._token('○')
+        self._token('∘')
         self._factor_in_matrix_()
         self.name_last_node('right')
         self.ast._define(
@@ -2146,7 +2146,7 @@ class grammardefaultParser(Parser):
     def _kronecker_product_in_matrix_operator_(self):  # noqa
         self._factor_in_matrix_()
         self.name_last_node('left')
-        self._token('⨂')
+        self._token('⊗')
         self._factor_in_matrix_()
         self.name_last_node('right')
         self.ast._define(
@@ -2166,14 +2166,31 @@ class grammardefaultParser(Parser):
         )
 
     @tatsumasu('Solver')
+    @nomemo
     def _solver_in_matrix_operator_(self):  # noqa
-        self._identifier_()
-        self.name_last_node('left')
-        self._token('\\')
-        self._identifier_()
-        self.name_last_node('right')
+        with self._choice():
+            with self._option():
+                self._factor_in_matrix_()
+                self.name_last_node('left')
+                self._token('\\')
+                self._factor_in_matrix_()
+                self.name_last_node('right')
+            with self._option():
+                self._factor_in_matrix_()
+                self.name_last_node('left')
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._token('^(-1)')
+                        with self._option():
+                            self._token('⁻¹')
+                        self._error('no available options')
+                self.name_last_node('p')
+                self._factor_in_matrix_()
+                self.name_last_node('right')
+            self._error('no available options')
         self.ast._define(
-            ['left', 'right'],
+            ['left', 'p', 'right'],
             []
         )
 

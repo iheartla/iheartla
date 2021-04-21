@@ -104,6 +104,7 @@ factor_in_matrix::Factor
 
 operations_in_matrix
     =
+    | solver_in_matrix_operator
     | power_in_matrix_operator
     | function_operator
     | norm_operator
@@ -115,7 +116,6 @@ operations_in_matrix
     | sum_in_matrix_operator
     | integral_operator
     | trans_in_matrix_operator
-    | solver_in_matrix_operator
     | builtin_operators
     ;
 
@@ -132,7 +132,7 @@ frobenius_product_in_matrix_operator::FroProduct
     ;
 
 hadamard_product_in_matrix_operator::HadamardProduct
-    = left:factor_in_matrix  '○'  right:factor_in_matrix
+    = left:factor_in_matrix  '∘'  right:factor_in_matrix
     ;
 
 cross_product_in_matrix_operator::CrossProduct
@@ -140,7 +140,7 @@ cross_product_in_matrix_operator::CrossProduct
     ;
 
 kronecker_product_in_matrix_operator::KroneckerProduct
-    = left:factor_in_matrix '⨂' right:factor_in_matrix
+    = left:factor_in_matrix '⊗' right:factor_in_matrix
     ;
 
 trans_in_matrix_operator::Transpose
@@ -148,7 +148,8 @@ trans_in_matrix_operator::Transpose
     ;
 
 solver_in_matrix_operator::Solver
-    = left:identifier '\' right:identifier
+    = left:factor_in_matrix '\' right:factor_in_matrix
+    | left:factor_in_matrix p:('^(-1)' | '⁻¹') right:factor_in_matrix
     ;
 
 sum_in_matrix_operator::Summation
