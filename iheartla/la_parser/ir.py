@@ -274,6 +274,7 @@ class ConditionNode(StmtNode):
         super().__init__(IRNodeType.Condition, parse_info=parse_info, raw_text=raw_text)
         self.cond_list = []
         self.cond_type = cond_type
+        self.tex_node = None
 
 
 class InNode(StmtNode):
@@ -412,10 +413,11 @@ class SubNode(ExprNode):
 
 
 class AddSubNode(ExprNode):
-    def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
+    def __init__(self, left=None, right=None, parse_info=None, raw_text=None, op='+-'):
         super().__init__(IRNodeType.AddSub, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
+        self.op = op
 
     def split_node(self):
         add_node = AddNode(self.left, self.right)

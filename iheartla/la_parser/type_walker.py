@@ -644,7 +644,7 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         ret_type, need_cast = self.type_inference(TypeInferenceEnum.INF_ADD, left_info, right_info)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
-        ir_node = AddSubNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
+        ir_node = AddSubNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, op=node.op)
         ir_node.la_type = ret_type
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)
@@ -1332,6 +1332,7 @@ class TypeWalker(NodeWalker):
         # check special nodes
         add_sub_node = ir_node.get_child(IRNodeType.AddSub)
         if add_sub_node is not None:
+            copy_node = copy.deepcopy(node_info.ir)
             assert add_sub_node.get_child(IRNodeType.AddSub) is None, self.get_err_msg_info(add_sub_node.parse_info, "Multiple +- symbols in a single expression")
             new_nodes = add_sub_node.split_node()
             add_sub_node.parent().value = new_nodes[0]
@@ -1343,6 +1344,7 @@ class TypeWalker(NodeWalker):
             condition_node = ConditionNode(cond_type=ConditionType.ConditionOr)
             condition_node.cond_list.append(node_info.ir)
             condition_node.cond_list.append(sec_node)
+            condition_node.tex_node = copy_node
             ir_node.cond = condition_node
         node_info.ir = ir_node
         return node_info

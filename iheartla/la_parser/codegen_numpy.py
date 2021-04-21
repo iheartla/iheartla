@@ -712,13 +712,6 @@ class CodeGenNumpy(CodeGen):
                 content = "{}[{}]".format(main_info.content, main_index_content)
         return CodeNodeInfo(content)
 
-    def visit_add_sub(self, node, **kwargs):
-        left_info = self.visit(node.left, **kwargs)
-        right_info = self.visit(node.right, **kwargs)
-        left_info.content = left_info.content + ' +- ' + right_info.content
-        left_info.pre_list += right_info.pre_list
-        return left_info
-
     def visit_mul(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)

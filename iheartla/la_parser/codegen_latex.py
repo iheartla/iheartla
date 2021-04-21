@@ -277,7 +277,7 @@ class CodeGenLatex(CodeGen):
         return self.visit(node.left, **kwargs) + " - " + self.visit(node.right, **kwargs)
 
     def visit_add_sub(self, node, **kwargs):
-        return self.visit(node.left, **kwargs) + " \\pm " + self.visit(node.right, **kwargs)
+        return self.visit(node.left, **kwargs) + " {} ".format(node.op) + self.visit(node.right, **kwargs)
 
     def visit_mul(self, node, **kwargs):
         if node.op == MulOpType.MulOpDot:
@@ -325,7 +325,7 @@ class CodeGenLatex(CodeGen):
         return ret_info
 
     def visit_condition(self, node, **kwargs):
-        return self.visit(node.cond_list[0], **kwargs)
+        return self.visit(node.tex_node, **kwargs)
 
     def visit_in(self, node, **kwargs):
         item_list = []
