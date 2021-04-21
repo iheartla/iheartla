@@ -56,6 +56,7 @@ class LatexPanel(wx.Panel):
         self.latex_ctrl = LatexControl(self)
         # self.latex_ctrl.Hide()
         self.Layout()
+        self.show_pdf = True
 
     def render_content(self, tex, show_pdf):
         self.latex_ctrl.SetEditable(True)
@@ -63,10 +64,12 @@ class LatexPanel(wx.Panel):
         self.latex_ctrl.SetEditable(False)
         if show_pdf is None:
             # render text
+            self.show_pdf = False
             self.tex_panel.Hide()
             self.latex_ctrl.Show()
         else:
             # render PDF
+            self.show_pdf = True
             self.tex_panel.Show()
             self.latex_ctrl.Hide()
             self.viewer.LoadFile(show_pdf)
@@ -91,3 +94,15 @@ class LatexPanel(wx.Panel):
     def OnZoomOut(self, e):
         self.percent_zoom = max(0.15, self.percent_zoom/2.0)
         self.viewer.SetZoom(self.percent_zoom)
+
+    def update_panels(self):
+        if self.show_pdf:
+            self.tex_panel.Show()
+            self.latex_ctrl.Hide()
+        else:
+            self.tex_panel.Hide()
+            self.latex_ctrl.Show()
+
+    def switch_panels(self):
+        self.show_pdf = not self.show_pdf
+        self.update_panels()

@@ -74,6 +74,7 @@ class MainWindow(wx.Frame):
         # tools
         tools_view = wx.Menu()
         item_clean = tools_view.Append(wx.NewId(), "&Clean cache", "Delete all cached parsers")
+        item_switch = tools_view.Append(wx.NewId(), "&Switch Latex panel", "Switch between source code and pdf")
         # line
         menu_bar.Append(menu_file, "&File")
         menu_bar.Append(self.menu_edit, "Edit")
@@ -106,6 +107,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_SIZE, self.OnSize)
         # tools
         self.Bind(wx.EVT_MENU, self.OnCleanCache, item_clean)
+        self.Bind(wx.EVT_MENU, self.OnSwitchPanel, item_switch)
         # panel
         self.control = LaTextControl(self)
         self.midPanel = MidPanel(self)
@@ -260,6 +262,9 @@ E: { ℤ × ℤ }''')
 
     def OnCleanCache(self, e):
         clean_parsers()
+
+    def OnSwitchPanel(self, e):
+        self.latexPanel.switch_panels()
 
     def OnResetPanel(self, e):
         self.control.SetSize(self.GetSize().width/3, self.GetSize().height)
