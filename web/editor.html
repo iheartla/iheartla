@@ -95,7 +95,9 @@ P ∈ ℝ^(4 × d)</pre>
     editor.session.on('change', onEditIhla);
     editor.setOptions({
         enableBasicAutocompletion: true,
-        enableLiveAutocompletion: true
+        enableLiveAutocompletion: true,
+        maxLines: Infinity,
+        minLines: 20
     });
 
     let cpp = ace.edit("cpp");
