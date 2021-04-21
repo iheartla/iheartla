@@ -1332,6 +1332,7 @@ class TypeWalker(NodeWalker):
         # check special nodes
         add_sub_node = ir_node.get_child(IRNodeType.AddSub)
         if add_sub_node is not None:
+            assert add_sub_node.get_child(IRNodeType.AddSub) is None, self.get_err_msg_info(add_sub_node.parse_info, "Multiple +- symbols in a single expression")
             new_nodes = add_sub_node.split_node()
             add_sub_node.parent().value = new_nodes[0]
             #

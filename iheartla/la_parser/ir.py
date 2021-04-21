@@ -424,6 +424,17 @@ class AddSubNode(ExprNode):
         sub_node.set_parent(self.parent())
         return [add_node, sub_node]
 
+    def get_child(self, node_type):
+        if self.left.is_node(node_type):
+            child_node = self.left
+        elif self.right.is_node(node_type):
+            child_node = self.right
+        else:
+            child_node = self.left.get_child(node_type)
+            if child_node is None:
+                child_node = self.right.get_child(node_type)
+        return child_node
+
 class MulOpType(Enum):
     # in case there'll be more valid symbols
     MulOpInvalid = -1
