@@ -568,6 +568,11 @@ class CodeGenEigen(CodeGen):
         f_info.content = "{}.transpose()".format(f_info.content)
         return f_info
 
+    def visit_squareroot(self, node, **kwargs):
+        f_info = self.visit(node.value, **kwargs)
+        f_info.content = "sqrt({})".format(f_info.content)
+        return f_info
+
     def visit_power(self, node, **kwargs):
         pre_list = []
         base_info = self.visit(node.base, **kwargs)
@@ -1203,7 +1208,7 @@ class CodeGenEigen(CodeGen):
     def visit_fro_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("({}).cwiseProduct({}).sum();".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
+        return CodeNodeInfo("({}).cwiseProduct({}).sum()".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
 
     def visit_hadamard_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)

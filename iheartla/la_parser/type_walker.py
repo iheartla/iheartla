@@ -1231,6 +1231,17 @@ class TypeWalker(NodeWalker):
         node_info.la_type = node_type
         return node_info
 
+    def walk_Squareroot(self, node, **kwargs):
+        ir_node = SquarerootNode(parse_info=node.parseinfo)
+        f_info = self.walk(node.f, **kwargs)
+        assert f_info.la_type.is_scalar(), self.get_err_msg_info(f_info.ir.parse_info, "Squareroot error. The base must be a scalar")
+        node_type = ScalarType()
+        ir_node.value = f_info.ir
+        node_info = NodeInfo(node_type, symbols=f_info.symbols)
+        node_info.ir = ir_node
+        node_info.la_type = node_type
+        return node_info
+
     def walk_Function(self, node, **kwargs):
         if isinstance(node.name, str):
             if contains_sub_symbol(node.name):

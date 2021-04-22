@@ -393,6 +393,11 @@ class CodeGenMatlab(CodeGen):
             f_info.content = "{}.T".format(f_info.content)
         return f_info
 
+    def visit_squareroot(self, node, **kwargs):
+        f_info = self.visit(node.value, **kwargs)
+        f_info.content = "sqrt({})".format(f_info.content)
+        return f_info
+
     def visit_power(self, node, **kwargs):
         base_info = self.visit(node.base, **kwargs)
         if node.t:

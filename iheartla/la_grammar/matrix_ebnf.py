@@ -116,6 +116,7 @@ operations_in_matrix
     | sum_in_matrix_operator
     | integral_operator
     | trans_in_matrix_operator
+    | sqrt_in_matrix_operator
     | builtin_operators
     ;
 
@@ -146,6 +147,9 @@ kronecker_product_in_matrix_operator::KroneckerProduct
 trans_in_matrix_operator::Transpose
     = f:factor_in_matrix /ᵀ/
     ;
+    
+sqrt_in_matrix_operator::Squareroot
+    = /√/ f:factor_in_matrix;
 
 solver_in_matrix_operator::Solver
     = left:factor_in_matrix '\' right:factor_in_matrix

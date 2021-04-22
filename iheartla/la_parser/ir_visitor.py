@@ -140,6 +140,7 @@ class IRVisitor(object):
             IRNodeType.Summation: "visit_summation",
             IRNodeType.Norm: "visit_norm",
             IRNodeType.Transpose: "visit_transpose",
+            IRNodeType.Squareroot: "visit_squareroot",
             IRNodeType.Power: "visit_power",
             IRNodeType.Solver: "visit_solver",
             IRNodeType.Derivative: "visit_derivative",
@@ -275,6 +276,9 @@ class IRVisitor(object):
         pass
 
     def visit_transpose(self, node, **kwargs):
+        pass
+
+    def visit_squareroot(self, node, **kwargs):
         pass
 
     def visit_power(self, node, **kwargs):

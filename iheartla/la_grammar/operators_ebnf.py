@@ -14,6 +14,7 @@ operations
     | sum_operator
     | integral_operator
     | trans_operator
+    | sqrt_operator
     | builtin_operators
     ;
 
@@ -123,6 +124,9 @@ kronecker_product_operator::KroneckerProduct
 trans_operator::Transpose
     = f:factor /ᵀ/
     ;
+    
+sqrt_operator::Squareroot
+    = /√/ f:factor;
 
 function_operator::Function
     = name:func_id '(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
