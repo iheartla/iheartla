@@ -10,16 +10,9 @@
     <script src="./src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="./src-noconflict/ext-language_tools.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-    <script type="text/javascript" src='js/py-worker.js'></script>
     <script type="text/javascript" src='js/editor.js'></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/pyodide/v0.17.0/full/pyodide.js"></script>
-    <script type="text/javascript">
-        if(isChrome()){
-            InitPyodide()
-        }
-    </script>
-
 </head>
 
 <body>
@@ -84,11 +77,9 @@ P ∈ ℝ^(4 × d)</pre>
 </body>
 
 <script>
+    InitPyodide()
     showMsg(checkBrowserVer());
     initBtnStatus();
-    if(!isChrome()) {
-        background('');
-    }
     //
     let editor = ace.edit("editor");
     editor.setTheme("ace/theme/twilight");
