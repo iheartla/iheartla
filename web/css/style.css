@@ -36,3 +36,6 @@ body {
     font-size: 120%;
     box-sizing: border-box;
 }
+#keybinding {
+    padding-bottom: 1em;
+}
