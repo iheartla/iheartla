@@ -516,6 +516,8 @@ class grammarinitParser(Parser):
             with self._option():
                 self._trans_operator_()
             with self._option():
+                self._sqrt_operator_()
+            with self._option():
                 self._builtin_operators_()
             self._error('no available options')
 
@@ -1317,6 +1319,16 @@ class grammarinitParser(Parser):
             []
         )
 
+    @tatsumasu('Squareroot')
+    def _sqrt_operator_(self):  # noqa
+        self._pattern('â')
+        self._factor_()
+        self.name_last_node('f')
+        self.ast._define(
+            ['f'],
+            []
+        )
+
     @tatsumasu('Function')
     def _function_operator_(self):  # noqa
         self._func_id_()
@@ -2058,6 +2070,8 @@ class grammarinitParser(Parser):
             with self._option():
                 self._trans_in_matrix_operator_()
             with self._option():
+                self._sqrt_in_matrix_operator_()
+            with self._option():
                 self._builtin_operators_()
             self._error('no available options')
 
@@ -2156,6 +2170,16 @@ class grammarinitParser(Parser):
         self._factor_in_matrix_()
         self.name_last_node('f')
         self._pattern('ᵀ')
+        self.ast._define(
+            ['f'],
+            []
+        )
+
+    @tatsumasu('Squareroot')
+    def _sqrt_in_matrix_operator_(self):  # noqa
+        self._pattern('â')
+        self._factor_in_matrix_()
+        self.name_last_node('f')
         self.ast._define(
             ['f'],
             []
@@ -4673,6 +4697,9 @@ class grammarinitSemantics(object):
     def trans_operator(self, ast):  # noqa
         return ast
 
+    def sqrt_operator(self, ast):  # noqa
+        return ast
+
     def function_operator(self, ast):  # noqa
         return ast
 
@@ -4758,6 +4785,9 @@ class grammarinitSemantics(object):
         return ast
 
     def trans_in_matrix_operator(self, ast):  # noqa
+        return ast
+
+    def sqrt_in_matrix_operator(self, ast):  # noqa
         return ast
 
     def solver_in_matrix_operator(self, ast):  # noqa
@@ -5219,6 +5249,10 @@ class KroneckerProduct(ModelBase):
 
 
 class Transpose(ModelBase):
+    f = None
+
+
+class Squareroot(ModelBase):
     f = None
 
 
