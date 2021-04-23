@@ -176,10 +176,16 @@ source_code = r"""${source}"""
 code = iheartla.la_parser.parser.compile_la_content(source_code)
 `
     setTimeout(function(){
+        try {
             pyodide.runPython(pythonCode);
             let code = pyodide.globals.get('code').toJs();
             updateEditor(code);
-            }, 1000);
+        }
+        catch (error){
+            console.log('Compile error!');
+            updateError('Compile error!');
+        }
+        }, 1000);
 }
 
 function clickCompile(){
