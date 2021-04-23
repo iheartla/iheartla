@@ -105,6 +105,7 @@ function isChrome(){
     `
     await pyodide.loadPackage(['micropip']);
     await pyodide.runPython(pythonCode);
+    activateBtnStatus();
 }
 
 async function background(source){
@@ -119,13 +120,16 @@ async function background(source){
                 console.log(results)
                 updateError(results);
             }
+            activateBtnStatus();
         } else if (error) {
             updateError(error);
             console.log('pyodideWorker error: ', error);
+            activateBtnStatus();
         }
     }
     catch (e){
         console.log(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`)
+        activateBtnStatus();
     }
 }
 
@@ -204,6 +208,17 @@ function showMsg(msg){
     document.getElementById("msg").hidden = false;
     document.getElementById("msg").innerHTML = msg;
     setTimeout(function(){ document.getElementById("msg").hidden = true; document.getElementById("msg").innerHTML = ''; }, 2000);
+}
+
+
+function initBtnStatus(){
+    document.getElementById("compile").disabled = true;
+    document.getElementById("compile").innerHTML = "Initialization...";
+}
+
+function activateBtnStatus(){
+    document.getElementById("compile").disabled = false;
+    document.getElementById("compile").innerHTML = "Compile";
 }
 
 function onEditIhla(e){
