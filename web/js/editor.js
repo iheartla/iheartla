@@ -92,8 +92,10 @@ function isChrome(){
     return false;
 }
 
-function loadPyodide(){
-    window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.16.1/full/';
+ async function InitPyodide(){
+    await loadPyodide({
+          indexURL : "https://cdn.jsdelivr.net/pyodide/v0.17.0/full/"
+        });
     let wheel = new URL("./iheartla-0.0.1-py3-none-any.whl", document.baseURI).href;
     pythonCode = `
     import micropip
@@ -101,12 +103,8 @@ function loadPyodide(){
     micropip.install('tatsu')
     micropip.install('${wheel}')
     `
-    languagePluginLoader.then(() => {
-        return pyodide.loadPackage(['micropip'])
-    }).then(() => {
-        pyodide.version();
-        pyodide.runPython(pythonCode);
-    })
+    await pyodide.loadPackage(['micropip']);
+    await pyodide.runPython(pythonCode);
 }
 
 async function background(source){
@@ -174,11 +172,12 @@ function compileFunction(){
     pythonCode = `
 import iheartla.la_parser.parser
 source_code = r"""${source}"""
-iheartla.la_parser.parser.compile_la_content(source_code)
+code = iheartla.la_parser.parser.compile_la_content(source_code)
 `
     if (isChrome()){
         setTimeout(function(){
-            var code = pyodide.runPython(pythonCode);
+            pyodide.runPython(pythonCode);
+            let code = pyodide.globals.get('code').toJs();
             updateEditor(code);
             }, 1000);
     }
