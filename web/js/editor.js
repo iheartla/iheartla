@@ -111,6 +111,7 @@ function isChrome(){
 async function background(source){
     try {
         const {results, error} = await asyncRun(source);
+        activateBtnStatus();
         if (results) {
             console.log('pyodideWorker return results: ', results);
             if (Array.isArray(results)){
@@ -120,11 +121,9 @@ async function background(source){
                 console.log(results)
                 updateError(results);
             }
-            activateBtnStatus();
         } else if (error) {
             updateError(error);
             console.log('pyodideWorker error: ', error);
-            activateBtnStatus();
         }
     }
     catch (e){
@@ -159,14 +158,12 @@ function updateEditor(code) {
     latex.session.setValue(code[2]);
     convert(code[3]);
     // reset UI
-    document.getElementById("submit_icon").className = "fa fa-refresh";
-    document.getElementById("compile").disabled = false;
+    activateBtnStatus();
 }
 
 function updateError(err) {
     showMsg(err);
-    document.getElementById("submit_icon").className = "fa fa-refresh";
-    document.getElementById("compile").disabled = false;
+    activateBtnStatus();
 }
 
 function compileFunction(){
@@ -192,13 +189,12 @@ code = iheartla.la_parser.parser.compile_la_content(source_code)
 
 function clickCompile(){
     try {
-        document.getElementById("submit_icon").className = "fa fa-refresh fa-spin";
         document.getElementById("compile").disabled = true;
+        document.getElementById("compile").innerHTML = `<i id="submit_icon" class="fa fa-refresh fa-spin"></i> Compiling`;
         compileFunction();
     } catch (error) {
         console.error(error);
-        document.getElementById("submit_icon").className = "fa fa-refresh";
-        document.getElementById("compile").disabled = false;
+        activateBtnStatus();
     }
     finally {
     }
@@ -210,15 +206,18 @@ function showMsg(msg){
     setTimeout(function(){ document.getElementById("msg").hidden = true; document.getElementById("msg").innerHTML = ''; }, 2000);
 }
 
+function setBtnTitle(text){
+    document.getElementById("compile").innerHTML = `<i id="submit_icon" class="fa fa-refresh"></i> ` + text;
+}
 
 function initBtnStatus(){
     document.getElementById("compile").disabled = true;
-    document.getElementById("compile").innerHTML = "Initialization...";
+    document.getElementById("compile").innerHTML = `Initializing...`;
 }
 
 function activateBtnStatus(){
     document.getElementById("compile").disabled = false;
-    document.getElementById("compile").innerHTML = "Compile";
+    setBtnTitle("Compile");
 }
 
 function onEditIhla(e){

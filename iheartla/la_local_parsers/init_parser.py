@@ -1321,7 +1321,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('Squareroot')
     def _sqrt_operator_(self):  # noqa
-        self._pattern('â')
+        self._pattern('√')
         self._factor_()
         self.name_last_node('f')
         self.ast._define(
@@ -2177,7 +2177,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('Squareroot')
     def _sqrt_in_matrix_operator_(self):  # noqa
-        self._pattern('â')
+        self._pattern('√')
         self._factor_in_matrix_()
         self.name_last_node('f')
         self.ast._define(

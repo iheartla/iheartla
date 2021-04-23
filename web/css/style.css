@@ -23,7 +23,8 @@ body {
     border: none; /* Remove borders */
     color: white; /* White text */
     padding: 12px 16px; /* Some padding */
-    font-size: 16px /* Set a font size */
+    font-size: 16px; /* Set a font size */
+    width: 130px
 }
 #msg {
     font-size: 16px /* Set a font size */
