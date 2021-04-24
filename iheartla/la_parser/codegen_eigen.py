@@ -1230,9 +1230,13 @@ class CodeGenEigen(CodeGen):
         pre_list.append("    {} {};\n".format(self.get_ctype(node.la_type), kronecker))
         pre_list.append("    for( int {}=0; {}<{}; {}++){{\n".format(index_i, index_i, node.left.la_type.rows, index_i))
         pre_list.append("        for( int {}=0; {}<{}; {}++){{\n".format(index_j, index_j, node.left.la_type.cols, index_j))
-        pre_list.append("            {}.block({}*{},{}*{},{},{}) = ({})({}, {})*({});\n".format(kronecker, index_i, node.left.la_type.rows, index_j, node.left.la_type.cols,
+        if node.left.la_type.is_sparse_matrix():
+            left_index_content = "({}).coeff({}, {})".format(left_info.content, index_i, index_j)
+        else:
+            left_index_content = "({})({}, {})".format(left_info.content, index_i, index_j)
+        pre_list.append("            {}.block({}*{},{}*{},{},{}) = {}*({});\n".format(kronecker, index_i, node.left.la_type.rows, index_j, node.left.la_type.cols,
                                                                                            node.right.la_type.rows, node.right.la_type.cols,
-                                                                                         left_info.content, index_i, index_j, right_info.content))
+                                                                                         left_index_content, right_info.content))
         pre_list.append("        }\n")
         pre_list.append("    }\n")
         return CodeNodeInfo(content=kronecker,pre_list=pre_list)

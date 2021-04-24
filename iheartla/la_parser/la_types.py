@@ -89,6 +89,9 @@ class LaVarType(object):
     def is_matrix(self):
         return self.var_type == VarTypeEnum.MATRIX
 
+    def is_sparse_matrix(self):
+        return self.var_type == VarTypeEnum.MATRIX and self.sparse
+
     def is_sequence(self):
         return self.var_type == VarTypeEnum.SEQUENCE
 

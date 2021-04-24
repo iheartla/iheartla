@@ -25,7 +25,7 @@ class LaTextControl(bc.BaseTextControl):
         self.keywords = ['where', 'sqrt', 'exp', 'log', 'sum', 'symmetric', 'diagonal', 'sparse', 'if',
                          'otherwise', 'in', 'index', 'given']
         self.unicode_dict = {'R': 'ℝ', 'Z': 'ℤ', 'x': '×', 'times': '×', 'inf': '∞', 'in': '∈', 'sum': '∑',
-                             'had': '○', 'kro': '⨂', 'dot': '⋅', 'T': 'ᵀ', '^T': 'ᵀ', 'par': '∂', 'emp': '∅',
+                             'had': '∘', 'kro': '⊗', 'dot': '⋅', 'T': 'ᵀ', '^T': 'ᵀ', 'par': '∂', 'emp': '∅',
                              'arr': '→', 'int': '∫', 'dbl': '‖', 'pi': 'π', 'sig': 'σ', 'rho': 'ρ',
                              'phi': 'ϕ', 'the': 'θ', 'alp': 'α', 'bet': 'β',  'gam': 'γ',
                              'u0': '₀', 'u1': '₁', 'u2': '₂', 'u3': '₃', 'u4': '₄', 'u5': '₅', 'u6': '₆', 'u7': '₇', 'u8': '₈', 'u9': '₉',

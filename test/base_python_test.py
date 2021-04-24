@@ -9,7 +9,7 @@ from time import sleep
 import numpy as np
 import logging
 from iheartla.la_tools.la_logger import LaLogger, LoggerTypeEnum
-eigen_path = "/usr/local/Cellar/eigen/3.3.7/include/eigen3"       # required
+eigen_path = "/usr/local/Cellar/eigen/3.3.9/include/eigen3"       # required
 
 
 class TestFuncInfo(object):
