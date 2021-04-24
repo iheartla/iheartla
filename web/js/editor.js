@@ -92,7 +92,7 @@ function isChrome(){
     return false;
 }
 
- async function InitPyodide(){
+ async function initPyodide(){
     await loadPyodide({
           indexURL : "https://cdn.jsdelivr.net/pyodide/v0.17.0/full/"
         });
