@@ -758,7 +758,7 @@ class CodeGenEigen(CodeGen):
                     else:
                         if type_info.la_type.item_types[i][j].la_type.is_matrix() or type_info.la_type.item_types[i][j].la_type.is_vector()\
                                 or (type_info.la_type.list_dim and (i, j) in type_info.la_type.list_dim):
-                            if type_info.la_type.list_dim[(i, j)][0] == 1 and type_info.la_type.list_dim[(i, j)][1] == 1:
+                            if (type_info.la_type.list_dim and (i, j) in type_info.la_type.list_dim) and type_info.la_type.list_dim[(i, j)][0] == 1 and type_info.la_type.list_dim[(i, j)][1] == 1:
                                 # scalar
                                 item_content = ret[i][j]
                                 cur_scalar = True
