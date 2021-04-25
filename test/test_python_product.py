@@ -170,28 +170,41 @@ class TestProduct(BasePythonTest):
         value = np.array([2, 5])
         T = scipy.sparse.coo_matrix((value, np.asarray(t).T), shape=(2, 3))
         P = np.array([[5, 6, 7], [7, 8, 9]])
-        A = np.array([[0, 0, 0, 10, 12, 14, 0, 0, 0],
-                      [0, 0, 0, 14, 16, 18, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 25, 30, 35],
-                      [0, 0, 0, 0, 0, 0, 35, 40, 45]])
-        self.assertDMatrixEqual(func_info.numpy_func(T, P).A, A)
+        t1 = [(0, 3), (0, 4), (0, 5), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8), (3, 6), (3, 7), (3, 8)]
+        value1 = np.array([10, 12, 14, 14, 16, 18, 25, 30, 35, 35, 40, 45])
+        A = scipy.sparse.coo_matrix((value1, np.asarray(t1).T), shape=(4, 9))
+        # A = np.array([[0, 0, 0, 10, 12, 14, 0, 0, 0],
+        #               [0, 0, 0, 14, 16, 18, 0, 0, 0],
+        #               [0, 0, 0, 0, 0, 0, 25, 30, 35],
+        #               [0, 0, 0, 0, 0, 0, 35, 40, 45]])
+        self.assertSMatrixEqual(func_info.numpy_func(T, P).A, A)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
-                     "    std::vector<Eigen::Triplet<double> > t1;",
-                     "    t1.push_back(Eigen::Triplet<double>(0, 1, 2));",
-                     "    t1.push_back(Eigen::Triplet<double>(1, 2, 5));",
+                     "    std::vector<Eigen::Triplet<double> > t2;",
+                     "    t2.push_back(Eigen::Triplet<double>(0, 1, 2));",
+                     "    t2.push_back(Eigen::Triplet<double>(1, 2, 5));",
                      "    Eigen::SparseMatrix<double> T(2, 3);",
-                     "    T.setFromTriplets(t1.begin(), t1.end());"
+                     "    T.setFromTriplets(t2.begin(), t2.end());"
                      "    Eigen::Matrix<double, 2, 3> P;",
                      "    P << 5, 6, 7, 7, 8, 9;",
-                     "    Eigen::Matrix<double, 4, 9> A;",
-                     "    A << 0, 0, 0, 10, 12, 14, 0, 0, 0,"
-                     "    0, 0, 0, 14, 16, 18, 0, 0, 0,"
-                     "    0, 0, 0, 0, 0, 0, 25, 30, 35,"
-                     "    0, 0, 0, 0, 0, 0, 35, 40, 45;",
-                     "   Eigen::Matrix<double, 4, 9> B = {}(T, P).A;".format(func_info.eig_func_name),
-                     "    return ((B - A).norm() == 0);",
+                     "    std::vector<Eigen::Triplet<double> > t1;",
+                     "    t1.push_back(Eigen::Triplet<double>(0, 3, 10));",
+                     "    t1.push_back(Eigen::Triplet<double>(0, 4, 12));",
+                     "    t1.push_back(Eigen::Triplet<double>(0, 5, 14));",
+                     "    t1.push_back(Eigen::Triplet<double>(1, 3, 14));",
+                     "    t1.push_back(Eigen::Triplet<double>(1, 4, 16));",
+                     "    t1.push_back(Eigen::Triplet<double>(1, 5, 18));",
+                     "    t1.push_back(Eigen::Triplet<double>(2, 6, 25));",
+                     "    t1.push_back(Eigen::Triplet<double>(2, 7, 30));",
+                     "    t1.push_back(Eigen::Triplet<double>(2, 8, 35));",
+                     "    t1.push_back(Eigen::Triplet<double>(3, 6, 35));",
+                     "    t1.push_back(Eigen::Triplet<double>(3, 7, 40));",
+                     "    t1.push_back(Eigen::Triplet<double>(3, 8, 45));",
+                     "    Eigen::SparseMatrix<double> A(4, 9);",
+                     "    A.setFromTriplets(t1.begin(), t1.end());"
+                     "   Eigen::SparseMatrix<double> B = {}(T, P).A;".format(func_info.eig_func_name),
+                     "    return A.isApprox(B);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())

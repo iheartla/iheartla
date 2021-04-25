@@ -1114,6 +1114,8 @@ class TypeWalker(NodeWalker):
         assert left_info.la_type.is_vector() or left_info.la_type.is_matrix(), self.get_err_msg_info(left_info.ir.parse_info, "Kronecker product error. Parameter {} must be vector or matrix".format(node.left.text))
         assert right_info.la_type.is_vector() or right_info.la_type.is_matrix(), self.get_err_msg_info(right_info.ir.parse_info, "Kronecker product error. Parameter {} must be vector or matrix".format(node.right.text))
         ir_node.la_type = MatrixType(rows=left_info.la_type.rows*right_info.la_type.rows, cols=left_info.la_type.cols*right_info.la_type.cols)
+        if left_info.la_type.is_sparse_matrix() or right_info.la_type.is_sparse_matrix():
+            ir_node.la_type.sparse = True
         return NodeInfo(ir_node.la_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
 
     def walk_DotProduct(self, node, **kwargs):

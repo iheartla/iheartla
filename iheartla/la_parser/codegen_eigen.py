@@ -1227,7 +1227,10 @@ class CodeGenEigen(CodeGen):
         index_j = self.generate_var_name('j')
         kronecker = self.generate_var_name('kron')
         pre_list = left_info.pre_list + right_info.pre_list
+        sparse = node.la_type.sparse
+        node.la_type.sparse = False
         pre_list.append("    {} {};\n".format(self.get_ctype(node.la_type), kronecker))
+        node.la_type.sparse = sparse
         pre_list.append("    for( int {}=0; {}<{}; {}++){{\n".format(index_i, index_i, node.left.la_type.rows, index_i))
         pre_list.append("        for( int {}=0; {}<{}; {}++){{\n".format(index_j, index_j, node.left.la_type.cols, index_j))
         if node.left.la_type.is_sparse_matrix():
@@ -1239,7 +1242,9 @@ class CodeGenEigen(CodeGen):
                                                                                          left_index_content, right_info.content))
         pre_list.append("        }\n")
         pre_list.append("    }\n")
-        return CodeNodeInfo(content=kronecker,pre_list=pre_list)
+        if node.la_type.is_sparse_matrix():
+            kronecker += '.sparseView()'
+        return CodeNodeInfo(content=kronecker, pre_list=pre_list)
 
     def visit_dot_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)

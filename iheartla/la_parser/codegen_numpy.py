@@ -1079,7 +1079,7 @@ class CodeGenNumpy(CodeGen):
     def visit_kronecker_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        if node.left.la_type.is_sparse_matrix():
+        if node.la_type.is_sparse_matrix():
             func_name = "scipy.sparse.kron"
         else:
             func_name = "np.kron"
