@@ -1079,7 +1079,11 @@ class CodeGenNumpy(CodeGen):
     def visit_kronecker_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("np.kron({}, {})".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
+        if node.left.la_type.is_sparse_matrix():
+            func_name = "scipy.sparse.kron"
+        else:
+            func_name = "np.kron"
+        return CodeNodeInfo("{}({}, {})".format(func_name, left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
 
     def visit_dot_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)

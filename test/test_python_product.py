@@ -3,6 +3,8 @@ sys.path.append('./')
 from test.base_python_test import BasePythonTest, eigen_path
 import numpy as np
 import cppyy
+import scipy
+from scipy import sparse
 cppyy.add_include_path(eigen_path)
 
 
@@ -152,6 +154,42 @@ class TestProduct(BasePythonTest):
                      "    7, 8, 9, 14, 16, 18, 21, 24, 27,"
                      "    15, 18, 21, 20, 24, 28, 25, 30, 35,"
                      "    21, 24, 27, 28, 32, 36, 35, 40, 45;",
+                     "   Eigen::Matrix<double, 4, 9> B = {}(T, P).A;".format(func_info.eig_func_name),
+                     "    return ((B - A).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_kronecker_product_sparse_lhs(self):
+        la_str = """A = T ⊗ P
+                    where 
+                    T: ℝ ^ (2×3) sparse
+                    P: ℝ ^ (2×3): a sequence"""
+        func_info = self.gen_func_info(la_str)
+        t = [(0, 1), (1, 2)]
+        value = np.array([2, 5])
+        T = scipy.sparse.coo_matrix((value, np.asarray(t).T), shape=(2, 3))
+        P = np.array([[5, 6, 7], [7, 8, 9]])
+        A = np.array([[0, 0, 0, 10, 12, 14, 0, 0, 0],
+                      [0, 0, 0, 14, 16, 18, 0, 0, 0],
+                      [0, 0, 0, 0, 0, 0, 25, 30, 35],
+                      [0, 0, 0, 0, 0, 0, 35, 40, 45]])
+        self.assertDMatrixEqual(func_info.numpy_func(T, P).A, A)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::vector<Eigen::Triplet<double> > t1;",
+                     "    t1.push_back(Eigen::Triplet<double>(0, 1, 2));",
+                     "    t1.push_back(Eigen::Triplet<double>(1, 2, 5));",
+                     "    Eigen::SparseMatrix<double> T(2, 3);",
+                     "    T.setFromTriplets(t1.begin(), t1.end());"
+                     "    Eigen::Matrix<double, 2, 3> P;",
+                     "    P << 5, 6, 7, 7, 8, 9;",
+                     "    Eigen::Matrix<double, 4, 9> A;",
+                     "    A << 0, 0, 0, 10, 12, 14, 0, 0, 0,"
+                     "    0, 0, 0, 14, 16, 18, 0, 0, 0,"
+                     "    0, 0, 0, 0, 0, 0, 25, 30, 35,"
+                     "    0, 0, 0, 0, 0, 0, 35, 40, 45;",
                      "   Eigen::Matrix<double, 4, 9> B = {}(T, P).A;".format(func_info.eig_func_name),
                      "    return ((B - A).norm() == 0);",
                      "}"]

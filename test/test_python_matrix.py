@@ -511,6 +511,46 @@ class TestMatrix(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_sparse_block_matrix_3(self):
+        # sparse matrix in block matrix
+        la_str = """C = [ A   1   2  0  B]
+        where
+        A: ℝ ^ (1 × 2)  
+        B: ℝ ^ (1 × 2) sparse  """
+        func_info = self.gen_func_info(la_str)
+        t = [(0, 0)]
+        t2 = [(0, 0), (0, 2), (0, 3), (0, 5)]
+        value = np.array([3])
+        value2 = np.array([3, 1, 2, 3])
+        D = np.array([[3, 0]])
+        A = scipy.sparse.coo_matrix((value, np.asarray(t).T), shape=(1, 2))
+        B = scipy.sparse.coo_matrix((value2, np.asarray(t2).T), shape=(1, 7))
+        self.assertSMatrixEqual(func_info.numpy_func(D, A).C, B)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::vector<Eigen::Triplet<double> > t1;",
+                     "    t1.push_back(Eigen::Triplet<double>(0, 0, 3));",
+                     "    Eigen::Matrix<double, 1, 2> D;",
+                     "    D<< 3, 0;"
+                     "    Eigen::SparseMatrix<double> A(1, 2);",
+                     "    A.setFromTriplets(t1.begin(), t1.end());"
+                     "    std::vector<Eigen::Triplet<double> > t2;",
+                     "    t2.push_back(Eigen::Triplet<double>(0, 0, 3));",
+                     "    t2.push_back(Eigen::Triplet<double>(0, 1, 0));",
+                     "    t2.push_back(Eigen::Triplet<double>(0, 2, 1));",
+                     "    t2.push_back(Eigen::Triplet<double>(0, 3, 2));",
+                     "    t2.push_back(Eigen::Triplet<double>(0, 4, 0));",
+                     "    t2.push_back(Eigen::Triplet<double>(0, 5, 3));",
+                     "    t2.push_back(Eigen::Triplet<double>(0, 6, 0));",
+                     "    Eigen::SparseMatrix<double> C(1, 7);",
+                     "    C.setFromTriplets(t2.begin(), t2.end());"
+                     "    Eigen::SparseMatrix<double> B = {}(D, A).C;".format(func_info.eig_func_name),
+                     "    return C.isApprox(B);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_vector_1(self):
         # vector
         la_str = """B = (1, A, 4) + (1, 1, 1, 1)
