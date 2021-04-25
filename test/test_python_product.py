@@ -173,10 +173,6 @@ class TestProduct(BasePythonTest):
         t1 = [(0, 3), (0, 4), (0, 5), (1, 3), (1, 4), (1, 5), (2, 6), (2, 7), (2, 8), (3, 6), (3, 7), (3, 8)]
         value1 = np.array([10, 12, 14, 14, 16, 18, 25, 30, 35, 35, 40, 45])
         A = scipy.sparse.coo_matrix((value1, np.asarray(t1).T), shape=(4, 9))
-        # A = np.array([[0, 0, 0, 10, 12, 14, 0, 0, 0],
-        #               [0, 0, 0, 14, 16, 18, 0, 0, 0],
-        #               [0, 0, 0, 0, 0, 0, 25, 30, 35],
-        #               [0, 0, 0, 0, 0, 0, 35, 40, 45]])
         self.assertSMatrixEqual(func_info.numpy_func(T, P).A, A)
         # eigen test
         cppyy.include(func_info.eig_file_name)

@@ -1080,10 +1080,10 @@ class CodeGenNumpy(CodeGen):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
         if node.la_type.is_sparse_matrix():
-            func_name = "scipy.sparse.kron"
+            content = "scipy.sparse.kron({}, {}, 'coo')".format(left_info.content, right_info.content)
         else:
-            func_name = "np.kron"
-        return CodeNodeInfo("{}({}, {})".format(func_name, left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
+            content = "np.kron({}, {})".format(left_info.content, right_info.content)
+        return CodeNodeInfo(content, pre_list=left_info.pre_list+right_info.pre_list)
 
     def visit_dot_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
