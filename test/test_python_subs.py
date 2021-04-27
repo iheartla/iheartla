@@ -348,3 +348,44 @@ class TestSubscript(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_indexing_type_addition(self):
+        la_str = """ c = b + 1
+                d = a_c 
+                where
+                a  ∈ ℝ^3
+                b  ∈ ℤ index"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([4, 5, 6])
+        self.assertEqual(func_info.numpy_func(A, 1).d, 6)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 3, 1> A;",
+                     "    A << 4, 5, 6;",
+                     "    double C = {}(A, 1).d;".format(func_info.eig_func_name),
+                     "    return (C == 6);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_indexing_type_subtraction(self):
+        la_str = """ d = b - c
+                e = a_d 
+                where
+                a  ∈ ℝ^3
+                b  ∈ ℤ index
+                c  ∈ ℤ index"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([4, 5, 6])
+        self.assertEqual(func_info.numpy_func(A, 3, 2).e, 4)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 3, 1> A;",
+                     "    A << 4, 5, 6;",
+                     "    double C = {}(A, 3, 2).e;".format(func_info.eig_func_name),
+                     "    return (C == 4);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
