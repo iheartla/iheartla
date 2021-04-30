@@ -38,7 +38,9 @@ class LaTextControl(bc.BaseTextControl):
                              'sqrt': '√', '+-': '±', '<=': '≤', '<=>': '⇔', '>=': '≥', '1/2': '½',
                              '1/3': '⅓', '1/4': '¼', '1/5': '⅕', '1/6': '⅙', '1/8': '⅛', '2/3': '⅔', '2/5': '⅖',
                              '3/4': '¾', '3/5': '⅗', '3/8': '⅜', '4/5': '⅘', '5/6': '⅚', '5/8': '⅝', '7/8': '⅞',
-                             'heart': '❤️', 'iheartla': 'I❤️LA'
+                             'heart': '❤️', 'iheartla': 'I❤️LA',
+                             'le':'≤', 'ge':'≥', 'ne': '≠', 'notin':'∉', 'div':'÷', 'nplus': '±',
+                             'linner': '⟨', 'rinner':'⟩', 'num1': '𝟙'
                              }
         self.StyleSetSpec(self.STC_STYLE_LA_DEFAULT, "fore:#A9B7C6,back:{}".format(bc.BACKGROUND_COLOR))
         self.StyleSetSpec(self.STC_STYLE_LA_KW, "fore:#94558D,bold,back:{}".format(bc.BACKGROUND_COLOR))
