@@ -439,6 +439,35 @@ class TestMatrix(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_sparse_diagonal_matrix(self):
+        # sparse matrix: =
+        la_str = """D_ii = sum_j A_ij
+        where
+        A: ℝ^(n × n)
+        """
+        func_info = self.gen_func_info(la_str)
+        A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        E = [(0, 0), (1, 1), (2, 2)]
+        value = np.array([6, 15, 24])
+        B = scipy.sparse.coo_matrix((value, np.asarray(E).T), shape=(3, 3), dtype=np.float64)
+        self.assertSMatrixEqual(func_info.numpy_func(A).D, B)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 3, 3> A;",
+                     "    A << 1, 2, 3, 4, 5, 6, 7, 8, 9;",
+                     "    std::vector<Eigen::Triplet<double> > t1;",
+                     "    t1.push_back(Eigen::Triplet<double>(0, 0, 6));",
+                     "    t1.push_back(Eigen::Triplet<double>(1, 1, 15));",
+                     "    t1.push_back(Eigen::Triplet<double>(2, 2, 24));",
+                     "    Eigen::SparseMatrix<double> C(3, 3);",
+                     "    C.setFromTriplets(t1.begin(), t1.end());"
+                     "    Eigen::SparseMatrix<double> B = {}(A).D;".format(func_info.eig_func_name),
+                     "    return C.isApprox(B);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_sparse_block_matrix_1(self):
         # sparse matrix in block matrix
         la_str = """[ A   0₂,₂
