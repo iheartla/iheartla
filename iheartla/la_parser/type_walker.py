@@ -758,6 +758,8 @@ class TypeWalker(NodeWalker):
                         err_msg = "{} is a parameter, can not be assigned".format(id0)
                     # assert False, self.get_err_msg_info(id0_info.ir.parse_info, err_msg)
             if len(left_subs) == 2:  # matrix
+                if right_info.ir.node_type != IRNodeType.SparseMatrix:
+                    assert sequence not in self.parameters, self.get_err_msg_info(id0_info.ir.parse_info, "{} is a parameter, can not be assigned".format(sequence))
                 if not (right_type.is_matrix() and right_type.sparse):
                     assert right_type.is_scalar(), self.get_err_msg_info(right_info.ir.parse_info, "RHS has to be scalar")
                 if right_info.la_type is not None and right_info.la_type.is_matrix():
@@ -1490,7 +1492,7 @@ class TypeWalker(NodeWalker):
                                                                                     "Element hasn't been defined")
             if self.symtable[left_info.content].is_sequence():
                 la_type = self.symtable[left_info.content].element_type
-                ir_node = SequenceIndexNode()
+                ir_node = SequenceIndexNode(parse_info=node.parseinfo)
                 ir_node.main = left_info.ir
                 main_index_info = self.walk(node.right[0])
                 ir_node.main_index = main_index_info.ir
@@ -1533,7 +1535,7 @@ class TypeWalker(NodeWalker):
                                          ir_node)
             elif self.symtable[left_info.content].is_matrix():
                 assert len(node.right) == 2
-                ir_node = MatrixIndexNode()
+                ir_node = MatrixIndexNode(parse_info=node.parseinfo)
                 ir_node.subs = right_sym_list
                 ir_node.main = left_info.ir
                 la_type = self.symtable[left_info.content].element_type
@@ -1562,7 +1564,7 @@ class TypeWalker(NodeWalker):
                 assert node.right[0] != '*'
                 index_info = self.walk(node.right[0])
                 assert index_info.la_type.is_scalar()
-                ir_node = VectorIndexNode()
+                ir_node = VectorIndexNode(parse_info=node.parseinfo)
                 ir_node.main = left_info.ir
                 ir_node.row_index = index_info.ir
                 ir_node.la_type = self.symtable[left_info.content].element_type
