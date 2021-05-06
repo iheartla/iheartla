@@ -1088,10 +1088,10 @@ class TypeWalker(NodeWalker):
         ir_node = HadamardProductNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
         assert left_info.la_type.is_vector() or left_info.la_type.is_matrix(), self.get_err_msg_info(left_info.ir.parse_info, "Hadamard product error. Parameter {} must be vector or matrix".format(node.left.text))
         assert right_info.la_type.is_vector() or right_info.la_type.is_matrix(), self.get_err_msg_info(right_info.ir.parse_info, "Hadamard product error. Parameter {} must be vector or matrix".format(node.right.text))
-        assert left_info.la_type.rows == left_info.la_type.rows, self.get_err_msg_info(node.parseinfo,
+        assert left_info.la_type.rows == right_info.la_type.rows, self.get_err_msg_info(node.parseinfo,
                                                                                         "Hadamard product error. Parameters {} and {} must have the same dimension".format(node.left.text, node.right.text))
         if left_info.la_type.is_matrix():
-            assert left_info.la_type.cols == left_info.la_type.cols, self.get_err_msg_info(node.parseinfo,
+            assert left_info.la_type.cols == right_info.la_type.cols, self.get_err_msg_info(node.parseinfo,
                                                                                         "Hadamard product error. Parameters {} and {} must have the same dimension".format(node.left.text, node.right.text))
             ir_node.la_type = MatrixType(rows=left_info.la_type.rows, cols=left_info.la_type.rows)
         else:
@@ -1762,13 +1762,6 @@ class TypeWalker(NodeWalker):
             if all_ids[0] in self.parameters:
                 self.parameters.remove(all_ids[0])  # not a parameter
                 self.remove_target_from_dim_dict(all_ids[0])
-            # assert node.id1 and node.id2, self.get_err_msg_info(node.parseinfo, "Sparse matrix: need dim")
-            # id1_info = self.walk(node.id1, **kwargs)
-            # id1 = id1_info.content
-            # ir_node.id1 = id1_info.ir
-            # id2_info = self.walk(node.id2, **kwargs)
-            # id2 = id2_info.content
-            # ir_node.id2 = id2_info.ir
             id1 = self.symtable[all_ids[0]].rows
             if not isinstance(id1, int):
                 assert id1 in self.symtable, self.get_err_msg_info(node.parseinfo, "Sparse matrix: dim {} is not defined".format(id1))
