@@ -816,6 +816,8 @@ class TypeWalker(NodeWalker):
                             dim = self.symtable[cur_node.get_main_id()].cols
                 if right_type.is_matrix():
                     sequence_type = True
+                elif right_type.is_scalar():
+                    sequence_type = False
                 if sequence_type:
                     self.symtable[sequence] = SequenceType(size=dim, element_type=right_type)
                     seq_index_node = SequenceIndexNode()

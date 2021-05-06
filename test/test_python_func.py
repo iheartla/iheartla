@@ -331,8 +331,10 @@ class TestFunction(BasePythonTest):
                      "    };",
                      "    f_i[0] = f;",
                      "    f_i[1] = f2;",
-                     "    std::vector<double > B = {}(f_i).c;".format(func_info.eig_func_name),
-                     "    return (B[0] == 1 and B[1] == 2);",
+                     "    Eigen::Matrix < double, 2, 1 > D;"
+                     "    D << 1, 2;"
+                     "    Eigen::VectorXd B = {}(f_i).c;".format(func_info.eig_func_name),
+                     "    return ((B - D).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
