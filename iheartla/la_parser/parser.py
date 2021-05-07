@@ -375,20 +375,31 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
     base_name = get_file_name(la_file)
     # print("head:", head, ", name:", name, "parser_type", parser_type, ", base_name:", base_name)
     parser = get_default_parser()
-    model = parser.parse(content, parseinfo=True)
-    type_walker, start_node = parse_ir_node(content, model)
-    if parser_type & ParserTypeEnum.NUMPY:
-        numpy_file = Path(la_file).with_suffix(".py")
-        numpy_content = walk_model(ParserTypeEnum.NUMPY, type_walker, start_node, func_name=base_name)
-        save_to_file(numpy_content, numpy_file)
-    if parser_type & ParserTypeEnum.EIGEN:
-        eigen_file = Path(la_file).with_suffix(".cpp")
-        eigen_content = walk_model(ParserTypeEnum.EIGEN, type_walker, start_node, func_name=base_name)
-        save_to_file(eigen_content, eigen_file)
-    if parser_type & ParserTypeEnum.LATEX:
-        tex_file = Path(la_file).with_suffix(".tex")
-        tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, start_node, func_name=base_name)
-        save_to_file(tex_content, tex_file)
+    try:
+        model = parser.parse(content, parseinfo=True)
+        type_walker, start_node = parse_ir_node(content, model)
+        if parser_type & ParserTypeEnum.NUMPY:
+            numpy_file = Path(la_file).with_suffix(".py")
+            numpy_content = walk_model(ParserTypeEnum.NUMPY, type_walker, start_node, func_name=base_name)
+            save_to_file(numpy_content, numpy_file)
+        if parser_type & ParserTypeEnum.EIGEN:
+            eigen_file = Path(la_file).with_suffix(".cpp")
+            eigen_content = walk_model(ParserTypeEnum.EIGEN, type_walker, start_node, func_name=base_name)
+            save_to_file(eigen_content, eigen_file)
+        if parser_type & ParserTypeEnum.LATEX:
+            tex_file = Path(la_file).with_suffix(".tex")
+            tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, start_node, func_name=base_name)
+            save_to_file(tex_content, tex_file)
+    except FailedParse as e:
+        print(LaMsg.getInstance().get_parse_error(e))
+    except FailedCut as e:
+        print("FailedCut: {}".format(str(e)))
+    except AssertionError as e:
+        print("{}".format(e.args[0]))
+    except Exception as e:
+        print("Exception: {}".format(str(e)))
+    except:
+        print(str(sys.exc_info()[0]))
 
 
 def parse_la(content, parser_type):
