@@ -40,11 +40,13 @@ For more, see the [wiki](https://github.com/pressureless/linear_algebra/wiki).
 
 To run the GUI:
 
-    python3 linear_algebra.py
+    python3 app.py
 
 You can also run as a command-line compiler:
 
-    python3 linear_algebra.py --help
+    python3 app.py --help
+
+There's a version in the [web browser](https://cragl.cs.gmu.edu/iheartla/browser/)
 
 ## Installing
 
