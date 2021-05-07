@@ -702,7 +702,7 @@ class IndexNode(ExprNode):
         for key in subs_dict.keys():
             if self.contain_sub_sym(key):
                 subs_dict[key].append(self)
-                break
+                # break
 
 
 class MatrixIndexNode(IndexNode):
