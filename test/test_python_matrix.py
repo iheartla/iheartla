@@ -284,6 +284,28 @@ class TestMatrix(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_elementwise_matrix(self):
+        # scalar value
+        la_str = """B_i,j = A_j,i
+        where 
+        A: ℝ^(2 × 3) """
+        func_info = self.gen_func_info(la_str)
+        A = np.array([[1, 3, 4], [2, 0, 1]])
+        B = np.array([[1, 2], [3, 0], [4, 1]])
+        self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 3> A;",
+                     "    A << 1, 3, 4, 2, 0, 1;",
+                     "    Eigen::Matrix<double, 3, 2> B;",
+                     "    B << 1, 2, 3, 0, 4, 1;",
+                     "    Eigen::Matrix<double, 3, 2> C = {}(A).B;".format(func_info.eig_func_name),
+                     "    return ((B - C).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_identity_matrix_0(self):
         # outside matrix
         la_str = """C = I_2 + A
