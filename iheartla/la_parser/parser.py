@@ -400,12 +400,12 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
             # A script-file can have funtions (and sub functions) as long as they
             # *do not* have the same name as the file.
             # 
-            # For now, I'm making the assumption that we output a script-file called
-            # *.m with functions called *_fun and generateRandomData. In the future
-            # we may want to output a function-file instead (but then need to decide
-            # what to do about the auto-testing output)
+            # For now, I'm making the assumption that we output a function-file called
+            # *.m with a main function called * and a sub function
+            # generateRandomData. When called with no arguments (nargin == 0),
+            # it will issue a warning and run with random data.
             m_file = Path(la_file).with_suffix(".m")
-            m_content = walk_model(ParserTypeEnum.MATLAB, type_walker, start_node, func_name=base_name+"_fun")
+            m_content = walk_model(ParserTypeEnum.MATLAB, type_walker, start_node, func_name=base_name)
             save_to_file(m_content, m_file)
     except FailedParse as e:
         print(LaMsg.getInstance().get_parse_error(e))
