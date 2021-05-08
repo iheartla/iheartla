@@ -10,7 +10,8 @@ from ..la_tools.la_helper import *
 ## Make the visualizer
 try: from la_tools.la_visualizer import LaVisualizer
 except ImportError:
-    print( "Skipping visualizer." )
+    if DEBUG_MODE:
+        print( "Skipping visualizer." )
     class LaVisualizer(object):
         def visualize(self, node): pass
 
