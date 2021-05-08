@@ -378,6 +378,7 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
     try:
         model = parser.parse(content, parseinfo=True)
         type_walker, start_node = parse_ir_node(content, model)
+        # Alec: maybe this should be a loop/case statement
         if parser_type & ParserTypeEnum.NUMPY:
             numpy_file = Path(la_file).with_suffix(".py")
             numpy_content = walk_model(ParserTypeEnum.NUMPY, type_walker, start_node, func_name=base_name)
@@ -390,6 +391,22 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
             tex_file = Path(la_file).with_suffix(".tex")
             tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, start_node, func_name=base_name)
             save_to_file(tex_content, tex_file)
+        if parser_type & ParserTypeEnum.MATLAB:
+            # Alec: in matlab a .m file can either be a "script" or a "function". 
+            #
+            # A function-file should have a main function with the same name as the
+            # file. Within that function there can be sub-functions.
+            #
+            # A script-file can have funtions (and sub functions) as long as they
+            # *do not* have the same name as the file.
+            # 
+            # For now, I'm making the assumption that we output a script-file called
+            # *.m with functions called *_fun and generateRandomData. In the future
+            # we may want to output a function-file instead (but then need to decide
+            # what to do about the auto-testing output)
+            m_file = Path(la_file).with_suffix(".m")
+            m_content = walk_model(ParserTypeEnum.MATLAB, type_walker, start_node, func_name=base_name+"_fun")
+            save_to_file(m_content, m_file)
     except FailedParse as e:
         print(LaMsg.getInstance().get_parse_error(e))
     except FailedCut as e:
