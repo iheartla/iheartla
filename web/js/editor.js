@@ -152,6 +152,7 @@ function convert(input) {
 }
 
 function updateEditor(code) {
+    showMsg('Compile succeeded');
     var cpp = ace.edit("cpp");
     cpp.session.setValue(code[1]);
     var python = ace.edit("python");
@@ -210,6 +211,7 @@ function clickCompile(){
 }
 
 function showMsg(msg, error=false){
+    msg = msg.replaceAll('\n', '<br>')
     document.getElementById("msg").hidden = false;
     document.getElementById("msg").innerHTML = msg;
     if(!error) {
