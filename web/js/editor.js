@@ -164,7 +164,7 @@ function updateEditor(code) {
 }
 
 function updateError(err) {
-    showMsg(err);
+    showMsg(err, true);
     activateBtnStatus();
 }
 
@@ -180,8 +180,13 @@ code = iheartla.la_parser.parser.compile_la_content(source_code)
     setTimeout(function(){
         try {
             pyodide.runPython(pythonCode);
-            let code = pyodide.globals.get('code').toJs();
-            updateEditor(code);
+            let code = pyodide.globals.get('code');
+            if (typeof code === 'string'){
+                updateError(code);
+            }
+            else{
+                updateEditor(code.toJs());
+            }
         }
         catch (error){
             console.log('Compile error!');
@@ -191,6 +196,7 @@ code = iheartla.la_parser.parser.compile_la_content(source_code)
 }
 
 function clickCompile(){
+    hideMsg();
     try {
         document.getElementById("compile").disabled = true;
         document.getElementById("compile").innerHTML = `<i id="submit_icon" class="fa fa-refresh fa-spin"></i> Compiling`;
@@ -203,10 +209,17 @@ function clickCompile(){
     }
 }
 
-function showMsg(msg){
+function showMsg(msg, error=false){
     document.getElementById("msg").hidden = false;
     document.getElementById("msg").innerHTML = msg;
-    setTimeout(function(){ document.getElementById("msg").hidden = true; document.getElementById("msg").innerHTML = ''; }, 2000);
+    if(!error) {
+        // notice, auto hide
+        setTimeout(hideMsg, 2000);
+    }
+}
+
+function hideMsg(){
+    document.getElementById("msg").hidden = true; document.getElementById("msg").innerHTML = '';
 }
 
 function setBtnTitle(text){
@@ -224,6 +237,7 @@ function activateBtnStatus(){
 }
 
 function onEditIhla(e){
+    hideMsg();
     let editor = ace.edit("editor");
     for (let key in unicode_dict) {
         let old_str = '\\' + key + ' ';
