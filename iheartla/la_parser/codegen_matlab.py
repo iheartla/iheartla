@@ -68,15 +68,25 @@ class CodeGenMatlab(CodeGen):
                         content = "{}({}, {})".format(node.main_id, node.subs[0], node.subs[1])
         return CodeNodeInfo(content)
 
+    def get_result_name(self):
+        #return self.get_result_type()
+        # It's awkward for the variable _name_ to be called xyzType
+        # In MATLAB, the returns must be named, so if we're using a struct like
+        # the other targets, then just call it output
+        # 
+        # Return a struct is not very matlibberish. Should consider return
+        # values in LIFO order
+        return "output"
+
     def get_struct_definition(self):
-        ret_type = self.get_result_type()
+        ret_name = self.get_result_name()
         assign_list = []
         for parameter in self.lhs_list:
-            assign_list.append("    {}.{} = {};\n".format(ret_type, parameter, parameter))
+            assign_list.append("    {}.{} = {};\n".format(ret_name, parameter, parameter))
         return "\n".join(assign_list)
 
     def get_ret_struct(self):
-        return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list))
+        return "{}({})".format(self.get_result_name(), ', '.join(self.lhs_list))
 
     def visit_block(self, node, **kwargs):
         type_checks = []
@@ -209,6 +219,7 @@ class CodeGenMatlab(CodeGen):
                 type_checks.append('    assert( isequal(size({}), [{}, {}]) );'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
             elif self.symtable[parameter].is_vector():
                 element_type = self.symtable[parameter].element_type
+                type_declare.append('    {} = reshape({},[],1);'.format(parameter, parameter))
                 if isinstance(element_type, LaVarType):
                     if element_type.is_scalar() and element_type.is_int:
                         #type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
@@ -219,15 +230,15 @@ class CodeGenMatlab(CodeGen):
                 else:
                     #type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
                     test_content.append(test_indent+'    {} = randn({},1)'.format(parameter, self.symtable[parameter].rows))
-                type_checks.append('    assert( size({}) == {}) );'.format(parameter, self.symtable[parameter].rows))
+                type_checks.append('    assert( numel({}) == {} );'.format(parameter, self.symtable[parameter].rows))
                 # type_checks.append('    assert {}.shape == ({}, 1)'.format(parameter, self.symtable[parameter].rows))
                 # test_content.append(test_indent+'    {} = {}.reshape(({}, 1))'.format(parameter, parameter, self.symtable[parameter].rows))
             elif self.symtable[parameter].is_scalar():
-                type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
+                type_checks.append('    assert(numel({}) == 1);'.format(parameter))
                 if self.symtable[parameter].is_int:
-                    test_function.append('    {} = randi({});'.format(parameter, rand_int_max))
+                    test_function.append(test_indent+'    {} = randi({});'.format(parameter, rand_int_max))
                 else:
-                    test_function.append('    {} = randn();'.format(parameter))
+                    test_function.append(test_indent+'    {} = randn();'.format(parameter))
             elif self.symtable[parameter].is_set():
                 type_checks.append('    assert isinstance({}, list) and len({}) > 0'.format(parameter, parameter))
                 if self.symtable[parameter].size > 1:
@@ -267,8 +278,8 @@ class CodeGenMatlab(CodeGen):
                 # test_content.append(test_indent+'    {} = lambda {}: {}'.format(parameter, ', '.join(param_list), self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
 
             # main_content.append('    print("{}:", {})'.format(parameter, parameter))
-        content = 'function {} = {}({})\n'.format(self.get_result_type(), self.func_name, ', '.join(self.parameters))
-        content += '% {} = {}({})\n%\n'.format(self.get_result_type(), self.func_name, ', '.join(self.parameters))
+        content = 'function {} = {}({})\n'.format(self.get_result_name(), self.func_name, ', '.join(self.parameters))
+        content += '% {} = {}({})\n%\n'.format(self.get_result_name(), self.func_name, ', '.join(self.parameters))
         content += '%    {}'.format(  ('\n%    ').join(self.la_content.split('\n') ))
         content += "\n"
         #if show_doc:
@@ -311,7 +322,9 @@ class CodeGenMatlab(CodeGen):
             stat_info = self.visit(node.stmts[index], **kwargs)
             if stat_info.pre_list:
                 stats_content += "".join(stat_info.pre_list)
-            stats_content += ret_str + stat_info.content + ';\n'
+            stats_content += ret_str + stat_info.content
+            if not stats_content:
+                stats_content += ';\n'
 
         content += stats_content
         content += self.get_struct_definition()
@@ -320,7 +333,7 @@ class CodeGenMatlab(CodeGen):
         # data
         #main_content.append("{}({})".format(self.func_name, ', '.join(self.parameters)))
 
-        content = '\n'.join(main_content) + '\n' + content + "end\n"
+        content += "end\n"
         # convert special string in identifiers
         content = self.trim_content(content)
         return content
@@ -443,7 +456,7 @@ class CodeGenMatlab(CodeGen):
         else:
             power_info = self.visit(node.power, **kwargs)
             if node.base.la_type.is_scalar():
-                base_info.content = "np.power({}, {})".format(base_info.content, power_info.content)
+                base_info.content = "{}.^{}".format(base_info.content, power_info.content)
             else:
                 base_info.content = "np.linalg.matrix_power({}, {})".format(base_info.content, power_info.content)
         return base_info
@@ -466,13 +479,13 @@ class CodeGenMatlab(CodeGen):
         pre_list = []
         index_var = type_info.la_type.index_var
         value_var = type_info.la_type.value_var
-        pre_list.append("    {} = []\n".format(index_var))
-        pre_list.append("    {} = []\n".format(value_var))
+        pre_list.append("    {} = [];\n".format(index_var))
+        pre_list.append("    {} = [];\n".format(value_var))
         if_info = self.visit(node.ifs, **kwargs)
         pre_list += if_info.content
         # assignment
         if op_type == '=':
-            pre_list.append("    {} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(cur_m_id, value_var, index_var, self.symtable[cur_m_id].rows,
+            pre_list.append("    {} = sparse({}(:,1),{}(:,2),{},{},{});\n".format(cur_m_id, index_var, index_var, value_var, self.symtable[cur_m_id].rows,
                                                           self.symtable[cur_m_id].cols))
         elif op_type == '+=':
             # left_ids = self.get_all_ids(lhs)
@@ -491,8 +504,8 @@ class CodeGenMatlab(CodeGen):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
         subs = assign_node.left.subs
-        ret = ["    for {} in range(1, {}+1):\n".format(subs[0], sparse_node.la_type.rows),
-               "        for {} in range(1, {}+1):\n".format(subs[1], sparse_node.la_type.cols)]
+        ret = ["    for {} = 1:{}\n".format(subs[0], sparse_node.la_type.rows),
+               "        for {} = 1:{}\n".format(subs[1], sparse_node.la_type.cols)]
         pre_list = []
         for cond in node.cond_list:
             cond_info = self.visit(cond, **kwargs)
@@ -500,6 +513,8 @@ class CodeGenMatlab(CodeGen):
                 cond_info.content[index] = '            ' + cond_info.content[index]
             ret += cond_info.content
             pre_list += cond_info.pre_list
+        ret += "        end\n"
+        ret += "    end\n"
         return CodeNodeInfo(ret, pre_list)
 
     def visit_sparse_if(self, node, **kwargs):
@@ -513,9 +528,10 @@ class CodeGenMatlab(CodeGen):
         stat_content = stat_info.content
         # replace '_ij' with '(i,j)'
         stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '({},{})'.format(subs[0], subs[1]))
-        content.append('if {}:\n'.format(cond_info.content))
-        content.append('    {}.append(({}, {}))\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
-        content.append('    {}.append({})\n'.format(sparse_node.la_type.value_var, stat_content))
+        content.append('if {}\n'.format(cond_info.content))
+        content.append('    {} = [{};{} {}];\n'.format(sparse_node.la_type.index_var, sparse_node.la_type.index_var, subs[0], subs[1]))
+        content.append('    {} = [{};{}];\n'.format(   sparse_node.la_type.value_var, sparse_node.la_type.value_var, stat_content))
+        content.append('end\n')
         self.convert_matrix = False
         return CodeNodeInfo(content)
 
@@ -738,7 +754,7 @@ class CodeGenMatlab(CodeGen):
         mul = ' * '
         if l_info.la_type.is_matrix() or l_info.la_type.is_vector():
             if r_info.la_type.is_matrix() or r_info.la_type.is_vector():
-                mul = ' @ '
+                mul = ' * '
         left_info.content = left_info.content + mul + right_info.content
         left_info.pre_list += right_info.pre_list
         return left_info
