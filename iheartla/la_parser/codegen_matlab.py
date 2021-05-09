@@ -274,11 +274,16 @@ class CodeGenMatlab(CodeGen):
         #if show_doc:
         #    content += '    %{\n' + '\n'.join(doc) + '\n    %}\n'
 
+        # test
+        test_function += test_content
+        test_function.append(test_indent+'end')
         if len(self.parameters) > 0:
             content += '    if nargin==0\n'
             content += "        warning('generating random input data');\n"
             content += "        [{}] = {}();\n".format(', '.join(self.parameters), rand_func_name)
             content += '    end\n'
+            content += '\n'.join(test_function)
+            content += '\n\n'
         #else:
         #    # Alec: I don't understand what/when this would be doing something 
         #    content += "        {}();\n".format(rand_func_name)
@@ -310,17 +315,13 @@ class CodeGenMatlab(CodeGen):
 
         content += stats_content
         content += self.get_struct_definition()
-        # test
-        test_function += test_content
-        test_function.append(test_indent+'end')
 
         # Alec: outputting a function-file. Call with no arguments  for fake
         # data
         #main_content.append("{}({})".format(self.func_name, ', '.join(self.parameters)))
 
-        content = '\n'.join(main_content) + '\n' + content + '\n\n' + '\n'.join(test_function)
+        content = '\n'.join(main_content) + '\n' + content + "end\n"
         # convert special string in identifiers
-        content += '\nend\n'
         content = self.trim_content(content)
         return content
 
@@ -609,7 +610,7 @@ class CodeGenMatlab(CodeGen):
             content += '{} = zeros({}, {});\n'.format(cur_m_id, self.symtable[cur_m_id].rows,
                                                           self.symtable[cur_m_id].cols)
             for i in range(len(ret)):
-                content += "    {}({}) = [{}];\n".format(cur_m_id, i, ', '.join(ret[i]))
+                content += "    {}({},:) = [{}];\n".format(cur_m_id, i+1, ', '.join(ret[i]))
         #####################
         pre_list = [content]
         if ret_info.pre_list:
