@@ -421,12 +421,16 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
             write_output(m_content, m_file)
     except FailedParse as e:
         print(LaMsg.getInstance().get_parse_error(e))
+        raise
     except FailedCut as e:
         print("FailedCut: {}".format(str(e)))
+        raise
     except AssertionError as e:
         print("{}".format(e.args[0]))
+        raise
     except Exception as e:
         print("Exception: {}".format(str(e)))
+        raise
     except:
         print(str(sys.exc_info()[0]))
 
