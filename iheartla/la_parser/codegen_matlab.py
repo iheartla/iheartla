@@ -42,7 +42,7 @@ class CodeGenMatlab(CodeGen):
     def get_set_test_list(self, parameter, la_type, rand_int_max, pre='    '):
         test_content = []
         test_content.append(test_indent+'{} = [];'.format(parameter))
-        test_content.append(test_indent+'{}_0 = randi(1, {});'.format(parameter, rand_int_max))
+        test_content.append(test_indent+'{}_0 = randi({});'.format(parameter, rand_int_max))
         test_content.append(test_indent+'for i = 1:{}_0)'.format(parameter))
         gen_list = []
         for i in range(la_type.size):
@@ -240,19 +240,23 @@ class CodeGenMatlab(CodeGen):
                 else:
                     test_function.append(test_indent+'    {} = randn();'.format(parameter))
             elif self.symtable[parameter].is_set():
-                type_checks.append('    assert isinstance({}, list) and len({}) > 0'.format(parameter, parameter))
+                # turning off this check until deciding how sets will be
+                # stored.
+                #
+                #type_checks.append('    assert isinstance({}, list) and len({}) > 0'.format(parameter, parameter))
                 if self.symtable[parameter].size > 1:
-                    type_checks.append('    assert len({}[0]) == {}'.format(parameter, self.symtable[parameter].size))
+                    type_checks.append('    assert(size({},2) == {})'.format(parameter, self.symtable[parameter].size))
                 test_content.append(test_indent+'    {} = [];'.format(parameter))
-                test_content.append(test_indent+'    {}_0 = randi(1, {});'.format(parameter, rand_int_max))
+                test_content.append(test_indent+'    {}_0 = randi({});'.format(parameter, rand_int_max))
                 test_content.append(test_indent+'    for i = 1:{}_0 '.format(parameter))
                 gen_list = []
                 for i in range(self.symtable[parameter].size):
                     if self.symtable[parameter].int_list[i]:
-                        gen_list.append('randi({});'.format(rand_int_max))
+                        gen_list.append('randi({})'.format(rand_int_max))
                     else:
-                        gen_list.append('randn();')
-                test_content.append(test_indent+'        {}.append(('.format(parameter) + ', '.join(gen_list) + '))')
+                        gen_list.append('randn()')
+                test_content.append(test_indent+'        {} = [{};'.format(parameter,parameter) + ', '.join(gen_list) + '];')
+                test_content.append(test_indent+'    end')
             elif self.symtable[parameter].is_function():
                 param_list = []
                 dim_definition = []
@@ -581,7 +585,7 @@ class CodeGenMatlab(CodeGen):
                             elif 'I' in ret[i][j] and 'I' not in self.symtable:
                                 # todo: assert in type checker
                                 assert dims[0] == dims[1], "I must be square matrix"
-                                ret[i][j] = ret[i][j].replace('I', 'eye({})'.format(dims[0]))
+                                ret[i][j] = ret[i][j].replace('I', 'speye({})'.format(dims[0]))
                                 continue
                             else:
                                 func_name = ret[i][j] + ' * ones'
@@ -596,31 +600,31 @@ class CodeGenMatlab(CodeGen):
                         ret[i][j] = 'reshape({}, [{}, 1])'.format(ret[i][j], node.la_type.item_types[i][j].la_type.rows)
                 all_rows.append('[' + ', '.join(ret[i]) + ']')
             # matrix
-            if self.symtable[cur_m_id].sparse and self.symtable[cur_m_id].block:
-                m_content += 'sparse.bmat([{}])'.format(', '.join(all_rows))
-                if len(ret) > 1 and len(ret[0]) > 1:
-                    content += '{} = {}\n'.format(cur_m_id, m_content)
-                elif len(ret) == 1 and len(ret[0]) != 1:  # one row one col -> vstack
-                    # single row
-                    content += '{} = sparse.hstack(({}))\n'.format(cur_m_id, ', '.join(ret[0]))
-                else:
-                    # single col
-                    for i in range(len(ret)):
-                        ret[i] = ''.join(ret[i])
-                    content += '{} = sparse.vstack(({}))\n'.format(cur_m_id, ', '.join(ret))
-            else:
-                # dense
-                m_content += 'np.block([{}])'.format(', '.join(all_rows))
-                if len(ret) > 1 and len(ret[0]) > 1:
-                    content += '{} = {};\n'.format(cur_m_id, m_content)
-                elif len(ret) == 1 and len(ret[0]) != 1:  # one row one col -> vstack
-                    # single row
-                    content += '{} = np.hstack(({}))\n'.format(cur_m_id, ', '.join(ret[0]))
-                else:
-                    # single col
-                    for i in range(len(ret)):
-                        ret[i] = ''.join(ret[i])
-                    content += '{} = np.vstack(({}))\n'.format(cur_m_id, ', '.join(ret))
+            #if self.symtable[cur_m_id].sparse and self.symtable[cur_m_id].block:
+            #    m_content += 'sparse.bmat([{}])'.format(', '.join(all_rows))
+            #    if len(ret) > 1 and len(ret[0]) > 1:
+            #        content += '{} = {}\n'.format(cur_m_id, m_content)
+            #    elif len(ret) == 1 and len(ret[0]) != 1:  # one row one col -> vstack
+            #        # single row
+            #        content += '{} = sparse.hstack(({}))\n'.format(cur_m_id, ', '.join(ret[0]))
+            #    else:
+            #        # single col
+            #        for i in range(len(ret)):
+            #            ret[i] = ''.join(ret[i])
+            #        content += '{} = sparse.vstack(({}))\n'.format(cur_m_id, ', '.join(ret))
+            #else:
+            #    # dense
+            m_content += '[{}]'.format('; '.join(all_rows))
+            if len(ret) > 1 and len(ret[0]) > 1:
+                content += '{} = {};\n'.format(cur_m_id, m_content)
+            #elif len(ret) == 1 and len(ret[0]) != 1:  # one row one col -> vstack
+            #    # single row
+            #    content += '{} = np.hstack(({}))\n'.format(cur_m_id, ', '.join(ret[0]))
+            #else:
+            #    # single col
+            #    for i in range(len(ret)):
+            #        ret[i] = ''.join(ret[i])
+            #    content += '{} = np.vstack(({}))\n'.format(cur_m_id, ', '.join(ret))
         else:
             # dense
             content += '{} = zeros({}, {});\n'.format(cur_m_id, self.symtable[cur_m_id].rows,
@@ -636,7 +640,7 @@ class CodeGenMatlab(CodeGen):
     def visit_num_matrix(self, node, **kwargs):
         post_s = ''
         if node.id:
-            func_name = "eye"
+            func_name = "speye"
         else:
             if node.left == '0':
                 func_name = "zeros"
@@ -904,7 +908,7 @@ class CodeGenMatlab(CodeGen):
                 else:
                     item_content = "{}+1".format(item_info.content)
                 item_list.append(item_content)
-        content = '(' + ', '.join(item_list) + ') in ' + right_info.content
+        content = 'ismember([' + ', '.join(item_list) + '],' + right_info.content+",'rows')"
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_not_in(self, node, **kwargs):
