@@ -1373,9 +1373,12 @@ class TypeWalker(NodeWalker):
         for item in node.left:
             item_info = self.walk(item, **kwargs)
             item_node.append(item_info.ir)
+            assert item_info.la_type.is_scalar(), self.get_err_msg_info(item_info.ir.parse_info, "Must be scalar type")
         ir_node.items = item_node
         set_info = self.walk(node.right, **kwargs)
         ir_node.set = set_info.ir
+        assert set_info.la_type.is_set(), self.get_err_msg_info(set_info.ir.parse_info, "Must be set type")
+        assert len(item_node) == set_info.la_type.size, self.get_err_msg_info(node.parseinfo, "Size doesn't match for set")
         return NodeInfo(ir=ir_node)
 
     def walk_NotInCondition(self, node, **kwargs):
@@ -1384,45 +1387,56 @@ class TypeWalker(NodeWalker):
         for item in node.left:
             item_info = self.walk(item, **kwargs)
             item_node.append(item_info.ir)
+            assert item_info.la_type.is_scalar(), self.get_err_msg_info(item_info.ir.parse_info, "Must be scalar type")
         ir_node.items = item_node
         set_info = self.walk(node.right, **kwargs)
         ir_node.set = set_info.ir
+        assert set_info.la_type.is_set(), self.get_err_msg_info(set_info.ir.parse_info, "Must be set type")
+        assert len(item_node) == set_info.la_type.size, self.get_err_msg_info(node.parseinfo, "Size doesn't match for set")
         return NodeInfo(VarTypeEnum.SCALAR, ir=ir_node)
 
     def walk_NeCondition(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
-        left_type = left_info.la_type
         right_info = self.walk(node.right, **kwargs)
-        right_type = right_info.la_type
-        # assert left_type.var_type == right_type.var_type, "different type "
+        assert left_info.la_type.is_same_type(right_info.la_type), self.get_err_msg(self.get_line_info(node.parseinfo),
+                                                              self.get_line_info(node.parseinfo).text.find(node.op),
+                                                              "Different types for comparison")
         return NodeInfo(ir=BinCompNode(IRNodeType.Ne, left_info.ir, right_info.ir, parse_info=node.parseinfo, op=node.op))
 
     def walk_EqCondition(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
-        left_type = left_info.la_type
         right_info = self.walk(node.right, **kwargs)
-        right_type = right_info.la_type
-        # assert left_type.var_type == right_type.var_type, "different type "
+        assert left_info.la_type.is_same_type(right_info.la_type), self.get_err_msg(self.get_line_info(node.parseinfo),
+                                                              self.get_line_info(node.parseinfo).text.find(node.op),
+                                                              "Different types for comparison")
         return NodeInfo(ir=BinCompNode(IRNodeType.Eq, left_info.ir, right_info.ir, parse_info=node.parseinfo, op=node.op))
 
     def walk_GreaterCondition(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
+        assert left_info.la_type.is_scalar(), self.get_err_msg_info(left_info.ir.parse_info, "LHS has to be scalar type for comparison")
+        assert right_info.la_type.is_scalar(), self.get_err_msg_info(right_info.ir.parse_info, "RHS has to be scalar type for comparison")
         return NodeInfo(ir=BinCompNode(IRNodeType.Gt, left_info.ir, right_info.ir, parse_info=node.parseinfo, op=node.op))
 
     def walk_GreaterEqualCondition(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
+        assert left_info.la_type.is_scalar(), self.get_err_msg_info(left_info.ir.parse_info, "LHS has to be scalar type for comparison")
+        assert right_info.la_type.is_scalar(), self.get_err_msg_info(right_info.ir.parse_info, "RHS has to be scalar type for comparison")
         return NodeInfo(ir=BinCompNode(IRNodeType.Ge, left_info.ir, right_info.ir, parse_info=node.parseinfo, op=node.op))
 
     def walk_LessCondition(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
+        assert left_info.la_type.is_scalar(), self.get_err_msg_info(left_info.ir.parse_info, "LHS has to be scalar type for comparison")
+        assert right_info.la_type.is_scalar(), self.get_err_msg_info(right_info.ir.parse_info, "RHS has to be scalar type for comparison")
         return NodeInfo(ir=BinCompNode(IRNodeType.Lt, left_info.ir, right_info.ir, parse_info=node.parseinfo, op=node.op))
 
     def walk_LessEqualCondition(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
+        assert left_info.la_type.is_scalar(), self.get_err_msg_info(left_info.ir.parse_info, "LHS has to be scalar type for comparison")
+        assert right_info.la_type.is_scalar(), self.get_err_msg_info(right_info.ir.parse_info, "RHS has to be scalar type for comparison")
         return NodeInfo(ir=BinCompNode(IRNodeType.Le, left_info.ir, right_info.ir, parse_info=node.parseinfo, op=node.op))
 
     def update_sub_sym_lists(self, main_sym, right_sym_list):
@@ -2348,11 +2362,6 @@ class TypeWalker(NodeWalker):
         need_cast = False
         left_type = left_info.ir.la_type
         right_type = right_info.ir.la_type
-        # todo:delete
-        if left_type.var_type == VarTypeEnum.INVALID:
-            left_type.var_type = VarTypeEnum.SCALAR
-        if right_type.var_type == VarTypeEnum.INVALID:
-            right_type.var_type = VarTypeEnum.SCALAR
         # error msg
         left_line = get_parse_info_buffer(left_info.ir.parse_info).line_info(left_info.ir.parse_info.pos)
         right_line = get_parse_info_buffer(right_info.ir.parse_info).line_info(right_info.ir.parse_info.pos)
