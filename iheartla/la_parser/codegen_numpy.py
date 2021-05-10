@@ -852,7 +852,7 @@ class CodeGenNumpy(CodeGen):
                 op = ' += '
             right_exp += '    ' + self.get_main_id(left_id) + op + right_info.content
             content += right_exp
-        content += '\n'
+        #content += '\n'
         la_remove_key(LHS, **kwargs)
         self.declared_symbols.add(node.left.get_main_id())
         return CodeNodeInfo(content)
