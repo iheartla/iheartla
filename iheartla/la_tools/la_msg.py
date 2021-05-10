@@ -1,5 +1,6 @@
 from enum import Enum
 from tatsu.util import re
+from .la_helper import is_new_tatsu_version
 
 
 class LaMsgTypeEnum(Enum):
@@ -146,7 +147,10 @@ class LaMsg(object):
         return ''.join([' '] * column) + '^\n'
 
     def get_parse_error(self, err):
-        line_info = err.buf.line_info(err.pos)
+        if is_new_tatsu_version():
+            line_info = err.tokenizer.line_info(err.pos)
+        else:
+            line_info = err.buf.line_info(err.pos)
         converted_name = None
         for rule in reversed(err.stack):
             if rule in self.rule_convention_dict:

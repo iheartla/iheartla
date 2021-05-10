@@ -64,10 +64,6 @@ def la_remove_key(keys, **kwargs):
     elif keys in kwargs:
         del kwargs[keys]
 
-def get_parse_info_buffer(parse_info):
-    if is_new_tatsu_version():
-        return parse_info.tokenizer
-    return parse_info.buffer
 
 class TypeWalker(NodeWalker):
     def __init__(self):
