@@ -146,25 +146,33 @@ class LaMsg(object):
         return ''.join([' '] * column) + '^\n'
 
     def get_parse_error(self, err):
-        line_info = err.buf.line_info(err.pos)
-        converted_name = None
-        for rule in reversed(err.stack):
-            if rule in self.rule_convention_dict:
-                converted_name = self.rule_convention_dict[rule]
-                break
-        content = "{}. Failed to parse {}: {}\n".format(self.get_line_desc(line_info), converted_name, err.message)
-        content += line_info.text
-        content += self.get_pos_marker(line_info.col)
-        # from TatSu/tatsu/exceptions.py 
-        # info = err.tokenizer.line_info(err.pos)
-        # template = "{}({}:{}) {} :\n{}\n{}^"
-        # text = info.text.rstrip()
-        # leading = re.sub(r'[^\t]', ' ', text)[:info.col]
-        # text = text.expandtabs()
-        # leading = leading.expandtabs()
-        # content = template.format(info.filename,
-        #                        info.line + 1, info.col + 1,
-        #                        err.message.rstrip(),
-        #                        text,
-        #                        leading)
+        ## Uncommenting this and commenting out the block below causes *nothing*
+        ## to get printed when the CLI encounters an error
+        ## 
+        ## What is this block printing that the block below is not? When we
+        ## restore it, could we please check that the CLI still prints an error
+        ## message?
+        ## 
+        #line_info = err.buf.line_info(err.pos)
+        #converted_name = None
+        #for rule in reversed(err.stack):
+        #    if rule in self.rule_convention_dict:
+        #        converted_name = self.rule_convention_dict[rule]
+        #        break
+        #content = "{}. Failed to parse {}: {}\n".format(self.get_line_desc(line_info), converted_name, err.message)
+        #content += line_info.text
+        #content += self.get_pos_marker(line_info.col)
+
+        #from TatSu/tatsu/exceptions.py 
+        info = err.tokenizer.line_info(err.pos)
+        template = "{}({}:{}) {} :\n{}\n{}^"
+        text = info.text.rstrip()
+        leading = re.sub(r'[^\t]', ' ', text)[:info.col]
+        text = text.expandtabs()
+        leading = leading.expandtabs()
+        content = template.format(info.filename,
+                               info.line + 1, info.col + 1,
+                               err.message.rstrip(),
+                               text,
+                               leading)
         return content
