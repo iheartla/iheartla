@@ -453,26 +453,20 @@ class CodeGenMatlab(CodeGen):
             if node.la_type.is_scalar():
                 base_info.content = "1 / ({})".format(base_info.content)
             else:
-                if node.base.la_type.is_matrix() and node.base.la_type.sparse:
-                    base_info.content = "sparse.linalg.inv({})".format(base_info.content)
-                else:
-                    base_info.content = "np.linalg.inv({})".format(base_info.content)
+                base_info.content = "inv({})".format(base_info.content)
         else:
             power_info = self.visit(node.power, **kwargs)
             if node.base.la_type.is_scalar():
                 base_info.content = "{}.^{}".format(base_info.content, power_info.content)
             else:
-                base_info.content = "np.linalg.matrix_power({}, {})".format(base_info.content, power_info.content)
+                base_info.content = "{}^{}".format(base_info.content, power_info.content)
         return base_info
 
     def visit_solver(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
         left_info.pre_list += right_info.pre_list
-        if (node.left.la_type.is_matrix() and node.left.la_type.sparse) or (node.right.la_type.is_matrix() and node.right.la_type.sparse):
-            left_info.content = "sparse.linalg.spsolve({}, {})".format(left_info.content, right_info.content)
-        else:
-            left_info.content = "np.linalg.solve({}, {})".format(left_info.content, right_info.content)
+        left_info.content = "{}\{}".format(left_info.content, right_info.content)
         return left_info
 
     def visit_sparse_matrix(self, node, **kwargs):
