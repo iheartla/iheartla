@@ -21,8 +21,7 @@ class CodeGenLatex(CodeGen):
 \usepackage{amssymb}
 '''[1:]
         self.pre_str += r'''
-\usepackage{ctex}
-\setmainfont{Linux Libertine O}
+\usepackage{libertine}
 '''[1:]
         self.pre_str += r'''
 \DeclareMathOperator*{\argmax}{arg\,max}

@@ -221,7 +221,7 @@ class CodeGenNumpy(CodeGen):
                             test_content.append('        {}.append({})'.format(parameter, "{}_f".format(parameter)))
                             test_content.append('    {} = np.asarray({})'.format(parameter, parameter))
                         else:
-                            type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
+                            type_declare.append('    {} = np.asarray({}, dtype={})'.format(parameter, parameter, "np.integer" if ele_type.is_integer_element() else "np.float64"))
                             test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
             elif self.symtable[parameter].is_matrix():
                 element_type = self.symtable[parameter].element_type

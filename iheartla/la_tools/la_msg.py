@@ -58,6 +58,15 @@ class LaMsg(object):
                 "subtraction_in_matrix": "subtraction in matrix",
                 "multiplication_in_matrix": "multiplication in matrix",
                 "division_in_matrix": "division in matrix",
+                "frobenius_product_in_matrix_operator": "frobenius product",
+                "hadamard_product_in_matrix_operator": "hadamard product",
+                "cross_product_in_matrix_operator": "cross product",
+                "kronecker_product_in_matrix_operator": "kronecker product",
+                "trans_in_matrix_operator": "transpose",
+                "sqrt_in_matrix_operator": "squareroot",
+                "sum_in_matrix_operator": "sum",
+                "power_in_matrix_operator": "power",
+                "solver_in_matrix_operator": "solver",
                 "number_matrix": "number matrix",
                 # operators.ebnf
                 "addition": "addition",
@@ -79,6 +88,7 @@ class LaMsg(object):
                 "cross_product_operator": "cross product",
                 "kronecker_product_operator": "kronecker product",
                 "trans_operator": "transpose",
+                "sqrt_operator": "squareroot operator",
                 "function_operator": "function",
                 "exp_func": "exponential",
                 "log_func": "log",
@@ -107,6 +117,16 @@ class LaMsg(object):
                 "sec_func": "sec function",
                 "csc_func": "csc function",
                 "atan2_func": "atan2 function",
+                # linear algebra function
+                "trace_func": "trace function",
+                "tr_func": "trace function",
+                "diag_func": "diagonal function",
+                "vec_func": "vectorization function",
+                "det_func": "determinant function",
+                "rank_func": "rank function",
+                "null_func": "null space function",
+                "orth_func": "orthogonal space function",
+                "inv_func": "inverse function",
             }
             self.cur_line = 0
             self.cur_col = 0
@@ -126,16 +146,25 @@ class LaMsg(object):
         return ''.join([' '] * column) + '^\n'
 
     def get_parse_error(self, err):
+        line_info = err.buf.line_info(err.pos)
+        converted_name = None
+        for rule in reversed(err.stack):
+            if rule in self.rule_convention_dict:
+                converted_name = self.rule_convention_dict[rule]
+                break
+        content = "{}. Failed to parse {}: {}\n".format(self.get_line_desc(line_info), converted_name, err.message)
+        content += line_info.text
+        content += self.get_pos_marker(line_info.col)
         # from TatSu/tatsu/exceptions.py 
-        info = err.tokenizer.line_info(err.pos)
-        template = "{}({}:{}) {} :\n{}\n{}^"
-        text = info.text.rstrip()
-        leading = re.sub(r'[^\t]', ' ', text)[:info.col]
-        text = text.expandtabs()
-        leading = leading.expandtabs()
-        content = template.format(info.filename,
-                               info.line + 1, info.col + 1,
-                               err.message.rstrip(),
-                               text,
-                               leading)
+        # info = err.tokenizer.line_info(err.pos)
+        # template = "{}({}:{}) {} :\n{}\n{}^"
+        # text = info.text.rstrip()
+        # leading = re.sub(r'[^\t]', ' ', text)[:info.col]
+        # text = text.expandtabs()
+        # leading = leading.expandtabs()
+        # content = template.format(info.filename,
+        #                        info.line + 1, info.col + 1,
+        #                        err.message.rstrip(),
+        #                        text,
+        #                        leading)
         return content
