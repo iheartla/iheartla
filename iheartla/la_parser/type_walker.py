@@ -1454,11 +1454,23 @@ class TypeWalker(NodeWalker):
                 if main_sym in cur_dict:
                     # merge same subscript
                     old_right_list = copy.deepcopy(cur_dict[main_sym])
-                    assert len(old_right_list) == len(right_sym_list), "Internal error, please report a bug"
-                    for old_index in range(len(old_right_list)):
-                        if sub_sym != old_right_list[old_index]:
-                            old_right_list[old_index] = right_sym_list[old_index]
-                    cur_dict[main_sym] = old_right_list
+                    # assert len(old_right_list) == len(right_sym_list), "Internal error, please report a bug"
+                    if len(old_right_list) == len(right_sym_list):
+                        for old_index in range(len(old_right_list)):
+                            if sub_sym != old_right_list[old_index]:
+                                old_right_list[old_index] = right_sym_list[old_index]
+                        cur_dict[main_sym] = old_right_list
+                    elif len(old_right_list) < len(right_sym_list):
+                        new_right_list = copy.deepcopy(right_sym_list)
+                        for old_index in range(len(old_right_list)):
+                            if sub_sym == old_right_list[old_index]:
+                                new_right_list[old_index] = sub_sym
+                        cur_dict[main_sym] = new_right_list
+                    else:
+                        for new_index in range(len(right_sym_list)):
+                            if sub_sym == right_sym_list[new_index]:
+                                old_right_list[new_index] = sub_sym
+                        cur_dict[main_sym] = old_right_list
                 else:
                     cur_dict[main_sym] = right_sym_list
                 sub_sym_list[sub_index] = cur_dict
