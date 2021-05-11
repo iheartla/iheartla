@@ -200,7 +200,7 @@ class ParserFileManager(object):
             self.parser_dict[hash_value] = parser
             try:
                 # save to file asynchronously
-                print("hash_value is:{}, grammar:{}".format(hash_value, grammar))
+                # print("hash_value is:{}, grammar:{}".format(hash_value, grammar))
                 save_thread = threading.Thread(target=self.save_grammar, args=(hash_value, grammar,))
                 save_thread.start()
                 self.save_threads.append( save_thread )
@@ -580,34 +580,33 @@ def recreate_local_parser_cache():
     The new parser will work as long as the grammar modification doesn't include the following rules:
     KEYWORDS, constant, builtin_operators, func_id, identifier_alone
     """
-    if DEBUG_PARSER:
-        ### WARNING: This will delete and re-create the cache and 'la_local_parsers' directories.
-        import iheartla.la_parser.parser
-        PM = iheartla.la_parser.parser._parser_manager
+    ### WARNING: This will delete and re-create the cache and 'la_local_parsers' directories.
+    import iheartla.la_parser.parser
+    PM = iheartla.la_parser.parser._parser_manager
 
-        print( '## Clearing the cache dir:', PM.cache_dir )
-        shutil.rmtree( PM.cache_dir )
-        Path(PM.cache_dir).mkdir()
+    print( '## Clearing the cache dir:', PM.cache_dir )
+    shutil.rmtree( PM.cache_dir )
+    Path(PM.cache_dir).mkdir()
 
-        la_local_parsers = PM.grammar_dir.parent/'la_local_parsers'
-        print( '## Clearing the la_local_parsers dir:', la_local_parsers )
-        shutil.rmtree( la_local_parsers )
-        la_local_parsers.mkdir()
+    la_local_parsers = PM.grammar_dir.parent/'la_local_parsers'
+    print( '## Clearing the la_local_parsers dir:', la_local_parsers )
+    shutil.rmtree( la_local_parsers )
+    la_local_parsers.mkdir()
 
-        print('## Reloading the ParserManager.')
-        PM.reload()
+    print('## Reloading the ParserManager.')
+    PM.reload()
 
-        print('## Re-creating the parsers.')
-        iheartla.la_parser.parser.create_parser()
+    print('## Re-creating the parsers.')
+    iheartla.la_parser.parser.create_parser()
 
-        print('## Waiting for them to be saved.')
-        for thread in PM.parser_file_manager.save_threads: thread.join()
+    print('## Waiting for them to be saved.')
+    for thread in PM.parser_file_manager.save_threads: thread.join()
 
-        print('## Copying the cache dir contents into the local dir.')
-        for f in Path(PM.cache_dir).glob('*.py'):
-            shutil.copy( f, la_local_parsers )
+    print('## Copying the cache dir contents into the local dir.')
+    for f in Path(PM.cache_dir).glob('*.py'):
+        shutil.copy( f, la_local_parsers )
 
-        print('## Modifying default parsers')
-        PM.parser_file_manager.generate_new_parser_files()
+    print('## Modifying default parsers')
+    PM.parser_file_manager.generate_new_parser_files()
 
-        print('## Done.')
+    print('## Done.')
