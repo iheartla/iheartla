@@ -12,6 +12,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('-o', '--output', help='The output language', choices = ['numpy', 'eigen', 'latex','matlab'])
     # arg_parser.add_argument('-i', '--input', help='File name containing I heart LA source code')
     arg_parser.add_argument('--GUI', action='store_true', help='Launch the GUI editor')
+    arg_parser.add_argument('--reg', action='store_false', help='Regenerate grammar files')
     arg_parser.add_argument('input', nargs='*', help='The I Heart LA files to compile.')
     args = arg_parser.parse_args()
     if args.GUI:
@@ -28,5 +29,8 @@ if __name__ == '__main__':
                 assert out in out_dict, "Parameters after -o or --output can only be numpy, eigen, latex, or matlab"
                 parser_type = parser_type | out_dict[out]
         for input in args.input: compile_la_file(input, parser_type)
+    elif args.reg:
+        import iheartla.la_tools.parser_manager
+        iheartla.la_tools.parser_manager.recreate_local_parser_cache()
     else:
         show_gui()
