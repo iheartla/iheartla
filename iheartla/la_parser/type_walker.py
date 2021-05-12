@@ -99,6 +99,7 @@ class TypeWalker(NodeWalker):
         self.la_content = ''
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
         self.visiting_lhs = False
+        self.pre_walk = False
         self.same_dim_list = []
         self.rhs_raw_str_list = []
 
@@ -267,6 +268,7 @@ class TypeWalker(NodeWalker):
         raise Exception('Unexpected type %s walked', type(o).__name__)
 
     def walk_Start(self, node, **kwargs):
+        self.pre_walk = True if 'pre_walk' in kwargs else False
         self.symtable.clear()
         # self.visualizer.visualize(node)  # visualize
         ir_node = StartNode(parse_info=node.parseinfo)
@@ -293,7 +295,7 @@ class TypeWalker(NodeWalker):
         ir_node.vblock = vblock_list
         params_list, stat_list, index_list = ir_node.get_block_list()
         # check function assignment
-        if 'pre_walk' in kwargs:
+        if self.pre_walk:
             for index in range(len(stat_list)):
                 if type(stat_list[index]).__name__ == 'Assignment':
                     # check whether rhs is function type
@@ -311,7 +313,7 @@ class TypeWalker(NodeWalker):
                             continue
         #
         self.multi_lhs_list = multi_lhs_list
-        if 'pre_walk' in kwargs:
+        if self.pre_walk:
             return ir_node
         block_node = BlockNode()
         for index in range(len(stat_list)):
