@@ -63,7 +63,7 @@ class CodeGenMatlab(CodeGen):
             if len(node.subs) == 2:
                 if self.symtable[node.main_id].is_matrix():
                     if self.symtable[node.main_id].sparse:
-                        content = "{}.tocsr()[{}, {}]".format(node.main_id, node.subs[0], node.subs[1])
+                        content = "{}({}, {})".format(node.main_id, node.subs[0], node.subs[1])
                     else:
                         content = "{}({}, {})".format(node.main_id, node.subs[0], node.subs[1])
         return CodeNodeInfo(content)
@@ -380,10 +380,14 @@ class CodeGenMatlab(CodeGen):
             content.append("{} = zeros({}, {}, {});\n".format(assign_id, self.symtable[assign_id].size, ele_type.rows, ele_type.cols))
         else:
             content.append("{} = 0;\n".format(assign_id))
+        sym_info = node.sym_dict[target_var[0]]
         if self.symtable[target_var[0]].is_matrix() and self.symtable[target_var[0]].sparse:
-            content.append("for {} = 1:size({}, 2)\n".format(sub, target_var[0]))
+            if sub == sym_info[0]:
+                content.append("for {} = 1:size({},1)\n".format(sub, target_var[0]))
+            else:
+                content.append("for {} = 1:size({},2)\n".format(sub, target_var[0]))
         else:
-            content.append("for {} = 1:wrongsize?({}, 1)\n".format(sub, target_var[0]))
+            content.append("for {} = 1:numel({})\n".format(sub, target_var[0]))
         if exp_info.pre_list:   # catch pre_list
             list_content = "".join(exp_info.pre_list)
             # content += exp_info.pre_list
@@ -477,8 +481,8 @@ class CodeGenMatlab(CodeGen):
         pre_list = []
         index_var = type_info.la_type.index_var
         value_var = type_info.la_type.value_var
-        pre_list.append("    {} = [];\n".format(index_var))
-        pre_list.append("    {} = [];\n".format(value_var))
+        pre_list.append("    {} = zeros(0,2);\n".format(index_var))
+        pre_list.append("    {} = zeros(0,1);\n".format(value_var))
         if_info = self.visit(node.ifs, **kwargs)
         pre_list += if_info.content
         # assignment
@@ -527,8 +531,8 @@ class CodeGenMatlab(CodeGen):
         # replace '_ij' with '(i,j)'
         stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '({},{})'.format(subs[0], subs[1]))
         content.append('if {}\n'.format(cond_info.content))
-        content.append('    {} = [{};{} {}];\n'.format(sparse_node.la_type.index_var, sparse_node.la_type.index_var, subs[0], subs[1]))
-        content.append('    {} = [{};{}];\n'.format(   sparse_node.la_type.value_var, sparse_node.la_type.value_var, stat_content))
+        content.append('    {}(end+1,:) = [{} {}];\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
+        content.append('    {}(end+1) = {};\n'.format(   sparse_node.la_type.value_var, stat_content))
         content.append('end\n')
         self.convert_matrix = False
         return CodeNodeInfo(content)
@@ -667,9 +671,9 @@ class CodeGenMatlab(CodeGen):
                 else:
                     col_content = "{}".format(col_info.content)
                 if self.symtable[main_info.content].sparse:
-                    content = "{}.tocsr()[{}, {}]".format(main_info.content, row_content, col_content)
+                    content = "{}({}, {})".format(main_info.content, row_content, col_content)
                 else:
-                    content = "{}[{}, {}]".format(main_info.content, row_content, col_content)
+                    content = "{}({}, {})".format(main_info.content, row_content, col_content)
             else:
                 content = "{}({}, :)".format(main_info.content, row_content)
         else:
@@ -795,26 +799,26 @@ class CodeGenMatlab(CodeGen):
                         content = ""
                         if self.symtable[sequence].diagonal:
                             # add definition
-                            content += "    {} = [];\n".format(self.symtable[sequence].index_var)
-                            content += "    {} = [];\n".format(self.symtable[sequence].value_var)
+                            content += "    {} = zeros(0,2);\n".format(self.symtable[sequence].index_var)
+                            content += "    {} = zeros(0,1);\n".format(self.symtable[sequence].value_var)
                         content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].rows)
                         if right_info.pre_list:
                             content += self.update_prelist_str(right_info.pre_list, "    ")
-                        content += "        {}.append(({} - 1, {} - 1))\n".format(self.symtable[sequence].index_var, left_subs[0], left_subs[0])
-                        content += "        {}.append({})\n".format(self.symtable[sequence].value_var, right_info.content)
-                        content += "    {} = scipy.sparse.fcoo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(
+                        content += "        {}(end+1,:) = [{} {}];\n".format(self.symtable[sequence].index_var, left_subs[0], left_subs[0])
+                        content += "        {}(end+1) = {};\n".format(self.symtable[sequence].value_var, right_info.content)
+                        content += "    end\n"
+                        content += "    {} = sparse({}(:,1),{}(:,2),{},{},{});\n".format(
                             sequence,
-                            self.symtable[sequence].value_var,
                             self.symtable[sequence].index_var,
-                            self.symtable[
-                            sequence].rows,
-                            self.symtable[
-                            sequence].cols)
+                            self.symtable[sequence].index_var,
+                            self.symtable[sequence].value_var,
+                            self.symtable[ sequence].rows,
+                            self.symtable[ sequence].cols)
                     else:  # L_ij
                         if right_info.pre_list:
                             content += "".join(right_info.pre_list)
                         # sparse mat assign
-                        right_exp += '    ' + sequence + ' = ' + right_info.content
+                        right_exp += '    ' + sequence + ' = ' + right_info.content + ';\n'
                         content += right_exp
                 elif left_subs[0] == left_subs[1]:
                     # L_ii
@@ -874,8 +878,7 @@ class CodeGenMatlab(CodeGen):
             if node.op == '+=':
                 op = ' += '
             right_exp += '    ' + self.get_main_id(left_id) + op + right_info.content
-            content += right_exp
-        content += ';\n'
+            content += right_exp + ';\n';
         la_remove_key(LHS, **kwargs)
         return CodeNodeInfo(content)
 
