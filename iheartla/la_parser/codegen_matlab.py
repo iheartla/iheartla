@@ -381,9 +381,9 @@ class CodeGenMatlab(CodeGen):
         else:
             content.append("{} = 0;\n".format(assign_id))
         if self.symtable[target_var[0]].is_matrix() and self.symtable[target_var[0]].sparse:
-            content.append("for {} = 1:size({}, 1)\n".format(sub, target_var[0]))
+            content.append("for {} = 1:size({}, 2)\n".format(sub, target_var[0]))
         else:
-            content.append("for {} = 1:size({}, 1)\n".format(sub, target_var[0]))
+            content.append("for {} = 1:wrongsize?({}, 1)\n".format(sub, target_var[0]))
         if exp_info.pre_list:   # catch pre_list
             list_content = "".join(exp_info.pre_list)
             # content += exp_info.pre_list
@@ -797,18 +797,19 @@ class CodeGenMatlab(CodeGen):
                             # add definition
                             content += "    {} = [];\n".format(self.symtable[sequence].index_var)
                             content += "    {} = [];\n".format(self.symtable[sequence].value_var)
-                        content += "    for {} = 1:({}+1)\n".format(left_subs[0], self.symtable[sequence].rows)
+                        content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].rows)
                         if right_info.pre_list:
                             content += self.update_prelist_str(right_info.pre_list, "    ")
                         content += "        {}.append(({} - 1, {} - 1))\n".format(self.symtable[sequence].index_var, left_subs[0], left_subs[0])
                         content += "        {}.append({})\n".format(self.symtable[sequence].value_var, right_info.content)
-                        content += "    {} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(sequence,
-                                                                                                            self.symtable[sequence].value_var,
-                                                                                                            self.symtable[sequence].index_var,
-                                                                                                            self.symtable[
-                                                                                                                sequence].rows,
-                                                                                                            self.symtable[
-                                                                                                                sequence].cols)
+                        content += "    {} = scipy.sparse.fcoo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(
+                            sequence,
+                            self.symtable[sequence].value_var,
+                            self.symtable[sequence].index_var,
+                            self.symtable[
+                            sequence].rows,
+                            self.symtable[
+                            sequence].cols)
                     else:  # L_ij
                         if right_info.pre_list:
                             content += "".join(right_info.pre_list)
@@ -818,7 +819,7 @@ class CodeGenMatlab(CodeGen):
                 elif left_subs[0] == left_subs[1]:
                     # L_ii
                     content = ""
-                    content += "    for {} = 1:({}+1)\n".format(left_subs[0], self.symtable[sequence].rows)
+                    content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].rows)
                     if right_info.pre_list:
                         content += self.update_prelist_str(right_info.pre_list, "    ")
                     content += "        {}[{}][{}] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
@@ -834,8 +835,8 @@ class CodeGenMatlab(CodeGen):
                             content += "    {} = zeros({}, {});\n".format(sequence,
                                                                               self.symtable[sequence].rows,
                                                                               self.symtable[sequence].cols)
-                    content += "    for {} = 1:{}+1\n".format(left_subs[0], self.symtable[sequence].rows)
-                    content += "        for {} = 1:{}+1:\n".format(left_subs[1], self.symtable[sequence].cols)
+                    content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].rows)
+                    content += "        for {} = 1:{}\n".format(left_subs[1], self.symtable[sequence].cols)
                     if right_info.pre_list:
                         content += self.update_prelist_str(right_info.pre_list, "        ")
                     content += "        " + right_exp
@@ -857,11 +858,11 @@ class CodeGenMatlab(CodeGen):
                         content += "    {} = zeros({}, {});\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
                     else:
                         content += "    {} = zeros({});\n".format(sequence, self.symtable[sequence].size)
-                    content += "    for {} = 1:{}+1\n".format(left_subs[0], self.symtable[sequence].size)
+                    content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].size)
                 else:
                     # vector
                     content += "    {} = zeros({});\n".format(sequence, self.symtable[sequence].rows)
-                    content += "    for {} = 1:{}+1\n".format(left_subs[0], self.symtable[sequence].rows)
+                    content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].rows)
                 if right_info.pre_list:
                     content += self.update_prelist_str(right_info.pre_list, "    ")
                 content += "    " + right_exp
@@ -924,7 +925,7 @@ class CodeGenMatlab(CodeGen):
                 else:
                     item_content = "{}+1".format(item_info.content)
                 item_list.append(item_content)
-        content = '(' + ', '.join(item_list) + ') not in ' + right_info.content
+        content = '~ismember([' + ', '.join(item_list) + '],' + right_info.content+",'rows')"
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_bin_comp(self, node, **kwargs):
