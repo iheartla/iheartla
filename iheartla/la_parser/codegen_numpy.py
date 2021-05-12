@@ -364,8 +364,12 @@ class CodeGenNumpy(CodeGen):
             content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].size, ele_type.rows, ele_type.cols))
         else:
             content.append("{} = 0\n".format(assign_id))
+        sym_info = node.sym_dict[target_var[0]]
         if self.symtable[target_var[0]].is_matrix() and self.symtable[target_var[0]].sparse:
-            content.append("for {} in range(1, {}.shape[0]+1):\n".format(sub, target_var[0]))
+            if sub == sym_info[0]:
+                content.append("for {} in range(1, {}.shape[0]+1):\n".format(sub, target_var[0]))
+            else:
+                content.append("for {} in range(1, {}.shape[1]+1):\n".format(sub, target_var[0]))
         else:
             content.append("for {} in range(1, len({})+1):\n".format(sub, target_var[0]))
         if exp_info.pre_list:   # catch pre_list
