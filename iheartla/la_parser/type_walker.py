@@ -64,10 +64,6 @@ def la_remove_key(keys, **kwargs):
     elif keys in kwargs:
         del kwargs[keys]
 
-def get_parse_info_buffer(parse_info):
-    if is_new_tatsu_version():
-        return parse_info.tokenizer
-    return parse_info.buffer
 
 class TypeWalker(NodeWalker):
     def __init__(self):
@@ -103,6 +99,7 @@ class TypeWalker(NodeWalker):
         self.la_content = ''
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
         self.visiting_lhs = False
+        self.pre_walk = False
         self.same_dim_list = []
         self.rhs_raw_str_list = []
 
@@ -271,6 +268,7 @@ class TypeWalker(NodeWalker):
         raise Exception('Unexpected type %s walked', type(o).__name__)
 
     def walk_Start(self, node, **kwargs):
+        self.pre_walk = True if 'pre_walk' in kwargs else False
         self.symtable.clear()
         # self.visualizer.visualize(node)  # visualize
         ir_node = StartNode(parse_info=node.parseinfo)
@@ -297,7 +295,7 @@ class TypeWalker(NodeWalker):
         ir_node.vblock = vblock_list
         params_list, stat_list, index_list = ir_node.get_block_list()
         # check function assignment
-        if 'pre_walk' in kwargs:
+        if self.pre_walk:
             for index in range(len(stat_list)):
                 if type(stat_list[index]).__name__ == 'Assignment':
                     # check whether rhs is function type
@@ -315,7 +313,7 @@ class TypeWalker(NodeWalker):
                             continue
         #
         self.multi_lhs_list = multi_lhs_list
-        if 'pre_walk' in kwargs:
+        if self.pre_walk:
             return ir_node
         block_node = BlockNode()
         for index in range(len(stat_list)):
@@ -1458,11 +1456,23 @@ class TypeWalker(NodeWalker):
                 if main_sym in cur_dict:
                     # merge same subscript
                     old_right_list = copy.deepcopy(cur_dict[main_sym])
-                    assert len(old_right_list) == len(right_sym_list), "Internal error, please report a bug"
-                    for old_index in range(len(old_right_list)):
-                        if sub_sym != old_right_list[old_index]:
-                            old_right_list[old_index] = right_sym_list[old_index]
-                    cur_dict[main_sym] = old_right_list
+                    # assert len(old_right_list) == len(right_sym_list), "Internal error, please report a bug"
+                    if len(old_right_list) == len(right_sym_list):
+                        for old_index in range(len(old_right_list)):
+                            if sub_sym != old_right_list[old_index]:
+                                old_right_list[old_index] = right_sym_list[old_index]
+                        cur_dict[main_sym] = old_right_list
+                    elif len(old_right_list) < len(right_sym_list):
+                        new_right_list = copy.deepcopy(right_sym_list)
+                        for old_index in range(len(old_right_list)):
+                            if sub_sym == old_right_list[old_index]:
+                                new_right_list[old_index] = sub_sym
+                        cur_dict[main_sym] = new_right_list
+                    else:
+                        for new_index in range(len(right_sym_list)):
+                            if sub_sym == right_sym_list[new_index]:
+                                old_right_list[new_index] = sub_sym
+                        cur_dict[main_sym] = old_right_list
                 else:
                     cur_dict[main_sym] = right_sym_list
                 sub_sym_list[sub_index] = cur_dict

@@ -72,7 +72,8 @@ class ParserFileManager(object):
         self.prefix = "parser"
         self.module_dir = "iheartla"
         self.default_hash_value = hashlib.md5("default".encode()).hexdigest()
-        self.default_parsers_dict = {hashlib.md5("init".encode()).hexdigest(): 0, self.default_hash_value: 0}
+        self.init_hash_value = hashlib.md5("init".encode()).hexdigest()
+        self.default_parsers_dict = {self.init_hash_value: 0, self.default_hash_value: 0}
         for f in (self.grammar_dir.parent / 'la_local_parsers').glob('parser*.py'):
             name, hash_value, t = self.separate_parser_file(f.name)
             if hash_value in self.default_parsers_dict:
@@ -199,7 +200,7 @@ class ParserFileManager(object):
             self.parser_dict[hash_value] = parser
             try:
                 # save to file asynchronously
-                print("hash_value is:{}, grammar:{}".format(hash_value, grammar))
+                # print("hash_value is:{}, grammar:{}".format(hash_value, grammar))
                 save_thread = threading.Thread(target=self.save_grammar, args=(hash_value, grammar,))
                 save_thread.start()
                 self.save_threads.append( save_thread )
@@ -377,32 +378,235 @@ class ParserFileManager(object):
             cur_content = cur_content.replace(builtin_original_rule, funcs_rule)
         return cur_content
 
+    def generate_new_parser_files(self):
+        la_local_parsers = self.grammar_dir.parent / 'la_local_parsers'
+        for f in listdir(la_local_parsers):
+            if self.init_hash_value in f:
+                init_parser = read_from_file(la_local_parsers / f)
+                init_parser = init_parser.replace(self.init_hash_value, 'init')
+                save_to_file(init_parser, os.path.join(la_local_parsers, 'init_parser.py'))
+            if self.default_hash_value in f:
+                def_parser = read_from_file(la_local_parsers / f)
+                def_parser = def_parser.replace(self.default_hash_value, 'default')
+                # extra elements
+                original_class = r"""super(grammardefaultParser, self).__init__(
+            whitespace=whitespace,
+            nameguard=nameguard,
+            comments_re=comments_re,
+            eol_comments_re=eol_comments_re,
+            ignorecase=ignorecase,
+            left_recursion=left_recursion,
+            parseinfo=parseinfo,
+            keywords=keywords,
+            namechars=namechars,
+            buffer_class=buffer_class,
+            **kwargs
+        )"""
+                new_class = r"""super(grammardefaultParser, self).__init__(
+            whitespace=whitespace,
+            nameguard=nameguard,
+            comments_re=comments_re,
+            eol_comments_re=eol_comments_re,
+            ignorecase=ignorecase,
+            left_recursion=left_recursion,
+            parseinfo=parseinfo,
+            keywords=keywords,
+            namechars=namechars,
+            buffer_class=buffer_class,
+            **kwargs
+        )
+        self.new_id_list = []
+        self.new_func_list = []
+        self.builtin_list = []
+        self.const_e = False"""
+                def_parser = def_parser.replace(original_class, new_class)
+                # ids
+                id_alone_original_rule = r"""class IdentifierAlone(ModelBase):
+    id = None
+    value = None"""
+                id_alone_cur_rule = r"""class IdentifierAlone(ModelBase):
+    id = None
+    value = None
+    const = None"""
+                def_parser = def_parser.replace(id_alone_original_rule, id_alone_cur_rule)
+                #
+                id_original_rule = r"""@tatsumasu('IdentifierAlone')
+    def _identifier_alone_(self):  # noqa
+        with self._ifnot():
+            self._KEYWORDS_()
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                    self.name_last_node('value')
+                with self._option():
+                    self._token('`')
+                    self._pattern('[^`]*')
+                    self.name_last_node('id')
+                    self._token('`')
+                self._error('no available options')
+        self.ast._define(
+            ['id', 'value'],
+            []
+        )"""
+                id_rule = r"""@tatsumasu('IdentifierAlone')
+    def _identifier_alone_(self):  # noqa
+        if len(self.new_id_list) > 0:
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        with self._choice():
+                            for new_id in self.new_id_list:
+                                with self._option():
+                                    self._pattern(new_id)
+                            self._error('no available options')
+                    self.name_last_node('const')
+                with self._option():
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                with self._ifnot():
+                                    with self._group():
+                                        with self._choice():
+                                            with self._option():
+                                                self._KEYWORDS_()
+                                            for new_id in self.new_id_list:
+                                                with self._option():
+                                                    self._pattern(new_id)
+                                            self._error('no available options')
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                                self.name_last_node('value')
+                            with self._option():
+                                self._token('`')
+                                self._pattern('[^`]*')
+                                self.name_last_node('id')
+                                self._token('`')
+                            self._error('no available options')
+                self._error('no available options')
+            self.ast._define(
+                ['const', 'id', 'value'],
+                []
+            )
+        else:
+            # default
+            with self._ifnot():
+                self._KEYWORDS_()
+            with self._group():
+                with self._choice():
+                    with self._option():
+                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                        self.name_last_node('value')
+                    with self._option():
+                        self._token('`')
+                        self._pattern('[^`]*')
+                        self.name_last_node('id')
+                        self._token('`')
+                    self._error('no available options')
+            self.ast._define(
+                ['id', 'value'],
+                []
+            )"""
+                def_parser = def_parser.replace(id_original_rule, id_rule)
+                #
+                funcs_original_rule = r"""@tatsumasu()
+    def _func_id_(self):  # noqa
+        self._token('!!!')"""
+                funcs_rule = """@tatsumasu()
+    def _func_id_(self):  # noqa
+        if len(self.new_func_list) > 0:
+            with self._choice():
+                for new_id in self.new_func_list:
+                    with self._option():
+                        self._pattern(new_id)
+                self._error('no available options')
+        else:
+            # default
+            self._token('!!!')"""
+                def_parser = def_parser.replace(funcs_original_rule, funcs_rule)
+                # normal builtin functions
+                builtin_original_rule = r"""@tatsumasu()
+    def _builtin_operators_(self):  # noqa
+        self._predefined_built_operators_()"""
+                funcs_rule = """@tatsumasu()
+    def _builtin_operators_(self):  # noqa
+        if len(self.builtin_list) > 0:
+            with self._choice():
+                for new_builtin in self.builtin_list:
+                    with self._option():
+                        func = getattr(self, "_{}_".format(new_builtin), None)
+                        func()
+                with self._option():
+                    self._predefined_built_operators_()
+                self._error('no available options')
+        else:
+            self._predefined_built_operators_()"""
+                def_parser = def_parser.replace(builtin_original_rule, funcs_rule)
+                #
+                constant_original = r"""@tatsumasu()
+    def _constant_(self):  # noqa
+        self._pi_()"""
+                constant_new = r"""@tatsumasu()
+    def _constant_(self):  # noqa
+        if self.const_e:
+            with self._choice():
+                with self._option():
+                    self._pi_()
+                with self._option():
+                    self._e_()
+                self._error('no available options')
+        else:
+            self._pi_()"""
+                def_parser = def_parser.replace(constant_original, constant_new)
+                keywords_original = r"""@tatsumasu()
+    def _KEYWORDS_(self):  # noqa
+        self._BUILTIN_KEYWORDS_()"""
+                keywords_new = r"""@tatsumasu()
+    def _KEYWORDS_(self):  # noqa
+        if self.const_e:
+            with self._choice():
+                with self._option():
+                    self._BUILTIN_KEYWORDS_()
+                with self._option():
+                    self._e_()
+                self._error('no available options')
+        else:
+            self._BUILTIN_KEYWORDS_()"""
+                def_parser = def_parser.replace(keywords_original, keywords_new)
+                save_to_file(def_parser, os.path.join(la_local_parsers, 'default_parser.py'))
+
 
 def recreate_local_parser_cache():
+    """
+    The new parser will work as long as the grammar modification doesn't include the following rules:
+    KEYWORDS, constant, builtin_operators, func_id, identifier_alone
+    """
     ### WARNING: This will delete and re-create the cache and 'la_local_parsers' directories.
     import iheartla.la_parser.parser
     PM = iheartla.la_parser.parser._parser_manager
-    
+
     print( '## Clearing the cache dir:', PM.cache_dir )
     shutil.rmtree( PM.cache_dir )
     Path(PM.cache_dir).mkdir()
-    
+
     la_local_parsers = PM.grammar_dir.parent/'la_local_parsers'
     print( '## Clearing the la_local_parsers dir:', la_local_parsers )
     shutil.rmtree( la_local_parsers )
     la_local_parsers.mkdir()
-    
+
     print('## Reloading the ParserManager.')
     PM.reload()
-    
+
     print('## Re-creating the parsers.')
     iheartla.la_parser.parser.create_parser()
-    
+
     print('## Waiting for them to be saved.')
     for thread in PM.parser_file_manager.save_threads: thread.join()
-    
+
     print('## Copying the cache dir contents into the local dir.')
     for f in Path(PM.cache_dir).glob('*.py'):
         shutil.copy( f, la_local_parsers )
-    
+
+    print('## Modifying default parsers')
+    PM.parser_file_manager.generate_new_parser_files()
+
     print('## Done.')
