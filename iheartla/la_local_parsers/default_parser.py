@@ -4402,7 +4402,7 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._token('>=')
                 with self._option():
-                    self._token('⩾')
+                    self._token('≥')
                 self._error('no available options')
         self.name_last_node('op')
 
@@ -4450,7 +4450,7 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._token('<=')
                 with self._option():
-                    self._token('⩽')
+                    self._token('≤')
                 self._error('no available options')
         self.name_last_node('op')
 
@@ -5327,10 +5327,11 @@ class KroneckerProduct(ModelBase):
 class Transpose(ModelBase):
     f = None
 
+
 class Squareroot(ModelBase):
     f = None
 
-    
+
 class Function(ModelBase):
     name = None
     params = None

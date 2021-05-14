@@ -42,6 +42,10 @@ To run the GUI:
 
     python3 app.py
 
+or, if installed via conda,
+
+    pythonw app.py
+
 You can also run as a command-line compiler:
 
     python3 app.py --help
@@ -67,7 +71,17 @@ or install the [Poetry](https://python-poetry.org/) dependency manager and run:
 **NOTE**: As of 2020-10-14, installing poetry via homebrew has a bug whose workaround is to type `poetry env use python3.8` before you run `poetry install --no-root --no-dev`.
 This situation may have changed.
 
-If you are developing I❤️LA, the test suite needs a working C++ compiler and, optionally, the Graphviz graph visualization software (`brew install graphviz`).
+or via [Anaconda](https://www.anaconda.com/products/individual) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
+Miniconda is faster to install. (On Windows, choose the 64-bit Python 3.x version. Launch the Anaconda shell from the Start menu and navigate to this directory.)
+Then:
+
+    conda env create -f environment-{cli,gui,dev}.yml
+    conda activate iheartla
+
+Choose `environment-{cli,gui,dev}.yml` according to whether you only want the command line (`cli`), also the GUI (`gui`), or also the development test suite (`dev`).
+To update an already created environment if the `environment.yml` file changes or to change environments, activate and then run `conda env update --file environment-{cli,gui,dev}.yml.yml --prune`.
+
+If you are developing I❤️LA, the test suite needs a working C++ compiler and, optionally, the Graphviz graph visualization software (`brew install graphviz` if you're not using conda).
 
 ### Output Dependencies
 
