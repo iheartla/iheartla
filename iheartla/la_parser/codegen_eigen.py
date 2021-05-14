@@ -663,7 +663,7 @@ class CodeGenEigen(CodeGen):
         stat_content = stat_info.content
         # replace '_ij' with '(i,j)'
         stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '({}, {})'.format(subs[0], subs[1]))
-        content.append('if({}){{\n'.format(cond_info.content))
+        content.append('{}({}){{\n'.format("if" if node.first_in_list else "else if",cond_info.content))
         content += stat_info.pre_list
         content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(assign_node.left.main.main_id, subs[0], subs[1], stat_content))
         content.append('}\n')
