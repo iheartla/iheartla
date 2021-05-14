@@ -1,0 +1,10 @@
+name: iheartla
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - tatsu=4.4
+  - regex
+  - appdirs
+prefix: /Users/yotam/opt/miniconda3/envs/iheartla
