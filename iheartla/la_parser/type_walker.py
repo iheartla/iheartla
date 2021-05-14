@@ -1771,7 +1771,10 @@ class TypeWalker(NodeWalker):
         # ifsNode
         ifs_info = self.walk(node.ifs, **kwargs)
         ifs_node = SparseIfsNode(parse_info=node.ifs.parseinfo)
+        first = True
         for ir in ifs_info.ir:
+            ir.first_in_list = first
+            first = False
             ifs_node.cond_list.append(ir)
             ir.set_parent(ifs_node)
         ifs_node.set_parent(ir_node)

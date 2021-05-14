@@ -660,6 +660,7 @@ class SparseIfNode(ExprNode):
         self.id0 = None
         self.id1 = None
         self.id2 = None
+        self.first_in_list = None
 
 
 class SparseIfsNode(ExprNode):
