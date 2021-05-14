@@ -207,7 +207,7 @@ greater::GreaterCondition
     ;
 
 greater_equal::GreaterEqualCondition
-    = left:expression {hspace} op:('>=' | '⩾') {hspace} right:expression
+    = left:expression {hspace} op:('>=' | '≥') {hspace} right:expression
     ;
 
 less::LessCondition
@@ -215,6 +215,6 @@ less::LessCondition
     ;
 
 less_equal::LessEqualCondition
-    = left:expression {hspace} op:('<=' | '⩽') {hspace} right:expression
+    = left:expression {hspace} op:('<=' | '≤') {hspace} right:expression
     ;
 """
