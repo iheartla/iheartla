@@ -517,7 +517,7 @@ class CodeGenNumpy(CodeGen):
         stat_content = stat_info.content
         # replace '_ij' with '(i,j)'
         stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '[{}][{}]'.format(subs[0], subs[1]))
-        content.append('if {}:\n'.format(cond_info.content))
+        content.append('{} {}:\n'.format("if" if node.first_in_list else "elif", cond_info.content))
         content.append('    {}.append(({}-1, {}-1))\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
         content.append('    {}.append({})\n'.format(sparse_node.la_type.value_var, stat_content))
         self.convert_matrix = False
