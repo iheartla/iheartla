@@ -41,16 +41,18 @@ class CodeGenMatlab(CodeGen):
 
     def get_set_test_list(self, parameter, la_type, rand_int_max, pre='    '):
         test_content = []
+        test_indent = "    "
         test_content.append(test_indent+'{} = [];'.format(parameter))
         test_content.append(test_indent+'{}_0 = randi({});'.format(parameter, rand_int_max))
-        test_content.append(test_indent+'for i = 1:{}_0)'.format(parameter))
+        test_content.append(test_indent+'for i = 1:{}_0'.format(parameter))
         gen_list = []
         for i in range(la_type.size):
             if la_type.int_list[i]:
-                gen_list.append('randi({});'.format(rand_int_max))
+                gen_list.append('randi({})'.format(rand_int_max))
             else:
-                gen_list.append('randn();')
-        test_content.append(test_indent+'    {}.append(('.format(parameter) + ', '.join(gen_list) + '))')
+                gen_list.append('randn()')
+        test_content.append(test_indent+'    {}(end+1,:) = ['.format(parameter) + ', '.join(gen_list) + '];')
+        test_content.append(test_indent+'end')
         test_content = ['{}{}'.format(pre, line) for line in test_content]
         return test_content
 
@@ -161,7 +163,7 @@ class CodeGenMatlab(CodeGen):
                         # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
                         # size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)
                         type_checks.append('    assert( isequal(size({}), [{}, {}]) );'.format(parameter, self.symtable[parameter].size, ele_type.rows))
-                        size_str = '{}, {}, '.format(self.symtable[parameter].size, ele_type.rows)
+                        size_str = '{}, {}'.format(self.symtable[parameter].size, ele_type.rows)
                     elif ele_type.is_scalar():
                         # Alec: is scalar? but then should
                         # self.symtable[parameter].size always be 1? What's
@@ -177,7 +179,10 @@ class CodeGenMatlab(CodeGen):
                             test_content.append(test_indent+'    {} = randi({}, {});'.format(parameter, rand_int_max, size_str))
                         else:
                             # type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
-                            test_content.append(test_indent+'    {} = randn({},1);'.format(parameter, size_str))
+                            if ele_type.is_scalar():
+                                test_content.append(test_indent+'    {} = randn({},1);'.format(parameter, size_str))
+                            else:
+                                test_content.append(test_indent+'    {} = randn({});'.format(parameter, size_str))
                     else:
                         # Alec: I don't understand what this was doing for python,
                         # so I don't know if it would be important for matlab
@@ -271,13 +276,16 @@ class CodeGenMatlab(CodeGen):
                                 dim_definition.append('        {} = {}{}.shape[1]'.format(ret_dim, self.param_name_test, param_i))
                 for index in range(len(self.symtable[parameter].params)):
                     param_list.append('{}{}'.format(self.param_name_test, index))
-                test_content.append(test_indent+"    def {}({}):".format(parameter, ', '.join(param_list)))
+                test_content.append(test_indent+"    {} = @{};".format(parameter,parameter+"Func"));
+                test_content.append(test_indent+"    rseed = randi(2^32);")
+                test_content.append(test_indent+"    function tmp =  {}({})".format(parameter+"Func", ', '.join(param_list)))
+                test_content.append(test_indent+"        rng(rseed);")
                 test_content += dim_definition
                 if self.symtable[parameter].ret.is_set():
-                    test_content += self.get_set_test_list('tmp', self.symtable[parameter].ret, rand_int_max, '        ')
-                    test_content.append(test_indent+'        return tmp')
+                   test_content += self.get_set_test_list('tmp', self.symtable[parameter].ret, rand_int_max, '        ')
                 else:
-                    test_content.append(test_indent+"        return {}".format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
+                   test_content.append(test_indent+"        tmp = {};".format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
+                test_content.append(test_indent+"    end\n")
                 # test_content.append(test_indent+'    {} = lambda {}: {}'.format(parameter, ', '.join(param_list), self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
 
         declaration_content = 'function {} = {}({})\n'.format(self.get_result_name(), self.func_name, ', '.join(self.parameters))
@@ -362,7 +370,7 @@ class CodeGenMatlab(CodeGen):
         cond_content = ""
         if node.cond:
             cond_info = self.visit(node.cond, **kwargs)
-            cond_content = "if(" + cond_info.content + "):\n"
+            cond_content = "if " + cond_info.content + "\n"
         kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
         content = []
         exp_info = self.visit(node.exp)
@@ -370,7 +378,7 @@ class CodeGenMatlab(CodeGen):
         if self.symtable[assign_id].is_matrix():
             content.append("{} = zeros({}, {});\n".format(assign_id, self.symtable[assign_id].rows, self.symtable[assign_id].cols))
         elif self.symtable[assign_id].is_vector():
-            content.append("{} = zeros({});\n".format(assign_id, self.symtable[assign_id].rows))
+            content.append("{} = zeros({},1);\n".format(assign_id, self.symtable[assign_id].rows))
         elif self.symtable[assign_id].is_sequence():
             ele_type = self.symtable[assign_id].element_type
             content.append("{} = zeros({}, {}, {});\n".format(assign_id, self.symtable[assign_id].size, ele_type.rows, ele_type.cols))
@@ -383,7 +391,7 @@ class CodeGenMatlab(CodeGen):
             else:
                 content.append("for {} = 1:size({},2)\n".format(sub, target_var[0]))
         else:
-            content.append("for {} = 1:numel({})\n".format(sub, target_var[0]))
+            content.append("for {} = 1:size({},1)\n".format(sub, target_var[0]))
         if exp_info.pre_list:   # catch pre_list
             list_content = "".join(exp_info.pre_list)
             # content += exp_info.pre_list
@@ -398,6 +406,8 @@ class CodeGenMatlab(CodeGen):
             indent += "  "
         content.append(str(indent + assign_id + " = " + assign_id + " + " + exp_str + ';\n'))
         content[0] = "    " + content[0]
+        if node.cond:
+            content.append("    end\n")
         content.append("end\n")
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
@@ -731,12 +741,19 @@ class CodeGenMatlab(CodeGen):
                         col_content = col_info.content
                     else:
                         col_content = "{}".format(col_info.content)
-                    content = "{}({})({}, {})".format(main_info.content, main_index_content, row_content,
-                                                      col_content)
+                    content = "{}({},{},{})".format(main_info.content, main_index_content, row_content,
+                                                     col_content)
                 else:
-                    content = "{}({})({})".format(main_info.content, main_index_content, row_content)
+                    content = "{}({},{})".format(main_info.content, main_index_content, row_content)
             else:
-                content = "{}({})".format(main_info.content, main_index_content)
+                if node.la_type.is_vector():
+                    content = "{}({},:)'".format(main_info.content, main_index_content)
+                elif node.la_type.is_matrix():
+                    content = "squeeze({}({},:,:))".format(main_info.content, main_index_content)
+                elif node.la_type.is_scalar():
+                    content = "{}({})".format(main_info.content, main_index_content)
+                else:
+                    content = "{}{{{}}}".format(main_info.content, main_index_content)
         return CodeNodeInfo(content)
 
     def visit_add_sub(self, node, **kwargs):
