@@ -98,7 +98,6 @@ class CodeGenMatlab(CodeGen):
         test_indent = "    "
         test_function = [test_indent+"function [{}] = {}()".format(', '.join(self.parameters), rand_func_name)]
         rand_int_max = 10
-        main_content = []
         dim_content = ""
         dim_defined_list = []
         if self.dim_dict:
@@ -281,14 +280,14 @@ class CodeGenMatlab(CodeGen):
                     test_content.append(test_indent+"        return {}".format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
                 # test_content.append(test_indent+'    {} = lambda {}: {}'.format(parameter, ', '.join(param_list), self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
 
-            # main_content.append('    print("{}:", {})'.format(parameter, parameter))
-        content = 'function {} = {}({})\n'.format(self.get_result_name(), self.func_name, ', '.join(self.parameters))
-        content += '% {} = {}({})\n%\n'.format(self.get_result_name(), self.func_name, ', '.join(self.parameters))
-        content += '%    {}'.format(  ('\n%    ').join(self.la_content.split('\n') ))
-        content += "\n"
+        declaration_content = 'function {} = {}({})\n'.format(self.get_result_name(), self.func_name, ', '.join(self.parameters))
+        comment_content = '% {} = {}({})\n%\n'.format(self.get_result_name(), self.func_name, ', '.join(self.parameters))
+        comment_content += '%    {}'.format(  ('\n%    ').join(self.la_content.split('\n') ))
+        comment_content += "\n"
         #if show_doc:
         #    content += '    %{\n' + '\n'.join(doc) + '\n    %}\n'
 
+        content = ""
         # test
         test_function += test_content
         test_function.append(test_indent+'end')
@@ -330,17 +329,14 @@ class CodeGenMatlab(CodeGen):
             if not stats_content:
                 stats_content += ';\n'
 
+        stats_content += self.get_struct_definition()
         content += stats_content
-        content += self.get_struct_definition()
-
-        # Alec: outputting a function-file. Call with no arguments  for fake
-        # data
-        #main_content.append("{}({})".format(self.func_name, ', '.join(self.parameters)))
 
         content += "end\n"
         # convert special string in identifiers
+        declaration_content = self.trim_content(declaration_content)
         content = self.trim_content(content)
-        return content
+        return declaration_content + comment_content + content
 
     def visit_summation(self, node, **kwargs):
         target_var = []
@@ -1077,27 +1073,27 @@ class CodeGenMatlab(CodeGen):
     def visit_fro_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("np.dot(({}).ravel(), ({}).ravel())".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
+        return CodeNodeInfo("sum({}(:).*{}(:))".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
 
     def visit_hadamard_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("np.multiply({}, {})".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
+        return CodeNodeInfo("{}.*{}".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
 
     def visit_cross_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("np.cross({}, {})".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
+        return CodeNodeInfo("cross({}, {})".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
 
     def visit_kronecker_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("np.kron({}, {})".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
+        return CodeNodeInfo("kron({}, {})".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
 
     def visit_dot_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("np.dot(({}).ravel(), ({}).ravel())".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
+        return CodeNodeInfo("dot({},{})".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
 
     def visit_math_func(self, node, **kwargs):
         content = ''
