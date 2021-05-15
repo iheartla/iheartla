@@ -481,13 +481,13 @@ class CodeGenMatlab(CodeGen):
         pre_list = []
         index_var = type_info.la_type.index_var
         value_var = type_info.la_type.value_var
-        pre_list.append("    {} = zeros(0,2);\n".format(index_var))
-        pre_list.append("    {} = zeros(0,1);\n".format(value_var))
+        pre_list.append("    {} = zeros(2,0);\n".format(index_var))
+        pre_list.append("    {} = zeros(1,0);\n".format(value_var))
         if_info = self.visit(node.ifs, **kwargs)
         pre_list += if_info.content
         # assignment
         if op_type == '=':
-            pre_list.append("    {} = sparse({}(:,1),{}(:,2),{},{},{});\n".format(cur_m_id, index_var, index_var, value_var, self.symtable[cur_m_id].rows,
+            pre_list.append("    {} = sparse({}(1,:),{}(2,:),{},{},{});\n".format(cur_m_id, index_var, index_var, value_var, self.symtable[cur_m_id].rows,
                                                           self.symtable[cur_m_id].cols))
         elif op_type == '+=':
             # left_ids = self.get_all_ids(lhs)
@@ -515,6 +515,7 @@ class CodeGenMatlab(CodeGen):
                 cond_info.content[index] = '            ' + cond_info.content[index]
             ret += cond_info.content
             pre_list += cond_info.pre_list
+        ret += '            end\n'
         ret += "        end\n"
         ret += "    end\n"
         return CodeNodeInfo(ret, pre_list)
@@ -530,10 +531,10 @@ class CodeGenMatlab(CodeGen):
         stat_content = stat_info.content
         # replace '_ij' with '(i,j)'
         stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '({},{})'.format(subs[0], subs[1]))
-        content.append('if {}\n'.format(cond_info.content))
-        content.append('    {}(end+1,:) = [{} {}];\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
+        content.append('{} {}\n'.format("if" if node.first_in_list else "elseif",cond_info.content))
+        # https://www.mathworks.com/matlabcentral/answers/392985-why-does-is-take-o-n-2-to-append-elements-in-matlab-when-it-takes-o-n-amortized-time-in-theory#comment_1520858
+        content.append('    {}(1:2,end+1) = [{};{}];\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
         content.append('    {}(end+1) = {};\n'.format(   sparse_node.la_type.value_var, stat_content))
-        content.append('end\n')
         self.convert_matrix = False
         return CodeNodeInfo(content)
 
@@ -799,15 +800,16 @@ class CodeGenMatlab(CodeGen):
                         content = ""
                         if self.symtable[sequence].diagonal:
                             # add definition
-                            content += "    {} = zeros(0,2);\n".format(self.symtable[sequence].index_var)
-                            content += "    {} = zeros(0,1);\n".format(self.symtable[sequence].value_var)
+                            content += "    {} = zeros(2,0);\n".format(self.symtable[sequence].index_var)
+                            content += "    {} = zeros(1,0);\n".format(self.symtable[sequence].value_var)
                         content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].rows)
                         if right_info.pre_list:
                             content += self.update_prelist_str(right_info.pre_list, "    ")
-                        content += "        {}(end+1,:) = [{} {}];\n".format(self.symtable[sequence].index_var, left_subs[0], left_subs[0])
+                        # https://www.mathworks.com/matlabcentral/answers/392985-why-does-is-take-o-n-2-to-append-elements-in-matlab-when-it-takes-o-n-amortized-time-in-theory#comment_1520858
+                        content += "        {}(1:2,end+1) = [{};{}];\n".format(self.symtable[sequence].index_var, left_subs[0], left_subs[0])
                         content += "        {}(end+1) = {};\n".format(self.symtable[sequence].value_var, right_info.content)
                         content += "    end\n"
-                        content += "    {} = sparse({}(:,1),{}(:,2),{},{},{});\n".format(
+                        content += "    {} = sparse({}(1,:),{}(2,:),{},{},{});\n".format(
                             sequence,
                             self.symtable[sequence].index_var,
                             self.symtable[sequence].index_var,
