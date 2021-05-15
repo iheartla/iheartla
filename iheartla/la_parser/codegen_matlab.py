@@ -412,14 +412,14 @@ class CodeGenMatlab(CodeGen):
         type_info = node.value
         content = ''
         if type_info.la_type.is_scalar():
-            content = "np.absolute({})".format(value)
+            content = "abs({})".format(value)
         elif type_info.la_type.is_vector():
             if node.norm_type == NormType.NormDet:
-                content = "scipy.linalg.det({})".format(value)
+                content = "det({})".format(value)
             elif node.norm_type == NormType.NormInteger:
-                content = "np.linalg.norm({}, {})".format(value, node.sub)
+                content = "norm({}, {})".format(value, node.sub)
             elif node.norm_type == NormType.NormMax:
-                content = "np.linalg.norm({}, np.inf)".format(value)
+                content = "norm({}, inf)".format(value)
             elif node.norm_type == NormType.NormIdentifier:
                 sub_info = self.visit(node.sub, **kwargs)
                 pre_list += sub_info.pre_list
@@ -429,19 +429,20 @@ class CodeGenMatlab(CodeGen):
                     content = "np.sqrt(({}).T @ {} @ ({}))".format(value, sub_info.content, value)
         elif type_info.la_type.is_matrix():
             if node.norm_type == NormType.NormDet:
-                content = "scipy.linalg.det({})".format(value)
+                content = "det({})".format(value)
             elif node.norm_type == NormType.NormFrobenius:
-                content = "np.linalg.norm({}, 'fro')".format(value)
+                content = "norm({}, 'fro')".format(value)
             elif node.norm_type == NormType.NormNuclear:
-                content = "np.linalg.norm({}, 'nuc')".format(value)
+                content = "norm(svd({}),1)".format(value)
         return CodeNodeInfo(content, pre_list)
 
     def visit_transpose(self, node, **kwargs):
         f_info = self.visit(node.f, **kwargs)
-        if node.f.la_type.is_vector():
-            f_info.content = "reshape({}.T, [1, {}])".format(f_info.content, node.f.la_type.rows)
-        else:
-            f_info.content = "{}'".format(f_info.content)
+        #if node.f.la_type.is_vector():
+        #    f_info.content = "reshape({},1,[])".format(f_info.content)
+        #else:
+        #    f_info.content = "{}'".format(f_info.content)
+        f_info.content = "{}'".format(f_info.content)
         return f_info
 
     def visit_squareroot(self, node, **kwargs):
@@ -1104,76 +1105,76 @@ class CodeGenMatlab(CodeGen):
         params_content = param_info.content
         pre_list = param_info.pre_list
         if node.func_type == MathFuncType.MathFuncSin:
-            content = 'np.sin'
+            content = 'sin'
         elif node.func_type == MathFuncType.MathFuncAsin:
-            content = 'np.arcsin'
+            content = 'asin'
         elif node.func_type == MathFuncType.MathFuncCos:
-            content = 'np.cos'
+            content = 'cos'
         elif node.func_type == MathFuncType.MathFuncAcos:
-            content = 'np.arccos'
+            content = 'acos'
         elif node.func_type == MathFuncType.MathFuncTan:
-            content = 'np.tan'
+            content = 'tan'
         elif node.func_type == MathFuncType.MathFuncAtan:
-            content = 'np.arctan'
+            content = 'atan'
         elif node.func_type == MathFuncType.MathFuncSinh:
-            content = 'np.sinh'
+            content = 'sinh'
         elif node.func_type == MathFuncType.MathFuncAsinh:
-            content = 'np.arcsinh'
+            content = 'asinh'
         elif node.func_type == MathFuncType.MathFuncCosh:
-            content = 'np.cosh'
+            content = 'cosh'
         elif node.func_type == MathFuncType.MathFuncAcosh:
-            content = 'np.arccosh'
+            content = 'acosh'
         elif node.func_type == MathFuncType.MathFuncTanh:
-            content = 'np.tanh'
+            content = 'tanh'
         elif node.func_type == MathFuncType.MathFuncAtanh:
-            content = 'np.arctanh'
+            content = 'atanh'
         elif node.func_type == MathFuncType.MathFuncCot:
-            content = '1/np.tan'
+            content = '1./tan'
         elif node.func_type == MathFuncType.MathFuncSec:
-            content = '1/np.cos'
+            content = '1./cos'
         elif node.func_type == MathFuncType.MathFuncCsc:
-            content = '1/np.sin'
+            content = '1./sin'
         elif node.func_type == MathFuncType.MathFuncAtan2:
-            content = 'np.arctan2'
+            content = 'atan2'
             remain_info = self.visit(node.remain_params[0], **kwargs)
             params_content += ', ' + remain_info.content
             pre_list += remain_info.pre_list
         elif node.func_type == MathFuncType.MathFuncExp:
-            content = 'np.exp'
+            content = 'exp'
         elif node.func_type == MathFuncType.MathFuncLog:
-            content = 'np.log'
+            content = 'log'
         elif node.func_type == MathFuncType.MathFuncLog2:
-            content = 'np.log2'
+            content = 'log2'
         elif node.func_type == MathFuncType.MathFuncLog10:
-            content = 'np.log10'
+            content = 'log10'
         elif node.func_type == MathFuncType.MathFuncLn:
-            content = 'np.log'
+            content = 'log'
         elif node.func_type == MathFuncType.MathFuncSqrt:
-            content = 'np.sqrt'
+            content = 'sqrt'
         elif node.func_type == MathFuncType.MathFuncTrace:
-            content = 'np.trace'
+            content = 'trace'
         elif node.func_type == MathFuncType.MathFuncDiag:
-            content = 'np.diag'
+            content = 'diag'
         elif node.func_type == MathFuncType.MathFuncVec:
-            return CodeNodeInfo("np.matrix.flatten({}, order='F')".format(params_content))  # column-major
+            return CodeNodeInfo("reshape({},[],1)".format(params_content))  # column-major
         elif node.func_type == MathFuncType.MathFuncDet:
-            content = 'scipy.linalg.det'
+            content = 'det'
         elif node.func_type == MathFuncType.MathFuncRank:
-            content = 'np.linalg.matrix_rank'
+            content = 'rank'
         elif node.func_type == MathFuncType.MathFuncNull:
-            content = 'scipy.linalg.null_space'
+            content = 'null'
         elif node.func_type == MathFuncType.MathFuncOrth:
-            content = 'scipy.linalg.orth'
+            content = 'orth'
         elif node.func_type == MathFuncType.MathFuncInv:
-            content = 'scipy.linalg.inv'
+            content = 'inv'
         return CodeNodeInfo("{}({})".format(content, params_content), pre_list=pre_list)
 
     def visit_constant(self, node, **kwargs):
         content = ''
         if node.c_type == ConstantType.ConstantPi:
-            content = 'np.pi'
+            content = 'pi'
         elif node.c_type == ConstantType.ConstantE:
-            content = 'np.e'
+            content = 'exp(1)'
         return CodeNodeInfo(content)
 
     ###################################################################
