@@ -334,8 +334,9 @@ class CodeGenMatlab(CodeGen):
             if stat_info.pre_list:
                 stats_content += "".join(stat_info.pre_list)
             stats_content += ret_str + stat_info.content
-            if not stats_content:
-                stats_content += ';\n'
+            if index == len(node.stmts) - 1:
+                if type(node.stmts[index]).__name__ != 'AssignNode':
+                    stats_content += ';\n'
 
         stats_content += self.get_struct_definition()
         content += stats_content
