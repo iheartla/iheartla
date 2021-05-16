@@ -4373,6 +4373,8 @@ class grammarinitParser(Parser):
                     self._token('>=')
                 with self._option():
                     self._token('≥')
+                with self._option():
+                    self._token('⩾')
                 self._error('no available options')
         self.name_last_node('op')
 
@@ -4421,6 +4423,8 @@ class grammarinitParser(Parser):
                     self._token('<=')
                 with self._option():
                     self._token('≤')
+                with self._option():
+                    self._token('⩽')
                 self._error('no available options')
         self.name_last_node('op')
 

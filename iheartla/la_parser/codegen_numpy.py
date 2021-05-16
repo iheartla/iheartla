@@ -996,8 +996,8 @@ class CodeGenNumpy(CodeGen):
                 opt_func = self.generate_var_name(category)
                 pre_list.append("    def {}({}):\n".format(opt_func, opt_param))
                 pre_list.append("        {} = 1\n".format(opt_ret))
-                pre_list.append("        for i in range(len({})):\n".format(v_set))
-                pre_list.append("            {} *= ({}[0] - {}[i])\n".format(opt_ret, opt_param, v_set))
+                pre_list.append("        for i in {}:\n".format(v_set))
+                pre_list.append("            {} *= ({}[0] - i)\n".format(opt_ret, opt_param, v_set))
                 pre_list.append("        return {}\n".format(opt_ret))
                 constraint_list.append("{{'type': 'eq', 'fun': {}}}".format(opt_func))
 
