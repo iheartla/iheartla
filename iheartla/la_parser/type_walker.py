@@ -658,9 +658,9 @@ class TypeWalker(NodeWalker):
             op_type = MulOpType.MulOpDot
             if left_info.la_type.is_vector() and right_info.la_type.is_vector() and left_info.la_type.rows == right_info.la_type.rows:
                 return self.walk_DotProduct(node, **kwargs)
-        return self.make_mul_info(left_info, right_info, op_type)
+        return self.make_mul_info(left_info, right_info, op_type, parse_info=node.parseinfo)
 
-    def make_mul_info(self, left_info, right_info, op=MulOpType.MulOpInvalid):
+    def make_mul_info(self, left_info, right_info, op=MulOpType.MulOpInvalid, parse_info=None):
         ret_type, need_cast = self.type_inference(TypeInferenceEnum.INF_MUL, left_info, right_info)
         sym_set = left_info.symbols.union(right_info.symbols)
         # I in block matrix
@@ -669,7 +669,7 @@ class TypeWalker(NodeWalker):
             for sym in sym_set:
                 ret_type.symbol += sym
         ret_info = NodeInfo(ret_type, symbols=sym_set)
-        ir_node = MulNode(left_info.ir, right_info.ir, parse_info=left_info.ir.parse_info, op=op)
+        ir_node = MulNode(left_info.ir, right_info.ir, parse_info=left_info.ir.parse_info if parse_info is None else parse_info, op=op)
         ir_node.la_type = ret_type
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)
@@ -1193,7 +1193,7 @@ class TypeWalker(NodeWalker):
         if left_info.la_type.is_matrix():
             assert left_info.la_type.rows == right_info.la_type.rows, self.get_err_msg_info(left_info.ir.parse_info, "Parameters {} and {} should have the same rows".format(node.left.text, node.right.text))
             if right_info.la_type.is_matrix():
-                node_type = MatrixType(rows=left_info.la_type.cols, cols=left_info.la_type.cols, sparse=left_info.la_type.sparse and right_info.la_type.sparse)
+                node_type = MatrixType(rows=left_info.la_type.cols, cols=right_info.la_type.cols, sparse=left_info.la_type.sparse and right_info.la_type.sparse)
             elif right_info.la_type.is_vector():
                 node_type = VectorType(rows=left_info.la_type.cols)
         ir_node.la_type = node_type
