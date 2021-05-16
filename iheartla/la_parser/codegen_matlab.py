@@ -829,6 +829,8 @@ class CodeGenMatlab(CodeGen):
                     content = "{}({},{})".format(main_info.content, main_index_content, row_content)
             else:
                 if node.la_type.is_vector():
+                    # This is ugly if we're visiting the lefthand side of an
+                    # equality expression
                     content = "{}({},:)'".format(main_info.content, main_index_content)
                 elif node.la_type.is_matrix():
                     content = "squeeze({}({},:,:))".format(main_info.content, main_index_content)
@@ -878,6 +880,9 @@ class CodeGenMatlab(CodeGen):
         # visit matrix first
         content = ""
         left_info = self.visit(node.left, **kwargs)
+        print("##########################################################")
+        print(node.left)
+        print("##########################################################")
         left_id = left_info.content
         kwargs[LHS] = left_id
         kwargs[ASSIGN_TYPE] = node.op
@@ -953,7 +958,15 @@ class CodeGenMatlab(CodeGen):
                         var_ids = self.get_all_ids(right_var)
                         right_info.content = right_info.content.replace(right_var, "{}[{}]".format(var_ids[0], var_ids[1][0]))
 
-                right_exp += "    {} = {}".format(left_info.content, right_info.content)
+                # ugly hack to deal with visit_sequence_index using ' on lists
+                # of vectors sotred in rows of matrix... Similar problem will
+                # happen for matrices and squeeze.
+                left_content = left_info.content
+                right_content = right_info.content
+                if left_content[-1] == "'":
+                    left_content = left_content[:-1]
+                    right_content = "({})'".format(right_content);
+                right_exp += "    {} = {}".format(left_content,right_content);
                 ele_type = self.symtable[sequence].element_type
                 if self.symtable[sequence].is_sequence():
                     if ele_type.is_matrix():
