@@ -1601,7 +1601,7 @@ class TypeWalker(NodeWalker):
         #
         for value in node.right:
             v_info = self.walk(value)
-            right.append(v_info.content)
+            right.append(str(v_info.content))
         return self.create_id_node_info(left_info.content, right, node.parseinfo)
 
     def create_id_node_info(self, left_content, right_content, parse_info=None):
@@ -2534,6 +2534,7 @@ class TypeWalker(NodeWalker):
             arr = self.get_all_ids(identifier)
             new_var_name = None
             for val in arr[1]:
+                assert not val.isnumeric(), self.get_err_msg_info(id_node.parse_info, "Parameter {} can't have constant subscript".format(arr[0]))
                 if val in self.sub_name_dict:
                     new_var_name = self.sub_name_dict[val]
                 else:
