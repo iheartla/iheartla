@@ -27,6 +27,10 @@ class CodeGenLatex(CodeGen):
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 \usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}
+\let\originalleft\left
+\let\originalright\right
+\renewcommand{\left}{\mathopen{}\mathclose\bgroup\originalleft}
+\renewcommand{\right}{\aftergroup\egroup\originalright}
 \begin{document}
 
 \begin{center}
@@ -507,13 +511,13 @@ class CodeGenLatex(CodeGen):
 
     def visit_norm(self, node, **kwargs):
         if node.value.la_type.is_scalar():
-            content = "|{}|".format(self.visit(node.value, **kwargs))
+            content = "\\left|{}\\right|".format(self.visit(node.value, **kwargs))
         else:
             value_content = self.visit(node.value, **kwargs)
-            content = "\\|{}\\|".format(value_content)
+            content = "\\left\\|{}\\right\\|".format(value_content)
             if node.value.la_type.is_vector():
                 if node.norm_type == NormType.NormDet:
-                    content = "|{}|".format(value_content)
+                    content = "\\left|{}\\right|".format(value_content)
                 elif node.norm_type == NormType.NormInteger:
                     content += "_{}".format(node.sub)
                 elif node.norm_type == NormType.NormMax:
@@ -523,7 +527,7 @@ class CodeGenLatex(CodeGen):
                     content += "_{{{}}}".format(sub_info)
             elif node.value.la_type.is_matrix():
                 if node.norm_type == NormType.NormDet:
-                    content = "|{}|".format(value_content)
+                    content = "\\left|{}\\right|".format(value_content)
                 elif node.norm_type == NormType.NormFrobenius:
                     content += "_F"
                 elif node.norm_type == NormType.NormNuclear:
