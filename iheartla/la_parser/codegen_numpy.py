@@ -372,18 +372,22 @@ class CodeGenNumpy(CodeGen):
                 content.append("for {} in range(1, {}.shape[1]+1):\n".format(sub, target_var[0]))
         else:
             content.append("for {} in range(1, len({})+1):\n".format(sub, target_var[0]))
+        exp_pre_list = []
         if exp_info.pre_list:   # catch pre_list
             list_content = "".join(exp_info.pre_list)
             # content += exp_info.pre_list
             list_content = list_content.split('\n')
             for index in range(len(list_content)):
                 if index != len(list_content)-1:
-                    content.append(list_content[index] + '\n')
+                    exp_pre_list.append(list_content[index] + '\n')
         # only one sub for now
         if node.cond:
+            content += ["    " + pre for pre in cond_info.pre_list]
             content.append("    " + cond_content)
+            content += ["    " + pre for pre in exp_pre_list]
             content.append(str("        " + assign_id + " += " + exp_str + '\n'))
         else:
+            content += exp_pre_list
             content.append(str("    " + assign_id + " += " + exp_str + '\n'))
         content[0] = "    " + content[0]
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
@@ -885,6 +889,7 @@ class CodeGenNumpy(CodeGen):
         item_list = []
         pre_list = []
         right_info = self.visit(node.set, **kwargs)
+        pre_list += right_info.pre_list
         if node.set.la_type.index_type:
             for item in node.items:
                 item_info = self.visit(item, **kwargs)
@@ -892,6 +897,7 @@ class CodeGenNumpy(CodeGen):
                 if not item.la_type.index_type:
                     item_content = "{}-1".format(item_info.content)
                 item_list.append(item_content)
+                pre_list += item_info.pre_list
         else:
             for item in node.items:
                 item_info = self.visit(item, **kwargs)
@@ -900,6 +906,7 @@ class CodeGenNumpy(CodeGen):
                 else:
                     item_content = "{}+1".format(item_info.content)
                 item_list.append(item_content)
+                pre_list += item_info.pre_list
         content = '(' + ', '.join(item_list) + ') in ' + right_info.content
         return CodeNodeInfo(content=content, pre_list=pre_list)
 

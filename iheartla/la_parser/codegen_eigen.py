@@ -509,19 +509,23 @@ class CodeGenEigen(CodeGen):
                 content.append("for(int {}=1; {}<={}.cols(); {}++){{\n".format(sub, sub, target_var[0], sub))
         else:
             content.append("for(int {}=1; {}<={}.size(); {}++){{\n".format(sub, sub, target_var[0], sub))
+        exp_pre_list = []
         if exp_info.pre_list:  # catch pre_list
             list_content = "".join(exp_info.pre_list)
             # content += exp_info.pre_list
             list_content = list_content.split('\n')
             for index in range(len(list_content)):
                 if index != len(list_content) - 1:
-                    content.append(list_content[index] + '\n')
+                    exp_pre_list.append(list_content[index] + '\n')
         # only one sub for now
         if node.cond:
+            content += ["    " + pre for pre in cond_info.pre_list]
             content.append("    " + cond_content)
+            content += ["    " + pre for pre in exp_pre_list]
             content.append(str("        " + assign_id + " += " + exp_str + ';\n'))
             content.append("    }\n")
         else:
+            content += exp_pre_list
             content.append(str("    " + assign_id + " += " + exp_str + ';\n'))
         content[0] = "    " + content[0]
 
@@ -1121,6 +1125,7 @@ class CodeGenEigen(CodeGen):
         item_list = []
         pre_list = []
         right_info = self.visit(node.set, **kwargs)
+        pre_list += right_info.pre_list
         if node.set.la_type.index_type:
             for item in node.items:
                 item_info = self.visit(item, **kwargs)
@@ -1128,6 +1133,7 @@ class CodeGenEigen(CodeGen):
                 if not item.la_type.index_type:
                     item_content = "{}-1".format(item_info.content)
                 item_list.append(item_content)
+                pre_list += item_info.pre_list
         else:
             for item in node.items:
                 item_info = self.visit(item, **kwargs)
@@ -1136,6 +1142,7 @@ class CodeGenEigen(CodeGen):
                 else:
                     item_content = "{}+1".format(item_info.content)
                 item_list.append(item_content)
+                pre_list += item_info.pre_list
         if node.set.node_type != IRNodeType.Id:
             set_name = self.generate_var_name('set')
             pre_list.append('{} {} = {};\n'.format(self.get_ctype(node.set.la_type), set_name, right_info.content))
