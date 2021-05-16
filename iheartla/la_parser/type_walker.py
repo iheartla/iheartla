@@ -8,7 +8,7 @@ from ..la_tools.la_msg import *
 from ..la_tools.la_helper import *
 
 ## Make the visualizer
-try: from la_tools.la_visualizer import LaVisualizer
+try: from ..la_tools.la_visualizer import LaVisualizer
 except ImportError:
     if DEBUG_MODE:
         print( "Skipping visualizer." )
