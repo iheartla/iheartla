@@ -21,36 +21,93 @@ class CodeGenMatlab(CodeGen):
             check_list = ['    assert( {} );'.format(stat) for stat in check_list]
         return check_list
 
+    def randn_str(self,sizes=[]):
+        if len(sizes) == 0:
+            return "randn()"
+        elif len(sizes) == 1:
+            return 'randn({},1)'.format(sizes[0])
+        else: #len(sizes) > 1:
+            return 'randn({})'.format(",".join([str(s) for s in sizes]))
+
+    def randi_str(self,rand_int_max,sizes=[]):
+        if len(sizes) == 0:
+            return "randi({})".format(rand_int_max)
+        elif len(sizes) == 1:
+            return 'randi({},{},1)'.format(rand_int_max,sizes[0])
+        else: #len(sizes) > 1:
+            return 'randi({},{})'.format(rand_int_max,",".join([str(s) for s in sizes]))
+
     def get_rand_test_str(self, la_type, rand_int_max):
         rand_test = ''
         if la_type.is_matrix():
             element_type = la_type.element_type
             if isinstance(element_type, LaVarType) and element_type.is_scalar() and element_type.is_int:
-                rand_test = 'randi({}, {}, {});'.format(rand_int_max, la_type.rows, la_type.cols)
+                #rand_test = 'randi({}, {}, {});'.format(rand_int_max, la_type.rows, la_type.cols)
+                rand_test = self.randi_str(rand_int_max,[la_type.rows, la_type.cols])
             else:
-                rand_test = 'randn({}, {});'.format(la_type.rows, la_type.cols)
+                #rand_test = 'randn({}, {});'.format(la_type.rows, la_type.cols)
+                rand_test = self.randn_str([la_type.rows, la_type.cols])
         elif la_type.is_vector():
             element_type = la_type.element_type
             if isinstance(element_type, LaVarType) and element_type.is_scalar() and element_type.is_int:
-                rand_test = 'randi({}, {});'.format(rand_int_max, la_type.rows)
+                #rand_test = 'randi({}, {});'.format(rand_int_max, la_type.rows)
+                rand_test = self.randi_str(rand_int_max,[la_type.rows])
             else:
-                rand_test = 'randn({},1);'.format(la_type.rows)
+                #rand_test = 'randn({},1);'.format(la_type.rows)
+                rand_test = self.randn_str([la_type.rows])
         elif la_type.is_scalar():
-            rand_test = 'randn();'
+            #rand_test = 'randn();'
+            rand_test = self.randn_str()
         return rand_test
+
+    def get_func_test_str(self, var_name, func_type, rand_int_max):
+        """
+        :param var_name: lhs name
+        :param func_type: la_type
+        :param rand_int_max: 10
+        :return:
+        """
+        test_content = []
+        param_list = []
+        dim_definition = []
+        #Alec: I don't know what this is doing in python...
+        #
+        #if func_type.ret_template():
+        #    for ret_dim in func_type.ret_symbols:
+        #        param_i = func_type.template_symbols[ret_dim]
+        #        if func_type.params[param_i].is_vector():
+        #            dim_definition.append('        {} = {}{}.shape[0]'.format(ret_dim, self.param_name_test, param_i))
+        #        elif func_type.params[param_i].is_matrix():
+        #            if ret_dim == func_type.params[param_i].rows:
+        #                dim_definition.append(
+        #                    '        {} = {}{}.shape[0]'.format(ret_dim, self.param_name_test, param_i))
+        #            else:
+        #                dim_definition.append(
+        #                    '        {} = {}{}.shape[1]'.format(ret_dim, self.param_name_test, param_i))
+        for index in range(len(func_type.params)):
+            param_list.append('{}{}'.format(self.param_name_test, index))
+        anon_str = "   {} = @({}) ".format(var_name, ', '.join(param_list))
+        # Multi-line anonymous functions are not possible in Matlab.
+        if func_type.ret.is_set():
+            test_content += self.get_set_test_list('tmp', self.generate_var_name("dim"), 'i', func_type.ret, rand_int_max, '        ')
+            #test_content.append('        return tmp')
+        else:
+            anon_str += self.get_rand_test_str(func_type.ret, rand_int_max)+";"
+        test_content.append(anon_str)
+        return test_content
 
     def get_set_test_list(self, parameter, la_type, rand_int_max, pre='    '):
         test_content = []
         test_indent = "    "
         test_content.append(test_indent+'{} = [];'.format(parameter))
-        test_content.append(test_indent+'{}_0 = randi({});'.format(parameter, rand_int_max))
+        test_content.append(test_indent+'{}_0 = {};'.format(parameter, self.randi_str(rand_int_max)))
         test_content.append(test_indent+'for i = 1:{}_0'.format(parameter))
         gen_list = []
         for i in range(la_type.size):
             if la_type.int_list[i]:
-                gen_list.append('randi({})'.format(rand_int_max))
+                gen_list.append(self.randi_str(rand_int_max))
             else:
-                gen_list.append('randn()')
+                gen_list.append(self.randn_str())
         test_content.append(test_indent+'    {}(end+1,:) = ['.format(parameter) + ', '.join(gen_list) + '];')
         test_content.append(test_indent+'end')
         test_content = ['{}{}'.format(pre, line) for line in test_content]
@@ -115,7 +172,7 @@ class CodeGenMatlab(CodeGen):
                                 int_dim = self.get_int_dim(cur_set)
                                 has_defined = True
                                 if int_dim == -1:
-                                    test_content.append(test_indent+"    {} = randi({});".format(key, rand_int_max))
+                                    test_content.append(test_indent+"    {} = {};".format(key, self.randi_str(rand_int_max)))
                                 else:
                                     test_content.append(test_indent+"    {} = {};".format(key, int_dim))
                                 for same_key in cur_set:
@@ -130,7 +187,7 @@ class CodeGenMatlab(CodeGen):
                     else:
                         has_defined = True
                 if not has_defined:
-                    test_content.append(test_indent+"    {} = randi({});".format(key, rand_int_max))
+                    test_content.append(test_indent+"    {} = {};".format(key, self.randi_str(rand_int_max)))
                 # +1 because sizes in matlab are 1-indexed
                 dim_content += "    {} = size({}, {});\n".format(key, target, target_dict[target]+1)
         for parameter in self.parameters:
@@ -155,15 +212,18 @@ class CodeGenMatlab(CodeGen):
                             '        {}.append(sparse.random({}, {}, dtype=np.float64, density=0.25))'.format(parameter, ele_type.rows,
                                                                                             ele_type.cols))
                 else:
-                    size_str = ""
+                    #size_str = ""
+                    sizes = []
                     if ele_type.is_matrix():
                         type_checks.append('    assert( isequal(size({}), [{}, {}, {}]) );'.format(parameter, self.symtable[parameter].size, ele_type.rows, ele_type.cols))
-                        size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
+                        #size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
+                        sizes = [self.symtable[parameter].size, ele_type.rows, ele_type.cols]
                     elif ele_type.is_vector():
                         # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
                         # size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)
                         type_checks.append('    assert( isequal(size({}), [{}, {}]) );'.format(parameter, self.symtable[parameter].size, ele_type.rows))
-                        size_str = '{}, {}'.format(self.symtable[parameter].size, ele_type.rows)
+                        #size_str = '{}, {}'.format(self.symtable[parameter].size, ele_type.rows)
+                        sizes = [self.symtable[parameter].size, ele_type.rows]
                     elif ele_type.is_scalar():
                         # Alec: is scalar? but then should
                         # self.symtable[parameter].size always be 1? What's
@@ -172,22 +232,39 @@ class CodeGenMatlab(CodeGen):
                         # Force inputs to be treated as column vectors
                         type_declare.append('    {} = reshape({},[],1);'.format(parameter,parameter));
                         type_checks.append('    assert( size({},1) == {} );'.format(parameter, self.symtable[parameter].size))
-                        size_str = '{}'.format(self.symtable[parameter].size)
+                        #size_str = '{}'.format(self.symtable[parameter].size)
+                        sizes = [self.symtable[parameter].size]
                     if isinstance(data_type, LaVarType):
                         if data_type.is_scalar() and data_type.is_int:
-                            # type_declare.append('    {} = np.asarray({}, dtype=np.int)'.format(parameter, parameter))
-                            test_content.append(test_indent+'    {} = randi({}, {});'.format(parameter, rand_int_max, size_str))
+                            #type_declare.append('    {} = np.asarray({}, dtype=np.int)'.format(parameter, parameter))
+                            test_content.append('    {} = {};'.format(parameter, self.randi_str(rand_int_max,sizes)))
+                        elif ele_type.is_set():
+                            test_content.append('    {} = []'.format(parameter))
+                            test_content.append('    for i = 1:{}'.format(self.symtable[parameter].size))
+                            set_content = self.get_set_test_list("{}_tmp".format(parameter),
+                                                                 self.generate_var_name("dim"), 'j', ele_type,
+                                                                 rand_int_max, '    ')
+                            set_content = ["    {}".format(line) for line in set_content]
+                            test_content += set_content
+                            test_content.append('        {}(end+1) = {};'.format(parameter, "{}_tmp".format(parameter)))
+                            #test_content.append('    {} = np.asarray({})'.format(parameter, parameter))
+                            test_content.append('    end')
                         else:
-                            # type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
-                            if ele_type.is_scalar():
-                                test_content.append(test_indent+'    {} = randn({},1);'.format(parameter, size_str))
-                            else:
-                                test_content.append(test_indent+'    {} = randn({});'.format(parameter, size_str))
+                            #type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
+                            test_content.append('    {} = {};'.format(parameter, self.randn_str(sizes)))
                     else:
-                        # Alec: I don't understand what this was doing for python,
-                        # so I don't know if it would be important for matlab
-                        #type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
-                        test_content.append(test_indent+'    {} = randn({},1);'.format(parameter, size_str))
+                        if ele_type.is_function():
+                            test_content.append('        {} = {{}};'.format(parameter))
+                            test_content.append('        for i = 1:{}'.format(self.symtable[parameter].size))
+                            func_content = self.get_func_test_str("{}_f".format(parameter), ele_type, rand_int_max)
+                            func_content = ["         {}".format(line) for line in func_content]
+                            test_content += func_content
+                            test_content.append('            {}{{end+1,1}} = {};'.format(parameter, "{}_f".format(parameter)))
+                            test_content.append('        end')
+                            #test_content.append('    {} = np.asarray({})'.format(parameter, parameter))
+                        else:
+                            #type_declare.append('    {} = np.asarray({}, dtype={})'.format(parameter, parameter, "np.integer" if ele_type.is_integer_element() else "np.float64"))
+                            test_content.append('        {} = {};'.format(parameter, self.randn_str(sizes)))
             elif self.symtable[parameter].is_matrix():
                 element_type = self.symtable[parameter].element_type
                 if isinstance(element_type, LaVarType):
