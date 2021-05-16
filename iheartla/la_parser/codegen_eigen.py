@@ -29,7 +29,7 @@ class CodeGenEigen(CodeGen):
                 type_list.append('int')
             else:
                 type_list.append('double')
-        return "std::tuple< {} >".format(", ".join(type_list))
+        return "std::tuple< {} >".format(", ".join(type_list)) if len(type_list) > 1 else type_list[0]
 
     def get_func_params_str(self, la_type, name_required=False):
         param_list = []
@@ -167,8 +167,10 @@ class CodeGenEigen(CodeGen):
                 gen_list.append('rand()%{}'.format(rand_int_max))
             else:
                 gen_list.append('rand()%10')
-        test_content.append(
-            '    {}.insert(std::make_tuple('.format(parameter) + ', '.join(gen_list) + '));')
+        if len(gen_list) > 1:
+            test_content.append('    {}.insert(std::make_tuple('.format(parameter) + ', '.join(gen_list) + '));')
+        else:
+            test_content.append('    {}.insert({});'.format(parameter, gen_list[0]))
         test_content.append('}')
         test_content = ['{}{}'.format(pre, line) for line in test_content]
         return test_content
