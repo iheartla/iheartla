@@ -625,8 +625,9 @@ class CodeGenMatlab(CodeGen):
             #else:
             #    # dense
             m_content += '[{}]'.format('; '.join(all_rows))
-            if len(ret) > 1 and len(ret[0]) > 1:
-                content += '{} = {};\n'.format(cur_m_id, m_content)
+            #Alec: why would we ever not output the assignment?
+            #if len(ret) > 1 and len(ret[0]) > 1:
+            content += '{} = {};\n'.format(cur_m_id, m_content)
             #elif len(ret) == 1 and len(ret[0]) != 1:  # one row one col -> vstack
             #    # single row
             #    content += '{} = np.hstack(({}))\n'.format(cur_m_id, ', '.join(ret[0]))
