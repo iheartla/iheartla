@@ -496,9 +496,12 @@ class CodeGenLatex(CodeGen):
         else:
             if node.power.node_type == IRNodeType.Factor and node.power.sub:  # sub expression
                 power_info = self.visit(node.power.sub.value, **kwargs)
-                base_info = "{{{}}}^{{{}}}".format(base_info, power_info)
             else:
                 power_info = self.visit(node.power, **kwargs)
+            if node.base.node_type == IRNodeType.Norm:
+                # don't enclose norms in {} this causes ugly space.
+                base_info = "{}^{{{}}}".format(base_info, power_info)
+            else:
                 base_info = "{{{}}}^{{{}}}".format(base_info, power_info)
         return base_info
 
