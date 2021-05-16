@@ -787,7 +787,9 @@ class CodeGenMatlab(CodeGen):
     def visit_cast(self, node, **kwargs):
         value_info = self.visit(node.value, **kwargs)
         if node.la_type.is_scalar():
-            value_info.content = "({}).item()".format(value_info.content)
+            #value_info.content = "({}).item()".format(value_info.content)
+            # seems like a python/eigen problem. what else is being cast?
+            value_info.content = "{}".format(value_info.content)
         return value_info
 
     def visit_assignment(self, node, **kwargs):
@@ -878,11 +880,11 @@ class CodeGenMatlab(CodeGen):
                     elif ele_type.is_vector():
                         content += "    {} = zeros({}, {});\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
                     else:
-                        content += "    {} = zeros({});\n".format(sequence, self.symtable[sequence].size)
+                        content += "    {} = zeros({},1);\n".format(sequence, self.symtable[sequence].size)
                     content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].size)
                 else:
                     # vector
-                    content += "    {} = zeros({});\n".format(sequence, self.symtable[sequence].rows)
+                    content += "    {} = zeros({},1);\n".format(sequence, self.symtable[sequence].rows)
                     content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].rows)
                 if right_info.pre_list:
                     content += self.update_prelist_str(right_info.pre_list, "    ")
@@ -969,9 +971,9 @@ class CodeGenMatlab(CodeGen):
         if node.base_type.la_type.is_scalar():
             init_value = 0
         elif node.base_type.la_type.is_vector():
-            init_value = "zeros({})".format(node.base_type.la_type.rows)
+            init_value = "zeros({},1)".format(node.base_type.la_type.rows)
         elif node.base_type.la_type.is_matrix():
-            init_value = "zeros({}*{})".format(node.base_type.la_type.rows, node.base_type.la_type.cols)
+            init_value = "zeros({}*{},1)".format(node.base_type.la_type.rows, node.base_type.la_type.cols)
             name_convention = {id_info.content: "reshape({}, [{}, {}])".format(id_info.content, node.base_type.la_type.rows, node.base_type.la_type.cols)}
             self.add_name_conventions(name_convention)
         exp_info = self.visit(node.exp, **kwargs)
@@ -1010,11 +1012,11 @@ class CodeGenMatlab(CodeGen):
             elif cond_node.cond.node_type == IRNodeType.In:
                 v_set = self.visit(cond_node.cond.set, **kwargs).content
                 opt_func = self.generate_var_name(category)
-                pre_list.append("    def {}({}):\n".format(opt_func, opt_param))
+                pre_list.append("    function ret = {}({})\n".format(opt_func, opt_param))
                 pre_list.append("        {} = 1\n".format(opt_ret))
-                pre_list.append("        for i in range(len({})):\n".format(v_set))
+                pre_list.append("        for i = 1:numel({}):\n".format(v_set))
                 pre_list.append("            {} *= ({}[0] - {}[i])\n".format(opt_ret, opt_param, v_set))
-                pre_list.append("        return {}\n".format(opt_ret))
+                pre_list.append("        ret = {}\n".format(opt_ret))
                 constraint_list.append("{{'type': 'eq', 'fun': {}}}".format(opt_func))
 
         # constraint
@@ -1033,32 +1035,44 @@ class CodeGenMatlab(CodeGen):
             exp = "-({})".format(exp)
 
         if len(exp_info.pre_list) > 0:
-            pre_list.append("    def {}({}):\n".format(target_func, id_info.content))
+            pre_list.append("    function ret = {}({})\n".format(target_func, id_info.content))
             for pre in exp_info.pre_list:
                 lines = pre.split('\n')
                 for line in lines:
                     if line != "":
                         pre_list.append("    {}\n".format(line))
-            pre_list.append("        return {}\n".format(exp))
+            pre_list.append("        ret = {};\n".format(exp))
+            pre_list.append("    end\n")
         else:
             # simple expression
             pre_list.append("    {} = lambda {}: {}\n".format(target_func, id_info.content, exp))
-        #
-        if node.opt_type == OptimizeType.OptimizeMin:
-            content = "minimize({}, {}{}).fun".format(target_func, init_value, constraints_param)
-        elif node.opt_type == OptimizeType.OptimizeMax:
-            content = "-minimize({}, {}{}).fun".format(target_func, init_value, constraints_param)
-        elif node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
-            if node.base_type.la_type.is_scalar():
-                content = "minimize({}, {}{}).x[0]".format(target_func, init_value, constraints_param)
-            elif node.base_type.la_type.is_vector():
-                content = "minimize({}, {}{}).x".format(target_func, init_value, constraints_param)
-            elif node.base_type.la_type.is_matrix():
-                content = "minimize({}, {}{}).x.reshape({}, {})".format(target_func,
-                                                                                                init_value,
-                                                                                                constraints_param,
-                                                                                                node.base_type.la_type.rows,
-                                                                                                node.base_type.la_type.cols)
+        if len(constraint_list) > 0:
+            # unfinished implementation
+            fmin = "fmincon(@{},{},{})".format(target_func,init_value,constraints_param)
+        else:
+            fmin = "fminunc(@{},{})".format(target_func,init_value)
+        if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
+            fmin = "-"+fmin
+        if node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
+            pre_list.append("    [optimize_0,~] = {};\n".format(fmin))
+        else:
+            pre_list.append("    [~,optimize_0] = {};\n".format(fmin))
+        content = "optimize_0"
+        #if node.opt_type == OptimizeType.OptimizeMin:
+        #    content = "minimize({}, {}{});".format(target_func, init_value, constraints_param)
+        #elif node.opt_type == OptimizeType.OptimizeMax:
+        #    content = "-minimize({}, {}{});".format(target_func, init_value, constraints_param)
+        #elif node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
+        #    if node.base_type.la_type.is_scalar():
+        #        content = "minimize({}, {}{}).x[0]".format(target_func, init_value, constraints_param)
+        #    elif node.base_type.la_type.is_vector():
+        #        content = "minimize({}, {}{}).x".format(target_func, init_value, constraints_param)
+        #    elif node.base_type.la_type.is_matrix():
+        #        content = "minimize({}, {}{}).x.reshape({}, {})".format(target_func,
+        #                                                                                        init_value,
+        #                                                                                        constraints_param,
+        #                                                                                        node.base_type.la_type.rows,
+        #                                                                                        node.base_type.la_type.cols)
         if node.base_type.la_type.is_matrix():
             self.del_name_conventions(name_convention)
         return CodeNodeInfo(content, pre_list=pre_list)
