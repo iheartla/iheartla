@@ -880,9 +880,6 @@ class CodeGenMatlab(CodeGen):
         # visit matrix first
         content = ""
         left_info = self.visit(node.left, **kwargs)
-        print("##########################################################")
-        print(node.left)
-        print("##########################################################")
         left_id = left_info.content
         kwargs[LHS] = left_id
         kwargs[ASSIGN_TYPE] = node.op
@@ -1045,6 +1042,22 @@ class CodeGenMatlab(CodeGen):
         content = '~ismember([' + ', '.join(item_list) + '],' + right_info.content+",'rows')"
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
+    def get_bin_comp_str(self, comp_type):
+        op = ''
+        if comp_type == IRNodeType.Eq:
+            op = '=='
+        elif comp_type == IRNodeType.Ne:
+            op = '~='
+        elif comp_type == IRNodeType.Lt:
+            op = '<'
+        elif comp_type == IRNodeType.Le:
+            op = '<='
+        elif comp_type == IRNodeType.Gt:
+            op = '>'
+        elif comp_type == IRNodeType.Ge:
+            op = '>='
+        return op
+
     def visit_bin_comp(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
@@ -1185,7 +1198,12 @@ class CodeGenMatlab(CodeGen):
         pre_list += exp_info.pre_list
         base_info = self.visit(node.base, **kwargs)
         pre_list += exp_info.pre_list
-        content = "integral({}, {}, {})".format("lambda {}: {}".format(base_info.content, exp_info.content), lower_info.content, upper_info.content)
+        # Awkwardly 'ArrayValued',true means that the function will get called
+        # with scalar input, otherwise MATLAB assumes the function is written in
+        # a vectorized way and surely ours will not be without intentionally
+        # guaranteeing that.
+        func_content = "@({}) {}".format(base_info.content, exp_info.content);
+        content = "integral({}, {}, {},'ArrayValued',true)".format(func_content, lower_info.content, upper_info.content)
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_inner_product(self, node, **kwargs):
