@@ -386,7 +386,7 @@ class CodeGenMatlab(CodeGen):
         else:
             content.append("{} = 0;\n".format(assign_id))
         sym_info = node.sym_dict[target_var[0]]
-        if self.symtable[target_var[0]].is_matrix() and self.symtable[target_var[0]].sparse:
+        if self.symtable[target_var[0]].is_matrix():
             if sub == sym_info[0]:
                 content.append("for {} = 1:size({},1)\n".format(sub, target_var[0]))
             else:
