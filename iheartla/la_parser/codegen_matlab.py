@@ -478,7 +478,10 @@ class CodeGenMatlab(CodeGen):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
         left_info.pre_list += right_info.pre_list
-        left_info.content = "{}\{}".format(left_info.content, right_info.content)
+        # parenthesis are important! we're replacing a "power" (higher
+        # precedence than multiplication) with a "division" (equal precedence
+        # with multiplication)
+        left_info.content = "({}\{})".format(left_info.content, right_info.content)
         return left_info
 
     def visit_sparse_matrix(self, node, **kwargs):
@@ -888,7 +891,8 @@ class CodeGenMatlab(CodeGen):
                     content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].rows)
                 if right_info.pre_list:
                     content += self.update_prelist_str(right_info.pre_list, "    ")
-                content += "    " + right_exp
+                content += "    " + right_exp+";\n"
+                content += "    end\n"
         #
         else:
             if right_info.pre_list:
