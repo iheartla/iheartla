@@ -34,6 +34,9 @@ if __name__ == '__main__':
                 for out in out_list:
                     assert out in out_dict, "Parameters after -o or --output can only be numpy, eigen, latex, or matlab"
                     parser_type = parser_type | out_dict[out]
-            for input in args.input: compile_la_file(input, parser_type)
+            try:
+                for input in args.input: compile_la_file(input, parser_type)
+            except:
+                exit(1)
         else:
             show_gui()

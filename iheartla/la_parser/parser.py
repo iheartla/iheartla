@@ -371,33 +371,66 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
     """
     used for command line
     """
-    content = read_from_file(la_file)
-    base_name = get_file_name(la_file)
+    # Alec: maybe this compile_la_file should just call compile_la_content after
+    # reading the content?
+    if la_file == "-":
+        content = "\n".join(sys.stdin.readlines())
+        base_name = "iheartla"
+    else:
+        content = read_from_file(la_file)
+        base_name = get_file_name(la_file)
     # print("head:", head, ", name:", name, "parser_type", parser_type, ", base_name:", base_name)
     parser = get_default_parser()
     try:
+        def write_output(content, file_name):
+            if la_file == "-":
+                print("{}".format(content));
+                print("\n")
+            else:
+                save_to_file(content,file_name)
         model = parser.parse(content, parseinfo=True)
         type_walker, start_node = parse_ir_node(content, model)
+        # Alec: maybe this should be a loop/case statement
         if parser_type & ParserTypeEnum.NUMPY:
             numpy_file = Path(la_file).with_suffix(".py")
             numpy_content = walk_model(ParserTypeEnum.NUMPY, type_walker, start_node, func_name=base_name)
-            save_to_file(numpy_content, numpy_file)
+            write_output(numpy_content, numpy_file)
         if parser_type & ParserTypeEnum.EIGEN:
             eigen_file = Path(la_file).with_suffix(".cpp")
             eigen_content = walk_model(ParserTypeEnum.EIGEN, type_walker, start_node, func_name=base_name)
-            save_to_file(eigen_content, eigen_file)
+            write_output(eigen_content, eigen_file)
         if parser_type & ParserTypeEnum.LATEX:
             tex_file = Path(la_file).with_suffix(".tex")
             tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, start_node, func_name=base_name)
-            save_to_file(tex_content, tex_file)
+            write_output(tex_content, tex_file)
+        if parser_type & ParserTypeEnum.MATLAB:
+            # Alec: in matlab a .m file can either be a "script" or a "function". 
+            #
+            # A function-file should have a main function with the same name as the
+            # file. Within that function there can be sub-functions.
+            #
+            # A script-file can have funtions (and sub functions) as long as they
+            # *do not* have the same name as the file.
+            # 
+            # For now, I'm making the assumption that we output a function-file called
+            # *.m with a main function called * and a sub function
+            # generateRandomData. When called with no arguments (nargin == 0),
+            # it will issue a warning and run with random data.
+            m_file = Path(la_file).with_suffix(".m")
+            m_content = walk_model(ParserTypeEnum.MATLAB, type_walker, start_node, func_name=base_name)
+            write_output(m_content, m_file)
     except FailedParse as e:
         print(LaMsg.getInstance().get_parse_error(e))
+        raise
     except FailedCut as e:
         print("FailedCut: {}".format(str(e)))
+        raise
     except AssertionError as e:
         print("{}".format(e.args[0]))
+        raise
     except Exception as e:
         print("Exception: {}".format(str(e)))
+        raise
     except:
         print(str(sys.exc_info()[0]))
 

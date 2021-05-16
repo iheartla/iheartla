@@ -35,6 +35,15 @@ class IRVisitor(object):
         self.new_id_prefix = ''  # _
         self.uni_num_dict = {'₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9',
                              '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9'}
+        # These are especially important in targets like MATLAB which have a very restrictive (≈ASCII) character set for variable names:
+        #
+        # remove (,) otherwise they result in giant variable names, e.g., `x(a,b)` → x_left_parenthesis_a_comma_b_right_parenthesis
+        # Greek symbols to English words, e.g., θ → theta
+        # subscripts to underscore letter, e.g., ᵢ → _i
+        # common math decorations to English names, e.g., v̄ → v_bar, rather than unicode names , e.g., v̄ → v_combining_macron 
+        # ^ is translated into _, .e.g, s^k → s_k
+        # ℓ → ell rather than script_small_l
+        self.common_symbol_dict = {',': '', '(':'',')':'', 'Α': 'Alpha', 'Β': 'Beta', 'Γ': 'Gamma', 'Δ': 'Delta', 'Ε': 'Epsilon', 'Ζ': 'Zeta', 'Η': 'Eta', 'Θ': 'Theta', 'Ι': 'Iota', 'Κ': 'Kappa', 'Λ': 'Lambda', 'Μ': 'Mu', 'Ν': 'Nu', 'Ξ': 'Xi', 'Ο': 'Omicron', 'Π': 'Pi', 'Ρ': 'Rho', 'Σ': 'Sigma', '∑': 'Sigma', 'Τ': 'Tau', 'Υ': 'Upsilon', 'Φ': 'Phi', 'Χ': 'Chi', 'Ψ': 'Psi', 'Ω': 'Omega', 'α': 'alpha', 'β': 'beta', 'γ': 'gamma', 'δ': 'delta', 'ε': 'epsilon', 'ζ': 'zeta', 'η': 'eta', 'θ': 'theta', 'ι': 'iota', 'κ': 'kappa', 'λ': 'lambda', 'μ': 'mu', 'ν': 'nu', 'ξ': 'xi', 'ο': 'omicron', 'π': 'pi', 'ρ': 'rho', 'ς': 'sigma', 'σ': 'sigma', 'τ': 'tau', 'υ': 'upsilon', 'ϕ': 'phi', 'φ': 'phi', 'χ': 'chi', 'ψ': 'psi', 'ω': 'omega', 'ₐ':'_a','ᵢ': '_i', 'ⱼ': '_j', 'ₖ': '_k', 'ₘ': '_m', 'ₙ': '_n','ᵣ': '_r', 'ₛ': '_s', '\u0302': '_hat', '\u0303': '_tilde', '\u0304': '_bar', '\u0305': '_wide_bar', '\u0307': '_dot', '\u0308': '_double_dot', '\u030C': '_check', '\u20D7': '_vec', 'ã': 'a_tilde', '^': '_', 'ℓ': 'ell'}
         self.declared_symbols = set()
 
     def add_name_conventions(self, con_dict):
@@ -459,34 +468,39 @@ class IRVisitor(object):
         return prefix + "\n{}".format(prefix).join(lines) + '\n'
 
     def convert_unicode(self, name):
-        if '`' not in name:
+        if '`' not in name and self.parse_type != ParserTypeEnum.MATLAB:
             return name
         content = name.replace('`', '')
         new_list = []
         pre_unicode = False
         for e in content:
-            if self.parse_type == ParserTypeEnum.NUMPY:
+            if self.parse_type == ParserTypeEnum.NUMPY or self.parse_type == ParserTypeEnum.MATLAB:
                 # make sure identifier is valid in numpy
                 if e.isnumeric() and e in self.uni_num_dict:
                     e = self.uni_num_dict[e]
-            if e.isalnum() or e == '_':
+            if ((self.parse_type != ParserTypeEnum.MATLAB or e.isascii()) and e.isalnum()) or e == '_':
                 if pre_unicode:
                     new_list.append('_')
                     pre_unicode = False
                 new_list.append(e)
             elif e.isspace():
-                new_list.append('_')
+                new_list.append('')
             else:
-                try:
-                    if not pre_unicode:
-                        new_list.append('_')
-                    new_list.append(unicodedata.name(e).lower().replace(' ', '_'))
-                    pre_unicode = True
-                except KeyError:
-                    continue
+                if  self.parse_type == ParserTypeEnum.MATLAB and e in self.common_symbol_dict:
+                    new_list.append(self.common_symbol_dict[e])
+                else:
+                    try:
+                        if not pre_unicode:
+                            new_list.append('_')
+                        new_list.append(unicodedata.name(e).lower().replace(' ', '_'))
+                    except KeyError:
+                        continue
+                new_list.append('_')
+                pre_unicode = True
         if len(new_list) > 0 and new_list[0].isnumeric():
             new_list.insert(0, '_')
-        return ''.join(new_list)
+        ret = re.sub("_+", "_", ''.join(new_list)).strip("_")
+        return ret
 
     def trim_content(self, content):
         # convert special string in identifiers
@@ -496,8 +510,15 @@ class IRVisitor(object):
             all_ids = self.get_all_ids(ids)
             ids_list += all_ids[1]
         names_dict = []
+        # This is conducting the replacements at the output string level rather
+        # than the variable name level. If one name appears in another (e.g., φ
+        # in `x(φ)` then this leads to clashes, hence the awkward sort.
+        ids_list.sort(key=len,reverse=True)
         for special in ids_list:
-            if '`' not in special:
+            if '`' not in special and self.parse_type != ParserTypeEnum.MATLAB:
+                continue
+            # don't convert numbers...
+            if special.isnumeric():
                 continue
             new_str = self.convert_unicode(special)
             new_str = new_str.replace('-', '_')
