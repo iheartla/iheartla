@@ -103,6 +103,7 @@ function isChrome(){
     import micropip
     micropip.install('appdirs')
     micropip.install('tatsu')
+    micropip.install('sympy')
     micropip.install('${wheel}')
     `
     await pyodide.loadPackage(['micropip']);
