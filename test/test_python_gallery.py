@@ -21,13 +21,13 @@ class TestGallery(BasePythonTest):
         R: ℝ : the radius of the sphere"""
         func_info = self.gen_func_info(la_str)
         A = np.array([[0], [0], [3]])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(np.pi/2, np.pi/2, 3).x_left_parenthesis_θ_comma__ϕ_right_parenthesis, A)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(np.pi/2, np.pi/2, 3).x_left_parenthesis_θ_comma_ϕ_right_parenthesis, A)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
                      "    Eigen::Matrix<double, 3, 1> A;",
                      "    A << 0, 0, 3;",
-                     "    Eigen::Matrix<double, 3, 1> B = {}(M_PI/2, M_PI/2, 3).x_left_parenthesis_θ_comma__ϕ_right_parenthesis;".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 3, 1> B = {}(M_PI/2, M_PI/2, 3).x_left_parenthesis_θ_comma_ϕ_right_parenthesis;".format(func_info.eig_func_name),
                      "    return ((A - B).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -212,7 +212,7 @@ class TestGallery(BasePythonTest):
                       [7, 0, 0, 8, 0, 0, 9, 0, 0],
                       [0, 7, 0, 0, 8, 0, 0, 9, 0],
                       [0, 0, 7, 0, 0, 8, 0, 0, 9]])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(A)._partial_differential_2I5_soliduspartial_differential_f2, B)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(A).partial_differential_2I5_solidus_partial_differential_f2, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -228,7 +228,7 @@ class TestGallery(BasePythonTest):
                      "    7, 0, 0, 8, 0, 0, 9, 0, 0,"
                      "    0, 7, 0, 0, 8, 0, 0, 9, 0,"
                      "    0, 0, 7, 0, 0, 8, 0, 0, 9;",
-                     "    Eigen::Matrix<double, 9, 9> C = {}(A)._partial_differential_²I₅_soliduspartial_differential_f²;".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 9, 9> C = {}(A).partial_differential_²I₅_solidus_partial_differential_f²;".format(func_info.eig_func_name),
                      "    return ((2*B - C).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))

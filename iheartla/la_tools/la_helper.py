@@ -39,7 +39,7 @@ def is_keyword(name, parser_type=ParserTypeEnum.DEFAULT):
 
 
 def is_same_expr(lhs, rhs):
-    return simplify('{} == {}'.format(lhs, rhs))
+    return sympify('{} == {}'.format(lhs, rhs))
 
 
 def is_new_tatsu_version():
