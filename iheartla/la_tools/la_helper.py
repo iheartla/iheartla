@@ -9,7 +9,7 @@ DEBUG_MODE = False
 DEBUG_PARSER = False  # used for new grammer files
 class ParserTypeEnum(IntFlag):
     INVALID = 0
-    DEFAULT = 7
+    DEFAULT = 15
     #
     LATEX = 1
     NUMPY = 2
