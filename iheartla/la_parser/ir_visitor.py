@@ -1,4 +1,3 @@
-import re
 from .ir import *
 from ..la_tools.la_logger import *
 from ..la_tools.la_helper import *

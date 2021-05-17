@@ -1,11 +1,11 @@
 import copy
 from tatsu.model import NodeWalker
-import regex as re
 from tatsu.objectmodel import Node
 from .la_types import *
 from ..la_tools.la_logger import *
 from ..la_tools.la_msg import *
 from ..la_tools.la_helper import *
+import regex as re
 
 ## Make the visualizer
 try: from ..la_tools.la_visualizer import LaVisualizer
@@ -656,7 +656,7 @@ class TypeWalker(NodeWalker):
         op_type = MulOpType.MulOpInvalid
         if node.op and node.op == '⋅':
             op_type = MulOpType.MulOpDot
-            if left_info.la_type.is_vector() and right_info.la_type.is_vector() and left_info.la_type.rows == right_info.la_type.rows:
+            if left_info.la_type.is_vector() and right_info.la_type.is_vector() and is_same_expr(left_info.la_type.rows, right_info.la_type.rows):
                 return self.walk_DotProduct(node, **kwargs)
         return self.make_mul_info(left_info, right_info, op_type, parse_info=node.parseinfo)
 
@@ -1034,7 +1034,7 @@ class TypeWalker(NodeWalker):
             if ir_node.norm_type == NormType.NormIdentifier:
                 assert ir_node.sub.la_type.is_matrix() or ir_node.sub.la_type.is_scalar(), self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Subscript has to be matrix or scalar for vector type")
                 if ir_node.sub.la_type.is_matrix():
-                    assert ir_node.sub.la_type.rows == ir_node.sub.la_type.cols and ir_node.sub.la_type.rows == ir_node.value.la_type.rows, self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Dimension error")
+                    assert is_same_expr(ir_node.sub.la_type.rows, ir_node.sub.la_type.cols) and is_same_expr(ir_node.sub.la_type.rows, ir_node.value.la_type.rows), self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Dimension error")
         elif ir_node.value.la_type.is_matrix():
             if node.single:
                 ir_node.norm_type = NormType.NormDet
@@ -1061,7 +1061,7 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         assert left_info.ir.la_type.is_vector(), self.get_err_msg_info(left_info.ir.parse_info, "Inner product error. Parameter {} must be vector".format(node.left.text))
         assert right_info.ir.la_type.is_vector(), self.get_err_msg_info(right_info.ir.parse_info, "Inner product error. Parameter {} must be vector".format(node.right.text))
-        assert left_info.ir.la_type.rows == right_info.ir.la_type.rows, self.get_err_msg_info(node.parseinfo,
+        assert is_same_expr(left_info.ir.la_type.rows, right_info.ir.la_type.rows), self.get_err_msg_info(node.parseinfo,
                                                                                         "Inner product error. Parameters {} and {} must have the same dimension".format(node.left.text, node.right.text))
         sub_node = None
         if node.sub:
@@ -1089,10 +1089,10 @@ class TypeWalker(NodeWalker):
         ir_node = HadamardProductNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
         assert left_info.la_type.is_vector() or left_info.la_type.is_matrix(), self.get_err_msg_info(left_info.ir.parse_info, "Hadamard product error. Parameter {} must be vector or matrix".format(node.left.text))
         assert right_info.la_type.is_vector() or right_info.la_type.is_matrix(), self.get_err_msg_info(right_info.ir.parse_info, "Hadamard product error. Parameter {} must be vector or matrix".format(node.right.text))
-        assert left_info.la_type.rows == right_info.la_type.rows, self.get_err_msg_info(node.parseinfo,
+        assert is_same_expr(left_info.la_type.rows, right_info.la_type.rows), self.get_err_msg_info(node.parseinfo,
                                                                                         "Hadamard product error. Parameters {} and {} must have the same dimension".format(node.left.text, node.right.text))
         if left_info.la_type.is_matrix():
-            assert left_info.la_type.cols == right_info.la_type.cols, self.get_err_msg_info(node.parseinfo,
+            assert is_same_expr(left_info.la_type.cols, right_info.la_type.cols), self.get_err_msg_info(node.parseinfo,
                                                                                         "Hadamard product error. Parameters {} and {} must have the same dimension".format(node.left.text, node.right.text))
             ir_node.la_type = MatrixType(rows=left_info.la_type.rows, cols=left_info.la_type.rows)
         else:
@@ -1127,7 +1127,7 @@ class TypeWalker(NodeWalker):
         ir_node = DotProductNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
         assert left_info.la_type.is_vector(), self.get_err_msg_info(left_info.ir.parse_info, "Dot product error. Parameter {} must be vector".format(node.left.text))
         assert right_info.la_type.is_vector(), self.get_err_msg_info(right_info.ir.parse_info, "Dot product error. Parameter {} must be vector".format(node.right.text))
-        assert left_info.la_type.rows == right_info.la_type.rows, self.get_err_msg_info(node.parseinfo,
+        assert is_same_expr(left_info.la_type.rows, right_info.la_type.rows), self.get_err_msg_info(node.parseinfo,
                                                                                         "Dot product error. Parameters {} and {} must have the same dimension".format(node.left.text, node.right.text))
         ir_node.la_type = ScalarType()
         return NodeInfo(ir_node.la_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
@@ -1140,7 +1140,7 @@ class TypeWalker(NodeWalker):
         power_node.la_type = ScalarType()
         assert base.la_type.is_scalar() or base.la_type.is_matrix(), self.get_err_msg_info(base.parse_info, "Base of power must be scalar or matrix")
         if base.la_type.is_matrix():
-            assert base.la_type.rows == base.la_type.cols, self.get_err_msg_info(base.parse_info, "Power error. Rows must be the same as columns")
+            assert is_same_expr(base.la_type.rows, base.la_type.cols), self.get_err_msg_info(base.parse_info, "Power error. Rows must be the same as columns")
             self.unofficial_method = True
             power_node.la_type = base.la_type
         return power_node
@@ -1166,7 +1166,7 @@ class TypeWalker(NodeWalker):
             ir_node.r = node.r
             if base_info.la_type.is_matrix():
                 assert base_info.la_type.is_matrix(), self.get_err_msg_info(base_info.ir.parse_info,"Inverse matrix error. The base must be a matrix")
-                assert base_info.la_type.rows == base_info.la_type.cols, self.get_err_msg_info(base_info.ir.parse_info,"Inverse matrix error. The rows should be the same as the columns")
+                assert is_same_expr(base_info.la_type.rows, base_info.la_type.cols), self.get_err_msg_info(base_info.ir.parse_info,"Inverse matrix error. The rows should be the same as the columns")
                 ir_node.la_type = MatrixType(rows=base_info.la_type.rows, cols=base_info.la_type.rows, sparse=base_info.la_type.sparse)
             else:
                 assert base_info.la_type.is_scalar(), self.get_err_msg_info(base_info.ir.parse_info,
@@ -1191,7 +1191,7 @@ class TypeWalker(NodeWalker):
         assert right_info.la_type.is_matrix() or right_info.la_type.is_vector(), self.get_err_msg_info(left_info.ir.parse_info, "Parameter {} must be a matrix or vector".format(node.right.text))
         node_type = None
         if left_info.la_type.is_matrix():
-            assert left_info.la_type.rows == right_info.la_type.rows, self.get_err_msg_info(left_info.ir.parse_info, "Parameters {} and {} should have the same rows".format(node.left.text, node.right.text))
+            assert is_same_expr(left_info.la_type.rows, right_info.la_type.rows), self.get_err_msg_info(left_info.ir.parse_info, "Parameters {} and {} should have the same rows".format(node.left.text, node.right.text))
             if right_info.la_type.is_matrix():
                 node_type = MatrixType(rows=left_info.la_type.cols, cols=right_info.la_type.cols, sparse=left_info.la_type.sparse and right_info.la_type.sparse)
             elif right_info.la_type.is_vector():
@@ -1277,18 +1277,18 @@ class TypeWalker(NodeWalker):
                     if name_type.params[index].rows in name_type.template_symbols:
                         convertion_dict[name_type.params[index].rows] = param_info.ir.la_type.rows
                     else:
-                        assert name_type.params[index].rows == param_info.ir.la_type.rows, self.get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch")
+                        assert is_same_expr(name_type.params[index].rows, param_info.ir.la_type.rows), self.get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch")
                 elif name_type.params[index].is_matrix():
                     assert param_info.ir.la_type.is_matrix(), self.get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch")
                     if name_type.params[index].rows in name_type.template_symbols:
                         convertion_dict[name_type.params[index].rows] = param_info.ir.la_type.rows
                     else:
-                        assert name_type.params[index].rows == param_info.ir.la_type.rows, self.get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch")
+                        assert is_same_expr(name_type.params[index].rows, param_info.ir.la_type.rows), self.get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch")
                     #
                     if name_type.params[index].cols in name_type.template_symbols:
                         convertion_dict[name_type.params[index].cols] = param_info.ir.la_type.cols
                     else:
-                        assert name_type.params[index].cols == param_info.ir.la_type.cols, self.get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch")
+                        assert is_same_expr(name_type.params[index].cols, param_info.ir.la_type.cols), self.get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch")
                 elif name_type.params[index].is_set():
                     assert param_info.ir.la_type.is_set(), self.get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch")
                     assert name_type.params[index].size == param_info.ir.la_type.size, self.get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch")
@@ -2389,7 +2389,7 @@ class TypeWalker(NodeWalker):
                             if right_type.is_dynamic_row() and right_type.is_dynamic_col():
                                 ret_type = copy.deepcopy(left_type)
                             elif right_type.is_dynamic_row():
-                                assert left_type.cols == right_type.cols, get_err_msg()
+                                assert is_same_expr(left_type.cols, right_type.cols), get_err_msg()
                                 ret_type = copy.deepcopy(left_type)
                             elif right_type.is_dynamic_col():
                                 ret_type = copy.deepcopy(left_type)
@@ -2403,7 +2403,7 @@ class TypeWalker(NodeWalker):
                                 ret_type.cols = right_type.cols
                                 ret_type.set_dynamic_type(DynamicTypeEnum.DYN_INVALID)  # change to static type
                             elif right_type.is_dynamic_col():
-                                assert left_type.rows == right_type.rows, get_err_msg()
+                                assert is_same_expr(left_type.rows, right_type.rows), get_err_msg()
                                 ret_type = copy.deepcopy(left_type)
                     else:
                         if left_type.is_dynamic():
@@ -2411,20 +2411,20 @@ class TypeWalker(NodeWalker):
                                 ret_type = copy.deepcopy(right_type)
                             else:
                                 if left_type.is_dynamic_row():
-                                    assert left_type.cols == right_type.cols, get_err_msg()
+                                    assert is_same_expr(left_type.cols, right_type.cols), get_err_msg()
                                 else:
-                                    assert left_type.rows == right_type.rows, get_err_msg()
+                                    assert is_same_expr(left_type.rows, right_type.rows), get_err_msg()
                         else:
                             if right_type.is_dynamic_row() and right_type.is_dynamic_col():
                                 ret_type = copy.deepcopy(left_type)
                             else:
                                 if right_type.is_dynamic_row():
-                                    assert left_type.cols == right_type.cols, get_err_msg()
+                                    assert is_same_expr(left_type.cols, right_type.cols), get_err_msg()
                                 else:
-                                    assert left_type.rows == right_type.rows, get_err_msg()
+                                    assert is_same_expr(left_type.rows, right_type.rows), get_err_msg()
                 else:
                     # static
-                    assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, get_err_msg()
+                    assert is_same_expr(left_type.rows, right_type.rows) and is_same_expr(left_type.cols, right_type.cols), get_err_msg()
                     if left_type.sparse and right_type.sparse:
                         ret_type.sparse = True
                     else:
@@ -2432,7 +2432,7 @@ class TypeWalker(NodeWalker):
                 ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
             elif left_type.is_vector():
                 assert right_type.is_vector(), get_err_msg()
-                assert left_type.rows == right_type.rows, get_err_msg()
+                assert is_same_expr(left_type.rows, right_type.rows), get_err_msg()
                 # assert right_type.is_matrix() or right_type.is_vector(), error_msg
                 # assert left_type.rows == right_type.rows and left_type.cols == right_type.cols, error_msg
                 if right_type.is_matrix():
@@ -2460,7 +2460,7 @@ class TypeWalker(NodeWalker):
                 if right_type.is_scalar():
                     ret_type = copy.deepcopy(left_type)
                 elif right_type.is_matrix():
-                    assert left_type.cols == right_type.rows, get_err_msg()
+                    assert is_same_expr(left_type.cols, right_type.rows), get_err_msg()
                     ret_type = MatrixType(rows=left_type.rows, cols=right_type.cols)
                     if left_type.sparse and right_type.sparse:
                         ret_type.sparse = True
@@ -2468,7 +2468,7 @@ class TypeWalker(NodeWalker):
                     #     ret_type = ScalarType()
                     ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
                 elif right_type.is_vector():
-                    assert left_type.cols == right_type.rows, get_err_msg()
+                    assert is_same_expr(left_type.cols, right_type.rows), get_err_msg()
                     if left_type.rows == 1:
                         # scalar
                         ret_type = ScalarType()
@@ -2489,7 +2489,7 @@ class TypeWalker(NodeWalker):
                     left_info.ir = new_node
                     ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
                 elif right_type.is_vector():
-                    assert left_type.cols == right_type.rows, get_err_msg()
+                    assert is_same_expr(left_type.cols, right_type.rows), get_err_msg()
                     ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
         elif op == TypeInferenceEnum.INF_DIV:
             # assert left_type.is_scalar() and right_type.is_scalar(), error_msg

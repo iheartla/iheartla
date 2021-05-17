@@ -2,6 +2,7 @@ from enum import Enum, IntFlag
 from tatsu._version import __version__
 import sys
 import keyword
+from sympy import *
 import regex as re
 
 
@@ -35,6 +36,10 @@ def is_keyword(name, parser_type=ParserTypeEnum.DEFAULT):
         return name in keywords
     else:
         return is_keyword(name, parser_type=ParserTypeEnum.NUMPY) or is_keyword(name, parser_type=ParserTypeEnum.EIGEN)
+
+
+def is_same_expr(lhs, rhs):
+    return simplify('{} == {}'.format(lhs, rhs))
 
 
 def is_new_tatsu_version():
