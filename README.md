@@ -58,7 +58,7 @@ You can find releases on the GitHub [release page](https://github.com/pressurele
 
 I❤️LA depends on Python 3.x and several modules. You can install the modules via `pip`:
 
-    pip3 install tatsu==4.4 regex wxpython PyMuPDF
+    pip3 install tatsu==4.4 regex wxpython PyMuPDF sympy
     ## For development, also install:
     pip3 install graphviz cppyy numpy scipy pyinstaller
 
