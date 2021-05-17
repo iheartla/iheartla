@@ -1,4 +1,4 @@
-name: iheartla
+name: iheartla-cli
 channels:
   - conda-forge
   - defaults
@@ -6,5 +6,6 @@ dependencies:
   - python=3.8
   - tatsu=4.4
   - regex
+  - sympy
   - appdirs
 prefix: /Users/yotam/opt/miniconda3/envs/iheartla

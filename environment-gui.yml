@@ -1,4 +1,4 @@
-name: iheartla
+name: iheartla-gui
 channels:
   - conda-forge
   - defaults
@@ -8,6 +8,7 @@ dependencies:
   - regex
   - appdirs
   - wxpython
+  - sympy
   - pip
   - pip:
     - PyMuPDF
