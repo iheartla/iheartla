@@ -1,4 +1,4 @@
-name: iheartla
+name: iheartla-dev
 channels:
   - conda-forge
   - defaults
@@ -12,6 +12,7 @@ dependencies:
   - cppyy
   - scipy
   - pyinstaller
+  - sympy
   - pip
   - pip:
     - PyMuPDF
