@@ -638,7 +638,7 @@ class CodeGenMatlab(CodeGen):
             item_info = self.visit(item, **kwargs)
             ret.append(item_info.content)
             pre_list += item_info.pre_list
-        content = 'np.hstack(({}))'.format(", ".join(ret))
+        content = '[{}]'.format("; ".join(ret))
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_to_matrix(self, node, **kwargs):
@@ -765,7 +765,7 @@ class CodeGenMatlab(CodeGen):
                 else:
                     content = "{}({}, {})".format(main_info.content, row_content, col_content)
             else:
-                content = "{}({}, :)".format(main_info.content, row_content)
+                content = "{}({}, :)'".format(main_info.content, row_content)
         else:
             col_info = self.visit(node.col_index, **kwargs)
             if node.col_index.la_type.index_type:
@@ -1209,10 +1209,13 @@ class CodeGenMatlab(CodeGen):
     def visit_inner_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        content = "np.inner({}, {})".format(left_info.content, right_info.content)
+        # It's not clear if this will get called for tensor dot product. If so
+        # then this code will fail.
         if node.sub:
             sub_info = self.visit(node.sub, **kwargs)
-            content = "({}).T @ ({}) @ ({})".format(right_info.content, sub_info.content, left_info.content)
+            content = "({})' * ({}) * ({})".format(right_info.content, sub_info.content, left_info.content)
+        else:
+            content = "({})' * ({})".format(right_info.content, left_info.content)
         return CodeNodeInfo(content, pre_list=left_info.pre_list+right_info.pre_list)
 
     def visit_fro_product(self, node, **kwargs):
