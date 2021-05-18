@@ -5,8 +5,8 @@ I❤️LA is a compilable markdown for math. It can generate working code in you
 ```
 ∑_i a_i b_i
 where
-a_i ∈ ℝ
-b_i ∈ ℝ
+a ∈ ℝ^n
+b ∈ ℝ^n
 ```
 
 or this:
@@ -38,7 +38,11 @@ For more, see the [wiki](https://github.com/pressureless/linear_algebra/wiki).
 
 ## Running
 
-To run the GUI:
+The easiest way to run is in the web browser. You can use the [hosted version](https://cragl.cs.gmu.edu/iheartla/browser/) (no installation needed) or `cd web` and then `python3 -m http.server`.
+
+The following instructions describe running the Python code directly.
+
+To run the desktop GUI:
 
     python3 app.py
 
@@ -49,8 +53,6 @@ or, if installed via conda,
 You can also run as a command-line compiler:
 
     python3 app.py --help
-
-There's a version in the [web browser](https://cragl.cs.gmu.edu/iheartla/browser/)
 
 ## Installing
 
@@ -76,10 +78,10 @@ Miniconda is faster to install. (On Windows, choose the 64-bit Python 3.x versio
 Then:
 
     conda env create -f environment-{cli,gui,dev}.yml
-    conda activate iheartla
+    conda activate iheartla-{cli,gui,dev}
 
 Choose `environment-{cli,gui,dev}.yml` according to whether you only want the command line (`cli`), also the GUI (`gui`), or also the development test suite (`dev`).
-To update an already created environment if the `environment.yml` file changes or to change environments, activate and then run `conda env update --file environment-{cli,gui,dev}.yml.yml --prune`.
+To update an already created environment if the `environment.yml` file changes or to change environments, activate and then run `conda env update --file environment-{cli,gui,dev}.yml --prune`.
 
 If you are developing I❤️LA, the test suite needs a working C++ compiler and, optionally, the Graphviz graph visualization software (`brew install graphviz` if you're not using conda).
 
@@ -89,6 +91,7 @@ To use the code output for the various backends, you will need:
 
 * LaTeX: A working tex distribution with `xelatex` and `pdfcrop`
 * Python: NumPy and SciPy
+* MATLAB: MATLAB or Octave
 * C++: Eigen. Compilation differs on different platforms. On macOS with Homebrew eigen: `c++ -I/usr/local/eigen3 output.cpp -o output`
 
 ### Unicode Fonts
@@ -96,5 +99,7 @@ To use the code output for the various backends, you will need:
 `DejaVu Sans Mono` is a font with good Unicode support. Windows users should install it. You can download it [here](https://dejavu-fonts.github.io/Download.html). The I❤️LA GUI will use it if installed.
 
 ### Packaging a release
+
+To update the browser-based compiler, run `python3 setup.py sdist bdist_wheel` and then copy `dist/iheartla-0.0.1-py3-none-any.whl` to the `web` directory.
 
 **macOS**: `pyinstaller iheartla.spec`. The output `iheartla.app` is placed into `dist/`. Whoever is packaging should run `la_local_parsers.py` at least once to generate the cached parsers for everyone to use. For example, `python la_local_parsers.py`.
