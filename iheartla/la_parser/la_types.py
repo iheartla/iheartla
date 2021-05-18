@@ -124,7 +124,7 @@ class LaVarType(object):
         same = False
         if self.var_type == other.var_type:
             if self.var_type == VarTypeEnum.SEQUENCE:
-                same = self.element_type.is_same_type(other.element_type.is_same_type)
+                same = self.size == other.size and self.element_type.is_same_type(other.element_type)
             elif self.var_type == VarTypeEnum.MATRIX:
                 same = self.rows == other.rows and self.cols == other.cols
             elif self.var_type == VarTypeEnum.VECTOR:
