@@ -396,7 +396,7 @@ class TypeWalker(NodeWalker):
                 type_node.la_type.element_type.index_type = True
         type_node.parse_info = node.parseinfo
         type_node.la_type.desc = desc
-        self.handle_identifier(id0, type_node)
+        self.handle_identifier(id0, id0_info.ir, type_node)
         # self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
         self.update_parameters(id0, kwargs[PARAM_INDEX])
         if type_node.la_type.is_matrix():
@@ -447,6 +447,12 @@ class TypeWalker(NodeWalker):
         else:
             element_type = ScalarType()
         la_type = MatrixType(rows=id1, cols=id2, element_type=element_type)
+        if ir_node.id1.is_node(IRNodeType.Id) and ir_node.id1.contain_subscript():
+            assert len(ir_node.id1.subs) == 1, self.get_err_msg_info(ir_node.id1.parse_info, "Invalid dimension for matrix")
+            la_type.add_dynamic_type(DynamicTypeEnum.DYN_ROW)
+        if ir_node.id2.is_node(IRNodeType.Id) and ir_node.id2.contain_subscript():
+            la_type.add_dynamic_type(DynamicTypeEnum.DYN_COL)
+            assert len(ir_node.id2.subs) == 1, self.get_err_msg_info(ir_node.id2.parse_info, "Invalid dimension for matrix")
         if node.attr and 'sparse' in node.attr:
             la_type.sparse = True
         ir_node.la_type = la_type
@@ -467,6 +473,9 @@ class TypeWalker(NodeWalker):
         else:
             element_type = ScalarType()
         la_type = VectorType(rows=id1, element_type=element_type)
+        if ir_node.id1.is_node(IRNodeType.Id) and ir_node.id1.contain_subscript():
+            assert len(ir_node.id1.subs) == 1, self.get_err_msg_info(ir_node.id1.parse_info, "Invalid dimension for vector")
+            la_type.add_dynamic_type(DynamicTypeEnum.DYN_ROW)
         ir_node.la_type = la_type
         return ir_node
 
@@ -2528,26 +2537,35 @@ class TypeWalker(NodeWalker):
         return identifier
 
     # handle subscripts only (where block)
-    def handle_identifier(self, identifier, id_node):
+    def handle_identifier(self, identifier, ir_node, id_node):
         id_type = id_node.la_type
         if self.contain_subscript(identifier):
             arr = self.get_all_ids(identifier)
             new_var_name = None
-            for val in arr[1]:
-                assert not val.isnumeric(), self.get_err_msg_info(id_node.parse_info, "Parameter {} can't have constant subscript".format(arr[0]))
-                if val in self.sub_name_dict:
-                    new_var_name = self.sub_name_dict[val]
-                else:
-                    new_var_name = self.generate_var_name("dim")
-                    self.sub_name_dict[val] = new_var_name
-                    self.update_dim_dict(new_var_name, arr[0], 0)
-                if val in self.subscripts:
-                    var_list = self.subscripts[val]
-                    var_list.append(arr[0])
-                    self.subscripts[val] = var_list
-                else:
-                    # first sequence
-                    self.subscripts[val] = [arr[0]]
+            assert len(arr[1]) == 1, self.get_err_msg_info(ir_node.parse_info, "Parameter {} can't use multiple subscripts".format(arr[0]))
+            val = arr[1][0]  # subscript
+            assert not val.isnumeric(), self.get_err_msg_info(id_node.parse_info, "Parameter {} can't have constant subscript".format(arr[0]))
+            if id_type.is_vector():
+                if id_type.is_dynamic_row():
+                    assert id_node.id1.subs[0] == val, self.get_err_msg_info(id_node.id1.parse_info, "Dimension {} has different subscript".format(id_node.id1.get_name()))
+            elif id_type.is_matrix():
+                if id_type.is_dynamic_row():
+                    assert id_node.id1.subs[0] == val, self.get_err_msg_info(id_node.id1.parse_info, "Dimension {} has different subscript".format(id_node.id1.get_name()))
+                if id_type.is_dynamic_col():
+                    assert id_node.id2.subs[0] == val, self.get_err_msg_info(id_node.id2.parse_info, "Dimension {} has different subscript".format(id_node.id2.get_name()))
+            if val in self.sub_name_dict:
+                new_var_name = self.sub_name_dict[val]
+            else:
+                new_var_name = self.generate_var_name("dim")
+                self.sub_name_dict[val] = new_var_name
+                self.update_dim_dict(new_var_name, arr[0], 0)
+            if val in self.subscripts:
+                var_list = self.subscripts[val]
+                var_list.append(arr[0])
+                self.subscripts[val] = var_list
+            else:
+                # first sequence
+                self.subscripts[val] = [arr[0]]
             assert arr[0] not in self.symtable, self.get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(arr[0]))
             self.symtable[arr[0]] = SequenceType(size=new_var_name, element_type=id_type, desc=id_type.desc, symbol=arr[0])
         else:
