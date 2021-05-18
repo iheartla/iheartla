@@ -16,4 +16,4 @@ dependencies:
   - pip
   - pip:
     - PyMuPDF
-prefix: /Users/yotam/opt/miniconda3/envs/iheartla
+prefix: /Users/anonymous/opt/miniconda3/envs/iheartla-dev

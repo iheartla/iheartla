@@ -8,4 +8,4 @@ dependencies:
   - regex
   - sympy
   - appdirs
-prefix: /Users/yotam/opt/miniconda3/envs/iheartla
+prefix: /Users/anonymous/opt/miniconda3/envs/iheartla-cli
