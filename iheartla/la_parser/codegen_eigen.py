@@ -501,6 +501,22 @@ class CodeGenEigen(CodeGen):
                 content.append("for(int {}=1; {}<={}.rows(); {}++){{\n".format(sub, sub, target_var[0], sub))
             else:
                 content.append("for(int {}=1; {}<={}.cols(); {}++){{\n".format(sub, sub, target_var[0], sub))
+        elif self.symtable[target_var[0]].is_sequence():
+            sym_list = node.sym_dict[target_var[0]]
+            sub_index = sym_list.index(sub)
+            if sub_index == 0:
+                size_str = "{}.size()".format(target_var[0])
+            elif sub_index == 1:
+                if self.symtable[target_var[0]].element_type.is_dynamic_row():
+                    size_str = "{}.at({}-1).rows()".format(target_var[0], sym_list[0])
+                else:
+                    size_str = "{}".format(self.symtable[target_var[0]].element_type.rows)
+            else:
+                if self.symtable[target_var[0]].element_type.is_dynamic_col():
+                    size_str = "{}.at({}-1).cols()".format(target_var[0], sym_list[0])
+                else:
+                    size_str = "{}".format(self.symtable[target_var[0]].element_type.cols)
+            content.append("for(int {}=1; {}<={}; {}++){{\n".format(sub, sub, size_str, sub))
         else:
             content.append("for(int {}=1; {}<={}.size(); {}++){{\n".format(sub, sub, self.convert_bound_symbol(target_var[0]), sub))
         exp_pre_list = []
