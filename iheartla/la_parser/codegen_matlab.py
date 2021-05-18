@@ -847,7 +847,12 @@ class CodeGenMatlab(CodeGen):
         return CodeNodeInfo(content)
 
     def visit_seq_dim_index(self, node, **kwargs):
-        return CodeNodeInfo('')
+        main_index_info = self.visit(node.main_index, **kwargs)
+        if node.is_row_index():
+            content = "size({}({}), 1)".format(node.real_symbol, main_index_info.content)
+        else:
+            content = "size({}({}), 2)".format(node.real_symbol, main_index_info.content)
+        return CodeNodeInfo(content)
 
     def visit_add_sub(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)

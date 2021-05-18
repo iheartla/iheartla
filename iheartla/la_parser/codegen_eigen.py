@@ -934,10 +934,14 @@ class CodeGenEigen(CodeGen):
 
     def visit_seq_dim_index(self, node, **kwargs):
         main_index_info = self.visit(node.main_index, **kwargs)
-        if node.is_row_index():
-            content = "{}.at({}).rows()".format(node.real_symbol, main_index_info.content)
+        if node.main_index.la_type.index_type:
+            main_index_content = main_index_info.content
         else:
-            content = "{}.at({}).cols()".format(node.real_symbol, main_index_info.content)
+            main_index_content = "{}-1".format(main_index_info.content)
+        if node.is_row_index():
+            content = "{}.at({}).rows()".format(node.real_symbol, main_index_content)
+        else:
+            content = "{}.at({}).cols()".format(node.real_symbol, main_index_content)
         return CodeNodeInfo(content)
 
     def visit_mul(self, node, **kwargs):
