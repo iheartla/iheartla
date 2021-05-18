@@ -74,7 +74,8 @@ class TypeWalker(NodeWalker):
         self.subscripts = {}
         self.sub_name_dict = {}  # only for parameter checker
         self.name_cnt_dict = {}
-        self.dim_dict = {}       # parameter used. h:w_i
+        self.dim_dict = {}        # parameter used. h:w_i
+        self.dim_seq_set = set()  # sequence of dimension for ragged list
         self.ids_dict = {}    # identifiers with subscripts
         self.unofficial_method = False
         self.is_param_block = False  # where or given block
@@ -126,6 +127,7 @@ class TypeWalker(NodeWalker):
         self.sub_name_dict.clear()
         self.name_cnt_dict.clear()
         self.dim_dict.clear()
+        self.dim_seq_set.clear()
         self.ids_dict.clear()
         self.ret_symbol = None
         self.unofficial_method = False
@@ -403,15 +405,21 @@ class TypeWalker(NodeWalker):
             id1 = type_node.la_type.rows
             id2 = type_node.la_type.cols
             if isinstance(id1, str):
-                if id1 not in self.symtable:
-                    self.symtable[id1] = ScalarType(is_int=True)
+                if type_node.la_type.is_dynamic_row():
+                    id1 = type_node.id1.get_main_id()
+                else:
+                    if id1 not in self.symtable:
+                        self.symtable[id1] = ScalarType(is_int=True)
                 if self.contain_subscript(id0):
                     self.update_dim_dict(id1, self.get_main_id(id0), 1)
                 else:
                     self.update_dim_dict(id1, self.get_main_id(id0), 0)
             if isinstance(id2, str):
-                if id2 not in self.symtable:
-                    self.symtable[id2] = ScalarType(is_int=True)
+                if type_node.la_type.is_dynamic_col():
+                    id2 = type_node.id2.get_main_id()
+                else:
+                    if id2 not in self.symtable:
+                        self.symtable[id2] = ScalarType(is_int=True)
                 if self.contain_subscript(id0):
                     self.update_dim_dict(id2, self.get_main_id(id0), 2)
                 else:
@@ -419,8 +427,11 @@ class TypeWalker(NodeWalker):
         elif type_node.la_type.is_vector():
             id1 = type_node.la_type.rows
             if isinstance(id1, str):
-                if id1 not in self.symtable:
-                    self.symtable[id1] = ScalarType(is_int=True)
+                if type_node.la_type.is_dynamic_row():
+                    id1 = type_node.id1.get_main_id()
+                else:
+                    if id1 not in self.symtable:
+                        self.symtable[id1] = ScalarType(is_int=True)
                 if self.contain_subscript(id0):
                     self.update_dim_dict(id1, self.get_main_id(id0), 1)
                 else:
@@ -2545,14 +2556,6 @@ class TypeWalker(NodeWalker):
             assert len(arr[1]) == 1, self.get_err_msg_info(ir_node.parse_info, "Parameter {} can't use multiple subscripts".format(arr[0]))
             val = arr[1][0]  # subscript
             assert not val.isnumeric(), self.get_err_msg_info(id_node.parse_info, "Parameter {} can't have constant subscript".format(arr[0]))
-            if id_type.is_vector():
-                if id_type.is_dynamic_row():
-                    assert id_node.id1.subs[0] == val, self.get_err_msg_info(id_node.id1.parse_info, "Dimension {} has different subscript".format(id_node.id1.get_name()))
-            elif id_type.is_matrix():
-                if id_type.is_dynamic_row():
-                    assert id_node.id1.subs[0] == val, self.get_err_msg_info(id_node.id1.parse_info, "Dimension {} has different subscript".format(id_node.id1.get_name()))
-                if id_type.is_dynamic_col():
-                    assert id_node.id2.subs[0] == val, self.get_err_msg_info(id_node.id2.parse_info, "Dimension {} has different subscript".format(id_node.id2.get_name()))
             if val in self.sub_name_dict:
                 new_var_name = self.sub_name_dict[val]
             else:
@@ -2567,6 +2570,42 @@ class TypeWalker(NodeWalker):
                 # first sequence
                 self.subscripts[val] = [arr[0]]
             assert arr[0] not in self.symtable, self.get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(arr[0]))
+            if id_type.is_vector():
+                if id_type.is_dynamic_row():
+                    assert id_node.id1.subs[0] == val, self.get_err_msg_info(id_node.id1.parse_info, "Dimension {} has different subscript".format(id_node.id1.get_name()))
+                    row_seq_type = SequenceType(size=new_var_name, element_type=ScalarType(is_int=True), symbol=id_node.id1.get_main_id())
+                    if id_node.id1.get_main_id() in self.symtable:
+                        assert self.symtable[id_node.id1.get_main_id()].is_same_type(row_seq_type), self.get_err_msg_info(id_node.id1.parse_info,
+                                                                                 "{} has already been defined as different type".format(
+                                                                                     id_node.id1.get_main_id()))
+                    else:
+                        self.symtable[id_node.id1.get_main_id()] = row_seq_type
+                        self.dim_seq_set.add(id_node.id1.get_main_id())
+            elif id_type.is_matrix():
+                if id_type.is_dynamic_row():
+                    assert id_node.id1.subs[0] == val, self.get_err_msg_info(id_node.id1.parse_info, "Dimension {} has different subscript".format(id_node.id1.get_name()))
+                    row_seq_type = SequenceType(size=new_var_name, element_type=ScalarType(is_int=True),
+                                                symbol=id_node.id1.get_main_id())
+                    if id_node.id1.get_main_id() in self.symtable:
+                        assert self.symtable[id_node.id1.get_main_id()].is_same_type(
+                            row_seq_type), self.get_err_msg_info(id_node.id1.parse_info,
+                                                                 "{} has already been defined as different type".format(
+                                                                     id_node.id1.get_main_id()))
+                    else:
+                        self.symtable[id_node.id1.get_main_id()] = row_seq_type
+                        self.dim_seq_set.add(id_node.id1.get_main_id())
+                if id_type.is_dynamic_col():
+                    assert id_node.id2.subs[0] == val, self.get_err_msg_info(id_node.id2.parse_info, "Dimension {} has different subscript".format(id_node.id2.get_name()))
+                    col_seq_type = SequenceType(size=new_var_name, element_type=ScalarType(is_int=True),
+                                                symbol=id_node.id1.get_main_id())
+                    if id_node.id2.get_main_id() in self.symtable:
+                        assert self.symtable[id_node.id2.get_main_id()].is_same_type(
+                            col_seq_type), self.get_err_msg_info(id_node.id2.parse_info,
+                                                                 "{} has already been defined as different type".format(
+                                                                     id_node.id2.get_main_id()))
+                    else:
+                        self.symtable[id_node.id2.get_main_id()] = col_seq_type
+                        self.dim_seq_set.add(id_node.id2.get_main_id())
             self.symtable[arr[0]] = SequenceType(size=new_var_name, element_type=id_type, desc=id_type.desc, symbol=arr[0])
         else:
             id_type.symbol = identifier
