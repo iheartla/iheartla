@@ -163,6 +163,9 @@ class SequenceType(LaVarType):
     def is_integer_element(self):
         return self.element_type.is_integer_element()
 
+    def is_dynamic(self):
+        return self.element_type.is_dynamic()
+
 
 class MatrixType(LaVarType):
     def __init__(self, rows=0, cols=0, desc=None, element_type=ScalarType(), symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=None, list_dim=None, index_var=None, value_var=None, item_types=None, dynamic=DynamicTypeEnum.DYN_INVALID):

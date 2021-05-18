@@ -242,7 +242,7 @@ class CodeGenEigen(CodeGen):
         dim_defined_list = []
         if self.dim_dict:
             for key, target_dict in self.dim_dict.items():
-                if key in self.parameters:
+                if key in self.parameters or key in self.dim_seq_set:
                     continue
                 target = list(target_dict.keys())[0]
                 dim_defined_dict[target] = target_dict[target]
@@ -307,7 +307,7 @@ class CodeGenEigen(CodeGen):
                     type_checks.append(
                         '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
                 if ele_type.is_matrix():
-                    if not ele_type.is_dim_constant():
+                    if not ele_type.is_dim_constant() and not ele_type.is_dynamic():
                         type_checks.append('    for( const auto& el : {} ) {{'.format(parameter))
                         type_checks.append('        assert( el.rows() == {} );'.format(ele_type.rows))
                         type_checks.append('        assert( el.cols() == {} );'.format(ele_type.cols))
@@ -315,25 +315,19 @@ class CodeGenEigen(CodeGen):
                     sparse_view = ''
                     if ele_type.sparse:
                         sparse_view = '.sparseView()'
-                    if integer_type:
-                        test_content.append(
-                            '        {}[i] = Eigen::MatrixXi::Random({}, {}){};'.format(parameter, ele_type.rows,
-                                                                                      ele_type.cols, sparse_view))
-                    else:
-                        test_content.append(
-                            '        {}[i] = Eigen::MatrixXd::Random({}, {}){};'.format(parameter, ele_type.rows,
-                                                                                      ele_type.cols, sparse_view))
+                    matrix_type_str = 'MatrixXi' if integer_type else 'MatrixXd'
+                    row_str = ele_type.rows if not ele_type.is_dynamic_row() else 'rand()%{}'.format(rand_int_max)
+                    col_str = ele_type.cols if not ele_type.is_dynamic_col() else 'rand()%{}'.format(rand_int_max)
+                    test_content.append('        {}[i] = Eigen::{}::Random({}, {}){};'.format(parameter, matrix_type_str, row_str, col_str, sparse_view))
                 elif ele_type.is_vector():
-                    if not ele_type.is_dim_constant():
+                    if not ele_type.is_dim_constant() and not ele_type.is_dynamic():
                         type_checks.append('    for( const auto& el : {} ) {{'.format(parameter))
                         type_checks.append('        assert( el.size() == {} );'.format(ele_type.rows))
                         type_checks.append('    }')
-                    if integer_type:
-                        test_content.append(
-                            '        {}[i] = Eigen::VectorXi::Random({});'.format(parameter, ele_type.rows))
-                    else:
-                        test_content.append(
-                            '        {}[i] = Eigen::VectorXd::Random({});'.format(parameter, ele_type.rows))
+                    vector_type_str = 'VectorXi' if integer_type else 'VectorXd'
+                    row_str = ele_type.rows if not ele_type.is_dynamic_row() else 'rand()%{}'.format(rand_int_max)
+                    test_content.append(
+                        '        {}[i] = Eigen::{}::Random({});'.format(parameter, vector_type_str, row_str))
                 elif ele_type.is_scalar():
                     test_content.append(
                         '        {}[i] = rand() % {};'.format(parameter, rand_int_max))

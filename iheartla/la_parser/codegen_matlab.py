@@ -161,7 +161,7 @@ class CodeGenMatlab(CodeGen):
         dim_defined_list = []
         if self.dim_dict:
             for key, target_dict in self.dim_dict.items():
-                if key in self.parameters:
+                if key in self.parameters or key in self.dim_seq_set:
                     continue
                 target = list(target_dict.keys())[0]
                 has_defined = False
@@ -215,15 +215,21 @@ class CodeGenMatlab(CodeGen):
                     #size_str = ""
                     sizes = []
                     if ele_type.is_matrix():
-                        type_checks.append('    assert( isequal(size({}), [{}, {}, {}]) );'.format(parameter, self.symtable[parameter].size, ele_type.rows, ele_type.cols))
-                        #size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
-                        sizes = [self.symtable[parameter].size, ele_type.rows, ele_type.cols]
+                        if not ele_type.is_dynamic():
+                            type_checks.append('    assert( isequal(size({}), [{}, {}, {}]) );'.format(parameter, self.symtable[parameter].size, ele_type.rows, ele_type.cols))
+                            #size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
+                            sizes = [self.symtable[parameter].size, ele_type.rows, ele_type.cols]
+                        else:
+                            sizes = [self.symtable[parameter].size, 'randi({})'.format(rand_int_max), 'randi({})'.format(rand_int_max)]
                     elif ele_type.is_vector():
                         # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
                         # size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)
-                        type_checks.append('    assert( isequal(size({}), [{}, {}]) );'.format(parameter, self.symtable[parameter].size, ele_type.rows))
-                        #size_str = '{}, {}'.format(self.symtable[parameter].size, ele_type.rows)
-                        sizes = [self.symtable[parameter].size, ele_type.rows]
+                        if not ele_type.is_dynamic():
+                            type_checks.append('    assert( isequal(size({}), [{}, {}]) );'.format(parameter, self.symtable[parameter].size, ele_type.rows))
+                            #size_str = '{}, {}'.format(self.symtable[parameter].size, ele_type.rows)
+                            sizes = [self.symtable[parameter].size, ele_type.rows]
+                        else:
+                            sizes = [self.symtable[parameter].size, 'randi({})'.format(rand_int_max)]
                     elif ele_type.is_scalar():
                         # Alec: is scalar? but then should
                         # self.symtable[parameter].size always be 1? What's

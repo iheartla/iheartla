@@ -134,7 +134,7 @@ class CodeGenNumpy(CodeGen):
         dim_defined_list = []
         if self.dim_dict:
             for key, target_dict in self.dim_dict.items():
-                if key in self.parameters:
+                if key in self.parameters or key in self.dim_seq_set:
                     continue
                 target = list(target_dict.keys())[0]
                 has_defined = False
@@ -184,12 +184,16 @@ class CodeGenNumpy(CodeGen):
                 else:
                     size_str = ""
                     if ele_type.is_matrix():
-                        type_checks.append('    assert {}.shape == ({}, {}, {})'.format(parameter, self.symtable[parameter].size, ele_type.rows, ele_type.cols))
-                        size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
+                        if not ele_type.is_dynamic():
+                            type_checks.append('    assert {}.shape == ({}, {}, {})'.format(parameter, self.symtable[parameter].size, ele_type.rows, ele_type.cols))
+                            size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
+                        else:
+                            size_str = '{}, np.random.randint({}), np.random.randint({})'.format(self.symtable[parameter].size, rand_int_max, rand_int_max)
                     elif ele_type.is_vector():
                         # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
                         # size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)
-                        type_checks.append('    assert {}.shape == ({}, {}, )'.format(parameter, self.symtable[parameter].size, ele_type.rows))
+                        if not ele_type.is_dynamic():
+                            type_checks.append('    assert {}.shape == ({}, {}, )'.format(parameter, self.symtable[parameter].size, ele_type.rows))
                         size_str = '{}, {}, '.format(self.symtable[parameter].size, ele_type.rows)
                     elif ele_type.is_scalar():
                         type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].size))
