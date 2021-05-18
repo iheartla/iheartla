@@ -824,10 +824,11 @@ class TypeWalker(NodeWalker):
                         break
                     elif self.symtable[cur_node.get_main_id()].is_sequence():
                         dim = self.symtable[cur_node.get_main_id()].size
-                        if cur_node.same_as_row_sym(cur_sub):
-                            dim = self.symtable[cur_node.get_main_id()].rows
-                        elif cur_node.same_as_col_sym(cur_sub):
-                            dim = self.symtable[cur_node.get_main_id()].cols
+                        if cur_node.is_node(IRNodeType.SequenceIndex):
+                            if cur_node.same_as_row_sym(cur_sub):
+                                dim = self.symtable[cur_node.get_main_id()].rows
+                            elif cur_node.same_as_col_sym(cur_sub):
+                                dim = self.symtable[cur_node.get_main_id()].cols
                     elif self.symtable[cur_node.get_main_id()].is_matrix():
                         # matrix
                         dim = self.symtable[cur_node.get_main_id()].rows
@@ -1534,6 +1535,7 @@ class TypeWalker(NodeWalker):
                         break
                     la_type = ScalarType(is_int=True)
                     ir_node.la_type = la_type
+                    ir_node.process_subs_dict(self.lhs_sub_dict)
                     return NodeInfo(la_type, content_symbol,
                                     {content_symbol},
                                     ir_node)

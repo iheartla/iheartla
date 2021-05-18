@@ -823,6 +823,11 @@ class SeqDimIndexNode(IndexNode):
     def is_row_index(self):
         return self.dim_index == 1
 
+    def contain_sub_sym(self, sym):
+        if self.main_index and self.main_index.node_type == IRNodeType.Id and self.main_index.get_main_id() == sym:
+            return True
+        return False
+
 
 class SubexpressionNode(ExprNode):
     def __init__(self, parse_info=None, raw_text=None):
