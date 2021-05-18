@@ -1521,6 +1521,22 @@ class TypeWalker(NodeWalker):
             assert left_info.content in self.symtable, self.get_err_msg_info(left_info.ir.parse_info,
                                                                                     "Element hasn't been defined")
             if self.symtable[left_info.content].is_sequence():
+                if left_info.content in self.dim_seq_set:
+                    # index the sequence of dimension
+                    ir_node = SeqDimIndexNode(parse_info=node.parseinfo)
+                    ir_node.main = left_info.ir
+                    main_index_info = self.walk(node.right[0])
+                    ir_node.main_index = main_index_info.ir
+                    main_dict = self.dim_dict[left_info.content]
+                    for key, value in main_dict.items():
+                        ir_node.real_symbol = key
+                        ir_node.dim_index = value
+                        break
+                    la_type = ScalarType(is_int=True)
+                    ir_node.la_type = la_type
+                    return NodeInfo(la_type, content_symbol,
+                                    {content_symbol},
+                                    ir_node)
                 la_type = self.symtable[left_info.content].element_type
                 ir_node = SequenceIndexNode(parse_info=node.parseinfo)
                 ir_node.main = left_info.ir

@@ -70,6 +70,7 @@ class IRNodeType(Enum):
     MatrixIndex = 320
     VectorIndex = 321
     SequenceIndex = 322
+    SeqDimIndex = 323
     # where block
     ParamsBlock = 399
     WhereConditions = 400
@@ -806,6 +807,21 @@ class SequenceIndexNode(IndexNode):
         if self.col_index and self.col_index.node_type == IRNodeType.Id and self.col_index.get_main_id() == sym:
             return True
         return False
+
+
+class SeqDimIndexNode(IndexNode):
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.SeqDimIndex, parse_info=parse_info, raw_text=raw_text)
+        self.main = None
+        self.main_index = None
+        self.real_symbol = None
+        self.dim_index = 1  # 1 or 2
+
+    def get_main_id(self):
+        return self.main.get_main_id()
+
+    def is_row_index(self):
+        return self.dim_index == 1
 
 
 class SubexpressionNode(ExprNode):

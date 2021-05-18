@@ -442,6 +442,12 @@ class CodeGenLatex(CodeGen):
                 content = "{}_{{ {} }}".format(main_info, main_index_info)
         return content
 
+    def visit_seq_dim_index(self, node, **kwargs):
+        main_info = self.visit(node.main, **kwargs)
+        main_index_info = self.visit(node.main_index, **kwargs)
+        content = "{}_{{ {} }}".format(main_info, main_index_info)
+        return content
+
     def visit_matrix(self, node, **kwargs):
         return '\\begin{bmatrix}\n' + self.visit(node.value, **kwargs) + '\\end{bmatrix}'
 

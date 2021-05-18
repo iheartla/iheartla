@@ -725,6 +725,14 @@ class CodeGenNumpy(CodeGen):
                 content = "{}[{}]".format(main_info.content, main_index_content)
         return CodeNodeInfo(content)
 
+    def visit_seq_dim_index(self, node, **kwargs):
+        main_index_info = self.visit(node.main_index, **kwargs)
+        if node.is_row_index():
+            content = "{}[{}].shape[0]".format(node.real_symbol, main_index_info.content)
+        else:
+            content = "{}[{}].shape[1]".format(node.real_symbol, main_index_info.content)
+        return CodeNodeInfo(content)
+
     def visit_mul(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
