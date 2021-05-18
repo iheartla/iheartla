@@ -508,7 +508,7 @@ class CodeGenEigen(CodeGen):
             else:
                 content.append("for(int {}=1; {}<={}.cols(); {}++){{\n".format(sub, sub, target_var[0], sub))
         else:
-            content.append("for(int {}=1; {}<={}.size(); {}++){{\n".format(sub, sub, target_var[0], sub))
+            content.append("for(int {}=1; {}<={}.size(); {}++){{\n".format(sub, sub, self.convert_bound_symbol(target_var[0]), sub))
         exp_pre_list = []
         if exp_info.pre_list:  # catch pre_list
             list_content = "".join(exp_info.pre_list)

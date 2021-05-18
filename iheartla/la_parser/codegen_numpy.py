@@ -371,7 +371,7 @@ class CodeGenNumpy(CodeGen):
             else:
                 content.append("for {} in range(1, {}.shape[1]+1):\n".format(sub, target_var[0]))
         else:
-            content.append("for {} in range(1, len({})+1):\n".format(sub, target_var[0]))
+            content.append("for {} in range(1, len({})+1):\n".format(sub, self.convert_bound_symbol(target_var[0])))
         exp_pre_list = []
         if exp_info.pre_list:   # catch pre_list
             list_content = "".join(exp_info.pre_list)

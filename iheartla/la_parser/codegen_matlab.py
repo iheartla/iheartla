@@ -469,7 +469,7 @@ class CodeGenMatlab(CodeGen):
             else:
                 content.append("for {} = 1:size({},2)\n".format(sub, target_var[0]))
         else:
-            content.append("for {} = 1:size({},1)\n".format(sub, target_var[0]))
+            content.append("for {} = 1:size({},1)\n".format(sub, self.convert_bound_symbol(target_var[0])))
         if exp_info.pre_list:   # catch pre_list
             list_content = "".join(exp_info.pre_list)
             # content += exp_info.pre_list
