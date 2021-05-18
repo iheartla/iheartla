@@ -220,7 +220,9 @@ class CodeGenMatlab(CodeGen):
                             #size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
                             sizes = [self.symtable[parameter].size, ele_type.rows, ele_type.cols]
                         else:
-                            sizes = [self.symtable[parameter].size, 'randi({})'.format(rand_int_max), 'randi({})'.format(rand_int_max)]
+                            row_str = 'randi({})'.format(rand_int_max) if ele_type.is_dynamic_row() else rand_int_max
+                            col_str = 'randi({})'.format(rand_int_max) if ele_type.is_dynamic_col() else rand_int_max
+                            sizes = [self.symtable[parameter].size, row_str, col_str]
                     elif ele_type.is_vector():
                         # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
                         # size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)

@@ -188,13 +188,17 @@ class CodeGenNumpy(CodeGen):
                             type_checks.append('    assert {}.shape == ({}, {}, {})'.format(parameter, self.symtable[parameter].size, ele_type.rows, ele_type.cols))
                             size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
                         else:
-                            size_str = '{}, np.random.randint({}), np.random.randint({})'.format(self.symtable[parameter].size, rand_int_max, rand_int_max)
+                            row_str = 'np.random.randint({})'.format(rand_int_max) if ele_type.is_dynamic_row() else ele_type.rows
+                            col_str = 'np.random.randint({})'.format(rand_int_max) if ele_type.is_dynamic_col() else ele_type.cols
+                            size_str = '{}, {}, {}'.format(self.symtable[parameter].size, row_str, col_str)
                     elif ele_type.is_vector():
                         # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
                         # size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)
                         if not ele_type.is_dynamic():
                             type_checks.append('    assert {}.shape == ({}, {}, )'.format(parameter, self.symtable[parameter].size, ele_type.rows))
-                        size_str = '{}, {}, '.format(self.symtable[parameter].size, ele_type.rows)
+                            size_str = '{}, {}, '.format(self.symtable[parameter].size, ele_type.rows)
+                        else:
+                            size_str = '{}, np.random.randint({}), '.format(self.symtable[parameter].size, rand_int_max)
                     elif ele_type.is_scalar():
                         type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].size))
                         size_str = '{}'.format(self.symtable[parameter].size)
