@@ -97,6 +97,16 @@ class IRVisitor(object):
                     seq_dict[sym][index_str] = key
         return seq_dict
 
+    def get_intersect_list(self):
+        seq_set = self.get_dynamic_seq_set()
+        subs_list = []
+        for subs, subs_dict in self.subscripts.items():
+            subs_set = set(subs_dict)
+            intersection = subs_set.intersection(seq_set)
+            if len(intersection) > 1:
+                subs_list.append(intersection)
+        return subs_list
+
     def get_dynamic_seq_set(self):
         dym_seq_list = []
         for key, value in self.seq_dim_dict.items():

@@ -229,13 +229,7 @@ class CodeGenEigen(CodeGen):
         test_content = []
         visited_sym_set = set()
         rand_int_max = 10
-        seq_set = self.get_dynamic_seq_set()
-        subs_list = []
-        for subs, subs_dict in self.subscripts.items():
-            subs_set = set(subs_dict)
-            intersection = subs_set.intersection(seq_set)
-            if len(intersection) > 1:
-                subs_list.append(intersection)
+        subs_list = self.get_intersect_list()
         if len(subs_list) > 0:
             rand_name_dict = {}
             rand_def_dict = {}
@@ -303,7 +297,6 @@ class CodeGenEigen(CodeGen):
         dim_content = ""
         dim_defined_dict = {}
         dim_defined_list = []
-        test_generated_sym_set = set()
         if self.dim_dict:
             for key, target_dict in self.dim_dict.items():
                 if key in self.parameters:
