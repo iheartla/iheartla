@@ -38,7 +38,7 @@ For more, see the [wiki](https://github.com/pressureless/linear_algebra/wiki).
 
 ## Running
 
-The easiest way to run is in the web browser. You can use the [hosted version](https://cragl.cs.gmu.edu/iheartla/browser/) (no installation needed) or `cd web` and then `python3 -m http.server`.
+The easiest way to run is in the web browser. You can use the [hosted version](https://iheartla.github.io/iheartla/) (no installation needed) or `cd web` and then `python3 -m http.server`.
 
 The following instructions describe running the Python code directly.
 
