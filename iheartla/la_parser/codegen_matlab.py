@@ -302,7 +302,7 @@ class CodeGenMatlab(CodeGen):
                         if data_type.is_scalar() and data_type.is_int:
                             #type_declare.append('    {} = np.asarray({}, dtype=np.int)'.format(parameter, parameter))
                             if parameter not in test_generated_sym_set:
-                                test_content.append('    {} = {};'.format(parameter, self.randi_str(rand_int_max,sizes)))
+                                test_content.append('        {} = {};'.format(parameter, self.randi_str(rand_int_max,sizes)))
                         elif ele_type.is_set():
                             test_content.append('    {} = []'.format(parameter))
                             test_content.append('    for i = 1:{}'.format(self.symtable[parameter].size))
