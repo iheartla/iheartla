@@ -92,6 +92,16 @@ class IRVisitor(object):
         for key, value in self.seq_dim_dict.items():
             if name in value:
                 same_seq_list.append(value)
+        return same_seq_list
+
+    def get_same_seq_symbols(self, name):
+        same_symbols = []
+        for key, value in self.seq_dim_dict.items():
+            if name in value:
+                same_symbols += value.keys()
+        same_symbols = set(same_symbols)
+        same_symbols.remove(name)
+        return same_symbols
 
     def generate_var_name(self, base):
         index = -1

@@ -240,9 +240,12 @@ class CodeGenEigen(CodeGen):
         dim_content = ""
         dim_defined_dict = {}
         dim_defined_list = []
+        test_generated_sym_set = set()
         if self.dim_dict:
             for key, target_dict in self.dim_dict.items():
-                if key in self.parameters or key in self.dim_seq_set:
+                if key in self.parameters:
+                    continue
+                if key in self.dim_seq_set:
                     continue
                 target = list(target_dict.keys())[0]
                 dim_defined_dict[target] = target_dict[target]
@@ -298,8 +301,6 @@ class CodeGenEigen(CodeGen):
                 ele_type = self.symtable[parameter].element_type
                 data_type = ele_type.element_type
                 integer_type = False
-                test_content.append('    {}.resize({});'.format(parameter, self.symtable[parameter].size))
-                test_content.append('    for(int i=0; i<{}; i++){{'.format(self.symtable[parameter].size))
                 if isinstance(data_type, LaVarType):
                     if data_type.is_scalar() and data_type.is_int:
                         integer_type = True
@@ -315,10 +316,42 @@ class CodeGenEigen(CodeGen):
                     sparse_view = ''
                     if ele_type.sparse:
                         sparse_view = '.sparseView()'
-                    matrix_type_str = 'MatrixXi' if integer_type else 'MatrixXd'
-                    row_str = ele_type.rows if not ele_type.is_dynamic_row() else 'rand()%{}'.format(rand_int_max)
-                    col_str = ele_type.cols if not ele_type.is_dynamic_col() else 'rand()%{}'.format(rand_int_max)
-                    test_content.append('        {}[i] = Eigen::{}::Random({}, {}){};'.format(parameter, matrix_type_str, row_str, col_str, sparse_view))
+                    if parameter not in test_generated_sym_set:
+                        test_content.append('    {}.resize({});'.format(parameter, self.symtable[parameter].size))
+                        test_generated_sym_set.add(parameter)
+                        # add test
+                        has_defined_test = False
+                        if self.symtable[parameter].is_dynamic():
+                            same_symbols = self.get_same_seq_symbols(parameter)
+                            if len(same_symbols) > 0:
+                                block_content_list = []
+                                matrix_type_str = 'MatrixXi' if integer_type else 'MatrixXd'
+                                row_str = ele_type.rows if not ele_type.is_dynamic_row() else 'rand()%{}'.format(rand_int_max)
+                                col_str = ele_type.cols if not ele_type.is_dynamic_col() else 'rand()%{}'.format(rand_int_max)
+                                block_content_list.append('        {}[i] = Eigen::{}::Random({}, {}){};'.format(parameter, matrix_type_str,
+                                                                                          row_str, col_str,
+                                                                                          sparse_view))
+                                has_defined_test = True
+                                same_seq_list = self.get_same_seq_list(parameter)
+                                if len(same_seq_list) == 2:
+                                    pass
+                                for sym in same_symbols:
+                                    test_generated_sym_set.add(sym)
+                                    test_content.append('    {}.resize({});'.format(sym, self.symtable[sym].size))
+                                    block_content_list.append(
+                                        '        {}[i] = Eigen::{}::Random({}, {}){};'.format(sym,
+                                                                                              matrix_type_str,
+                                                                                              row_str, col_str,
+                                                                                              sparse_view))
+                                test_content.append('    for(int i=0; i<{}; i++){{'.format(self.symtable[parameter].size))
+                                test_content += block_content_list
+                        if not has_defined_test:
+                            matrix_type_str = 'MatrixXi' if integer_type else 'MatrixXd'
+                            row_str = ele_type.rows if not ele_type.is_dynamic_row() else 'rand()%{}'.format(rand_int_max)
+                            col_str = ele_type.cols if not ele_type.is_dynamic_col() else 'rand()%{}'.format(rand_int_max)
+                            test_content.append('    for(int i=0; i<{}; i++){{'.format(self.symtable[parameter].size))
+                            test_content.append('        {}[i] = Eigen::{}::Random({}, {}){};'.format(parameter, matrix_type_str, row_str, col_str, sparse_view))
+                        test_content.append('    }')
                 elif ele_type.is_vector():
                     if not ele_type.is_dim_constant() and not ele_type.is_dynamic():
                         type_checks.append('    for( const auto& el : {} ) {{'.format(parameter))
@@ -326,20 +359,26 @@ class CodeGenEigen(CodeGen):
                         type_checks.append('    }')
                     vector_type_str = 'VectorXi' if integer_type else 'VectorXd'
                     row_str = ele_type.rows if not ele_type.is_dynamic_row() else 'rand()%{}'.format(rand_int_max)
+                    test_content.append('    {}.resize({});'.format(parameter, self.symtable[parameter].size))
+                    test_content.append('    for(int i=0; i<{}; i++){{'.format(self.symtable[parameter].size))
                     test_content.append(
                         '        {}[i] = Eigen::{}::Random({});'.format(parameter, vector_type_str, row_str))
-                elif ele_type.is_scalar():
-                    test_content.append(
-                        '        {}[i] = rand() % {};'.format(parameter, rand_int_max))
-                elif ele_type.is_function():
-                    func_content = self.get_func_test_str("{}[i]".format(parameter), ele_type, rand_int_max)
-                    func_content = ["    {}".format(line) for line in func_content]
-                    test_content += func_content
-                elif ele_type.is_set():
-                    set_content = self.get_set_test_list("{}[i]".format(parameter), self.generate_var_name("dim"), 'j', ele_type, rand_int_max, '    ')
-                    set_content = ["    {}".format(line) for line in set_content]
-                    test_content += set_content
-                test_content.append('    }')
+                    test_content.append('    }')
+                else:
+                    test_content.append('    {}.resize({});'.format(parameter, self.symtable[parameter].size))
+                    test_content.append('    for(int i=0; i<{}; i++){{'.format(self.symtable[parameter].size))
+                    if ele_type.is_scalar():
+                        test_content.append(
+                            '        {}[i] = rand() % {};'.format(parameter, rand_int_max))
+                    elif ele_type.is_function():
+                        func_content = self.get_func_test_str("{}[i]".format(parameter), ele_type, rand_int_max)
+                        func_content = ["    {}".format(line) for line in func_content]
+                        test_content += func_content
+                    elif ele_type.is_set():
+                        set_content = self.get_set_test_list("{}[i]".format(parameter), self.generate_var_name("dim"), 'j', ele_type, rand_int_max, '    ')
+                        set_content = ["    {}".format(line) for line in set_content]
+                        test_content += set_content
+                    test_content.append('    }')
             elif self.symtable[parameter].is_matrix():
                 element_type = self.symtable[parameter].element_type
                 sparse_view = ''
