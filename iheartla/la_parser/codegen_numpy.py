@@ -149,7 +149,7 @@ class CodeGenNumpy(CodeGen):
                         first = False
                         cur_test_content.append('    for i in range({}):'.format(self.symtable[cur_sym].size))
                     dim_dict = new_seq_dim_dict[cur_sym]
-                    defined_content.append('    {} = []'.format(cur_sym, self.symtable[cur_sym].size))
+                    defined_content.append('    {} = []'.format(cur_sym))
                     if self.symtable[cur_sym].element_type.is_vector():
                         # determined
                         if self.symtable[cur_sym].element_type.is_integer_element():

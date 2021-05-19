@@ -179,21 +179,21 @@ class CodeGenMatlab(CodeGen):
                         first = False
                         cur_test_content.append('        for i = 1:{}'.format(self.symtable[cur_sym].size))
                     dim_dict = new_seq_dim_dict[cur_sym]
-                    defined_content.append('        {} = []'.format(cur_sym, self.symtable[cur_sym].size))
+                    defined_content.append('        {} = {{}};'.format(cur_sym, self.symtable[cur_sym].size))
                     if self.symtable[cur_sym].element_type.is_vector():
                         # determined
                         if self.symtable[cur_sym].element_type.is_integer_element():
-                            cur_block_content.append('            {}.append(randi({}, {}))'.format(cur_sym, rand_int_max, rand_name_dict[dim_dict[1]]))
+                            cur_block_content.append('            {} = [{}; randi({}, {})];'.format(cur_sym, cur_sym, rand_int_max, rand_name_dict[dim_dict[1]]))
                         else:
-                            cur_block_content.append('            {}.append(randn({}))'.format(cur_sym, row_str, rand_name_dict[dim_dict[1]]))
+                            cur_block_content.append('            {} = [{}; randn({})];'.format(cur_sym, cur_sym, rand_name_dict[dim_dict[1]]))
                     else:
                         # matrix
                         row_str = self.symtable[cur_sym].element_type.rows if not self.symtable[cur_sym].element_type.is_dynamic_row() else rand_name_dict[dim_dict[1]]
                         col_str = self.symtable[cur_sym].element_type.cols if not self.symtable[cur_sym].element_type.is_dynamic_col() else rand_name_dict[dim_dict[2]]
                         if self.symtable[cur_sym].element_type.is_integer_element():
-                            cur_block_content.append('            {}.append(randi({}, {}, {}))'.format(cur_sym, rand_int_max, row_str, col_str))
+                            cur_block_content.append('            {} = [{}; randi({}, {}, {})];'.format(cur_sym, cur_sym, rand_int_max, row_str, col_str))
                         else:
-                            cur_block_content.append('            {}.append(randn({}, {}))'.format(cur_sym, row_str, col_str))
+                            cur_block_content.append('            {} = [{}; randn({}, {})];'.format(cur_sym, cur_sym, row_str, col_str))
                 cur_test_content = defined_content + cur_test_content + cur_block_content
                 cur_test_content.append('        end')
                 test_content += cur_test_content
@@ -241,7 +241,13 @@ class CodeGenMatlab(CodeGen):
                 if not has_defined:
                     test_content.append(test_indent+"    {} = {};".format(key, self.randi_str(rand_int_max)))
                 # +1 because sizes in matlab are 1-indexed
-                dim_content += "    {} = size({}, {});\n".format(key, target, target_dict[target]+1)
+                if self.symtable[target].is_sequence() and self.symtable[target].element_type.is_dynamic():
+                    if target_dict[target] == 0:
+                        dim_content += "    {} = size({}, 1);\n".format(key, target)
+                    else:
+                        dim_content += "    {} = size({}{{1}}, {});\n".format(key, target, target_dict[target])
+                else:
+                    dim_content += "    {} = size({}, {});\n".format(key, target, target_dict[target]+1)
         # Handle sequences first
         test_generated_sym_set, seq_test_list = self.gen_same_seq_test()
         test_content += seq_test_list
