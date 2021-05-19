@@ -75,6 +75,7 @@ class TypeWalker(NodeWalker):
         self.sub_name_dict = {}  # only for parameter checker
         self.name_cnt_dict = {}
         self.dim_dict = {}        # parameter used. h:w_i
+        self.seq_dim_dict = {}    # support repeated symbol
         self.dim_seq_set = set()  # sequence of dimension for ragged list
         self.ids_dict = {}    # identifiers with subscripts
         self.unofficial_method = False
@@ -127,6 +128,7 @@ class TypeWalker(NodeWalker):
         self.sub_name_dict.clear()
         self.name_cnt_dict.clear()
         self.dim_dict.clear()
+        self.seq_dim_dict.clear()
         self.dim_seq_set.clear()
         self.ids_dict.clear()
         self.ret_symbol = None
@@ -180,6 +182,13 @@ class TypeWalker(NodeWalker):
         return ret
 
     def update_dim_dict(self, dim, target, pos):
+        if dim in self.dim_seq_set:
+            # can repeat
+            if dim not in self.seq_dim_dict:
+                self.seq_dim_dict[dim] = {}
+            if target not in self.seq_dim_dict[dim]:
+                self.seq_dim_dict[dim][target] = []
+            self.seq_dim_dict[dim][target].append(pos)
         if dim not in self.dim_dict:
             self.dim_dict[dim] = {}
         self.dim_dict[dim][target] = pos
