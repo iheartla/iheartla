@@ -87,6 +87,22 @@ class IRVisitor(object):
             if key in self.name_convention_dict:
                 del self.name_convention_dict[key]
 
+    def convert_seq_dim_dict(self):
+        seq_dict = {}
+        for key, value_dict in self.seq_dim_dict.items():
+            for sym, index_list in value_dict.items():
+                if sym not in seq_dict:
+                    seq_dict[sym] = {}
+                for index_str in index_list:
+                    seq_dict[sym][index_str] = key
+        return seq_dict
+
+    def get_dynamic_seq_set(self):
+        dym_seq_list = []
+        for key, value in self.seq_dim_dict.items():
+            dym_seq_list += value.keys()
+        return set(dym_seq_list)
+
     def get_same_seq_list(self, name):
         same_seq_list = []
         for key, value in self.seq_dim_dict.items():
