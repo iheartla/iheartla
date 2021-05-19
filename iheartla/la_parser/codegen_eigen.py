@@ -267,18 +267,18 @@ class CodeGenEigen(CodeGen):
                         cur_test_content.append('    for(int i=0; i<{}; i++){{'.format(self.symtable[cur_sym].size))
                     dim_dict = new_seq_dim_dict[cur_sym]
                     defined_content.append('    {}.resize({});'.format(cur_sym, self.symtable[cur_sym].size))
-                    if self.symtable[cur_sym].is_vector():
+                    if self.symtable[cur_sym].element_type.is_vector():
                         vector_type_str = 'VectorXi' if self.symtable[cur_sym].element_type.is_integer_element() else 'VectorXd'
                         # determined
-                        cur_block_content.append('        {}[i] = Eigen::{}::Random({});'.format(cur_sym, vector_type_str, rand_name_dict[dim_dict.values()[0]]))
+                        cur_block_content.append('        {}[i] = Eigen::{}::Random({});'.format(cur_sym, vector_type_str, rand_name_dict[dim_dict[1]]))
                     else:
                         # matrix
                         sparse_view = ''
                         if self.symtable[cur_sym].element_type.sparse:
                             sparse_view = '.sparseView()'
                         matrix_type_str = 'MatrixXi' if self.symtable[cur_sym].element_type.is_integer_element() else 'MatrixXd'
-                        row_str = self.symtable[cur_sym].ele_type.rows if not self.symtable[cur_sym].element_type.is_dynamic_row() else rand_name_dict[dim_dict[1]]
-                        col_str = self.symtable[cur_sym].ele_type.cols if not self.symtable[cur_sym].element_type.is_dynamic_col() else rand_name_dict[dim_dict[2]]
+                        row_str = self.symtable[cur_sym].element_type.rows if not self.symtable[cur_sym].element_type.is_dynamic_row() else rand_name_dict[dim_dict[1]]
+                        col_str = self.symtable[cur_sym].element_type.cols if not self.symtable[cur_sym].element_type.is_dynamic_col() else rand_name_dict[dim_dict[2]]
                         cur_block_content.append('        {}[i] = Eigen::{}::Random({}, {}){};'.format(cur_sym, matrix_type_str, row_str, col_str,
                                                                                   sparse_view))
                 cur_test_content = defined_content + cur_test_content + cur_block_content
