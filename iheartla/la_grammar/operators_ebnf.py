@@ -78,7 +78,7 @@ multi_cond::MultiCond
     ;
 
 integral_operator::Integral
-    = (INT|'∫') '_' (d:domain | (lower:(integer|identifier_alone) {hspace} '^' {hspace} upper:(integer|identifier_alone) )) {hspace} exp:expression {hspace} '∂' id:identifier_alone
+    = (INT|'∫') '_' (d:domain | (lower:sub_factor {hspace} '^' {hspace} upper:sub_factor )) {hspace} exp:expression {hspace} '∂' id:identifier_alone
     ;
 
 domain::Domain
