@@ -20,7 +20,7 @@
 <div class="container">
     <div class="row">
         <div class="col-sm">
-            <a>Keybinding:</a>
+            <a>Keybindings:</a>
             <div id="keybinding" class="btn-group" role="group" aria-label="Basic radio toggle button group">
               <input type="radio" class="btn-check" name="btnradio" id="ace" autocomplete="off" checked>
               <label class="btn btn-outline-primary" for="ace">Ace</label>
@@ -77,6 +77,14 @@ P ∈ ℝ^(4 × d)</pre>
 </body>
 
 <script>
+    {
+        const url = new URL(window.location.href);
+        const code = url.searchParams.get("code");
+        if( code !== null ) {
+            document.getElementById("editor").innerHTML = code;
+        }
+    }
+    
     initPyodide()
     showMsg(checkBrowserVer());
     initBtnStatus();
