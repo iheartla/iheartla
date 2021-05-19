@@ -15,6 +15,7 @@ class IRVisitor(object):
         self.parameters = set()
         self.subscripts = {}
         self.dim_dict = {}
+        self.seq_dim_dict = {}
         self.sub_name_dict = {}
         self.name_cnt_dict = {}
         self.same_dim_list = []
@@ -86,6 +87,48 @@ class IRVisitor(object):
             if key in self.name_convention_dict:
                 del self.name_convention_dict[key]
 
+    def convert_seq_dim_dict(self):
+        seq_dict = {}
+        for key, value_dict in self.seq_dim_dict.items():
+            for sym, index_list in value_dict.items():
+                if sym not in seq_dict:
+                    seq_dict[sym] = {}
+                for index_str in index_list:
+                    seq_dict[sym][index_str] = key
+        return seq_dict
+
+    def get_intersect_list(self):
+        seq_set = self.get_dynamic_seq_set()
+        subs_list = []
+        for subs, subs_dict in self.subscripts.items():
+            subs_set = set(subs_dict)
+            intersection = subs_set.intersection(seq_set)
+            if len(intersection) > 1:
+                subs_list.append(intersection)
+        return subs_list
+
+    def get_dynamic_seq_set(self):
+        dym_seq_list = []
+        for key, value in self.seq_dim_dict.items():
+            dym_seq_list += value.keys()
+        return set(dym_seq_list)
+
+    def get_same_seq_list(self, name):
+        same_seq_list = []
+        for key, value in self.seq_dim_dict.items():
+            if name in value:
+                same_seq_list.append(value)
+        return same_seq_list
+
+    def get_same_seq_symbols(self, name):
+        same_symbols = []
+        for key, value in self.seq_dim_dict.items():
+            if name in value:
+                same_symbols += value.keys()
+        same_symbols = set(same_symbols)
+        same_symbols.remove(name)
+        return same_symbols
+
     def generate_var_name(self, base):
         index = -1
         if base in self.name_cnt_dict:
@@ -118,7 +161,9 @@ class IRVisitor(object):
         self.logger.info("parameters:\n" + str(self.parameters))
         self.logger.info("subscripts:\n" + str(self.subscripts))
         self.logger.info("dim_dict:\n" + str(self.dim_dict))
+        self.logger.info("seq_dim_dict:\n" + str(self.seq_dim_dict))
         self.logger.info("dim_seq_set:\n" + str(self.dim_seq_set))
+        self.logger.info("same_dim_list:\n" + str(self.same_dim_list))
         self.logger.info("sub_name_dict:\n" + str(self.sub_name_dict) + '\n')
 
     def init_type(self, type_walker, func_name):
@@ -129,6 +174,7 @@ class IRVisitor(object):
         self.parameters = type_walker.parameters
         self.subscripts = type_walker.subscripts
         self.dim_dict = type_walker.dim_dict
+        self.seq_dim_dict = type_walker.seq_dim_dict
         self.ids_dict = type_walker.ids_dict
         self.dim_seq_set = type_walker.dim_seq_set
         self.sub_name_dict = type_walker.sub_name_dict

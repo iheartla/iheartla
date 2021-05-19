@@ -157,6 +157,14 @@ factor::Factor
     | v:vector
     | c:constant
     ;
+    
+sub_factor
+    = 
+    subexpression
+    | identifier_alone
+    | number
+    | constant
+    ;
 
 constant
     =

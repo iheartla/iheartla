@@ -96,21 +96,20 @@ class CodeGenMatlab(CodeGen):
         test_content.append(anon_str)
         return test_content
 
-    def get_set_test_list(self, parameter, la_type, rand_int_max, pre='    '):
+    def get_set_test_list(self, parameter, dim_name, ind_name, la_type, rand_int_max, test_indent='    '):
         test_content = []
-        test_indent = "    "
-        test_content.append(test_indent+'{} = [];'.format(parameter))
-        test_content.append(test_indent+'{}_0 = {};'.format(parameter, self.randi_str(rand_int_max)))
-        test_content.append(test_indent+'for i = 1:{}_0'.format(parameter))
+        test_content.append('{} = [];'.format(parameter))
+        test_content.append('{} = randi({});'.format(dim_name, rand_int_max))
+        test_content.append('for {} = 1:{} '.format(ind_name, dim_name))
         gen_list = []
         for i in range(la_type.size):
             if la_type.int_list[i]:
-                gen_list.append(self.randi_str(rand_int_max))
+                gen_list.append('randi({})'.format(rand_int_max))
             else:
-                gen_list.append(self.randn_str())
-        test_content.append(test_indent+'    {}(end+1,:) = ['.format(parameter) + ', '.join(gen_list) + '];')
-        test_content.append(test_indent+'end')
-        test_content = ['{}{}'.format(pre, line) for line in test_content]
+                gen_list.append('randn()')
+        test_content.append('    {} = [{};'.format(parameter, parameter) + ', '.join(gen_list) + '];')
+        test_content.append('end')
+        test_content = ['{}{}'.format(test_indent, line) for line in test_content]
         return test_content
 
     def visit_id(self, node, **kwargs):
@@ -146,6 +145,59 @@ class CodeGenMatlab(CodeGen):
 
     def get_ret_struct(self):
         return "{}({})".format(self.get_result_name(), ', '.join(self.lhs_list))
+
+    def gen_same_seq_test(self):
+        # dynamic seq
+        test_content = []
+        visited_sym_set = set()
+        rand_int_max = 10
+        subs_list = self.get_intersect_list()
+        if len(subs_list) > 0:
+            rand_name_dict = {}
+            rand_def_dict = {}
+            for keys in self.seq_dim_dict:
+                new_name = self.generate_var_name(keys)
+                rand_name_dict[keys] = new_name
+                rand_def_dict[keys] = '            {} = randi({})'.format(new_name, rand_int_max)
+            new_seq_dim_dict = self.convert_seq_dim_dict()
+            def get_keys_in_set(cur_set):
+                keys_list = []
+                for sym in cur_set:
+                    keys_list += new_seq_dim_dict[sym].values()
+                return set(keys_list)
+            for sym_set in subs_list:
+                visited_sym_set = visited_sym_set.union(sym_set)
+                cur_test_content = []
+                defined_content = []
+                cur_block_content = []
+                first = True
+                keys_set = get_keys_in_set(sym_set)
+                for key in keys_set:
+                    cur_block_content.append(rand_def_dict[key])
+                for cur_sym in sym_set:
+                    if first:
+                        first = False
+                        cur_test_content.append('        for i = 1:{}'.format(self.symtable[cur_sym].size))
+                    dim_dict = new_seq_dim_dict[cur_sym]
+                    defined_content.append('        {} = []'.format(cur_sym, self.symtable[cur_sym].size))
+                    if self.symtable[cur_sym].element_type.is_vector():
+                        # determined
+                        if self.symtable[cur_sym].element_type.is_integer_element():
+                            cur_block_content.append('            {}.append(randi({}, {}))'.format(cur_sym, rand_int_max, rand_name_dict[dim_dict[1]]))
+                        else:
+                            cur_block_content.append('            {}.append(randn({}))'.format(cur_sym, row_str, rand_name_dict[dim_dict[1]]))
+                    else:
+                        # matrix
+                        row_str = self.symtable[cur_sym].element_type.rows if not self.symtable[cur_sym].element_type.is_dynamic_row() else rand_name_dict[dim_dict[1]]
+                        col_str = self.symtable[cur_sym].element_type.cols if not self.symtable[cur_sym].element_type.is_dynamic_col() else rand_name_dict[dim_dict[2]]
+                        if self.symtable[cur_sym].element_type.is_integer_element():
+                            cur_block_content.append('            {}.append(randi({}, {}, {}))'.format(cur_sym, rand_int_max, row_str, col_str))
+                        else:
+                            cur_block_content.append('            {}.append(randn({}, {}))'.format(cur_sym, row_str, col_str))
+                cur_test_content = defined_content + cur_test_content + cur_block_content
+                cur_test_content.append('        end')
+                test_content += cur_test_content
+        return visited_sym_set, test_content
 
     def visit_block(self, node, **kwargs):
         type_checks = []
@@ -190,6 +242,9 @@ class CodeGenMatlab(CodeGen):
                     test_content.append(test_indent+"    {} = {};".format(key, self.randi_str(rand_int_max)))
                 # +1 because sizes in matlab are 1-indexed
                 dim_content += "    {} = size({}, {});\n".format(key, target, target_dict[target]+1)
+        # Handle sequences first
+        test_generated_sym_set, seq_test_list = self.gen_same_seq_test()
+        test_content += seq_test_list
         for parameter in self.parameters:
             if self.symtable[parameter].desc:
                 show_doc = True
@@ -220,7 +275,9 @@ class CodeGenMatlab(CodeGen):
                             #size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
                             sizes = [self.symtable[parameter].size, ele_type.rows, ele_type.cols]
                         else:
-                            sizes = [self.symtable[parameter].size, 'randi({})'.format(rand_int_max), 'randi({})'.format(rand_int_max)]
+                            row_str = 'randi({})'.format(rand_int_max) if ele_type.is_dynamic_row() else rand_int_max
+                            col_str = 'randi({})'.format(rand_int_max) if ele_type.is_dynamic_col() else rand_int_max
+                            sizes = [self.symtable[parameter].size, row_str, col_str]
                     elif ele_type.is_vector():
                         # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
                         # size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)
@@ -243,21 +300,23 @@ class CodeGenMatlab(CodeGen):
                     if isinstance(data_type, LaVarType):
                         if data_type.is_scalar() and data_type.is_int:
                             #type_declare.append('    {} = np.asarray({}, dtype=np.int)'.format(parameter, parameter))
-                            test_content.append('    {} = {};'.format(parameter, self.randi_str(rand_int_max,sizes)))
+                            if parameter not in test_generated_sym_set:
+                                test_content.append('        {} = {};'.format(parameter, self.randi_str(rand_int_max,sizes)))
                         elif ele_type.is_set():
-                            test_content.append('    {} = []'.format(parameter))
-                            test_content.append('    for i = 1:{}'.format(self.symtable[parameter].size))
+                            test_content.append('        {} = {{}};'.format(parameter))
+                            test_content.append('        for i = 1:{}'.format(self.symtable[parameter].size))
                             set_content = self.get_set_test_list("{}_tmp".format(parameter),
                                                                  self.generate_var_name("dim"), 'j', ele_type,
                                                                  rand_int_max, '    ')
-                            set_content = ["    {}".format(line) for line in set_content]
+                            set_content = ["        {}".format(line) for line in set_content]
                             test_content += set_content
-                            test_content.append('        {}(end+1) = {};'.format(parameter, "{}_tmp".format(parameter)))
+                            test_content.append('            {} = [{}, {}];'.format(parameter, parameter, "{}_tmp".format(parameter)))
                             #test_content.append('    {} = np.asarray({})'.format(parameter, parameter))
-                            test_content.append('    end')
+                            test_content.append('        end')
                         else:
                             #type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
-                            test_content.append('    {} = {};'.format(parameter, self.randn_str(sizes)))
+                            if parameter not in test_generated_sym_set:
+                                test_content.append('        {} = {};'.format(parameter, self.randn_str(sizes)))
                     else:
                         if ele_type.is_function():
                             test_content.append('        {} = {{}};'.format(parameter))
@@ -333,17 +392,9 @@ class CodeGenMatlab(CodeGen):
                 #type_checks.append('    assert isinstance({}, list) and len({}) > 0'.format(parameter, parameter))
                 if self.symtable[parameter].size > 1:
                     type_checks.append('    assert(size({},2) == {})'.format(parameter, self.symtable[parameter].size))
-                test_content.append(test_indent+'    {} = [];'.format(parameter))
-                test_content.append(test_indent+'    {}_0 = randi({});'.format(parameter, rand_int_max))
-                test_content.append(test_indent+'    for i = 1:{}_0 '.format(parameter))
-                gen_list = []
-                for i in range(self.symtable[parameter].size):
-                    if self.symtable[parameter].int_list[i]:
-                        gen_list.append('randi({})'.format(rand_int_max))
-                    else:
-                        gen_list.append('randn()')
-                test_content.append(test_indent+'        {} = [{};'.format(parameter,parameter) + ', '.join(gen_list) + '];')
-                test_content.append(test_indent+'    end')
+                test_content += self.get_set_test_list(parameter, self.generate_var_name("dim"), 'i',
+                                                       self.symtable[parameter],
+                                                       rand_int_max, '        ')
             elif self.symtable[parameter].is_function():
                 param_list = []
                 dim_definition = []
@@ -359,13 +410,13 @@ class CodeGenMatlab(CodeGen):
                                 dim_definition.append('        {} = {}{}.shape[1]'.format(ret_dim, self.param_name_test, param_i))
                 for index in range(len(self.symtable[parameter].params)):
                     param_list.append('{}{}'.format(self.param_name_test, index))
-                test_content.append(test_indent+"    {} = @{};".format(parameter,parameter+"Func"));
+                test_content.append(test_indent+"    {} = @{};".format(parameter,parameter+"Func"))
                 test_content.append(test_indent+"    rseed = randi(2^32);")
                 test_content.append(test_indent+"    function tmp =  {}({})".format(parameter+"Func", ', '.join(param_list)))
                 test_content.append(test_indent+"        rng(rseed);")
                 test_content += dim_definition
                 if self.symtable[parameter].ret.is_set():
-                   test_content += self.get_set_test_list('tmp', self.symtable[parameter].ret, rand_int_max, '        ')
+                   test_content += self.get_set_test_list('tmp', self.generate_var_name("dim"), 'i', self.symtable[parameter].ret, rand_int_max, '            ')
                 else:
                    test_content.append(test_indent+"        tmp = {};".format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
                 test_content.append(test_indent+"    end\n")
@@ -474,6 +525,22 @@ class CodeGenMatlab(CodeGen):
                 content.append("for {} = 1:size({},1)\n".format(sub, target_var[0]))
             else:
                 content.append("for {} = 1:size({},2)\n".format(sub, target_var[0]))
+        elif self.symtable[target_var[0]].is_sequence():
+            sym_list = node.sym_dict[target_var[0]]
+            sub_index = sym_list.index(sub)
+            if sub_index == 0:
+                size_str = "size({}, 1)".format(target_var[0])
+            elif sub_index == 1:
+                if self.symtable[target_var[0]].element_type.is_dynamic_row():
+                    size_str = "size({}({}), 1)".format(target_var[0], sym_list[0])
+                else:
+                    size_str = "{}".format(self.symtable[target_var[0]].element_type.rows)
+            else:
+                if self.symtable[target_var[0]].element_type.is_dynamic_col():
+                    size_str = "size({}({}), 2)".format(target_var[0], sym_list[0])
+                else:
+                    size_str = "{}".format(self.symtable[target_var[0]].element_type.cols)
+            content.append("for {} = 1:size({},1)\n".format(sub, size_str))
         else:
             content.append("for {} = 1:size({},1)\n".format(sub, self.convert_bound_symbol(target_var[0])))
         if exp_info.pre_list:   # catch pre_list

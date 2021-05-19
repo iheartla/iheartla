@@ -944,42 +944,30 @@ class grammardefaultParser(Parser):
                     self.name_last_node('d')
                 with self._option():
                     with self._group():
-                        with self._group():
-                            with self._choice():
-                                with self._option():
-                                    self._integer_()
-                                with self._option():
-                                    self._identifier_alone_()
-                                self._error('no available options')
+                        self._sub_factor_()
                         self.name_last_node('lower')
+
+                        def block3():
+                            self._hspace_()
+                        self._closure(block3)
+                        self._token('^')
 
                         def block4():
                             self._hspace_()
                         self._closure(block4)
-                        self._token('^')
-
-                        def block5():
-                            self._hspace_()
-                        self._closure(block5)
-                        with self._group():
-                            with self._choice():
-                                with self._option():
-                                    self._integer_()
-                                with self._option():
-                                    self._identifier_alone_()
-                                self._error('no available options')
+                        self._sub_factor_()
                         self.name_last_node('upper')
                 self._error('no available options')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
+        self._expression_()
+        self.name_last_node('exp')
 
         def block9():
             self._hspace_()
         self._closure(block9)
-        self._expression_()
-        self.name_last_node('exp')
-
-        def block11():
-            self._hspace_()
-        self._closure(block11)
         self._token('∂')
         self._identifier_alone_()
         self.name_last_node('id')
@@ -4093,6 +4081,19 @@ class grammardefaultParser(Parser):
         )
 
     @tatsumasu()
+    def _sub_factor_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._subexpression_()
+            with self._option():
+                self._identifier_alone_()
+            with self._option():
+                self._number_()
+            with self._option():
+                self._constant_()
+            self._error('no available options')
+
+    @tatsumasu()
     def _constant_(self):  # noqa
         if self.const_e:
             with self._choice():
@@ -5090,6 +5091,9 @@ class grammardefaultSemantics(object):
         return ast
 
     def factor(self, ast):  # noqa
+        return ast
+
+    def sub_factor(self, ast):  # noqa
         return ast
 
     def constant(self, ast):  # noqa
