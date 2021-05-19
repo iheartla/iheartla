@@ -155,7 +155,7 @@ class CodeGenNumpy(CodeGen):
                         if self.symtable[cur_sym].element_type.is_integer_element():
                             cur_block_content.append('        {}.append(np.random.randint({}, size=({})))'.format(cur_sym, rand_int_max, rand_name_dict[dim_dict[1]]))
                         else:
-                            cur_block_content.append('        {}.append(np.random.randn({}))'.format(cur_sym, row_str, rand_name_dict[dim_dict[1]]))
+                            cur_block_content.append('        {}.append(np.random.randn({}))'.format(cur_sym, rand_name_dict[dim_dict[1]]))
                     else:
                         # matrix
                         row_str = self.symtable[cur_sym].element_type.rows if not self.symtable[cur_sym].element_type.is_dynamic_row() else rand_name_dict[dim_dict[1]]
@@ -213,7 +213,13 @@ class CodeGenNumpy(CodeGen):
                         has_defined = True
                 if not has_defined:
                     test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
-                dim_content += "    {} = {}.shape[{}]\n".format(key, target, target_dict[target])
+                if self.symtable[target].is_sequence() and self.symtable[target].element_type.is_dynamic():
+                    if target_dict[target] == 0:
+                        dim_content += "    {} = {}.shape[0]\n".format(key, target)
+                    else:
+                        dim_content += "    {} = {}[0].shape[{}]\n".format(key, target, target_dict[target]-1)
+                else:
+                    dim_content += "    {} = {}.shape[{}]\n".format(key, target, target_dict[target])
         # Handle sequences first
         test_generated_sym_set, seq_test_list = self.gen_same_seq_test()
         test_content += seq_test_list
