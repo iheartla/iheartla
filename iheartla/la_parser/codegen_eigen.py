@@ -237,9 +237,9 @@ class CodeGenEigen(CodeGen):
                 new_name = self.generate_var_name(keys)
                 rand_name_dict[keys] = new_name
                 rand_def_dict[keys] = '        int {} = rand()%{};'.format(new_name, rand_int_max)
-            print("subs_list: {}".format(subs_list))
+            self.logger.info("subs_list: {}".format(subs_list))
             new_seq_dim_dict = self.convert_seq_dim_dict()
-            print("new_seq_dim_dict: {}".format(new_seq_dim_dict))
+            self.logger.info("new_seq_dim_dict: {}".format(new_seq_dim_dict))
             def get_keys_in_set(cur_set):
                 keys_list = []
                 for sym in cur_set:
@@ -254,7 +254,7 @@ class CodeGenEigen(CodeGen):
                 keys_set = get_keys_in_set(sym_set)
                 for key in keys_set:
                     cur_block_content.append(rand_def_dict[key])
-                print("keys_set:{}".format(keys_set))
+                self.logger.info("keys_set:{}".format(keys_set))
                 for cur_sym in sym_set:
                     if first:
                         first = False
