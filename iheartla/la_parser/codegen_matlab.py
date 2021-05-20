@@ -292,7 +292,14 @@ class CodeGenMatlab(CodeGen):
                             #size_str = '{}, {}'.format(self.symtable[parameter].size, ele_type.rows)
                             sizes = [self.symtable[parameter].size, ele_type.rows]
                         else:
-                            sizes = [self.symtable[parameter].size, 'randi({})'.format(rand_int_max)]
+                            test_content.append('        {} = {{}};'.format(parameter))
+                            test_content.append('        for i = 1:{}'.format(self.symtable[parameter].size))
+                            if ele_type.is_integer_element():
+                                test_content.append('            {} = [{}; randi({}, randi({}))];'.format(parameter, parameter, rand_int_max, rand_int_max))
+                            else:
+                                test_content.append('            {} = [{}; randn(randi({}))];'.format(parameter, parameter, rand_int_max))
+                            test_content.append('        end')
+                            # sizes = [self.symtable[parameter].size, 'randi({})'.format(rand_int_max)]
                     elif ele_type.is_scalar():
                         # Alec: is scalar? but then should
                         # self.symtable[parameter].size always be 1? What's
@@ -306,7 +313,7 @@ class CodeGenMatlab(CodeGen):
                     if isinstance(data_type, LaVarType):
                         if data_type.is_scalar() and data_type.is_int:
                             #type_declare.append('    {} = np.asarray({}, dtype=np.int)'.format(parameter, parameter))
-                            if parameter not in test_generated_sym_set:
+                            if parameter not in test_generated_sym_set and not ele_type.is_dynamic():
                                 test_content.append('        {} = {};'.format(parameter, self.randi_str(rand_int_max,sizes)))
                         elif ele_type.is_set():
                             test_content.append('        {} = {{}};'.format(parameter))
@@ -321,7 +328,7 @@ class CodeGenMatlab(CodeGen):
                             test_content.append('        end')
                         else:
                             #type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
-                            if parameter not in test_generated_sym_set:
+                            if parameter not in test_generated_sym_set and not ele_type.is_dynamic():
                                 test_content.append('        {} = {};'.format(parameter, self.randn_str(sizes)))
                     else:
                         if ele_type.is_function():

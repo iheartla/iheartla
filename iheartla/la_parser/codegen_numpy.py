@@ -259,14 +259,23 @@ class CodeGenNumpy(CodeGen):
                             type_checks.append('    assert {}.shape == ({}, {}, )'.format(parameter, self.symtable[parameter].size, ele_type.rows))
                             size_str = '{}, {}, '.format(self.symtable[parameter].size, ele_type.rows)
                         else:
-                            size_str = '{}, np.random.randint({}), '.format(self.symtable[parameter].size, rand_int_max)
+                            test_content.append('    {} = []'.format(parameter))
+                            test_content.append('    for i in range({}):'.format(self.symtable[parameter].size))
+                            if ele_type.is_integer_element():
+                                test_content.append('        {}.append(np.random.randint({}, size=(np.random.randint({}) ,)))'.format(parameter, rand_int_max, rand_int_max))
+                            else:
+                                test_content.append('        {}.append(np.random.randn(np.random.randint({})))'.format(parameter, rand_int_max))
+                            # size_str = '{}, np.random.randint({}), '.format(self.symtable[parameter].size, rand_int_max)
                     elif ele_type.is_scalar():
                         type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].size))
                         size_str = '{}'.format(self.symtable[parameter].size)
                     if isinstance(data_type, LaVarType):
                         if data_type.is_scalar() and data_type.is_int:
-                            type_declare.append('    {} = np.asarray({}, dtype=np.int)'.format(parameter, parameter))
-                            if parameter not in test_generated_sym_set:
+                            if ele_type.is_dynamic():
+                                type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
+                            else:
+                                type_declare.append('    {} = np.asarray({}, dtype=np.int)'.format(parameter, parameter))
+                            if parameter not in test_generated_sym_set and not ele_type.is_dynamic():
                                 test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, size_str))
                         elif ele_type.is_set():
                             test_content.append('    {} = []'.format(parameter))
@@ -283,7 +292,7 @@ class CodeGenNumpy(CodeGen):
                                 type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
                             else:
                                 type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
-                            if parameter not in test_generated_sym_set:
+                            if parameter not in test_generated_sym_set and not ele_type.is_dynamic():
                                 test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
                     else:
                         if ele_type.is_function():
