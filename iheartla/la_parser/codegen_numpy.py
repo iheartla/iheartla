@@ -251,7 +251,13 @@ class CodeGenNumpy(CodeGen):
                         else:
                             row_str = 'np.random.randint({})'.format(rand_int_max) if ele_type.is_dynamic_row() else ele_type.rows
                             col_str = 'np.random.randint({})'.format(rand_int_max) if ele_type.is_dynamic_col() else ele_type.cols
-                            size_str = '{}, {}, {}'.format(self.symtable[parameter].size, row_str, col_str)
+                            # size_str = '{}, {}, {}'.format(self.symtable[parameter].size, row_str, col_str)
+                            test_content.append('    {} = []'.format(parameter))
+                            test_content.append('    for i in range({}):'.format(self.symtable[parameter].size))
+                            if ele_type.is_integer_element():
+                                test_content.append('        {}.append(np.random.randint({}, size=({}, {})))'.format(parameter, rand_int_max, row_str, col_str))
+                            else:
+                                test_content.append('        {}.append(np.random.randn({}, {}))'.format(parameter, row_str, col_str))
                     elif ele_type.is_vector():
                         # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
                         # size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)
