@@ -96,13 +96,16 @@ P ∈ ℝ^(4 × d)</pre>
 
     <div class="row">
         <div class="col-lg">
-            <pre id="cpp">cpp</pre>
+            <pre id="cpp">Cpp</pre>
         </div>
         <div class="col-lg">
-            <pre id="python">python</pre>
+            <pre id="python">Python</pre>
         </div>
         <div class="col-lg">
-            <pre id="latex">latex</pre>
+            <pre id="matlab">MATLAB</pre>
+        </div>
+        <div class="col-lg">
+            <pre id="latex">Latex</pre>
         </div>
     </div>
 </div>
@@ -146,6 +149,13 @@ P ∈ ℝ^(4 × d)</pre>
     latex.setTheme("ace/theme/twilight");
     latex.session.setMode("ace/mode/latex");
     latex.setOptions({
+        readOnly: true,
+    });
+
+    let matlab = ace.edit("matlab");
+    matlab.setTheme("ace/theme/twilight");
+    matlab.session.setMode("ace/mode/matlab");
+    matlab.setOptions({
         readOnly: true,
     });
 

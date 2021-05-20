@@ -18,6 +18,10 @@ body {
     width: 100%;
     height: 500px;
 }
+#matlab {
+    width: 100%;
+    height: 500px;
+}
 #compile {
     background-color: #4CAF50; /* Green background */
 }

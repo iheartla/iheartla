@@ -162,6 +162,8 @@ function updateEditor(code) {
     var latex = ace.edit("latex");
     latex.session.setValue(code[2]);
     convert(code[3]);
+    var matlab = ace.edit("matlab");
+    matlab.session.setValue(code[4]);
     // reset UI
     activateBtnStatus();
 }
