@@ -335,7 +335,7 @@ def get_file_name(path_name):
 
 
 def compile_la_content(la_content,
-                       parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX | ParserTypeEnum.MATHJAX):
+                       parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX | ParserTypeEnum.MATHJAX | ParserTypeEnum.MATLAB):
     parser = get_default_parser()
     try:
         model = parser.parse(la_content, parseinfo=True)
@@ -352,6 +352,9 @@ def compile_la_content(la_content,
             ret.append(tex_content)
         if parser_type & ParserTypeEnum.MATHJAX:
             tex_content = walk_model(ParserTypeEnum.MATHJAX, type_walker, start_node)
+            ret.append(tex_content)
+        if parser_type & ParserTypeEnum.MATLAB:
+            tex_content = walk_model(ParserTypeEnum.MATLAB, type_walker, start_node)
             ret.append(tex_content)
     except FailedParse as e:
         ret = LaMsg.getInstance().get_parse_error(e)
