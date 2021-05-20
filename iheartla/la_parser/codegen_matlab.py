@@ -158,7 +158,7 @@ class CodeGenMatlab(CodeGen):
             for keys in self.seq_dim_dict:
                 new_name = self.generate_var_name(keys)
                 rand_name_dict[keys] = new_name
-                rand_def_dict[keys] = '            {} = randi({})'.format(new_name, rand_int_max)
+                rand_def_dict[keys] = '            {} = randi({});'.format(new_name, rand_int_max)
             new_seq_dim_dict = self.convert_seq_dim_dict()
             def get_keys_in_set(cur_set):
                 keys_list = []
@@ -538,12 +538,12 @@ class CodeGenMatlab(CodeGen):
                 size_str = "size({}, 1)".format(target_var[0])
             elif sub_index == 1:
                 if self.symtable[target_var[0]].element_type.is_dynamic_row():
-                    size_str = "size({}({}), 1)".format(target_var[0], sym_list[0])
+                    size_str = "size({}({}), 1)".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
                 else:
                     size_str = "{}".format(self.symtable[target_var[0]].element_type.rows)
             else:
                 if self.symtable[target_var[0]].element_type.is_dynamic_col():
-                    size_str = "size({}({}), 2)".format(target_var[0], sym_list[0])
+                    size_str = "size({}({}), 2)".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
                 else:
                     size_str = "{}".format(self.symtable[target_var[0]].element_type.cols)
             content.append("for {} = 1:size({},1)\n".format(sub, size_str))
@@ -869,54 +869,43 @@ class CodeGenMatlab(CodeGen):
         # 
         # https://github.com/pressureless/linear_algebra/issues/34
         main_info = self.visit(node.main, **kwargs)
-        main_index_info = self.visit(node.main_index, **kwargs)
-        if node.main_index.la_type.index_type:
-            main_index_content = main_index_info.content
-        else:
-            main_index_content = "{}".format(main_index_info.content)
+        main_index_content = self.visit(node.main_index, **kwargs).content
         if node.slice_matrix:
             if node.row_index is not None:
-                row_info = self.visit(node.row_index, **kwargs)
-                if node.row_index.la_type.index_type:
-                    row_content = row_info.content
+                row_content = self.visit(node.row_index, **kwargs).content
+                if node.la_type.is_dynamic():
+                    content = "{}{{{}}}({}, :)".format(main_info.content, main_index_content, row_content)
                 else:
-                    row_content = "{}".format(row_info.content)
-                content = "{}({})({}, :)".format(main_info.content, main_index_content, row_content)
+                    content = "{}({})({}, :)".format(main_info.content, main_index_content, row_content)
             else:
-                col_info = self.visit(node.col_index, **kwargs)
-                if node.col_index.la_type.index_type:
-                    col_content = col_info.content
+                col_content = self.visit(node.col_index, **kwargs).content
+                if node.la_type.is_dynamic():
+                    content = "{}{{{}}}(:, {})".format(main_info.content, main_index_content, row_content)
                 else:
-                    col_content = "{}".format(col_info.content)
-                content = "{}({})(:, {})".format(main_info.content, main_index_content, col_content)
+                    content = "{}({})(:, {})".format(main_info.content, main_index_content, col_content)
         else:
             if node.row_index is not None:
-                row_info = self.visit(node.row_index, **kwargs)
-                if node.row_index.la_type.index_type:
-                    row_content = row_info.content
-                else:
-                    row_content = "{}".format(row_info.content)
+                row_content = self.visit(node.row_index, **kwargs).content
                 if node.col_index is not None:
-                    col_info = self.visit(node.col_index, **kwargs)
-                    if node.col_index.la_type.index_type:
-                        col_content = col_info.content
-                    else:
-                        col_content = "{}".format(col_info.content)
+                    col_content = self.visit(node.col_index, **kwargs).content
                     content = "{}({},{},{})".format(main_info.content, main_index_content, row_content,
                                                      col_content)
                 else:
                     content = "{}({},{})".format(main_info.content, main_index_content, row_content)
             else:
-                if node.la_type.is_vector():
-                    # This is ugly if we're visiting the lefthand side of an
-                    # equality expression
-                    content = "{}({},:)'".format(main_info.content, main_index_content)
-                elif node.la_type.is_matrix():
-                    content = "squeeze({}({},:,:))".format(main_info.content, main_index_content)
-                elif node.la_type.is_scalar():
-                    content = "{}({})".format(main_info.content, main_index_content)
-                else:
+                if node.la_type.is_dynamic():
                     content = "{}{{{}}}".format(main_info.content, main_index_content)
+                else:
+                    if node.la_type.is_vector():
+                        # This is ugly if we're visiting the lefthand side of an
+                        # equality expression
+                        content = "{}({},:)'".format(main_info.content, main_index_content)
+                    elif node.la_type.is_matrix():
+                        content = "squeeze({}({},:,:))".format(main_info.content, main_index_content)
+                    elif node.la_type.is_scalar():
+                        content = "{}({})".format(main_info.content, main_index_content)
+                    else:
+                        content = "{}{{{}}}".format(main_info.content, main_index_content)
         return CodeNodeInfo(content)
 
     def visit_seq_dim_index(self, node, **kwargs):
