@@ -281,16 +281,17 @@ class CodeGenMatlab(CodeGen):
                             #size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
                             sizes = [self.symtable[parameter].size, ele_type.rows, ele_type.cols]
                         else:
-                            row_str = 'randi({})'.format(rand_int_max) if ele_type.is_dynamic_row() else ele_type.rows
-                            col_str = 'randi({})'.format(rand_int_max) if ele_type.is_dynamic_col() else ele_type.cols
-                            # sizes = [self.symtable[parameter].size, row_str, col_str]
-                            test_content.append('        {} = {{}};'.format(parameter))
-                            test_content.append('        for i = 1:{}'.format(self.symtable[parameter].size))
-                            if ele_type.is_integer_element():
-                                test_content.append('            {} = [{}; randi({}, {}, {})];'.format(parameter, parameter, rand_int_max, row_str, col_str))
-                            else:
-                                test_content.append('            {} = [{}; randn({}, {})];'.format(parameter, parameter, row_str, col_str))
-                            test_content.append('        end')
+                            if parameter not in test_generated_sym_set:
+                                row_str = 'randi({})'.format(rand_int_max) if ele_type.is_dynamic_row() else ele_type.rows
+                                col_str = 'randi({})'.format(rand_int_max) if ele_type.is_dynamic_col() else ele_type.cols
+                                # sizes = [self.symtable[parameter].size, row_str, col_str]
+                                test_content.append('        {} = {{}};'.format(parameter))
+                                test_content.append('        for i = 1:{}'.format(self.symtable[parameter].size))
+                                if ele_type.is_integer_element():
+                                    test_content.append('            {} = [{}; randi({}, {}, {})];'.format(parameter, parameter, rand_int_max, row_str, col_str))
+                                else:
+                                    test_content.append('            {} = [{}; randn({}, {})];'.format(parameter, parameter, row_str, col_str))
+                                test_content.append('        end')
                     elif ele_type.is_vector():
                         # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
                         # size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)
@@ -299,14 +300,15 @@ class CodeGenMatlab(CodeGen):
                             #size_str = '{}, {}'.format(self.symtable[parameter].size, ele_type.rows)
                             sizes = [self.symtable[parameter].size, ele_type.rows]
                         else:
-                            test_content.append('        {} = {{}};'.format(parameter))
-                            test_content.append('        for i = 1:{}'.format(self.symtable[parameter].size))
-                            if ele_type.is_integer_element():
-                                test_content.append('            {} = [{}; randi({}, randi({}))];'.format(parameter, parameter, rand_int_max, rand_int_max))
-                            else:
-                                test_content.append('            {} = [{}; randn(randi({}))];'.format(parameter, parameter, rand_int_max))
-                            test_content.append('        end')
-                            # sizes = [self.symtable[parameter].size, 'randi({})'.format(rand_int_max)]
+                            if parameter not in test_generated_sym_set:
+                                test_content.append('        {} = {{}};'.format(parameter))
+                                test_content.append('        for i = 1:{}'.format(self.symtable[parameter].size))
+                                if ele_type.is_integer_element():
+                                    test_content.append('            {} = [{}; randi({}, randi({}))];'.format(parameter, parameter, rand_int_max, rand_int_max))
+                                else:
+                                    test_content.append('            {} = [{}; randn(randi({}))];'.format(parameter, parameter, rand_int_max))
+                                test_content.append('        end')
+                                # sizes = [self.symtable[parameter].size, 'randi({})'.format(rand_int_max)]
                     elif ele_type.is_scalar():
                         # Alec: is scalar? but then should
                         # self.symtable[parameter].size always be 1? What's
