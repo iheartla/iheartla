@@ -149,7 +149,7 @@ class CodeGenNumpy(CodeGen):
                         first = False
                         cur_test_content.append('    for i in range({}):'.format(self.symtable[cur_sym].size))
                     dim_dict = new_seq_dim_dict[cur_sym]
-                    defined_content.append('    {} = []'.format(cur_sym, self.symtable[cur_sym].size))
+                    defined_content.append('    {} = []'.format(cur_sym))
                     if self.symtable[cur_sym].element_type.is_vector():
                         # determined
                         if self.symtable[cur_sym].element_type.is_integer_element():
@@ -249,9 +249,16 @@ class CodeGenNumpy(CodeGen):
                             type_checks.append('    assert {}.shape == ({}, {}, {})'.format(parameter, self.symtable[parameter].size, ele_type.rows, ele_type.cols))
                             size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
                         else:
-                            row_str = 'np.random.randint({})'.format(rand_int_max) if ele_type.is_dynamic_row() else ele_type.rows
-                            col_str = 'np.random.randint({})'.format(rand_int_max) if ele_type.is_dynamic_col() else ele_type.cols
-                            size_str = '{}, {}, {}'.format(self.symtable[parameter].size, row_str, col_str)
+                            if parameter not in test_generated_sym_set:
+                                row_str = 'np.random.randint({})'.format(rand_int_max) if ele_type.is_dynamic_row() else ele_type.rows
+                                col_str = 'np.random.randint({})'.format(rand_int_max) if ele_type.is_dynamic_col() else ele_type.cols
+                                # size_str = '{}, {}, {}'.format(self.symtable[parameter].size, row_str, col_str)
+                                test_content.append('    {} = []'.format(parameter))
+                                test_content.append('    for i in range({}):'.format(self.symtable[parameter].size))
+                                if ele_type.is_integer_element():
+                                    test_content.append('        {}.append(np.random.randint({}, size=({}, {})))'.format(parameter, rand_int_max, row_str, col_str))
+                                else:
+                                    test_content.append('        {}.append(np.random.randn({}, {}))'.format(parameter, row_str, col_str))
                     elif ele_type.is_vector():
                         # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
                         # size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)
@@ -259,14 +266,24 @@ class CodeGenNumpy(CodeGen):
                             type_checks.append('    assert {}.shape == ({}, {}, )'.format(parameter, self.symtable[parameter].size, ele_type.rows))
                             size_str = '{}, {}, '.format(self.symtable[parameter].size, ele_type.rows)
                         else:
-                            size_str = '{}, np.random.randint({}), '.format(self.symtable[parameter].size, rand_int_max)
+                            if parameter not in test_generated_sym_set:
+                                test_content.append('    {} = []'.format(parameter))
+                                test_content.append('    for i in range({}):'.format(self.symtable[parameter].size))
+                                if ele_type.is_integer_element():
+                                    test_content.append('        {}.append(np.random.randint({}, size=(np.random.randint({}) ,)))'.format(parameter, rand_int_max, rand_int_max))
+                                else:
+                                    test_content.append('        {}.append(np.random.randn(np.random.randint({})))'.format(parameter, rand_int_max))
+                            # size_str = '{}, np.random.randint({}), '.format(self.symtable[parameter].size, rand_int_max)
                     elif ele_type.is_scalar():
                         type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].size))
                         size_str = '{}'.format(self.symtable[parameter].size)
                     if isinstance(data_type, LaVarType):
                         if data_type.is_scalar() and data_type.is_int:
-                            type_declare.append('    {} = np.asarray({}, dtype=np.int)'.format(parameter, parameter))
-                            if parameter not in test_generated_sym_set:
+                            if ele_type.is_dynamic():
+                                type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
+                            else:
+                                type_declare.append('    {} = np.asarray({}, dtype=np.int)'.format(parameter, parameter))
+                            if parameter not in test_generated_sym_set and not ele_type.is_dynamic():
                                 test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, size_str))
                         elif ele_type.is_set():
                             test_content.append('    {} = []'.format(parameter))
@@ -283,7 +300,7 @@ class CodeGenNumpy(CodeGen):
                                 type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
                             else:
                                 type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
-                            if parameter not in test_generated_sym_set:
+                            if parameter not in test_generated_sym_set and not ele_type.is_dynamic():
                                 test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
                     else:
                         if ele_type.is_function():
@@ -452,15 +469,15 @@ class CodeGenNumpy(CodeGen):
             sym_list = node.sym_dict[target_var[0]]
             sub_index = sym_list.index(sub)
             if sub_index == 0:
-                size_str = "len({})".format(target_var[0])
+                size_str = "len({})".format(self.convert_bound_symbol(target_var[0]))
             elif sub_index == 1:
                 if self.symtable[target_var[0]].element_type.is_dynamic_row():
-                    size_str = "{}[{}-1].shape[0]".format(target_var[0], sym_list[0])
+                    size_str = "{}[{}-1].shape[0]".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
                 else:
                     size_str = "{}".format(self.symtable[target_var[0]].element_type.rows)
             else:
                 if self.symtable[target_var[0]].element_type.is_dynamic_col():
-                    size_str = "{}[{}-1].shape[1]".format(target_var[0], sym_list[0])
+                    size_str = "{}[{}-1].shape[1]".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
                 else:
                     size_str = "{}".format(self.symtable[target_var[0]].element_type.cols)
             content.append("for {} in range(1, {}+1):\n".format(sub, size_str))

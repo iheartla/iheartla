@@ -158,7 +158,7 @@ class CodeGenMatlab(CodeGen):
             for keys in self.seq_dim_dict:
                 new_name = self.generate_var_name(keys)
                 rand_name_dict[keys] = new_name
-                rand_def_dict[keys] = '            {} = randi({})'.format(new_name, rand_int_max)
+                rand_def_dict[keys] = '            {} = randi({});'.format(new_name, rand_int_max)
             new_seq_dim_dict = self.convert_seq_dim_dict()
             def get_keys_in_set(cur_set):
                 keys_list = []
@@ -179,21 +179,21 @@ class CodeGenMatlab(CodeGen):
                         first = False
                         cur_test_content.append('        for i = 1:{}'.format(self.symtable[cur_sym].size))
                     dim_dict = new_seq_dim_dict[cur_sym]
-                    defined_content.append('        {} = []'.format(cur_sym, self.symtable[cur_sym].size))
+                    defined_content.append('        {} = {{}};'.format(cur_sym, self.symtable[cur_sym].size))
                     if self.symtable[cur_sym].element_type.is_vector():
                         # determined
                         if self.symtable[cur_sym].element_type.is_integer_element():
-                            cur_block_content.append('            {}.append(randi({}, {}))'.format(cur_sym, rand_int_max, rand_name_dict[dim_dict[1]]))
+                            cur_block_content.append('            {} = [{}; randi({}, {})];'.format(cur_sym, cur_sym, rand_int_max, rand_name_dict[dim_dict[1]]))
                         else:
-                            cur_block_content.append('            {}.append(randn({}))'.format(cur_sym, row_str, rand_name_dict[dim_dict[1]]))
+                            cur_block_content.append('            {} = [{}; randn({})];'.format(cur_sym, cur_sym, rand_name_dict[dim_dict[1]]))
                     else:
                         # matrix
                         row_str = self.symtable[cur_sym].element_type.rows if not self.symtable[cur_sym].element_type.is_dynamic_row() else rand_name_dict[dim_dict[1]]
                         col_str = self.symtable[cur_sym].element_type.cols if not self.symtable[cur_sym].element_type.is_dynamic_col() else rand_name_dict[dim_dict[2]]
                         if self.symtable[cur_sym].element_type.is_integer_element():
-                            cur_block_content.append('            {}.append(randi({}, {}, {}))'.format(cur_sym, rand_int_max, row_str, col_str))
+                            cur_block_content.append('            {} = [{}; randi({}, {}, {})];'.format(cur_sym, cur_sym, rand_int_max, row_str, col_str))
                         else:
-                            cur_block_content.append('            {}.append(randn({}, {}))'.format(cur_sym, row_str, col_str))
+                            cur_block_content.append('            {} = [{}; randn({}, {})];'.format(cur_sym, cur_sym, row_str, col_str))
                 cur_test_content = defined_content + cur_test_content + cur_block_content
                 cur_test_content.append('        end')
                 test_content += cur_test_content
@@ -241,7 +241,13 @@ class CodeGenMatlab(CodeGen):
                 if not has_defined:
                     test_content.append(test_indent+"    {} = {};".format(key, self.randi_str(rand_int_max)))
                 # +1 because sizes in matlab are 1-indexed
-                dim_content += "    {} = size({}, {});\n".format(key, target, target_dict[target]+1)
+                if self.symtable[target].is_sequence() and self.symtable[target].element_type.is_dynamic():
+                    if target_dict[target] == 0:
+                        dim_content += "    {} = size({}, 1);\n".format(key, target)
+                    else:
+                        dim_content += "    {} = size({}{{1}}, {});\n".format(key, target, target_dict[target])
+                else:
+                    dim_content += "    {} = size({}, {});\n".format(key, target, target_dict[target]+1)
         # Handle sequences first
         test_generated_sym_set, seq_test_list = self.gen_same_seq_test()
         test_content += seq_test_list
@@ -275,9 +281,17 @@ class CodeGenMatlab(CodeGen):
                             #size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
                             sizes = [self.symtable[parameter].size, ele_type.rows, ele_type.cols]
                         else:
-                            row_str = 'randi({})'.format(rand_int_max) if ele_type.is_dynamic_row() else rand_int_max
-                            col_str = 'randi({})'.format(rand_int_max) if ele_type.is_dynamic_col() else rand_int_max
-                            sizes = [self.symtable[parameter].size, row_str, col_str]
+                            if parameter not in test_generated_sym_set:
+                                row_str = 'randi({})'.format(rand_int_max) if ele_type.is_dynamic_row() else ele_type.rows
+                                col_str = 'randi({})'.format(rand_int_max) if ele_type.is_dynamic_col() else ele_type.cols
+                                # sizes = [self.symtable[parameter].size, row_str, col_str]
+                                test_content.append('        {} = {{}};'.format(parameter))
+                                test_content.append('        for i = 1:{}'.format(self.symtable[parameter].size))
+                                if ele_type.is_integer_element():
+                                    test_content.append('            {} = [{}; randi({}, {}, {})];'.format(parameter, parameter, rand_int_max, row_str, col_str))
+                                else:
+                                    test_content.append('            {} = [{}; randn({}, {})];'.format(parameter, parameter, row_str, col_str))
+                                test_content.append('        end')
                     elif ele_type.is_vector():
                         # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
                         # size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)
@@ -286,7 +300,15 @@ class CodeGenMatlab(CodeGen):
                             #size_str = '{}, {}'.format(self.symtable[parameter].size, ele_type.rows)
                             sizes = [self.symtable[parameter].size, ele_type.rows]
                         else:
-                            sizes = [self.symtable[parameter].size, 'randi({})'.format(rand_int_max)]
+                            if parameter not in test_generated_sym_set:
+                                test_content.append('        {} = {{}};'.format(parameter))
+                                test_content.append('        for i = 1:{}'.format(self.symtable[parameter].size))
+                                if ele_type.is_integer_element():
+                                    test_content.append('            {} = [{}; randi({}, randi({}))];'.format(parameter, parameter, rand_int_max, rand_int_max))
+                                else:
+                                    test_content.append('            {} = [{}; randn(randi({}))];'.format(parameter, parameter, rand_int_max))
+                                test_content.append('        end')
+                                # sizes = [self.symtable[parameter].size, 'randi({})'.format(rand_int_max)]
                     elif ele_type.is_scalar():
                         # Alec: is scalar? but then should
                         # self.symtable[parameter].size always be 1? What's
@@ -300,7 +322,7 @@ class CodeGenMatlab(CodeGen):
                     if isinstance(data_type, LaVarType):
                         if data_type.is_scalar() and data_type.is_int:
                             #type_declare.append('    {} = np.asarray({}, dtype=np.int)'.format(parameter, parameter))
-                            if parameter not in test_generated_sym_set:
+                            if parameter not in test_generated_sym_set and not ele_type.is_dynamic():
                                 test_content.append('        {} = {};'.format(parameter, self.randi_str(rand_int_max,sizes)))
                         elif ele_type.is_set():
                             test_content.append('        {} = {{}};'.format(parameter))
@@ -315,7 +337,7 @@ class CodeGenMatlab(CodeGen):
                             test_content.append('        end')
                         else:
                             #type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
-                            if parameter not in test_generated_sym_set:
+                            if parameter not in test_generated_sym_set and not ele_type.is_dynamic():
                                 test_content.append('        {} = {};'.format(parameter, self.randn_str(sizes)))
                     else:
                         if ele_type.is_function():
@@ -529,18 +551,18 @@ class CodeGenMatlab(CodeGen):
             sym_list = node.sym_dict[target_var[0]]
             sub_index = sym_list.index(sub)
             if sub_index == 0:
-                size_str = "size({}, 1)".format(target_var[0])
+                size_str = "{}, 1".format(target_var[0])
             elif sub_index == 1:
                 if self.symtable[target_var[0]].element_type.is_dynamic_row():
-                    size_str = "size({}({}), 1)".format(target_var[0], sym_list[0])
+                    size_str = "{}{{{}}}, 1".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
                 else:
                     size_str = "{}".format(self.symtable[target_var[0]].element_type.rows)
             else:
                 if self.symtable[target_var[0]].element_type.is_dynamic_col():
-                    size_str = "size({}({}), 2)".format(target_var[0], sym_list[0])
+                    size_str = "{}{{{}}}, 2".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
                 else:
                     size_str = "{}".format(self.symtable[target_var[0]].element_type.cols)
-            content.append("for {} = 1:size({},1)\n".format(sub, size_str))
+            content.append("for {} = 1:size({})\n".format(sub, size_str))
         else:
             content.append("for {} = 1:size({},1)\n".format(sub, self.convert_bound_symbol(target_var[0])))
         if exp_info.pre_list:   # catch pre_list
@@ -863,54 +885,50 @@ class CodeGenMatlab(CodeGen):
         # 
         # https://github.com/pressureless/linear_algebra/issues/34
         main_info = self.visit(node.main, **kwargs)
-        main_index_info = self.visit(node.main_index, **kwargs)
-        if node.main_index.la_type.index_type:
-            main_index_content = main_index_info.content
-        else:
-            main_index_content = "{}".format(main_index_info.content)
+        main_index_content = self.visit(node.main_index, **kwargs).content
         if node.slice_matrix:
             if node.row_index is not None:
-                row_info = self.visit(node.row_index, **kwargs)
-                if node.row_index.la_type.index_type:
-                    row_content = row_info.content
+                row_content = self.visit(node.row_index, **kwargs).content
+                if self.symtable[main_info.content].is_dynamic():
+                    content = "{}{{{}}}({}, :)".format(main_info.content, main_index_content, row_content)
                 else:
-                    row_content = "{}".format(row_info.content)
-                content = "{}({})({}, :)".format(main_info.content, main_index_content, row_content)
+                    content = "{}({})({}, :)".format(main_info.content, main_index_content, row_content)
             else:
-                col_info = self.visit(node.col_index, **kwargs)
-                if node.col_index.la_type.index_type:
-                    col_content = col_info.content
+                col_content = self.visit(node.col_index, **kwargs).content
+                if self.symtable[main_info.content].is_dynamic():
+                    content = "{}{{{}}}(:, {})".format(main_info.content, main_index_content, col_content)
                 else:
-                    col_content = "{}".format(col_info.content)
-                content = "{}({})(:, {})".format(main_info.content, main_index_content, col_content)
+                    content = "{}({})(:, {})".format(main_info.content, main_index_content, col_content)
         else:
             if node.row_index is not None:
-                row_info = self.visit(node.row_index, **kwargs)
-                if node.row_index.la_type.index_type:
-                    row_content = row_info.content
-                else:
-                    row_content = "{}".format(row_info.content)
+                row_content = self.visit(node.row_index, **kwargs).content
                 if node.col_index is not None:
-                    col_info = self.visit(node.col_index, **kwargs)
-                    if node.col_index.la_type.index_type:
-                        col_content = col_info.content
+                    col_content = self.visit(node.col_index, **kwargs).content
+                    if self.symtable[main_info.content].is_dynamic():
+                        content = "{}{{{}}}({},{})".format(main_info.content, main_index_content, row_content,
+                                                        col_content)
                     else:
-                        col_content = "{}".format(col_info.content)
-                    content = "{}({},{},{})".format(main_info.content, main_index_content, row_content,
-                                                     col_content)
+                        content = "{}({},{},{})".format(main_info.content, main_index_content, row_content,
+                                                         col_content)
                 else:
-                    content = "{}({},{})".format(main_info.content, main_index_content, row_content)
+                    if self.symtable[main_info.content].is_dynamic():
+                        content = "{}{{{}}}({})".format(main_info.content, main_index_content, row_content)
+                    else:
+                        content = "{}({},{})".format(main_info.content, main_index_content, row_content)
             else:
-                if node.la_type.is_vector():
-                    # This is ugly if we're visiting the lefthand side of an
-                    # equality expression
-                    content = "{}({},:)'".format(main_info.content, main_index_content)
-                elif node.la_type.is_matrix():
-                    content = "squeeze({}({},:,:))".format(main_info.content, main_index_content)
-                elif node.la_type.is_scalar():
-                    content = "{}({})".format(main_info.content, main_index_content)
-                else:
+                if self.symtable[main_info.content].is_dynamic():
                     content = "{}{{{}}}".format(main_info.content, main_index_content)
+                else:
+                    if node.la_type.is_vector():
+                        # This is ugly if we're visiting the lefthand side of an
+                        # equality expression
+                        content = "{}({},:)'".format(main_info.content, main_index_content)
+                    elif node.la_type.is_matrix():
+                        content = "squeeze({}({},:,:))".format(main_info.content, main_index_content)
+                    elif node.la_type.is_scalar():
+                        content = "{}({})".format(main_info.content, main_index_content)
+                    else:
+                        content = "{}{{{}}}".format(main_info.content, main_index_content)
         return CodeNodeInfo(content)
 
     def visit_seq_dim_index(self, node, **kwargs):
