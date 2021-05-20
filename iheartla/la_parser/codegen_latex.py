@@ -48,16 +48,22 @@ class CodeGenLatex(CodeGen):
 \end{document}
 '''[1:]
 
+    def convert_special_marks(self, name):
+        for mark in ['̃', '̂', '̄']:
+            if mark in name:
+                return "\\textit{{{}}}".format(name)
+        return "\\mathit{{{}}}".format(name)
+
     def convert_unicode(self, name):
         if '`' not in name:
-            return "\\mathit{{{}}}".format(name)
+            return self.convert_special_marks(name)
             # return name
         text = name.replace('`', '')
         special_list = ['_', '&', '^', '%', '$', '#', '{', '}']
         text = text.replace('\\', '\\textbackslash{}')
         for special in special_list:
             text = text.replace(special, '\\{}'.format(special))
-        value = "\\mathit{{{}}}".format(text)
+        value = "\\textit{{{}}}".format(text)
         return value
 
     def visit_id(self, node, **kwargs):
@@ -109,7 +115,7 @@ class CodeGenLatex(CodeGen):
             text = text.replace('\\', '\\textbackslash{}')
             for special in special_list:
                 text = text.replace(special, '\\{}'.format(special))
-            value = "\\mathit{{{}}}".format(text)
+            value = self.convert_special_marks(text)
         return value
 
     def visit_import(self, node, **kwargs):
