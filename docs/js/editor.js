@@ -273,4 +273,27 @@ function onEditIhla(e){
     }
 }
 
+// Set the contents of the code editor to a `code` parameter if present.
+function loadCodeFromURLParameter() {
+    const url = new URL(window.location.href);
+    const code = url.searchParams.get("code");
+    if( code !== null ) {
+        // If this is called after the ace editor is created, then we need
+        // to set the code a different way.
+        document.getElementById("editor").innerHTML = code;
+    }
+}
 
+function captureHotKeys() {
+    // https://stackoverflow.com/questions/93695/best-cross-browser-method-to-capture-ctrls-with-jquery
+    window.addEventListener( 'keydown', function(event) {
+        if (event.ctrlKey || event.metaKey) {
+            switch (String.fromCharCode(event.which).toLowerCase()) {
+            case 'r':
+                event.preventDefault();
+                clickCompile();
+                break;
+            }
+        }
+    });
+}

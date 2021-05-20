@@ -110,14 +110,8 @@ P ∈ ℝ^(4 × d)</pre>
 </body>
 
 <script>
-    // Set the contents of the code editor to a `code` parameter if present.
-    {
-        const url = new URL(window.location.href);
-        const code = url.searchParams.get("code");
-        if( code !== null ) {
-            document.getElementById("editor").innerHTML = code;
-        }
-    }
+    // We have to do this before creating the ace editor, or else call an ace function.
+    loadCodeFromURLParameter();
     
     initPyodide()
     showMsg(checkBrowserVer());
@@ -163,6 +157,8 @@ P ∈ ℝ^(4 × d)</pre>
             editor.setKeyboardHandler("ace/keyboard/"+this.id);
         }
     });
+    
+    captureHotKeys();
 </script>
 
 </html>
