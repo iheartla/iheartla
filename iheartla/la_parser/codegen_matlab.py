@@ -902,7 +902,10 @@ class CodeGenMatlab(CodeGen):
                         content = "{}({},{},{})".format(main_info.content, main_index_content, row_content,
                                                          col_content)
                 else:
-                    content = "{}({},{})".format(main_info.content, main_index_content, row_content)
+                    if self.symtable[main_info.content].is_dynamic():
+                        content = "{}{{{}}}({})".format(main_info.content, main_index_content, row_content)
+                    else:
+                        content = "{}({},{})".format(main_info.content, main_index_content, row_content)
             else:
                 if self.symtable[main_info.content].is_dynamic():
                     content = "{}{{{}}}".format(main_info.content, main_index_content)
