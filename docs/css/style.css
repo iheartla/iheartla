@@ -20,11 +20,8 @@ body {
 }
 #compile {
     background-color: #4CAF50; /* Green background */
-    border: none; /* Remove borders */
-    color: white; /* White text */
-    padding: 12px 16px; /* Some padding */
-    font-size: 16px; /* Set a font size */
-    width: 130px
+}
+#clipboard {
 }
 #msg {
     font-size: 16px /* Set a font size */
@@ -32,10 +29,10 @@ body {
 #output {
     border: 0px solid grey;
     width: 100%;
-    min-height: 300px;
-    font-size: 120%;
     box-sizing: border-box;
 }
 #keybinding {
-    padding-bottom: 1em;
+}
+.widgets {
+    margin-bottom: 1em;
 }

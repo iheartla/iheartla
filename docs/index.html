@@ -19,28 +19,12 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-sm">
-            <a>Keybindings:</a>
-            <div id="keybinding" class="btn-group" role="group" aria-label="Basic radio toggle button group">
-              <input type="radio" class="btn-check" name="btnradio" id="ace" autocomplete="off" checked>
-              <label class="btn btn-outline-primary" for="ace">Ace</label>
-
-              <input type="radio" class="btn-check" name="btnradio" id="vim" autocomplete="off">
-              <label class="btn btn-outline-primary" for="vim">Vim</label>
-
-              <input type="radio" class="btn-check" name="btnradio" id="emacs" autocomplete="off">
-              <label class="btn btn-outline-primary" for="emacs">Emacs</label>
-
-              <input type="radio" class="btn-check" name="btnradio" id="sublime" autocomplete="off">
-              <label class="btn btn-outline-primary" for="sublime">Sublime</label>
-
-              <input type="radio" class="btn-check" name="btnradio" id="vscode" autocomplete="off">
-              <label class="btn btn-outline-primary" for="vscode">VSCode</label>
-            </div>
-        </div>
-    </div>
+    
+    <!-- A column for the code editor and buttons -->
+    <div class="col-lg">
+    
     <div class="row">
-        <div class="col-lg">
+        <div class="col-sm">
             <pre id="editor">[ t^3 t^2 t 1 ] [ -1  3 -3  1
                    3 -6  3  0
                   -3  3  0  0
@@ -49,16 +33,65 @@ where
 t ∈ ℝ
 P ∈ ℝ^(4 × d)</pre>
         </div>
-        <div class="col-lg">
-            <button id="compile" class="btn btn-success" onclick="clickCompile()">
-                <i id="submit_icon" class="fa fa-refresh"></i> Compile
-            <!--  <i id="submit_icon" class="fa fa-refresh fa-spin"></i> Compile-->
-            </button>
-            <div id="msg" class="alert alert-primary" role="alert"></div>
+    </div>
+    
+    <!-- The message row -->
+    <div class="row">
+    <div class="col-sm">
+        <div id="msg" class="alert alert-primary" role="alert"></div>
+    </div>
+    </div>
+    
+    <!-- The buttons row -->
+    <div class="row widgets">
+    <div class="col-sm">
+        <button id="compile" class="btn btn-success" onclick="clickCompile()">
+            <i id="submit_icon" class="fa fa-refresh"></i> Compile
+        <!--  <i id="submit_icon" class="fa fa-refresh fa-spin"></i> Compile-->
+        </button>
+        <button id="clipboard" class="btn btn-primary" onclick="clickCopy()">
+            <!-- <i class="bi bi-clipboard"></i> -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+              <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+              <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+            </svg>
+            Copy as URL
+        </button>
+    </div>
+    </div>
+    
+    <!-- The keybindings row -->
+    <div class="row widgets">
+    <div class="col-sm" id="keybinding">
+        <a>Keybindings:</a>
+        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+          <input type="radio" class="btn-check" name="btnradio" id="ace" autocomplete="off" checked />
+          <label class="btn btn-outline-primary" for="ace">Ace</label>
+
+          <input type="radio" class="btn-check" name="btnradio" id="vim" autocomplete="off" />
+          <label class="btn btn-outline-primary" for="vim">Vim</label>
+
+          <input type="radio" class="btn-check" name="btnradio" id="emacs" autocomplete="off" />
+          <label class="btn btn-outline-primary" for="emacs">Emacs</label>
+
+          <input type="radio" class="btn-check" name="btnradio" id="sublime" autocomplete="off" />
+          <label class="btn btn-outline-primary" for="sublime">Sublime</label>
+
+          <input type="radio" class="btn-check" name="btnradio" id="vscode" autocomplete="off" />
+          <label class="btn btn-outline-primary" for="vscode">VSCode</label>
         </div>
-        <div class="col-lg">
-            <div id="output"></div>
-        </div>
+    </div>
+    </div>
+
+    <!-- Close the code editor and widgets column -->
+    </div>
+    
+    <!-- The MathJax output column -->
+    <div class="col-lg">
+        <div id="output"></div>
+    </div>
+    
+    <!-- Close the row containing the code editor and MathJax output -->
     </div>
 
     <div class="row">
@@ -77,6 +110,7 @@ P ∈ ℝ^(4 × d)</pre>
 </body>
 
 <script>
+    // Set the contents of the code editor to a `code` parameter if present.
     {
         const url = new URL(window.location.href);
         const code = url.searchParams.get("code");

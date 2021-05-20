@@ -212,6 +212,24 @@ function clickCompile(){
     }
 }
 
+function clickCopy() {
+    // Base the URL off the current one.
+    const url = new URL(window.location.href);
+    const source = editor.getValue();
+    url.searchParams.set( "code", source );
+    
+    navigator.clipboard.writeText( url.toString() ).then(function() {
+        /* clipboard successfully set */
+        showMsg( "Copied a shareable code URL to the clipboard." );
+    }, function() {
+        /* clipboard write failed */
+        showMsg( "Failed to copy to the clipboard." );
+    });
+    
+    
+    
+}
+
 function showMsg(msg, error=false){
     msg = msg.replaceAll('\n', '<br>')
     document.getElementById("msg").hidden = false;
