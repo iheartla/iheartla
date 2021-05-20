@@ -535,18 +535,18 @@ class CodeGenMatlab(CodeGen):
             sym_list = node.sym_dict[target_var[0]]
             sub_index = sym_list.index(sub)
             if sub_index == 0:
-                size_str = "size({}, 1)".format(target_var[0])
+                size_str = "{}, 1".format(target_var[0])
             elif sub_index == 1:
                 if self.symtable[target_var[0]].element_type.is_dynamic_row():
-                    size_str = "size({}({}), 1)".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
+                    size_str = "{}{{{}}}, 1".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
                 else:
                     size_str = "{}".format(self.symtable[target_var[0]].element_type.rows)
             else:
                 if self.symtable[target_var[0]].element_type.is_dynamic_col():
-                    size_str = "size({}({}), 2)".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
+                    size_str = "{}{{{}}}, 2".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
                 else:
                     size_str = "{}".format(self.symtable[target_var[0]].element_type.cols)
-            content.append("for {} = 1:size({},1)\n".format(sub, size_str))
+            content.append("for {} = 1:size({})\n".format(sub, size_str))
         else:
             content.append("for {} = 1:size({},1)\n".format(sub, self.convert_bound_symbol(target_var[0])))
         if exp_info.pre_list:   # catch pre_list
@@ -873,14 +873,14 @@ class CodeGenMatlab(CodeGen):
         if node.slice_matrix:
             if node.row_index is not None:
                 row_content = self.visit(node.row_index, **kwargs).content
-                if node.la_type.is_dynamic():
+                if self.symtable[main_info.content].is_dynamic():
                     content = "{}{{{}}}({}, :)".format(main_info.content, main_index_content, row_content)
                 else:
                     content = "{}({})({}, :)".format(main_info.content, main_index_content, row_content)
             else:
                 col_content = self.visit(node.col_index, **kwargs).content
-                if node.la_type.is_dynamic():
-                    content = "{}{{{}}}(:, {})".format(main_info.content, main_index_content, row_content)
+                if self.symtable[main_info.content].is_dynamic():
+                    content = "{}{{{}}}(:, {})".format(main_info.content, main_index_content, col_content)
                 else:
                     content = "{}({})(:, {})".format(main_info.content, main_index_content, col_content)
         else:
@@ -888,12 +888,16 @@ class CodeGenMatlab(CodeGen):
                 row_content = self.visit(node.row_index, **kwargs).content
                 if node.col_index is not None:
                     col_content = self.visit(node.col_index, **kwargs).content
-                    content = "{}({},{},{})".format(main_info.content, main_index_content, row_content,
-                                                     col_content)
+                    if self.symtable[main_info.content].is_dynamic():
+                        content = "{}{{{}}}({},{})".format(main_info.content, main_index_content, row_content,
+                                                        col_content)
+                    else:
+                        content = "{}({},{},{})".format(main_info.content, main_index_content, row_content,
+                                                         col_content)
                 else:
                     content = "{}({},{})".format(main_info.content, main_index_content, row_content)
             else:
-                if node.la_type.is_dynamic():
+                if self.symtable[main_info.content].is_dynamic():
                     content = "{}{{{}}}".format(main_info.content, main_index_content)
                 else:
                     if node.la_type.is_vector():

@@ -452,15 +452,15 @@ class CodeGenNumpy(CodeGen):
             sym_list = node.sym_dict[target_var[0]]
             sub_index = sym_list.index(sub)
             if sub_index == 0:
-                size_str = "len({})".format(target_var[0])
+                size_str = "len({})".format(self.convert_bound_symbol(target_var[0]))
             elif sub_index == 1:
                 if self.symtable[target_var[0]].element_type.is_dynamic_row():
-                    size_str = "{}[{}-1].shape[0]".format(target_var[0], sym_list[0])
+                    size_str = "{}[{}-1].shape[0]".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
                 else:
                     size_str = "{}".format(self.symtable[target_var[0]].element_type.rows)
             else:
                 if self.symtable[target_var[0]].element_type.is_dynamic_col():
-                    size_str = "{}[{}-1].shape[1]".format(target_var[0], sym_list[0])
+                    size_str = "{}[{}-1].shape[1]".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
                 else:
                     size_str = "{}".format(self.symtable[target_var[0]].element_type.cols)
             content.append("for {} in range(1, {}+1):\n".format(sub, size_str))
