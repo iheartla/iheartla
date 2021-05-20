@@ -160,15 +160,69 @@
 	</dict>
 	<dict>
 		<key>phrase</key>
+		<string>→</string>
+		<key>shortcut</key>
+		<string>-&gt;</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
+		<string>‖</string>
+		<key>shortcut</key>
+		<string>\|</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
 		<string>𝟙</string>
 		<key>shortcut</key>
 		<string>\1</string>
 	</dict>
 	<dict>
 		<key>phrase</key>
+		<string>ɑ</string>
+		<key>shortcut</key>
+		<string>\alpha</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
+		<string>̄</string>
+		<key>shortcut</key>
+		<string>\bar</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
+		<string>β</string>
+		<key>shortcut</key>
+		<string>\beta</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
 		<string>⋅</string>
 		<key>shortcut</key>
 		<string>\cdot</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
+		<string>Δ</string>
+		<key>shortcut</key>
+		<string>\delta</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
+		<string>ε</string>
+		<key>shortcut</key>
+		<string>\eps</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
+		<string>γ</string>
+		<key>shortcut</key>
+		<string>\gamma</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
+		<string>̂</string>
+		<key>shortcut</key>
+		<string>\hat</string>
 	</dict>
 	<dict>
 		<key>phrase</key>
@@ -184,15 +238,39 @@
 	</dict>
 	<dict>
 		<key>phrase</key>
+		<string>λ</string>
+		<key>shortcut</key>
+		<string>\lambda</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
 		<string>∇</string>
 		<key>shortcut</key>
 		<string>\nabla</string>
 	</dict>
 	<dict>
 		<key>phrase</key>
+		<string>≠</string>
+		<key>shortcut</key>
+		<string>\neq</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
+		<string>ɸ</string>
+		<key>shortcut</key>
+		<string>\phi</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
 		<string>ℝ</string>
 		<key>shortcut</key>
 		<string>\R</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
+		<string>ρ</string>
+		<key>shortcut</key>
+		<string>\rho</string>
 	</dict>
 	<dict>
 		<key>phrase</key>
@@ -205,6 +283,12 @@
 		<string>∑</string>
 		<key>shortcut</key>
 		<string>\sum</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
+		<string>θ</string>
+		<key>shortcut</key>
+		<string>\theta</string>
 	</dict>
 	<dict>
 		<key>phrase</key>
@@ -304,6 +388,12 @@
 	</dict>
 	<dict>
 		<key>phrase</key>
+		<string>←</string>
+		<key>shortcut</key>
+		<string>&lt;-</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
 		<string>≤</string>
 		<key>shortcut</key>
 		<string>&lt;=</string>
@@ -313,6 +403,12 @@
 		<string>⇔</string>
 		<key>shortcut</key>
 		<string>&lt;=&gt;</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
+		<string>⇒</string>
+		<key>shortcut</key>
+		<string>=&gt;</string>
 	</dict>
 	<dict>
 		<key>phrase</key>
@@ -421,6 +517,12 @@
 		<string>I❤️LA</string>
 		<key>shortcut</key>
 		<string>iheartla</string>
+	</dict>
+	<dict>
+		<key>phrase</key>
+		<string>I❤️LA</string>
+		<key>shortcut</key>
+		<string>IHLA</string>
 	</dict>
 	<dict>
 		<key>phrase</key>
