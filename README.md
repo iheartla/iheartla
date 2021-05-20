@@ -100,6 +100,6 @@ To use the code output for the various backends, you will need:
 
 ### Packaging a release
 
-To update the browser-based compiler, run `python3 setup.py sdist bdist_wheel` and then copy `dist/iheartla-0.0.1-py3-none-any.whl` to the `web` directory.
+To update the browser-based compiler, run `python3 setup.py sdist bdist_wheel` and then copy `dist/iheartla-0.0.1-py3-none-any.whl` to the `docs` directory.
 
 **macOS**: `pyinstaller iheartla.spec`. The output `iheartla.app` is placed into `dist/`. Whoever is packaging should run `la_local_parsers.py` at least once to generate the cached parsers for everyone to use. For example, `python la_local_parsers.py`.
