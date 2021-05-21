@@ -23,7 +23,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install iheartla dependencies
       - run: python --version
       - run: python -m pip install --upgrade pip
       - run: pip install setuptools wheel
