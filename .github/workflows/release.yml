@@ -1,4 +1,8 @@
 on:
+  workflow_dispatch:
+    inputs:
+      name:
+        required: false
   push:
     # Sequence of patterns matched against refs/tags
     tags:
@@ -19,14 +23,11 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install iheartla dependencies
-        run: |
-        python --version
-        python -m pip install --upgrade pip
-        pip install setuptools wheel
-        pip install -r requirements.txt
-        pyinstaller iheartla.spec
-        zip iheartla.app.zip ./dist/iheartla.app/ -r
+      - run: python --version
+      - run: python -m pip install --upgrade pip
+      - run: pip install setuptools wheel pyinstaller regex tatsu wxpython PyMuPDF sympy sympy appdirs
+      - run: pyinstaller iheartla.spec
+      - run: zip iheartla.app.zip ./dist/iheartla.app/ -r
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
