@@ -436,6 +436,7 @@ function setupSettingPanel(settingDiv, settingOpener, editor) {
             Scala:      "Scala"
         },
         theme: {
+            chalkboard:       "Chalkboard",
             clouds:           "Clouds",
             clouds_midnight:  "Clouds Midnight",
             cobalt:           "Cobalt",

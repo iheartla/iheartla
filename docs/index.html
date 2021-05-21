@@ -128,9 +128,7 @@ P ∈ ℝ^(4 × d)</pre>
     initBtnStatus();
     //
     let editor = ace.edit("editor");
-    // comments are easier to read in tomorrow_night than twilight
-    let theme = "ace/theme/tomorrow_night";
-    editor.setTheme(theme);
+    editor.setTheme("ace/theme/chalkboard");
     editor.session.setMode("ace/mode/iheartla");
     editor.session.on('change', onEditIhla);
     editor.setOptions({
@@ -140,6 +138,8 @@ P ∈ ℝ^(4 × d)</pre>
         minLines: 20
     });
 
+    // comments are easier to read in tomorrow_night than twilight
+    let theme = "ace/theme/tomorrow_night";
     let cpp = ace.edit("cpp");
     cpp.setTheme(theme);
     cpp.session.setMode("ace/mode/c_cpp");
