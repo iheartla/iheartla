@@ -6,20 +6,8 @@ body {
     width: 100%;
     height: 90%;
 }
-#cpp {
-    width: 100%;
-    height: 500px;
-}
-#python {
-    width: 100%;
-    height: 500px;
-}
-#latex {
-    width: 100%;
-    height: 500px;
-}
-#matlab {
-    width: 100%;
+#lang_output {
+    width: 50%;
     height: 500px;
 }
 #compile {
@@ -36,6 +24,8 @@ body {
     box-sizing: border-box;
 }
 #keybinding {
+}
+#languages {
 }
 .widgets {
     margin-bottom: 1em;

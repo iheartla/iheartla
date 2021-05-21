@@ -17,6 +17,7 @@ let unicode_dict = {'R': 'ℝ', 'Z': 'ℤ', 'x': '×', 'times': '×', 'inf': '�
                              'linner': '⟨', 'rinner':'⟩', 'num1': '𝟙',
                              'hat': '\u0302', 'bar': '\u0304'
                              }
+let code_result = []
 function checkBrowserVer(){
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
@@ -155,20 +156,16 @@ function convert(input) {
 
 function updateEditor(code) {
     showMsg('Compile succeeded');
-    var cpp = ace.edit("cpp");
-    cpp.session.setValue(code[1]);
-    var python = ace.edit("python");
-    python.session.setValue(code[0]);
-    var latex = ace.edit("latex");
-    latex.session.setValue(code[2]);
+    var output = ace.edit("lang_output");
+    output.session.setValue(code[1]);
     convert(code[3]);
-    var matlab = ace.edit("matlab");
-    matlab.session.setValue(code[4]);
+    code_result = code;
     // reset UI
     activateBtnStatus();
 }
 
 function updateError(err) {
+    code_result = [];
     showMsg(err, true);
     activateBtnStatus();
 }
