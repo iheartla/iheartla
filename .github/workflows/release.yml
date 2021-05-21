@@ -10,15 +10,21 @@ jobs:
   build:
     name: Upload Release Asset
     runs-on: macos-10.15
+    strategy:
+      matrix:
+        python-version: [3.7]
     steps:
       - uses: actions/checkout@v2
-      - run: brew install poetry
-      - run: brew install python@3.8
-      - run: poetry env use $(brew --prefix)/opt/python@3.8/bin/python3
-      - run: poetry run python3 --version
-      - run: poetry run pip install --upgrade pip setuptools wheel
-      - run: poetry install --no-root --no-dev
-      - run: poetry run pyinstaller iheartla.spec
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install iheartla dependencies
+      - run: python --version
+      - run: python -m pip install --upgrade pip
+      - run: pip install setuptools wheel
+      - run: pip install -r requirements.txt
+      - run: pyinstaller iheartla.spec
       - run: zip iheartla.app.zip ./dist/iheartla.app/ -r
       - name: Create Release
         id: create_release
