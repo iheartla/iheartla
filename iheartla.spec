@@ -46,7 +46,7 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          console=False , icon='docs/icon/icon.icns')
+          console=False , icon='extras/icon/icon.icns')
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
@@ -57,7 +57,7 @@ coll = COLLECT(exe,
                name='iheartla')
 app = BUNDLE(coll,
              name='iheartla.app',
-             icon='docs/icon/icon.icns',
+             icon='extras/icon/icon.icns',
              bundle_identifier=None,
              info_plist={'NSHighResolutionCapable': 'True'}
              )
