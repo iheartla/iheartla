@@ -40,3 +40,8 @@ body {
 .widgets {
     margin-bottom: 1em;
 }
+
+div#msg .alert{
+  font-family: Consolas,monospace;
+  font-size: 0.8em;
+}
