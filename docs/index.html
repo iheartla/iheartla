@@ -165,33 +165,30 @@ P ∈ ℝ^(4 × d)</pre>
         cur_editor.setOptions({
             readOnly: true,
         });
-        switch(this.id) {
-          case 'cpp_output':
-              cur_editor.session.setMode("ace/mode/c_cpp");
-              if (code_result.length > 0){
+        if (code_result.length > 0){
+            switch(this.id) {
+              case 'cpp_output':
+                  cur_editor.session.setMode("ace/mode/c_cpp");
                   cur_editor.setValue(code_result[1]);
-              }
-              break;
-          case 'python_output':
-              cur_editor.session.setMode("ace/mode/python");
-              if (code_result.length > 0){
+                  break;
+              case 'python_output':
+                  cur_editor.session.setMode("ace/mode/python");
                   cur_editor.setValue(code_result[0]);
-              }
-              break;
-          case 'matlab_output':
-              cur_editor.session.setMode("ace/mode/matlab");
-              if (code_result.length > 0){
+                  break;
+              case 'matlab_output':
+                  cur_editor.session.setMode("ace/mode/matlab");
                   cur_editor.setValue(code_result[4]);
-              }
-              break;
-          case 'latex_output':
-              cur_editor.session.setMode("ace/mode/latex");
-              if (code_result.length > 0){
+                  break;
+              case 'latex_output':
+                  cur_editor.session.setMode("ace/mode/latex");
                   cur_editor.setValue(code_result[2]);
-              }
-              break;
-          default:
-              break;
+                  break;
+              default:
+                  break;
+            }
+        }
+        else{
+            cur_editor.setValue('');
         }
         cur_editor.clearSelection();
     });

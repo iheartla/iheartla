@@ -162,6 +162,29 @@ function updateEditor(code) {
     code_result = code;
     // reset UI
     activateBtnStatus();
+
+    this.updateOutput();
+}
+
+function updateOutput(){
+    let cur_editor = ace.edit("lang_output");
+    cur_editor.setTheme("ace/theme/twilight");
+    cur_editor.setOptions({
+        readOnly: true,
+    });
+    if (document.getElementById("cpp_output").checked){
+        cur_editor.setValue(code_result[1]);
+    }
+    else if (document.getElementById("python_output").checked){
+        cur_editor.setValue(code_result[0]);
+    }
+    else if (document.getElementById("matlab_output").checked){
+        cur_editor.setValue(code_result[4]);
+    }
+    else if (document.getElementById("latex_output").checked){
+        cur_editor.setValue(code_result[2]);
+    }
+    cur_editor.clearSelection();
 }
 
 function updateError(err) {
