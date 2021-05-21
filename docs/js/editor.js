@@ -17,7 +17,6 @@ let unicode_dict = {'R': 'ℝ', 'Z': 'ℤ', 'x': '×', 'times': '×', 'inf': '�
                              'linner': '⟨', 'rinner':'⟩', 'num1': '𝟙',
                              'hat': '\u0302', 'bar': '\u0304'
                              }
-let code_result = []
 function checkBrowserVer(){
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
@@ -78,7 +77,6 @@ function checkBrowserVer(){
         fullVersion  = ''+parseFloat(navigator.appVersion);
         majorVersion = parseInt(navigator.appVersion,10);
     }
-    
     let result = false;
     if (validBrowser){
         result = true;
@@ -88,8 +86,7 @@ function checkBrowserVer(){
         msg = "You are using " + browserName + ". Please use Chrome or Firefox.";
     }
     console.log(msg);
-    
-    
+
     // Also check for a secure context.
     // UPDATE: This isn't needed.
     /*
@@ -99,7 +96,7 @@ function checkBrowserVer(){
         console.log(msg);
     }
     */
-    
+
     // Make sure we're not running from a file: URL (if the user double-clicked index.html)
     // Source: https://stackoverflow.com/questions/3920892/how-to-detect-if-a-web-page-is-running-from-a-website-or-local-file-system
     /// It turns out we don't need a secure context.
@@ -110,7 +107,7 @@ function checkBrowserVer(){
         msg = "Please run via a local webserver. Try `python3 -m http.server` and then browse to 'http://localhost:8000/'."
         console.log(msg);
     }
-    
+
     return [ result, msg ];
 }
 
@@ -182,39 +179,20 @@ function convert(input) {
 
 function updateEditor(code) {
     showMsg('Compile succeeded');
-    var output = ace.edit("lang_output");
-    output.session.setValue(code[1]);
+    var cpp = ace.edit("cpp");
+    cpp.session.setValue(code[1]);
+    var python = ace.edit("python");
+    python.session.setValue(code[0]);
+    var latex = ace.edit("latex");
+    latex.session.setValue(code[2]);
     convert(code[3]);
-    code_result = code;
+    var matlab = ace.edit("matlab");
+    matlab.session.setValue(code[4]);
     // reset UI
     activateBtnStatus();
-
-    this.updateOutput();
-}
-
-function updateOutput(){
-    let cur_editor = ace.edit("lang_output");
-    cur_editor.setTheme("ace/theme/twilight");
-    cur_editor.setOptions({
-        readOnly: true,
-    });
-    if (document.getElementById("cpp_output").checked){
-        cur_editor.setValue(code_result[1]);
-    }
-    else if (document.getElementById("python_output").checked){
-        cur_editor.setValue(code_result[0]);
-    }
-    else if (document.getElementById("matlab_output").checked){
-        cur_editor.setValue(code_result[4]);
-    }
-    else if (document.getElementById("latex_output").checked){
-        cur_editor.setValue(code_result[2]);
-    }
-    cur_editor.clearSelection();
 }
 
 function updateError(err) {
-    code_result = [];
     showMsg(err, true);
     activateBtnStatus();
 }
@@ -280,11 +258,10 @@ function clickCopy() {
 
 function showMsg(msg, error=false){
     msg = msg.replaceAll('\n', '<br>')
-    
     let el = document.getElementById("msg");
     el.hidden = false;
     el.innerHTML = msg;
-    
+
     // Alert types: https://getbootstrap.com/docs/4.0/components/alerts/
     // Edit class: https://stackoverflow.com/questions/195951/how-can-i-change-an-elements-class-with-javascript
     el.classList.remove('alert-primary');

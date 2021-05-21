@@ -18,31 +18,6 @@
 <body>
 
 <div class="container">
-
-    <!-- The keybindings row -->
-    <div class="row widgets">
-    <div class="col-sm" id="keybinding">
-        <a>Keybindings:</a>
-        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-          <input type="radio" class="btn-check" name="btnradio" id="ace" autocomplete="off" checked />
-          <label class="btn btn-outline-primary" for="ace">Ace</label>
-
-          <input type="radio" class="btn-check" name="btnradio" id="vim" autocomplete="off" />
-          <label class="btn btn-outline-primary" for="vim">Vim</label>
-
-          <input type="radio" class="btn-check" name="btnradio" id="emacs" autocomplete="off" />
-          <label class="btn btn-outline-primary" for="emacs">Emacs</label>
-
-          <input type="radio" class="btn-check" name="btnradio" id="sublime" autocomplete="off" />
-          <label class="btn btn-outline-primary" for="sublime">Sublime</label>
-
-          <input type="radio" class="btn-check" name="btnradio" id="vscode" autocomplete="off" />
-          <label class="btn btn-outline-primary" for="vscode">VSCode</label>
-        </div>
-    </div>
-    </div>
-
-
     <div class="row">
     
     <!-- A column for the code editor and buttons -->
@@ -84,6 +59,29 @@ P ∈ ℝ^(4 × d)</pre>
         </button>
     </div>
     </div>
+    
+    <!-- The keybindings row -->
+    <div class="row widgets">
+    <div class="col-sm" id="keybinding">
+        <a>Keybindings:</a>
+        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+          <input type="radio" class="btn-check" name="btnradio" id="ace" autocomplete="off" checked />
+          <label class="btn btn-outline-primary" for="ace">Ace</label>
+
+          <input type="radio" class="btn-check" name="btnradio" id="vim" autocomplete="off" />
+          <label class="btn btn-outline-primary" for="vim">Vim</label>
+
+          <input type="radio" class="btn-check" name="btnradio" id="emacs" autocomplete="off" />
+          <label class="btn btn-outline-primary" for="emacs">Emacs</label>
+
+          <input type="radio" class="btn-check" name="btnradio" id="sublime" autocomplete="off" />
+          <label class="btn btn-outline-primary" for="sublime">Sublime</label>
+
+          <input type="radio" class="btn-check" name="btnradio" id="vscode" autocomplete="off" />
+          <label class="btn btn-outline-primary" for="vscode">VSCode</label>
+        </div>
+    </div>
+    </div>
 
     <!-- Close the code editor and widgets column -->
     </div>
@@ -96,28 +94,18 @@ P ∈ ℝ^(4 × d)</pre>
     <!-- Close the row containing the code editor and MathJax output -->
     </div>
 
-    <div class="row widgets">
-         <div class="col-sm" id="languages">
-            <a>Output languages:</a>
-            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-              <input type="radio" class="btn-check" name="btnradio1" id="cpp_output" autocomplete="off" checked />
-              <label class="btn btn-outline-primary" for="cpp_output">C++</label>
-
-              <input type="radio" class="btn-check" name="btnradio1" id="python_output" autocomplete="off" />
-              <label class="btn btn-outline-primary" for="python_output">Python</label>
-
-              <input type="radio" class="btn-check" name="btnradio1" id="matlab_output" autocomplete="off" />
-              <label class="btn btn-outline-primary" for="matlab_output">MATLAB</label>
-
-              <input type="radio" class="btn-check" name="btnradio1" id="latex_output" autocomplete="off" />
-              <label class="btn btn-outline-primary" for="latex_output">Latex</label>
-            </div>
-        </div>
-    </div>
-
     <div class="row">
         <div class="col-lg">
-            <pre id="lang_output">Output language</pre>
+            <pre id="cpp">Cpp</pre>
+        </div>
+        <div class="col-lg">
+            <pre id="python">Python</pre>
+        </div>
+        <div class="col-lg">
+            <pre id="matlab">MATLAB</pre>
+        </div>
+        <div class="col-lg">
+            <pre id="latex">Latex</pre>
         </div>
     </div>
 </div>
@@ -144,10 +132,31 @@ P ∈ ℝ^(4 × d)</pre>
         minLines: 20
     });
 
-    let cur_editor = ace.edit("lang_output");
-    cur_editor.setTheme("ace/theme/twilight");
-    cur_editor.session.setMode("ace/mode/c_cpp");
-    cur_editor.setOptions({
+    let cpp = ace.edit("cpp");
+    cpp.setTheme("ace/theme/twilight");
+    cpp.session.setMode("ace/mode/c_cpp");
+    cpp.setOptions({
+        readOnly: true,
+    });
+
+    let python = ace.edit("python");
+    python.setTheme("ace/theme/twilight");
+    python.session.setMode("ace/mode/python");
+    python.setOptions({
+        readOnly: true,
+    });
+
+    let latex = ace.edit("latex");
+    latex.setTheme("ace/theme/twilight");
+    latex.session.setMode("ace/mode/latex");
+    latex.setOptions({
+        readOnly: true,
+    });
+
+    let matlab = ace.edit("matlab");
+    matlab.setTheme("ace/theme/twilight");
+    matlab.session.setMode("ace/mode/matlab");
+    matlab.setOptions({
         readOnly: true,
     });
 
@@ -158,40 +167,6 @@ P ∈ ℝ^(4 × d)</pre>
         else{
             editor.setKeyboardHandler("ace/keyboard/"+this.id);
         }
-    });
-
-    $('#languages input').click(function() {
-        let cur_editor = ace.edit("lang_output");
-        cur_editor.setTheme("ace/theme/twilight");
-        cur_editor.setOptions({
-            readOnly: true,
-        });
-        if (code_result.length > 0){
-            switch(this.id) {
-              case 'cpp_output':
-                  cur_editor.session.setMode("ace/mode/c_cpp");
-                  cur_editor.setValue(code_result[1]);
-                  break;
-              case 'python_output':
-                  cur_editor.session.setMode("ace/mode/python");
-                  cur_editor.setValue(code_result[0]);
-                  break;
-              case 'matlab_output':
-                  cur_editor.session.setMode("ace/mode/matlab");
-                  cur_editor.setValue(code_result[4]);
-                  break;
-              case 'latex_output':
-                  cur_editor.session.setMode("ace/mode/latex");
-                  cur_editor.setValue(code_result[2]);
-                  break;
-              default:
-                  break;
-            }
-        }
-        else{
-            cur_editor.setValue('');
-        }
-        cur_editor.clearSelection();
     });
     
     captureHotKeys();
