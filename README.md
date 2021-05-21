@@ -56,7 +56,7 @@ You can also run as a command-line compiler:
 
 ## Installing
 
-You can find releases on the GitHub [release page](https://github.com/pressureless/linear_algebra/releases). The following instructions are for running from source.
+You can find releases on the GitHub [release page](https://github.com/iheartla/iheartla/releases). The following instructions are for running from source.
 
 I❤️LA depends on Python 3.x and several modules. You can install the modules via `pip`:
 
@@ -93,6 +93,7 @@ To use the code output for the various backends, you will need:
 * Python: NumPy and SciPy
 * MATLAB: MATLAB or Octave
 * C++: Eigen. Compilation differs on different platforms. On macOS with Homebrew eigen: `c++ -I/usr/local/eigen3 output.cpp -o output`
+* MATLAB: MATLAB or (untested) Octave
 
 ### Unicode Fonts
 
@@ -102,4 +103,4 @@ To use the code output for the various backends, you will need:
 
 To update the browser-based compiler, run `python3 setup.py sdist bdist_wheel` and then copy `dist/iheartla-0.0.1-py3-none-any.whl` to the `docs` directory.
 
-**macOS**: `pyinstaller iheartla.spec`. The output `iheartla.app` is placed into `dist/`. Whoever is packaging should run `la_local_parsers.py` at least once to generate the cached parsers for everyone to use. For example, `python la_local_parsers.py`.
+**macOS**: `pyinstaller iheartla.spec`. The output `iheartla.app` is placed into `dist/`. Whoever is packaging should run `python3 app.py --regenerate-grammar` at least once.
