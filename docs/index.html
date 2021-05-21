@@ -4,7 +4,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Editor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="./src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -13,11 +12,16 @@
     <script type="text/javascript" src='js/editor.js'></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/pyodide/v0.17.0/full/pyodide.js"></script>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
 <div class="container">
+  <h1>I❤️LA In-Browser Compiler 
+    | <a href=https://github.com/iheartla/iheartla>Code</a>
+    | <a href=https://github.com/iheartla/iheartla/wiki>Wiki</a>
+  </h1>
     <div class="row">
     
     <!-- A column for the code editor and buttons -->
@@ -80,6 +84,8 @@ P ∈ ℝ^(4 × d)</pre>
           <input type="radio" class="btn-check" name="btnradio" id="vscode" autocomplete="off" />
           <label class="btn btn-outline-primary" for="vscode">VSCode</label>
         </div>
+        <div><a target="_blank" href=https://github.com/iheartla/iheartla/wiki/Keywords-And-Special-Symbols#special-symbols>Special Symbol Shortcuts</a>,
+             <a target="_blank" href=https://github.com/iheartla/iheartla/wiki/Operators>Operators</a></div>
     </div>
     </div>
 
@@ -96,16 +102,16 @@ P ∈ ℝ^(4 × d)</pre>
 
     <div class="row">
         <div class="col-lg">
-            <pre id="cpp">Cpp</pre>
+            <pre id="cpp">/* C++ with Eigen */</pre>
         </div>
         <div class="col-lg">
-            <pre id="python">Python</pre>
+            <pre id="python"># Python with numpy and scipy</pre>
         </div>
         <div class="col-lg">
-            <pre id="matlab">MATLAB</pre>
+            <pre id="matlab">% MATLAB</pre>
         </div>
         <div class="col-lg">
-            <pre id="latex">Latex</pre>
+            <pre id="latex">% LaTeX</pre>
         </div>
     </div>
 </div>
@@ -122,7 +128,9 @@ P ∈ ℝ^(4 × d)</pre>
     initBtnStatus();
     //
     let editor = ace.edit("editor");
-    editor.setTheme("ace/theme/twilight");
+    // comments are easier to read in tomorrow_night than twilight
+    let theme = "ace/theme/tomorrow_night";
+    editor.setTheme(theme);
     editor.session.setMode("ace/mode/iheartla");
     editor.session.on('change', onEditIhla);
     editor.setOptions({
@@ -133,28 +141,28 @@ P ∈ ℝ^(4 × d)</pre>
     });
 
     let cpp = ace.edit("cpp");
-    cpp.setTheme("ace/theme/twilight");
+    cpp.setTheme(theme);
     cpp.session.setMode("ace/mode/c_cpp");
     cpp.setOptions({
         readOnly: true,
     });
 
     let python = ace.edit("python");
-    python.setTheme("ace/theme/twilight");
+    python.setTheme(theme);
     python.session.setMode("ace/mode/python");
     python.setOptions({
         readOnly: true,
     });
 
     let latex = ace.edit("latex");
-    latex.setTheme("ace/theme/twilight");
+    latex.setTheme(theme);
     latex.session.setMode("ace/mode/latex");
     latex.setOptions({
         readOnly: true,
     });
 
     let matlab = ace.edit("matlab");
-    matlab.setTheme("ace/theme/twilight");
+    matlab.setTheme(theme);
     matlab.session.setMode("ace/mode/matlab");
     matlab.setOptions({
         readOnly: true,

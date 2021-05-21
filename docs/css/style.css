@@ -1,6 +1,6 @@
 body {
     /* overflow: hidden; */
-    padding-top: 20px;
+    padding-top: 10px;
 }
 #editor {
     width: 100%;
@@ -44,4 +44,10 @@ body {
 div#msg .alert{
   font-family: Consolas,monospace;
   font-size: 0.8em;
+}
+
+h1
+{
+  font-size: 1.5em;
+  text-align: center;
 }
