@@ -129,7 +129,8 @@ P ∈ ℝ^(4 × d)</pre>
     loadCodeFromURLParameter();
     
     initPyodide()
-    showMsg(checkBrowserVer());
+    const [ validBrowser, validBrowserMessage ] = checkBrowserVer();
+    showMsg( validBrowserMessage, !validBrowser );
     initBtnStatus();
     //
     let editor = ace.edit("editor");

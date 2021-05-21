@@ -78,14 +78,40 @@ function checkBrowserVer(){
         fullVersion  = ''+parseFloat(navigator.appVersion);
         majorVersion = parseInt(navigator.appVersion,10);
     }
+    
+    let result = false;
     if (validBrowser){
+        result = true;
         msg = "Valid browser!";
     }
     else{
-        msg = "You are using " + browserName + ", please use Chrome or Firefox!";
+        msg = "You are using " + browserName + ". Please use Chrome or Firefox.";
     }
     console.log(msg);
-    return msg;
+    
+    
+    // Also check for a secure context.
+    // UPDATE: This isn't needed.
+    /*
+    if( !window.isSecureContext ) {
+        result = false;
+        msg = "This is not a secure context. You must use 'https://' or 'http://localhost'."
+        console.log(msg);
+    }
+    */
+    
+    // Make sure we're not running from a file: URL (if the user double-clicked index.html)
+    // Source: https://stackoverflow.com/questions/3920892/how-to-detect-if-a-web-page-is-running-from-a-website-or-local-file-system
+    /// It turns out we don't need a secure context.
+    // if( !window.isSecureContext ) {
+    /// But a file: URL won't work.
+    if( window.location.protocol === "file:" ) {
+        result = false;
+        msg = "Please run via a local webserver. Try `python3 -m http.server` and then browse to 'http://localhost:8000/'."
+        console.log(msg);
+    }
+    
+    return [ result, msg ];
 }
 
 function isChrome(){
@@ -254,10 +280,20 @@ function clickCopy() {
 
 function showMsg(msg, error=false){
     msg = msg.replaceAll('\n', '<br>')
-    document.getElementById("msg").hidden = false;
-    document.getElementById("msg").innerHTML = msg;
-    if(!error) {
+    
+    let el = document.getElementById("msg");
+    el.hidden = false;
+    el.innerHTML = msg;
+    
+    // Alert types: https://getbootstrap.com/docs/4.0/components/alerts/
+    // Edit class: https://stackoverflow.com/questions/195951/how-can-i-change-an-elements-class-with-javascript
+    el.classList.remove('alert-primary');
+    el.classList.remove('alert-danger');
+    if(error) {
+        el.classList.add('alert-danger');
+    } else {
         // notice, auto hide
+        el.classList.add('alert-primary');
         setTimeout(hideMsg, 2000);
     }
 }
