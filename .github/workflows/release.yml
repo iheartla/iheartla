@@ -1,5 +1,8 @@
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      name:
+        required: false
   push:
     # Sequence of patterns matched against refs/tags
     tags:
