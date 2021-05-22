@@ -1328,7 +1328,10 @@ class CodeGenEigen(CodeGen):
         pre_list = left_info.pre_list + right_info.pre_list
         sparse = node.la_type.sparse
         node.la_type.sparse = False
-        pre_list.append("    {} {};\n".format(self.get_ctype(node.la_type), kronecker))
+        if node.la_type.is_dim_constant():
+            pre_list.append("    {} {};\n".format(self.get_ctype(node.la_type), kronecker))
+        else:
+            pre_list.append("    {} {}({}, {});\n".format(self.get_ctype(node.la_type), kronecker, node.la_type.rows, node.la_type.cols))
         node.la_type.sparse = sparse
         pre_list.append("    for( int {}=0; {}<{}; {}++){{\n".format(index_i, index_i, node.left.la_type.rows, index_i))
         pre_list.append("        for( int {}=0; {}<{}; {}++){{\n".format(index_j, index_j, node.left.la_type.cols, index_j))
@@ -1336,7 +1339,7 @@ class CodeGenEigen(CodeGen):
             left_index_content = "({}).coeff({}, {})".format(left_info.content, index_i, index_j)
         else:
             left_index_content = "({})({}, {})".format(left_info.content, index_i, index_j)
-        pre_list.append("            {}.block({}*{},{}*{},{},{}) = {}*({});\n".format(kronecker, index_i, node.left.la_type.rows, index_j, node.left.la_type.cols,
+        pre_list.append("            {}.block({}*{},{}*{},{},{}) = {}*({});\n".format(kronecker, index_i, node.right.la_type.rows, index_j, node.right.la_type.cols,
                                                                                            node.right.la_type.rows, node.right.la_type.cols,
                                                                                          left_index_content, right_info.content))
         pre_list.append("        }\n")
