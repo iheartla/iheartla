@@ -3,7 +3,7 @@ import sys
 import importlib
 from importlib import reload
 sys.path.append('./')
-from iheartla.la_parser.parser import parse_la, ParserTypeEnum
+from iheartla.la_parser.parser import parse_la, ParserTypeEnum, compile_la_content
 import subprocess
 from time import sleep
 import numpy as np
@@ -37,21 +37,19 @@ class BasePythonTest(unittest.TestCase):
     def gen_func_info(self, parse_str):
         func_name = "myExpression"   # can use different name in future
         # Numpy
-        parse_type = ParserTypeEnum.NUMPY
-        content = parse_la(parse_str, parse_type)
+        results = compile_la_content(parse_str, ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN)
         module_name = 'test.generated_code{}'.format(BasePythonTest.cnt)
         file_name = 'test/generated_code{}.py'.format(BasePythonTest.cnt)
         try:
             file = open(file_name, 'w')
-            file.write(content)
+            file.write(results[0])
             file.close()
         except IOError:
             print("IO Error!")
         module = importlib.import_module(module_name)
         subprocess.run(["rm", file_name], capture_output=False)
         # Eigen
-        parse_type = ParserTypeEnum.EIGEN
-        content = parse_la(parse_str, parse_type)
+        content = results[1]
         # add namespace
         namespace = "eigen_code{}".format(BasePythonTest.cnt)
         pos = content.rfind("#include")
