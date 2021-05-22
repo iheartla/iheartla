@@ -1,6 +1,6 @@
 import sys
 sys.path.append('./')
-from test.base_python_test import BasePythonTest, eigen_path
+from test.base_python_test import *
 import numpy as np
 import cppyy
 cppyy.add_include_path(eigen_path)
@@ -52,6 +52,10 @@ class TestExpr(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(mat_func(3, 2)['c'], 6)
 
     def test_multiplication_1(self):
         # star
@@ -97,7 +101,7 @@ class TestExpr(BasePythonTest):
 
     def test_solver(self):
         # matrix
-        la_str = """y = A \ C 
+        la_str = """y = A \ C
         where
         A: ℝ ^ (2 × 2): a matrix
         C: ℝ ^ (2 × 2): a matrix """

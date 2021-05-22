@@ -8,6 +8,7 @@ import regex as re
 
 DEBUG_MODE = False
 DEBUG_PARSER = False  # used for new grammer files
+TEST_MATLAB = False   # used for running tests for MATLAB
 class ParserTypeEnum(IntFlag):
     INVALID = 0
     DEFAULT = 15
