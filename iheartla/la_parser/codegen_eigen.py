@@ -1445,6 +1445,9 @@ class CodeGenEigen(CodeGen):
                 content = "({}).inverse()".format(params_content)
         return CodeNodeInfo(content, pre_list=pre_list)
 
+    def visit_fraction(self, node, **kwargs):
+        return CodeNodeInfo("({}/double({}))".format(node.numerator, node.denominator))
+
     def visit_constant(self, node, **kwargs):
         content = ''
         if node.c_type == ConstantType.ConstantPi:

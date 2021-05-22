@@ -18,9 +18,14 @@ double::Double
     | f:floating_point
     ;
 
+fraction::Fraction
+    = value:/[\u00BC-\u00BE\u2150-\u215E]/
+    ;
+
 number
     =
     | double
+    | fraction
     | integer
     ;
 """

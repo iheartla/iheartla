@@ -553,6 +553,12 @@ class TypeWalker(NodeWalker):
         number_dict = {'₀':0,'₁':1,'₂':2, '₃':3,'₄':4,'₅':5,'₆':6,'₇':7,'₈':8,'₉':9 }
         return number_dict[unicode]
 
+    def get_unicode_fraction(self, unicode):
+        fraction_dict = {'¼':[1,4],'½':[1,2],'¾':[3,4],'⅐':[1,7],'⅑':[1,9],'⅒':[1,10],'⅓':[1,3],'⅔':[2,3],
+                       '⅕':[1,5],'⅖':[2,5],'⅗':[3,5],'⅘':[4,5],'⅙':[1,6],'⅚':[5,6],'⅛':[1,8],'⅜':[3,8],'⅝':[5,8],
+                       '⅞':[7,8]}
+        return fraction_dict[unicode]
+
     def walk_FunctionType(self, node, **kwargs):
         ir_node = FunctionTypeNode(parse_info=node.parseinfo)
         ir_node.empty = node.empty
@@ -1789,6 +1795,14 @@ class TypeWalker(NodeWalker):
         #
         ir_node = DoubleNode(parse_info=node.parseinfo)
         ir_node.value = node_value
+        ir_node.la_type = node_info.la_type
+        node_info.ir = ir_node
+        return node_info
+
+    def walk_Fraction(self, node, **kwargs):
+        frac_list = self.get_unicode_fraction(node.value)
+        node_info = NodeInfo(ScalarType(), content=node.text)
+        ir_node = FractionNode(node.parseinfo, node.value, frac_list[0], frac_list[1])
         ir_node.la_type = node_info.la_type
         node_info.ir = ir_node
         return node_info

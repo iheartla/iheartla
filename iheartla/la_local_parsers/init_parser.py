@@ -478,11 +478,22 @@ class grammarinitParser(Parser):
             []
         )
 
+    @tatsumasu('Fraction')
+    def _fraction_(self):  # noqa
+        self._pattern('[\\u00BC-\\u00BE\\u2150-\\u215E]')
+        self.name_last_node('value')
+        self.ast._define(
+            ['value'],
+            []
+        )
+
     @tatsumasu()
     def _number_(self):  # noqa
         with self._choice():
             with self._option():
                 self._double_()
+            with self._option():
+                self._fraction_()
             with self._option():
                 self._integer_()
             self._error('no available options')
@@ -4639,6 +4650,9 @@ class grammarinitSemantics(object):
     def double(self, ast):  # noqa
         return ast
 
+    def fraction(self, ast):  # noqa
+        return ast
+
     def number(self, ast):  # noqa
         return ast
 
@@ -5141,6 +5155,10 @@ class Double(ModelBase):
     exp = None
     f = None
     i = None
+
+
+class Fraction(ModelBase):
+    value = None
 
 
 class Add(ModelBase):

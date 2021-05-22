@@ -97,6 +97,9 @@ class CodeGenLatex(CodeGen):
     def visit_double(self, node):
         return str(node.value)
 
+    def visit_fraction(self, node, **kwargs):
+        return str(node.unicode)
+
     def visit_integer(self, node):
         return str(node.value)
 

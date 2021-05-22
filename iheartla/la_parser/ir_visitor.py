@@ -198,6 +198,7 @@ class IRVisitor(object):
             # base
             IRNodeType.Id: "visit_id",
             IRNodeType.Double: "visit_double",
+            IRNodeType.Fraction: "visit_fraction",
             IRNodeType.Integer: "visit_integer",
             IRNodeType.Factor: "visit_factor",
             IRNodeType.Expression: "visit_expression",
@@ -477,6 +478,9 @@ class IRVisitor(object):
     def visit_double(self, node, **kwargs):
         content = str(node.value)
         return CodeNodeInfo(content)
+
+    def visit_fraction(self, node, **kwargs):
+        return CodeNodeInfo("({}/{})".format(node.numerator, node.denominator))
 
     def visit_integer(self, node, **kwargs):
         content = str(node.value)

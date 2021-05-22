@@ -13,6 +13,7 @@ class IRNodeType(Enum):
     Subexpression = 5
     Constant = 6
     Cast = 7
+    Fraction = 8
     # control
     Start = 50
     Block = 51
@@ -918,6 +919,14 @@ class DoubleNode(ExprNode):
     def __init__(self, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Double, parse_info=parse_info, raw_text=raw_text)
         self.value = None
+
+
+class FractionNode(ExprNode):
+    def __init__(self, parse_info=None, raw_text=None, numerator=None, denominator=None):
+        super().__init__(IRNodeType.Fraction, parse_info=parse_info, raw_text=raw_text)
+        self.denominator = denominator
+        self.numerator = numerator
+        self.unicode = raw_text
 
 
 class IntegerNode(ExprNode):
