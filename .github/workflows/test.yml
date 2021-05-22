@@ -1,6 +1,5 @@
 on:
   workflow_dispatch:
-  push:
 
 name: Run test cases
 
