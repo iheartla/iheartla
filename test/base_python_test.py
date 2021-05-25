@@ -12,6 +12,8 @@ import logging
 from iheartla.la_tools.la_logger import LaLogger, LoggerTypeEnum
 eigen_path = "/usr/local/include/eigen3"       # required
 if TEST_MATLAB:
+    # Install the library using the following link
+    # https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
     import matlab
     import matlab.engine
     mat_engine = matlab.engine.start_matlab()
@@ -83,7 +85,8 @@ class BasePythonTest(unittest.TestCase):
     def assertDMatrixEqual(self, A, B):
         # dense matrix comparision
         assert A.shape == B.shape
-        assert (A == B).all()
+        # assert (A == B).all()
+        assert np.allclose(A, B, rtol=0, atol=self.eps)
 
     def assertDMatrixApproximateEqual(self, A, B):
         # dense matrix comparision( with double value)
