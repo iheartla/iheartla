@@ -1250,14 +1250,15 @@ class CodeGenMatlab(CodeGen):
                         pre_list.append("    {}\n".format(line))
             pre_list.append("        ret = {};\n".format(exp))
             pre_list.append("    end\n")
+            target_func = "@{}".format(target_func)
         else:
             # simple expression
-            pre_list.append("    {} = lambda {}: {}\n".format(target_func, id_info.content, exp))
+            pre_list.append("    {} = @({}) {};\n".format(target_func, id_info.content, exp))
         if len(constraint_list) > 0:
             # unfinished implementation
-            fmin = "fmincon(@{},{},{})".format(target_func,init_value,constraints_param)
+            fmin = "fmincon({},{},{})".format(target_func,init_value,constraints_param)
         else:
-            fmin = "fminunc(@{},{})".format(target_func,init_value)
+            fmin = "fminunc({},{})".format(target_func,init_value)
         if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
             fmin = "-"+fmin
         if node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
