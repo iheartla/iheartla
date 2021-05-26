@@ -1073,11 +1073,14 @@ class TypeWalker(NodeWalker):
             assert node.single is not None, self.get_err_msg_info(node.parseinfo, "Norm error. Scalar type has to use | rather than ||")
         elif ir_node.value.la_type.is_vector():
             assert node.single is None, self.get_err_msg_info(node.parseinfo, "Norm error. Vector type has to use || rather than |")
-            assert ir_node.norm_type != NormType.NormFrobenius and ir_node.norm_type != NormType.NormNuclear, self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Invalid norm for Vector")
+            assert ir_node.norm_type != NormType.NormFrobenius and ir_node.norm_type != NormType.NormNuclear, self.get_err_msg(self.get_line_info(node.parseinfo),
+                                 self.get_line_info(node.parseinfo).text.find('_')+1, "Norm error. Invalid norm for Vector")
             if ir_node.norm_type == NormType.NormIdentifier:
-                assert ir_node.sub.la_type.is_matrix() or ir_node.sub.la_type.is_scalar(), self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Subscript has to be matrix or scalar for vector type")
+                assert ir_node.sub.la_type.is_matrix() or ir_node.sub.la_type.is_scalar(), self.get_err_msg(self.get_line_info(node.parseinfo),
+                                 self.get_line_info(node.parseinfo).text.find('_')+1, "Norm error. Subscript has to be matrix or scalar for vector type")
                 if ir_node.sub.la_type.is_matrix():
-                    assert is_same_expr(ir_node.sub.la_type.rows, ir_node.sub.la_type.cols) and is_same_expr(ir_node.sub.la_type.rows, ir_node.value.la_type.rows), self.get_err_msg_info(ir_node.sub.parse_info, "Norm error. Dimension error")
+                    assert is_same_expr(ir_node.sub.la_type.rows, ir_node.sub.la_type.cols) and is_same_expr(ir_node.sub.la_type.rows, ir_node.value.la_type.rows), self.get_err_msg(self.get_line_info(node.parseinfo),
+                                 self.get_line_info(node.parseinfo).text.find('_')+1, "Norm error. Dimension error")
         elif ir_node.value.la_type.is_matrix():
             if node.single:
                 ir_node.norm_type = NormType.NormDet
