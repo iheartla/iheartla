@@ -259,14 +259,20 @@ class TypeWalker(NodeWalker):
     def get_text_pos_marker(self, node):
         # ir node
         line_info = get_parse_info_buffer(node.parse_info).line_info(node.parse_info.pos)
-        return "{}{}".format(line_info.text, self.la_msg.get_pos_marker(line_info.col))
+        raw_text = line_info.text
+        if raw_text[-1] != '\n':
+            raw_text += '\n'
+        return "{}{}".format(raw_text, self.la_msg.get_pos_marker(line_info.col))
 
     def get_line_info(self, parse_info):
         return get_parse_info_buffer(parse_info).line_info(parse_info.pos)
 
     def get_err_msg(self, line_info, col, error_msg):
         line_msg = self.la_msg.get_line_desc_with_col(line_info.line, col)
-        return "{}. {}.\n{}{}".format(line_msg, error_msg, line_info.text, self.la_msg.get_pos_marker(col))
+        raw_text = line_info.text
+        if raw_text[-1] != '\n':
+            raw_text += '\n'
+        return "{}. {}.\n{}{}".format(line_msg, error_msg, raw_text, self.la_msg.get_pos_marker(col))
 
     def get_err_msg_info(self, parse_info, error_msg):
         line_info = self.get_line_info(parse_info)
@@ -2434,7 +2440,10 @@ class TypeWalker(NodeWalker):
                                                                                 self.get_type_desc(right_type),
                                                                                       get_parse_info_buffer(right_info.ir.parse_info).text[right_info.ir.parse_info.pos:right_info.ir.parse_info.endpos],
                                                                                 extra_msg)
-            error_msg += left_line.text
+            raw_text = left_line.text
+            if raw_text[-1] != '\n':
+                raw_text += '\n'
+            error_msg += raw_text
             error_msg += self.la_msg.get_pos_marker(left_line.col)
             return error_msg
         ret_type = None
