@@ -505,11 +505,11 @@ class grammarinitParser(Parser):
             with self._option():
                 self._solver_operator_()
             with self._option():
+                self._norm_operator_()
+            with self._option():
                 self._power_operator_()
             with self._option():
                 self._function_operator_()
-            with self._option():
-                self._norm_operator_()
             with self._option():
                 self._inner_product_operator_()
             with self._option():
@@ -1060,49 +1060,36 @@ class grammarinitParser(Parser):
             with self._choice():
                 with self._option():
                     with self._group():
-                        self._token('_')
                         with self._group():
                             with self._choice():
                                 with self._option():
-                                    self._integer_()
+                                    self._token('_')
+                                    with self._group():
+                                        with self._choice():
+                                            with self._option():
+                                                self._integer_()
+                                            with self._option():
+                                                self._token('*')
+                                            with self._option():
+                                                self._token('∞')
+                                            with self._option():
+                                                self._identifier_alone_()
+                                            self._error('no available options')
+                                    self.name_last_node('sub')
                                 with self._option():
-                                    self._token('F')
-                                with self._option():
-                                    self._token('*')
-                                with self._option():
-                                    self._token('∞')
-                                with self._option():
-                                    self._identifier_alone_()
+                                    self._sub_integer_()
+                                    self.name_last_node('sub')
                                 self._error('no available options')
-                        self.name_last_node('sub')
-                        self._token('^')
-                        self._factor_()
-                        self.name_last_node('power')
-                with self._option():
-                    with self._group():
-                        self._token('_')
-                        with self._group():
-                            with self._choice():
-                                with self._option():
-                                    self._integer_()
-                                with self._option():
-                                    self._token('F')
-                                with self._option():
-                                    self._token('*')
-                                with self._option():
-                                    self._token('∞')
-                                with self._option():
-                                    self._identifier_()
-                                self._error('no available options')
-                        self.name_last_node('sub')
-                with self._option():
-                    with self._group():
-                        self._sub_integer_()
-                        self.name_last_node('sub')
                         with self._optional():
-                            self._token('^')
-                            self._factor_()
-                            self.name_last_node('power')
+                            with self._choice():
+                                with self._option():
+                                    self._token('^')
+                                    self._factor_()
+                                    self.name_last_node('power')
+                                with self._option():
+                                    self._sup_integer_()
+                                    self.name_last_node('power')
+                                self._error('no available options')
                 with self._option():
                     with self._group():
                         self._token('_(')
@@ -1110,8 +1097,6 @@ class grammarinitParser(Parser):
                             with self._choice():
                                 with self._option():
                                     self._integer_()
-                                with self._option():
-                                    self._token('F')
                                 with self._option():
                                     self._token('*')
                                 with self._option():
@@ -1122,35 +1107,47 @@ class grammarinitParser(Parser):
                         self.name_last_node('sub')
                         self._token(')')
                         with self._optional():
-                            self._token('^')
-                            self._factor_()
-                            self.name_last_node('power')
+                            with self._choice():
+                                with self._option():
+                                    self._token('^')
+                                    self._factor_()
+                                    self.name_last_node('power')
+                                with self._option():
+                                    self._sup_integer_()
+                                    self.name_last_node('power')
+                                self._error('no available options')
                 with self._option():
                     with self._group():
-                        self._token('^')
-                        self._factor_()
-                        self.name_last_node('power')
+                        with self._group():
+                            with self._choice():
+                                with self._option():
+                                    self._token('^')
+                                    self._factor_()
+                                    self.name_last_node('power')
+                                with self._option():
+                                    self._sup_integer_()
+                                    self.name_last_node('power')
+                                self._error('no available options')
                         with self._optional():
-                            self._token('_')
-                            with self._group():
-                                with self._choice():
-                                    with self._option():
-                                        self._integer_()
-                                    with self._option():
-                                        self._identifier_()
-                                    with self._option():
-                                        self._token('*')
-                                    with self._option():
-                                        self._token('∞')
-                                    self._error('no available options')
-                            self.name_last_node('sub')
-                with self._option():
-                    with self._group():
-                        self._sup_integer_()
-                        self.name_last_node('power')
-                        with self._optional():
-                            self._sub_integer_()
-                            self.name_last_node('sub')
+                            with self._choice():
+                                with self._option():
+                                    self._token('_')
+                                    with self._group():
+                                        with self._choice():
+                                            with self._option():
+                                                self._integer_()
+                                            with self._option():
+                                                self._token('*')
+                                            with self._option():
+                                                self._token('∞')
+                                            with self._option():
+                                                self._identifier_alone_()
+                                            self._error('no available options')
+                                    self.name_last_node('sub')
+                                with self._option():
+                                    self._sub_integer_()
+                                    self.name_last_node('sub')
+                                self._error('no available options')
                 self._error('no available options')
         self.ast._define(
             ['double', 'power', 'single', 'sub', 'value'],
@@ -2030,11 +2027,11 @@ class grammarinitParser(Parser):
             with self._option():
                 self._solver_in_matrix_operator_()
             with self._option():
+                self._norm_operator_()
+            with self._option():
                 self._power_in_matrix_operator_()
             with self._option():
                 self._function_operator_()
-            with self._option():
-                self._norm_operator_()
             with self._option():
                 self._inner_product_operator_()
             with self._option():

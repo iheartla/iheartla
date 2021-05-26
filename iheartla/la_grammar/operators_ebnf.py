@@ -3,9 +3,9 @@ OPERATORS = r"""
 operations
     =
     | solver_operator
+    | norm_operator
     | power_operator
     | function_operator
-    | norm_operator
     | inner_product_operator
     | frobenius_product_operator
     | hadamard_product_operator
@@ -90,12 +90,9 @@ norm_operator::Norm
     | double:'‖' {hspace} value:expression {hspace} '‖'
     | single:'|' {hspace} value:expression {hspace} '|')
     [
-    ( '_' sub:(integer|'F'|'*'|'∞'|identifier_alone) '^' power:factor)
-    | ( '_' sub:(integer|'F'|'*'|'∞'|identifier) )
-    | ( sub:sub_integer ['^' power:factor])
-    | ( '_(' sub:(integer|'F'|'*'|'∞'|identifier) ')' ['^' power:factor])
-    | ( '^' power:factor ['_' sub:(integer|identifier|'*'|'∞')] )
-    | ( power:sup_integer [sub:sub_integer] )
+    ( ('_' sub:(integer|'*'|'∞'|identifier_alone) | sub:sub_integer) ['^' power:factor | power:sup_integer])
+    | ( '_(' sub:(integer|'*'|'∞'|identifier) ')' ['^' power:factor | power:sup_integer])
+    | ( ('^' power:factor | power:sup_integer) ['_' sub:(integer|'*'|'∞'|identifier_alone) | sub:sub_integer] )
     ]
     ;
 

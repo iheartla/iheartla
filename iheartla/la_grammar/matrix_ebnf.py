@@ -105,9 +105,9 @@ factor_in_matrix::Factor
 operations_in_matrix
     =
     | solver_in_matrix_operator
+    | norm_operator
     | power_in_matrix_operator
     | function_operator
-    | norm_operator
     | inner_product_operator
     | frobenius_product_in_matrix_operator
     | hadamard_product_in_matrix_operator

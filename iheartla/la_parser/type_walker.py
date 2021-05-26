@@ -1046,9 +1046,7 @@ class TypeWalker(NodeWalker):
         value_info = self.walk(node.value, **kwargs)
         ir_node.value = value_info.ir
         if node.sub:
-            if node.sub == 'F':
-                ir_node.norm_type = NormType.NormFrobenius
-            elif node.sub == '*':
+            if node.sub == '*':
                 ir_node.norm_type = NormType.NormNuclear
             elif node.sub == '∞':
                 ir_node.norm_type = NormType.NormMax
@@ -1058,9 +1056,12 @@ class TypeWalker(NodeWalker):
                     ir_node.sub = sub_type.ir.value
                     ir_node.norm_type = NormType.NormInteger
                 else:
-                    # identifier
-                    ir_node.norm_type = NormType.NormIdentifier
-                    ir_node.sub = sub_type.ir
+                    if sub_type.ir.get_name() == 'F':
+                        ir_node.norm_type = NormType.NormFrobenius
+                    else:
+                        # identifier
+                        ir_node.norm_type = NormType.NormIdentifier
+                        ir_node.sub = sub_type.ir
         else:
             # default
             if ir_node.value.la_type.is_matrix():
