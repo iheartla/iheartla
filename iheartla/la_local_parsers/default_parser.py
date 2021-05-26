@@ -1987,26 +1987,9 @@ class grammardefaultParser(Parser):
                     self._hspace_()
                 self._closure(block22)
                 self._token(')')
-            with self._option():
-                self._token('I')
-                self.name_last_node('id')
-                self._token('_')
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            self._integer_()
-                        with self._option():
-                            self._identifier_()
-                        self._error('no available options')
-                self.name_last_node('id1')
-            with self._option():
-                self._pattern('[I]')
-                self.name_last_node('id')
-                self._sub_integer_()
-                self.name_last_node('id1')
             self._error('no available options')
         self.ast._define(
-            ['id', 'id1', 'id2', 'left'],
+            ['id1', 'id2', 'left'],
             []
         )
 
@@ -5427,7 +5410,6 @@ class ExpInMatrix(ModelBase):
 
 
 class NumMatrix(ModelBase):
-    id = None
     id1 = None
     id2 = None
     left = None

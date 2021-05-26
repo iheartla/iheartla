@@ -930,9 +930,9 @@ class FractionNode(ExprNode):
 
 
 class IntegerNode(ExprNode):
-    def __init__(self, parse_info=None, raw_text=None):
+    def __init__(self, parse_info=None, raw_text=None, value=None):
         super().__init__(IRNodeType.Integer, parse_info=parse_info, raw_text=raw_text)
-        self.value = None
+        self.value = value
 
 
 class FunctionNode(ExprNode):
