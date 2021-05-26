@@ -782,6 +782,7 @@ class TypeWalker(NodeWalker):
             left_ids = self.get_all_ids(id0)
             left_subs = left_ids[1]
             sequence = left_ids[0]    #y
+            assert '*' not in left_subs, self.get_err_msg_info(node.parseinfo, "LHS can't have * as subscript")
             if node.op != '=':
                 assert sequence in self.symtable, self.get_err_msg_info(id0_info.ir.parse_info,
                                                                        "{} hasn't been defined".format(sequence))
@@ -1654,8 +1655,11 @@ class TypeWalker(NodeWalker):
                 return node_info
         #
         for value in node.right:
-            v_info = self.walk(value)
-            right.append(str(v_info.content))
+            if value == '*':
+                v_content = value
+            else:
+                v_content = self.walk(value).content
+            right.append(str(v_content))
         return self.create_id_node_info(left_info.content, right, node.parseinfo)
 
     def create_id_node_info(self, left_content, right_content, parse_info=None):
