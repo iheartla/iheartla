@@ -516,9 +516,9 @@ class CodeGenMatlab(CodeGen):
                     if sub == var_sub:
                         target_var.append(var_ids[0])
                 if len(var_ids[1]) > 1:  # matrix
-                    name_convention[var] = "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1])
+                    name_convention[var] = "{}({}, {})".format(var_ids[0], var_ids[1][0], var_ids[1][1])
                 else:
-                    name_convention[var] = "{}[{}]".format(var_ids[0], var_ids[1][0])
+                    name_convention[var] = "{}({})".format(var_ids[0], var_ids[1][0])
         for sym, subs in node.sym_dict.items():
             target_var.append(sym)
         self.add_name_conventions(name_convention)
@@ -1027,13 +1027,14 @@ class CodeGenMatlab(CodeGen):
                     content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].rows)
                     if right_info.pre_list:
                         content += self.update_prelist_str(right_info.pre_list, "    ")
-                    content += "        {}[{}][{}] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
+                    content += "        {}({}, {}) = {};\n".format(sequence, left_subs[0], left_subs[0], right_info.content)
+                    content += "    end\n"
                 else:
                     for right_var in type_info.symbols:
                         if sub_strs in right_var:
                             var_ids = self.get_all_ids(right_var)
-                            right_info.content = right_info.content.replace(right_var, "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
-                    right_exp += "    {}[{}][{}] = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
+                            right_info.content = right_info.content.replace(right_var, "{}({}, {})".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
+                    right_exp += "    {}({}, {}) = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
                     if self.symtable[sequence].is_matrix():
                         if node.op == '=':
                             # declare
