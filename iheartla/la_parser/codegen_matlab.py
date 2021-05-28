@@ -603,9 +603,9 @@ class CodeGenMatlab(CodeGen):
                 sub_info = self.visit(node.sub, **kwargs)
                 pre_list += sub_info.pre_list
                 if node.sub.la_type.is_scalar():
-                    content = "np.linalg.norm({}, {})".format(value, sub_info.content)
+                    content = "norm({}, {})".format(value, sub_info.content)
                 else:
-                    content = "np.sqrt(({}).T @ {} @ ({}))".format(value, sub_info.content, value)
+                    content = "sqrt(({})' * {} * ({}))".format(value, sub_info.content, value)
         elif type_info.la_type.is_matrix():
             if node.norm_type == NormType.NormDet:
                 content = "det({})".format(value)
