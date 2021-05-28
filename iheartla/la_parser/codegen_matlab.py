@@ -1045,7 +1045,9 @@ class CodeGenMatlab(CodeGen):
                     content += "        for {} = 1:{}\n".format(left_subs[1], self.symtable[sequence].cols)
                     if right_info.pre_list:
                         content += self.update_prelist_str(right_info.pre_list, "        ")
-                    content += "        " + right_exp
+                    content += "        " + right_exp + ';\n'
+                    content += "        end\n"
+                    content += "    end\n"
                     # content += '\n'
             elif len(left_subs) == 1: # sequence only
                 sequence = left_ids[0]  # y left_subs[0]
@@ -1089,7 +1091,7 @@ class CodeGenMatlab(CodeGen):
             if node.op == '+=':
                 op = ' += '
             right_exp += '    ' + self.get_main_id(left_id) + op + right_info.content
-            content += right_exp + ';\n';
+            content += right_exp + ';\n'
         la_remove_key(LHS, **kwargs)
         return CodeNodeInfo(content)
 
