@@ -1251,10 +1251,7 @@ class CodeGenMatlab(CodeGen):
             pre_list.append("    {} = ({})\n".format(cons, ','.join(constraint_list)))
             constraints_param = ", constraints={}".format(cons)
         target_func = self.generate_var_name('target')
-        if node.base_type.la_type.is_scalar():
-            exp = exp_info.content.replace(id_info.content, "{}[0]".format(id_info.content))
-        else:
-            exp = exp_info.content
+        exp = exp_info.content
         # Handle optimization type
         if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
             exp = "-({})".format(exp)
