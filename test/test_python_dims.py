@@ -1,6 +1,6 @@
 import sys
 sys.path.append('./')
-from test.base_python_test import BasePythonTest, eigen_path
+from test.base_python_test import *
 import numpy as np
 import cppyy
 cppyy.add_include_path(eigen_path)
@@ -17,6 +17,10 @@ class TestDims(BasePythonTest):
         Q = np.array([[5, 6], [8, 7]])
         R = np.array([[6, 8], [12, 10]])
         self.assertDMatrixEqual(func_info.numpy_func(P, Q).ret, R)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(P.tolist()), matlab.double(Q.tolist()))['ret']), R)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -44,6 +48,10 @@ class TestDims(BasePythonTest):
         Q = np.array([[5, 6], [8, 7]])
         R = np.array([[6, 8], [12, 10]])
         self.assertDMatrixEqual(func_info.numpy_func(2, P, Q).ret, R)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(2, matlab.double(P.tolist()), matlab.double(Q.tolist()))['ret']), R)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -107,7 +115,7 @@ class TestDims(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
-    def test_template_func_2(self):
+    def test_template_func_3(self):
         la_str = """f( M ) + f(N)
                     where
                     M: ℝ^( m×m )

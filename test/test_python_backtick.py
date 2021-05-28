@@ -1,6 +1,6 @@
 import sys
 sys.path.append('./')
-from test.base_python_test import BasePythonTest, eigen_path
+from test.base_python_test import *
 import numpy as np
 import scipy
 from scipy import sparse
@@ -17,6 +17,10 @@ class TestBacktick(BasePythonTest):
                     `ΦΧΨΩΥΣΠΞΘΔΓ`:scalar"""
         func_info = self.gen_func_info(la_str)
         self.assertEqual(func_info.numpy_func(1, 2, 3).A, 6)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func(1, 2, 3)['A']), 6)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -34,6 +38,10 @@ class TestBacktick(BasePythonTest):
                     `while`:scalar"""
         func_info = self.gen_func_info(la_str)
         self.assertEqual(func_info.numpy_func(1, 2, 3).A, 6)
+        # MATLAB test
+        # if TEST_MATLAB:
+        #     mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+        #     self.assertEqual(np.array(mat_func(1, 2, 3)['A']), 6)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -51,6 +59,10 @@ class TestBacktick(BasePythonTest):
         A = np.array([[[1, 2], [4, 3]], [[1, 2], [4, 3]]])
         B = np.array([[2, 4], [8, 6]])
         self.assertDMatrixEqual(func_info.numpy_func(A).A, B)
+        # MATLAB test
+        # if TEST_MATLAB:
+        #     mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+        #     self.assertDMatrixEqual(np.array(mat_func(matlab.double(A.tolist()))['A']), B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -79,6 +91,10 @@ class TestBacktick(BasePythonTest):
         f = lambda p : p+p
         A = np.array([[18, 16], [32, 34]])
         self.assertDMatrixEqual(func_info.numpy_func(P, f).Output, A)
+        # MATLAB test
+        # if TEST_MATLAB:
+        #     mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+        #     self.assertDMatrixEqual(np.array(mat_func(matlab.double(P.tolist()))['Output']), A)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -106,6 +122,10 @@ class TestBacktick(BasePythonTest):
         bb: ℝ """
         func_info = self.gen_func_info(la_str)
         self.assertEqual(func_info.numpy_func(1, 2).ff, 12)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(mat_func(1, 2)['ff'], 12)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -124,6 +144,10 @@ class TestBacktick(BasePythonTest):
         d: ℝ """
         func_info = self.gen_func_info(la_str)
         self.assertEqual(func_info.numpy_func(1, 2, 3, 4).f, 24)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(mat_func(1, 2, 3, 4)['f'], 24)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),

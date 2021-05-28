@@ -1,6 +1,6 @@
 import sys
 sys.path.append('./')
-from test.base_python_test import BasePythonTest, eigen_path
+from test.base_python_test import *
 import numpy as np
 import cppyy
 cppyy.add_include_path(eigen_path)
@@ -14,6 +14,10 @@ class TestOthers(BasePythonTest):
         a: scalar """
         func_info = self.gen_func_info(la_str)
         self.assertEqual(func_info.numpy_func(2).c, 3)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func(matlab.double([2]))['c']), 3)
 
     def test_integral_2(self):
         # no return symbol
@@ -22,6 +26,10 @@ class TestOthers(BasePythonTest):
         a: scalar """
         func_info = self.gen_func_info(la_str)
         self.assertEqual(func_info.numpy_func(2).c, 3)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func(matlab.double([2]))['c']), 3)
 
     def test_nested_integral(self):
         # no return symbol
@@ -30,6 +38,10 @@ class TestOthers(BasePythonTest):
         a: scalar """
         func_info = self.gen_func_info(la_str)
         self.assertEqual(func_info.numpy_func(2).c, 9)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func(matlab.double([2]))['c']), 9)
 
     def test_optimization_argmin(self):
         # no return symbol

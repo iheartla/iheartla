@@ -1,6 +1,6 @@
 import sys
 sys.path.append('./')
-from test.base_python_test import BasePythonTest, eigen_path
+from test.base_python_test import *
 import numpy as np
 import cppyy
 import scipy
@@ -18,6 +18,10 @@ class TestProduct(BasePythonTest):
         T = np.array([1, 2, 3])
         P = np.array([4, 5, 6])
         self.assertEqual(func_info.numpy_func(T, P).A, 32)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func(matlab.double(T.tolist()), matlab.double(P.tolist()))['A']), 32)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -42,6 +46,10 @@ class TestProduct(BasePythonTest):
         P = np.array([3, 4])
         M = np.array([[5, 6], [7, 8]])
         self.assertEqual(func_info.numpy_func(T, P, M).A, 143)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func(matlab.double(T.tolist()), matlab.double(P.tolist()), matlab.double(M.tolist()))['A']), 143)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -66,6 +74,10 @@ class TestProduct(BasePythonTest):
         T = np.array([[1, 2], [3, 4]])
         P = np.array([[5, 6], [7, 8]])
         self.assertEqual(func_info.numpy_func(T, P).A, 70)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func(matlab.double(T.tolist()), matlab.double(P.tolist()))['A']), 70)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -89,6 +101,10 @@ class TestProduct(BasePythonTest):
         P = np.array([[5, 6], [7, 8]])
         A = np.array([[5, 12], [21, 32]])
         self.assertDMatrixEqual(func_info.numpy_func(T, P).A, A)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(T.tolist()), matlab.double(P.tolist()))['A']), A)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -114,6 +130,10 @@ class TestProduct(BasePythonTest):
         P = np.array([4, 5, 6])
         A = np.array([-3, 6, -3])
         self.assertDMatrixEqual(func_info.numpy_func(T, P).A, A)
+        # MATLAB test
+        # if TEST_MATLAB:
+        #     mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+        #     self.assertDMatrixEqual(np.array(mat_func(matlab.double(T.tolist()), matlab.double(P.tolist()))['A']), A)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -142,6 +162,10 @@ class TestProduct(BasePythonTest):
                       [15, 18, 21, 20, 24, 28, 25, 30, 35],
                       [21, 24, 27, 28, 32, 36, 35, 40, 45]])
         self.assertDMatrixEqual(func_info.numpy_func(T, P).A, A)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(T.tolist()), matlab.double(P.tolist()))['A']), A)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -214,6 +238,10 @@ class TestProduct(BasePythonTest):
         T = np.array([1, 2, 3])
         P = np.array([4, 5, 6])
         self.assertEqual(func_info.numpy_func(T, P).A, 32)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func(matlab.double(T.tolist()), matlab.double(P.tolist()))['A']), 32)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),

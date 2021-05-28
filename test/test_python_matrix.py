@@ -1,6 +1,6 @@
 import sys
 sys.path.append('./')
-from test.base_python_test import BasePythonTest, eigen_path
+from test.base_python_test import *
 import numpy as np
 import scipy
 from scipy import sparse
@@ -19,6 +19,10 @@ class TestMatrix(BasePythonTest):
         b = 4
         B = np.array([[1, 2], [4, 3]])
         self.assertDMatrixEqual(func_info.numpy_func(a, b).A, B)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(a, b)['A']), B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -39,6 +43,10 @@ class TestMatrix(BasePythonTest):
         A = np.array([[1, 2], [4, 3]])
         B = np.array([[1, 4], [2, 3]])
         self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(A.tolist()))['B']), B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -61,6 +69,10 @@ class TestMatrix(BasePythonTest):
         A = np.array([[1, 2], [4, 3]])
         B = np.array([[1, 4], [2, 3]])
         self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(A.tolist()))['B']), B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -83,6 +95,10 @@ class TestMatrix(BasePythonTest):
         A = np.array([[4, 0], [0, 0.5]])
         B = np.array([[0.25, 0], [0, 2]])
         self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(A.tolist()))['B']), B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -107,6 +123,10 @@ class TestMatrix(BasePythonTest):
         B = np.array([[5, 6], [7, 8]])
         C = np.array([[1, 2], [3, 4], [5, 6], [7, 8]])
         self.assertDMatrixEqual(func_info.numpy_func(A, B).C, C)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(A.tolist()), matlab.double(B.tolist()))['C']), C)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -132,6 +152,10 @@ class TestMatrix(BasePythonTest):
         B = np.array([[5, 6], [7, 8]])
         C = np.array([[1, 2, 5, 6], [3, 4, 7, 8]])
         self.assertDMatrixEqual(func_info.numpy_func(A, B).C, C)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(A.tolist()), matlab.double(B.tolist()))['C']), C)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -158,6 +182,10 @@ class TestMatrix(BasePythonTest):
         B = np.array([[5, 6], [7, 8]])
         C = np.array([[6, 8, -4, -4], [10, 12, -4, -4]])
         self.assertDMatrixEqual(func_info.numpy_func(A, B).C, C)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(A.tolist()), matlab.double(B.tolist()))['C']), C)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -182,6 +210,10 @@ class TestMatrix(BasePythonTest):
         A = np.array([[1, 2], [3, 4]])
         C = np.array([[1, 2, 1, 1], [3, 4, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]])
         self.assertDMatrixEqual(func_info.numpy_func(A).C, C)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(A.tolist()))['C']), C)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -204,6 +236,11 @@ class TestMatrix(BasePythonTest):
         A = np.array([[1, 2], [3, 4]])
         C = np.array([[1, 2, 1, 1], [3, 4, 1, 1], [0, 0, 1, 0], [0, 0, 0, 1]])
         self.assertDMatrixEqual(func_info.numpy_func(A).C, C)
+        # MATLAB testA
+        # if TEST_MATLAB:
+        #     mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+        #     print(np.array(mat_func((A.tolist()))['C']))
+        #     self.assertDMatrixEqual(np.array(mat_func((A.tolist()))['C']), C)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -227,6 +264,10 @@ class TestMatrix(BasePythonTest):
         A = np.array([[1, 2], [3, 4]])
         B = np.array([[1, 2, 1, 2, 1, 0], [3, 4, 3, 4, 0, 1]])
         self.assertDMatrixEqual(func_info.numpy_func(A, A).B, B)
+        # MATLAB test
+        # if TEST_MATLAB:
+        #     mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+        #     self.assertDMatrixEqual(np.array(mat_func(matlab.double(A.tolist()), matlab.double(A.tolist()))['B']), B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -249,6 +290,10 @@ class TestMatrix(BasePythonTest):
         A = np.array([3, 4])
         B = np.array([[3, 1], [4, 1]])
         self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(A.tolist()))['B']), B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -271,6 +316,10 @@ class TestMatrix(BasePythonTest):
         A = np.array([3, 4])
         B = np.array([[3], [4], [1]])
         self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(A.tolist()))['B']), B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -293,6 +342,10 @@ class TestMatrix(BasePythonTest):
         A = np.array([[1, 3, 4], [2, 0, 1]])
         B = np.array([[1, 2], [3, 0], [4, 1]])
         self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(A.tolist()))['B']), B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -315,6 +368,10 @@ class TestMatrix(BasePythonTest):
         A = np.array([[1, 2], [3, 4]])
         B = np.array([[2, 2], [3, 5]])
         self.assertDMatrixEqual(func_info.numpy_func(A).C, B)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(A.tolist()))['C']), B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -338,6 +395,10 @@ class TestMatrix(BasePythonTest):
         A = np.array([[1, 2], [3, 4]])
         B = np.array([[2, 4], [6, 8]])
         self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(A.tolist()))['B']), B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),

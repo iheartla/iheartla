@@ -1,6 +1,6 @@
 import sys
 sys.path.append('./')
-from test.base_python_test import BasePythonTest, eigen_path
+from test.base_python_test import *
 import numpy as np
 import cppyy
 cppyy.add_include_path(eigen_path)
@@ -15,6 +15,10 @@ class TestStat(BasePythonTest):
         b: scalar"""
         func_info = self.gen_func_info(la_str)
         self.assertEqual(func_info.numpy_func(3, 2).ret, 6)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func(3, 2)['ret']), 6)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -30,6 +34,10 @@ class TestStat(BasePythonTest):
         la_str = """A = 2 + 3"""
         func_info = self.gen_func_info(la_str)
         self.assertEqual(func_info.numpy_func().A, 5)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func()['A']), 5)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
