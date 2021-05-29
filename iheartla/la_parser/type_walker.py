@@ -398,9 +398,6 @@ class TypeWalker(NodeWalker):
 
     def walk_WhereCondition(self, node, **kwargs):
         ir_node = WhereConditionNode(parse_info=node.parseinfo)
-        id0_info = self.walk(node.id, **kwargs)
-        ir_node.id = id0_info.ir
-        id0 = id0_info.content
         ret = node.text.split(':')
         desc = ':'.join(ret[1:len(ret)])
         ir_node.desc = node.desc
@@ -413,44 +410,48 @@ class TypeWalker(NodeWalker):
                 type_node.la_type.element_type.index_type = True
         type_node.parse_info = node.parseinfo
         type_node.la_type.desc = desc
-        self.handle_identifier(id0, id0_info.ir, type_node)
-        # self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
-        self.update_parameters(id0, kwargs[PARAM_INDEX])
-        if type_node.la_type.is_matrix():
-            id1 = type_node.la_type.rows
-            id2 = type_node.la_type.cols
-            if isinstance(id1, str):
-                if type_node.la_type.is_dynamic_row():
-                    id1 = type_node.id1.get_main_id()
-                else:
-                    if id1 not in self.symtable:
-                        self.symtable[id1] = ScalarType(is_int=True)
-                if self.contain_subscript(id0):
-                    self.update_dim_dict(id1, self.get_main_id(id0), 1)
-                else:
-                    self.update_dim_dict(id1, self.get_main_id(id0), 0)
-            if isinstance(id2, str):
-                if type_node.la_type.is_dynamic_col():
-                    id2 = type_node.id2.get_main_id()
-                else:
-                    if id2 not in self.symtable:
-                        self.symtable[id2] = ScalarType(is_int=True)
-                if self.contain_subscript(id0):
-                    self.update_dim_dict(id2, self.get_main_id(id0), 2)
-                else:
-                    self.update_dim_dict(id2, self.get_main_id(id0), 1)
-        elif type_node.la_type.is_vector():
-            id1 = type_node.la_type.rows
-            if isinstance(id1, str):
-                if type_node.la_type.is_dynamic_row():
-                    id1 = type_node.id1.get_main_id()
-                else:
-                    if id1 not in self.symtable:
-                        self.symtable[id1] = ScalarType(is_int=True)
-                if self.contain_subscript(id0):
-                    self.update_dim_dict(id1, self.get_main_id(id0), 1)
-                else:
-                    self.update_dim_dict(id1, self.get_main_id(id0), 0)
+        for raw_id in node.id:
+            id0_info = self.walk(raw_id, **kwargs)
+            ir_node.id = id0_info.ir
+            id0 = id0_info.content
+            self.handle_identifier(id0, id0_info.ir, type_node)
+            # self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
+            self.update_parameters(id0, kwargs[PARAM_INDEX])
+            if type_node.la_type.is_matrix():
+                id1 = type_node.la_type.rows
+                id2 = type_node.la_type.cols
+                if isinstance(id1, str):
+                    if type_node.la_type.is_dynamic_row():
+                        id1 = type_node.id1.get_main_id()
+                    else:
+                        if id1 not in self.symtable:
+                            self.symtable[id1] = ScalarType(is_int=True)
+                    if self.contain_subscript(id0):
+                        self.update_dim_dict(id1, self.get_main_id(id0), 1)
+                    else:
+                        self.update_dim_dict(id1, self.get_main_id(id0), 0)
+                if isinstance(id2, str):
+                    if type_node.la_type.is_dynamic_col():
+                        id2 = type_node.id2.get_main_id()
+                    else:
+                        if id2 not in self.symtable:
+                            self.symtable[id2] = ScalarType(is_int=True)
+                    if self.contain_subscript(id0):
+                        self.update_dim_dict(id2, self.get_main_id(id0), 2)
+                    else:
+                        self.update_dim_dict(id2, self.get_main_id(id0), 1)
+            elif type_node.la_type.is_vector():
+                id1 = type_node.la_type.rows
+                if isinstance(id1, str):
+                    if type_node.la_type.is_dynamic_row():
+                        id1 = type_node.id1.get_main_id()
+                    else:
+                        if id1 not in self.symtable:
+                            self.symtable[id1] = ScalarType(is_int=True)
+                    if self.contain_subscript(id0):
+                        self.update_dim_dict(id1, self.get_main_id(id0), 1)
+                    else:
+                        self.update_dim_dict(id1, self.get_main_id(id0), 0)
         ir_node.type = type_node
         return ir_node
 

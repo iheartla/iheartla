@@ -3424,11 +3424,25 @@ class grammarinitParser(Parser):
     @tatsumasu('WhereCondition')
     def _where_condition_(self):  # noqa
         self._identifier_()
-        self.name_last_node('id')
+        self.add_last_node_to_name('id')
 
         def block1():
-            self._hspace_()
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._token(',')
+
+            def block3():
+                self._hspace_()
+            self._closure(block3)
+            self._identifier_()
+            self.add_last_node_to_name('id')
         self._closure(block1)
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
         with self._group():
             with self._choice():
                 with self._option():
@@ -3437,37 +3451,37 @@ class grammarinitParser(Parser):
                     self._IN_()
                 self._error('no available options')
 
-        def block3():
+        def block7():
             self._hspace_()
-        self._closure(block3)
+        self._closure(block7)
         self._la_type_()
         self.name_last_node('type')
 
-        def block5():
-
-            def block6():
-                self._hspace_()
-            self._closure(block6)
-            self._token('index')
-            self.name_last_node('index')
-        self._closure(block5)
-
-        def block8():
-
-            def block9():
-                self._hspace_()
-            self._closure(block9)
-            self._token(':')
+        def block9():
 
             def block10():
                 self._hspace_()
             self._closure(block10)
+            self._token('index')
+            self.name_last_node('index')
+        self._closure(block9)
+
+        def block12():
+
+            def block13():
+                self._hspace_()
+            self._closure(block13)
+            self._token(':')
+
+            def block14():
+                self._hspace_()
+            self._closure(block14)
             self._description_()
             self.name_last_node('desc')
-        self._closure(block8)
+        self._closure(block12)
         self.ast._define(
-            ['desc', 'id', 'index', 'type'],
-            []
+            ['desc', 'index', 'type'],
+            ['id']
         )
 
     @tatsumasu('MatrixType')
