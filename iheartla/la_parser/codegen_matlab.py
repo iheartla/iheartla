@@ -1195,10 +1195,13 @@ class CodeGenMatlab(CodeGen):
         id_info = self.visit(node.base, **kwargs)
         if node.base_type.la_type.is_scalar():
             init_value = 0
+            base_str = "{} = optimvar('{}');".format(id_info.content, id_info.content)
         elif node.base_type.la_type.is_vector():
             init_value = "zeros({},1)".format(node.base_type.la_type.rows)
+            base_str = "{} = optimvar('{}', {});".format(id_info.content, id_info.content, node.base_type.la_type.rows)
         elif node.base_type.la_type.is_matrix():
             init_value = "zeros({}*{},1)".format(node.base_type.la_type.rows, node.base_type.la_type.cols)
+            base_str = "{} = optimvar('{}', {}, {});".format(id_info.content, id_info.content, node.base_type.la_type.rows, node.base_type.la_type.cols)
             name_convention = {id_info.content: "reshape({}, [{}, {}])".format(id_info.content, node.base_type.la_type.rows, node.base_type.la_type.cols)}
             self.add_name_conventions(name_convention)
         exp_info = self.visit(node.exp, **kwargs)
@@ -1216,24 +1219,26 @@ class CodeGenMatlab(CodeGen):
         # Handle constraints
         pre_list = []
         constraint_list = []
-        for cond_node in node.cond_list:
+        prob_name = self.generate_var_name('prob')
+        constraint_list.append("{} = optimproblem;".format(prob_name))
+        constraint_list.append(base_str)
+        for cond_index in range(len(node.cond_list)):
+            cond_node = node.cond_list[cond_index]
             if cond_node.cond.node_type == IRNodeType.BinComp:
                 if cond_node.cond.comp_type == IRNodeType.Gt or cond_node.cond.comp_type == IRNodeType.Ge:
-                    constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: {}-{}}}".format(id_info.content,
-                                                                                                self.visit(cond_node.cond.left, **kwargs).content,
-                                                                                                self.visit(cond_node.cond.right, **kwargs).content))
+                    constraint_list.append("{}.Constraints.cons{} = {} >= {};".format(prob_name, cond_index+1, self.visit(cond_node.cond.left, **kwargs).content,
+                                                                                     self.visit(cond_node.cond.right, **kwargs).content))
                 elif cond_node.cond.comp_type == IRNodeType.Lt or cond_node.cond.comp_type == IRNodeType.Le:
-                    constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: {}-{}}}".format(id_info.content,
-                                                                                                self.visit(cond_node.cond.right, **kwargs).content,
-                                                                                                self.visit(cond_node.cond.left, **kwargs).content))
-                elif cond_node.cond.comp_type == IRNodeType.Eq:
-                    constraint_list.append("{{'type': 'eq', 'fun': lambda {}: {}-{}}}".format(id_info.content,
-                                                                                              self.visit(cond_node.cond.left, **kwargs).content,
-                                                                                              self.visit(cond_node.cond.right, **kwargs).content))
-                elif cond_node.cond.comp_type == IRNodeType.Ne:
-                    constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: np.power({}-{}, 2)}}".format(id_info.content,
-                                                                                              self.visit(cond_node.cond.left, **kwargs).content,
-                                                                                              self.visit(cond_node.cond.right, **kwargs).content))
+                    constraint_list.append("{}.Constraints.cons{} = {} <= {};".format(prob_name, cond_index+1, self.visit(cond_node.cond.left, **kwargs).content,
+                                                                                     self.visit(cond_node.cond.right, **kwargs).content))
+                # elif cond_node.cond.comp_type == IRNodeType.Eq:
+                #     constraint_list.append("{{'type': 'eq', 'fun': lambda {}: {}-{}}}".format(id_info.content,
+                #                                                                               self.visit(cond_node.cond.left, **kwargs).content,
+                #                                                                               self.visit(cond_node.cond.right, **kwargs).content))
+                # elif cond_node.cond.comp_type == IRNodeType.Ne:
+                #     constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: np.power({}-{}, 2)}}".format(id_info.content,
+                #                                                                               self.visit(cond_node.cond.left, **kwargs).content,
+                #                                                                               self.visit(cond_node.cond.right, **kwargs).content))
             elif cond_node.cond.node_type == IRNodeType.In:
                 v_set = self.visit(cond_node.cond.set, **kwargs).content
                 opt_func = self.generate_var_name(category)
@@ -1248,8 +1253,9 @@ class CodeGenMatlab(CodeGen):
         constraints_param = ""
         if len(constraint_list) > 0:
             cons = self.generate_var_name('cons')
-            pre_list.append("    {} = ({})\n".format(cons, ','.join(constraint_list)))
-            constraints_param = ", constraints={}".format(cons)
+            # pre_list.append("    {} = ({})\n".format(cons, ','.join(constraint_list)))
+            pre_list += ["    {}\n".format(cons) for cons in constraint_list]
+            # constraints_param = ", constraints={}".format(cons)
         target_func = self.generate_var_name('target')
         exp = exp_info.content
         # Handle optimization type
@@ -1268,34 +1274,30 @@ class CodeGenMatlab(CodeGen):
             target_func = "@{}".format(target_func)
         else:
             # simple expression
-            pre_list.append("    {} = @({}) {};\n".format(target_func, id_info.content, exp))
+            if len(constraint_list) == 0:
+                pre_list.append("    {} = @({}) {};\n".format(target_func, id_info.content, exp))
+        # ret name
+        opt_name = self.generate_var_name("optimize")
         if len(constraint_list) > 0:
             # unfinished implementation
-            fmin = "fmincon({},{},{})".format(target_func,init_value,constraints_param)
+            pre_list.append("    {}.Objective = {};\n".format(prob_name, exp))
+            opt_exp = "solve({})".format(prob_name)
+            if node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
+                content = "{}.{}".format(opt_name, id_info.content)
+            else:
+                content = opt_name
+            if node.opt_type == OptimizeType.OptimizeMax:
+                content = "-"+content
         else:
-            fmin = "fminunc({},{})".format(target_func,init_value)
-        if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
-            fmin = "-"+fmin
+            # no constraints
+            opt_exp = "fminunc({},{})".format(target_func, init_value)
+            if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
+                opt_exp = "-"+opt_exp
+            content = opt_name
         if node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
-            pre_list.append("    [optimize_0,~] = {};\n".format(fmin))
+            pre_list.append("    [{}, ~] = {};\n".format(opt_name, opt_exp))
         else:
-            pre_list.append("    [~,optimize_0] = {};\n".format(fmin))
-        content = "optimize_0"
-        #if node.opt_type == OptimizeType.OptimizeMin:
-        #    content = "minimize({}, {}{});".format(target_func, init_value, constraints_param)
-        #elif node.opt_type == OptimizeType.OptimizeMax:
-        #    content = "-minimize({}, {}{});".format(target_func, init_value, constraints_param)
-        #elif node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
-        #    if node.base_type.la_type.is_scalar():
-        #        content = "minimize({}, {}{}).x[0]".format(target_func, init_value, constraints_param)
-        #    elif node.base_type.la_type.is_vector():
-        #        content = "minimize({}, {}{}).x".format(target_func, init_value, constraints_param)
-        #    elif node.base_type.la_type.is_matrix():
-        #        content = "minimize({}, {}{}).x.reshape({}, {})".format(target_func,
-        #                                                                                        init_value,
-        #                                                                                        constraints_param,
-        #                                                                                        node.base_type.la_type.rows,
-        #                                                                                        node.base_type.la_type.cols)
+            pre_list.append("    [~, {}] = {};\n".format(opt_name, opt_exp))
         if node.base_type.la_type.is_matrix():
             self.del_name_conventions(name_convention)
         return CodeNodeInfo(content, pre_list=pre_list)
