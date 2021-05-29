@@ -53,6 +53,10 @@ class TestOthers(BasePythonTest):
         a: scalar """
         func_info = self.gen_func_info(la_str)
         self.assertTrue(abs(func_info.numpy_func(2).b - 4) < 0.00001)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertTrue(abs(np.array(mat_func(matlab.double([2]))['b']) - 4) < 0.00001)
 
     def test_optimization_min(self):
         # no return symbol
@@ -64,6 +68,10 @@ class TestOthers(BasePythonTest):
         a: scalar """
         func_info = self.gen_func_info(la_str)
         self.assertTrue(abs(func_info.numpy_func(2).b - 14) < 0.00001)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertTrue(abs(np.array(mat_func(matlab.double([2]))['b']) - 14) < 0.00001)
 
     def test_optimization_argmax(self):
         # no return symbol
@@ -75,6 +83,10 @@ class TestOthers(BasePythonTest):
         a: scalar """
         func_info = self.gen_func_info(la_str)
         self.assertTrue(abs(func_info.numpy_func(2).b - 9) < 0.00001)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertTrue(abs(np.array(mat_func(matlab.double([2]))['b']) - 9) < 0.00001)
 
     def test_optimization_max(self):
         # no return symbol
@@ -86,6 +98,10 @@ class TestOthers(BasePythonTest):
         a: scalar """
         func_info = self.gen_func_info(la_str)
         self.assertTrue(abs(func_info.numpy_func(2).b - 29) < 0.00001)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertTrue(abs(np.array(mat_func(matlab.double([2]))['b']) - 29) < 0.00001)
 
     def test_optimization_argmin_no_st(self):
         # no return symbol
@@ -94,6 +110,10 @@ class TestOthers(BasePythonTest):
         a: scalar """
         func_info = self.gen_func_info(la_str)
         self.assertTrue(abs(func_info.numpy_func(2).b == 0))
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertTrue(abs(np.array(mat_func(matlab.double([2]))['b'])) == 0)
 
     def test_optimization_argmin_in_cond(self):
         # no return symbol
@@ -104,3 +124,7 @@ class TestOthers(BasePythonTest):
         s: {ℝ} """
         func_info = self.gen_func_info(la_str)
         self.assertTrue(abs(func_info.numpy_func([2, 1, 4]).b - 1) < 0.00001)
+        # MATLAB test
+        # if TEST_MATLAB:
+        #     mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+        #     self.assertTrue(abs(np.array(mat_func(matlab.double([2]))['b'])) == 0)
