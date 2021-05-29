@@ -1251,7 +1251,7 @@ class CodeGenMatlab(CodeGen):
 
         # constraint
         constraints_param = ""
-        if len(constraint_list) > 0:
+        if len(node.cond_list) > 0:
             cons = self.generate_var_name('cons')
             # pre_list.append("    {} = ({})\n".format(cons, ','.join(constraint_list)))
             pre_list += ["    {}\n".format(cons) for cons in constraint_list]
@@ -1274,11 +1274,11 @@ class CodeGenMatlab(CodeGen):
             target_func = "@{}".format(target_func)
         else:
             # simple expression
-            if len(constraint_list) == 0:
+            if len(node.cond_list) == 0:
                 pre_list.append("    {} = @({}) {};\n".format(target_func, id_info.content, exp))
         # ret name
         opt_name = self.generate_var_name("optimize")
-        if len(constraint_list) > 0:
+        if len(node.cond_list) > 0:
             # unfinished implementation
             pre_list.append("    {}.Objective = {};\n".format(prob_name, exp))
             opt_exp = "solve({})".format(prob_name)
