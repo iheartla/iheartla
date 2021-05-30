@@ -369,29 +369,35 @@ class TypeWalker(NodeWalker):
         #     ir_node.value.append(cond_node)
         ir_list = []
         ir_index = []  # matrix, vector
+        param_index = []
         func_index = []  # function
+        func_param_index = []
         prev_parameters = self.parameters
-        self.parameters = [None] * len(node.value)
+        self.parameters = [None] * sum([len(value.id) for value in node.value])
+        cur_param_index = 0
         for i in range(len(node.value)):
             # walk scalar first
             if type(node.value[i].type).__name__ == "ScalarType" or type(node.value[i].type).__name__ == "SetType":
-                kwargs[PARAM_INDEX] = i
+                kwargs[PARAM_INDEX] = cur_param_index
                 ir_list.append(self.walk(node.value[i], **kwargs))
             elif type(node.value[i].type).__name__ == "FunctionType":
                 ir_list.append(None)
                 func_index.append(i)
+                func_param_index.append(cur_param_index)
             else:
                 ir_list.append(None)
                 ir_index.append(i)
+                param_index.append(cur_param_index)
+            cur_param_index += len(node.value[i].id)
         # matrix, vector nodes
         if len(ir_index) > 0:
             for i in range(len(ir_index)):
-                kwargs[PARAM_INDEX] = ir_index[i]
+                kwargs[PARAM_INDEX] = param_index[i]
                 ir_list[ir_index[i]] = self.walk(node.value[ir_index[i]], **kwargs)
         # func nodes:
         if len(func_index) > 0:
             for i in range(len(func_index)):
-                kwargs[PARAM_INDEX] = func_index[i]
+                kwargs[PARAM_INDEX] = func_param_index[i]
                 ir_list[func_index[i]] = self.walk(node.value[func_index[i]], **kwargs)
         #
         ir_node.value = ir_list
@@ -406,19 +412,19 @@ class TypeWalker(NodeWalker):
         type_node = self.walk(node.type, **kwargs)
         if node.index:
             # check index type condition
-            assert type_node.la_type.is_integer_element(), self.get_err_msg_info(node.id.parseinfo, "Invalid index type: element must be integer")
+            assert type_node.la_type.is_integer_element(), self.get_err_msg_info(node.id[0].parseinfo, "Invalid index type: element must be integer")
             type_node.la_type.index_type = True
             if not type_node.la_type.is_scalar():
                 type_node.la_type.element_type.index_type = True
         type_node.parse_info = node.parseinfo
         type_node.la_type.desc = desc
-        for raw_id in node.id:
-            id0_info = self.walk(raw_id, **kwargs)
-            ir_node.id = id0_info.ir
+        for id_index in range(len(node.id)):
+            id0_info = self.walk(node.id[id_index], **kwargs)
+            ir_node.id.append(id0_info.ir)
             id0 = id0_info.content
             self.handle_identifier(id0, id0_info.ir, type_node)
             # self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
-            self.update_parameters(id0, kwargs[PARAM_INDEX])
+            self.update_parameters(id0, kwargs[PARAM_INDEX]+id_index)
             if type_node.la_type.is_matrix():
                 id1 = type_node.la_type.rows
                 id2 = type_node.la_type.cols

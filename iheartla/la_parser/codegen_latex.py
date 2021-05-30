@@ -187,9 +187,9 @@ class CodeGenLatex(CodeGen):
         return ''.join(ret)
 
     def visit_where_condition(self, node, **kwargs):
-        id0 = self.visit(node.id, **kwargs)
+        id_list = [self.visit(id0, **kwargs) for id0 in node.id]
         type_content = self.visit(node.type, **kwargs)
-        content = "{} & \\in {}".format(id0, type_content)
+        content = "{} & \\in {}".format(','.join(id_list), type_content)
         if node.desc:
             content += " \\text{{ {}}} \\\\\n".format(node.desc)
         else:

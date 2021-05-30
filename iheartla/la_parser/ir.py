@@ -180,7 +180,7 @@ class WhereConditionsNode(StmtNode):
 class WhereConditionNode(StmtNode):
     def __init__(self, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.WhereCondition, parse_info=parse_info, raw_text=raw_text)
-        self.id = None
+        self.id = []
         self.type = None
         self.desc = None
 
