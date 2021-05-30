@@ -301,7 +301,9 @@ class TypeWalker(NodeWalker):
             vblock_list.append(vblock_info)
             if isinstance(vblock_info, list) and len(vblock_info) > 0:  # statement list with single statement
                 if type(vblock_info[0]).__name__ == 'Assignment':
+                    self.visiting_lhs = True
                     id_node = self.walk(vblock_info[0].left, **kwargs).ir
+                    self.visiting_lhs = False
                     if id_node.get_main_id() not in self.lhs_list:
                         self.lhs_list.append(id_node.get_main_id())
                     if len(id_node.get_main_id()) > 1:
