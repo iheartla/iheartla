@@ -449,3 +449,87 @@ class TestSubscript(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_ragged_array(self):
+        # matrix
+        la_str = """a = ∑_i ∑_j A_i,j  
+        where
+        A_i ∈ ℝ^(n_i)"""
+        func_info = self.gen_func_info(la_str)
+        A = [np.array([1, 1]), np.array([2, 2, 2]), np.array([3, 3, 3, 3])]
+        self.assertEqual(func_info.numpy_func(A).a, 20)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 1> A1;",
+                     "    A1 << 1, 1;",
+                     "    Eigen::Matrix<double, 3, 1> A2;",
+                     "    A2 << 2, 2, 2;",
+                     "    Eigen::Matrix<double, 4, 1> A3;",
+                     "    A3 << 3, 3, 3, 3;",
+                     "    std::vector<Eigen::VectorXd> A;",
+                     "    A.push_back(A1);",
+                     "    A.push_back(A2);",
+                     "    A.push_back(A3);",
+                     "    double C = {}(A).a;".format(func_info.eig_func_name),
+                     "    return C == 20;",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_ragged_array1(self):
+        # matrix
+        la_str = """a = ∑_i n_i m_i
+        where
+        A_i ∈ ℝ^(n_i×m_i) """
+        func_info = self.gen_func_info(la_str)
+        A = [np.array([[1, 0], [0, 1]]), np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])]
+        self.assertEqual(func_info.numpy_func(A).a, 13)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> A1;",
+                     "    A1 << 1, 0, 0, 1;",
+                     "    Eigen::Matrix<double, 3, 3> A2;",
+                     "    A2 << 1, 0, 0, 0, 1, 0, 0, 0, 1;",
+                     "    std::vector<Eigen::MatrixXd> A;",
+                     "    A.push_back(A1);",
+                     "    A.push_back(A2);",
+                     "    double C = {}(A).a;".format(func_info.eig_func_name),
+                     "    return C == 13;",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_ragged_array2(self):
+        # matrix
+        la_str = """a = ∑_i ∑_j (A_i,j,* B_i)
+        where
+        A_i ∈ ℝ^(n_i×m_i)
+        B_i ∈ ℝ^m_i"""
+        func_info = self.gen_func_info(la_str)
+        A = [np.array([[1, 0], [0, 1]]), np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])]
+        B = [np.array([1, 1]), np.array([2, 2, 2])]
+        self.assertEqual(func_info.numpy_func(A, B).a, 8)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> A1;",
+                     "    A1 << 1, 0, 0, 1;",
+                     "    Eigen::Matrix<double, 3, 3> A2;",
+                     "    A2 << 1, 0, 0, 0, 1, 0, 0, 0, 1;",
+                     "    std::vector<Eigen::MatrixXd> A;",
+                     "    A.push_back(A1);",
+                     "    A.push_back(A2);",
+                     "    Eigen::Matrix<double, 2, 1> B1;",
+                     "    B1 << 1, 1;",
+                     "    Eigen::Matrix<double, 3, 1> B2;",
+                     "    B2 << 2, 2, 2;",
+                     "    std::vector<Eigen::VectorXd> B;",
+                     "    B.push_back(B1);",
+                     "    B.push_back(B2);",
+                     "    double C = {}(A, B).a;".format(func_info.eig_func_name),
+                     "    return C == 8;",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())

@@ -1624,7 +1624,7 @@ class TypeWalker(NodeWalker):
                                 col_index_info = self.walk(node.right[2])
                                 ir_node.col_index = col_index_info.ir
                             else:
-                                la_type = MatrixType(rows=1, cols=self.symtable[left_info.content].cols)
+                                la_type = MatrixType(rows=1, cols=self.symtable[left_info.content].element_type.cols)
                                 row_index_info = self.walk(node.right[1])
                                 ir_node.row_index = row_index_info.ir
                         else:
