@@ -285,6 +285,13 @@ class InNode(StmtNode):
         super().__init__(IRNodeType.In, parse_info=parse_info, raw_text=raw_text)
         self.items = []
         self.set = None
+        self.loop = False  # special handling
+
+    def same_subs(self, subs):
+        if len(subs) == len(self.items):
+            raw_list = [item.raw_text for item in self.items]
+            return set(raw_list) == set([sub for sub in subs])
+        return False
 
 
 class NotInNode(StmtNode):
@@ -663,12 +670,20 @@ class SparseIfNode(ExprNode):
         self.id1 = None
         self.id2 = None
         self.first_in_list = None
+        self.loop = False  # special handling
 
 
 class SparseIfsNode(ExprNode):
     def __init__(self, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.SparseIfs, parse_info=parse_info, raw_text=raw_text)
         self.cond_list = []
+        self.in_cond_only = False
+
+    def set_in_cond_only(self, value):
+        self.in_cond_only = value
+        if value:
+            for cond in self.cond_list:
+                cond.loop = True
 
 
 class SparseOtherNode(ExprNode):

@@ -653,7 +653,7 @@ class TypeWalker(NodeWalker):
 
     def walk_Expression(self, node, **kwargs):
         value_info = self.walk(node.value, **kwargs)
-        ir_node = ExpressionNode(parse_info=node.parseinfo)
+        ir_node = ExpressionNode(parse_info=node.parseinfo, raw_text=node.text)
         value_info.ir.set_parent(ir_node)
         ir_node.la_type = value_info.la_type
         ir_node.value = value_info.ir
@@ -745,7 +745,7 @@ class TypeWalker(NodeWalker):
 
     def walk_Subexpression(self, node, **kwargs):
         value_info = self.walk(node.value, **kwargs)
-        ir_node = SubexpressionNode(parse_info=node.parseinfo)
+        ir_node = SubexpressionNode(parse_info=node.parseinfo, raw_text=node.text)
         ir_node.value = value_info.ir
         ir_node.la_type = value_info.la_type
         value_info.ir = ir_node
@@ -1876,11 +1876,15 @@ class TypeWalker(NodeWalker):
         ifs_info = self.walk(node.ifs, **kwargs)
         ifs_node = SparseIfsNode(parse_info=node.ifs.parseinfo)
         first = True
+        in_cond_only = True
         for ir in ifs_info.ir:
             ir.first_in_list = first
             first = False
             ifs_node.cond_list.append(ir)
             ir.set_parent(ifs_node)
+            if not (ir.cond.cond.node_type == IRNodeType.In and ir.cond.cond.same_subs(all_ids[1])):
+                in_cond_only = False
+        ifs_node.set_in_cond_only(in_cond_only)
         ifs_node.set_parent(ir_node)
         ir_node.ifs = ifs_node
         # otherwise
