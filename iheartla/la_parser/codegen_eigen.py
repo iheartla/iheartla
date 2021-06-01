@@ -721,20 +721,29 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo(cur_m_id, pre_list)
 
     def visit_sparse_ifs(self, node, **kwargs):
-        assign_node = node.get_ancestor(IRNodeType.Assignment)
-        sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
-        subs = assign_node.left.subs
-        ret = ["    for( int {}=1; {}<={}; {}++){{\n".format(subs[0], subs[0], sparse_node.la_type.rows, subs[0]),
-               "        for( int {}=1; {}<={}; {}++){{\n".format(subs[1], subs[1], sparse_node.la_type.cols, subs[1])]
         pre_list = []
-        for cond in node.cond_list:
-            cond_info = self.visit(cond, **kwargs)
-            for index in range(len(cond_info.content)):
-                cond_info.content[index] = '            ' + cond_info.content[index]
-            ret += cond_info.content
-            pre_list += cond_info.pre_list
-        ret.append("        }\n")
-        ret.append("    }\n")
+        if node.in_cond_only:
+            ret = []
+            for cond in node.cond_list:
+                cond_info = self.visit(cond, **kwargs)
+                for index in range(len(cond_info.content)):
+                    cond_info.content[index] = self.update_prelist_str([cond_info.content[index]], '    ')
+                ret += cond_info.content
+                pre_list += cond_info.pre_list
+        else:
+            assign_node = node.get_ancestor(IRNodeType.Assignment)
+            sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
+            subs = assign_node.left.subs
+            ret = ["    for( int {}=1; {}<={}; {}++){{\n".format(subs[0], subs[0], sparse_node.la_type.rows, subs[0]),
+                   "        for( int {}=1; {}<={}; {}++){{\n".format(subs[1], subs[1], sparse_node.la_type.cols, subs[1])]
+            for cond in node.cond_list:
+                cond_info = self.visit(cond, **kwargs)
+                for index in range(len(cond_info.content)):
+                    cond_info.content[index] = '            ' + cond_info.content[index]
+                ret += cond_info.content
+                pre_list += cond_info.pre_list
+            ret.append("        }\n")
+            ret.append("    }\n")
         return CodeNodeInfo(ret, pre_list)
 
     def visit_sparse_if(self, node, **kwargs):
@@ -747,10 +756,17 @@ class CodeGenEigen(CodeGen):
         stat_content = stat_info.content
         # replace '_ij' with '(i,j)'
         stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '({}, {})'.format(subs[0], subs[1]))
-        content.append('{}({}){{\n'.format("if" if node.first_in_list else "else if",cond_info.content))
-        content += stat_info.pre_list
-        content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(assign_node.left.main.main_id, subs[0], subs[1], stat_content))
-        content.append('}\n')
+        if node.loop:
+            content += stat_info.pre_list
+            content.append(cond_info.content)
+            content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(
+                assign_node.left.main.main_id, subs[0], subs[1], stat_content))
+            content.append('}\n')
+        else:
+            content.append('{}({}){{\n'.format("if" if node.first_in_list else "else if",cond_info.content))
+            content += stat_info.pre_list
+            content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(assign_node.left.main.main_id, subs[0], subs[1], stat_content))
+            content.append('}\n')
         self.convert_matrix = False
         return CodeNodeInfo(content)
 
@@ -1233,12 +1249,22 @@ class CodeGenEigen(CodeGen):
                     item_content = "{}+1".format(item_info.content)
                 item_list.append(item_content)
                 pre_list += item_info.pre_list
-        if node.set.node_type != IRNodeType.Id:
-            set_name = self.generate_var_name('set')
-            pre_list.append('{} {} = {};\n'.format(self.get_ctype(node.set.la_type), set_name, right_info.content))
-            content = '{}.find({}({})) != {}.end()'.format(set_name, self.get_set_item_str(node.set.la_type), ', '.join(item_list), set_name)
+        if node.loop:
+            if node.set.node_type != IRNodeType.Id:
+                set_name = self.generate_var_name('set')
+                pre_list.append('{} {} = {};\n'.format(self.get_ctype(node.set.la_type), set_name, right_info.content))
+                content = 'for({} tuple : {}){{\n'.format(self.get_set_item_str(node.set.la_type), set_name)
+            else:
+                content = 'for({} tuple : {}){{\n'.format(self.get_set_item_str(node.set.la_type), right_info.content)
+            content += '    int {} = std::get<0>(tuple);\n'.format(item_list[0])
+            content += '    int {} = std::get<1>(tuple);\n'.format(item_list[1])
         else:
-            content = '{}.find({}({})) != {}.end()'.format(right_info.content, self.get_set_item_str(node.set.la_type), ', '.join(item_list),right_info.content)
+            if node.set.node_type != IRNodeType.Id:
+                set_name = self.generate_var_name('set')
+                pre_list.append('{} {} = {};\n'.format(self.get_ctype(node.set.la_type), set_name, right_info.content))
+                content = '{}.find({}({})) != {}.end()'.format(set_name, self.get_set_item_str(node.set.la_type), ', '.join(item_list), set_name)
+            else:
+                content = '{}.find({}({})) != {}.end()'.format(right_info.content, self.get_set_item_str(node.set.la_type), ', '.join(item_list),right_info.content)
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_not_in(self, node, **kwargs):

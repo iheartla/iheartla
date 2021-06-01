@@ -613,12 +613,21 @@ class CodeGenNumpy(CodeGen):
         ret = ["    for {} in range(1, {}+1):\n".format(subs[0], sparse_node.la_type.rows),
                "        for {} in range(1, {}+1):\n".format(subs[1], sparse_node.la_type.cols)]
         pre_list = []
-        for cond in node.cond_list:
-            cond_info = self.visit(cond, **kwargs)
-            for index in range(len(cond_info.content)):
-                cond_info.content[index] = '            ' + cond_info.content[index]
-            ret += cond_info.content
-            pre_list += cond_info.pre_list
+        if node.in_cond_only:
+            ret = []
+            for cond in node.cond_list:
+                cond_info = self.visit(cond, **kwargs)
+                for index in range(len(cond_info.content)):
+                    cond_info.content[index] = self.update_prelist_str([cond_info.content[index]], '    ')
+                ret += cond_info.content
+                pre_list += cond_info.pre_list
+        else:
+            for cond in node.cond_list:
+                cond_info = self.visit(cond, **kwargs)
+                for index in range(len(cond_info.content)):
+                    cond_info.content[index] = '            ' + cond_info.content[index]
+                ret += cond_info.content
+                pre_list += cond_info.pre_list
         return CodeNodeInfo(ret, pre_list)
 
     def visit_sparse_if(self, node, **kwargs):
@@ -632,9 +641,15 @@ class CodeGenNumpy(CodeGen):
         stat_content = stat_info.content
         # replace '_ij' with '(i,j)'
         stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '[{}][{}]'.format(subs[0], subs[1]))
-        content.append('{} {}:\n'.format("if" if node.first_in_list else "elif", cond_info.content))
-        content.append('    {}.append(({}-1, {}-1))\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
-        content.append('    {}.append({})\n'.format(sparse_node.la_type.value_var, stat_content))
+        if node.loop:
+            content += stat_info.pre_list
+            content.append(cond_info.content)
+            content.append('    {}.append(({}-1, {}-1))\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
+            content.append('    {}.append({})\n'.format(sparse_node.la_type.value_var, stat_content))
+        else:
+            content.append('{} {}:\n'.format("if" if node.first_in_list else "elif", cond_info.content))
+            content.append('    {}.append(({}-1, {}-1))\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
+            content.append('    {}.append({})\n'.format(sparse_node.la_type.value_var, stat_content))
         self.convert_matrix = False
         return CodeNodeInfo(content)
 
@@ -1030,7 +1045,10 @@ class CodeGenNumpy(CodeGen):
                     item_content = "{}+1".format(item_info.content)
                 item_list.append(item_content)
                 pre_list += item_info.pre_list
-        content = '(' + ', '.join(item_list) + ') in ' + right_info.content
+        if node.loop:
+            content = 'for ({}) in {}:\n'.format(', '.join(item_list), right_info.content)
+        else:
+            content = '(' + ', '.join(item_list) + ') in ' + right_info.content
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_not_in(self, node, **kwargs):

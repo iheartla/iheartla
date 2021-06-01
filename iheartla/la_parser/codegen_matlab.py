@@ -692,15 +692,24 @@ class CodeGenMatlab(CodeGen):
         ret = ["    for {} = 1:{}\n".format(subs[0], sparse_node.la_type.rows),
                "        for {} = 1:{}\n".format(subs[1], sparse_node.la_type.cols)]
         pre_list = []
-        for cond in node.cond_list:
-            cond_info = self.visit(cond, **kwargs)
-            for index in range(len(cond_info.content)):
-                cond_info.content[index] = '            ' + cond_info.content[index]
-            ret += cond_info.content
-            pre_list += cond_info.pre_list
-        ret += '            end\n'
-        ret += "        end\n"
-        ret += "    end\n"
+        if node.in_cond_only:
+            ret = []
+            for cond in node.cond_list:
+                cond_info = self.visit(cond, **kwargs)
+                for index in range(len(cond_info.content)):
+                    cond_info.content[index] = self.update_prelist_str([cond_info.content[index]], '    ')
+                ret += cond_info.content
+                pre_list += cond_info.pre_list
+        else:
+            for cond in node.cond_list:
+                cond_info = self.visit(cond, **kwargs)
+                for index in range(len(cond_info.content)):
+                    cond_info.content[index] = '            ' + cond_info.content[index]
+                ret += cond_info.content
+                pre_list += cond_info.pre_list
+            ret += '            end\n'
+            ret += "        end\n"
+            ret += "    end\n"
         return CodeNodeInfo(ret, pre_list)
 
     def visit_sparse_if(self, node, **kwargs):
@@ -714,10 +723,17 @@ class CodeGenMatlab(CodeGen):
         stat_content = stat_info.content
         # replace '_ij' with '(i,j)'
         stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '({},{})'.format(subs[0], subs[1]))
-        content.append('{} {}\n'.format("if" if node.first_in_list else "elseif",cond_info.content))
-        # https://www.mathworks.com/matlabcentral/answers/392985-why-does-is-take-o-n-2-to-append-elements-in-matlab-when-it-takes-o-n-amortized-time-in-theory#comment_1520858
-        content.append('    {}(1:2,end+1) = [{};{}];\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
-        content.append('    {}(end+1) = {};\n'.format(   sparse_node.la_type.value_var, stat_content))
+        if node.loop:
+            content += stat_info.pre_list
+            content.append(cond_info.content)
+            content.append('    {}(1:2,end+1) = [{};{}];\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
+            content.append('    {}(end+1) = {};\n'.format(sparse_node.la_type.value_var, stat_content))
+            content.append('end\n')
+        else:
+            content.append('{} {}\n'.format("if" if node.first_in_list else "elseif",cond_info.content))
+            # https://www.mathworks.com/matlabcentral/answers/392985-why-does-is-take-o-n-2-to-append-elements-in-matlab-when-it-takes-o-n-amortized-time-in-theory#comment_1520858
+            content.append('    {}(1:2,end+1) = [{};{}];\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
+            content.append('    {}(end+1) = {};\n'.format(   sparse_node.la_type.value_var, stat_content))
         self.convert_matrix = False
         return CodeNodeInfo(content)
 
@@ -1134,7 +1150,13 @@ class CodeGenMatlab(CodeGen):
                 else:
                     item_content = "{}+1".format(item_info.content)
                 item_list.append(item_content)
-        content = 'ismember([' + ', '.join(item_list) + '],' + right_info.content+",'rows')"
+        if node.loop:
+            index_name = self.generate_var_name('index')
+            content = 'for {} = 1:size({}, 1)\n'.format(index_name, right_info.content)
+            content += '    {} = {}({}, 1);\n'.format(item_list[0], right_info.content, index_name)
+            content += '    {} = {}({}, 2);\n'.format(item_list[1], right_info.content, index_name)
+        else:
+            content = 'ismember([' + ', '.join(item_list) + '],' + right_info.content+",'rows')"
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_not_in(self, node, **kwargs):

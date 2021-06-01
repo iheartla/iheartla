@@ -257,6 +257,7 @@ class IfNode(StmtNode):
     def __init__(self, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.If, parse_info=parse_info, raw_text=raw_text)
         self.cond = None
+        self.loop = False
 
     def get_child(self, node_type):
         if self.cond.is_node(node_type):
@@ -264,6 +265,10 @@ class IfNode(StmtNode):
         else:
             child_node = self.cond.get_child(node_type)
         return child_node
+
+    def set_loop(self, loop):
+        if self.cond:
+            self.cond.loop = loop
 
 
 class ConditionType(IntEnum):
@@ -666,11 +671,17 @@ class SparseIfNode(ExprNode):
     def __init__(self, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.SparseIf, parse_info=parse_info, raw_text=raw_text)
         self.stat = None
+        self.cond = None
         self.id0 = None
         self.id1 = None
         self.id2 = None
         self.first_in_list = None
         self.loop = False  # special handling
+
+    def set_loop(self, loop):
+        self.loop = loop
+        if self.cond:
+            self.cond.set_loop(loop)
 
 
 class SparseIfsNode(ExprNode):
@@ -683,7 +694,7 @@ class SparseIfsNode(ExprNode):
         self.in_cond_only = value
         if value:
             for cond in self.cond_list:
-                cond.loop = True
+                cond.set_loop(True)
 
 
 class SparseOtherNode(ExprNode):
