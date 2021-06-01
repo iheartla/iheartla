@@ -1938,12 +1938,12 @@ class TypeWalker(NodeWalker):
 
     def walk_SparseIfs(self, node, **kwargs):
         ir_list = []
-        if node.value:
-            node_info = self.walk(node.value, **kwargs)
-            ir_list.append(node_info.ir)
         if node.ifs:
             node_info = self.walk(node.ifs, **kwargs)
             ir_list += node_info.ir
+        if node.value:
+            node_info = self.walk(node.value, **kwargs)
+            ir_list.append(node_info.ir)
         ret_info = NodeInfo(ir=ir_list)
         return ret_info
 

@@ -728,8 +728,8 @@ class CodeGenEigen(CodeGen):
                 cond_info = self.visit(cond, **kwargs)
                 for index in range(len(cond_info.content)):
                     cond_info.content[index] = self.update_prelist_str([cond_info.content[index]], '    ')
+                ret += cond_info.pre_list
                 ret += cond_info.content
-                pre_list += cond_info.pre_list
         else:
             assign_node = node.get_ancestor(IRNodeType.Assignment)
             sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
