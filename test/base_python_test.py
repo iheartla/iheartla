@@ -97,6 +97,7 @@ class BasePythonTest(unittest.TestCase):
         # coo matrix comparision
         assert A.shape == B.shape
         # assert (A.data == B.data).all()
-        assert np.allclose(A.data, B.data, rtol=0, atol=self.eps)
-        assert (A.row == B.row).all()
-        assert (A.col == B.col).all()
+        # assert np.allclose(A.data, B.data, rtol=0, atol=self.eps)
+        assert (abs(A-B) > self.eps).nnz == 0
+        # assert (A.row == B.row).all()
+        # assert (A.col == B.col).all()
