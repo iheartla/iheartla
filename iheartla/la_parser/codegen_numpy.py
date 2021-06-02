@@ -1028,26 +1028,57 @@ class CodeGenNumpy(CodeGen):
         pre_list = []
         right_info = self.visit(node.set, **kwargs)
         pre_list += right_info.pre_list
-        if node.set.la_type.index_type:
-            for item in node.items:
-                item_info = self.visit(item, **kwargs)
-                item_content = item_info.content
-                if not item.la_type.index_type:
-                    item_content = "{}-1".format(item_info.content)
-                item_list.append(item_content)
-                pre_list += item_info.pre_list
-        else:
-            for item in node.items:
-                item_info = self.visit(item, **kwargs)
-                if not item.la_type.index_type:
-                    item_content = "{}".format(item_info.content)
-                else:
-                    item_content = "{}+1".format(item_info.content)
-                item_list.append(item_content)
-                pre_list += item_info.pre_list
         if node.loop:
-            content = 'for ({}) in {}:\n'.format(', '.join(item_list), right_info.content)
+            extra_list = []
+            extra_blank = True
+            if node.set.la_type.index_type:
+                for item in node.items:
+                    item_info = self.visit(item, **kwargs)
+                    item_content = item_info.content
+                    extra_content = ''
+                    if not item.la_type.index_type:
+                        # item_content = "{}-1".format(item_info.content)
+                        extra_content = '+1'
+                        extra_blank = False
+                    item_list.append(item_content)
+                    extra_list.append(extra_content)
+                    pre_list += item_info.pre_list
+            else:
+                for item in node.items:
+                    item_info = self.visit(item, **kwargs)
+                    extra_content = ''
+                    item_content = "{}".format(item_info.content)
+                    if item.la_type.index_type:
+                        # item_content = "{}+1".format(item_info.content)
+                        extra_content = '-1'
+                        extra_blank = False
+                    item_list.append(item_content)
+                    extra_list.append(extra_content)
+            if extra_blank:
+                content = 'for ({}) in {}:\n'.format(', '.join(item_list), right_info.content)
+            else:
+                index_name = self.generate_var_name('tuple')
+                content = 'for {} in {}:\n'.format(index_name, right_info.content)
+                content += '    {} = {}[0]{}\n'.format(item_list[0], index_name, extra_list[0])
+                content += '    {} = {}[1]{}\n'.format(item_list[1], index_name, extra_list[1])
         else:
+            if node.set.la_type.index_type:
+                for item in node.items:
+                    item_info = self.visit(item, **kwargs)
+                    item_content = item_info.content
+                    if not item.la_type.index_type:
+                        item_content = "{}-1".format(item_info.content)
+                    item_list.append(item_content)
+                    pre_list += item_info.pre_list
+            else:
+                for item in node.items:
+                    item_info = self.visit(item, **kwargs)
+                    if not item.la_type.index_type:
+                        item_content = "{}".format(item_info.content)
+                    else:
+                        item_content = "{}+1".format(item_info.content)
+                    item_list.append(item_content)
+                    pre_list += item_info.pre_list
             content = '(' + ', '.join(item_list) + ') in ' + right_info.content
         return CodeNodeInfo(content=content, pre_list=pre_list)
 

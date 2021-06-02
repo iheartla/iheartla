@@ -1232,33 +1232,55 @@ class CodeGenEigen(CodeGen):
         pre_list = []
         right_info = self.visit(node.set, **kwargs)
         pre_list += right_info.pre_list
-        if node.set.la_type.index_type:
-            for item in node.items:
-                item_info = self.visit(item, **kwargs)
-                item_content = item_info.content
-                if not item.la_type.index_type:
-                    item_content = "{}-1".format(item_info.content)
-                item_list.append(item_content)
-                pre_list += item_info.pre_list
-        else:
-            for item in node.items:
-                item_info = self.visit(item, **kwargs)
-                if not item.la_type.index_type:
-                    item_content = "{}".format(item_info.content)
-                else:
-                    item_content = "{}+1".format(item_info.content)
-                item_list.append(item_content)
-                pre_list += item_info.pre_list
         if node.loop:
+            extra_list = []
+            if node.set.la_type.index_type:
+                for item in node.items:
+                    item_info = self.visit(item, **kwargs)
+                    item_content = item_info.content
+                    extra_content = ''
+                    if not item.la_type.index_type:
+                        # item_content = "{}-1".format(item_info.content)
+                        extra_content = '+1'
+                    item_list.append(item_content)
+                    extra_list.append(extra_content)
+                    pre_list += item_info.pre_list
+            else:
+                for item in node.items:
+                    item_info = self.visit(item, **kwargs)
+                    extra_content = ''
+                    item_content = "{}".format(item_info.content)
+                    if item.la_type.index_type:
+                        # item_content = "{}+1".format(item_info.content)
+                        extra_content = '-1'
+                    item_list.append(item_content)
+                    extra_list.append(extra_content)
             if node.set.node_type != IRNodeType.Id:
                 set_name = self.generate_var_name('set')
                 pre_list.append('{} {} = {};\n'.format(self.get_ctype(node.set.la_type), set_name, right_info.content))
                 content = 'for({} tuple : {}){{\n'.format(self.get_set_item_str(node.set.la_type), set_name)
             else:
                 content = 'for({} tuple : {}){{\n'.format(self.get_set_item_str(node.set.la_type), right_info.content)
-            content += '    int {} = std::get<0>(tuple);\n'.format(item_list[0])
-            content += '    int {} = std::get<1>(tuple);\n'.format(item_list[1])
+            content += '    int {} = std::get<0>(tuple){};\n'.format(item_list[0], extra_list[0])
+            content += '    int {} = std::get<1>(tuple){};\n'.format(item_list[1], extra_list[1])
         else:
+            if node.set.la_type.index_type:
+                for item in node.items:
+                    item_info = self.visit(item, **kwargs)
+                    item_content = item_info.content
+                    if not item.la_type.index_type:
+                        item_content = "{}-1".format(item_info.content)
+                    item_list.append(item_content)
+                    pre_list += item_info.pre_list
+            else:
+                for item in node.items:
+                    item_info = self.visit(item, **kwargs)
+                    if not item.la_type.index_type:
+                        item_content = "{}".format(item_info.content)
+                    else:
+                        item_content = "{}+1".format(item_info.content)
+                    item_list.append(item_content)
+                    pre_list += item_info.pre_list
             if node.set.node_type != IRNodeType.Id:
                 set_name = self.generate_var_name('set')
                 pre_list.append('{} {} = {};\n'.format(self.get_ctype(node.set.la_type), set_name, right_info.content))
