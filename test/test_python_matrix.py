@@ -412,6 +412,28 @@ class TestMatrix(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_shadow_identity_matrix(self):
+        la_str = """given
+        I ∈ ℝ²
+        I_1+I_2"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([1, 2])
+        self.assertEqual(func_info.numpy_func(A).ret, 3)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func(matlab.double(A.tolist()))['ret']), 3)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 1> A;",
+                     "    A << 1, 2;",
+                     "    double C = {}(A).ret;".format(func_info.eig_func_name),
+                     "    return C == 3;",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_sparse_matrix_0(self):
         # sparse matrix: =
         la_str = """G_ij = { P_ij + J_ij  if  ( i , j ) ∈ E

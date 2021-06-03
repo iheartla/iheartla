@@ -184,6 +184,41 @@ class TestProduct(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_kronecker_product1(self):
+        la_str = """A = T ⊗ P
+                    where 
+                    T: ℝ ^ (a×b): a sequence
+                    P: ℝ ^ (c×d): a sequence"""
+        func_info = self.gen_func_info(la_str)
+        T = np.array([[1, 2, 3], [3, 4, 5]])
+        P = np.array([[5, 6, 7], [7, 8, 9]])
+        A = np.array([[5, 6, 7, 10, 12, 14, 15, 18, 21],
+                      [7, 8, 9, 14, 16, 18, 21, 24, 27],
+                      [15, 18, 21, 20, 24, 28, 25, 30, 35],
+                      [21, 24, 27, 28, 32, 36, 35, 40, 45]])
+        self.assertDMatrixEqual(func_info.numpy_func(T, P).A, A)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(T.tolist()), matlab.double(P.tolist()))['A']), A)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 3> T;",
+                     "    T << 1, 2, 3, 3, 4, 5;",
+                     "    Eigen::Matrix<double, 2, 3> P;",
+                     "    P << 5, 6, 7, 7, 8, 9;",
+                     "    Eigen::Matrix<double, 4, 9> A;",
+                     "    A << 5, 6, 7, 10, 12, 14, 15, 18, 21,"
+                     "    7, 8, 9, 14, 16, 18, 21, 24, 27,"
+                     "    15, 18, 21, 20, 24, 28, 25, 30, 35,"
+                     "    21, 24, 27, 28, 32, 36, 35, 40, 45;",
+                     "   Eigen::Matrix<double, 4, 9> B = {}(T, P).A;".format(func_info.eig_func_name),
+                     "    return ((B - A).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_kronecker_product_sparse_lhs(self):
         la_str = """A = T ⊗ P
                     where 

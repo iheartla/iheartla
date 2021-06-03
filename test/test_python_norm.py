@@ -259,6 +259,94 @@ class TestNorm(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_matrix_frobenius1(self):
+        la_str = """A = ||T||_F²
+                    where 
+                    T: ℝ ^ (2×2): matrix"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([[0, 5], [0, 12]])
+        self.assertEqual(func_info.numpy_func(A).A, 169)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func(matlab.double(A.tolist()))['A']), 169)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> A;",
+                     "    A << 0, 5, 0, 12;",
+                     "    double B = {}(A).A;".format(func_info.eig_func_name),
+                     "    return (B == 169);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_matrix_frobenius2(self):
+        la_str = """A = ||T||_F^2
+                    where 
+                    T: ℝ ^ (2×2): matrix"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([[0, 5], [0, 12]])
+        self.assertEqual(func_info.numpy_func(A).A, 169)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func(matlab.double(A.tolist()))['A']), 169)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> A;",
+                     "    A << 0, 5, 0, 12;",
+                     "    double B = {}(A).A;".format(func_info.eig_func_name),
+                     "    return (B == 169);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_matrix_frobenius3(self):
+        la_str = """A = ||T||^2_F
+                    where 
+                    T: ℝ ^ (2×2): matrix"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([[0, 5], [0, 12]])
+        self.assertEqual(func_info.numpy_func(A).A, 169)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func(matlab.double(A.tolist()))['A']), 169)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> A;",
+                     "    A << 0, 5, 0, 12;",
+                     "    double B = {}(A).A;".format(func_info.eig_func_name),
+                     "    return (B == 169);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_matrix_frobenius4(self):
+        la_str = """A = ||T||²_F
+                    where 
+                    T: ℝ ^ (2×2): matrix"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([[0, 5], [0, 12]])
+        self.assertEqual(func_info.numpy_func(A).A, 169)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func(matlab.double(A.tolist()))['A']), 169)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> A;",
+                     "    A << 0, 5, 0, 12;",
+                     "    double B = {}(A).A;".format(func_info.eig_func_name),
+                     "    return (B == 169);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_matrix_nuclear(self):
         la_str = """A = ||T||_*
                     where 
