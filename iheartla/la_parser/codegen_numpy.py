@@ -371,8 +371,8 @@ class CodeGenNumpy(CodeGen):
             elif self.symtable[parameter].is_set():
                 type_declare.append('    {} = frozenset({})'.format(parameter, parameter))
                 # type_checks.append('    assert isinstance({}, list) and len({}) > 0'.format(parameter, parameter))
-                # if self.symtable[parameter].size > 1:
-                #     type_checks.append('    assert len({}[0]) == {}'.format(parameter, self.symtable[parameter].size))
+                if self.symtable[parameter].size > 1:
+                    type_checks.append('    assert all( len(el) == {} for el in {} )'.format(self.symtable[parameter].size, parameter))
                 test_content += self.get_set_test_list(parameter, self.generate_var_name("dim"), 'i', self.symtable[parameter],
                                                        rand_int_max, '    ')
             elif self.symtable[parameter].is_function():
