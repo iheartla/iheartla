@@ -780,7 +780,9 @@ class TypeWalker(NodeWalker):
                 cur_sym_dict = self.lhs_sym_list[cur_index]
                 if self.get_main_id(id0) not in self.symtable:
                     assert len(cur_sym_dict) > 0, self.get_err_msg_info(node.left.right[cur_index].parseinfo, "Subscript hasn't been used on rhs")
-                self.check_sum_subs(self.lhs_subs[cur_index], cur_sym_dict)
+                # self.check_sum_subs(self.lhs_subs[cur_index], cur_sym_dict)
+                assert self.check_sum_subs(self.lhs_subs[cur_index], cur_sym_dict), self.get_err_msg_info(node.left.right[cur_index].parseinfo,
+                                                                                      "Subscript has inconsistent dimensions")
         self.lhs_sym_list.clear()
         self.lhs_subs.clear()
         #
@@ -959,8 +961,8 @@ class TypeWalker(NodeWalker):
         self.sum_conds.pop()
         cur_sym_dict = self.sum_sym_list.pop()
         assert len(cur_sym_dict) > 0, self.get_err_msg_info(sub_parse_info, "Subscript hasn't been used in summation")
-        self.check_sum_subs(subs, cur_sym_dict)
-        # assert self.check_sum_subs(subs, cur_sym_dict), self.get_err_msg_info(sub_parse_info, "Subscript has inconsistent dimensions")
+        # self.check_sum_subs(subs, cur_sym_dict)
+        assert self.check_sum_subs(subs, cur_sym_dict), self.get_err_msg_info(sub_parse_info, "Subscript has inconsistent dimensions")
         ir_node.sym_dict = cur_sym_dict
         ret_info.ir = ir_node
         del self.symtable[subs]   # remove subscript from symbol table
@@ -971,27 +973,35 @@ class TypeWalker(NodeWalker):
     def check_sum_subs(self, subs, sym_dict):
         self.logger.debug("subs:{}, sym_dict:{}".format(subs, sym_dict))
         dim_set = set()
+        seq_cnt = 0  #
+        valid = True
         for k, v in sym_dict.items():
             cur_type = self.symtable[k]
             for cur_index in range(len(v)):
                 if v[cur_index] == subs:
                     cur_dim = cur_type.get_dim_size(cur_index)
+                    if cur_type.is_sequence() and cur_index == 0:
+                        if cur_dim not in dim_set:
+                            seq_cnt += 1
                     dim_set.add(cur_dim)
-        if len(dim_set) > 1:
-            found = False
-            for cur_index in range(len(self.same_dim_list)):
-                for ele in dim_set:
-                    if ele in self.same_dim_list[cur_index]:
-                        found = True
-                        self.same_dim_list[cur_index].union(dim_set)
+        if len(dim_set) > seq_cnt+1:
+            valid = False
+        else:
+            if len(dim_set) > 1:
+                found = False
+                for cur_index in range(len(self.same_dim_list)):
+                    for ele in dim_set:
+                        if ele in self.same_dim_list[cur_index]:
+                            found = True
+                            self.same_dim_list[cur_index].union(dim_set)
+                            break
+                    if found:
                         break
-                if found:
-                    break
-            if not found:
-                self.same_dim_list.append(dim_set)
+                if not found:
+                    self.same_dim_list.append(dim_set)
         self.logger.debug("dim_set:{}".format(dim_set))
         self.logger.debug("self.same_dim_list:{}".format(self.same_dim_list))
-        return True
+        return valid
 
     def walk_Optimize(self, node, **kwargs):
         opt_type = OptimizeType.OptimizeInvalid
