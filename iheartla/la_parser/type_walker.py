@@ -295,9 +295,20 @@ class TypeWalker(NodeWalker):
         # vblock
         vblock_list = []
         multi_lhs_list = []
+        raw_param_list = []  # handle params first
         self.rhs_raw_str_list.clear()
         for vblock in node.vblock:
-            vblock_info = self.walk(vblock, **kwargs)
+            if type(vblock).__name__ == 'ParamsBlock':
+                raw_param_list.append(vblock)
+        param_ir_list = self.extract_all_params(raw_param_list)
+        #
+        param_ir_index = 0
+        for vblock in node.vblock:
+            if type(vblock).__name__ == 'ParamsBlock':
+                vblock_info = param_ir_list[param_ir_index]
+                param_ir_index += 1
+            else:
+                vblock_info = self.walk(vblock, **kwargs)
             vblock_list.append(vblock_info)
             if isinstance(vblock_info, list) and len(vblock_info) > 0:  # statement list with single statement
                 if type(vblock_info[0]).__name__ == 'Assignment':
@@ -355,6 +366,66 @@ class TypeWalker(NodeWalker):
         return ir_node
 
     ###################################################################
+    def extract_all_params(self, raw_param_list, **kwargs):
+        self.is_param_block = True
+        param_ir_list = []
+        total_list = []  # all lines of params
+        total_map = []
+        #
+        ir_index = []  # matrix, vector
+        param_index = []
+        func_index = []  # function
+        func_param_index = []
+        scalar_index = []
+        scalar_param_index = []
+        #
+        cur_param_index = 0
+        cur_line_index = 0  # line of params
+        for raw_block_index in range(len(raw_param_list)):
+            raw_param_node = raw_param_list[raw_block_index]
+            where_conds = WhereConditionsNode(parse_info=raw_param_node.conds.parseinfo)
+            where_conds.value = [None] * len(raw_param_node.conds.value)
+            ir_node = ParamsBlockNode(parse_info=raw_param_node.parseinfo, annotation=raw_param_node.annotation,
+                                      conds=where_conds)
+            param_ir_list.append(ir_node)
+            for i in range(len(raw_param_node.conds.value)):
+                if type(raw_param_node.conds.value[i].type).__name__ == "ScalarType" or type(
+                        raw_param_node.conds.value[i].type).__name__ == "SetType":
+                    scalar_index.append(i+cur_line_index)
+                    scalar_param_index.append(cur_param_index)
+                elif type(raw_param_node.conds.value[i].type).__name__ == "FunctionType":
+                    func_index.append(i+cur_line_index)
+                    func_param_index.append(cur_param_index)
+                else:
+                    ir_index.append(i+cur_line_index)
+                    param_index.append(cur_param_index)
+                cur_param_index += len(raw_param_node.conds.value[i].id)
+                total_list.append(raw_param_node.conds.value[i])
+                total_map.append((raw_block_index, i))
+            cur_line_index += len(raw_param_node.conds.value)
+        self.parameters = [None] * cur_param_index
+        # walk scalar first
+        if len(scalar_index) > 0:
+            for i in range(len(scalar_index)):
+                kwargs[PARAM_INDEX] = scalar_param_index[i]
+                total_list[scalar_index[i]] = self.walk(total_list[scalar_index[i]], **kwargs)
+        # matrix, vector nodes
+        if len(ir_index) > 0:
+            for i in range(len(ir_index)):
+                kwargs[PARAM_INDEX] = param_index[i]
+                total_list[ir_index[i]] = self.walk(total_list[ir_index[i]], **kwargs)
+        # func nodes:
+        if len(func_index) > 0:
+            for i in range(len(func_index)):
+                kwargs[PARAM_INDEX] = func_param_index[i]
+                total_list[func_index[i]] = self.walk(total_list[func_index[i]], **kwargs)
+        # set ir back
+        for i in range(len(total_list)):
+            ir_index, cond_index = total_map[i]
+            param_ir_list[ir_index].conds.value[cond_index] = total_list[i]
+        self.is_param_block = False
+        return param_ir_list
+
     def walk_ParamsBlock(self, node, **kwargs):
         self.is_param_block = True
         where_conds = self.walk(node.conds, **kwargs)
