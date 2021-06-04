@@ -984,7 +984,7 @@ class TypeWalker(NodeWalker):
                         if cur_dim not in dim_set:
                             seq_cnt += 1
                     dim_set.add(cur_dim)
-        if len(dim_set) > seq_cnt+1:
+        if len(dim_set) > seq_cnt+1 or seq_cnt > 1:
             valid = False
         else:
             if len(dim_set) > 1:
