@@ -312,13 +312,14 @@ class TypeWalker(NodeWalker):
             vblock_list.append(vblock_info)
             if isinstance(vblock_info, list) and len(vblock_info) > 0:  # statement list with single statement
                 if type(vblock_info[0]).__name__ == 'Assignment':
-                    self.visiting_lhs = True
-                    id_node = self.walk(vblock_info[0].left, **kwargs).ir
-                    self.visiting_lhs = False
-                    if id_node.get_main_id() not in self.lhs_list:
-                        self.lhs_list.append(id_node.get_main_id())
-                    if len(id_node.get_main_id()) > 1:
-                        multi_lhs_list.append(id_node.get_main_id())
+                    if type(vblock_info[0].left).__name__ == 'IdentifierSubscript':
+                        lhs_sym = self.walk(vblock_info[0].left.left).ir.get_main_id()
+                    else:
+                        lhs_sym = self.walk(vblock_info[0].left).ir.get_main_id()
+                    if lhs_sym not in self.lhs_list:
+                        self.lhs_list.append(lhs_sym)
+                    if len(lhs_sym) > 1:
+                        multi_lhs_list.append(lhs_sym)
                     self.rhs_raw_str_list.append(vblock_info[0].right.text)
                 else:
                     self.rhs_raw_str_list.append(vblock_info[0].text)
@@ -831,7 +832,7 @@ class TypeWalker(NodeWalker):
             self.ret_symbol = self.get_main_id(id0)
         kwargs[LHS] = id0
         kwargs[ASSIGN_OP] = node.op
-        if self.contain_subscript(id0):
+        if id0_info.ir.contain_subscript():
             left_ids = self.get_all_ids(id0)
             left_subs = left_ids[1]
             pre_subs = []
