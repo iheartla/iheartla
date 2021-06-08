@@ -45,7 +45,7 @@ set_type::SetType
 
 dimension
     =
-    integer | identifier
+    arithmetic_expression
     ;
 
 la_type

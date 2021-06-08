@@ -3747,13 +3747,9 @@ class grammardefaultParser(Parser):
         )
 
     @tatsumasu()
+    @nomemo
     def _dimension_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._integer_()
-            with self._option():
-                self._identifier_()
-            self._error('no available options')
+        self._arithmetic_expression_()
 
     @tatsumasu()
     def _la_type_(self):  # noqa
@@ -4474,6 +4470,183 @@ class grammardefaultParser(Parser):
             []
         )
 
+    @tatsumasu('ArithExpression')
+    @leftrec
+    def _arithmetic_expression_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._arithmetic_addition_()
+                self.name_last_node('value')
+            with self._option():
+                self._arithmetic_subtraction_()
+                self.name_last_node('value')
+            with self._option():
+                with self._optional():
+                    self._token('-')
+                self.name_last_node('sign')
+                self._arithmetic_term_()
+                self.name_last_node('value')
+            self._error('no available options')
+        self.ast._define(
+            ['sign', 'value'],
+            []
+        )
+
+    @tatsumasu('ArithAdd')
+    @nomemo
+    def _arithmetic_addition_(self):  # noqa
+        self._arithmetic_expression_()
+        self.name_last_node('left')
+
+        def block1():
+            self._hspace_()
+        self._closure(block1)
+        self._token('+')
+        self.name_last_node('op')
+
+        def block3():
+            self._hspace_()
+        self._closure(block3)
+        self._arithmetic_term_()
+        self.name_last_node('right')
+        self.ast._define(
+            ['left', 'op', 'right'],
+            []
+        )
+
+    @tatsumasu('ArithSubtract')
+    @nomemo
+    def _arithmetic_subtraction_(self):  # noqa
+        self._arithmetic_expression_()
+        self.name_last_node('left')
+
+        def block1():
+            self._hspace_()
+        self._closure(block1)
+        self._token('-')
+        self.name_last_node('op')
+
+        def block3():
+            self._hspace_()
+        self._closure(block3)
+        self._arithmetic_term_()
+        self.name_last_node('right')
+        self.ast._define(
+            ['left', 'op', 'right'],
+            []
+        )
+
+    @tatsumasu()
+    @leftrec
+    def _arithmetic_term_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._arithmetic_multiplication_()
+            with self._option():
+                self._arithmetic_division_()
+            with self._option():
+                self._arithmetic_factor_()
+            self._error('no available options')
+
+    @tatsumasu('ArithMultiply')
+    @nomemo
+    def _arithmetic_multiplication_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._arithmetic_term_()
+                self.name_last_node('left')
+
+                def block1():
+                    self._hspace_()
+                self._closure(block1)
+                self._token('⋅')
+                self.name_last_node('op')
+
+                def block3():
+                    self._hspace_()
+                self._closure(block3)
+                self._arithmetic_factor_()
+                self.name_last_node('right')
+            with self._option():
+                self._arithmetic_term_()
+                self.name_last_node('left')
+
+                def block6():
+                    self._hspace_()
+                self._closure(block6)
+                self._arithmetic_factor_()
+                self.name_last_node('right')
+            self._error('no available options')
+        self.ast._define(
+            ['left', 'op', 'right'],
+            []
+        )
+
+    @tatsumasu('ArithDivide')
+    @nomemo
+    def _arithmetic_division_(self):  # noqa
+        self._arithmetic_term_()
+        self.name_last_node('left')
+
+        def block1():
+            self._hspace_()
+        self._closure(block1)
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._token('/')
+                with self._option():
+                    self._token('÷')
+                self._error('no available options')
+        self.name_last_node('op')
+
+        def block4():
+            self._hspace_()
+        self._closure(block4)
+        self._arithmetic_factor_()
+        self.name_last_node('right')
+        self.ast._define(
+            ['left', 'op', 'right'],
+            []
+        )
+
+    @tatsumasu('ArithFactor')
+    def _arithmetic_factor_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._arithmetic_subexpression_()
+                self.name_last_node('sub')
+            with self._option():
+                self._identifier_()
+                self.name_last_node('id0')
+            with self._option():
+                self._number_()
+                self.name_last_node('num')
+            self._error('no available options')
+        self.ast._define(
+            ['id0', 'num', 'sub'],
+            []
+        )
+
+    @tatsumasu('ArithSubexpression')
+    def _arithmetic_subexpression_(self):  # noqa
+        self._token('(')
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._arithmetic_expression_()
+        self.name_last_node('value')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._token(')')
+        self.ast._define(
+            ['value'],
+            []
+        )
+
     @tatsumasu()
     def _func_id_(self):  # noqa
         if len(self.new_func_list) > 0:
@@ -5140,6 +5313,30 @@ class grammardefaultSemantics(object):
     def less_equal(self, ast):  # noqa
         return ast
 
+    def arithmetic_expression(self, ast):  # noqa
+        return ast
+
+    def arithmetic_addition(self, ast):  # noqa
+        return ast
+
+    def arithmetic_subtraction(self, ast):  # noqa
+        return ast
+
+    def arithmetic_term(self, ast):  # noqa
+        return ast
+
+    def arithmetic_multiplication(self, ast):  # noqa
+        return ast
+
+    def arithmetic_division(self, ast):  # noqa
+        return ast
+
+    def arithmetic_factor(self, ast):  # noqa
+        return ast
+
+    def arithmetic_subexpression(self, ast):  # noqa
+        return ast
+
     def func_id(self, ast):  # noqa
         return ast
 
@@ -5700,6 +5897,45 @@ class LessEqualCondition(ModelBase):
     left = None
     op = None
     right = None
+
+
+class ArithExpression(ModelBase):
+    sign = None
+    value = None
+
+
+class ArithAdd(ModelBase):
+    left = None
+    op = None
+    right = None
+
+
+class ArithSubtract(ModelBase):
+    left = None
+    op = None
+    right = None
+
+
+class ArithMultiply(ModelBase):
+    left = None
+    op = None
+    right = None
+
+
+class ArithDivide(ModelBase):
+    left = None
+    op = None
+    right = None
+
+
+class ArithFactor(ModelBase):
+    id0 = None
+    num = None
+    sub = None
+
+
+class ArithSubexpression(ModelBase):
+    value = None
 
 
 class IdentifierAlone(ModelBase):

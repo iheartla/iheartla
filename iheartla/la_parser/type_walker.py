@@ -2390,6 +2390,95 @@ class TypeWalker(NodeWalker):
 
     def walk_InvFunc(self, node, **kwargs):
         return self.create_math_node_info(MathFuncType.MathFuncInv, self.walk(node.param, **kwargs))
+    ###################################################################
+    def walk_ArithExpression(self, node, **kwargs):
+        value_info = self.walk(node.value, **kwargs)
+        ir_node = ExpressionNode(parse_info=node.parseinfo, raw_text=node.text)
+        value_info.ir.set_parent(ir_node)
+        ir_node.la_type = value_info.la_type
+        ir_node.value = value_info.ir
+        ir_node.sign = node.sign
+        value_info.ir = ir_node
+        return value_info
+
+    def walk_ArithSubexpression(self, node, **kwargs):
+        value_info = self.walk(node.value, **kwargs)
+        ir_node = SubexpressionNode(parse_info=node.parseinfo, raw_text=node.text)
+        ir_node.value = value_info.ir
+        ir_node.la_type = value_info.la_type
+        value_info.ir = ir_node
+        return value_info
+
+    def walk_ArithAdd(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        ret_type, need_cast = self.type_inference(TypeInferenceEnum.INF_ADD, left_info, right_info)
+        ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
+        ir_node = AddNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
+        ir_node.la_type = ret_type
+        left_info.ir.set_parent(ir_node)
+        right_info.ir.set_parent(ir_node)
+        ret_info.ir = ir_node
+        return ret_info
+
+    def walk_ArithSubtract(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        ret_type, need_cast = self.type_inference(TypeInferenceEnum.INF_SUB, left_info, right_info)
+        ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
+        ir_node = SubNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
+        ir_node.la_type = ret_type
+        left_info.ir.set_parent(ir_node)
+        right_info.ir.set_parent(ir_node)
+        ret_info.ir = ir_node
+        return ret_info
+
+    def walk_ArithMultiply(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        op_type = MulOpType.MulOpInvalid
+        if node.op and node.op == '⋅':
+            op_type = MulOpType.MulOpDot
+        ir_node = MulNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, op=op_type)
+        sym_set = left_info.symbols.union(right_info.symbols)
+        ret_info = NodeInfo(symbols=sym_set)
+        ret_info.ir = ir_node
+        return ret_info
+
+    def walk_ArithDivide(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        ret_type, need_cast = self.type_inference(TypeInferenceEnum.INF_DIV, left_info, right_info)
+        ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
+        op_type = DivOpType.DivOpSlash
+        if node.op == '÷':
+            op_type = DivOpType.DivOpUnicode
+        ir_node = DivNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, op=op_type)
+        ir_node.la_type = ret_type
+        left_info.ir.set_parent(ir_node)
+        right_info.ir.set_parent(ir_node)
+        ret_info.ir = ir_node
+        return ret_info
+
+    def walk_ArithFactor(self, node, **kwargs):
+        node_info = None
+        ir_node = FactorNode(parse_info=node.parseinfo)
+        if node.id0:
+            id0_info = self.walk(node.id0, **kwargs)
+            id0 = id0_info.ir.get_main_id()
+            node_info = NodeInfo(id0_info.la_type, id0, id0_info.symbols, id0_info.ir)
+            # node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
+            ir_node.id = node_info.ir
+        elif node.num:
+            node_info = self.walk(node.num, **kwargs)
+            ir_node.num = node_info.ir
+        elif node.sub:
+            node_info = self.walk(node.sub, **kwargs)
+            ir_node.sub = node_info.ir
+        #
+        ir_node.la_type = node_info.la_type
+        node_info.ir = ir_node
+        return node_info
 
     ###################################################################
     def get_sum_value(self, dim_list):

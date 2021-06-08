@@ -6,8 +6,9 @@ from .base_ebnf import BASE
 from .trigonometry_ebnf import TRIGONOMETRY
 from .shared_ebnf import SHARED
 from .LA_ebnf import START
+from .arithmetic_ebnf import ARITHMETIC
 
-SIMPLIFIED = START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + SHARED
+SIMPLIFIED = START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + SHARED + ARITHMETIC
 #include :: "keywords.ebnf"
 #include :: "number.ebnf"
 #include :: "operators.ebnf"
