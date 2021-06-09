@@ -44,15 +44,15 @@ The following instructions describe running the Python code directly.
 
 To run the desktop GUI:
 
-    python3 app.py
+    python3 -m iheartla
 
 or, if installed via conda,
 
-    pythonw app.py
+    pythonw -m iheartla
 
 You can also run as a command-line compiler:
 
-    python3 app.py --help
+    python3 -m iheartla --help
 
 ## Installing
 
@@ -66,12 +66,8 @@ I❤️LA depends on Python 3.x and several modules. You can install the modules
 
 or install the [Poetry](https://python-poetry.org/) dependency manager and run:
 
-    poetry env use python3.8 # needed only if you installed poetry via Homebrew
     poetry install --no-root --no-dev
     poetry shell
-
-**NOTE**: As of 2020-10-14, installing poetry via homebrew has a bug whose workaround is to type `poetry env use python3.8` before you run `poetry install --no-root --no-dev`.
-This situation may have changed.
 
 or via [Anaconda](https://www.anaconda.com/products/individual) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
 Miniconda is faster to install. (On Windows, choose the 64-bit Python 3.x version. Launch the Anaconda shell from the Start menu and navigate to this directory.)
@@ -103,4 +99,4 @@ To use the code output for the various backends, you will need:
 
 To update the browser-based compiler, run `python3 setup.py sdist bdist_wheel` and then copy `dist/iheartla-0.0.1-py3-none-any.whl` to the `docs` directory.
 
-**macOS**: `pyinstaller iheartla.spec`. The output `iheartla.app` is placed into `dist/`. Whoever is packaging should run `python3 app.py --regenerate-grammar` at least once.
+**macOS**: `pyinstaller iheartla.spec`. The output `iheartla.app` is placed into `dist/`. Whoever is packaging should run `python3 -m iheartla --regenerate-grammar` at least once.
