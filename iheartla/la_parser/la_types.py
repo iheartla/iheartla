@@ -168,10 +168,12 @@ class SequenceType(LaVarType):
 
 
 class MatrixType(LaVarType):
-    def __init__(self, rows=0, cols=0, desc=None, element_type=ScalarType(), symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=None, list_dim=None, index_var=None, value_var=None, item_types=None, dynamic=DynamicTypeEnum.DYN_INVALID):
+    def __init__(self, rows=0, cols=0, desc=None, element_type=ScalarType(), symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=None, list_dim=None, index_var=None, value_var=None, item_types=None, dynamic=DynamicTypeEnum.DYN_INVALID,rows_ir=None,cols_ir=None):
         LaVarType.__init__(self, VarTypeEnum.MATRIX, desc, element_type, symbol, dynamic=dynamic)
         self.rows = rows
         self.cols = cols
+        self.rows_ir = rows_ir
+        self.cols_ir = cols_ir
         # attributes
         self.need_exp = need_exp      # need expression
         self.diagonal = diagonal      # L_ii assignment
@@ -196,9 +198,10 @@ class MatrixType(LaVarType):
 
 
 class VectorType(LaVarType):
-    def __init__(self, rows=0, desc=None, element_type=ScalarType(), symbol=None, dynamic=DynamicTypeEnum.DYN_INVALID):
+    def __init__(self, rows=0, desc=None, element_type=ScalarType(), symbol=None, dynamic=DynamicTypeEnum.DYN_INVALID, rows_ir=None):
         LaVarType.__init__(self, VarTypeEnum.VECTOR, desc, element_type, symbol, dynamic=dynamic)
         self.rows = rows
+        self.rows_ir = rows_ir
         self.cols = 1
 
     def get_signature(self):

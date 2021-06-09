@@ -106,6 +106,7 @@ class TypeWalker(NodeWalker):
         self.same_dim_list = []
         self.rhs_raw_str_list = []
         self.dependency_set = set()
+        self.dependency_dim_dict = {}
 
     def filter_symbol(self, symbol):
         if '`' in symbol:
@@ -145,6 +146,7 @@ class TypeWalker(NodeWalker):
         self.same_dim_list.clear()
         self.rhs_raw_str_list.clear()
         self.dependency_set.clear()
+        self.dependency_dim_dict.clear()
 
     def get_func_symbols(self):
         ret = {}
@@ -430,7 +432,7 @@ class TypeWalker(NodeWalker):
             param_ir_list[ir_index].conds.value[cond_index] = total_list[i]
         if not self.pre_walk:
             for cur_set in self.dependency_set:
-                assert cur_set in self.symtable, "Not exist"
+                assert cur_set in self.symtable, self.get_err_msg_info(self.dependency_dim_dict[cur_set], "Symbol {} not defined".format(cur_set))
         self.is_param_block = False
         return param_ir_list
 
@@ -2479,12 +2481,10 @@ class TypeWalker(NodeWalker):
     def walk_ArithSubtract(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
-        ret_type, need_cast = self.type_inference(TypeInferenceEnum.INF_SUB, left_info, right_info)
+        ret_type = ScalarType(is_int=True)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         ir_node = SubNode(left_info.ir, right_info.ir, parse_info=node.parseinfo)
         ir_node.la_type = ret_type
-        left_info.ir.set_parent(ir_node)
-        right_info.ir.set_parent(ir_node)
         ret_info.ir = ir_node
         ret_info.content = '{}-{}'.format(left_info.content, right_info.content)
         return ret_info
@@ -2492,12 +2492,13 @@ class TypeWalker(NodeWalker):
     def walk_ArithMultiply(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
+        ret_type = ScalarType(is_int=True)
         op_type = MulOpType.MulOpInvalid
         if node.op and node.op == '⋅':
             op_type = MulOpType.MulOpDot
         ir_node = MulNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, op=op_type)
-        sym_set = left_info.symbols.union(right_info.symbols)
-        ret_info = NodeInfo(symbols=sym_set)
+        ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
+        ir_node.la_type = ret_type
         ret_info.ir = ir_node
         ret_info.content = '{}*{}'.format(left_info.content, right_info.content)
         return ret_info
@@ -2505,15 +2506,13 @@ class TypeWalker(NodeWalker):
     def walk_ArithDivide(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
-        ret_type, need_cast = self.type_inference(TypeInferenceEnum.INF_DIV, left_info, right_info)
+        ret_type = ScalarType(is_int=True)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
         op_type = DivOpType.DivOpSlash
         if node.op == '÷':
             op_type = DivOpType.DivOpUnicode
         ir_node = DivNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, op=op_type)
         ir_node.la_type = ret_type
-        left_info.ir.set_parent(ir_node)
-        right_info.ir.set_parent(ir_node)
         ret_info.ir = ir_node
         ret_info.content = '{}/{}'.format(left_info.content, right_info.content)
         return ret_info
@@ -2523,11 +2522,15 @@ class TypeWalker(NodeWalker):
         ir_node = FactorNode(parse_info=node.parseinfo)
         if node.id0:
             content = node.id0.text
+            def add_sym_info(sym, info):
+                if sym not in self.dependency_dim_dict:
+                    self.dependency_dim_dict[sym] = info
             if type(node.id0).__name__ == "IdentifierSubscript":
                 self.dyn_dim = True
                 assert len(node.id0.right) == 1 and node.id0.right[0] != '*', self.get_err_msg_info(node.id0.parseinfo, "Invalid dimension")
                 index_node = SeqDimIndexNode(parse_info=node.parseinfo)
                 index_node.main = self.walk(node.id0.left).ir
+                add_sym_info(index_node.main.get_name(), node.parseinfo)
                 main_index_info = self.walk(node.id0.right[0])
                 index_node.main_index = main_index_info.ir
                 # main_dict = self.dim_dict[left_info.content]
@@ -2542,6 +2545,7 @@ class TypeWalker(NodeWalker):
             else:
                 id0_info = self.walk(node.id0, **kwargs)
                 id0 = id0_info.ir.get_main_id()
+                add_sym_info(id0, node.parseinfo)
                 node_info = NodeInfo(id0_info.la_type, id0, id0_info.symbols, id0_info.ir)
                 # node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
                 ir_node.id = node_info.ir
