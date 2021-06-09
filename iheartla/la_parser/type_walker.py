@@ -104,6 +104,7 @@ class TypeWalker(NodeWalker):
         self.pre_walk = False
         self.same_dim_list = []
         self.rhs_raw_str_list = []
+        self.dependency_set = set()
 
     def filter_symbol(self, symbol):
         if '`' in symbol:
@@ -142,6 +143,7 @@ class TypeWalker(NodeWalker):
         self.la_content = la_content
         self.same_dim_list.clear()
         self.rhs_raw_str_list.clear()
+        self.dependency_set.clear()
 
     def get_func_symbols(self):
         ret = {}
@@ -369,6 +371,7 @@ class TypeWalker(NodeWalker):
     ###################################################################
     def extract_all_params(self, raw_param_list, **kwargs):
         self.is_param_block = True
+        self.dependency_set.clear()
         param_ir_list = []
         total_list = []  # all lines of params
         total_map = []
@@ -424,6 +427,9 @@ class TypeWalker(NodeWalker):
         for i in range(len(total_list)):
             ir_index, cond_index = total_map[i]
             param_ir_list[ir_index].conds.value[cond_index] = total_list[i]
+        if not self.pre_walk:
+            for cur_set in self.dependency_set:
+                assert cur_set in self.symtable, "Not exist"
         self.is_param_block = False
         return param_ir_list
 
@@ -506,20 +512,22 @@ class TypeWalker(NodeWalker):
                     else:
                         if id1 not in self.symtable:
                             self.symtable[id1] = ScalarType(is_int=True)
-                    if self.contain_subscript(id0):
-                        self.update_dim_dict(id1, self.get_main_id(id0), 1)
-                    else:
-                        self.update_dim_dict(id1, self.get_main_id(id0), 0)
+                    if type_node.la_type.rows_ir is None:
+                        if self.contain_subscript(id0):
+                            self.update_dim_dict(id1, self.get_main_id(id0), 1)
+                        else:
+                            self.update_dim_dict(id1, self.get_main_id(id0), 0)
                 if isinstance(id2, str):
                     if type_node.la_type.is_dynamic_col():
                         id2 = type_node.id2.get_main_id()
                     else:
                         if id2 not in self.symtable:
                             self.symtable[id2] = ScalarType(is_int=True)
-                    if self.contain_subscript(id0):
-                        self.update_dim_dict(id2, self.get_main_id(id0), 2)
-                    else:
-                        self.update_dim_dict(id2, self.get_main_id(id0), 1)
+                    if type_node.la_type.cols_ir is None:
+                        if self.contain_subscript(id0):
+                            self.update_dim_dict(id2, self.get_main_id(id0), 2)
+                        else:
+                            self.update_dim_dict(id2, self.get_main_id(id0), 1)
             elif type_node.la_type.is_vector():
                 id1 = type_node.la_type.rows
                 if isinstance(id1, str):
@@ -528,10 +536,11 @@ class TypeWalker(NodeWalker):
                     else:
                         if id1 not in self.symtable:
                             self.symtable[id1] = ScalarType(is_int=True)
-                    if self.contain_subscript(id0):
-                        self.update_dim_dict(id1, self.get_main_id(id0), 1)
-                    else:
-                        self.update_dim_dict(id1, self.get_main_id(id0), 0)
+                    if type_node.la_type.rows_ir is None:
+                        if self.contain_subscript(id0):
+                            self.update_dim_dict(id1, self.get_main_id(id0), 1)
+                        else:
+                            self.update_dim_dict(id1, self.get_main_id(id0), 0)
         ir_node.type = type_node
         return ir_node
 
@@ -548,20 +557,6 @@ class TypeWalker(NodeWalker):
 
     def walk_MatrixType(self, node, **kwargs):
         ir_node = MatrixTypeNode(parse_info=node.parseinfo)
-        id1_info = self.walk(node.id1, **kwargs)
-        single_node = self.get_single_factor(id1_info.ir)
-        if single_node is not None:
-            ir_node.id1 = single_node
-        else:
-            ir_node.id1 = id1_info.ir
-        id1 = id1_info.content
-        id2_info = self.walk(node.id2, **kwargs)
-        single_node = self.get_single_factor(id2_info.ir)
-        if single_node is not None:
-            ir_node.id2 = single_node
-        else:
-            ir_node.id2 = id1_info.ir
-        id2 = id2_info.content
         element_type = ''
         if node.type:
             ir_node.type = node.type
@@ -571,7 +566,28 @@ class TypeWalker(NodeWalker):
                 element_type = ScalarType(is_int=True)
         else:
             element_type = ScalarType()
-        la_type = MatrixType(rows=id1, cols=id2, element_type=element_type)
+        id1_info = self.walk(node.id1, **kwargs)
+        single_node = self.get_single_factor(id1_info.ir)
+        rows_ir = None
+        if single_node is not None:
+            ir_node.id1 = single_node
+        else:
+            self.dependency_set.update(id1_info.symbols)
+            ir_node.id1 = id1_info.ir
+            rows_ir = id1_info.ir
+            print("content is: {}".format(id1_info.content))
+        id1 = id1_info.content
+        id2_info = self.walk(node.id2, **kwargs)
+        single_node = self.get_single_factor(id2_info.ir)
+        cols_ir = None
+        if single_node is not None:
+            ir_node.id2 = single_node
+        else:
+            self.dependency_set.update(id2_info.symbols)
+            ir_node.id2 = id2_info.ir
+            cols_ir = id2_info.ir
+        id2 = id2_info.content
+        la_type = MatrixType(rows=id1, cols=id2, element_type=element_type, rows_ir=rows_ir, cols_ir=cols_ir)
         if ir_node.id1.is_node(IRNodeType.Id) and ir_node.id1.contain_subscript():
             assert len(ir_node.id1.subs) == 1, self.get_err_msg_info(ir_node.id1.parse_info, "Invalid dimension for matrix")
             la_type.add_dynamic_type(DynamicTypeEnum.DYN_ROW)
@@ -585,13 +601,6 @@ class TypeWalker(NodeWalker):
 
     def walk_VectorType(self, node, **kwargs):
         ir_node = VectorTypeNode(parse_info=node.parseinfo)
-        id1_info = self.walk(node.id1, **kwargs)
-        single_node = self.get_single_factor(id1_info.ir)
-        if single_node is not None:
-            ir_node.id1 = single_node
-        else:
-            ir_node.id1 = id1_info.ir
-        id1 = id1_info.content
         element_type = ''
         if node.type:
             ir_node.type = node.type
@@ -601,7 +610,18 @@ class TypeWalker(NodeWalker):
                 element_type = ScalarType(is_int=True)
         else:
             element_type = ScalarType()
-        la_type = VectorType(rows=id1, element_type=element_type)
+        id1_info = self.walk(node.id1, **kwargs)
+        rows_ir = None
+        single_node = self.get_single_factor(id1_info.ir)
+        if single_node is not None:
+            ir_node.id1 = single_node
+        else:
+            self.dependency_set.update(id1_info.symbols)
+            ir_node.id1 = id1_info.ir
+            rows_ir = id1_info.ir
+            print("content is: {}".format(id1_info.content))
+        id1 = id1_info.content
+        la_type = VectorType(rows=id1, element_type=element_type, rows_ir=rows_ir)
         if ir_node.id1.is_node(IRNodeType.Id) and ir_node.id1.contain_subscript():
             assert len(ir_node.id1.subs) == 1, self.get_err_msg_info(ir_node.id1.parse_info, "Invalid dimension for vector")
             la_type.add_dynamic_type(DynamicTypeEnum.DYN_ROW)
@@ -2429,6 +2449,7 @@ class TypeWalker(NodeWalker):
         ir_node.value = value_info.ir
         ir_node.la_type = value_info.la_type
         value_info.ir = ir_node
+        value_info.content = '({})'.format(value_info.content)
         return value_info
 
     def walk_ArithAdd(self, node, **kwargs):
@@ -2442,6 +2463,7 @@ class TypeWalker(NodeWalker):
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)
         ret_info.ir = ir_node
+        ret_info.content = '{}+{}'.format(left_info.content, right_info.content)
         return ret_info
 
     def walk_ArithSubtract(self, node, **kwargs):
@@ -2454,6 +2476,7 @@ class TypeWalker(NodeWalker):
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)
         ret_info.ir = ir_node
+        ret_info.content = '{}-{}'.format(left_info.content, right_info.content)
         return ret_info
 
     def walk_ArithMultiply(self, node, **kwargs):
@@ -2466,6 +2489,7 @@ class TypeWalker(NodeWalker):
         sym_set = left_info.symbols.union(right_info.symbols)
         ret_info = NodeInfo(symbols=sym_set)
         ret_info.ir = ir_node
+        ret_info.content = '{}*{}'.format(left_info.content, right_info.content)
         return ret_info
 
     def walk_ArithDivide(self, node, **kwargs):
@@ -2481,26 +2505,46 @@ class TypeWalker(NodeWalker):
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)
         ret_info.ir = ir_node
+        ret_info.content = '{}/{}'.format(left_info.content, right_info.content)
         return ret_info
 
     def walk_ArithFactor(self, node, **kwargs):
         node_info = None
         ir_node = FactorNode(parse_info=node.parseinfo)
         if node.id0:
-            id0_info = self.walk(node.id0, **kwargs)
-            id0 = id0_info.ir.get_main_id()
-            node_info = NodeInfo(id0_info.la_type, id0, id0_info.symbols, id0_info.ir)
-            # node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
-            ir_node.id = node_info.ir
+            content = node.id0.text
+            if type(node.id0).__name__ == "IdentifierSubscript":
+                index_node = SeqDimIndexNode(parse_info=node.parseinfo)
+                index_node.main = self.walk(node.id0.left).ir
+                main_index_info = self.walk(node.id0.right[0])
+                index_node.main_index = main_index_info.ir
+                # main_dict = self.dim_dict[left_info.content]
+                # for key, value in main_dict.items():
+                #     ir_node.real_symbol = key
+                #     ir_node.dim_index = value
+                #     break
+                la_type = ScalarType(is_int=True)
+                index_node.la_type = la_type
+                ir_node.id = index_node
+                node_info = NodeInfo(la_type, content, {}, index_node)
+            else:
+                id0_info = self.walk(node.id0, **kwargs)
+                id0 = id0_info.ir.get_main_id()
+                node_info = NodeInfo(id0_info.la_type, id0, id0_info.symbols, id0_info.ir)
+                # node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
+                ir_node.id = node_info.ir
         elif node.num:
+            content = node.num.text
             node_info = self.walk(node.num, **kwargs)
             ir_node.num = node_info.ir
         elif node.sub:
             node_info = self.walk(node.sub, **kwargs)
             ir_node.sub = node_info.ir
+            content = node_info.content
         #
         ir_node.la_type = node_info.la_type
         node_info.ir = ir_node
+        node_info.content = content
         return node_info
 
     ###################################################################
