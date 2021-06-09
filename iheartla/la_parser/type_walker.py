@@ -101,6 +101,7 @@ class TypeWalker(NodeWalker):
         self.la_content = ''
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
         self.visiting_lhs = False
+        self.dyn_dim = False
         self.pre_walk = False
         self.same_dim_list = []
         self.rhs_raw_str_list = []
@@ -506,7 +507,7 @@ class TypeWalker(NodeWalker):
             if type_node.la_type.is_matrix():
                 id1 = type_node.la_type.rows
                 id2 = type_node.la_type.cols
-                if isinstance(id1, str):
+                if isinstance(id1, str) and not id1.isnumeric():
                     if type_node.la_type.is_dynamic_row():
                         id1 = type_node.id1.get_main_id()
                     else:
@@ -517,7 +518,7 @@ class TypeWalker(NodeWalker):
                             self.update_dim_dict(id1, self.get_main_id(id0), 1)
                         else:
                             self.update_dim_dict(id1, self.get_main_id(id0), 0)
-                if isinstance(id2, str):
+                if isinstance(id2, str) and not id2.isnumeric():
                     if type_node.la_type.is_dynamic_col():
                         id2 = type_node.id2.get_main_id()
                     else:
@@ -530,7 +531,7 @@ class TypeWalker(NodeWalker):
                             self.update_dim_dict(id2, self.get_main_id(id0), 1)
             elif type_node.la_type.is_vector():
                 id1 = type_node.la_type.rows
-                if isinstance(id1, str):
+                if isinstance(id1, str) and not id1.isnumeric():
                     if type_node.la_type.is_dynamic_row():
                         id1 = type_node.id1.get_main_id()
                     else:
@@ -566,7 +567,9 @@ class TypeWalker(NodeWalker):
                 element_type = ScalarType(is_int=True)
         else:
             element_type = ScalarType()
+        self.dyn_dim = False
         id1_info = self.walk(node.id1, **kwargs)
+        dyn_rows = self.dyn_dim
         single_node = self.get_single_factor(id1_info.ir)
         rows_ir = None
         if single_node is not None:
@@ -575,9 +578,11 @@ class TypeWalker(NodeWalker):
             self.dependency_set.update(id1_info.symbols)
             ir_node.id1 = id1_info.ir
             rows_ir = id1_info.ir
-            print("content is: {}".format(id1_info.content))
+            self.logger.debug("Param matrix, row is: {}".format(id1_info.content))
         id1 = id1_info.content
+        self.dyn_dim = False
         id2_info = self.walk(node.id2, **kwargs)
+        dyn_cols = self.dyn_dim
         single_node = self.get_single_factor(id2_info.ir)
         cols_ir = None
         if single_node is not None:
@@ -586,14 +591,17 @@ class TypeWalker(NodeWalker):
             self.dependency_set.update(id2_info.symbols)
             ir_node.id2 = id2_info.ir
             cols_ir = id2_info.ir
+            self.logger.debug("Param matrix, col is: {}".format(id2_info.content))
         id2 = id2_info.content
         la_type = MatrixType(rows=id1, cols=id2, element_type=element_type, rows_ir=rows_ir, cols_ir=cols_ir)
-        if ir_node.id1.is_node(IRNodeType.Id) and ir_node.id1.contain_subscript():
-            assert len(ir_node.id1.subs) == 1, self.get_err_msg_info(ir_node.id1.parse_info, "Invalid dimension for matrix")
+        # if ir_node.id1.is_node(IRNodeType.Id) and ir_node.id1.contain_subscript():
+        if dyn_rows:
+            # assert len(ir_node.id1.subs) == 1, self.get_err_msg_info(ir_node.id1.parse_info, "Invalid dimension for matrix")
             la_type.add_dynamic_type(DynamicTypeEnum.DYN_ROW)
-        if ir_node.id2.is_node(IRNodeType.Id) and ir_node.id2.contain_subscript():
+        # if ir_node.id2.is_node(IRNodeType.Id) and ir_node.id2.contain_subscript():
+        if dyn_cols:
             la_type.add_dynamic_type(DynamicTypeEnum.DYN_COL)
-            assert len(ir_node.id2.subs) == 1, self.get_err_msg_info(ir_node.id2.parse_info, "Invalid dimension for matrix")
+            # assert len(ir_node.id2.subs) == 1, self.get_err_msg_info(ir_node.id2.parse_info, "Invalid dimension for matrix")
         if node.attr and 'sparse' in node.attr:
             la_type.sparse = True
         ir_node.la_type = la_type
@@ -601,6 +609,7 @@ class TypeWalker(NodeWalker):
 
     def walk_VectorType(self, node, **kwargs):
         ir_node = VectorTypeNode(parse_info=node.parseinfo)
+        self.dyn_dim = False
         element_type = ''
         if node.type:
             ir_node.type = node.type
@@ -619,11 +628,12 @@ class TypeWalker(NodeWalker):
             self.dependency_set.update(id1_info.symbols)
             ir_node.id1 = id1_info.ir
             rows_ir = id1_info.ir
-            print("content is: {}".format(id1_info.content))
+            self.logger.debug("Param matrix, row is: {}".format(id1_info.content))
         id1 = id1_info.content
         la_type = VectorType(rows=id1, element_type=element_type, rows_ir=rows_ir)
-        if ir_node.id1.is_node(IRNodeType.Id) and ir_node.id1.contain_subscript():
-            assert len(ir_node.id1.subs) == 1, self.get_err_msg_info(ir_node.id1.parse_info, "Invalid dimension for vector")
+        # if ir_node.id1.is_node(IRNodeType.Id) and ir_node.id1.contain_subscript():
+        if self.dyn_dim:
+            # assert len(ir_node.id1.subs) == 1, self.get_err_msg_info(ir_node.id1.parse_info, "Invalid dimension for vector")
             la_type.add_dynamic_type(DynamicTypeEnum.DYN_ROW)
         ir_node.la_type = la_type
         return ir_node
@@ -2514,6 +2524,8 @@ class TypeWalker(NodeWalker):
         if node.id0:
             content = node.id0.text
             if type(node.id0).__name__ == "IdentifierSubscript":
+                self.dyn_dim = True
+                assert len(node.id0.right) == 1 and node.id0.right[0] != '*', self.get_err_msg_info(node.id0.parseinfo, "Invalid dimension")
                 index_node = SeqDimIndexNode(parse_info=node.parseinfo)
                 index_node.main = self.walk(node.id0.left).ir
                 main_index_info = self.walk(node.id0.right[0])
@@ -2534,17 +2546,14 @@ class TypeWalker(NodeWalker):
                 # node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
                 ir_node.id = node_info.ir
         elif node.num:
-            content = node.num.text
             node_info = self.walk(node.num, **kwargs)
             ir_node.num = node_info.ir
         elif node.sub:
             node_info = self.walk(node.sub, **kwargs)
             ir_node.sub = node_info.ir
-            content = node_info.content
         #
         ir_node.la_type = node_info.la_type
         node_info.ir = ir_node
-        node_info.content = content
         return node_info
 
     ###################################################################
@@ -2881,40 +2890,43 @@ class TypeWalker(NodeWalker):
             assert arr[0] not in self.symtable, self.get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(arr[0]))
             if id_type.is_vector():
                 if id_type.is_dynamic_row():
-                    assert id_node.id1.subs[0] == val, self.get_err_msg_info(id_node.id1.parse_info, "Dimension {} has different subscript".format(id_node.id1.get_name()))
-                    row_seq_type = SequenceType(size=new_var_name, element_type=ScalarType(is_int=True), symbol=id_node.id1.get_main_id())
-                    if id_node.id1.get_main_id() in self.symtable:
-                        assert self.symtable[id_node.id1.get_main_id()].is_same_type(row_seq_type), self.get_err_msg_info(id_node.id1.parse_info,
-                                                                                 "{} has already been defined as different type".format(
-                                                                                     id_node.id1.get_main_id()))
-                    else:
-                        self.symtable[id_node.id1.get_main_id()] = row_seq_type
-                        self.dim_seq_set.add(id_node.id1.get_main_id())
+                    if id_node.id1.is_node(IRNodeType.SeqDimIndex):
+                        assert id_node.id1.main_index.get_name() == val, self.get_err_msg_info(id_node.id1.parse_info, "Dimension {} has different subscript".format(id_node.id1.main.get_name()))
+                        row_seq_type = SequenceType(size=new_var_name, element_type=ScalarType(is_int=True), symbol=id_node.id1.get_main_id())
+                        if id_node.id1.get_main_id() in self.symtable:
+                            assert self.symtable[id_node.id1.get_main_id()].is_same_type(row_seq_type), self.get_err_msg_info(id_node.id1.parse_info,
+                                                                                     "{} has already been defined as different type".format(
+                                                                                         id_node.id1.get_main_id()))
+                        else:
+                            self.symtable[id_node.id1.get_main_id()] = row_seq_type
+                            self.dim_seq_set.add(id_node.id1.get_main_id())
             elif id_type.is_matrix():
                 if id_type.is_dynamic_row():
-                    assert id_node.id1.subs[0] == val, self.get_err_msg_info(id_node.id1.parse_info, "Dimension {} has different subscript".format(id_node.id1.get_name()))
-                    row_seq_type = SequenceType(size=new_var_name, element_type=ScalarType(is_int=True),
-                                                symbol=id_node.id1.get_main_id())
-                    if id_node.id1.get_main_id() in self.symtable:
-                        assert self.symtable[id_node.id1.get_main_id()].is_same_type(
-                            row_seq_type), self.get_err_msg_info(id_node.id1.parse_info,
-                                                                 "{} has already been defined as different type".format(
-                                                                     id_node.id1.get_main_id()))
-                    else:
-                        self.symtable[id_node.id1.get_main_id()] = row_seq_type
-                        self.dim_seq_set.add(id_node.id1.get_main_id())
+                    if id_node.id1.is_node(IRNodeType.SeqDimIndex):
+                        assert id_node.id1.main_index.get_name() == val, self.get_err_msg_info(id_node.id1.parse_info, "Dimension {} has different subscript".format(id_node.id1.main.get_name()))
+                        row_seq_type = SequenceType(size=new_var_name, element_type=ScalarType(is_int=True),
+                                                    symbol=id_node.id1.get_main_id())
+                        if id_node.id1.get_main_id() in self.symtable:
+                            assert self.symtable[id_node.id1.get_main_id()].is_same_type(
+                                row_seq_type), self.get_err_msg_info(id_node.id1.parse_info,
+                                                                     "{} has already been defined as different type".format(
+                                                                         id_node.id1.get_main_id()))
+                        else:
+                            self.symtable[id_node.id1.get_main_id()] = row_seq_type
+                            self.dim_seq_set.add(id_node.id1.get_main_id())
                 if id_type.is_dynamic_col():
-                    assert id_node.id2.subs[0] == val, self.get_err_msg_info(id_node.id2.parse_info, "Dimension {} has different subscript".format(id_node.id2.get_name()))
-                    col_seq_type = SequenceType(size=new_var_name, element_type=ScalarType(is_int=True),
-                                                symbol=id_node.id1.get_main_id())
-                    if id_node.id2.get_main_id() in self.symtable:
-                        assert self.symtable[id_node.id2.get_main_id()].is_same_type(
-                            col_seq_type), self.get_err_msg_info(id_node.id2.parse_info,
-                                                                 "{} has already been defined as different type".format(
-                                                                     id_node.id2.get_main_id()))
-                    else:
-                        self.symtable[id_node.id2.get_main_id()] = col_seq_type
-                        self.dim_seq_set.add(id_node.id2.get_main_id())
+                    if id_node.id2.is_node(IRNodeType.SeqDimIndex):
+                        assert id_node.id1.main_index.get_name() == val, self.get_err_msg_info(id_node.id2.parse_info, "Dimension {} has different subscript".format(id_node.id2.main.get_name()))
+                        col_seq_type = SequenceType(size=new_var_name, element_type=ScalarType(is_int=True),
+                                                    symbol=id_node.id1.get_main_id())
+                        if id_node.id2.get_main_id() in self.symtable:
+                            assert self.symtable[id_node.id2.get_main_id()].is_same_type(
+                                col_seq_type), self.get_err_msg_info(id_node.id2.parse_info,
+                                                                     "{} has already been defined as different type".format(
+                                                                         id_node.id2.get_main_id()))
+                        else:
+                            self.symtable[id_node.id2.get_main_id()] = col_seq_type
+                            self.dim_seq_set.add(id_node.id2.get_main_id())
             self.symtable[arr[0]] = SequenceType(size=new_var_name, element_type=id_type, desc=id_type.desc, symbol=arr[0])
         else:
             id_type.symbol = identifier
