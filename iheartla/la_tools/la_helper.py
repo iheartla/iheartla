@@ -45,10 +45,14 @@ def is_same_expr(lhs, rhs):
 
 def mul_dims(lhs, rhs):
     if not isinstance(lhs, str) and not isinstance(rhs, str):
-        res = lhs * rhs;
+        res = lhs * rhs
     else:
-        res = "{}*{}".format(lhs, rhs);
-    return res
+        res = "{}*{}".format(lhs, rhs)
+    return sympify(res)
+
+
+def simpify_dims(dims):
+    return sympify(dims)
 
 
 def is_new_tatsu_version():
