@@ -513,7 +513,7 @@ class TypeWalker(NodeWalker):
                     if type_node.la_type.is_dynamic_row():
                         id1 = type_node.id1.get_main_id()
                     else:
-                        if id1 not in self.symtable:
+                        if id1 not in self.symtable and type_node.la_type.rows_ir is None:
                             self.symtable[id1] = ScalarType(is_int=True)
                     if type_node.la_type.rows_ir is None:
                         if self.contain_subscript(id0):
@@ -524,7 +524,7 @@ class TypeWalker(NodeWalker):
                     if type_node.la_type.is_dynamic_col():
                         id2 = type_node.id2.get_main_id()
                     else:
-                        if id2 not in self.symtable:
+                        if id2 not in self.symtable and type_node.la_type.cols_ir is None:
                             self.symtable[id2] = ScalarType(is_int=True)
                     if type_node.la_type.cols_ir is None:
                         if self.contain_subscript(id0):
@@ -537,7 +537,7 @@ class TypeWalker(NodeWalker):
                     if type_node.la_type.is_dynamic_row():
                         id1 = type_node.id1.get_main_id()
                     else:
-                        if id1 not in self.symtable:
+                        if id1 not in self.symtable and type_node.la_type.rows_ir is None:
                             self.symtable[id1] = ScalarType(is_int=True)
                     if type_node.la_type.rows_ir is None:
                         if self.contain_subscript(id0):
