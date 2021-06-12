@@ -533,3 +533,64 @@ class TestSubscript(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_arith_dims(self):
+        # matrix
+        la_str = """w ∈ ℝ^(p×k)
+        x = [ w
+              0_1,k ]
+        a = x + y
+        where
+        y ∈ ℝ^((p+1)×k)"""
+        func_info = self.gen_func_info(la_str)
+        w = np.array([[1, 1, 1], [2, 2, 2]])
+        y = np.array([[1, 1, 1], [2, 2, 2], [3, 3, 3]])
+        a = np.array([[2, 2, 2], [4, 4, 4], [3, 3, 3]])
+        self.assertDMatrixEqual(func_info.numpy_func(w, y).a, a)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(w.tolist()), matlab.double(y.tolist()))['a']), a)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 3> w;",
+                     "    w << 1, 1, 1, 2, 2, 2;",
+                     "    Eigen::Matrix<double, 3, 3> y;",
+                     "    y << 1, 1, 1, 2, 2, 2, 3, 3, 3;",
+                     "    Eigen::Matrix<double, 3, 3> a;",
+                     "    a << 2, 2, 2, 4, 4, 4, 3, 3, 3;",
+                     "    Eigen::Matrix<double, 3, 3> C = {}(w, y).a;".format(func_info.eig_func_name),
+                     "    return ((C - a).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_arith_dims_1(self):
+        # matrix
+        la_str = """w ∈ ℝ^(p×k) 
+        y ∈ ℝ^(p(2k-k)/k×k)
+        a = w + y"""
+        func_info = self.gen_func_info(la_str)
+        w = np.array([[1, 1, 1], [2, 2, 2], [3, 2, 3]])
+        y = np.array([[1, 1, 1], [2, 2, 2], [3, 3, 3]])
+        a = np.array([[2, 2, 2], [4, 4, 4], [6, 5, 6]])
+        self.assertDMatrixEqual(func_info.numpy_func(w, y).a, a)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(w.tolist()), matlab.double(y.tolist()))['a']), a)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 3, 3> w;",
+                     "    w << 1, 1, 1, 2, 2, 2, 3, 2, 3;",
+                     "    Eigen::Matrix<double, 3, 3> y;",
+                     "    y << 1, 1, 1, 2, 2, 2, 3, 3, 3;",
+                     "    Eigen::Matrix<double, 3, 3> a;",
+                     "    a << 2, 2, 2, 4, 4, 4, 6, 5, 6;",
+                     "    Eigen::Matrix<double, 3, 3> C = {}(w, y).a;".format(func_info.eig_func_name),
+                     "    return ((C - a).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
