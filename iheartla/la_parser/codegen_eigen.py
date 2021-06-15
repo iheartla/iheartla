@@ -22,6 +22,12 @@ class CodeGenEigen(CodeGen):
             check_list = ['    assert( {} );'.format(stat) for stat in check_list]
         return check_list
 
+    def get_arith_dim_check_str(self):
+        check_list = []
+        if len(self.arith_dim_list) > 0:
+            check_list = ['    assert( fmod({}, 1) == 0.0 );'.format(dims) for dims in self.arith_dim_list]
+        return check_list
+
     def get_set_item_str(self, set_type):
         type_list = []
         for index in range(set_type.size):
@@ -474,6 +480,7 @@ class CodeGenEigen(CodeGen):
         # merge content
         content += dim_content
         type_checks += self.get_dim_check_str()
+        type_checks += self.get_arith_dim_check_str()
         if len(type_checks) > 0:
             content += '\n'.join(type_checks) + '\n\n'
         # statements

@@ -104,6 +104,7 @@ class TypeWalker(NodeWalker):
         self.dyn_dim = False
         self.pre_walk = False
         self.same_dim_list = []
+        self.arith_dim_list = []
         self.rhs_raw_str_list = []
         self.dependency_set = set()
         self.dependency_dim_dict = {}
@@ -145,6 +146,7 @@ class TypeWalker(NodeWalker):
         self.la_content = la_content
         self.same_dim_list.clear()
         self.rhs_raw_str_list.clear()
+        self.arith_dim_list.clear()
         self.dependency_set.clear()
         self.dependency_dim_dict.clear()
 
@@ -520,6 +522,8 @@ class TypeWalker(NodeWalker):
                             self.update_dim_dict(id1, self.get_main_id(id0), 1)
                         else:
                             self.update_dim_dict(id1, self.get_main_id(id0), 0)
+                    else:
+                        self.arith_dim_list.append(type_node.la_type.rows)
                 if isinstance(id2, str) and not id2.isnumeric():
                     if type_node.la_type.is_dynamic_col():
                         id2 = type_node.id2.get_main_id()
@@ -531,6 +535,8 @@ class TypeWalker(NodeWalker):
                             self.update_dim_dict(id2, self.get_main_id(id0), 2)
                         else:
                             self.update_dim_dict(id2, self.get_main_id(id0), 1)
+                    else:
+                        self.arith_dim_list.append(type_node.la_type.cols)
             elif type_node.la_type.is_vector():
                 id1 = type_node.la_type.rows
                 if isinstance(id1, str) and not id1.isnumeric():
@@ -544,6 +550,8 @@ class TypeWalker(NodeWalker):
                             self.update_dim_dict(id1, self.get_main_id(id0), 1)
                         else:
                             self.update_dim_dict(id1, self.get_main_id(id0), 0)
+                    else:
+                        self.arith_dim_list.append(type_node.la_type.rows)
         ir_node.type = type_node
         return ir_node
 
