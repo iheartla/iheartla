@@ -5,6 +5,7 @@ from .la_types import *
 from ..la_tools.la_logger import *
 from ..la_tools.la_msg import *
 from ..la_tools.la_helper import *
+from .ir_converter import IRConverter
 import regex as re
 
 ## Make the visualizer
@@ -68,6 +69,7 @@ def la_remove_key(keys, **kwargs):
 class TypeWalker(NodeWalker):
     def __init__(self):
         super().__init__()
+        self.ir_converter = IRConverter()
         self.symtable = {}
         self.tmp_symtable = {}
         self.parameters = []
@@ -108,6 +110,7 @@ class TypeWalker(NodeWalker):
         self.rhs_raw_str_list = []
         self.dependency_set = set()
         self.dependency_dim_dict = {}
+        self.undef_symbols = set()
 
     def filter_symbol(self, symbol):
         if '`' in symbol:
@@ -371,6 +374,9 @@ class TypeWalker(NodeWalker):
             if update_ret_type:
                 self.symtable[self.ret_symbol] = type_info.la_type
         ir_node.stat = block_node
+        ###
+        self.ir_converter.init_type(self, None)
+        self.ir_converter.visit_code(ir_node)
         return ir_node
 
     ###################################################################
@@ -1880,9 +1886,11 @@ class TypeWalker(NodeWalker):
                 if not la_is_if(**kwargs):  # symbols in sum don't need to be defined before todo:modify
                     if id0 != 'I':  # special case
                         new_symbol = self.filter_symbol(id0)
-                        assert self.symtable.get(new_symbol) is not None, self.get_err_msg_info(id0_info.ir.parse_info,
-                                                                                         "Symbol {} is not defined".format(id0))
+                        # assert self.symtable.get(new_symbol) is not None, self.get_err_msg_info(id0_info.ir.parse_info,
+                        #                                                                  "Symbol {} is not defined".format(id0))
                         # pass  # todo:delete
+                        if self.symtable.get(new_symbol) is None:
+                            self.undef_symbols.add(id0)
                     else:
                         # I
                         if 'I' not in self.symtable:
@@ -2703,6 +2711,7 @@ class TypeWalker(NodeWalker):
 
     def type_inference(self, op, left_info, right_info):
         need_cast = False
+        return LaVarType(), need_cast
         left_type = left_info.ir.la_type
         right_type = right_info.ir.la_type
         # error msg

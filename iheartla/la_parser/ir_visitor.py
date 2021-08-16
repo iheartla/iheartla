@@ -20,6 +20,7 @@ class IRVisitor(object):
         self.name_cnt_dict = {}
         self.same_dim_list = []
         self.arith_dim_list = []
+        self.undef_symbols = set()
         self.ids_dict = {}  # identifiers with subscripts
         self.dim_seq_set = set()  # sequence of dimension for ragged list
         self.ret_symbol = None
@@ -186,6 +187,7 @@ class IRVisitor(object):
         self.la_content = type_walker.la_content
         self.same_dim_list = type_walker.same_dim_list
         self.arith_dim_list = type_walker.arith_dim_list
+        self.undef_symbols = type_walker.undef_symbols
         if func_name is not None:
             self.func_name = func_name
         # self.print_symbols()
