@@ -34,15 +34,40 @@ class IRConverter(IRVisitor):
         # Type inference
         hm_ast = self.visit(node)
         print("hm_ast: {}".format(hm_ast))
-        ty, mgu, t = Infer.infer_exp(env_dict, hm_ast)
-        print("ty:{}, mgu:{}, t:{}".format(ty, mgu, t))
-        # Convert inferred types to LaTypes, add back as parameters
-        for sym in self.undef_symbols:
-            v_ty = Infer.apply(mgu, env_dict[sym])
-            v_type = self.convert_inf_type(v_ty)
-            self.symtable[sym] = v_type
-            self.parameters.append(sym)
-        self.symtable[self.ret_symbol] = self.convert_inf_type(ty)
+        ty_list, mgu_list, t_list = Infer.infer_exp(env_dict, hm_ast)
+        info = ''
+        valid_cnt = 0
+        for cur_index in range(len(ty_list)):
+            ty = ty_list[cur_index]
+            mgu = mgu_list[cur_index]
+            t = t_list[cur_index]
+            print("ty:{}, mgu:{}, t:{}".format(ty, mgu, t))
+            # Convert inferred types to LaTypes, add back as parameters
+            multi_tips = ''
+            skip = False
+            for sym in self.undef_symbols:
+                v_ty = Infer.apply(mgu, env_dict[sym])
+                if not Infer.check_final_mtype(v_ty):
+                    skip = True
+                    continue
+                v_type = self.convert_inf_type(v_ty)
+                if isinstance(v_ty, Infer.TypeM):
+                    multi_tips += "{} is {}, rows:{}, cols:{}; ".format(sym, v_ty, v_ty.rows, v_ty.cols)
+                else:
+                    multi_tips += "{} is {}; ".format(sym, v_ty)
+                if cur_index == 0:
+                    self.symtable[sym] = v_type
+                    self.parameters.append(sym)
+            if skip:
+                continue
+            valid_cnt += 1
+            info += multi_tips + '\n'
+            if cur_index == 0:
+                self.symtable[self.ret_symbol] = self.convert_inf_type(ty)
+        info = 'There are {} options:\n'.format(valid_cnt) + info + '\n'
+        if len(ty_list) > 1:
+            assert False, info
+            print(info)
         return ''
 
 

@@ -196,6 +196,14 @@ class MatrixType(LaVarType):
     def is_integer_element(self):
         return self.element_type.is_integer_element()
 
+    def __str__(self):
+        return "Matrix({}, {}) with {} element".format(self.rows if self.rows is not None else '*',
+                                                       self.cols if self.cols is not None else '*',
+                                                       "int" if self.is_integer_element() is not None else 'double')
+
+    def __repr__(self):
+        return self.__str__()
+
 
 class VectorType(LaVarType):
     def __init__(self, rows=0, desc=None, element_type=ScalarType(), symbol=None, dynamic=DynamicTypeEnum.DYN_INVALID, rows_ir=None):
