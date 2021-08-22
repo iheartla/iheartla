@@ -9,7 +9,10 @@ from __future__ import print_function
 from enum import IntEnum
 from enum import Enum, IntEnum, IntFlag
 import copy
-from .inference_logger import log_content, log_perm
+if __name__ == '__main__':
+    from inference_logger import log_content, log_perm
+else:
+    from .inference_logger import log_content, log_perm
 import math
 
 
@@ -1138,7 +1141,7 @@ def infer_exp(env, node):
         sol_list, sol_mgu_list = solve_cons(cons, cur_mgu_list)
         # mgu = solve_cons(cons, cur_mgu_list)
         for total_index in range(len(sol_list)):
-            print("total_index:{}".format(total_index))
+            log_content("total_index:{}".format(total_index))
             mgu = sol_list[total_index]
             cur_mgu_list = sol_mgu_list[total_index]
             try:
@@ -1159,8 +1162,7 @@ def infer_exp(env, node):
                 cnt = 0
                 while unresolved:
                     unresolved = False
-                    cnt += 1
-                    log_content("cnt: {}".format(cnt))
+                    log_content("cnt: {}, start".format(cnt))
                     # Handle addition
                     unresolved_add = handle_addition(new_gmu)
                     if unresolved_add:
@@ -1170,10 +1172,12 @@ def infer_exp(env, node):
                     if unresolved_mul:
                         unresolved = True
                     # log_content("ty:{}, ty.rows:{}, cols:{}, addr:{}".format(infer_ty, infer_ty.rows, infer_ty.cols, id(infer_ty)))
+                    log_content("cnt: {}, unresolved:{}".format(cnt, unresolved))
+                    cnt += 1
                     if cnt > 5:
                         unresolved = False
-                    if cnt < 5:
-                        unresolved = False
+                    # if cnt < 5:
+                    #     unresolved = False
                 infer_ty_list.append(infer_ty)
                 new_gmu_list.append(new_gmu)
                 t_list.append(t)
@@ -1200,7 +1204,7 @@ def resolved_matrix(m_value):
     elif isinstance(m_value, TypeMcolDouble) or isinstance(m_value, TypeMcol):
         is_resolved = m_value.cols is not None
     elif isinstance(m_value, TypeMfixedDouble) or isinstance(m_value, TypeMfixed):
-        is_resolved = m_value.cols is not None and m_value.rows is not None
+        is_resolved = (m_value.cols is not None) and (m_value.rows is not None)
     return is_resolved
 
 
@@ -1289,10 +1293,10 @@ def handle_addition(new_gmu):
             resolved = resolved_matrix(ret_param)
             if not (resolved and resolved_matrix(first_param) and resolved_matrix(sec_param)):
                 unresolved = True
-            log_content("add_index:\n"
+            log_content("add_index:, unresolved:{}\n"
                         "fir param:{}, rows:{}, cols:{}, addr:{};\n"
                         "sec param:{}, rows:{}, cols:{}, addr:{};\n"
-                        "ret param:{}, rows:{}, cols:{}, addr:{};\n".format(
+                        "ret param:{}, rows:{}, cols:{}, addr:{};\n".format(unresolved,
                 first_param, first_param.rows, first_param.cols, id(first_param),
                 sec_param, sec_param.rows, sec_param.cols, id(sec_param),
                 ret_param, ret_param.rows, ret_param.cols, id(ret_param)))
@@ -1335,7 +1339,7 @@ def handle_multiplication(new_gmu):
                         # Fill back
                         sec_param.cols = ret_param.cols
                     else:
-                        assert ret_param.cols == first_param.cols
+                        assert ret_param.cols == sec_param.cols
                 log_content("mul_index:{};\n"
                             "fir param:{}, rows:{}, cols:{}, addr:{};\n"
                             "sec param:{}, rows:{}, cols:{}, addr:{};\n"
@@ -1389,6 +1393,7 @@ def handle_multiplication(new_gmu):
         resolved = resolved_matrix(ret_param)
         if not (resolved and resolved_matrix(first_param) and resolved_matrix(sec_param)):
             unresolved = True
+        log_content("unresolved:{};\n".format(unresolved))
     return unresolved
 
 
@@ -1678,14 +1683,14 @@ def main():
         # Apply(Apply(Identifier("add"), TypeMfixed(rows=2, cols=3)),
         #       Apply(Apply(Identifier("mul"), Identifier("f")), TypeMfixed(rows=2, cols=3))),
 
-        Apply(Apply(Identifier("add"), TypeMfixed(rows=2, cols=3)),
-              Apply(Apply(Identifier("mul"), TypeMfixed(rows=2, cols=4)), Identifier("f"))),
+        # Apply(Apply(Identifier("add"), TypeMfixed(rows=2, cols=3)),
+        #       Apply(Apply(Identifier("mul"), TypeMfixed(rows=2, cols=4)), Identifier("f"))),
 
         # Apply(Apply(Identifier("add"), Identifier("f")), Identifier("g")),
 
         # M(2,3) + f*M(5,6)*g
-        # Apply(Apply(Identifier("add"), TypeMfixed(rows=2, cols=3)),
-        #       Apply(Apply(Identifier("mul"), Apply(Apply(Identifier("mul"), Identifier("f")), TypeMfixed(rows=5, cols=6))),  Identifier("g"))),
+        Apply(Apply(Identifier("add"), TypeMfixed(rows=2, cols=3)),
+              Apply(Apply(Identifier("mul"), Apply(Apply(Identifier("mul"), Identifier("f")), TypeMfixed(rows=5, cols=6))),  Identifier("g"))),
 
         # Apply(Apply(Identifier("add"), TypeMfixed(rows=2, cols=3)), Identifier("f")),
 
@@ -1728,6 +1733,9 @@ def main():
             else:
                 log_content("f, v_ty: {}, addr:{}".format(v_ty, id(v_ty)))
             v_ty = apply(mgu, my_env['g'])
+
+            if not check_final_mtype(v_ty):
+                continue
             if isinstance(v_ty, TypeM):
                 log_content("g, v_ty: {}, rows:{}, cols:{}, addr:{}".format(v_ty, v_ty.rows, v_ty.cols, id(v_ty)))
             else:
