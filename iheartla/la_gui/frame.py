@@ -159,14 +159,12 @@ class MainWindow(wx.Frame):
         self.SetAcceleratorTable(acc_zoom_out)
 
         self.Show()
-        self.control.SetValue('''B = [ A C ]
+        self.control.SetValue('''given
+A ∈ ℝ^(2×3)  
+B ∈ ℝ^(4×5)  
 
-where
-
-A: ℝ ^ (4 × 4): a matrix
-C: ℝ ^ (4 × 4): a matrix
-E: { ℤ × ℤ }''')
-
+a = A + CBD
+         ''')
         self.Bind(wx.EVT_BUTTON, self.OnButtonClicked)
         self.Bind(wx.EVT_IDLE, self.OnIdle)
         #

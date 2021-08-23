@@ -152,6 +152,7 @@ class TypeWalker(NodeWalker):
         self.arith_dim_list.clear()
         self.dependency_set.clear()
         self.dependency_dim_dict.clear()
+        self.undef_symbols.clear()
 
     def get_func_symbols(self):
         ret = {}
