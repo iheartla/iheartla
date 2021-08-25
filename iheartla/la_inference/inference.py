@@ -9,6 +9,7 @@ from __future__ import print_function
 from enum import IntEnum
 from enum import Enum, IntEnum, IntFlag
 import copy
+
 if __name__ == '__main__':
     from inference_logger import log_content, log_perm
 else:
@@ -655,7 +656,7 @@ def unify(x, y):
     elif const_type(x) and const_type(y):
         if isinstance(x, Identifier) and isinstance(y, Identifier) and x.name == y.name:
             return empty()
-        elif type(x).__name__ == type(y).__name__:
+        elif type(x).__name__ == type(y).__name__ and x.name == y.name:
             # log_content("x:{}, y:{}".format(x, y))
             return empty()
         else:
@@ -1297,9 +1298,12 @@ def handle_addition(new_gmu):
                         "fir param:{}, rows:{}, cols:{}, addr:{};\n"
                         "sec param:{}, rows:{}, cols:{}, addr:{};\n"
                         "ret param:{}, rows:{}, cols:{}, addr:{};\n".format(unresolved,
-                first_param, first_param.rows, first_param.cols, id(first_param),
-                sec_param, sec_param.rows, sec_param.cols, id(sec_param),
-                ret_param, ret_param.rows, ret_param.cols, id(ret_param)))
+                                                                            first_param, first_param.rows,
+                                                                            first_param.cols, id(first_param),
+                                                                            sec_param, sec_param.rows, sec_param.cols,
+                                                                            id(sec_param),
+                                                                            ret_param, ret_param.rows, ret_param.cols,
+                                                                            id(ret_param)))
     return unresolved
 
 
@@ -1414,7 +1418,7 @@ def check_final_mtype(m_value):
 
 
 TOP_ENV = {
-    "mul": [  #
+    "mul": [
         Function(MatrixCol, Function(MatrixRow, Matrix)),
         Function(MatrixCol, Function(MatrixRowDouble, MatrixDouble)),
         Function(MatrixCol, Function(MatrixFixed, MatrixCol)),
@@ -1471,82 +1475,94 @@ TOP_ENV = {
         Function(MatrixFixed, Function(Double, MatrixFixedDouble)),
         Function(MatrixFixedDouble, Function(Double, MatrixFixedDouble))
     ],
-    "add": [Function(Matrix, Function(Matrix, Matrix)),
-            Function(Matrix, Function(MatrixDouble, MatrixDouble)),
-            Function(Matrix, Function(MatrixRow, MatrixRow)),
-            Function(Matrix, Function(MatrixRowDouble, MatrixRowDouble)),
-            Function(Matrix, Function(MatrixCol, MatrixCol)),
-            Function(Matrix, Function(MatrixColDouble, MatrixColDouble)),
-            Function(Matrix, Function(MatrixFixed, MatrixFixed)),
-            Function(Matrix, Function(MatrixFixedDouble, MatrixFixedDouble)),
-            #
-            Function(MatrixDouble, Function(Matrix, MatrixDouble)),
-            Function(MatrixDouble, Function(MatrixDouble, MatrixDouble)),
-            Function(MatrixDouble, Function(MatrixRow, MatrixRowDouble)),
-            Function(MatrixDouble, Function(MatrixRowDouble, MatrixRowDouble)),
-            Function(MatrixDouble, Function(MatrixCol, MatrixColDouble)),
-            Function(MatrixDouble, Function(MatrixColDouble, MatrixColDouble)),
-            Function(MatrixDouble, Function(MatrixFixed, MatrixFixedDouble)),
-            Function(MatrixDouble, Function(MatrixFixedDouble, MatrixFixedDouble)),
-            #
-            Function(MatrixRow, Function(Matrix, MatrixRow)),
-            Function(MatrixRow, Function(MatrixDouble, MatrixRowDouble)),
-            Function(MatrixRow, Function(MatrixRow, MatrixRow)),
-            Function(MatrixRow, Function(MatrixRowDouble, MatrixRowDouble)),
-            Function(MatrixRow, Function(MatrixCol, MatrixFixed)),
-            Function(MatrixRow, Function(MatrixColDouble, MatrixFixedDouble)),
-            Function(MatrixRow, Function(MatrixFixed, MatrixFixed)),
-            Function(MatrixRow, Function(MatrixFixedDouble, MatrixFixedDouble)),
-            #
-            Function(MatrixRowDouble, Function(Matrix, MatrixRowDouble)),
-            Function(MatrixRowDouble, Function(MatrixDouble, MatrixRowDouble)),
-            Function(MatrixRowDouble, Function(MatrixRow, MatrixRowDouble)),
-            Function(MatrixRowDouble, Function(MatrixRowDouble, MatrixRowDouble)),
-            Function(MatrixRowDouble, Function(MatrixCol, MatrixRowDouble)),
-            Function(MatrixRowDouble, Function(MatrixColDouble, MatrixRowDouble)),
-            Function(MatrixRowDouble, Function(MatrixFixed, MatrixRowDouble)),
-            Function(MatrixRowDouble, Function(MatrixFixedDouble, MatrixRowDouble)),
-            #
-            Function(MatrixCol, Function(Matrix, MatrixCol)),
-            Function(MatrixCol, Function(MatrixDouble, MatrixColDouble)),
-            Function(MatrixCol, Function(MatrixRow, MatrixFixed)),
-            Function(MatrixCol, Function(MatrixRowDouble, MatrixFixedDouble)),
-            Function(MatrixCol, Function(MatrixCol, MatrixCol)),
-            Function(MatrixCol, Function(MatrixColDouble, MatrixColDouble)),
-            Function(MatrixCol, Function(MatrixFixed, MatrixFixed)),
-            Function(MatrixCol, Function(MatrixFixedDouble, MatrixFixedDouble)),
-            #
-            Function(MatrixColDouble, Function(Matrix, MatrixColDouble)),
-            Function(MatrixColDouble, Function(MatrixDouble, MatrixColDouble)),
-            Function(MatrixColDouble, Function(MatrixRow, MatrixFixedDouble)),
-            Function(MatrixColDouble, Function(MatrixRowDouble, MatrixFixedDouble)),
-            Function(MatrixColDouble, Function(MatrixCol, MatrixColDouble)),
-            Function(MatrixColDouble, Function(MatrixColDouble, MatrixColDouble)),
-            Function(MatrixColDouble, Function(MatrixFixed, MatrixFixedDouble)),
-            Function(MatrixColDouble, Function(MatrixFixedDouble, MatrixFixedDouble)),
-            #
-            Function(MatrixFixed, Function(Matrix, MatrixFixed)),
-            Function(MatrixFixed, Function(MatrixDouble, MatrixFixedDouble)),
-            Function(MatrixFixed, Function(MatrixRow, MatrixFixed)),
-            Function(MatrixFixed, Function(MatrixRowDouble, MatrixFixedDouble)),
-            Function(MatrixFixed, Function(MatrixCol, MatrixFixed)),
-            Function(MatrixFixed, Function(MatrixColDouble, MatrixFixedDouble)),
-            Function(MatrixFixed, Function(MatrixFixed, MatrixFixed)),
-            Function(MatrixFixed, Function(MatrixFixedDouble, MatrixFixedDouble)),
-            #
-            Function(MatrixFixedDouble, Function(Matrix, MatrixFixedDouble)),
-            Function(MatrixFixedDouble, Function(MatrixDouble, MatrixFixedDouble)),
-            Function(MatrixFixedDouble, Function(MatrixRow, MatrixFixedDouble)),
-            Function(MatrixFixedDouble, Function(MatrixRowDouble, MatrixFixedDouble)),
-            Function(MatrixFixedDouble, Function(MatrixCol, MatrixFixedDouble)),
-            Function(MatrixFixedDouble, Function(MatrixColDouble, MatrixFixedDouble)),
-            Function(MatrixFixedDouble, Function(MatrixFixed, MatrixFixedDouble)),
-            Function(MatrixFixedDouble, Function(MatrixFixedDouble, MatrixFixedDouble)),
-            #
-            Function(Integer, Function(Double, Double)),
-            Function(Double, Function(Integer, Double)),
-            Function(Double, Function(Double, Double)),
-            Function(Integer, Function(Integer, Integer))],
+    "add": [
+        Function(Matrix, Function(Matrix, Matrix)),
+        Function(Matrix, Function(MatrixDouble, MatrixDouble)),
+        Function(Matrix, Function(MatrixRow, MatrixRow)),
+        Function(Matrix, Function(MatrixRowDouble, MatrixRowDouble)),
+        Function(Matrix, Function(MatrixCol, MatrixCol)),
+        Function(Matrix, Function(MatrixColDouble, MatrixColDouble)),
+        Function(Matrix, Function(MatrixFixed, MatrixFixed)),
+        Function(Matrix, Function(MatrixFixedDouble, MatrixFixedDouble)),
+        #
+        Function(MatrixDouble, Function(Matrix, MatrixDouble)),
+        Function(MatrixDouble, Function(MatrixDouble, MatrixDouble)),
+        Function(MatrixDouble, Function(MatrixRow, MatrixRowDouble)),
+        Function(MatrixDouble, Function(MatrixRowDouble, MatrixRowDouble)),
+        Function(MatrixDouble, Function(MatrixCol, MatrixColDouble)),
+        Function(MatrixDouble, Function(MatrixColDouble, MatrixColDouble)),
+        Function(MatrixDouble, Function(MatrixFixed, MatrixFixedDouble)),
+        Function(MatrixDouble, Function(MatrixFixedDouble, MatrixFixedDouble)),
+        #
+        Function(MatrixRow, Function(Matrix, MatrixRow)),
+        Function(MatrixRow, Function(MatrixDouble, MatrixRowDouble)),
+        Function(MatrixRow, Function(MatrixRow, MatrixRow)),
+        Function(MatrixRow, Function(MatrixRowDouble, MatrixRowDouble)),
+        Function(MatrixRow, Function(MatrixCol, MatrixFixed)),
+        Function(MatrixRow, Function(MatrixColDouble, MatrixFixedDouble)),
+        Function(MatrixRow, Function(MatrixFixed, MatrixFixed)),
+        Function(MatrixRow, Function(MatrixFixedDouble, MatrixFixedDouble)),
+        #
+        Function(MatrixRowDouble, Function(Matrix, MatrixRowDouble)),
+        Function(MatrixRowDouble, Function(MatrixDouble, MatrixRowDouble)),
+        Function(MatrixRowDouble, Function(MatrixRow, MatrixRowDouble)),
+        Function(MatrixRowDouble, Function(MatrixRowDouble, MatrixRowDouble)),
+        Function(MatrixRowDouble, Function(MatrixCol, MatrixRowDouble)),
+        Function(MatrixRowDouble, Function(MatrixColDouble, MatrixRowDouble)),
+        Function(MatrixRowDouble, Function(MatrixFixed, MatrixRowDouble)),
+        Function(MatrixRowDouble, Function(MatrixFixedDouble, MatrixRowDouble)),
+        #
+        Function(MatrixCol, Function(Matrix, MatrixCol)),
+        Function(MatrixCol, Function(MatrixDouble, MatrixColDouble)),
+        Function(MatrixCol, Function(MatrixRow, MatrixFixed)),
+        Function(MatrixCol, Function(MatrixRowDouble, MatrixFixedDouble)),
+        Function(MatrixCol, Function(MatrixCol, MatrixCol)),
+        Function(MatrixCol, Function(MatrixColDouble, MatrixColDouble)),
+        Function(MatrixCol, Function(MatrixFixed, MatrixFixed)),
+        Function(MatrixCol, Function(MatrixFixedDouble, MatrixFixedDouble)),
+        #
+        Function(MatrixColDouble, Function(Matrix, MatrixColDouble)),
+        Function(MatrixColDouble, Function(MatrixDouble, MatrixColDouble)),
+        Function(MatrixColDouble, Function(MatrixRow, MatrixFixedDouble)),
+        Function(MatrixColDouble, Function(MatrixRowDouble, MatrixFixedDouble)),
+        Function(MatrixColDouble, Function(MatrixCol, MatrixColDouble)),
+        Function(MatrixColDouble, Function(MatrixColDouble, MatrixColDouble)),
+        Function(MatrixColDouble, Function(MatrixFixed, MatrixFixedDouble)),
+        Function(MatrixColDouble, Function(MatrixFixedDouble, MatrixFixedDouble)),
+        #
+        Function(MatrixFixed, Function(Matrix, MatrixFixed)),
+        Function(MatrixFixed, Function(MatrixDouble, MatrixFixedDouble)),
+        Function(MatrixFixed, Function(MatrixRow, MatrixFixed)),
+        Function(MatrixFixed, Function(MatrixRowDouble, MatrixFixedDouble)),
+        Function(MatrixFixed, Function(MatrixCol, MatrixFixed)),
+        Function(MatrixFixed, Function(MatrixColDouble, MatrixFixedDouble)),
+        Function(MatrixFixed, Function(MatrixFixed, MatrixFixed)),
+        Function(MatrixFixed, Function(MatrixFixedDouble, MatrixFixedDouble)),
+        #
+        Function(MatrixFixedDouble, Function(Matrix, MatrixFixedDouble)),
+        Function(MatrixFixedDouble, Function(MatrixDouble, MatrixFixedDouble)),
+        Function(MatrixFixedDouble, Function(MatrixRow, MatrixFixedDouble)),
+        Function(MatrixFixedDouble, Function(MatrixRowDouble, MatrixFixedDouble)),
+        Function(MatrixFixedDouble, Function(MatrixCol, MatrixFixedDouble)),
+        Function(MatrixFixedDouble, Function(MatrixColDouble, MatrixFixedDouble)),
+        Function(MatrixFixedDouble, Function(MatrixFixed, MatrixFixedDouble)),
+        Function(MatrixFixedDouble, Function(MatrixFixedDouble, MatrixFixedDouble)),
+        #
+        Function(Integer, Function(Double, Double)),
+        Function(Double, Function(Integer, Double)),
+        Function(Double, Function(Double, Double)),
+        Function(Integer, Function(Integer, Integer))
+    ],
+    "index": [
+        Function(Matrix, Function(Integer, Integer)),
+        Function(MatrixDouble, Function(Integer, Double)),
+        Function(MatrixRow, Function(Integer, Integer)),
+        Function(MatrixRowDouble, Function(Integer, Double)),
+        Function(MatrixCol, Function(Integer, Integer)),
+        Function(MatrixColDouble, Function(Integer, Double)),
+        Function(MatrixFixed, Function(Integer, Integer)),
+        Function(MatrixFixedDouble, Function(Integer, Double))
+    ],
 }
 
 
@@ -1578,7 +1594,6 @@ def main():
               "zero": Function(Integer, Bool),
               "pred": Function(Integer, Integer),
               # "index": [Function(Matrix, Function(Integer, Integer)),
-              "index": [Function(MatrixColDouble, Function(Integer, Double))],
               "test_f": generalize({}, Function(var4, var4)),
               "merge": Function(Integer, Function(Bool, Bool)),
               "aa": generalize({}, Function(var2, Function(TypeVariable(), Function(TypeVariable(), TypeVariable())))),
@@ -1689,8 +1704,18 @@ def main():
         # Apply(Apply(Identifier("add"), Identifier("f")), Identifier("g")),
 
         # M(2,3) + f*M(5,6)*g
-        Apply(Apply(Identifier("add"), TypeMfixed(rows=2, cols=3)),
-              Apply(Apply(Identifier("mul"), Apply(Apply(Identifier("mul"), Identifier("f")), TypeMfixed(rows=5, cols=6))),  Identifier("g"))),
+        # Apply(Apply(Identifier("add"), TypeMfixed(rows=2, cols=3)),
+        #       Apply(Apply(Identifier("mul"), Apply(Apply(Identifier("mul"), Identifier("f")), TypeMfixed(rows=5, cols=6))),  Identifier("g"))),
+
+        Apply(Apply(Identifier("index"), TypeMfixed(rows=2, cols=3)),
+              Apply(Apply(Identifier("index"), Apply(Apply(Identifier("add"), TypeMfixed(rows=2, cols=3)),
+                                                     Apply(Apply(Identifier("mul"),
+                                                                 Apply(Apply(Identifier("mul"), Identifier("f")),
+                                                                       TypeMfixed(rows=5, cols=6))), Identifier("g")))),
+                    Identifier("23"))),
+
+        # Apply(Apply(Identifier("index"), TypeMfixedDouble(rows=2, cols=3)),
+        #             Identifier("23.2")),
 
         # Apply(Apply(Identifier("add"), TypeMfixed(rows=2, cols=3)), Identifier("f")),
 
@@ -1717,30 +1742,34 @@ def main():
 
     # my_env["x3"] = TypeVariable()
     # infer_exp(my_env, Lambda("x", Lambda("y", Apply(Apply(Identifier("add"), Identifier("x3")), Identifier("3")))))
+    valid_cnt = 0
     for example in examples:
         ty_list, mgu_list, t_list = infer_exp(my_env, example)
         for cur_index in range(len(ty_list)):
-            log_content("cur_index:{}".format(cur_index))
             ty = ty_list[cur_index]
             mgu = mgu_list[cur_index]
             t = t_list[cur_index]
-            v_ty = apply(mgu, my_env['f'])
-
-            if not check_final_mtype(v_ty):
+            f_ty = apply(mgu, my_env['f'])
+            g_ty = apply(mgu, my_env['g'])
+            if not check_final_mtype(f_ty):
                 continue
-            if isinstance(v_ty, TypeM):
-                log_content("f, v_ty: {}, rows:{}, cols:{}, addr:{}".format(v_ty, v_ty.rows, v_ty.cols, id(v_ty)))
-            else:
-                log_content("f, v_ty: {}, addr:{}".format(v_ty, id(v_ty)))
-            v_ty = apply(mgu, my_env['g'])
-
-            if not check_final_mtype(v_ty):
+            if not check_final_mtype(g_ty):
                 continue
-            if isinstance(v_ty, TypeM):
-                log_content("g, v_ty: {}, rows:{}, cols:{}, addr:{}".format(v_ty, v_ty.rows, v_ty.cols, id(v_ty)))
+            log_content("valid_cnt:{}, mgu:{}".format(valid_cnt, mgu))
+            valid_cnt += 1
+            if isinstance(f_ty, TypeM):
+                log_content("f, v_ty: {}, rows:{}, cols:{}, addr:{}".format(f_ty, f_ty.rows, f_ty.cols, id(f_ty)))
             else:
-                log_content("g, v_ty: {}, addr:{}".format(v_ty, id(v_ty)))
-            log_content("ty:{}, ty.rows:{}, cols:{}, addr:{}".format(ty, ty.rows, ty.cols, id(ty)))
+                log_content("f, v_ty: {}, addr:{}".format(f_ty, id(f_ty)))
+            if isinstance(g_ty, TypeM):
+                log_content("g, v_ty: {}, rows:{}, cols:{}, addr:{}".format(g_ty, g_ty.rows, g_ty.cols, id(g_ty)))
+            else:
+                log_content("g, v_ty: {}, addr:{}".format(g_ty, id(g_ty)))
+            # result
+            if isinstance(ty, TypeM):
+                log_content("ty:{}, ty.rows:{}, cols:{}, addr:{}".format(ty, ty.rows, ty.cols, id(ty)))
+            else:
+                log_content("ty:{}, addr:{}".format(ty, id(ty)))
             # check_mul_list()
 
 
