@@ -468,15 +468,15 @@ def main():
         # Apply(Apply(Identifier("add"), Identifier("f")), Identifier("g")),
 
         # M(2,3) + f*M(5,6)*g
-        Apply(Apply(Identifier("add"), TypeMfixed(rows=2, cols=3)),
-              Apply(Apply(Identifier("mul"), Apply(Apply(Identifier("mul"), Identifier("f")), TypeMfixed(rows=5, cols=6))),  Identifier("g"))),
+        # Apply(Apply(Identifier("add"), TypeMfixed(rows=2, cols=3)),
+        #       Apply(Apply(Identifier("mul"), Apply(Apply(Identifier("mul"), Identifier("f")), TypeMfixed(rows=5, cols=6))),  Identifier("g"))),
 
-        # Apply(Apply(Identifier("index"), TypeMfixed(rows=2, cols=3)),
-        #       Apply(Apply(Identifier("index"), Apply(Apply(Identifier("add"), TypeMfixed(rows=2, cols=3)),
-        #                                              Apply(Apply(Identifier("mul"),
-        #                                                          Apply(Apply(Identifier("mul"), Identifier("f")),
-        #                                                                TypeMfixed(rows=5, cols=6))), Identifier("g")))),
-        #             Identifier("23"))),
+        Apply(Apply(Apply(Identifier("index"), TypeMfixedDouble(rows=2, cols=3)),
+              Apply(Apply(Apply(Identifier("index"), Apply(Apply(Identifier("add"), TypeMfixed(rows=2, cols=3)),
+                                                     Apply(Apply(Identifier("mul"),
+                                                                 Apply(Apply(Identifier("mul"), Identifier("f")),
+                                                                       TypeMfixed(rows=5, cols=6))), Identifier("g")))),
+                    Identifier("23")),Identifier("23"))), Identifier("23")),
 
         # Apply(Apply(Identifier("index"), TypeMfixedDouble(rows=2, cols=3)),
         #             Identifier("23")),

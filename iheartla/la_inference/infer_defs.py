@@ -491,14 +491,14 @@ TOP_ENV = {
         Function(Integer, Function(Integer, Integer))
     ],
     "index": [
-        Function(Matrix, Function(Integer, Integer)),
-        Function(MatrixDouble, Function(Integer, Double)),
-        Function(MatrixRow, Function(Integer, Integer)),
-        Function(MatrixRowDouble, Function(Integer, Double)),
-        Function(MatrixCol, Function(Integer, Integer)),
-        Function(MatrixColDouble, Function(Integer, Double)),
-        Function(MatrixFixed, Function(Integer, Integer)),
-        Function(MatrixFixedDouble, Function(Integer, Double))
+        Function(Matrix, Function(Integer, Function(Integer, Integer))),
+        Function(MatrixDouble, Function(Integer, Function(Integer, Double))),
+        Function(MatrixRow, Function(Integer, Function(Integer, Integer))),
+        Function(MatrixRowDouble, Function(Integer, Function(Integer, Double))),
+        Function(MatrixCol, Function(Integer, Function(Integer, Integer))),
+        Function(MatrixColDouble, Function(Integer, Function(Integer, Double))),
+        Function(MatrixFixed, Function(Integer, Function(Integer, Integer))),
+        Function(MatrixFixedDouble, Function(Integer, Function(Integer, Double)))
     ],
 }
 
