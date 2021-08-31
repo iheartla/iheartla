@@ -123,7 +123,7 @@ function isChrome(){
 
  async function initPyodide(){
     await loadPyodide({
-          indexURL : "https://cdn.jsdelivr.net/pyodide/v0.17.0/full/"
+          indexURL : self.location.origin + "/js/pyodide/"
         });
     let wheel = "./iheartla-0.0.1-py3-none-any.whl";
     pythonCode = `
