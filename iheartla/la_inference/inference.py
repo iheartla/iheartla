@@ -110,6 +110,15 @@ def get_param(cur_mgu, var_type):
     return var_param
 
 
+def resolved_type(value):
+    is_resolved = True
+    if isinstance(value, TypeM):
+        is_resolved = resolved_matrix(value)
+    elif isinstance(value, TypeV):
+        is_resolved = resolved_vector(value)
+    return is_resolved
+
+
 def resolved_matrix(m_value):
     is_resolved = True
     if isinstance(m_value, TypeMrowDouble) or isinstance(m_value, TypeMrow):
@@ -118,6 +127,13 @@ def resolved_matrix(m_value):
         is_resolved = m_value.cols is not None
     elif isinstance(m_value, TypeMfixedDouble) or isinstance(m_value, TypeMfixed):
         is_resolved = (m_value.cols is not None) and (m_value.rows is not None)
+    return is_resolved
+
+
+def resolved_vector(m_value):
+    is_resolved = True
+    if isinstance(m_value, TypeVfixed) or isinstance(m_value, TypeVfixedDouble):
+        is_resolved = m_value.rows is not None
     return is_resolved
 
 
@@ -130,7 +146,7 @@ def gen_new_mgu_list(mgu_list):
     for cur_index in range(len(mgu_list)):
         cur_mgu = mgu_list[len(mgu_list) - 1 - cur_index]
         for key, value in cur_mgu.items():
-            if isinstance(value, TypeM):
+            if isinstance(value, TypeM) or isinstance(value, TypeV):
                 # if value.rows is not None or value.cols is not None:
                 #     new_gmu[key] = value
                 # else:
@@ -216,6 +232,35 @@ def handle_addition(new_gmu):
                                                                             id(sec_param),
                                                                             ret_param, ret_param.rows, ret_param.cols,
                                                                             id(ret_param)))
+        elif isinstance(first_param, TypeV):
+            # vector addition
+            remain_func = get_param(new_gmu, var_fun.types[1])
+            sec_param = get_param(new_gmu, remain_func.types[0])
+            ret_param = get_param(new_gmu, remain_func.types[1])
+            assert isinstance(sec_param, TypeV)
+            # rows
+            if first_param.rows is not None:
+                if sec_param.rows is not None:
+                    assert first_param.rows == sec_param.rows
+                    # assert_list.append(first_param.rows, sec_param.rows)
+                else:
+                    sec_param.rows = first_param.rows
+                ret_param.rows = first_param.rows
+            else:
+                if sec_param.rows is not None:
+                    if ret_param.rows is None:
+                        ret_param.rows = sec_param.rows
+                    else:
+                        assert ret_param.rows == sec_param.rows
+                    first_param.rows = sec_param.rows
+                else:
+                    if ret_param.rows is not None:
+                        # Fill back
+                        first_param.rows = ret_param.rows
+                        sec_param.rows = ret_param.rows
+            resolved = resolved_vector(ret_param)
+            if not (resolved and resolved_vector(first_param) and resolved_vector(sec_param)):
+                unresolved = True
     return unresolved
 
 
@@ -228,7 +273,7 @@ def handle_multiplication(new_gmu):
         sec_param = get_param(new_gmu, remain_func.types[0])
         ret_param = get_param(new_gmu, remain_func.types[1])
         if isinstance(first_param, TypeM):
-            # matrix addition
+            # matrix multiply
             if isinstance(sec_param, TypeM):
                 # Matrix * Matrix
                 # rows
@@ -266,6 +311,25 @@ def handle_multiplication(new_gmu):
                                                                                 sec_param.cols, id(sec_param),
                                                                                 ret_param, ret_param.rows,
                                                                                 ret_param.cols, id(ret_param)))
+            elif isinstance(sec_param, TypeV):
+                # Matrix * Vector
+                # rows
+                if first_param.cols is not None:
+                    if sec_param.rows is not None:
+                        assert first_param.cols == sec_param.rows
+                    else:
+                        sec_param.rows = first_param.cols
+                else:
+                    if sec_param.rows is not None:
+                        first_param.cols = sec_param.rows
+                if ret_param.rows is None:
+                    ret_param.rows = first_param.rows
+                else:
+                    if first_param.rows is None:
+                        # Fill back
+                        first_param.rows = ret_param.rows
+                    else:
+                        assert ret_param.rows == first_param.rows
             else:
                 # Matrix * Scalar
                 if ret_param.rows is None:
@@ -284,6 +348,16 @@ def handle_multiplication(new_gmu):
                         first_param.cols = ret_param.cols
                     else:
                         assert first_param.cols == ret_param.cols
+        elif isinstance(first_param, TypeV):
+            # Vector * Scalar
+            if ret_param.rows is None:
+                ret_param.rows = first_param.rows
+            else:
+                if first_param.rows is None:
+                    # Fill back
+                    first_param.rows = ret_param.rows
+                else:
+                    assert first_param.rows == ret_param.rows
         else:
             if isinstance(sec_param, TypeM):
                 # Scalar * Matrix
@@ -303,11 +377,21 @@ def handle_multiplication(new_gmu):
                         sec_param.cols = ret_param.cols
                     else:
                         assert sec_param.cols == ret_param.cols
+            elif isinstance(sec_param, TypeV):
+                # Scalar * Vector
+                if ret_param.rows is None:
+                    ret_param.rows = sec_param.rows
+                else:
+                    if sec_param.rows is None:
+                        # Fill back
+                        sec_param.rows = ret_param.rows
+                    else:
+                        assert sec_param.rows == ret_param.rows
             else:
                 # Scalar * Scalar
                 pass
-        resolved = resolved_matrix(ret_param)
-        if not (resolved and resolved_matrix(first_param) and resolved_matrix(sec_param)):
+        resolved = resolved_type(ret_param)
+        if not (resolved and resolved_type(first_param) and resolved_type(sec_param)):
             unresolved = True
         log_content("unresolved:{};\n".format(unresolved))
     return unresolved

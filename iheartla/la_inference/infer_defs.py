@@ -128,6 +128,7 @@ class TypeCon(object):
         self.name = name
 
 
+# Matrix
 class TypeM(TypeCon):
     def __init__(self, name=None, rows=None, cols=None):
         super().__init__(name)
@@ -175,6 +176,30 @@ class TypeMfixedDouble(TypeM):
     def __repr__(self):
         return "TypeMfixedDouble"
 
+
+# Vector
+class TypeV(TypeCon):
+    def __init__(self, name=None, rows=None):
+        super().__init__(name)
+        self.rows = rows
+
+    def __repr__(self):
+        return "TypeV"
+
+
+class TypeVDouble(TypeV):
+    def __repr__(self):
+        return "TypeVDouble"
+
+
+class TypeVfixed(TypeV):
+    def __repr__(self):
+        return "TypeVfixed"
+
+
+class TypeVfixedDouble(TypeV):
+    def __repr__(self):
+        return "TypeVfixedDouble"
 
 # =======================================================#
 # Types and type constructors
@@ -338,6 +363,11 @@ MatrixCol = TypeMcol()
 MatrixColDouble = TypeMcolDouble()
 MatrixFixed = TypeMfixed()
 MatrixFixedDouble = TypeMfixedDouble()
+# Vector definitions
+Vector = TypeV()
+VectorDouble = TypeVDouble()
+VectorFixed = TypeVfixed()
+VectorFixedDouble = TypeVfixedDouble()
 
 
 inherited_dict = {
@@ -410,7 +440,35 @@ TOP_ENV = {
         Function(MatrixCol, Function(Double, MatrixColDouble)),
         Function(MatrixColDouble, Function(Double, MatrixColDouble)),
         Function(MatrixFixed, Function(Double, MatrixFixedDouble)),
-        Function(MatrixFixedDouble, Function(Double, MatrixFixedDouble))
+        Function(MatrixFixedDouble, Function(Double, MatrixFixedDouble)),
+        # vectors
+        # scalar vector
+        Function(Integer, Function(Vector, Vector)),
+        Function(Integer, Function(VectorDouble, VectorDouble)),
+        Function(Integer, Function(VectorFixed, VectorFixed)),
+        Function(Integer, Function(VectorFixedDouble, VectorFixedDouble)),
+        Function(Double, Function(Vector, VectorDouble)),
+        Function(Double, Function(VectorDouble, VectorDouble)),
+        Function(Double, Function(VectorFixed, VectorFixedDouble)),
+        Function(Double, Function(VectorFixedDouble, VectorFixedDouble)),
+        # vector scalar
+        Function(Vector, Function(Integer, Vector)),
+        Function(VectorDouble, Function(Integer, VectorDouble)),
+        Function(VectorFixed, Function(Integer, VectorFixed)),
+        Function(VectorFixedDouble, Function(Integer, VectorFixedDouble)),
+        Function(Vector, Function(Double, VectorDouble)),
+        Function(VectorDouble, Function(Double, VectorDouble)),
+        Function(VectorFixed, Function(Double, VectorFixedDouble)),
+        Function(VectorFixedDouble, Function(Double, VectorFixedDouble)),
+        # matrix vector
+        Function(MatrixCol, Function(VectorFixed, Vector)),
+        Function(MatrixCol, Function(VectorFixedDouble, VectorDouble)),
+        Function(MatrixColDouble, Function(VectorFixed, VectorDouble)),
+        Function(MatrixColDouble, Function(VectorFixedDouble, VectorDouble)),
+        Function(MatrixFixed, Function(VectorFixed, VectorFixed)),
+        Function(MatrixFixed, Function(VectorFixedDouble, VectorFixedDouble)),
+        Function(MatrixFixedDouble, Function(VectorFixed, VectorFixedDouble)),
+        Function(MatrixFixedDouble, Function(VectorFixedDouble, VectorFixedDouble)),
     ],
     "add": [
         Function(Matrix, Function(Matrix, Matrix)),
@@ -484,7 +542,27 @@ TOP_ENV = {
         Function(MatrixFixedDouble, Function(MatrixColDouble, MatrixFixedDouble)),
         Function(MatrixFixedDouble, Function(MatrixFixed, MatrixFixedDouble)),
         Function(MatrixFixedDouble, Function(MatrixFixedDouble, MatrixFixedDouble)),
+        # vectors
+        Function(Vector, Function(Vector, Vector)),
+        Function(Vector, Function(VectorDouble, VectorDouble)),
+        Function(Vector, Function(VectorFixed, VectorFixed)),
+        Function(Vector, Function(VectorFixedDouble, VectorFixedDouble)),
         #
+        Function(VectorDouble, Function(Vector, VectorDouble)),
+        Function(VectorDouble, Function(VectorDouble, VectorDouble)),
+        Function(VectorDouble, Function(VectorFixed, VectorFixedDouble)),
+        Function(VectorDouble, Function(VectorFixedDouble, VectorFixedDouble)),
+        #
+        Function(VectorFixed, Function(Vector, VectorFixed)),
+        Function(VectorFixed, Function(VectorDouble, VectorFixedDouble)),
+        Function(VectorFixed, Function(VectorFixed, VectorFixedDouble)),
+        Function(VectorFixed, Function(VectorFixedDouble, VectorFixedDouble)),
+        #
+        Function(VectorFixedDouble, Function(Vector, VectorFixedDouble)),
+        Function(VectorFixedDouble, Function(VectorDouble, VectorFixedDouble)),
+        Function(VectorFixedDouble, Function(VectorFixed, VectorFixedDouble)),
+        Function(VectorFixedDouble, Function(VectorFixedDouble, VectorFixedDouble)),
+        # scalars
         Function(Integer, Function(Double, Double)),
         Function(Double, Function(Integer, Double)),
         Function(Double, Function(Double, Double)),

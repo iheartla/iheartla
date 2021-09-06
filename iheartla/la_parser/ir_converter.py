@@ -12,6 +12,11 @@ class IRConverter(IRVisitor):
                 inf_type = Infer.TypeMfixed(rows=la_type.rows, cols=la_type.cols)
             else:
                 inf_type = Infer.TypeMfixedDouble(rows=la_type.rows, cols=la_type.cols)
+        elif la_type.is_vector():
+            if la_type.is_integer_element():
+                inf_type = Infer.TypeVfixed(rows=la_type.rows)
+            else:
+                inf_type = Infer.TypeVfixedDouble(rows=la_type.rows)
         return inf_type
 
     def convert_inf_type(self, inf_type):
@@ -19,6 +24,10 @@ class IRConverter(IRVisitor):
         if isinstance(inf_type, Infer.TypeM):
             la_type = MatrixType(rows=inf_type.rows, cols=inf_type.cols)
             if isinstance(inf_type, Infer.TypeMfixed) or isinstance(inf_type, Infer.TypeMrow) or isinstance(inf_type, Infer.TypeMcol):
+                la_type.is_int = True
+        elif isinstance(inf_type, Infer.TypeV):
+            la_type = VectorType(rows=inf_type.rows)
+            if isinstance(inf_type, Infer.TypeVfixed):
                 la_type.is_int = True
         return la_type
 
@@ -53,6 +62,8 @@ class IRConverter(IRVisitor):
                 v_type = self.convert_inf_type(v_ty)
                 if isinstance(v_ty, Infer.TypeM):
                     multi_tips += "{} is {}, rows:{}, cols:{}; ".format(sym, v_ty, v_ty.rows, v_ty.cols)
+                elif isinstance(v_ty, Infer.TypeV):
+                    multi_tips += "{} is {}, rows:{}; ".format(sym, v_ty, v_ty.rows)
                 else:
                     multi_tips += "{} is {}; ".format(sym, v_ty)
                 if cur_index == 0:
@@ -69,7 +80,6 @@ class IRConverter(IRVisitor):
             assert False, info
             print(info)
         return ''
-
 
 
     def visit_block(self, node, **kwargs):
