@@ -86,10 +86,10 @@ class IRConverter(IRVisitor):
         pre_node = None
         for index in range(len(node.stmts)):
             if node.stmts[len(node.stmts)-1-index].node_type == IRNodeType.Assignment:
-                stat_info = self.visit(node.stmts[index], **kwargs)
+                stat_info = self.visit(node.stmts[len(node.stmts)-1-index], **kwargs)
                 stat_info.body = pre_node
             else:
-                stat_info = self.visit(node.stmts[index], **kwargs)
+                stat_info = self.visit(node.stmts[len(node.stmts)-1-index], **kwargs)
             pre_node = stat_info
         return pre_node
 

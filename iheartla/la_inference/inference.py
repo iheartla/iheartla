@@ -404,12 +404,18 @@ def check_final_mtype(m_value):
     :return:
     """
     is_match = True
+    # matrix
     if isinstance(m_value, TypeMrowDouble) or isinstance(m_value, TypeMrow):
         is_match = m_value.rows is not None and m_value.cols is None
     elif isinstance(m_value, TypeMcolDouble) or isinstance(m_value, TypeMcol):
         is_match = m_value.cols is not None and m_value.rows is None
     elif isinstance(m_value, TypeMfixedDouble) or isinstance(m_value, TypeMfixed):
         is_match = m_value.cols is not None and m_value.rows is not None
+    # vector
+    elif isinstance(m_value, TypeVfixed) or isinstance(m_value, TypeVfixedDouble):
+        is_match = m_value.rows is not None
+    elif isinstance(m_value, TypeV) or isinstance(m_value, TypeVDouble):
+        is_match = m_value.rows is None
     return is_match
 
 

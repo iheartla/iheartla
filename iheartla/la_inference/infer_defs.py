@@ -386,6 +386,7 @@ inherited_dict = {
 
 TOP_ENV = {
     "mul": [
+        # matrix * matrix
         Function(MatrixCol, Function(MatrixRow, Matrix)),
         Function(MatrixCol, Function(MatrixRowDouble, MatrixDouble)),
         Function(MatrixCol, Function(MatrixFixed, MatrixCol)),
@@ -405,7 +406,7 @@ TOP_ENV = {
         Function(MatrixFixedDouble, Function(MatrixRowDouble, MatrixRowDouble)),
         Function(MatrixFixedDouble, Function(MatrixFixed, MatrixFixedDouble)),
         Function(MatrixFixedDouble, Function(MatrixFixedDouble, MatrixFixedDouble)),
-        #
+        # scalar * matrix
         Function(Integer, Function(Matrix, Matrix)),
         Function(Integer, Function(MatrixDouble, MatrixDouble)),
         Function(Integer, Function(MatrixRow, MatrixRow)),
@@ -415,6 +416,15 @@ TOP_ENV = {
         Function(Integer, Function(MatrixFixed, MatrixFixed)),
         Function(Integer, Function(MatrixFixedDouble, MatrixFixedDouble)),
         #
+        Function(Double, Function(Matrix, MatrixDouble)),
+        Function(Double, Function(MatrixDouble, MatrixDouble)),
+        Function(Double, Function(MatrixRow, MatrixRowDouble)),
+        Function(Double, Function(MatrixRowDouble, MatrixRowDouble)),
+        Function(Double, Function(MatrixCol, MatrixColDouble)),
+        Function(Double, Function(MatrixColDouble, MatrixColDouble)),
+        Function(Double, Function(MatrixFixed, MatrixFixedDouble)),
+        Function(Double, Function(MatrixFixedDouble, MatrixFixedDouble)),
+        # matrix * scalar
         Function(Matrix, Function(Integer, Matrix)),
         Function(MatrixDouble, Function(Integer, MatrixDouble)),
         Function(MatrixRow, Function(Integer, MatrixRow)),
@@ -424,15 +434,6 @@ TOP_ENV = {
         Function(MatrixFixed, Function(Integer, MatrixFixed)),
         Function(MatrixFixedDouble, Function(Integer, MatrixFixedDouble)),
         #
-        Function(Double, Function(Matrix, MatrixDouble)),
-        Function(Double, Function(MatrixDouble, MatrixDouble)),
-        Function(Double, Function(MatrixRow, MatrixRowDouble)),
-        Function(Double, Function(MatrixRowDouble, MatrixRowDouble)),
-        Function(Double, Function(MatrixCol, MatrixColDouble)),
-        Function(Double, Function(MatrixColDouble, MatrixColDouble)),
-        Function(Double, Function(MatrixFixed, MatrixFixedDouble)),
-        Function(Double, Function(MatrixFixedDouble, MatrixFixedDouble)),
-
         Function(Matrix, Function(Double, MatrixDouble)),
         Function(MatrixDouble, Function(Double, MatrixDouble)),
         Function(MatrixRow, Function(Double, MatrixRowDouble)),
@@ -442,7 +443,7 @@ TOP_ENV = {
         Function(MatrixFixed, Function(Double, MatrixFixedDouble)),
         Function(MatrixFixedDouble, Function(Double, MatrixFixedDouble)),
         # vectors
-        # scalar vector
+        # scalar * vector
         Function(Integer, Function(Vector, Vector)),
         Function(Integer, Function(VectorDouble, VectorDouble)),
         Function(Integer, Function(VectorFixed, VectorFixed)),
@@ -451,7 +452,7 @@ TOP_ENV = {
         Function(Double, Function(VectorDouble, VectorDouble)),
         Function(Double, Function(VectorFixed, VectorFixedDouble)),
         Function(Double, Function(VectorFixedDouble, VectorFixedDouble)),
-        # vector scalar
+        # vector * scalar
         Function(Vector, Function(Integer, Vector)),
         Function(VectorDouble, Function(Integer, VectorDouble)),
         Function(VectorFixed, Function(Integer, VectorFixed)),
@@ -460,7 +461,7 @@ TOP_ENV = {
         Function(VectorDouble, Function(Double, VectorDouble)),
         Function(VectorFixed, Function(Double, VectorFixedDouble)),
         Function(VectorFixedDouble, Function(Double, VectorFixedDouble)),
-        # matrix vector
+        # matrix * vector
         Function(MatrixCol, Function(VectorFixed, Vector)),
         Function(MatrixCol, Function(VectorFixedDouble, VectorDouble)),
         Function(MatrixColDouble, Function(VectorFixed, VectorDouble)),
@@ -471,6 +472,7 @@ TOP_ENV = {
         Function(MatrixFixedDouble, Function(VectorFixedDouble, VectorFixedDouble)),
     ],
     "add": [
+        # matrix + matrix
         Function(Matrix, Function(Matrix, Matrix)),
         Function(Matrix, Function(MatrixDouble, MatrixDouble)),
         Function(Matrix, Function(MatrixRow, MatrixRow)),
@@ -542,7 +544,7 @@ TOP_ENV = {
         Function(MatrixFixedDouble, Function(MatrixColDouble, MatrixFixedDouble)),
         Function(MatrixFixedDouble, Function(MatrixFixed, MatrixFixedDouble)),
         Function(MatrixFixedDouble, Function(MatrixFixedDouble, MatrixFixedDouble)),
-        # vectors
+        # vector + vector
         Function(Vector, Function(Vector, Vector)),
         Function(Vector, Function(VectorDouble, VectorDouble)),
         Function(Vector, Function(VectorFixed, VectorFixed)),
@@ -562,13 +564,14 @@ TOP_ENV = {
         Function(VectorFixedDouble, Function(VectorDouble, VectorFixedDouble)),
         Function(VectorFixedDouble, Function(VectorFixed, VectorFixedDouble)),
         Function(VectorFixedDouble, Function(VectorFixedDouble, VectorFixedDouble)),
-        # scalars
+        # scalar + scalar
         Function(Integer, Function(Double, Double)),
         Function(Double, Function(Integer, Double)),
         Function(Double, Function(Double, Double)),
         Function(Integer, Function(Integer, Integer))
     ],
     "index": [
+        # matrix indexing
         Function(Matrix, Function(Integer, Function(Integer, Integer))),
         Function(MatrixDouble, Function(Integer, Function(Integer, Double))),
         Function(MatrixRow, Function(Integer, Function(Integer, Integer))),
@@ -576,7 +579,12 @@ TOP_ENV = {
         Function(MatrixCol, Function(Integer, Function(Integer, Integer))),
         Function(MatrixColDouble, Function(Integer, Function(Integer, Double))),
         Function(MatrixFixed, Function(Integer, Function(Integer, Integer))),
-        Function(MatrixFixedDouble, Function(Integer, Function(Integer, Double)))
+        Function(MatrixFixedDouble, Function(Integer, Function(Integer, Double))),
+        # vector indexing
+        Function(Vector, Function(Integer, Integer)),
+        Function(VectorDouble, Function(Integer, Double)),
+        Function(VectorFixed, Function(Integer, Integer)),
+        Function(VectorFixedDouble, Function(Integer, Double)),
     ],
 }
 
