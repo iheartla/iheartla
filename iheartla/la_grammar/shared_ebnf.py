@@ -112,6 +112,7 @@ statements::Statements
 
 statement
     =
+    | local_func
     | assignment
     | right_hand_side
     ;
@@ -130,6 +131,13 @@ assignment::Assignment
     left:identifier {hspace} op:'=' {hspace} {separator_with_space} right:right_hand_side {hspace}
     | left:identifier {hspace} op:'+=' {hspace} {separator_with_space} right:right_hand_side {hspace}
     ;
+    
+    
+local_func::LocalFunc
+    = name:identifier def_p:'(' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')' {hspace} op:'=' {hspace} expr:right_hand_side
+    | name:identifier '[' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']' {hspace} op:'=' {hspace} expr:right_hand_side
+    ;
+
 
 right_hand_side
     =

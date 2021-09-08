@@ -142,7 +142,7 @@ class CodeGenLatex(CodeGen):
                 # elif pre_exp:
                 #     content += " \\\\\n"
                 block_content = self.visit(vblock, **kwargs)
-                if vblock.node_type != IRNodeType.Assignment:
+                if vblock.node_type != IRNodeType.Assignment and vblock.node_type != IRNodeType.LocalFunc:
                     # single expression
                     block_content = " \\omit \\span " + block_content
                 content += block_content + " \\\\\n"
@@ -330,6 +330,23 @@ class CodeGenLatex(CodeGen):
                 if index < len(node.params)-1:
                     params_str += node.separators[index] + ''
         return self.visit(node.name, **kwargs) + '\\left( ' + params_str + ' \\right)'
+
+    def visit_local_func(self, node, **kwargs):
+        params = []
+        if node.params:
+            for param in node.params:
+                params.append(self.visit(param, **kwargs))
+        params_str = ''
+        if len(node.params) > 0:
+            for index in range(len(node.params)):
+                params_str += self.visit(node.params[index], **kwargs)
+                if index < len(node.params)-1:
+                    params_str += node.separators[index] + ''
+        if node.def_type == LocalFuncDefType.LocalFuncDefParenthesis:
+            def_params = '\\left( ' + params_str + ' \\right)'
+        else:
+            def_params = '\\left[ ' + params_str + ' \\right]'
+        return self.visit(node.name, **kwargs) + def_params + " & = " + self.visit(node.expr, **kwargs)
 
     def visit_if(self, node, **kwargs):
         ret_info = self.visit(node.cond, **kwargs)
