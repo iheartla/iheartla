@@ -20,6 +20,7 @@ class IRNodeType(Enum):
     Assignment = 52
     If = 53
     Function = 54
+    LocalFunc = 55
     # if condition
     Condition = 99
     In = 100
@@ -241,6 +242,24 @@ class BlockNode(StmtNode):
             self.stmts += stmt.stmts
         else:
             self.stmts.append(stmt)
+
+
+class LocalFuncDefType(IntEnum):
+    LocalFuncDefInvalid = -1
+    LocalFuncDefParenthesis = 0
+    LocalFuncDefBracket = 1
+
+
+class LocalFuncNode(StmtNode):
+    def __init__(self, name=None, expr=None, parse_info=None, raw_text=None, def_type=LocalFuncDefType.LocalFuncDefParenthesis):
+        super().__init__(IRNodeType.LocalFunc, parse_info=parse_info, raw_text=raw_text)
+        self.name = name
+        self.expr = expr
+        self.op = None
+        self.symbols = None
+        self.def_type = def_type
+        self.params = []
+        self.separators = []
 
 
 class AssignNode(StmtNode):

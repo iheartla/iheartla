@@ -213,6 +213,7 @@ class IRVisitor(object):
             IRNodeType.Assignment: "visit_assignment",
             IRNodeType.If: "visit_if",
             IRNodeType.Function: "visit_function",
+            IRNodeType.LocalFunc: "visit_local_func",
             # if condition
             IRNodeType.Condition: "visit_condition",
             IRNodeType.In: "visit_in",
@@ -392,6 +393,9 @@ class IRVisitor(object):
                 pre_list += param_info.pre_list
         content = "{}({})".format(name_info.content, ', '.join(params))
         return CodeNodeInfo(content, pre_list)
+
+    def visit_local_func(self, node, **kwargs):
+        pass
 
     def visit_sparse_other(self, node, **kwargs):
         pass

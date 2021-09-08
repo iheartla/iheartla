@@ -885,6 +885,18 @@ class TypeWalker(NodeWalker):
         value_info.ir = ir_node
         return value_info
 
+    def walk_LocalFunc(self, node, **kwargs):
+        name_info = self.walk(node.name, **kwargs)
+        expr_info = self.walk(node.expr, **kwargs)
+        ir_node = LocalFuncNode(name=name_info.ir, expr=expr_info.ir,
+                                parse_info=node.parseinfo, raw_text=node.text,
+                                def_type=LocalFuncDefType.LocalFuncDefParenthesis if node.def_p else LocalFuncDefType.LocalFuncDefBracket)
+        for index in range(len(node.params)):
+            param_node = self.walk(node.params[index], **kwargs).ir
+            ir_node.params.append(param_node)
+        ir_node.separators = node.separators
+        return NodeInfo(ir=ir_node)
+
     def walk_Assignment(self, node, **kwargs):
         self.visiting_lhs = True
         id0_info = self.walk(node.left, **kwargs)

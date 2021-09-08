@@ -3928,6 +3928,8 @@ class grammardefaultParser(Parser):
     def _statement_(self):  # noqa
         with self._choice():
             with self._option():
+                self._local_func_()
+            with self._option():
                 self._assignment_()
             with self._option():
                 self._right_hand_side_()
@@ -4011,6 +4013,106 @@ class grammardefaultParser(Parser):
         self.ast._define(
             ['left', 'op', 'right'],
             []
+        )
+
+    @tatsumasu('LocalFunc')
+    def _local_func_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._identifier_()
+                self.name_last_node('name')
+                self._token('(')
+                self.name_last_node('def_p')
+
+                def block2():
+
+                    def block3():
+                        self._hspace_()
+                    self._closure(block3)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('params')
+
+                    def block5():
+
+                        def block6():
+                            self._hspace_()
+                        self._closure(block6)
+                        self._params_separator_()
+                        self.add_last_node_to_name('separators')
+
+                        def block8():
+                            self._hspace_()
+                        self._closure(block8)
+                        self._identifier_alone_()
+                        self.add_last_node_to_name('params')
+                    self._closure(block5)
+                self._closure(block2)
+
+                def block10():
+                    self._hspace_()
+                self._closure(block10)
+                self._token(')')
+
+                def block11():
+                    self._hspace_()
+                self._closure(block11)
+                self._token('=')
+                self.name_last_node('op')
+
+                def block13():
+                    self._hspace_()
+                self._closure(block13)
+                self._right_hand_side_()
+                self.name_last_node('expr')
+            with self._option():
+                self._identifier_()
+                self.name_last_node('name')
+                self._token('[')
+
+                def block16():
+
+                    def block17():
+                        self._hspace_()
+                    self._closure(block17)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('params')
+
+                    def block19():
+
+                        def block20():
+                            self._hspace_()
+                        self._closure(block20)
+                        self._params_separator_()
+                        self.add_last_node_to_name('separators')
+
+                        def block22():
+                            self._hspace_()
+                        self._closure(block22)
+                        self._identifier_alone_()
+                        self.add_last_node_to_name('params')
+                    self._closure(block19)
+                self._closure(block16)
+
+                def block24():
+                    self._hspace_()
+                self._closure(block24)
+                self._token(']')
+
+                def block25():
+                    self._hspace_()
+                self._closure(block25)
+                self._token('=')
+                self.name_last_node('op')
+
+                def block27():
+                    self._hspace_()
+                self._closure(block27)
+                self._right_hand_side_()
+                self.name_last_node('expr')
+            self._error('no available options')
+        self.ast._define(
+            ['def_p', 'expr', 'name', 'op'],
+            ['params', 'separators']
         )
 
     @tatsumasu()
@@ -5255,6 +5357,9 @@ class grammardefaultSemantics(object):
     def assignment(self, ast):  # noqa
         return ast
 
+    def local_func(self, ast):  # noqa
+        return ast
+
     def right_hand_side(self, ast):  # noqa
         return ast
 
@@ -5833,6 +5938,15 @@ class Assignment(ModelBase):
     left = None
     op = None
     right = None
+
+
+class LocalFunc(ModelBase):
+    def_p = None
+    expr = None
+    name = None
+    op = None
+    params = None
+    separators = None
 
 
 class Subexpression(ModelBase):
