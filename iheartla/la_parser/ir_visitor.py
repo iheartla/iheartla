@@ -25,6 +25,8 @@ class IRVisitor(object):
         self.ret_symbol = None
         self.unofficial_method = False  # matrix pow only(eigen)
         self.content = ''
+        self.local_func_def = ''
+        self.local_func_syms = []
         self.parse_type = parse_type
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
         self.name_convention_dict = {}  # eg:i -> i[0]
@@ -186,10 +188,12 @@ class IRVisitor(object):
         self.la_content = type_walker.la_content
         self.same_dim_list = type_walker.same_dim_list
         self.arith_dim_list = type_walker.arith_dim_list
+        self.local_func_syms = type_walker.local_func_syms
         if func_name is not None:
             self.func_name = func_name
         # self.print_symbols()
         self.declared_symbols.clear()
+        self.local_func_def = ''
 
     def visit_code(self, node, **kwargs):
         self.content = ''
