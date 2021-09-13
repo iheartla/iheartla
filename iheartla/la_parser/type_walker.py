@@ -108,6 +108,7 @@ class TypeWalker(NodeWalker):
         self.rhs_raw_str_list = []
         self.dependency_set = set()
         self.dependency_dim_dict = {}
+        self.local_func_syms = []
 
     def filter_symbol(self, symbol):
         if '`' in symbol:
@@ -149,6 +150,7 @@ class TypeWalker(NodeWalker):
         self.arith_dim_list.clear()
         self.dependency_set.clear()
         self.dependency_dim_dict.clear()
+        self.local_func_syms.clear()
 
     def get_func_symbols(self):
         ret = {}
@@ -170,6 +172,8 @@ class TypeWalker(NodeWalker):
             sig = self.symtable[seq].get_signature()
             for match in results:
                 ret[match] = sig + match
+        for sym in self.local_func_syms:
+            ret[sym] = "localF;" + sym
         return ret
 
     def generate_var_name(self, base):
@@ -328,6 +332,11 @@ class TypeWalker(NodeWalker):
                     if len(lhs_sym) > 1:
                         multi_lhs_list.append(lhs_sym)
                     self.rhs_raw_str_list.append(vblock_info[0].right.text)
+                elif type(vblock_info[0]).__name__ == 'LocalFunc':
+                    func_sym = self.walk(vblock_info[0].name).ir.get_main_id()
+                    self.local_func_syms.append(func_sym)
+                    if len(func_sym) > 1:
+                        multi_lhs_list.append(func_sym)
                 else:
                     self.rhs_raw_str_list.append(vblock_info[0].text)
         ir_node.vblock = vblock_list
@@ -349,6 +358,9 @@ class TypeWalker(NodeWalker):
                         except AssertionError as e:
                             # lhs = symbol
                             continue
+                elif type(stat_list[index]).__name__ == 'LocalFunc':
+                    # local function defition
+                    pass
         #
         self.multi_lhs_list = multi_lhs_list
         if self.pre_walk:
@@ -887,14 +899,22 @@ class TypeWalker(NodeWalker):
 
     def walk_LocalFunc(self, node, **kwargs):
         name_info = self.walk(node.name, **kwargs)
+        assert name_info.ir.get_main_id() not in self.symtable, self.get_err_msg_info(name_info.ir.parse_info,
+                                                                               "Symbol {} has been defined".format(
+                                                                                   name_info.ir.get_main_id()))
         expr_info = self.walk(node.expr, **kwargs)
         ir_node = LocalFuncNode(name=name_info.ir, expr=expr_info.ir,
                                 parse_info=node.parseinfo, raw_text=node.text,
                                 def_type=LocalFuncDefType.LocalFuncDefParenthesis if node.def_p else LocalFuncDefType.LocalFuncDefBracket)
+        param_tps = []
         for index in range(len(node.params)):
             param_node = self.walk(node.params[index], **kwargs).ir
+            assert param_node.get_name() in self.parameters, self.get_err_msg_info(param_node.parse_info, "Parameter {} hasn't been defined".format(param_node.get_name()))
             ir_node.params.append(param_node)
+            param_tps.append(param_node.la_type)
         ir_node.separators = node.separators
+        ir_node.la_type = FunctionType(params=param_tps, ret=expr_info.ir.la_type)
+        self.symtable[name_info.ir.get_main_id()] = ir_node.la_type
         return NodeInfo(ir=ir_node)
 
     def walk_Assignment(self, node, **kwargs):
