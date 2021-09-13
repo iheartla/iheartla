@@ -203,6 +203,10 @@ class CodeGenEigen(CodeGen):
             item_list.append("    {} {};".format(self.get_ctype(self.symtable[parameter]), parameter))
             def_list.append("const {} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
             assign_list.append("{}({})".format(parameter, parameter))
+        for parameter in self.local_func_syms:
+            item_list.append("    {} {};".format(self.get_ctype(self.symtable[parameter]), parameter))
+            def_list.append("const {} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
+            assign_list.append("{}({})".format(parameter, parameter))
         content = ["struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),
                    "    {}({})".format(self.get_result_type(), ',\n               '.join(def_list)),
@@ -228,7 +232,7 @@ class CodeGenEigen(CodeGen):
         return main_content
 
     def get_ret_struct(self):
-        return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list))
+        return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list + self.local_func_syms))
 
     def gen_same_seq_test(self):
         # dynamic seq
@@ -496,6 +500,8 @@ class CodeGenEigen(CodeGen):
             else:
                 if type(node.stmts[index]).__name__ != 'AssignNode':
                     # meaningless
+                    if type(node.stmts[index]).__name__ == 'LocalFuncNode':
+                        self.visit(node.stmts[index], **kwargs)
                     continue
             stat_info = self.visit(node.stmts[index], **kwargs)
             if stat_info.pre_list:
@@ -505,6 +511,7 @@ class CodeGenEigen(CodeGen):
             else:
                 stats_content += ret_str + stat_info.content + '\n'
 
+        content = self.local_func_def + content
         content += stats_content
         # return value
         ret_value = self.get_ret_struct()
@@ -617,6 +624,23 @@ class CodeGenEigen(CodeGen):
         content.append("}\n")
         self.del_name_conventions(name_convention)
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
+
+    def visit_local_func(self, node, **kwargs):
+        name_info = self.visit(node.name, **kwargs)
+        param_list = []
+        for parameter in node.params:
+            param_info = self.visit(parameter, **kwargs)
+            param_list.append("    {} {}".format(self.get_ctype(self.symtable[param_info.content]), param_info.content))
+        if len(param_list) == 0:
+            content = "{} {}()\n"
+        else:
+            content = "{} {}(\n".format(self.get_ctype(node.expr.la_type), name_info.content)
+            content += ",\n".join(param_list) + ')\n'
+        content += '{\n'
+        content += '    return ' + self.visit(node.expr, **kwargs).content + ';'
+        content += '\n}\n\n'
+        self.local_func_def += content
+        return CodeNodeInfo()
 
     def visit_norm(self, node, **kwargs):
         value_info = self.visit(node.value, **kwargs)
