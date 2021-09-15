@@ -109,14 +109,14 @@ class CodeGenNumpy(CodeGen):
                         content = "{}[{}][{}]".format(node.main_id, node.subs[0], node.subs[1])
         return CodeNodeInfo(content)
 
-    def get_struct_definition(self):
+    def get_struct_definition(self, init_content):
         assign_list = []
         for parameter in self.lhs_list:
             assign_list.append("self.{} = {}".format(parameter, parameter))
         content = ["class {}:".format(self.get_result_type()),
-                   "    def __init__( self, {}):".format(', '.join(self.lhs_list)),
-                   "        {}".format('\n        '.join(assign_list)),
-                   "\n"]
+                   "    def __init__(self,{}".format(init_content[3:]),
+                   self.local_func_def,
+                   ]
         return "\n".join(content)
 
     def get_ret_struct(self):
@@ -384,8 +384,7 @@ class CodeGenNumpy(CodeGen):
             elif self.symtable[parameter].is_function():
                 test_content += self.get_func_test_str(parameter, self.symtable[parameter], rand_int_max)
             main_content.append('    print("{}:", {})'.format(parameter, parameter))
-        content = self.get_struct_definition() + '\n'
-        content += 'def ' + self.func_name + '(' + ', '.join(self.parameters) + '):\n'
+        content = ', '.join(self.parameters) + '):\n'
         if show_doc:
             content += '    \"\"\"\n' + '\n'.join(doc) + '\n    \"\"\"\n'
         # merge content
@@ -408,6 +407,8 @@ class CodeGenNumpy(CodeGen):
             else:
                 if type(node.stmts[index]).__name__ != 'AssignNode':
                     # meaningless
+                    if type(node.stmts[index]).__name__ == 'LocalFuncNode':
+                        self.visit(node.stmts[index], **kwargs)
                     continue
             stat_info = self.visit(node.stmts[index], **kwargs)
             if stat_info.pre_list:
@@ -415,8 +416,9 @@ class CodeGenNumpy(CodeGen):
             stats_content += ret_str + stat_info.content + '\n'
 
         content += stats_content
-        content += '    return ' + self.get_ret_struct()
-        content += '\n'
+        # content += '    return ' + self.get_ret_struct()
+        # content += '\n'
+        content = self.get_struct_definition(self.update_prelist_str([content], '    ')) + '\n'
         # test
         test_function += test_content
         test_function.append('    return {}'.format(', '.join(self.parameters)))
@@ -509,6 +511,33 @@ class CodeGenNumpy(CodeGen):
             content.append(str("    " + assign_id + " += " + exp_str + '\n'))
         content[0] = "    " + content[0]
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
+
+    def visit_function(self, node, **kwargs):
+        name_info = self.visit(node.name, **kwargs)
+        pre_list = []
+        params = []
+        if node.params:
+            for param in node.params:
+                param_info = self.visit(param, **kwargs)
+                params.append(param_info.content)
+                pre_list += param_info.pre_list
+        if name_info.content in self.local_func_def:
+            func_name = 'self.' + name_info.content
+        else:
+            func_name = name_info.content
+        content = "{}({})".format(func_name, ', '.join(params))
+        return CodeNodeInfo(content, pre_list)
+
+    def visit_local_func(self, node, **kwargs):
+        name_info = self.visit(node.name, **kwargs)
+        param_list = []
+        for parameter in node.params:
+            param_info = self.visit(parameter, **kwargs)
+            param_list.append(param_info.content)
+        content = "    def {}(self, {}):\n".format(name_info.content, ", ".join(param_list))
+        content += '        return ' + self.visit(node.expr, **kwargs).content
+        self.local_func_def += content
+        return CodeNodeInfo()
 
     def visit_norm(self, node, **kwargs):
         value_info = self.visit(node.value, **kwargs)
@@ -1003,7 +1032,7 @@ class CodeGenNumpy(CodeGen):
             op = ' = '
             if node.op == '+=':
                 op = ' += '
-            right_exp += '    ' + self.get_main_id(left_id) + op + right_info.content
+            right_exp += '    self.' + self.get_main_id(left_id) + op + right_info.content
             content += right_exp
         #content += '\n'
         la_remove_key(LHS, **kwargs)
