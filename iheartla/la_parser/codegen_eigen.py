@@ -195,31 +195,27 @@ class CodeGenEigen(CodeGen):
                         content = "{}({}, {})".format(node.main_id, node.subs[0], node.subs[1])
         return CodeNodeInfo(content)
 
-    def get_struct_definition(self):
+    def get_struct_definition(self, init_content):
         item_list = []
         def_list = []
-        assign_list = []
+        # assign_list = []
         for parameter in self.lhs_list:
             item_list.append("    {} {};".format(self.get_ctype(self.symtable[parameter]), parameter))
             def_list.append("const {} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
-            assign_list.append("{}({})".format(parameter, parameter))
-        for parameter in self.local_func_syms:
-            item_list.append("    {} {};".format(self.get_ctype(self.symtable[parameter]), parameter))
-            def_list.append("const {} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
-            assign_list.append("{}({})".format(parameter, parameter))
+            # assign_list.append("{}({})".format(parameter, parameter))
         content = ["struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),
-                   "    {}({})".format(self.get_result_type(), ',\n               '.join(def_list)),
-                   "    : {}".format(',\n    '.join(assign_list)),
-                   "    {}",
-                   "};\n"]
-        return "\n".join(content)
+                   self.local_func_def,
+                   # "    {}({})".format(self.get_result_type(), ',\n               '.join(def_list)),
+                   # "    : {}".format(',\n    '.join(assign_list)),
+                   # "    {}",
+                   ]
+        return "\n".join(content) + init_content + "};\n"
 
     def get_ret_display(self):
         # print return value in main function
         la_type = self.symtable[self.ret_symbol]
-        main_content = ["    {} func_value = {}({});".format(self.get_result_type(), self.func_name,
-                                                             ', '.join(self.parameters))]
+        main_content = ["    {} func_value({});".format(self.get_result_type(), ', '.join(self.parameters))]
         if la_type.is_matrix() or la_type.is_vector() or la_type.is_scalar():
             main_content.append('    std::cout<<"return value:\\n"<<func_value.{}<<std::endl;'.format(self.ret_symbol))
         elif la_type.is_sequence():
@@ -365,7 +361,7 @@ class CodeGenEigen(CodeGen):
             par_des_list.append("const {} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
             test_par_list.append("{} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
             if self.symtable[parameter].desc:
-                show_doc = True
+                # show_doc = True
                 doc.append('@param {} {}'.format(parameter, self.symtable[parameter].desc))
             if self.symtable[parameter].is_sequence():
                 ele_type = self.symtable[parameter].element_type
@@ -467,19 +463,18 @@ class CodeGenEigen(CodeGen):
             elif self.symtable[parameter].is_function():
                 test_content += self.get_func_test_str(parameter, self.symtable[parameter], rand_int_max)
         content = ""
-        content += self.get_struct_definition() + '\n'
         if show_doc:
             content += '/**\n * ' + self.func_name + '\n *\n * ' + '\n * '.join(doc) + '\n * @return {}\n */\n'.format(
                 self.ret_symbol)
         ret_type = self.get_result_type()
         if len(self.parameters) == 0:
-            content += ret_type + ' ' + self.func_name + '(' + ')\n{\n'  # func name
+            content += self.func_name + '(' + ')\n{\n'  # func name
             test_function.insert(0, "void {}({})".format(rand_func_name, ', '.join(test_par_list)))
         elif len(self.parameters) == 1:
-            content += ret_type + ' ' + self.func_name + '(' + ', '.join(par_des_list) + ')\n{\n'  # func name
+            content += self.func_name + '(' + ', '.join(par_des_list) + ')\n{\n'  # func name
             test_function.insert(0, "void {}({})".format(rand_func_name, ', '.join(test_par_list)))
         else:
-            content += ret_type + ' ' + self.func_name + '(\n    ' + ',\n    '.join(par_des_list) + ')\n{\n'  # func name
+            content += self.func_name + '(\n    ' + ',\n    '.join(par_des_list) + ')\n{\n'  # func name
             test_function.insert(0, "void {}({})".format(rand_func_name, ',\n    '.join(test_par_list)))
         # merge content
         content += dim_content
@@ -511,12 +506,12 @@ class CodeGenEigen(CodeGen):
             else:
                 stats_content += ret_str + stat_info.content + '\n'
 
-        content = self.local_func_def + content
         content += stats_content
-        # return value
-        ret_value = self.get_ret_struct()
-        content += '    return ' + ret_value + ';'
         content += '\n}\n'
+        content = self.get_struct_definition(self.update_prelist_str([content], '    '))
+        # return value
+        # ret_value = self.get_ret_struct()
+        # content += '    return ' + ret_value + ';'
         # test function
         test_function += test_content
         test_function.append('}')
@@ -630,15 +625,15 @@ class CodeGenEigen(CodeGen):
         param_list = []
         for parameter in node.params:
             param_info = self.visit(parameter, **kwargs)
-            param_list.append("    {} {}".format(self.get_ctype(self.symtable[param_info.content]), param_info.content))
+            param_list.append("        {} {}".format(self.get_ctype(self.symtable[param_info.content]), param_info.content))
         if len(param_list) == 0:
-            content = "{} {}()\n"
+            content = "    {} {}()\n"
         else:
-            content = "{} {}(\n".format(self.get_ctype(node.expr.la_type), name_info.content)
+            content = "    {} {}(\n".format(self.get_ctype(node.expr.la_type), name_info.content)
             content += ",\n".join(param_list) + ')\n'
-        content += '{\n'
-        content += '    return ' + self.visit(node.expr, **kwargs).content + ';'
-        content += '\n}\n\n'
+        content += '    {\n'
+        content += '        return ' + self.visit(node.expr, **kwargs).content + ';'
+        content += '    \n    }\n'
         self.local_func_def += content
         return CodeNodeInfo()
 
@@ -1230,7 +1225,7 @@ class CodeGenEigen(CodeGen):
                     op = ' += '
                 type_def = ""
                 if not self.def_dict[node.left.get_main_id()]:
-                    type_def = self.get_ctype(self.symtable[node.left.get_main_id()]) + ' '
+                    # type_def = self.get_ctype(self.symtable[node.left.get_main_id()]) + ' '
                     self.def_dict[node.left.get_main_id()] = True
                 right_exp += '    ' + type_def + node.left.get_main_id() + op + right_info.content + ';'
                 content += right_exp + '\n'

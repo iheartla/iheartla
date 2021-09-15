@@ -656,7 +656,8 @@ class IRVisitor(object):
         return [res[0], subs]
 
     def get_result_type(self):
-        return self.func_name + "ResultType"
+        # return self.func_name + "ResultType"
+        return self.func_name
 
     def get_main_id(self, identifier):
         if identifier in self.ids_dict:
