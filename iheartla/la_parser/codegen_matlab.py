@@ -142,12 +142,14 @@ class CodeGenMatlab(CodeGen):
         # values in LIFO order
         return "output"
 
-    def get_struct_definition(self):
+    def get_struct_definition(self, init_content):
         ret_name = self.get_result_name()
         assign_list = []
         for parameter in self.lhs_list:
-            assign_list.append("    {}.{} = {};\n".format(ret_name, parameter, parameter))
-        return "\n".join(assign_list)
+            assign_list.append("    {}.{} = {};".format(ret_name, parameter, parameter))
+        for parameter in self.local_func_syms:
+            assign_list.append("    {}.{} = @{};".format(ret_name, parameter, parameter))
+        return "\n".join(assign_list) + '\n'
 
     def get_ret_struct(self):
         return "{}({})".format(self.get_result_name(), ', '.join(self.lhs_list))
@@ -492,6 +494,8 @@ class CodeGenMatlab(CodeGen):
             else:
                 if type(node.stmts[index]).__name__ != 'AssignNode':
                     # meaningless
+                    if type(node.stmts[index]).__name__ == 'LocalFuncNode':
+                        self.visit(node.stmts[index], **kwargs)
                     continue
             stat_info = self.visit(node.stmts[index], **kwargs)
             if stat_info.pre_list:
@@ -501,7 +505,7 @@ class CodeGenMatlab(CodeGen):
                 if type(node.stmts[index]).__name__ != 'AssignNode':
                     stats_content += ';\n'
 
-        stats_content += self.get_struct_definition()
+        stats_content += self.local_func_def + self.get_struct_definition('')
         content += stats_content
 
         content += "end\n"
@@ -590,6 +594,18 @@ class CodeGenMatlab(CodeGen):
             content.append("    end\n")
         content.append("end\n")
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
+
+    def visit_local_func(self, node, **kwargs):
+        name_info = self.visit(node.name, **kwargs)
+        param_list = []
+        for parameter in node.params:
+            param_info = self.visit(parameter, **kwargs)
+            param_list.append(param_info.content)
+        content = "    function ret = {}({})\n".format(name_info.content, ", ".join(param_list))
+        content += '        ret = {};\n'.format(self.visit(node.expr, **kwargs).content)
+        content += '    end\n\n'
+        self.local_func_def += content
+        return CodeNodeInfo()
 
     def visit_norm(self, node, **kwargs):
         value_info = self.visit(node.value, **kwargs)
