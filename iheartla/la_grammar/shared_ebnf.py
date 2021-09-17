@@ -20,7 +20,7 @@ matrix_type::MatrixType
     | type:/[ℝℤ]/ {hspace} '^' {hspace} '(' {hspace} id1:dimension  {hspace} '×' {hspace} id2:dimension {hspace}')'  {{hspace}+ attr+:matrix_attribute}
     ;
 
-matrix_attribute
+matrix_attribute 
     = SPARSE
     ;
 
@@ -143,7 +143,7 @@ right_hand_side
     =
     | expression
     | optimize_operator
-    | sparse_matrix
+    | multi_cond_expr
     ;
 
 term

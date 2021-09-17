@@ -2041,7 +2041,7 @@ class TypeWalker(NodeWalker):
             content += self.walk(node.e, **kwargs)
         return content
 
-    def walk_SparseMatrix(self, node, **kwargs):
+    def walk_MultiCondExpr(self, node, **kwargs):
         ir_node = SparseMatrixNode(parse_info=node.parseinfo)
         if LHS in kwargs:
             lhs = kwargs[LHS]
@@ -2112,7 +2112,7 @@ class TypeWalker(NodeWalker):
         node_info.ir = ir_node
         return node_info
 
-    def walk_SparseIfs(self, node, **kwargs):
+    def walk_MultiIfs(self, node, **kwargs):
         ir_list = []
         if node.ifs:
             node_info = self.walk(node.ifs, **kwargs)
@@ -2123,7 +2123,7 @@ class TypeWalker(NodeWalker):
         ret_info = NodeInfo(ir=ir_list)
         return ret_info
 
-    def walk_SparseIf(self, node, **kwargs):
+    def walk_SingleIf(self, node, **kwargs):
         ir_node = SparseIfNode(parse_info=node.parseinfo)
         cond_info = self.walk(node.cond, **kwargs)
         ir_node.cond = cond_info.ir
