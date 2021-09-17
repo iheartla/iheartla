@@ -8,23 +8,21 @@ matrix::Matrix
 vector::Vector            
     = '(' {hspace} exp+:expression {{hspace} ',' {hspace} exp+:expression}+ {hspace} ')'
     ;
-
-sparse_matrix::SparseMatrix
-    = '{' {hspace} ifs:sparse_if_conditions
+    
+multi_cond_expr::MultiCondExpr
+    = '{' {hspace} ifs:multi_if_conditions
     {{separator_with_space}+ {hspace} other:expression {hspace} OTHERWISE }
-    # {{separator_with_space}+ {hspace} IS {hspace} id1:(integer | identifier) {hspace} '×' {hspace} id2:(integer | identifier)}
+    ;
+    
+multi_if_conditions::MultiIfs
+    = ifs:single_if_condition {separator_with_space}+ value:single_if_condition
+    | value:single_if_condition
     ;
 
-sparse_if_conditions::SparseIfs
-    = ifs:sparse_if_conditions {separator_with_space}+ value:sparse_if_condition
-    | value:sparse_if_condition
-    ;
-
-sparse_if_condition::SparseIf
+single_if_condition::SingleIf
     = stat:statement {hspace} IF {hspace} cond:if_condition
     | cond:if_condition  {hspace} ':' {hspace} stat:statement
     ;
-
 
 rows::MatrixRows
     =

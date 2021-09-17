@@ -1561,14 +1561,14 @@ class grammarinitParser(Parser):
             ['exp']
         )
 
-    @tatsumasu('SparseMatrix')
-    def _sparse_matrix_(self):  # noqa
+    @tatsumasu('MultiCondExpr')
+    def _multi_cond_expr_(self):  # noqa
         self._token('{')
 
         def block0():
             self._hspace_()
         self._closure(block0)
-        self._sparse_if_conditions_()
+        self._multi_if_conditions_()
         self.name_last_node('ifs')
 
         def block2():
@@ -1593,21 +1593,20 @@ class grammarinitParser(Parser):
             []
         )
 
-    @tatsumasu('SparseIfs')
-    @leftrec
-    def _sparse_if_conditions_(self):  # noqa
+    @tatsumasu('MultiIfs')
+    def _multi_if_conditions_(self):  # noqa
         with self._choice():
             with self._option():
-                self._sparse_if_conditions_()
+                self._single_if_condition_()
                 self.name_last_node('ifs')
 
                 def block1():
                     self._separator_with_space_()
                 self._positive_closure(block1)
-                self._sparse_if_condition_()
+                self._single_if_condition_()
                 self.name_last_node('value')
             with self._option():
-                self._sparse_if_condition_()
+                self._single_if_condition_()
                 self.name_last_node('value')
             self._error('no available options')
         self.ast._define(
@@ -1615,8 +1614,8 @@ class grammarinitParser(Parser):
             []
         )
 
-    @tatsumasu('SparseIf')
-    def _sparse_if_condition_(self):  # noqa
+    @tatsumasu('SingleIf')
+    def _single_if_condition_(self):  # noqa
         with self._choice():
             with self._option():
                 self._statement_()
@@ -4110,7 +4109,7 @@ class grammarinitParser(Parser):
             with self._option():
                 self._optimize_operator_()
             with self._option():
-                self._sparse_matrix_()
+                self._multi_cond_expr_()
             self._error('no available options')
 
     @tatsumasu()
@@ -5002,13 +5001,13 @@ class grammarinitSemantics(object):
     def vector(self, ast):  # noqa
         return ast
 
-    def sparse_matrix(self, ast):  # noqa
+    def multi_cond_expr(self, ast):  # noqa
         return ast
 
-    def sparse_if_conditions(self, ast):  # noqa
+    def multi_if_conditions(self, ast):  # noqa
         return ast
 
-    def sparse_if_condition(self, ast):  # noqa
+    def single_if_condition(self, ast):  # noqa
         return ast
 
     def rows(self, ast):  # noqa
@@ -5600,17 +5599,17 @@ class Vector(ModelBase):
     exp = None
 
 
-class SparseMatrix(ModelBase):
+class MultiCondExpr(ModelBase):
     ifs = None
     other = None
 
 
-class SparseIfs(ModelBase):
+class MultiIfs(ModelBase):
     ifs = None
     value = None
 
 
-class SparseIf(ModelBase):
+class SingleIf(ModelBase):
     cond = None
     stat = None
 
