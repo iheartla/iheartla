@@ -30,6 +30,9 @@ class LaVarType(object):
         self.index_type = index_type
         self.dynamic = dynamic  # related to type inference, no need to check if True
 
+    def is_valid(self):
+        return self.var_type != VarTypeEnum.INVALID
+
     def is_integer_element(self):
         return False
 

@@ -151,16 +151,17 @@ class IRVisitor(object):
         self.logger.info("symtable:")
         for (k, v) in self.symtable.items():
             dims = ""
-            if v.var_type == VarTypeEnum.MATRIX:
-                if v.sparse:
-                    dims = ", sparse, rows:{}, cols:{}".format(v.rows, v.cols)
-                else:
-                    dims = ", rows:{}, cols:{}".format(v.rows, v.cols)
-            elif v.var_type == VarTypeEnum.VECTOR:
-                dims = ", rows:{}".format(v.rows)
-            elif v.var_type == VarTypeEnum.SEQUENCE or v.var_type == VarTypeEnum.SET:
-                dims = ", size:{}".format(v.size)
-            self.logger.info(k + ':' + str(v.var_type) + dims)
+            if v is not None:
+                if v.var_type == VarTypeEnum.MATRIX:
+                    if v.sparse:
+                        dims = ", sparse, rows:{}, cols:{}".format(v.rows, v.cols)
+                    else:
+                        dims = ", rows:{}, cols:{}".format(v.rows, v.cols)
+                elif v.var_type == VarTypeEnum.VECTOR:
+                    dims = ", rows:{}".format(v.rows)
+                elif v.var_type == VarTypeEnum.SEQUENCE or v.var_type == VarTypeEnum.SET:
+                    dims = ", size:{}".format(v.size)
+                self.logger.info(k + ':' + str(v.var_type) + dims)
         self.logger.info("parameters:\n" + str(self.parameters))
         self.logger.info("subscripts:\n" + str(self.subscripts))
         self.logger.info("dim_dict:\n" + str(self.dim_dict))

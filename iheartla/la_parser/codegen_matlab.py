@@ -146,7 +146,8 @@ class CodeGenMatlab(CodeGen):
         ret_name = self.get_result_name()
         assign_list = []
         for parameter in self.lhs_list:
-            assign_list.append("    {}.{} = {};".format(ret_name, parameter, parameter))
+            if parameter in self.symtable and self.symtable[parameter] is not None:
+                assign_list.append("    {}.{} = {};".format(ret_name, parameter, parameter))
         for parameter in self.local_func_syms:
             assign_list.append("    {}.{} = @{};".format(ret_name, parameter, parameter))
         return "\n".join(assign_list) + '\n'
@@ -489,6 +490,9 @@ class CodeGenMatlab(CodeGen):
             ret_str = ''
             if index == len(node.stmts) - 1:
                 if type(node.stmts[index]).__name__ != 'AssignNode':
+                    if type(node.stmts[index]).__name__ == 'LocalFuncNode':
+                        self.visit(node.stmts[index], **kwargs)
+                        continue
                     kwargs[LHS] = self.ret_symbol
                     ret_str = "    " + self.ret_symbol + ' = '
             else:
