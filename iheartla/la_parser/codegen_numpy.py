@@ -97,6 +97,9 @@ class CodeGenNumpy(CodeGen):
 
     def visit_id(self, node, **kwargs):
         content = node.get_name()
+        prefix = False
+        if content not in self.parameters and content not in self.local_func_syms:
+            prefix = True
         content = self.filter_symbol(content)
         if content in self.name_convention_dict:
             content = self.name_convention_dict[content]
@@ -107,6 +110,8 @@ class CodeGenNumpy(CodeGen):
                         content = "{}.tocsr()[{}, {}]".format(node.main_id, node.subs[0], node.subs[1])
                     else:
                         content = "{}[{}][{}]".format(node.main_id, node.subs[0], node.subs[1])
+        if prefix:
+            content = 'self.' + content
         return CodeNodeInfo(content)
 
     def get_struct_definition(self, init_content):
@@ -1032,7 +1037,7 @@ class CodeGenNumpy(CodeGen):
             op = ' = '
             if node.op == '+=':
                 op = ' += '
-            right_exp += '    self.' + self.get_main_id(left_id) + op + right_info.content
+            right_exp += '    ' + self.get_main_id(left_id) + op + right_info.content
             content += right_exp
         #content += '\n'
         la_remove_key(LHS, **kwargs)
