@@ -117,7 +117,8 @@ class CodeGenNumpy(CodeGen):
     def get_struct_definition(self, init_content):
         assign_list = []
         for parameter in self.lhs_list:
-            assign_list.append("self.{} = {}".format(parameter, parameter))
+            if parameter in self.symtable and self.symtable[parameter] is not None:
+                assign_list.append("self.{} = {}".format(parameter, parameter))
         content = ["class {}:".format(self.get_result_type()),
                    "    def __init__(self,{}".format(init_content[3:]),
                    self.local_func_def,
@@ -407,6 +408,9 @@ class CodeGenNumpy(CodeGen):
             ret_str = ''
             if index == len(node.stmts) - 1:
                 if type(node.stmts[index]).__name__ != 'AssignNode':
+                    if type(node.stmts[index]).__name__ == 'LocalFuncNode':
+                        self.visit(node.stmts[index], **kwargs)
+                        continue
                     kwargs[LHS] = self.ret_symbol
                     ret_str = "    " + self.ret_symbol + ' = '
             else:
@@ -428,7 +432,8 @@ class CodeGenNumpy(CodeGen):
         test_function += test_content
         test_function.append('    return {}'.format(', '.join(self.parameters)))
         main_content.append("    func_value = {}({})".format(self.func_name, ', '.join(self.parameters)))
-        main_content.append('    print("return value: ", func_value.{})'.format(self.ret_symbol))
+        if self.symtable[self.ret_symbol] is not None:
+            main_content.append('    print("return value: ", func_value.{})'.format(self.ret_symbol))
         content += '\n\n' + '\n'.join(test_function) + '\n\n\n' + '\n'.join(main_content)
         # convert special string in identifiers
         content = self.trim_content(content)

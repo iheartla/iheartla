@@ -200,9 +200,11 @@ class CodeGenEigen(CodeGen):
         def_list = []
         # assign_list = []
         for parameter in self.lhs_list:
-            item_list.append("    {} {};".format(self.get_ctype(self.symtable[parameter]), parameter))
-            def_list.append("const {} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
-            # assign_list.append("{}({})".format(parameter, parameter))
+            if parameter in self.symtable and self.symtable[parameter] is not None:
+                # not local func
+                item_list.append("    {} {};".format(self.get_ctype(self.symtable[parameter]), parameter))
+                def_list.append("const {} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
+                # assign_list.append("{}({})".format(parameter, parameter))
         content = ["struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),
                    self.local_func_def,
@@ -216,15 +218,16 @@ class CodeGenEigen(CodeGen):
         # print return value in main function
         la_type = self.symtable[self.ret_symbol]
         main_content = ["    {} func_value({});".format(self.get_result_type(), ', '.join(self.parameters))]
-        if la_type.is_matrix() or la_type.is_vector() or la_type.is_scalar():
-            main_content.append('    std::cout<<"return value:\\n"<<func_value.{}<<std::endl;'.format(self.ret_symbol))
-        elif la_type.is_sequence():
-            # sequence
-            if la_type.element_type.is_matrix() or la_type.element_type.is_vector() or la_type.element_type.is_scalar():
-                main_content.append('    std::cout<<"vector return value:"<<std::endl;')
-                main_content.append('    for(int i=0; i<func_value.{}.size(); i++){{'.format(self.ret_symbol))
-                main_content.append('        std::cout<<"i:"<<i<<", value:\\n"<<func_value.{}.at(i)<<std::endl;'.format(self.ret_symbol))
-                main_content.append('    }')
+        if la_type is not None:
+            if la_type.is_matrix() or la_type.is_vector() or la_type.is_scalar():
+                main_content.append('    std::cout<<"return value:\\n"<<func_value.{}<<std::endl;'.format(self.ret_symbol))
+            elif la_type.is_sequence():
+                # sequence
+                if la_type.element_type.is_matrix() or la_type.element_type.is_vector() or la_type.element_type.is_scalar():
+                    main_content.append('    std::cout<<"vector return value:"<<std::endl;')
+                    main_content.append('    for(int i=0; i<func_value.{}.size(); i++){{'.format(self.ret_symbol))
+                    main_content.append('        std::cout<<"i:"<<i<<", value:\\n"<<func_value.{}.at(i)<<std::endl;'.format(self.ret_symbol))
+                    main_content.append('    }')
         return main_content
 
     def get_ret_struct(self):
@@ -489,6 +492,9 @@ class CodeGenEigen(CodeGen):
             need_semicolon = False
             if index == len(node.stmts) - 1:
                 if type(node.stmts[index]).__name__ != 'AssignNode':
+                    if type(node.stmts[index]).__name__ == 'LocalFuncNode':
+                        self.visit(node.stmts[index], **kwargs)
+                        continue
                     kwargs[LHS] = self.ret_symbol
                     ret_str = "    " + self.get_ctype(self.symtable[self.ret_symbol]) + " " + self.ret_symbol + ' = '
                     need_semicolon = True
