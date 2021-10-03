@@ -109,4 +109,9 @@ class IRConverter(IRVisitor):
         return Infer.Multi_Apply(Infer.Identifier("mul"), [left_info, right_info])
 
     def visit_id(self, node, **kwargs):
+        if node.subs and len(node.subs) > 0:
+            params = [Infer.Identifier(node.main_id)]
+            for sub in node.subs:
+                params.append(Infer.Identifier(sub))
+            return Infer.Multi_Apply(Infer.Identifier("index"), params)
         return Infer.Identifier(node.get_name())
