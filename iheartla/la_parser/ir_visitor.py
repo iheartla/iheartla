@@ -150,19 +150,26 @@ class IRVisitor(object):
 
     def print_symbols(self):
         self.logger.info("symtable:")
+        def get_type_desc(v):
+            extra = ''
+            if v.var_type == VarTypeEnum.MATRIX:
+                if v.sparse:
+                    extra = ", sparse, rows:{}, cols:{}".format(v.rows, v.cols)
+                else:
+                    extra = ", rows:{}, cols:{}".format(v.rows, v.cols)
+            elif v.var_type == VarTypeEnum.VECTOR:
+                extra = ", rows:{}".format(v.rows)
+            elif v.var_type == VarTypeEnum.SEQUENCE or v.var_type == VarTypeEnum.SET:
+                extra = ", size:{}".format(v.size)
+            elif v.var_type == VarTypeEnum.FUNCTION:
+                par_list = []
+                for par in v.params:
+                    par_list.append(get_type_desc(par))
+                extra = ": " + '; '.join(par_list) + ' -> ' + get_type_desc(v.ret)
+            return str(v.var_type) + extra
         for (k, v) in self.symtable.items():
-            dims = ""
             if v is not None:
-                if v.var_type == VarTypeEnum.MATRIX:
-                    if v.sparse:
-                        dims = ", sparse, rows:{}, cols:{}".format(v.rows, v.cols)
-                    else:
-                        dims = ", rows:{}, cols:{}".format(v.rows, v.cols)
-                elif v.var_type == VarTypeEnum.VECTOR:
-                    dims = ", rows:{}".format(v.rows)
-                elif v.var_type == VarTypeEnum.SEQUENCE or v.var_type == VarTypeEnum.SET:
-                    dims = ", size:{}".format(v.size)
-                self.logger.info(k + ':' + str(v.var_type) + dims)
+                self.logger.info(k + ':' + get_type_desc(v))
         self.logger.info("parameters:\n" + str(self.parameters))
         self.logger.info("subscripts:\n" + str(self.subscripts))
         self.logger.info("dim_dict:\n" + str(self.dim_dict))
