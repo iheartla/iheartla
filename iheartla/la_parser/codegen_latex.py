@@ -5,6 +5,7 @@ from .type_walker import *
 class CodeGenLatex(CodeGen):
     def __init__(self, parse_type=ParserTypeEnum.LATEX):
         super().__init__(parse_type)
+        self.local_func_parsing = False
         self.uni_convert_dict = {'ᵢ': '\\textsubscript{i}', 'ⱼ': '\\textsubscript{j}', 'ᵣ': '\\textsubscript{r}',
                                  'ᵤ': '\\textsubscript{u}', 'ᵥ': '\\textsubscript{v}', '𝟙': '\\mathbb{ 1 }',
                                  '𝐚': '\\textbf{a}', '𝐛': '\\textbf{b}', '𝐜': '\\textbf{c}', '𝐝': '\\textbf{d}', '𝐞': '\\textbf{e}',
@@ -183,17 +184,18 @@ class CodeGenLatex(CodeGen):
     def visit_where_conditions(self, node, **kwargs):
         ret = []
         for val in node.value:
-            ret.append(self.visit(val, **kwargs))
+            ret.append(self.visit(val, **kwargs) + " \\\\\n")
         return ''.join(ret)
 
     def visit_where_condition(self, node, **kwargs):
         id_list = [self.visit(id0, **kwargs) for id0 in node.id]
         type_content = self.visit(node.type, **kwargs)
-        content = "{} & \\in {}".format(','.join(id_list), type_content)
-        if node.desc:
-            content += " \\text{{ {}}} \\\\\n".format(node.desc)
+        if self.local_func_parsing:
+            content = "{} \\in {}".format(','.join(id_list), type_content)
         else:
-            content += " \\\\\n"
+            content = "{} & \\in {}".format(','.join(id_list), type_content)
+        if node.desc:
+            content += " \\text{{ {}}}".format(node.desc)
         return content
 
     def visit_matrix_type(self, node, **kwargs):
@@ -346,7 +348,16 @@ class CodeGenLatex(CodeGen):
             def_params = '\\left( ' + params_str + ' \\right)'
         else:
             def_params = '\\left[ ' + params_str + ' \\right]'
-        return self.visit(node.name, **kwargs) + def_params + " & = " + self.visit(node.expr, **kwargs)
+        content = self.visit(node.name, **kwargs) + def_params + " & = " + self.visit(node.expr, **kwargs)
+        if len(node.defs) > 0:
+            self.local_func_parsing = True
+            par_list = []
+            for par in node.defs:
+                par_list.append(self.visit(par, **kwargs))
+            # content += "\\intertext{{{}}} ".format('where') + ', '.join(par_list)
+            content += ' \\text{{ where }}  ' + ', '.join(par_list)
+            self.local_func_parsing = False
+        return content
 
     def visit_if(self, node, **kwargs):
         ret_info = self.visit(node.cond, **kwargs)
