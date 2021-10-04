@@ -134,9 +134,11 @@ assignment::Assignment
     
     
 local_func::LocalFunc
-    = name:identifier def_p:'(' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')' {hspace} op:'=' {hspace} expr:right_hand_side
-    | name:identifier '[' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']' {hspace} op:'=' {hspace} expr:right_hand_side
-    ;
+    = name:identifier def_p:'(' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')' {hspace} 
+    op:'=' {hspace} expr:right_hand_side {{hspace} (WHERE | GIVEN ) {hspace} defs+:where_condition {{hspace} ',' {hspace} defs+:where_condition}}
+    | name:identifier '[' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']' {hspace}
+     op:'=' {hspace} expr:right_hand_side {{hspace} (WHERE | GIVEN ) {hspace} defs+:where_condition {{hspace} ',' {hspace} defs+:where_condition}}
+     ;
 
 
 right_hand_side
