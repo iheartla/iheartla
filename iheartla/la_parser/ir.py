@@ -185,6 +185,12 @@ class WhereConditionNode(StmtNode):
         self.type = None
         self.desc = None
 
+    def get_type_dict(self):
+        ret = {}
+        for name in self.id:
+            ret[name.get_name()] = self.type.la_type
+        return ret
+
 
 class SetTypeNode(ExprNode):
     def __init__(self, parse_info=None, raw_text=None):
@@ -251,7 +257,7 @@ class LocalFuncDefType(IntEnum):
 
 
 class LocalFuncNode(StmtNode):
-    def __init__(self, name=None, expr=None, parse_info=None, raw_text=None, def_type=LocalFuncDefType.LocalFuncDefParenthesis):
+    def __init__(self, name=None, expr=None, parse_info=None, raw_text=None, defs=[], def_type=LocalFuncDefType.LocalFuncDefParenthesis):
         super().__init__(IRNodeType.LocalFunc, parse_info=parse_info, raw_text=raw_text)
         self.name = name
         self.expr = expr
@@ -260,6 +266,7 @@ class LocalFuncNode(StmtNode):
         self.def_type = def_type
         self.params = []
         self.separators = []
+        self.defs = defs
 
 
 class AssignNode(StmtNode):
