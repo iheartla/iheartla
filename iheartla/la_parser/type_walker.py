@@ -109,8 +109,9 @@ class TypeWalker(NodeWalker):
         self.dependency_set = set()
         self.dependency_dim_dict = {}
         self.local_func_syms = []  # local function names
-        self.local_func_pars = []  # paramters for local functions
+        self.local_func_pars = []  # parameters for local functions
         self.local_func_parsing = False
+        self.local_func_name = ''  # function name when visiting expressions
         self.local_func_dict = {}  # local function name -> parameter dict
 
     def filter_symbol(self, symbol):
@@ -291,6 +292,24 @@ class TypeWalker(NodeWalker):
     def get_err_msg_info(self, parse_info, error_msg):
         line_info = self.get_line_info(parse_info)
         return self.get_err_msg(line_info, line_info.col, error_msg)
+
+    def get_sym_type(self, sym):
+        """
+        get la type by considering local function
+        :param sym: symbol name
+        :return: la type
+        """
+        node_type = LaVarType(VarTypeEnum.INVALID)
+        resolved = False
+        if self.local_func_parsing:
+            if self.local_func_name in self.local_func_dict and sym in self.local_func_dict[self.local_func_name]:
+                node_type = self.local_func_dict[self.local_func_name][sym]
+                resolved = True
+        if not resolved:
+            if sym in self.symtable:
+                node_type = self.symtable[sym]
+        print("node_type:"+str(node_type))
+        return node_type
 
     def walk_Node(self, node):
         print('Reached Node: ', node)
@@ -904,9 +923,10 @@ class TypeWalker(NodeWalker):
     def walk_LocalFunc(self, node, **kwargs):
         name_info = self.walk(node.name, **kwargs)
         par_defs = []
+        par_dict = {}
+        self.local_func_name = name_info.ir.get_main_id()
         if len(node.defs) > 0:
             self.local_func_parsing = True
-            par_dict = {}
             for par_def in node.defs:
                 par_type = self.walk(par_def, **kwargs)
                 par_defs.append(par_type)
@@ -922,9 +942,11 @@ class TypeWalker(NodeWalker):
         param_tps = []
         for index in range(len(node.params)):
             param_node = self.walk(node.params[index], **kwargs).ir
-            assert param_node.get_name() in self.parameters, self.get_err_msg_info(param_node.parse_info, "Parameter {} hasn't been defined".format(param_node.get_name()))
+            # assert param_node.get_name() in self.parameters, self.get_err_msg_info(param_node.parse_info, "Parameter {} hasn't been defined".format(param_node.get_name()))
+            assert param_node.get_name() in par_dict, self.get_err_msg_info(param_node.parse_info, "Parameter {} hasn't been defined".format(param_node.get_name()))
             ir_node.params.append(param_node)
-            param_tps.append(param_node.la_type)
+            # param_tps.append(param_node.la_type)
+            param_tps.append(par_dict[param_node.get_name()])
         ir_node.separators = node.separators
         ir_node.la_type = FunctionType(params=param_tps, ret=expr_info.ir.la_type)
         self.symtable[name_info.ir.get_main_id()] = ir_node.la_type
@@ -1906,8 +1928,9 @@ class TypeWalker(NodeWalker):
         value = self.filter_symbol(value)
         #
         ir_node = IdNode(value, parse_info=node.parseinfo)
-        if value in self.symtable:
-            node_type = self.symtable[value]
+        node_type = self.get_sym_type(value)
+        # if value in self.symtable:
+        #     node_type = self.symtable[value]
         node_type.symbol = value
         ir_node.la_type = node_type
         node_info = NodeInfo(node_type, value, {value}, ir_node)
