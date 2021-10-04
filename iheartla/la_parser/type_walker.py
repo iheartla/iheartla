@@ -108,7 +108,10 @@ class TypeWalker(NodeWalker):
         self.rhs_raw_str_list = []
         self.dependency_set = set()
         self.dependency_dim_dict = {}
-        self.local_func_syms = []
+        self.local_func_syms = []  # local function names
+        self.local_func_pars = []  # paramters for local functions
+        self.local_func_parsing = False
+        self.local_func_dict = {}  # local function name -> parameter dict
 
     def filter_symbol(self, symbol):
         if '`' in symbol:
@@ -517,53 +520,54 @@ class TypeWalker(NodeWalker):
             id0_info = self.walk(node.id[id_index], **kwargs)
             ir_node.id.append(id0_info.ir)
             id0 = id0_info.content
-            self.handle_identifier(id0, id0_info.ir, type_node)
-            # self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
-            self.update_parameters(id0, kwargs[PARAM_INDEX]+id_index)
-            if type_node.la_type.is_matrix():
-                id1 = type_node.la_type.rows
-                id2 = type_node.la_type.cols
-                if isinstance(id1, str) and not id1.isnumeric():
-                    if type_node.la_type.is_dynamic_row():
-                        id1 = type_node.id1.get_main_id()
-                    else:
-                        if id1 not in self.symtable and type_node.la_type.rows_ir is None:
-                            self.symtable[id1] = ScalarType(is_int=True)
-                    if type_node.la_type.rows_ir is None:
-                        if self.contain_subscript(id0):
-                            self.update_dim_dict(id1, self.get_main_id(id0), 1)
+            if not self.local_func_parsing:
+                self.handle_identifier(id0, id0_info.ir, type_node)
+                # self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
+                self.update_parameters(id0, kwargs[PARAM_INDEX]+id_index)
+                if type_node.la_type.is_matrix():
+                    id1 = type_node.la_type.rows
+                    id2 = type_node.la_type.cols
+                    if isinstance(id1, str) and not id1.isnumeric():
+                        if type_node.la_type.is_dynamic_row():
+                            id1 = type_node.id1.get_main_id()
                         else:
-                            self.update_dim_dict(id1, self.get_main_id(id0), 0)
-                    else:
-                        self.arith_dim_list.append(type_node.la_type.rows)
-                if isinstance(id2, str) and not id2.isnumeric():
-                    if type_node.la_type.is_dynamic_col():
-                        id2 = type_node.id2.get_main_id()
-                    else:
-                        if id2 not in self.symtable and type_node.la_type.cols_ir is None:
-                            self.symtable[id2] = ScalarType(is_int=True)
-                    if type_node.la_type.cols_ir is None:
-                        if self.contain_subscript(id0):
-                            self.update_dim_dict(id2, self.get_main_id(id0), 2)
+                            if id1 not in self.symtable and type_node.la_type.rows_ir is None:
+                                self.symtable[id1] = ScalarType(is_int=True)
+                        if type_node.la_type.rows_ir is None:
+                            if self.contain_subscript(id0):
+                                self.update_dim_dict(id1, self.get_main_id(id0), 1)
+                            else:
+                                self.update_dim_dict(id1, self.get_main_id(id0), 0)
                         else:
-                            self.update_dim_dict(id2, self.get_main_id(id0), 1)
-                    else:
-                        self.arith_dim_list.append(type_node.la_type.cols)
-            elif type_node.la_type.is_vector():
-                id1 = type_node.la_type.rows
-                if isinstance(id1, str) and not id1.isnumeric():
-                    if type_node.la_type.is_dynamic_row():
-                        id1 = type_node.id1.get_main_id()
-                    else:
-                        if id1 not in self.symtable and type_node.la_type.rows_ir is None:
-                            self.symtable[id1] = ScalarType(is_int=True)
-                    if type_node.la_type.rows_ir is None:
-                        if self.contain_subscript(id0):
-                            self.update_dim_dict(id1, self.get_main_id(id0), 1)
+                            self.arith_dim_list.append(type_node.la_type.rows)
+                    if isinstance(id2, str) and not id2.isnumeric():
+                        if type_node.la_type.is_dynamic_col():
+                            id2 = type_node.id2.get_main_id()
                         else:
-                            self.update_dim_dict(id1, self.get_main_id(id0), 0)
-                    else:
-                        self.arith_dim_list.append(type_node.la_type.rows)
+                            if id2 not in self.symtable and type_node.la_type.cols_ir is None:
+                                self.symtable[id2] = ScalarType(is_int=True)
+                        if type_node.la_type.cols_ir is None:
+                            if self.contain_subscript(id0):
+                                self.update_dim_dict(id2, self.get_main_id(id0), 2)
+                            else:
+                                self.update_dim_dict(id2, self.get_main_id(id0), 1)
+                        else:
+                            self.arith_dim_list.append(type_node.la_type.cols)
+                elif type_node.la_type.is_vector():
+                    id1 = type_node.la_type.rows
+                    if isinstance(id1, str) and not id1.isnumeric():
+                        if type_node.la_type.is_dynamic_row():
+                            id1 = type_node.id1.get_main_id()
+                        else:
+                            if id1 not in self.symtable and type_node.la_type.rows_ir is None:
+                                self.symtable[id1] = ScalarType(is_int=True)
+                        if type_node.la_type.rows_ir is None:
+                            if self.contain_subscript(id0):
+                                self.update_dim_dict(id1, self.get_main_id(id0), 1)
+                            else:
+                                self.update_dim_dict(id1, self.get_main_id(id0), 0)
+                        else:
+                            self.arith_dim_list.append(type_node.la_type.rows)
         ir_node.type = type_node
         return ir_node
 
@@ -899,12 +903,21 @@ class TypeWalker(NodeWalker):
 
     def walk_LocalFunc(self, node, **kwargs):
         name_info = self.walk(node.name, **kwargs)
+        par_defs = []
+        if len(node.defs) > 0:
+            self.local_func_parsing = True
+            par_dict = {}
+            for par_def in node.defs:
+                par_type = self.walk(par_def, **kwargs)
+                par_defs.append(par_type)
+                par_dict.update(par_type.get_type_dict())
+                self.local_func_dict[name_info.ir.get_main_id()] = par_dict
         assert name_info.ir.get_main_id() not in self.symtable, self.get_err_msg_info(name_info.ir.parse_info,
                                                                                "Symbol {} has been defined".format(
                                                                                    name_info.ir.get_main_id()))
         expr_info = self.walk(node.expr, **kwargs)
         ir_node = LocalFuncNode(name=name_info.ir, expr=expr_info.ir,
-                                parse_info=node.parseinfo, raw_text=node.text,
+                                parse_info=node.parseinfo, raw_text=node.text, defs=par_defs,
                                 def_type=LocalFuncDefType.LocalFuncDefParenthesis if node.def_p else LocalFuncDefType.LocalFuncDefBracket)
         param_tps = []
         for index in range(len(node.params)):
@@ -915,6 +928,7 @@ class TypeWalker(NodeWalker):
         ir_node.separators = node.separators
         ir_node.la_type = FunctionType(params=param_tps, ret=expr_info.ir.la_type)
         self.symtable[name_info.ir.get_main_id()] = ir_node.la_type
+        self.local_func_parsing = False
         return NodeInfo(ir=ir_node)
 
     def walk_Assignment(self, node, **kwargs):
