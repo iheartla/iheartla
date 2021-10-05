@@ -3366,30 +3366,67 @@ class grammardefaultParser(Parser):
         def block2():
             self._hspace_()
         self._closure(block2)
-        self._token(':')
 
         def block3():
-            self._hspace_()
+            self._token('(')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._identifier_alone_()
+                self.add_last_node_to_name('params')
+
+                def block7():
+
+                    def block8():
+                        self._hspace_()
+                    self._closure(block8)
+                    self._params_separator_()
+                    self.add_last_node_to_name('separators')
+
+                    def block10():
+                        self._hspace_()
+                    self._closure(block10)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('params')
+                self._closure(block7)
+            self._closure(block4)
+
+            def block12():
+                self._hspace_()
+            self._closure(block12)
+            self._token(')')
         self._closure(block3)
+
+        def block13():
+            self._hspace_()
+        self._closure(block13)
+        self._token(':')
+
+        def block14():
+            self._hspace_()
+        self._closure(block14)
         self._keyword_str_()
         self.add_last_node_to_name('names')
 
-        def block5():
+        def block16():
 
-            def block6():
+            def block17():
                 self._hspace_()
-            self._closure(block6)
+            self._closure(block17)
             self._token(',')
 
-            def block7():
+            def block18():
                 self._hspace_()
-            self._closure(block7)
+            self._closure(block18)
             self._keyword_str_()
             self.add_last_node_to_name('names')
-        self._closure(block5)
+        self._closure(block16)
         self.ast._define(
             ['package'],
-            ['names']
+            ['names', 'params', 'separators']
         )
 
     @tatsumasu('WhereConditions')
@@ -5932,6 +5969,8 @@ class InvFunc(ModelBase):
 class Import(ModelBase):
     names = None
     package = None
+    params = None
+    separators = None
 
 
 class WhereConditions(ModelBase):
