@@ -155,6 +155,10 @@ class TypeWalker(NodeWalker):
         self.dependency_set.clear()
         self.dependency_dim_dict.clear()
         self.local_func_syms.clear()
+        self.local_func_pars.clear()
+        self.local_func_parsing = False
+        self.local_func_name = ''
+        self.local_func_dict.clear()
 
     def get_func_symbols(self):
         ret = {}
@@ -308,7 +312,6 @@ class TypeWalker(NodeWalker):
         if not resolved:
             if sym in self.symtable:
                 node_type = self.symtable[sym]
-        print("node_type:"+str(node_type))
         return node_type
 
     def walk_Node(self, node):
