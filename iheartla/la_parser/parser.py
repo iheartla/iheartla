@@ -216,6 +216,11 @@ def parse_ir_node(content, model):
         if _id_pattern.fullmatch(multi_lhs):
             continue  # valid single identifier
         multi_list.append(multi_lhs)
+    #
+    for par in start_node.get_module_pars_list():
+        if _id_pattern.fullmatch(par):
+            continue  # valid single identifier
+        multi_list.append(par)
     # not add backticks
     new_list = []
     for key in multi_list:

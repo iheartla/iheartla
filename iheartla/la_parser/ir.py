@@ -157,12 +157,25 @@ class StartNode(StmtNode):
     def get_package_dict(self):
         package_func_dict = {}
         for directive in self.directives:
-            if directive.package in package_func_dict:
-                package_func_dict[directive.package] = list(set(package_func_dict[directive.package] + directive.names))
-            else:
-                package_func_dict[directive.package] = list(set(directive.names))
-            package_func_dict[directive.package].sort()
+            if directive.package is not None:
+                if directive.package in package_func_dict:
+                    package_func_dict[directive.package] = list(set(package_func_dict[directive.package] + directive.names))
+                else:
+                    package_func_dict[directive.package] = list(set(directive.names))
+                package_func_dict[directive.package].sort()
         return package_func_dict
+
+    def get_module_pars_list(self):
+        module_pars_list = []
+        for directive in self.directives:
+            if directive.module is not None:
+                for par in directive.params:
+                    if par not in module_pars_list:
+                        module_pars_list.append(par)
+                for sym in directive.names:
+                    if sym not in module_pars_list:
+                        module_pars_list.append(sym)
+        return module_pars_list
 
 
 class ParamsBlockNode(StmtNode):
@@ -232,10 +245,13 @@ class FunctionTypeNode(ExprNode):
 
 
 class ImportNode(StmtNode):
-    def __init__(self, package=None, names=None, parse_info=None, raw_text=None):
+    def __init__(self, package=None, module=None, names=None, separators=None, params=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Import, parse_info=parse_info, raw_text=raw_text)
-        self.package = package
+        self.package = package # builtin
+        self.module = module   # custom
         self.names = names
+        self.params = params
+        self.separators = separators
 
 
 class BlockNode(StmtNode):
