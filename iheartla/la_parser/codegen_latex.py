@@ -123,7 +123,18 @@ class CodeGenLatex(CodeGen):
         return value
 
     def visit_import(self, node, **kwargs):
-        return "\\text{{from {} import {}}}\\\\\n".format(node.package, ", ".join(node.names))
+        if node.package:
+            content = "\\text{{from {} import {}}}\\\\\n".format(node.package, ", ".join(node.names))
+        else:
+            if len(node.params) > 0:
+                params_str = ''
+                for index in range(len(node.params)):
+                    params_str += node.params[index]
+                    if index < len(node.params) - 1:
+                        params_str += node.separators[index] + ''
+                params_str = params_str.replace('\\mathit{', '\\textit{')
+                content = "\\text{{from {}({}) import {}}}\\\\\n".format(node.module, params_str, ", ".join(node.names))
+        return content
 
     def visit_start(self, node, **kwargs):
         content = ""
@@ -334,10 +345,6 @@ class CodeGenLatex(CodeGen):
         return self.visit(node.name, **kwargs) + '\\left( ' + params_str + ' \\right)'
 
     def visit_local_func(self, node, **kwargs):
-        params = []
-        if node.params:
-            for param in node.params:
-                params.append(self.visit(param, **kwargs))
         params_str = ''
         if len(node.params) > 0:
             for index in range(len(node.params)):

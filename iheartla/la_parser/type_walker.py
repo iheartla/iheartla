@@ -805,15 +805,22 @@ class TypeWalker(NodeWalker):
 
     ###################################################################
     def walk_Import(self, node, **kwargs):
-        import_node = ImportNode(package=node.package, names=node.names, parse_info=node.parseinfo)
-        assert node.package in self.packages, self.get_err_msg(self.get_line_info(node.parseinfo),
-                                                               self.get_line_info(node.parseinfo).text.find(node.package),
-                                                               "Package {} not exist".format(node.package))
-        func_list = self.packages[node.package]
-        for name in node.names:
-            assert name in func_list, self.get_err_msg(self.get_line_info(node.parseinfo),
-                                                       self.get_line_info(node.parseinfo).text.find(name),
-                                                       "Function {} not exist".format(name))
+        params = []
+        module = None
+        package = None
+        for par in node.params:
+            par_info = self.walk(par, **kwargs)
+            params.append(par_info.ir.get_name())
+        if node.package in self.packages:
+            package = node.package
+            func_list = self.packages[node.package]
+            for name in node.names:
+                assert name in func_list, self.get_err_msg(self.get_line_info(node.parseinfo),
+                                                           self.get_line_info(node.parseinfo).text.find(name),
+                                                           "Function {} not exist".format(name))
+        else:
+            module = node.package
+        import_node = ImportNode(package=package, module=module, names=node.names, separators=node.separators, params=params, parse_info=node.parseinfo)
         return import_node
 
     def walk_Statements(self, node, **kwargs):
