@@ -557,7 +557,7 @@ def solve_cons(cons, cur_mgu_list=[]):
         elif next_con.ctype == ConsType.ConsLessM:
             if next_con.satisfied(remain_cons):
                 type_scheme = generalize(gen_env_dict(next_con.mid), next_con.rhs)
-                if type_scheme.empty_quantified():
+                if isinstance(type_scheme, TypeOperator) and type_scheme.empty_quantified():
                     new_cons = TypeConstraint(next_con.lhs, type_scheme.type_op, ConsType.ConsEq)
                 else:
                     new_cons = TypeConstraint(next_con.lhs, type_scheme, ConsType.ConsLess)
