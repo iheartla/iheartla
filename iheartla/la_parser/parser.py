@@ -225,7 +225,7 @@ def parse_ir_node(content, model):
     for key in multi_list:
         if '`' not in key:
             new_list.append(key)
-    multi_list = new_list
+    multi_list = list(set(new_list))
     if len(multi_list) > 0:
         multi_list = [re.escape(item).replace('/', '\\/') for item in multi_list]
         multi_list = sorted(multi_list, key=len, reverse=True)
