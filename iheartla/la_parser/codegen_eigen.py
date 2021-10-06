@@ -14,6 +14,7 @@ class CodeGenEigen(CodeGen):
         if self.unofficial_method:
             self.pre_str += '#include <unsupported/Eigen/MatrixFunctions>\n'
         self.pre_str += '\n'
+        self.code_frame.desc = self.pre_str
 
     def get_dim_check_str(self):
         check_list = []
@@ -527,6 +528,9 @@ class CodeGenEigen(CodeGen):
         main_content += self.get_ret_display()
         main_content.append('    return 0;')
         main_content.append('}')
+        self.code_frame.main = '\n'.join(main_content)
+        self.code_frame.rand_data = '\n'.join(test_function)
+        self.code_frame.struct = content
         content += '\n\n' + '\n'.join(test_function) + '\n\n\n' + '\n'.join(main_content)
         # convert special string in identifiers
         content = self.trim_content(content)

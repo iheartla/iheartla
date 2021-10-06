@@ -206,7 +206,6 @@ class IRVisitor(object):
         self.local_func_def = ''
 
     def visit_code(self, node, **kwargs):
-        self.content = ''
         self.content = self.pre_str + self.visit(node) + self.post_str
 
     def visit(self, node, **kwargs):

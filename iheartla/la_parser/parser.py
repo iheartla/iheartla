@@ -73,10 +73,10 @@ def walk_model(parser_type, type_walker, node_info, func_name=None):
     gen = get_codegen(parser_type)
     #
     gen.init_type(type_walker, func_name)
-    gen.visit_code(node_info)
+    code_frame = gen.visit_code(node_info)
     if parser_type != ParserTypeEnum.LATEX:  # print once
         gen.print_symbols()
-    return gen.content
+    return code_frame.get_code()
 
 
 if getattr(sys, 'frozen', False):
