@@ -134,6 +134,8 @@ class CodeGenLatex(CodeGen):
                         params_str += node.separators[index] + ''
                 params_str = params_str.replace('\\mathit{', '\\textit{')
                 content = "\\text{{from {}({}) import {}}}\\\\\n".format(node.module, params_str, ", ".join(node.names))
+            else:
+                content = "\\text{{from {}() import {}}}\\\\\n".format(node.module, ", ".join(node.names))
         return content
 
     def visit_start(self, node, **kwargs):
