@@ -35,6 +35,8 @@ class IRVisitor(object):
         self.param_name_test = 'p'  # param name for test function
         self.convert_matrix = False
         self.lhs_list = []
+        self.module_list = []
+        self.module_syms = {}
         self.pattern = re.compile("[A-Za-z]+")
         self.la_content = ''
         self.new_id_prefix = ''  # _

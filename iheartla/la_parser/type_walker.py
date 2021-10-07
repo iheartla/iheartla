@@ -322,7 +322,7 @@ class TypeWalker(NodeWalker):
 
     def walk_Start(self, node, **kwargs):
         self.pre_walk = True if 'pre_walk' in kwargs else False
-        self.symtable.clear()
+        # self.symtable.clear()
         # self.visualizer.visualize(node)  # visualize
         ir_node = StartNode(parse_info=node.parseinfo)
         if node.directive:
