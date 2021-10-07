@@ -314,6 +314,14 @@ class TypeWalker(NodeWalker):
                 node_type = self.symtable[sym]
         return node_type
 
+    def check_sym_existence(self, sym, msg):
+        resolved = False
+        if self.local_func_parsing:
+            if self.local_func_name in self.local_func_dict and sym in self.local_func_dict[self.local_func_name]:
+                resolved = True
+        if not resolved:
+            assert self.symtable.get(sym) is not None, msg
+
     def walk_Node(self, node):
         print('Reached Node: ', node)
 
@@ -1959,8 +1967,8 @@ class TypeWalker(NodeWalker):
                 if not la_is_if(**kwargs):  # symbols in sum don't need to be defined before todo:modify
                     if id0 != 'I':  # special case
                         new_symbol = self.filter_symbol(id0)
-                        assert self.symtable.get(new_symbol) is not None, self.get_err_msg_info(id0_info.ir.parse_info,
-                                                                                         "Symbol {} is not defined".format(id0))
+                        self.check_sym_existence(new_symbol, self.get_err_msg_info(id0_info.ir.parse_info,
+                                                                                         "Symbol {} is not defined".format(id0)))
                         # pass  # todo:delete
                     else:
                         # I
