@@ -140,6 +140,9 @@ class StartNode(StmtNode):
         self.stat = None
         self.directives = []
         self.vblock = []
+        self.dependent_modules = []
+        self.module_list = []
+        self.module_syms = {}
 
     def get_block_list(self):
         params_list = []
@@ -176,6 +179,13 @@ class StartNode(StmtNode):
                     if sym not in module_pars_list:
                         module_pars_list.append(sym)
         return module_pars_list
+
+    def get_module_directives(self):
+        module_list = []
+        for directive in self.directives:
+            if directive.module is not None:
+                module_list.append(directive)
+        return module_list
 
 
 class ParamsBlockNode(StmtNode):

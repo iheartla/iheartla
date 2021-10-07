@@ -18,6 +18,7 @@ from tatsu.exceptions import (
     OptionSucceeded
 )
 from enum import Enum
+from .codegen import *
 from .codegen_numpy import CodeGenNumpy
 from .codegen_eigen import CodeGenEigen
 from .codegen_latex import CodeGenLatex
@@ -78,6 +79,14 @@ def walk_model(parser_type, type_walker, node_info, func_name=None):
         gen.print_symbols()
     return code_frame.get_code()
 
+def walk_model_frame(parser_type, type_walker, node_info, func_name=None):
+    gen = get_codegen(parser_type)
+    #
+    gen.init_type(type_walker, func_name)
+    code_frame = gen.visit_code(node_info)
+    if parser_type != ParserTypeEnum.LATEX:  # print once
+        gen.print_symbols()
+    return code_frame
 
 if getattr(sys, 'frozen', False):
     # We are running in a bundle.
@@ -251,7 +260,9 @@ def parse_ir_node(content, model):
             current_content = current_content.replace("func_id='!!!';", "func_id={};".format(func_rule))
         parse_key += "func symbol:{}, func sig:{}".format(','.join(func_dict.keys()), ";".join(func_dict.values()))
     # deal with packages
+    dependent_modules = []
     if len(start_node.directives) > 0:
+        dependent_modules = start_node.get_module_directives()
         # include directives
         package_name_dict = start_node.get_package_dict()
         package_name_list = []
@@ -279,9 +290,27 @@ def parse_ir_node(content, model):
     # get new parser
     parser = get_compiled_parser(current_content, parse_key, extra_dict)
     model = parser.parse(content, parseinfo=True)
+    # dependent modules
+    existed_syms_dict = {}
+    module_list = []
+    if len(dependent_modules) > 0:
+        for module in dependent_modules:
+            module_file = "/Users/pressure/Downloads/{}.ihla".format(module.module)
+            module_content = read_from_file(module_file)
+            # Init parser
+            parser = get_default_parser()
+            new_model = parser.parse(module_content, parseinfo=True)
+            tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model)
+            pre_frame = walk_model_frame(ParserTypeEnum.EIGEN, tmp_type_walker, tmp_start_node)
+            for sym in module.names:
+                existed_syms_dict[sym] = copy.deepcopy(tmp_type_walker.symtable[sym])
+            module_list.append(CodeModule(frame=pre_frame, name=module.module, syms=module.names, params=module.params))
     # second parsing
     type_walker.reset_state(content)  # reset
+    type_walker.symtable.update(existed_syms_dict)
     start_node = type_walker.walk(model)
+    start_node.module_list = module_list
+    start_node.module_syms = existed_syms_dict
     return type_walker, start_node
 
 

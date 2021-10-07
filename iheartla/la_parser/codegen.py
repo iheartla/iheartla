@@ -19,11 +19,21 @@ class CodeFrame(object):
         return content
 
 
+class CodeModule(object):
+    def __init__(self, frame=None, name='iheartla', syms=[], params=[]):
+        self.frame = frame   # code frame
+        self.name = name     # module name
+        self.syms = syms     # imported symbols
+        self.params = params # parameters
+
+
 class CodeGen(IRPrinter):
     def __init__(self, parse_type=None):
         super().__init__(parse_type=parse_type)
         self.code_frame = CodeFrame(parse_type)
 
     def visit_code(self, node, **kwargs):
+        self.module_list = node.module_list
+        self.module_syms = node.module_syms
         self.content = self.pre_str + self.visit(node) + self.post_str
         return self.code_frame

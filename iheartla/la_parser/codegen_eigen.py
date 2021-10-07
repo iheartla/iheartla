@@ -196,7 +196,7 @@ class CodeGenEigen(CodeGen):
                         content = "{}({}, {})".format(node.main_id, node.subs[0], node.subs[1])
         return CodeNodeInfo(content)
 
-    def get_struct_definition(self, init_content):
+    def get_struct_definition(self, def_str, stat_str):
         item_list = []
         def_list = []
         # assign_list = []
@@ -206,6 +206,20 @@ class CodeGenEigen(CodeGen):
                 item_list.append("    {} {};".format(self.get_ctype(self.symtable[parameter]), parameter))
                 def_list.append("const {} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
                 # assign_list.append("{}({})".format(parameter, parameter))
+        def_struct = ''
+        init_struct = ''
+        init_var = ''
+        if len(self.module_list) > 0:
+            for parameter in self.module_syms:
+                item_list.append("    {} {};".format(self.get_ctype(self.symtable[parameter]), parameter))
+            for module in self.module_list:
+                def_struct += self.update_prelist_str([module.frame.struct], '    ')
+                if len(module.params) > 0:
+                    init_struct += "        {} _{}({});\n".format(module.name, module.name, ', '.join(module.params))
+                else:
+                    init_struct += "        {} _{}();\n".format(module.name, module.name)
+                for sym in module.syms:
+                    init_var += "        {} = _{}.{};\n".format(sym, module.name, sym)
         content = ["struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),
                    self.local_func_def,
@@ -213,7 +227,7 @@ class CodeGenEigen(CodeGen):
                    # "    : {}".format(',\n    '.join(assign_list)),
                    # "    {}",
                    ]
-        return "\n".join(content) + init_content + "};\n"
+        return "\n".join(content) + def_struct + def_str + init_struct + init_var + stat_str + '\n    }\n' + "};\n"
 
     def get_ret_display(self):
         # print return value in main function
@@ -513,9 +527,9 @@ class CodeGenEigen(CodeGen):
             else:
                 stats_content += ret_str + stat_info.content + '\n'
 
-        content += stats_content
-        content += '\n}\n'
-        content = self.get_struct_definition(self.update_prelist_str([content], '    '))
+        # content += stats_content
+        # content += '\n}\n'
+        content = self.get_struct_definition(self.update_prelist_str([content], '    '), self.update_prelist_str([stats_content], '    '))
         # return value
         # ret_value = self.get_ret_struct()
         # content += '    return ' + ret_value + ';'
