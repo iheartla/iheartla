@@ -302,7 +302,7 @@ def parse_ir_node(content, model):
             parser = get_default_parser()
             new_model = parser.parse(module_content, parseinfo=True)
             tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model)
-            pre_frame = walk_model_frame(ParserTypeEnum.EIGEN, tmp_type_walker, tmp_start_node)
+            pre_frame = walk_model_frame(ParserTypeEnum.EIGEN, tmp_type_walker, tmp_start_node, module.module)
             for sym in module.names:
                 existed_syms_dict[sym] = copy.deepcopy(tmp_type_walker.symtable[sym])
             module_list.append(CodeModule(frame=pre_frame, name=module.module, syms=module.names, params=module.params))
