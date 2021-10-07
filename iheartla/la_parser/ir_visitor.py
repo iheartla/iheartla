@@ -203,6 +203,8 @@ class IRVisitor(object):
         self.local_func_dict = type_walker.local_func_dict
         if func_name is not None:
             self.func_name = func_name
+        else:
+            self.func_name = 'iheartla'
         # self.print_symbols()
         self.declared_symbols.clear()
         self.local_func_def = ''
