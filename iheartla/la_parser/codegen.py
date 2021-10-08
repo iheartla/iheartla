@@ -1,4 +1,5 @@
 from .ir_printer import *
+import copy
 
 
 class CodeFrame(object):
@@ -36,4 +37,4 @@ class CodeGen(IRPrinter):
         self.module_list = node.module_list
         self.module_syms = node.module_syms
         self.content = self.pre_str + self.visit(node) + self.post_str
-        return self.code_frame
+        return copy.deepcopy(self.code_frame)
