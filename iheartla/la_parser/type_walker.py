@@ -193,6 +193,8 @@ class TypeWalker(NodeWalker):
                 ret[match] = sig + match
         for sym in self.local_func_syms:
             ret[sym] = "localF;" + sym
+        for sym in tmp_sym_dict:
+            ret[sym] = "localFP;" + sym
         return ret
 
     def generate_var_name(self, base):
@@ -1556,7 +1558,7 @@ class TypeWalker(NodeWalker):
             else:
                 ir_node = IdNode(node.name, parse_info=node.parseinfo)
                 node.name = self.filter_symbol(node.name)
-                ir_node.la_type = self.symtable[node.name]
+                ir_node.la_type = self.get_sym_type(node.name)
             name_info = NodeInfo(ir_node.la_type, ir=ir_node)
         else:
             name_info = self.walk(node.name, **kwargs)
