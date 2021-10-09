@@ -52,6 +52,7 @@ import io
 _id_pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*")
 _backtick_pattern = re.compile("`[^`]*`")
 _codegen_dict = {}
+_module_path = Path.home() / 'Downloads'
 
 
 def get_codegen(parser_type):
@@ -296,7 +297,7 @@ def parse_ir_node(content, model):
     module_list = []
     if len(dependent_modules) > 0:
         for module in dependent_modules:
-            module_file = "/Users/pressure/Downloads/{}.ihla".format(module.module)
+            module_file = "{}/{}.ihla".format(_module_path, module.module)
             module_content = read_from_file(module_file)
             # Init parser
             parser = get_default_parser()
@@ -417,6 +418,8 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
     else:
         content = read_from_file(la_file)
         base_name = get_file_name(la_file)
+        global _module_path
+        _module_path = os.path.dirname(Path(la_file))
     # print("head:", head, ", name:", name, "parser_type", parser_type, ", base_name:", base_name)
     parser = get_default_parser()
     try:
