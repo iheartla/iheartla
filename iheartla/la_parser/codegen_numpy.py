@@ -14,6 +14,7 @@ class CodeGenNumpy(CodeGen):
         self.pre_str += "from scipy.optimize import minimize\n"
         self.pre_str += "\n\n"
         self.post_str = ''''''
+        self.code_frame.desc = self.pre_str
 
     def get_dim_check_str(self):
         check_list = []
@@ -114,16 +115,28 @@ class CodeGenNumpy(CodeGen):
             content = 'self.' + content
         return CodeNodeInfo(content)
 
-    def get_struct_definition(self, init_content):
+    def get_struct_definition(self, def_str, stat_str):
         assign_list = []
         for parameter in self.lhs_list:
             if parameter in self.symtable and self.symtable[parameter] is not None:
                 assign_list.append("self.{} = {}".format(parameter, parameter))
+        def_struct = ''
+        init_struct = ''
+        init_var = ''
+        if len(self.module_list) > 0:
+            for module in self.module_list:
+                def_struct += self.update_prelist_str([module.frame.struct], '    ')
+                if len(module.params) > 0:
+                    init_struct += "        _{} = self.{}({})\n".format(module.name, module.name, ', '.join(module.params))
+                else:
+                    init_struct += "        _{} = self.{}()\n".format(module.name, module.name)
+                for sym in module.syms:
+                    init_var += "        self.{} = _{}.{}\n".format(sym, module.name, sym)
         content = ["class {}:".format(self.get_result_type()),
-                   "    def __init__(self,{}".format(init_content[3:]),
+                   "    def __init__(self,{}".format(def_str[3:]),
                    self.local_func_def,
                    ]
-        return "\n".join(content)
+        return "\n".join(content) + init_struct + init_var + stat_str + '\n' + def_struct
 
     def get_ret_struct(self):
         return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list))
@@ -424,16 +437,20 @@ class CodeGenNumpy(CodeGen):
                 stats_content += "".join(stat_info.pre_list)
             stats_content += ret_str + stat_info.content + '\n'
 
-        content += stats_content
+        # content += stats_content
         # content += '    return ' + self.get_ret_struct()
         # content += '\n'
-        content = self.get_struct_definition(self.update_prelist_str([content], '    ')) + '\n'
+        content = self.get_struct_definition(self.update_prelist_str([content], '    '), self.update_prelist_str([stats_content], '    '))
+        # content = self.get_struct_definition(self.update_prelist_str([content], '    ')) + '\n'
         # test
         test_function += test_content
         test_function.append('    return {}'.format(', '.join(self.parameters)))
         main_content.append("    func_value = {}({})".format(self.func_name, ', '.join(self.parameters)))
         if self.symtable[self.ret_symbol] is not None:
             main_content.append('    print("return value: ", func_value.{})'.format(self.ret_symbol))
+        self.code_frame.main = '\n'.join(main_content)
+        self.code_frame.rand_data = '\n'.join(test_function)
+        self.code_frame.struct = content
         content += '\n\n' + '\n'.join(test_function) + '\n\n\n' + '\n'.join(main_content)
         # convert special string in identifiers
         content = self.trim_content(content)
