@@ -204,7 +204,7 @@ def generate_latex_code(type_walker, node_info, frame):
                 wx.CallAfter(frame.UpdateTexPanel, tex_content, show_pdf)
 
 
-def parse_ir_node(content, model):
+def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN):
     global _grammar_content
     current_content = _grammar_content
     # type walker
@@ -301,8 +301,8 @@ def parse_ir_node(content, model):
             # Init parser
             parser = get_default_parser()
             new_model = parser.parse(module_content, parseinfo=True)
-            tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model)
-            pre_frame = walk_model_frame(ParserTypeEnum.EIGEN, tmp_type_walker, tmp_start_node, module.module)
+            tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model, parser_type)
+            pre_frame = walk_model_frame(parser_type, tmp_type_walker, tmp_start_node, module.module)
             for sym in module.names:
                 existed_syms_dict[sym] = copy.deepcopy(tmp_type_walker.symtable[sym])
             module_list.append(CodeModule(frame=pre_frame, name=module.module, syms=module.names, params=module.params))
@@ -325,7 +325,7 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
         parser = get_default_parser()
         model = parser.parse(content, parseinfo=True)
         # type walker
-        type_walker, start_node = parse_ir_node(content, model)
+        type_walker, start_node = parse_ir_node(content, model, parser_type)
         # parsing Latex at the same time
         latex_thread = threading.Thread(target=generate_latex_code, args=(type_walker, start_node, frame,))
         latex_thread.start()
@@ -374,21 +374,25 @@ def compile_la_content(la_content,
     parser = get_default_parser()
     try:
         model = parser.parse(la_content, parseinfo=True)
-        type_walker, start_node = parse_ir_node(la_content, model)
         ret = []
         if parser_type & ParserTypeEnum.NUMPY:
+            type_walker, start_node = parse_ir_node(la_content, model, parser_type)
             numpy_content = walk_model(ParserTypeEnum.NUMPY, type_walker, start_node)
             ret.append(numpy_content)
         if parser_type & ParserTypeEnum.EIGEN:
+            type_walker, start_node = parse_ir_node(la_content, model, parser_type)
             eigen_content = walk_model(ParserTypeEnum.EIGEN, type_walker, start_node)
             ret.append(eigen_content)
         if parser_type & ParserTypeEnum.LATEX:
+            type_walker, start_node = parse_ir_node(la_content, model, parser_type)
             tex_content = walk_model(ParserTypeEnum.LATEX, type_walker, start_node)
             ret.append(tex_content)
         if parser_type & ParserTypeEnum.MATHJAX:
+            type_walker, start_node = parse_ir_node(la_content, model, parser_type)
             tex_content = walk_model(ParserTypeEnum.MATHJAX, type_walker, start_node)
             ret.append(tex_content)
         if parser_type & ParserTypeEnum.MATLAB:
+            type_walker, start_node = parse_ir_node(la_content, model, parser_type)
             tex_content = walk_model(ParserTypeEnum.MATLAB, type_walker, start_node)
             ret.append(tex_content)
     except FailedParse as e:
