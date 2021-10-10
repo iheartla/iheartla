@@ -142,6 +142,22 @@ class CodeGenMatlab(CodeGen):
         # values in LIFO order
         return "output"
 
+    def get_module_str(self):
+        def_struct = ''
+        init_struct = ''
+        init_var = ''
+        if len(self.module_list) > 0:
+            for module in self.module_list:
+                def_struct += self.update_prelist_str([module.frame.struct], '    ')
+                if len(module.params) > 0:
+                    init_struct += "    _{} = {}({});\n".format(module.name, module.name,
+                                                                        ', '.join(module.params))
+                else:
+                    init_struct += "    _{} = {}();\n".format(module.name, module.name)
+                for sym in module.syms:
+                    init_var += "    {} = _{}.{};\n".format(sym, module.name, sym)
+        return def_struct + init_struct + init_var
+
     def get_struct_definition(self, init_content):
         ret_name = self.get_result_name()
         assign_list = []
@@ -485,7 +501,7 @@ class CodeGenMatlab(CodeGen):
             content += '\n'.join(type_checks) + '\n\n'
         #
         # statements
-        stats_content = ""
+        stats_content = self.get_module_str()
         for index in range(len(node.stmts)):
             ret_str = ''
             if index == len(node.stmts) - 1:
@@ -516,6 +532,7 @@ class CodeGenMatlab(CodeGen):
         # convert special string in identifiers
         declaration_content = self.trim_content(declaration_content)
         content = self.trim_content(content)
+        self.code_frame.struct = declaration_content + comment_content + content
         return declaration_content + comment_content + content
 
     def visit_summation(self, node, **kwargs):
