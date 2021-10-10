@@ -150,12 +150,12 @@ class CodeGenMatlab(CodeGen):
             for module in self.module_list:
                 def_struct += self.update_prelist_str([module.frame.struct], '    ')
                 if len(module.params) > 0:
-                    init_struct += "    _{} = {}({});\n".format(module.name, module.name,
+                    init_struct += "    {}_ = {}({});\n".format(module.name, module.name,
                                                                         ', '.join(module.params))
                 else:
-                    init_struct += "    _{} = {}();\n".format(module.name, module.name)
+                    init_struct += "    {}_ = {}();\n".format(module.name, module.name)
                 for sym in module.syms:
-                    init_var += "    {} = _{}.{};\n".format(sym, module.name, sym)
+                    init_var += "    {} = {}_.{};\n".format(sym, module.name, sym)
         return def_struct + init_struct + init_var
 
     def get_struct_definition(self, init_content):
