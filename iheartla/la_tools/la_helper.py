@@ -59,12 +59,6 @@ def is_new_tatsu_version():
     return __version__ >= '5.0.0'
 
 
-def get_parse_info_buffer(parse_info):
-    if is_new_tatsu_version():
-        return parse_info.tokenizer
-    return parse_info.buffer
-
-
 def save_to_file(content, file_name):
     try:
         file = open(file_name, 'w')

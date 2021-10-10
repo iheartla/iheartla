@@ -172,3 +172,26 @@ class LaMsg(object):
         #                        text,
         #                        leading)
         return content
+
+
+def get_err_msg_info(parse_info, error_msg):
+    line_info = get_line_info(parse_info)
+    return get_err_msg(line_info, line_info.col, error_msg)
+
+
+def get_err_msg(line_info, col, error_msg):
+    line_msg = LaMsg.getInstance().get_line_desc_with_col(line_info.line, col)
+    raw_text = line_info.text
+    if raw_text[-1] != '\n':
+        raw_text += '\n'
+    return "{}. {}.\n{}{}".format(line_msg, error_msg, raw_text, LaMsg.getInstance().get_pos_marker(col))
+
+
+def get_line_info(parse_info):
+    return get_parse_info_buffer(parse_info).line_info(parse_info.pos)
+
+
+def get_parse_info_buffer(parse_info):
+    if is_new_tatsu_version():
+        return parse_info.tokenizer
+    return parse_info.buffer
