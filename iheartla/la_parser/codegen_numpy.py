@@ -99,7 +99,7 @@ class CodeGenNumpy(CodeGen):
     def visit_id(self, node, **kwargs):
         content = node.get_name()
         prefix = False
-        if content not in self.parameters and content not in self.local_func_syms:
+        if not self.is_local_param(content) and content not in self.parameters and content not in self.local_func_syms:
             prefix = True
         content = self.filter_symbol(content)
         if content in self.name_convention_dict:
@@ -134,9 +134,8 @@ class CodeGenNumpy(CodeGen):
                     init_var += "        self.{} = _{}.{}\n".format(sym, module.name, sym)
         content = ["class {}:".format(self.get_result_type()),
                    "    def __init__(self,{}".format(def_str[3:]),
-                   self.local_func_def,
                    ]
-        return "\n".join(content) + init_struct + init_var + stat_str + '\n' + def_struct
+        return "\n".join(content) + init_struct + init_var + stat_str + '\n' + self.local_func_def + def_struct
 
     def get_ret_struct(self):
         return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list))
@@ -562,7 +561,7 @@ class CodeGenNumpy(CodeGen):
             param_info = self.visit(parameter, **kwargs)
             param_list.append(param_info.content)
         content = "    def {}(self, {}):\n".format(name_info.content, ", ".join(param_list))
-        content += '        return ' + self.visit(node.expr, **kwargs).content
+        content += '        return {}\n\n'.format(self.visit(node.expr, **kwargs).content)
         self.local_func_def += content
         return CodeNodeInfo()
 
