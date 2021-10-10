@@ -93,6 +93,15 @@ class IRVisitor(object):
             if key in self.name_convention_dict:
                 del self.name_convention_dict[key]
 
+    def is_local_param(self, sym):
+        valid = False
+        for k, v in self.local_func_dict.items():
+            if len(v) > 0:
+                if sym in v:
+                    valid = True
+                    break
+        return valid
+
     def convert_seq_dim_dict(self):
         seq_dict = {}
         for key, value_dict in self.seq_dim_dict.items():
