@@ -294,6 +294,8 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN):
     # dependent modules
     existed_syms_dict = {}
     module_list = []
+    module_param_list = []
+    module_sym_list = []
     if len(dependent_modules) > 0:
         for module in dependent_modules:
             try:
@@ -307,13 +309,23 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN):
                 tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model, parser_type)
                 pre_frame = walk_model_frame(parser_type, tmp_type_walker, tmp_start_node, module.module.get_name())
                 name_list = []
-                par_lsit = []
+                par_list = []
                 for sym in module.names:
+                    if sym.get_name() not in tmp_type_walker.symtable:
+                        parse_info = sym.parse_info
+                        err_msg = "Symbol {} doesn't exist in module {}".format(sym.get_name(), module.module.get_name())
+                        raise
                     existed_syms_dict[sym.get_name()] = copy.deepcopy(tmp_type_walker.symtable[sym.get_name()])
                     name_list.append(sym.get_name())
                 for par in module.params:
-                    par_lsit.append(par.get_name())
-                module_list.append(CodeModule(frame=pre_frame, name=module.module.get_name(), syms=name_list, params=par_lsit))
+                    par_list.append(par.get_name())
+                if len(tmp_type_walker.parameters) != len(module.params):
+                    parse_info = sym.parse_info
+                    err_msg = "Parameters doesn't match, need {} while given {}".format(len(tmp_type_walker.parameters), len(module.params))
+                    raise
+                module_list.append(CodeModule(frame=pre_frame, name=module.module.get_name(), syms=name_list, params=par_list))
+                module_param_list.append(copy.deepcopy(tmp_type_walker.parameters))
+                module_sym_list.append(copy.deepcopy(tmp_type_walker.symtable))
             except:
                 assert False, get_err_msg_info(parse_info, err_msg)
     # second parsing
@@ -322,6 +334,17 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN):
     start_node = type_walker.walk(model)
     start_node.module_list = module_list
     start_node.module_syms = existed_syms_dict
+    if len(dependent_modules) > 0:
+        # check parameters type
+        for cur_index in range(len(dependent_modules)):
+            module = dependent_modules[cur_index]
+            params = module_param_list[cur_index]
+            cur_symtable = module_sym_list[cur_index]
+            for param_index in range(len(module.params)):
+                par = module.params[param_index]
+                assert par.get_name() in type_walker.symtable, get_err_msg_info(par.parse_info, "Symbol {} is not defined".format(par.get_name()))
+                assert type_walker.symtable[par.get_name()].is_same_type(cur_symtable[params[param_index]]), \
+                    get_err_msg_info(par.parse_info, "Parameter {} does not match the type".format(par.get_name()))
     return type_walker, start_node
 
 
