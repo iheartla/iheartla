@@ -31,6 +31,10 @@ identifier_with_subscript::IdentifierSubscript
 keyword_str
     = /[A-Za-z][A-Za-z0-9]*/
     ;
+    
+multi_str::IdentifierAlone
+    = (  value:/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*/ | '`' id:/[^`]*/ '`')
+    ;
 
 description
     = /[^`;\n\r\f]*/

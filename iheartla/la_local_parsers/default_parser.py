@@ -2363,6 +2363,24 @@ class grammardefaultParser(Parser):
     def _keyword_str_(self):  # noqa
         self._pattern('[A-Za-z][A-Za-z0-9]*')
 
+    @tatsumasu('IdentifierAlone')
+    def _multi_str_(self):  # noqa
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
+                    self.name_last_node('value')
+                with self._option():
+                    self._token('`')
+                    self._pattern('[^`]*')
+                    self.name_last_node('id')
+                    self._token('`')
+                self._error('no available options')
+        self.ast._define(
+            ['id', 'value'],
+            []
+        )
+
     @tatsumasu()
     def _description_(self):  # noqa
         self._pattern('[^`;\\n\\r\\f]*')
@@ -3360,7 +3378,7 @@ class grammardefaultParser(Parser):
         def block0():
             self._hspace_()
         self._positive_closure(block0)
-        self._keyword_str_()
+        self._multi_str_()
         self.name_last_node('package')
 
         def block2():
@@ -3408,7 +3426,7 @@ class grammardefaultParser(Parser):
         def block14():
             self._hspace_()
         self._closure(block14)
-        self._keyword_str_()
+        self._multi_str_()
         self.add_last_node_to_name('names')
 
         def block16():
@@ -3421,7 +3439,7 @@ class grammardefaultParser(Parser):
             def block18():
                 self._hspace_()
             self._closure(block18)
-            self._keyword_str_()
+            self._multi_str_()
             self.add_last_node_to_name('names')
         self._closure(block16)
         self.ast._define(
@@ -5272,6 +5290,9 @@ class grammardefaultSemantics(object):
     def keyword_str(self, ast):  # noqa
         return ast
 
+    def multi_str(self, ast):  # noqa
+        return ast
+
     def description(self, ast):  # noqa
         return ast
 
@@ -5838,6 +5859,12 @@ class IdentifierSubscript(ModelBase):
     right = None
 
 
+class IdentifierAlone(ModelBase):
+    id = None
+    value = None
+    const = None
+
+
 class Pi(ModelBase):
     pass
 
@@ -6147,9 +6174,3 @@ class ArithFactor(ModelBase):
 
 class ArithSubexpression(ModelBase):
     value = None
-
-
-class IdentifierAlone(ModelBase):
-    id = None
-    value = None
-    const = None
