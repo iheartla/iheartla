@@ -173,11 +173,11 @@ class StartNode(StmtNode):
         for directive in self.directives:
             if directive.module is not None:
                 for par in directive.params:
-                    if par not in module_pars_list:
-                        module_pars_list.append(par)
+                    if par.get_name() not in module_pars_list:
+                        module_pars_list.append(par.get_name())
                 for sym in directive.names:
-                    if sym not in module_pars_list:
-                        module_pars_list.append(sym)
+                    if sym.get_name() not in module_pars_list:
+                        module_pars_list.append(sym.get_name())
         return module_pars_list
 
     def get_module_directives(self):
@@ -259,9 +259,22 @@ class ImportNode(StmtNode):
         super().__init__(IRNodeType.Import, parse_info=parse_info, raw_text=raw_text)
         self.package = package # builtin
         self.module = module   # custom
-        self.names = names
-        self.params = params
+        self.names = names     # imported symbols
+        self.params = params   # parameters to initialize modules
         self.separators = separators
+
+    def get_name_list(self):
+        name_list = []
+        for name in self.names:
+            name_list.append(name.get_name())
+        return name_list
+
+    def get_param_list(self):
+        param_list = []
+        for par in self.params:
+            param_list.append(par.get_name())
+        return param_list
+
 
 
 class BlockNode(StmtNode):
