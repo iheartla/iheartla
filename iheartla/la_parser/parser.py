@@ -296,16 +296,26 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN):
     module_list = []
     if len(dependent_modules) > 0:
         for module in dependent_modules:
-            module_file = "{}/{}.ihla".format(_module_path, module.module)
-            module_content = read_from_file(module_file)
-            # Init parser
-            parser = get_default_parser()
-            new_model = parser.parse(module_content, parseinfo=True)
-            tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model, parser_type)
-            pre_frame = walk_model_frame(parser_type, tmp_type_walker, tmp_start_node, module.module)
-            for sym in module.names:
-                existed_syms_dict[sym] = copy.deepcopy(tmp_type_walker.symtable[sym])
-            module_list.append(CodeModule(frame=pre_frame, name=module.module, syms=module.names, params=module.params))
+            try:
+                parse_info = module.module.parse_info
+                err_msg = "Invalid module:{}".format(module.module.get_name())
+                module_file = "{}/{}.ihla".format(_module_path, module.module.get_name())
+                module_content = read_from_file(module_file)
+                # Init parser
+                parser = get_default_parser()
+                new_model = parser.parse(module_content, parseinfo=True)
+                tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model, parser_type)
+                pre_frame = walk_model_frame(parser_type, tmp_type_walker, tmp_start_node, module.module.get_name())
+                name_list = []
+                par_lsit = []
+                for sym in module.names:
+                    existed_syms_dict[sym.get_name()] = copy.deepcopy(tmp_type_walker.symtable[sym.get_name()])
+                    name_list.append(sym.get_name())
+                for par in module.params:
+                    par_lsit.append(par.get_name())
+                module_list.append(CodeModule(frame=pre_frame, name=module.module.get_name(), syms=name_list, params=par_lsit))
+            except:
+                assert False, get_err_msg_info(parse_info, err_msg)
     # second parsing
     type_walker.reset_state(content)  # reset
     type_walker.symtable.update(existed_syms_dict)

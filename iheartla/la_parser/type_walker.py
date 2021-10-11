@@ -824,17 +824,25 @@ class TypeWalker(NodeWalker):
         package = None
         for par in node.params:
             par_info = self.walk(par, **kwargs)
-            params.append(par_info.ir.get_name())
-        if node.package in self.packages:
-            package = node.package
-            func_list = self.packages[node.package]
-            for name in node.names:
+            params.append(par_info.ir)
+        package_info = self.walk(node.package, **kwargs)
+        name_list = []
+        name_ir_list = []
+        for cur_name in node.names:
+            name_info = self.walk(cur_name, **kwargs)
+            name_ir_list.append(name_info.ir)
+            name_list.append(name_info.ir.get_name())
+        if package_info.ir.get_name() in self.packages:
+            package = package_info.ir
+            func_list = self.packages[package_info.ir.get_name()]
+            for name in name_list:
                 assert name in func_list, get_err_msg(get_line_info(node.parseinfo),
                                                            get_line_info(node.parseinfo).text.find(name),
                                                            "Function {} not exist".format(name))
         else:
-            module = node.package
-        import_node = ImportNode(package=package, module=module, names=node.names, separators=node.separators, params=params, parse_info=node.parseinfo)
+            module = package_info.ir
+        import_node = ImportNode(package=package, module=module, names=name_ir_list, separators=node.separators,
+                                     params=params, parse_info=node.parseinfo)
         return import_node
 
     def walk_Statements(self, node, **kwargs):

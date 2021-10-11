@@ -129,13 +129,13 @@ class CodeGenLatex(CodeGen):
             if len(node.params) > 0:
                 params_str = ''
                 for index in range(len(node.params)):
-                    params_str += node.params[index]
+                    params_str += self.visit(node.params[index], **kwargs)
                     if index < len(node.params) - 1:
                         params_str += node.separators[index] + ''
                 params_str = params_str.replace('\\mathit{', '\\textit{')
-                content = "\\text{{from {}({}) import {}}}\\\\\n".format(node.module, params_str, ", ".join(node.names))
+                content = "\\text{{from {}({}) import {}}}\\\\\n".format(node.module.get_name(), params_str, ", ".join(node.get_name_list()))
             else:
-                content = "\\text{{from {}() import {}}}\\\\\n".format(node.module, ", ".join(node.names))
+                content = "\\text{{from {}() import {}}}\\\\\n".format(node.module.get_name(), ", ".join(node.get_name_list()))
         return content
 
     def visit_start(self, node, **kwargs):
