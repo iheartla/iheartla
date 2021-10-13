@@ -227,7 +227,7 @@ class CodeGenEigen(CodeGen):
                    # "    : {}".format(',\n    '.join(assign_list)),
                    # "    {}",
                    ]
-        return "\n".join(content) + def_struct + def_str + init_struct + init_var + stat_str + '\n    }\n' + "};\n"
+        return "\n".join(content) + def_struct + def_str + init_struct + init_var + stat_str + '    }\n' + "};\n"
 
     def get_ret_display(self):
         # print return value in main function

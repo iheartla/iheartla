@@ -135,7 +135,10 @@ class CodeGenNumpy(CodeGen):
         content = ["class {}:".format(self.get_result_type()),
                    "    def __init__(self,{}".format(def_str[3:]),
                    ]
-        return "\n".join(content) + init_struct + init_var + stat_str + '\n' + self.local_func_def + def_struct
+        end_str = self.local_func_def + def_struct
+        if end_str != '':
+            end_str = '\n' + end_str
+        return "\n".join(content) + init_struct + init_var + stat_str + end_str
 
     def get_ret_struct(self):
         return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list))
@@ -561,7 +564,9 @@ class CodeGenNumpy(CodeGen):
             param_info = self.visit(parameter, **kwargs)
             param_list.append(param_info.content)
         content = "    def {}(self, {}):\n".format(name_info.content, ", ".join(param_list))
-        content += '        return {}\n\n'.format(self.visit(node.expr, **kwargs).content)
+        content += '        return {}\n'.format(self.visit(node.expr, **kwargs).content)
+        if self.local_func_def != '':
+            self.local_func_def += '\n'
         self.local_func_def += content
         return CodeNodeInfo()
 
