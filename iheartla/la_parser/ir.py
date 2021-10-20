@@ -211,7 +211,7 @@ class WhereConditionNode(StmtNode):
     def get_type_dict(self):
         ret = {}
         for name in self.id:
-            ret[name.get_name()] = self.type.la_type
+            ret[name.get_main_id()] = self.type.la_type
         return ret
 
 

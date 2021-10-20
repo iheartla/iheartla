@@ -117,7 +117,7 @@ class TypeWalker(NodeWalker):
         # either main where/given block or local function block
         if self.local_func_parsing:
             if self.local_func_name in self.func_data_dict:
-                return self.func_data_dict[self.local_func_name]
+                return self.func_data_dict[self.local_func_name].params_data
         return self.main_param
 
     def filter_symbol(self, symbol):
@@ -287,6 +287,16 @@ class TypeWalker(NodeWalker):
             if sym in self.symtable:
                 node_type = self.symtable[sym]
         return node_type
+
+    def is_sym_existed(self, sym):
+        existed = False
+        if self.local_func_parsing:
+            if self.local_func_name in self.local_func_dict and sym in self.local_func_dict[self.local_func_name]:
+                existed = True
+        if not existed:
+            if sym in self.symtable:
+                existed = True
+        return existed
 
     def check_sym_existence(self, sym, msg):
         resolved = False
@@ -1748,7 +1758,7 @@ class TypeWalker(NodeWalker):
                     r_content = self.walk(right).content
                     right_list.append(r_content)
                     if not self.visiting_lhs and not isinstance(r_content, int):
-                        assert r_content in self.symtable, get_err_msg_info(right.parseinfo, "Subscript has not been defined")
+                        assert self.is_sym_existed(r_content), get_err_msg_info(right.parseinfo, "Subscript has not been defined")
                 else:
                     right_list.append(right)
             return right_list
