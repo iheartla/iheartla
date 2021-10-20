@@ -145,6 +145,13 @@ class IRVisitor(object):
         same_symbols.remove(name)
         return same_symbols
 
+    def get_cur_param_data(self, func_name=''):
+        # either main where/given block or local function block
+        if func_name != '':
+            if func_name in self.func_data_dict:
+                return self.func_data_dict[func_name].params_data
+        return self.main_param
+
     def generate_var_name(self, base):
         index = -1
         if base in self.name_cnt_dict:
@@ -196,8 +203,8 @@ class IRVisitor(object):
         for key in self.symtable.keys():
             self.def_dict[key] = False
         self.parameters = type_walker.parameters
-        self.func_data_dict = {}  # local function name -> LocalFuncData
-        self.main_param = ParamsData()
+        self.func_data_dict = type_walker.func_data_dict  # local function name -> LocalFuncData
+        self.main_param = type_walker.main_param
         self.name_cnt_dict = type_walker.name_cnt_dict
         self.ret_symbol = type_walker.ret_symbol
         self.unofficial_method = type_walker.unofficial_method

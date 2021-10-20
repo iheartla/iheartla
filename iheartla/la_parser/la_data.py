@@ -16,6 +16,8 @@ class ParamsData(object):
         self.seq_dim_dict = {}    # support repeated symbol
         self.dim_seq_set = set()  # sequence of dimension for ragged list
         self.ids_dict = {}    # identifiers with subscripts
+        self.parameters = []  #
+        self.symtable = {}    # for params only
 
     def update_dim_dict(self, dim, target, pos):
         if dim in self.dim_seq_set:
