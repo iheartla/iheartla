@@ -248,24 +248,24 @@ class CodeGenEigen(CodeGen):
     def get_ret_struct(self):
         return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list + self.local_func_syms))
 
-    def gen_dim_content(self, rand_int_max):
+    def gen_dim_content(self, func_name='', rand_int_max=10):
         test_content = []
         dim_content = ""
         dim_defined_dict = {}
         dim_defined_list = []
-        if self.dim_dict:
-            for key, target_dict in self.dim_dict.items():
-                if key in self.parameters:
+        if self.get_cur_param_data().dim_dict:
+            for key, target_dict in self.get_cur_param_data().dim_dict.items():
+                if key in self.get_cur_param_data().parameters:
                     continue
-                if key in self.dim_seq_set:
+                if key in self.get_cur_param_data().dim_seq_set:
                     continue
                 target = list(target_dict.keys())[0]
                 dim_defined_dict[target] = target_dict[target]
                 #
                 has_defined = False
-                if len(self.same_dim_list) > 0:
+                if len(self.get_cur_param_data().same_dim_list) > 0:
                     if key not in dim_defined_list:
-                        for cur_set in self.same_dim_list:
+                        for cur_set in self.get_cur_param_data().same_dim_list:
                             if key in cur_set:
                                 int_dim = self.get_int_dim(cur_set)
                                 has_defined = True
@@ -286,19 +286,19 @@ class CodeGenEigen(CodeGen):
                         has_defined = True
                 if not has_defined:
                     test_content.append("    const int {} = rand()%{};".format(key, rand_int_max))
-                if self.symtable[target].is_sequence():
+                if self.get_cur_param_data().symtable[target].is_sequence():
                     if target_dict[target] == 0:
                         dim_content += "    const long {} = {}.size();\n".format(key, target)
                     elif target_dict[target] == 1:
                         dim_content += "    const long {} = {}[0].rows();\n".format(key, target)
                     elif target_dict[target] == 2:
                         dim_content += "    const long {} = {}[0].cols();\n".format(key, target)
-                elif self.symtable[target].is_matrix():
+                elif self.get_cur_param_data().symtable[target].is_matrix():
                     if target_dict[target] == 0:
                         dim_content += "    const long {} = {}.rows();\n".format(key, target)
                     else:
                         dim_content += "    const long {} = {}.cols();\n".format(key, target)
-                elif self.symtable[target].is_vector():
+                elif self.get_cur_param_data().symtable[target].is_vector():
                     dim_content += "    const long {} = {}.size();\n".format(key, target)
         return dim_defined_dict, test_content, dim_content
 
@@ -373,7 +373,7 @@ class CodeGenEigen(CodeGen):
                         "{",
                         "    srand((int)time(NULL));"]
         # get dimension content
-        dim_defined_dict, test_content, dim_content = self.gen_dim_content(rand_int_max)
+        dim_defined_dict, test_content, dim_content = self.gen_dim_content()
         # Handle sequences first
         test_generated_sym_set, seq_test_list = self.gen_same_seq_test()
         test_content += seq_test_list
@@ -662,6 +662,9 @@ class CodeGenEigen(CodeGen):
             content = "    {} {}(\n".format(self.get_ctype(node.expr.la_type), name_info.content)
             content += ",\n".join(param_list) + ')\n'
         content += '    {\n'
+        dim_defined_dict, test_content, dim_content = self.gen_dim_content(name_info.content)
+        content += dim_content
+
         content += '        return ' + self.visit(node.expr, **kwargs).content + ';'
         content += '    \n    }\n'
         self.local_func_def += content

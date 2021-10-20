@@ -408,6 +408,9 @@ class TypeWalker(NodeWalker):
             if update_ret_type:
                 self.symtable[self.ret_symbol] = type_info.la_type
         ir_node.stat = block_node
+        # set properties
+        self.main_param.symtable = self.symtable
+        self.main_param.parameters = self.parameters
         return ir_node
 
     ###################################################################
@@ -950,8 +953,9 @@ class TypeWalker(NodeWalker):
                 par_type = self.walk(par_def, **kwargs)
                 par_defs.append(par_type)
                 par_dict.update(par_type.get_type_dict())
-                self.local_func_dict[name_info.ir.get_main_id()] = par_dict
+            self.local_func_dict[name_info.ir.get_main_id()] = par_dict
             self.is_param_block = False
+            self.func_data_dict[name_info.ir.get_main_id()].symtable = par_dict
         assert name_info.ir.get_main_id() not in self.symtable, get_err_msg_info(name_info.ir.parse_info,
                                                                                "Symbol {} has been defined".format(
                                                                                    name_info.ir.get_main_id()))
@@ -960,6 +964,7 @@ class TypeWalker(NodeWalker):
                                 parse_info=node.parseinfo, raw_text=node.text, defs=par_defs,
                                 def_type=LocalFuncDefType.LocalFuncDefParenthesis if node.def_p else LocalFuncDefType.LocalFuncDefBracket)
         param_tps = []
+        par_names = []
         for index in range(len(node.params)):
             param_node = self.walk(node.params[index], **kwargs).ir
             # assert param_node.get_name() in self.parameters, get_err_msg_info(param_node.parse_info, "Parameter {} hasn't been defined".format(param_node.get_name()))
@@ -967,6 +972,8 @@ class TypeWalker(NodeWalker):
             ir_node.params.append(param_node)
             # param_tps.append(param_node.la_type)
             param_tps.append(par_dict[param_node.get_name()])
+            par_names.append(param_node.get_name())
+        self.func_data_dict[name_info.ir.get_main_id()].parameters = par_names
         ir_node.separators = node.separators
         ir_node.la_type = FunctionType(params=param_tps, ret=expr_info.ir.la_type)
         self.symtable[name_info.ir.get_main_id()] = ir_node.la_type
