@@ -248,6 +248,60 @@ class CodeGenEigen(CodeGen):
     def get_ret_struct(self):
         return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list + self.local_func_syms))
 
+    def gen_dim_content(self, rand_int_max):
+        test_content = []
+        dim_content = ""
+        dim_defined_dict = {}
+        dim_defined_list = []
+        if self.dim_dict:
+            for key, target_dict in self.dim_dict.items():
+                if key in self.parameters:
+                    continue
+                if key in self.dim_seq_set:
+                    continue
+                target = list(target_dict.keys())[0]
+                dim_defined_dict[target] = target_dict[target]
+                #
+                has_defined = False
+                if len(self.same_dim_list) > 0:
+                    if key not in dim_defined_list:
+                        for cur_set in self.same_dim_list:
+                            if key in cur_set:
+                                int_dim = self.get_int_dim(cur_set)
+                                has_defined = True
+                                if int_dim == -1:
+                                    test_content.append("    const int {} = rand()%{};".format(key, rand_int_max))
+                                else:
+                                    test_content.append("    const int {} = {};".format(key, int_dim))
+                                for same_key in cur_set:
+                                    if same_key != key:
+                                        dim_defined_list.append(same_key)
+                                        if not isinstance(same_key, int):
+                                            if int_dim == -1:
+                                                test_content.append("    const int {} = {};".format(same_key, key))
+                                            else:
+                                                test_content.append("    const int {} = {};".format(same_key, int_dim))
+                                break
+                    else:
+                        has_defined = True
+                if not has_defined:
+                    test_content.append("    const int {} = rand()%{};".format(key, rand_int_max))
+                if self.symtable[target].is_sequence():
+                    if target_dict[target] == 0:
+                        dim_content += "    const long {} = {}.size();\n".format(key, target)
+                    elif target_dict[target] == 1:
+                        dim_content += "    const long {} = {}[0].rows();\n".format(key, target)
+                    elif target_dict[target] == 2:
+                        dim_content += "    const long {} = {}[0].cols();\n".format(key, target)
+                elif self.symtable[target].is_matrix():
+                    if target_dict[target] == 0:
+                        dim_content += "    const long {} = {}.rows();\n".format(key, target)
+                    else:
+                        dim_content += "    const long {} = {}.cols();\n".format(key, target)
+                elif self.symtable[target].is_vector():
+                    dim_content += "    const long {} = {}.size();\n".format(key, target)
+        return dim_defined_dict, test_content, dim_content
+
     def gen_same_seq_test(self):
         # dynamic seq
         test_content = []
@@ -318,56 +372,8 @@ class CodeGenEigen(CodeGen):
         main_content = ["int main(int argc, char *argv[])",
                         "{",
                         "    srand((int)time(NULL));"]
-        dim_content = ""
-        dim_defined_dict = {}
-        dim_defined_list = []
-        if self.dim_dict:
-            for key, target_dict in self.dim_dict.items():
-                if key in self.parameters:
-                    continue
-                if key in self.dim_seq_set:
-                    continue
-                target = list(target_dict.keys())[0]
-                dim_defined_dict[target] = target_dict[target]
-                #
-                has_defined = False
-                if len(self.same_dim_list) > 0:
-                    if key not in dim_defined_list:
-                        for cur_set in self.same_dim_list:
-                            if key in cur_set:
-                                int_dim = self.get_int_dim(cur_set)
-                                has_defined = True
-                                if int_dim == -1:
-                                    test_content.append("    const int {} = rand()%{};".format(key, rand_int_max))
-                                else:
-                                    test_content.append("    const int {} = {};".format(key, int_dim))
-                                for same_key in cur_set:
-                                    if same_key != key:
-                                        dim_defined_list.append(same_key)
-                                        if not isinstance(same_key, int):
-                                            if int_dim == -1:
-                                                test_content.append("    const int {} = {};".format(same_key, key))
-                                            else:
-                                                test_content.append("    const int {} = {};".format(same_key, int_dim))
-                                break
-                    else:
-                        has_defined = True
-                if not has_defined:
-                    test_content.append("    const int {} = rand()%{};".format(key, rand_int_max))
-                if self.symtable[target].is_sequence():
-                    if target_dict[target] == 0:
-                        dim_content += "    const long {} = {}.size();\n".format(key, target)
-                    elif target_dict[target] == 1:
-                        dim_content += "    const long {} = {}[0].rows();\n".format(key, target)
-                    elif target_dict[target] == 2:
-                        dim_content += "    const long {} = {}[0].cols();\n".format(key, target)
-                elif self.symtable[target].is_matrix():
-                    if target_dict[target] == 0:
-                        dim_content += "    const long {} = {}.rows();\n".format(key, target)
-                    else:
-                        dim_content += "    const long {} = {}.cols();\n".format(key, target)
-                elif self.symtable[target].is_vector():
-                    dim_content += "    const long {} = {}.size();\n".format(key, target)
+        # get dimension content
+        dim_defined_dict, test_content, dim_content = self.gen_dim_content(rand_int_max)
         # Handle sequences first
         test_generated_sym_set, seq_test_list = self.gen_same_seq_test()
         test_content += seq_test_list
