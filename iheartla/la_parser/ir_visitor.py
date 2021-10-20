@@ -1,4 +1,5 @@
 from .ir import *
+from .la_data import *
 from ..la_tools.la_logger import *
 from ..la_tools.la_helper import *
 import unicodedata
@@ -195,12 +196,8 @@ class IRVisitor(object):
         for key in self.symtable.keys():
             self.def_dict[key] = False
         self.parameters = type_walker.parameters
-        self.subscripts = type_walker.subscripts
-        self.dim_dict = type_walker.dim_dict
-        self.seq_dim_dict = type_walker.seq_dim_dict
-        self.ids_dict = type_walker.ids_dict
-        self.dim_seq_set = type_walker.dim_seq_set
-        self.sub_name_dict = type_walker.sub_name_dict
+        self.func_data_dict = {}  # local function name -> LocalFuncData
+        self.main_param = ParamsData()
         self.name_cnt_dict = type_walker.name_cnt_dict
         self.ret_symbol = type_walker.ret_symbol
         self.unofficial_method = type_walker.unofficial_method

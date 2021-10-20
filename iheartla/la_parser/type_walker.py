@@ -16,6 +16,7 @@ except ImportError:
         def visualize(self, node): pass
 
 from .ir import *
+from .la_data import *
 from enum import Enum, IntFlag
 
 
@@ -71,13 +72,7 @@ class TypeWalker(NodeWalker):
         self.symtable = {}
         self.tmp_symtable = {}
         self.parameters = []
-        self.subscripts = {}
-        self.sub_name_dict = {}  # only for parameter checker
         self.name_cnt_dict = {}
-        self.dim_dict = {}        # parameter used. h:w_i
-        self.seq_dim_dict = {}    # support repeated symbol
-        self.dim_seq_set = set()  # sequence of dimension for ragged list
-        self.ids_dict = {}    # identifiers with subscripts
         self.unofficial_method = False
         self.is_param_block = False  # where or given block
         self.visualizer = LaVisualizer()
@@ -108,11 +103,22 @@ class TypeWalker(NodeWalker):
         self.rhs_raw_str_list = []
         self.dependency_set = set()
         self.dependency_dim_dict = {}
+        #
         self.local_func_syms = []  # local function names
         self.local_func_pars = []  # parameters for local functions
         self.local_func_parsing = False
         self.local_func_name = ''  # function name when visiting expressions
         self.local_func_dict = {}  # local function name -> parameter dict
+        self.func_data_dict = {}   # local function name -> LocalFuncData
+        #
+        self.main_param = ParamsData()
+
+    def get_cur_param_data(self):
+        # either main where/given block or local function block
+        if self.local_func_parsing:
+            if self.local_func_name in self.func_data_dict:
+                return self.func_data_dict[self.local_func_name]
+        return self.main_param
 
     def filter_symbol(self, symbol):
         if '`' in symbol:
@@ -133,13 +139,7 @@ class TypeWalker(NodeWalker):
         self.symtable.clear()
         self.tmp_symtable.clear()
         self.parameters.clear()
-        self.subscripts.clear()
-        self.sub_name_dict.clear()
         self.name_cnt_dict.clear()
-        self.dim_dict.clear()
-        self.seq_dim_dict.clear()
-        self.dim_seq_set.clear()
-        self.ids_dict.clear()
         self.ret_symbol = None
         self.unofficial_method = False
         self.sum_subs.clear()
@@ -159,6 +159,7 @@ class TypeWalker(NodeWalker):
         self.local_func_parsing = False
         self.local_func_name = ''
         self.local_func_dict.clear()
+        self.func_data_dict.clear()
 
     def get_func_symbols(self):
         ret = {}
@@ -212,32 +213,6 @@ class TypeWalker(NodeWalker):
             index += 1
         self.name_cnt_dict[base] = index - 1
         return ret
-
-    def update_dim_dict(self, dim, target, pos):
-        if dim in self.dim_seq_set:
-            # can repeat
-            if dim not in self.seq_dim_dict:
-                self.seq_dim_dict[dim] = {}
-            if target not in self.seq_dim_dict[dim]:
-                self.seq_dim_dict[dim][target] = []
-            self.seq_dim_dict[dim][target].append(pos)
-        if dim not in self.dim_dict:
-            self.dim_dict[dim] = {}
-        self.dim_dict[dim][target] = pos
-
-    def remove_dim(self, dim, target):
-        if dim in self.dim_dict:
-            self.dim_dict[dim].pop(target, None)
-            if len(self.dim_dict[dim]) == 0:
-                del self.dim_dict[dim]
-
-    def remove_target_from_dim_dict(self, target):
-        for key in self.dim_dict.keys():
-            if target in self.dim_dict[key]:
-                del self.dim_dict[key][target]
-                if len(self.dim_dict[key]) == 0:
-                    del self.dim_dict[key]
-                break
 
     def get_op_desc(self, op):
         desc = ""
@@ -330,7 +305,7 @@ class TypeWalker(NodeWalker):
     def walk_Start(self, node, **kwargs):
         self.pre_walk = True if 'pre_walk' in kwargs else False
         # self.symtable.clear()
-        # self.visualizer.visualize(node)  # visualize
+        self.visualizer.visualize(node)  # visualize
         ir_node = StartNode(parse_info=node.parseinfo)
         if node.directive:
             for directive in node.directive:
@@ -371,6 +346,7 @@ class TypeWalker(NodeWalker):
                     if len(func_sym) > 1:
                         multi_lhs_list.append(func_sym)
                     self.local_func_dict[func_sym] = {}
+                    self.func_data_dict[func_sym] = LocalFuncData(name=func_sym)
                     for par_def in vblock_info[0].defs:
                         par_type = self.walk(par_def, **kwargs)
                         type_dict = par_type.get_type_dict()
@@ -571,9 +547,9 @@ class TypeWalker(NodeWalker):
                                 self.symtable[id1] = ScalarType(is_int=True)
                         if type_node.la_type.rows_ir is None:
                             if self.contain_subscript(id0):
-                                self.update_dim_dict(id1, self.get_main_id(id0), 1)
+                                self.get_cur_param_data().update_dim_dict(id1, self.get_main_id(id0), 1)
                             else:
-                                self.update_dim_dict(id1, self.get_main_id(id0), 0)
+                                self.get_cur_param_data().update_dim_dict(id1, self.get_main_id(id0), 0)
                         else:
                             self.arith_dim_list.append(type_node.la_type.rows)
                     if isinstance(id2, str) and not id2.isnumeric():
@@ -584,9 +560,9 @@ class TypeWalker(NodeWalker):
                                 self.symtable[id2] = ScalarType(is_int=True)
                         if type_node.la_type.cols_ir is None:
                             if self.contain_subscript(id0):
-                                self.update_dim_dict(id2, self.get_main_id(id0), 2)
+                                self.get_cur_param_data().update_dim_dict(id2, self.get_main_id(id0), 2)
                             else:
-                                self.update_dim_dict(id2, self.get_main_id(id0), 1)
+                                self.get_cur_param_data().update_dim_dict(id2, self.get_main_id(id0), 1)
                         else:
                             self.arith_dim_list.append(type_node.la_type.cols)
                 elif type_node.la_type.is_vector():
@@ -599,9 +575,9 @@ class TypeWalker(NodeWalker):
                                 self.symtable[id1] = ScalarType(is_int=True)
                         if type_node.la_type.rows_ir is None:
                             if self.contain_subscript(id0):
-                                self.update_dim_dict(id1, self.get_main_id(id0), 1)
+                                self.get_cur_param_data().update_dim_dict(id1, self.get_main_id(id0), 1)
                             else:
-                                self.update_dim_dict(id1, self.get_main_id(id0), 0)
+                                self.get_cur_param_data().update_dim_dict(id1, self.get_main_id(id0), 0)
                         else:
                             self.arith_dim_list.append(type_node.la_type.rows)
         ir_node.type = type_node
@@ -958,12 +934,14 @@ class TypeWalker(NodeWalker):
         par_dict = {}
         self.local_func_name = name_info.ir.get_main_id()
         if len(node.defs) > 0:
+            self.is_param_block = True
             self.local_func_parsing = True
             for par_def in node.defs:
                 par_type = self.walk(par_def, **kwargs)
                 par_defs.append(par_type)
                 par_dict.update(par_type.get_type_dict())
                 self.local_func_dict[name_info.ir.get_main_id()] = par_dict
+            self.is_param_block = False
         assert name_info.ir.get_main_id() not in self.symtable, get_err_msg_info(name_info.ir.parse_info,
                                                                                "Symbol {} has been defined".format(
                                                                                    name_info.ir.get_main_id()))
@@ -2144,7 +2122,7 @@ class TypeWalker(NodeWalker):
             assert all_ids[0] in self.symtable, get_err_msg_info(node.parseinfo, "Sparse matrix: need dim")
             if all_ids[0] in self.parameters:
                 self.parameters.remove(all_ids[0])  # not a parameter
-                self.remove_target_from_dim_dict(all_ids[0])
+                self.get_cur_param_data().remove_target_from_dim_dict(all_ids[0])
             id1 = self.symtable[all_ids[0]].rows
             if not isinstance(id1, int):
                 assert id1 in self.dim_dict or id1 in self.parameters, get_err_msg_info(node.parseinfo, "Sparse matrix: dim {} is not defined".format(id1))
@@ -2958,13 +2936,13 @@ class TypeWalker(NodeWalker):
         return ret_type, need_cast
 
     def contain_subscript(self, identifier):
-        if identifier in self.ids_dict:
-            return self.ids_dict[identifier].contain_subscript()
+        if identifier in self.get_cur_param_data().ids_dict:
+            return self.get_cur_param_data().ids_dict[identifier].contain_subscript()
         return False
 
     def get_all_ids(self, identifier):
-        if identifier in self.ids_dict:
-            return self.ids_dict[identifier].get_all_ids()
+        if identifier in self.get_cur_param_data().ids_dict:
+            return self.get_cur_param_data().ids_dict[identifier].get_all_ids()
         res = identifier.split('_')
         if len(res) == 1:
             return res
@@ -2974,8 +2952,8 @@ class TypeWalker(NodeWalker):
         return [res[0], subs]
 
     def get_main_id(self, identifier):
-        if identifier in self.ids_dict:
-            return self.ids_dict[identifier].get_main_id()
+        if identifier in self.get_cur_param_data().ids_dict:
+            return self.get_cur_param_data().ids_dict[identifier].get_main_id()
         return identifier
 
     # handle subscripts only (where block)
@@ -2987,19 +2965,19 @@ class TypeWalker(NodeWalker):
             assert len(arr[1]) == 1, get_err_msg_info(ir_node.parse_info, "Parameter {} can't use multiple subscripts".format(arr[0]))
             val = arr[1][0]  # subscript
             assert not val.isnumeric(), get_err_msg_info(id_node.parse_info, "Parameter {} can't have constant subscript".format(arr[0]))
-            if val in self.sub_name_dict:
-                new_var_name = self.sub_name_dict[val]
+            if val in self.get_cur_param_data().sub_name_dict:
+                new_var_name = self.get_cur_param_data().sub_name_dict[val]
             else:
                 new_var_name = self.generate_var_name("dim")
-                self.sub_name_dict[val] = new_var_name
-                self.update_dim_dict(new_var_name, arr[0], 0)
-            if val in self.subscripts:
-                var_list = self.subscripts[val]
+                self.get_cur_param_data().sub_name_dict[val] = new_var_name
+                self.get_cur_param_data().update_dim_dict(new_var_name, arr[0], 0)
+            if val in self.get_cur_param_data().subscripts:
+                var_list = self.get_cur_param_data().subscripts[val]
                 var_list.append(arr[0])
-                self.subscripts[val] = var_list
+                self.get_cur_param_data().subscripts[val] = var_list
             else:
                 # first sequence
-                self.subscripts[val] = [arr[0]]
+                self.get_cur_param_data().subscripts[val] = [arr[0]]
             assert arr[0] not in self.symtable, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(arr[0]))
             if id_type.is_vector():
                 if id_type.is_dynamic_row():
@@ -3012,7 +2990,7 @@ class TypeWalker(NodeWalker):
                                                                                          id_node.id1.get_main_id()))
                         else:
                             self.symtable[id_node.id1.get_main_id()] = row_seq_type
-                            self.dim_seq_set.add(id_node.id1.get_main_id())
+                            self.get_cur_param_data().dim_seq_set.add(id_node.id1.get_main_id())
             elif id_type.is_matrix():
                 if id_type.is_dynamic_row():
                     if id_node.id1.is_node(IRNodeType.SeqDimIndex):
@@ -3026,7 +3004,7 @@ class TypeWalker(NodeWalker):
                                                                          id_node.id1.get_main_id()))
                         else:
                             self.symtable[id_node.id1.get_main_id()] = row_seq_type
-                            self.dim_seq_set.add(id_node.id1.get_main_id())
+                            self.get_cur_param_data().dim_seq_set.add(id_node.id1.get_main_id())
                 if id_type.is_dynamic_col():
                     if id_node.id2.is_node(IRNodeType.SeqDimIndex):
                         assert id_node.id1.main_index.get_name() == val, get_err_msg_info(id_node.id2.parse_info, "Dimension {} has different subscript".format(id_node.id2.main.get_name()))
@@ -3039,7 +3017,7 @@ class TypeWalker(NodeWalker):
                                                                          id_node.id2.get_main_id()))
                         else:
                             self.symtable[id_node.id2.get_main_id()] = col_seq_type
-                            self.dim_seq_set.add(id_node.id2.get_main_id())
+                            self.get_cur_param_data().dim_seq_set.add(id_node.id2.get_main_id())
             self.symtable[arr[0]] = SequenceType(size=new_var_name, element_type=id_type, desc=id_type.desc, symbol=arr[0])
         else:
             id_type.symbol = identifier
