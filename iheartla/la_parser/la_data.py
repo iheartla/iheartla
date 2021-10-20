@@ -10,6 +10,8 @@ class LocalFuncData(object):
 class ParamsData(object):
     def __init__(self):
         super().__init__()
+        self.arith_dim_list = []
+        self.same_dim_list = []
         self.subscripts = {}
         self.sub_name_dict = {}
         self.dim_dict = {}        # parameter used. h:w_i

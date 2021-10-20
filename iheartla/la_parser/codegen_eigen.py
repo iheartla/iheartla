@@ -16,16 +16,16 @@ class CodeGenEigen(CodeGen):
         self.pre_str += '\n'
         self.code_frame.desc = self.pre_str
 
-    def get_dim_check_str(self):
+    def get_dim_check_str(self, func_name=''):
         check_list = []
-        if len(self.same_dim_list) > 0:
+        if len(self.get_cur_param_data(func_name).same_dim_list) > 0:
             check_list = super().get_dim_check_str()
             check_list = ['    assert( {} );'.format(stat) for stat in check_list]
         return check_list
 
-    def get_arith_dim_check_str(self):
+    def get_arith_dim_check_str(self, func_name=''):
         check_list = []
-        if len(self.arith_dim_list) > 0:
+        if len(self.get_cur_param_data(func_name).arith_dim_list) > 0:
             check_list = ['    assert( fmod({}, 1) == 0.0 );'.format(dims) for dims in self.arith_dim_list]
         return check_list
 
@@ -253,19 +253,19 @@ class CodeGenEigen(CodeGen):
         dim_content = ""
         dim_defined_dict = {}
         dim_defined_list = []
-        if self.get_cur_param_data().dim_dict:
-            for key, target_dict in self.get_cur_param_data().dim_dict.items():
-                if key in self.get_cur_param_data().parameters:
+        if self.get_cur_param_data(func_name).dim_dict:
+            for key, target_dict in self.get_cur_param_data(func_name).dim_dict.items():
+                if key in self.get_cur_param_data(func_name).parameters:
                     continue
-                if key in self.get_cur_param_data().dim_seq_set:
+                if key in self.get_cur_param_data(func_name).dim_seq_set:
                     continue
                 target = list(target_dict.keys())[0]
                 dim_defined_dict[target] = target_dict[target]
                 #
                 has_defined = False
-                if len(self.get_cur_param_data().same_dim_list) > 0:
+                if len(self.get_cur_param_data(func_name).same_dim_list) > 0:
                     if key not in dim_defined_list:
-                        for cur_set in self.get_cur_param_data().same_dim_list:
+                        for cur_set in self.get_cur_param_data(func_name).same_dim_list:
                             if key in cur_set:
                                 int_dim = self.get_int_dim(cur_set)
                                 has_defined = True
@@ -286,19 +286,19 @@ class CodeGenEigen(CodeGen):
                         has_defined = True
                 if not has_defined:
                     test_content.append("    const int {} = rand()%{};".format(key, rand_int_max))
-                if self.get_cur_param_data().symtable[target].is_sequence():
+                if self.get_cur_param_data(func_name).symtable[target].is_sequence():
                     if target_dict[target] == 0:
                         dim_content += "    const long {} = {}.size();\n".format(key, target)
                     elif target_dict[target] == 1:
                         dim_content += "    const long {} = {}[0].rows();\n".format(key, target)
                     elif target_dict[target] == 2:
                         dim_content += "    const long {} = {}[0].cols();\n".format(key, target)
-                elif self.get_cur_param_data().symtable[target].is_matrix():
+                elif self.get_cur_param_data(func_name).symtable[target].is_matrix():
                     if target_dict[target] == 0:
                         dim_content += "    const long {} = {}.rows();\n".format(key, target)
                     else:
                         dim_content += "    const long {} = {}.cols();\n".format(key, target)
-                elif self.get_cur_param_data().symtable[target].is_vector():
+                elif self.get_cur_param_data(func_name).symtable[target].is_vector():
                     dim_content += "    const long {} = {}.size();\n".format(key, target)
         return dim_defined_dict, test_content, dim_content
 
@@ -651,6 +651,7 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
     def visit_local_func(self, node, **kwargs):
+        type_checks = []
         name_info = self.visit(node.name, **kwargs)
         param_list = []
         for parameter in node.params:
@@ -664,6 +665,10 @@ class CodeGenEigen(CodeGen):
         content += '    {\n'
         dim_defined_dict, test_content, dim_content = self.gen_dim_content(name_info.content)
         content += dim_content
+        type_checks += self.get_dim_check_str(name_info.content)
+        type_checks += self.get_arith_dim_check_str(name_info.content)
+        if len(type_checks) > 0:
+            content += '\n'.join(type_checks) + '\n\n'
 
         content += '        return ' + self.visit(node.expr, **kwargs).content + ';'
         content += '    \n    }\n'
