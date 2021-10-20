@@ -1924,7 +1924,7 @@ class TypeWalker(NodeWalker):
         ir_node = IdNode(left_content, right_content, parse_info=parse_info)
         ir_node.la_type = node_type
         node_info = NodeInfo(node_type, content, {content}, ir_node)
-        self.ids_dict[content] = Identifier(left_content, right_content)
+        self.get_cur_param_data().ids_dict[content] = Identifier(left_content, right_content)
         return node_info
 
     def walk_IdentifierAlone(self, node, **kwargs):
