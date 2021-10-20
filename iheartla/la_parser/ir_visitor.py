@@ -210,8 +210,6 @@ class IRVisitor(object):
         self.unofficial_method = type_walker.unofficial_method
         self.lhs_list = type_walker.lhs_list
         self.la_content = type_walker.la_content
-        self.same_dim_list = type_walker.same_dim_list
-        self.arith_dim_list = type_walker.arith_dim_list
         self.local_func_syms = type_walker.local_func_syms
         self.local_func_dict = type_walker.local_func_dict
         if func_name is not None:
