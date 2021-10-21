@@ -14,15 +14,17 @@ class IRVisitor(object):
         self.tmp_symtable = {}
         self.def_dict = {}
         self.parameters = set()
-        self.subscripts = {}
-        self.dim_dict = {}
-        self.seq_dim_dict = {}
-        self.sub_name_dict = {}
+        self.local_func_parsing = False
+        self.local_func_name = ''  # function name when visiting expressions
+        # self.subscripts = {}
+        # self.dim_dict = {}
+        # self.seq_dim_dict = {}
+        # self.sub_name_dict = {}
         self.name_cnt_dict = {}
-        self.same_dim_list = []
-        self.arith_dim_list = []
-        self.ids_dict = {}  # identifiers with subscripts
-        self.dim_seq_set = set()  # sequence of dimension for ragged list
+        # self.same_dim_list = []
+        # self.arith_dim_list = []
+        # self.ids_dict = {}  # identifiers with subscripts
+        # self.dim_seq_set = set()  # sequence of dimension for ragged list
         self.ret_symbol = None
         self.unofficial_method = False  # matrix pow only(eigen)
         self.content = ''
@@ -105,7 +107,7 @@ class IRVisitor(object):
 
     def convert_seq_dim_dict(self):
         seq_dict = {}
-        for key, value_dict in self.seq_dim_dict.items():
+        for key, value_dict in self.get_cur_param_data().seq_dim_dict.items():
             for sym, index_list in value_dict.items():
                 if sym not in seq_dict:
                     seq_dict[sym] = {}
@@ -116,7 +118,7 @@ class IRVisitor(object):
     def get_intersect_list(self):
         seq_set = self.get_dynamic_seq_set()
         subs_list = []
-        for subs, subs_dict in self.subscripts.items():
+        for subs, subs_dict in self.get_cur_param_data().subscripts.items():
             subs_set = set(subs_dict)
             intersection = subs_set.intersection(seq_set)
             if len(intersection) > 1:
@@ -125,20 +127,20 @@ class IRVisitor(object):
 
     def get_dynamic_seq_set(self):
         dym_seq_list = []
-        for key, value in self.seq_dim_dict.items():
+        for key, value in self.get_cur_param_data().seq_dim_dict.items():
             dym_seq_list += value.keys()
         return set(dym_seq_list)
 
     def get_same_seq_list(self, name):
         same_seq_list = []
-        for key, value in self.seq_dim_dict.items():
+        for key, value in self.get_cur_param_data().seq_dim_dict.items():
             if name in value:
                 same_seq_list.append(value)
         return same_seq_list
 
     def get_same_seq_symbols(self, name):
         same_symbols = []
-        for key, value in self.seq_dim_dict.items():
+        for key, value in self.get_cur_param_data().seq_dim_dict.items():
             if name in value:
                 same_symbols += value.keys()
         same_symbols = set(same_symbols)
@@ -147,9 +149,12 @@ class IRVisitor(object):
 
     def get_cur_param_data(self, func_name=''):
         # either main where/given block or local function block
-        if func_name != '':
-            if func_name in self.func_data_dict:
-                return self.func_data_dict[func_name].params_data
+        # if func_name != '':
+        #     if func_name in self.func_data_dict:
+        #         return self.func_data_dict[func_name].params_data
+        if self.local_func_parsing:
+            if self.local_func_name in self.func_data_dict:
+                return self.func_data_dict[self.local_func_name].params_data
         return self.main_param
 
     def generate_var_name(self, base):
@@ -190,12 +195,12 @@ class IRVisitor(object):
             if v is not None:
                 self.logger.info(k + ':' + get_type_desc(v))
         self.logger.info("parameters:\n" + str(self.parameters))
-        self.logger.info("subscripts:\n" + str(self.subscripts))
-        self.logger.info("dim_dict:\n" + str(self.dim_dict))
-        self.logger.info("seq_dim_dict:\n" + str(self.seq_dim_dict))
-        self.logger.info("dim_seq_set:\n" + str(self.dim_seq_set))
-        self.logger.info("same_dim_list:\n" + str(self.same_dim_list))
-        self.logger.info("sub_name_dict:\n" + str(self.sub_name_dict) + '\n')
+        self.logger.info("subscripts:\n" + str(self.get_cur_param_data().subscripts))
+        self.logger.info("dim_dict:\n" + str(self.get_cur_param_data().dim_dict))
+        self.logger.info("seq_dim_dict:\n" + str(self.get_cur_param_data().seq_dim_dict))
+        self.logger.info("dim_seq_set:\n" + str(self.get_cur_param_data().dim_seq_set))
+        self.logger.info("same_dim_list:\n" + str(self.get_cur_param_data().same_dim_list))
+        self.logger.info("sub_name_dict:\n" + str(self.get_cur_param_data().sub_name_dict) + '\n')
 
     def init_type(self, type_walker, func_name):
         self.symtable = type_walker.symtable
@@ -630,7 +635,7 @@ class IRVisitor(object):
         # convert special string in identifiers
         res = content
         ids_list = list(self.symtable.keys()) + list(self.tmp_symtable.keys())
-        for ids in self.ids_dict.keys():
+        for ids in self.get_cur_param_data().ids_dict.keys():
             all_ids = self.get_all_ids(ids)
             # these can contain asterisks from vector/matrix slicing 
             ids_list += all_ids[1]
@@ -666,13 +671,13 @@ class IRVisitor(object):
         return new_symbol
 
     def contain_subscript(self, identifier):
-        if identifier in self.ids_dict:
-            return self.ids_dict[identifier].contain_subscript()
+        if identifier in self.get_cur_param_data().ids_dict:
+            return self.get_cur_param_data().ids_dict[identifier].contain_subscript()
         return False
 
     def get_all_ids(self, identifier):
-        if identifier in self.ids_dict:
-            return self.ids_dict[identifier].get_all_ids()
+        if identifier in self.get_cur_param_data().ids_dict:
+            return self.get_cur_param_data().ids_dict[identifier].get_all_ids()
         res = identifier.split('_')
         subs = []
         for index in range(len(res[1])):
@@ -684,8 +689,8 @@ class IRVisitor(object):
         return self.func_name
 
     def get_main_id(self, identifier):
-        if identifier in self.ids_dict:
-            return self.ids_dict[identifier].get_main_id()
+        if identifier in self.get_cur_param_data().ids_dict:
+            return self.get_cur_param_data().ids_dict[identifier].get_main_id()
         if self.contain_subscript(identifier):
             ret = self.get_all_ids(identifier)
             return ret[0]

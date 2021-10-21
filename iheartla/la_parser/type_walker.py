@@ -943,13 +943,13 @@ class TypeWalker(NodeWalker):
         return value_info
 
     def walk_LocalFunc(self, node, **kwargs):
+        self.local_func_parsing = True
         name_info = self.walk(node.name, **kwargs)
         par_defs = []
         par_dict = {}
         self.local_func_name = name_info.ir.get_main_id()
         if len(node.defs) > 0:
             self.is_param_block = True
-            self.local_func_parsing = True
             for par_def in node.defs:
                 par_type = self.walk(par_def, **kwargs)
                 par_defs.append(par_type)
@@ -1806,17 +1806,17 @@ class TypeWalker(NodeWalker):
                     split_res = [left_info.content, content_symbol.replace(left_info.content, '')]
                 else:
                     split_res = content_symbol.split('_')
-                self.ids_dict[content_symbol] = Identifier(split_res[0], split_res[1])
+                self.get_cur_param_data().ids_dict[content_symbol] = Identifier(split_res[0], split_res[1])
                 assert left_info.content in self.symtable, get_err_msg_info(left_info.ir.parse_info,
                                                                                         "Element hasn't been defined")
                 if self.symtable[left_info.content].is_sequence():
-                    if left_info.content in self.dim_seq_set:
+                    if left_info.content in self.get_cur_param_data().dim_seq_set:
                         # index the sequence of dimension
                         ir_node = SeqDimIndexNode(parse_info=node.parseinfo)
                         ir_node.main = left_info.ir
                         main_index_info = self.walk(node.right[0])
                         ir_node.main_index = main_index_info.ir
-                        main_dict = self.dim_dict[left_info.content]
+                        main_dict = self.get_cur_param_data().dim_dict[left_info.content]
                         for key, value in main_dict.items():
                             ir_node.real_symbol = key
                             ir_node.dim_index = value
@@ -3015,7 +3015,7 @@ class TypeWalker(NodeWalker):
                         assert id_node.id1.main_index.get_name() == val, get_err_msg_info(id_node.id1.parse_info, "Dimension {} has different subscript".format(id_node.id1.main.get_name()))
                         row_seq_type = SequenceType(size=new_var_name, element_type=ScalarType(is_int=True),
                                                     symbol=id_node.id1.get_main_id())
-                        if id_node.id1.get_main_id() in self.symtable:
+                        if id_node.id1.get_main_id() in self.get_cur_param_data().symtable:
                             assert self.get_cur_param_data().symtable[id_node.id1.get_main_id()].is_same_type(
                                 row_seq_type), get_err_msg_info(id_node.id1.parse_info,
                                                                      "{} has already been defined as different type".format(
