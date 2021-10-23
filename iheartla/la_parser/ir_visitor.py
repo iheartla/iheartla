@@ -194,13 +194,21 @@ class IRVisitor(object):
         for (k, v) in self.symtable.items():
             if v is not None:
                 self.logger.info(k + ':' + get_type_desc(v))
-        self.logger.info("parameters:\n" + str(self.parameters))
-        self.logger.info("subscripts:\n" + str(self.get_cur_param_data().subscripts))
-        self.logger.info("dim_dict:\n" + str(self.get_cur_param_data().dim_dict))
-        self.logger.info("seq_dim_dict:\n" + str(self.get_cur_param_data().seq_dim_dict))
-        self.logger.info("dim_seq_set:\n" + str(self.get_cur_param_data().dim_seq_set))
-        self.logger.info("same_dim_list:\n" + str(self.get_cur_param_data().same_dim_list))
-        self.logger.info("sub_name_dict:\n" + str(self.get_cur_param_data().sub_name_dict) + '\n')
+        param_data_list = []
+        param_data_list += self.func_data_dict.values()
+        param_data_list.append(self.main_param)
+        self.logger.info("param_data_list cnt: {}\n".format(len(param_data_list)))
+        for param_data in param_data_list:
+            if isinstance(param_data, LocalFuncData):
+                self.logger.info("local function name:\n" + str(param_data.name))
+                param_data = param_data.params_data
+            self.logger.info("parameters:\n" + str(param_data.parameters))
+            self.logger.info("subscripts:\n" + str(param_data.subscripts))
+            self.logger.info("dim_dict:\n" + str(param_data.dim_dict))
+            self.logger.info("seq_dim_dict:\n" + str(param_data.seq_dim_dict))
+            self.logger.info("dim_seq_set:\n" + str(param_data.dim_seq_set))
+            self.logger.info("same_dim_list:\n" + str(param_data.same_dim_list))
+            self.logger.info("sub_name_dict:\n" + str(param_data.sub_name_dict) + '\n')
 
     def init_type(self, type_walker, func_name):
         self.symtable = type_walker.symtable
