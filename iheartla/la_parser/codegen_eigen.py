@@ -665,7 +665,7 @@ class CodeGenEigen(CodeGen):
         param_list = []
         for parameter in node.params:
             param_info = self.visit(parameter, **kwargs)
-            param_list.append("        const {} & {}".format(self.get_ctype(self.local_func_dict[name_info.content][param_info.content]), param_info.content))
+            param_list.append("        const {} & {}".format(self.get_ctype(self.get_cur_param_data(name_info.content).symtable[param_info.content]), param_info.content))
         if len(param_list) == 0:
             content = "    {} {}()\n"
         else:
