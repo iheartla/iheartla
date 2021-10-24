@@ -361,11 +361,13 @@ class TypeWalker(NodeWalker):
                         self.local_func_syms.append(func_sym)
                         if len(func_sym) > 1:
                             multi_lhs_list.append(func_sym)
+                        self.is_param_block = True
                         for par_def in vblock_info[0].defs:
                             par_type = self.walk(par_def, **kwargs)
                             type_dict = par_type.get_type_dict()
                             self.local_func_dict[func_sym].update(type_dict)
                         self.local_func_parsing = False
+                        self.is_param_block = False
                 else:
                     self.rhs_raw_str_list.append(vblock_info[0].text)
         ir_node.vblock = vblock_list
