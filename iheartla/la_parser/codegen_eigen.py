@@ -659,7 +659,6 @@ class CodeGenEigen(CodeGen):
 
     def visit_local_func(self, node, **kwargs):
         self.local_func_parsing = True
-        type_checks = []
         name_info = self.visit(node.name, **kwargs)
         self.local_func_name = name_info.content  # function name when visiting expressions
         param_list = []
@@ -672,12 +671,22 @@ class CodeGenEigen(CodeGen):
             content = "    {} {}(\n".format(self.get_ctype(node.expr.la_type), name_info.content)
             content += ",\n".join(param_list) + ')\n'
         content += '    {\n'
+        # get dimension content
         dim_defined_dict, test_content, dim_content = self.gen_dim_content(name_info.content)
-        content += dim_content
+        content += self.update_prelist_str([dim_content], '    ')
+        #
+        main_declaration = []
+        # Handle sequences first
+        test_generated_sym_set, seq_test_list = self.gen_same_seq_test()
+        # get params content
+        type_checks, doc, test_content, test_function, par_des_list, test_par_list = \
+            self.get_param_content(main_declaration, test_generated_sym_set, dim_defined_dict)
+        #
         type_checks += self.get_dim_check_str(name_info.content)
         type_checks += self.get_arith_dim_check_str(name_info.content)
+        type_checks = self.update_prelist_str(type_checks, '    ')
         if len(type_checks) > 0:
-            content += '\n'.join(type_checks) + '\n\n'
+            content += type_checks + '\n'
 
         content += '        return ' + self.visit(node.expr, **kwargs).content + ';'
         content += '    \n    }\n'
