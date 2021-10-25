@@ -490,9 +490,10 @@ class CodeGenEigen(CodeGen):
         test_generated_sym_set, seq_test_list = self.gen_same_seq_test()
         test_content += seq_test_list
         # get params content
-        type_checks, doc, test_content, test_function, par_des_list, test_par_list = \
+        type_checks, doc, param_test_content, test_function, par_des_list, test_par_list = \
             self.get_param_content(main_declaration, test_generated_sym_set, dim_defined_dict)
         #
+        test_content += param_test_content
         content = ""
         if show_doc:
             content += '/**\n * ' + self.func_name + '\n *\n * ' + '\n * '.join(doc) + '\n * @return {}\n */\n'.format(
