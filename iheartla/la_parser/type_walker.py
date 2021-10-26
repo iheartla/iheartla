@@ -355,10 +355,10 @@ class TypeWalker(NodeWalker):
                     func_sym = self.walk(vblock_info[0].name).ir.get_main_id()
                     self.local_func_dict[func_sym] = {}
                     self.func_data_dict[func_sym] = LocalFuncData(name=func_sym)
+                    self.local_func_syms.append(func_sym)
                     if self.pre_walk:
                         self.local_func_parsing = True
                         self.local_func_name = func_sym
-                        self.local_func_syms.append(func_sym)
                         if len(func_sym) > 1:
                             multi_lhs_list.append(func_sym)
                         self.is_param_block = True
