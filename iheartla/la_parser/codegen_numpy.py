@@ -18,15 +18,15 @@ class CodeGenNumpy(CodeGen):
 
     def get_dim_check_str(self):
         check_list = []
-        if len(self.same_dim_list) > 0:
+        if len(self.get_cur_param_data().same_dim_list) > 0:
             check_list = super().get_dim_check_str()
             check_list = ['    assert {} '.format(stat) for stat in check_list]
         return check_list
 
     def get_arith_dim_check_str(self):
         check_list = []
-        if len(self.arith_dim_list) > 0:
-            check_list = ['    assert {} == int({})'.format(dims, dims) for dims in self.arith_dim_list]
+        if len(self.get_cur_param_data().arith_dim_list) > 0:
+            check_list = ['    assert {} == int({})'.format(dims, dims) for dims in self.get_cur_param_data().arith_dim_list]
         return check_list
 
     def get_rand_test_str(self, la_type, rand_int_max):
@@ -195,61 +195,16 @@ class CodeGenNumpy(CodeGen):
                 test_content += cur_test_content
         return visited_sym_set, test_content
 
-    def visit_block(self, node, **kwargs):
+    def get_param_content(self, main_content, type_declare, test_generated_sym_set, dim_defined_dict):
         type_checks = []
-        type_declare = []
-        doc = []
-        show_doc = False
         rand_func_name = "generateRandomData"
+        doc = []
         test_content = []
         test_function = ["def " + rand_func_name + "():"]
         rand_int_max = 10
-        main_content = ["if __name__ == '__main__':"]
-        if len(self.parameters) > 0:
-            main_content.append("    {} = {}()".format(', '.join(self.parameters), rand_func_name))
-        else:
-            main_content.append("    {}()".format(rand_func_name))
-        dim_content = ""
-        dim_defined_list = []
-        if self.dim_dict:
-            for key, target_dict in self.dim_dict.items():
-                if key in self.parameters or key in self.dim_seq_set:
-                    continue
-                target = list(target_dict.keys())[0]
-                has_defined = False
-                if len(self.same_dim_list) > 0:
-                    if key not in dim_defined_list:
-                        for cur_set in self.same_dim_list:
-                            if key in cur_set:
-                                int_dim = self.get_int_dim(cur_set)
-                                has_defined = True
-                                if int_dim == -1:
-                                    test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
-                                else:
-                                    test_content.append("    {} = {}".format(key, int_dim))
-                                for same_key in cur_set:
-                                    if same_key != key:
-                                        dim_defined_list.append(same_key)
-                                        if not isinstance(same_key, int):
-                                            if int_dim == -1:
-                                                test_content.append("    {} = {}".format(same_key, key))
-                                            else:
-                                                test_content.append("    {} = {}".format(same_key, int_dim))
-                                break
-                    else:
-                        has_defined = True
-                if not has_defined:
-                    test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
-                if self.symtable[target].is_sequence() and self.symtable[target].element_type.is_dynamic():
-                    if target_dict[target] == 0:
-                        dim_content += "    {} = {}.shape[0]\n".format(key, target)
-                    else:
-                        dim_content += "    {} = {}[0].shape[{}]\n".format(key, target, target_dict[target]-1)
-                else:
-                    dim_content += "    {} = {}.shape[{}]\n".format(key, target, target_dict[target])
-        # Handle sequences first
-        test_generated_sym_set, seq_test_list = self.gen_same_seq_test()
-        test_content += seq_test_list
+        #
+        par_des_list = []
+        test_par_list = []
         for parameter in self.parameters:
             if self.symtable[parameter].desc:
                 show_doc = True
@@ -405,6 +360,74 @@ class CodeGenNumpy(CodeGen):
             elif self.symtable[parameter].is_function():
                 test_content += self.get_func_test_str(parameter, self.symtable[parameter], rand_int_max)
             main_content.append('    print("{}:", {})'.format(parameter, parameter))
+        return type_checks, doc, test_content, test_function, par_des_list, test_par_list
+
+
+    def gen_dim_content(self, func_name='', rand_int_max=10):
+        test_content = []
+        dim_content = ""
+        dim_defined_dict = {}
+        dim_defined_list = []
+        if self.get_cur_param_data(func_name).dim_dict:
+            for key, target_dict in self.get_cur_param_data(func_name).dim_dict.items():
+                if key in self.parameters or key in self.get_cur_param_data(func_name).dim_seq_set:
+                    continue
+                target = list(target_dict.keys())[0]
+                dim_defined_dict[target] = target_dict[target]
+                has_defined = False
+                if len(self.get_cur_param_data(func_name).same_dim_list) > 0:
+                    if key not in dim_defined_list:
+                        for cur_set in self.get_cur_param_data(func_name).same_dim_list:
+                            if key in cur_set:
+                                int_dim = self.get_int_dim(cur_set)
+                                has_defined = True
+                                if int_dim == -1:
+                                    test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
+                                else:
+                                    test_content.append("    {} = {}".format(key, int_dim))
+                                for same_key in cur_set:
+                                    if same_key != key:
+                                        dim_defined_list.append(same_key)
+                                        if not isinstance(same_key, int):
+                                            if int_dim == -1:
+                                                test_content.append("    {} = {}".format(same_key, key))
+                                            else:
+                                                test_content.append("    {} = {}".format(same_key, int_dim))
+                                break
+                    else:
+                        has_defined = True
+                if not has_defined:
+                    test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
+                if self.get_cur_param_data(func_name).symtable[target].is_sequence() and \
+                        self.get_cur_param_data(func_name).symtable[target].element_type.is_dynamic():
+                    if target_dict[target] == 0:
+                        dim_content += "    {} = {}.shape[0]\n".format(key, target)
+                    else:
+                        dim_content += "    {} = {}[0].shape[{}]\n".format(key, target, target_dict[target] - 1)
+                else:
+                    dim_content += "    {} = {}.shape[{}]\n".format(key, target, target_dict[target])
+        return dim_defined_dict, test_content, dim_content
+
+    def visit_block(self, node, **kwargs):
+        type_declare = []
+        show_doc = False
+        rand_func_name = "generateRandomData"
+        main_content = ["if __name__ == '__main__':"]
+        if len(self.parameters) > 0:
+            main_content.append("    {} = {}()".format(', '.join(self.parameters), rand_func_name))
+        else:
+            main_content.append("    {}()".format(rand_func_name))
+        # get dimension content
+        dim_defined_dict, test_content, dim_content = self.gen_dim_content()
+        # Handle sequences first
+        test_generated_sym_set, seq_test_list = self.gen_same_seq_test()
+        test_content += seq_test_list
+        #
+        # get params content
+        type_checks, doc, param_test_content, test_function, par_des_list, test_par_list = \
+            self.get_param_content(main_content, type_declare, test_generated_sym_set, dim_defined_dict)
+        #
+        test_content += param_test_content
         content = ', '.join(self.parameters) + '):\n'
         if show_doc:
             content += '    \"\"\"\n' + '\n'.join(doc) + '\n    \"\"\"\n'
@@ -558,16 +581,37 @@ class CodeGenNumpy(CodeGen):
         return CodeNodeInfo(content, pre_list)
 
     def visit_local_func(self, node, **kwargs):
+        self.local_func_parsing = True
         name_info = self.visit(node.name, **kwargs)
+        self.local_func_name = name_info.content  # function name when visiting expressions
         param_list = []
         for parameter in node.params:
             param_info = self.visit(parameter, **kwargs)
             param_list.append(param_info.content)
         content = "    def {}(self, {}):\n".format(name_info.content, ", ".join(param_list))
+        # get dimension content
+        dim_defined_dict, test_content, dim_content = self.gen_dim_content()
+        # Handle sequences first
+        test_generated_sym_set, seq_test_list = self.gen_same_seq_test()
+        test_content += seq_test_list
+        #
+        main_content = []
+        type_declare = []
+        # get params content
+        type_checks, doc, param_test_content, test_function, par_des_list, test_par_list = \
+            self.get_param_content(main_content, type_declare, test_generated_sym_set, dim_defined_dict)
+        content += self.update_prelist_str(type_declare, '    ')
+        content += self.update_prelist_str([dim_content], '    ')
+        type_checks += self.get_dim_check_str()
+        type_checks += self.get_arith_dim_check_str()
+        type_checks = self.update_prelist_str(type_checks, '    ')
+        if len(type_checks) > 0:
+            content += type_checks + '\n'
         content += '        return {}\n'.format(self.visit(node.expr, **kwargs).content)
         if self.local_func_def != '':
             self.local_func_def += '\n'
         self.local_func_def += content
+        self.local_func_parsing = False
         return CodeNodeInfo()
 
     def visit_norm(self, node, **kwargs):
