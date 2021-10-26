@@ -428,7 +428,7 @@ class CodeGenEigen(CodeGen):
         if len(subs_list) > 0:
             rand_name_dict = {}
             rand_def_dict = {}
-            for keys in self.seq_dim_dict:
+            for keys in self.get_cur_param_data().seq_dim_dict:
                 new_name = self.generate_var_name(keys)
                 rand_name_dict[keys] = new_name
                 rand_def_dict[keys] = '        int {} = rand()%{};'.format(new_name, rand_int_max)
