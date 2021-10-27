@@ -1024,7 +1024,7 @@ class TypeWalker(NodeWalker):
         #
         right_type = right_info.la_type
         # ir
-        assign_node = AssignNode(id0_info.ir, right_info.ir, parse_info=node.parseinfo)
+        assign_node = AssignNode(id0_info.ir, right_info.ir, parse_info=node.parseinfo, raw_text=node.text)
         assign_node.op = node.op
         right_info.ir.set_parent(assign_node)
         id0_info.ir.set_parent(assign_node)
