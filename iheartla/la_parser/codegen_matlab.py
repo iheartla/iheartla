@@ -634,15 +634,38 @@ class CodeGenMatlab(CodeGen):
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
     def visit_local_func(self, node, **kwargs):
+        self.local_func_parsing = True
         name_info = self.visit(node.name, **kwargs)
+        self.local_func_name = name_info.content  # function name when visiting expressions
         param_list = []
         for parameter in node.params:
             param_info = self.visit(parameter, **kwargs)
             param_list.append(param_info.content)
         content = "    function ret = {}({})\n".format(name_info.content, ", ".join(param_list))
+        type_declare = []
+        rand_func_name = "generateRandomData"
+        test_indent = "    "
+        # get dimension content
+        dim_defined_dict, test_content, dim_content = self.gen_dim_content()
+        # Handle sequences first
+        test_generated_sym_set, seq_test_list = self.gen_same_seq_test()
+        test_content += seq_test_list
+        # get params content
+        type_checks, doc, param_test_content, test_function = \
+            self.get_param_content(test_indent, type_declare, test_generated_sym_set, rand_func_name)
+        test_content += param_test_content
+        #
+        content += self.update_prelist_str(type_declare, '    ')
+        content += self.update_prelist_str([dim_content], '    ')
+        type_checks += self.get_dim_check_str()
+        type_checks += self.get_arith_dim_check_str()
+        type_checks = self.update_prelist_str(type_checks, '    ')
+        if len(type_checks) > 0:
+            content += type_checks + '\n'
         content += '        ret = {};\n'.format(self.visit(node.expr, **kwargs).content)
         content += '    end\n\n'
         self.local_func_def += content
+        self.local_func_parsing = False
         return CodeNodeInfo()
 
     def visit_norm(self, node, **kwargs):
