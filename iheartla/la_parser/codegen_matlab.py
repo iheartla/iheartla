@@ -16,14 +16,14 @@ class CodeGenMatlab(CodeGen):
 
     def get_dim_check_str(self):
         check_list = []
-        if len(self.same_dim_list) > 0:
+        if len(self.get_cur_param_data().same_dim_list) > 0:
             check_list = super().get_dim_check_str()
             check_list = ['    assert( {} );'.format(stat) for stat in check_list]
         return check_list
 
     def get_arith_dim_check_str(self):
         check_list = []
-        if len(self.arith_dim_list) > 0:
+        if len(self.get_cur_param_data().arith_dim_list) > 0:
             check_list = ['    assert( mod({}, 1) == 0.0 );'.format(dims) for dims in self.arith_dim_list]
         return check_list
 
@@ -224,27 +224,22 @@ class CodeGenMatlab(CodeGen):
                 test_content += cur_test_content
         return visited_sym_set, test_content
 
-    def visit_block(self, node, **kwargs):
-        type_checks = []
-        type_declare = []
-        doc = []
-        show_doc = False
-        rand_func_name = "generateRandomData"
-        test_content = []
+    def gen_dim_content(self, func_name='', rand_int_max=10):
         test_indent = "    "
-        test_function = [test_indent+"function [{}] = {}()".format(', '.join(self.parameters), rand_func_name)]
-        rand_int_max = 10
+        test_content = []
         dim_content = ""
+        dim_defined_dict = {}
         dim_defined_list = []
-        if self.dim_dict:
-            for key, target_dict in self.dim_dict.items():
-                if key in self.parameters or key in self.dim_seq_set:
+        if self.get_cur_param_data(func_name).dim_dict:
+            for key, target_dict in self.get_cur_param_data(func_name).dim_dict.items():
+                if key in self.parameters or key in self.get_cur_param_data(func_name).dim_seq_set:
                     continue
                 target = list(target_dict.keys())[0]
+                dim_defined_dict[target] = target_dict[target]
                 has_defined = False
-                if len(self.same_dim_list) > 0:
+                if len(self.get_cur_param_data(func_name).same_dim_list) > 0:
                     if key not in dim_defined_list:
-                        for cur_set in self.same_dim_list:
+                        for cur_set in self.get_cur_param_data(func_name).same_dim_list:
                             if key in cur_set:
                                 int_dim = self.get_int_dim(cur_set)
                                 has_defined = True
@@ -266,16 +261,21 @@ class CodeGenMatlab(CodeGen):
                 if not has_defined:
                     test_content.append(test_indent+"    {} = {};".format(key, self.randi_str(rand_int_max)))
                 # +1 because sizes in matlab are 1-indexed
-                if self.symtable[target].is_sequence() and self.symtable[target].element_type.is_dynamic():
+                if self.get_cur_param_data(func_name).symtable[target].is_sequence() and self.get_cur_param_data(func_name).symtable[target].element_type.is_dynamic():
                     if target_dict[target] == 0:
                         dim_content += "    {} = size({}, 1);\n".format(key, target)
                     else:
                         dim_content += "    {} = size({}{{1}}, {});\n".format(key, target, target_dict[target])
                 else:
                     dim_content += "    {} = size({}, {});\n".format(key, target, target_dict[target]+1)
-        # Handle sequences first
-        test_generated_sym_set, seq_test_list = self.gen_same_seq_test()
-        test_content += seq_test_list
+        return dim_defined_dict, test_content, dim_content
+
+    def get_param_content(self, test_indent, type_declare, test_generated_sym_set, rand_func_name):
+        test_content = []
+        doc = []
+        test_function = [test_indent+"function [{}] = {}()".format(', '.join(self.parameters), rand_func_name)]
+        type_checks = []
+        rand_int_max = 10
         for parameter in self.parameters:
             if self.symtable[parameter].desc:
                 show_doc = True
@@ -338,7 +338,7 @@ class CodeGenMatlab(CodeGen):
                         # Alec: is scalar? but then should
                         # self.symtable[parameter].size always be 1? What's
                         # meant by "scalar" here?
-                        # 
+                        #
                         # Force inputs to be treated as column vectors
                         type_declare.append('    {} = reshape({},[],1);'.format(parameter,parameter));
                         type_checks.append('    assert( size({},1) == {} );'.format(parameter, self.symtable[parameter].size))
@@ -468,7 +468,24 @@ class CodeGenMatlab(CodeGen):
                    test_content.append(test_indent+"        tmp = {};".format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
                 test_content.append(test_indent+"    end\n")
                 # test_content.append(test_indent+'    {} = lambda {}: {}'.format(parameter, ', '.join(param_list), self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
+        return type_checks, doc, test_content, test_function
 
+    def visit_block(self, node, **kwargs):
+        type_declare = []
+        show_doc = False
+        rand_func_name = "generateRandomData"
+        test_indent = "    "
+        rand_int_max = 10
+        # get dimension content
+        dim_defined_dict, test_content, dim_content = self.gen_dim_content()
+        # Handle sequences first
+        test_generated_sym_set, seq_test_list = self.gen_same_seq_test()
+        test_content += seq_test_list
+        # get params content
+        type_checks, doc, param_test_content, test_function = \
+            self.get_param_content(test_indent, type_declare, test_generated_sym_set, rand_func_name)
+        test_content += param_test_content
+        #
         declaration_content = 'function {} = {}({})\n'.format(self.get_result_name(), self.func_name, ', '.join(self.parameters))
         comment_content = '% {} = {}({})\n%\n'.format(self.get_result_name(), self.func_name, ', '.join(self.parameters))
         comment_content += '%    {}'.format(  ('\n%    ').join(self.la_content.split('\n') ))
