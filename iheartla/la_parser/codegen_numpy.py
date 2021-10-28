@@ -363,21 +363,21 @@ class CodeGenNumpy(CodeGen):
         return type_checks, doc, test_content, test_function, par_des_list, test_par_list
 
 
-    def gen_dim_content(self, func_name='', rand_int_max=10):
+    def gen_dim_content(self, rand_int_max=10):
         test_content = []
         dim_content = ""
         dim_defined_dict = {}
         dim_defined_list = []
-        if self.get_cur_param_data(func_name).dim_dict:
-            for key, target_dict in self.get_cur_param_data(func_name).dim_dict.items():
-                if key in self.parameters or key in self.get_cur_param_data(func_name).dim_seq_set:
+        if self.get_cur_param_data().dim_dict:
+            for key, target_dict in self.get_cur_param_data().dim_dict.items():
+                if key in self.parameters or key in self.get_cur_param_data().dim_seq_set:
                     continue
                 target = list(target_dict.keys())[0]
                 dim_defined_dict[target] = target_dict[target]
                 has_defined = False
-                if len(self.get_cur_param_data(func_name).same_dim_list) > 0:
+                if len(self.get_cur_param_data().same_dim_list) > 0:
                     if key not in dim_defined_list:
-                        for cur_set in self.get_cur_param_data(func_name).same_dim_list:
+                        for cur_set in self.get_cur_param_data().same_dim_list:
                             if key in cur_set:
                                 int_dim = self.get_int_dim(cur_set)
                                 has_defined = True
@@ -398,8 +398,8 @@ class CodeGenNumpy(CodeGen):
                         has_defined = True
                 if not has_defined:
                     test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
-                if self.get_cur_param_data(func_name).symtable[target].is_sequence() and \
-                        self.get_cur_param_data(func_name).symtable[target].element_type.is_dynamic():
+                if self.get_cur_param_data().symtable[target].is_sequence() and \
+                        self.get_cur_param_data().symtable[target].element_type.is_dynamic():
                     if target_dict[target] == 0:
                         dim_content += "    {} = {}.shape[0]\n".format(key, target)
                     else:
