@@ -24,7 +24,7 @@ class CodeGenMatlab(CodeGen):
     def get_arith_dim_check_str(self):
         check_list = []
         if len(self.get_cur_param_data().arith_dim_list) > 0:
-            check_list = ['    assert( mod({}, 1) == 0.0 );'.format(dims) for dims in self.arith_dim_list]
+            check_list = ['    assert( mod({}, 1) == 0.0 );'.format(dims) for dims in self.get_cur_param_data().arith_dim_list]
         return check_list
 
     def randn_str(self,sizes=[]):
@@ -224,22 +224,22 @@ class CodeGenMatlab(CodeGen):
                 test_content += cur_test_content
         return visited_sym_set, test_content
 
-    def gen_dim_content(self, func_name='', rand_int_max=10):
+    def gen_dim_content(self, rand_int_max=10):
         test_indent = "    "
         test_content = []
         dim_content = ""
         dim_defined_dict = {}
         dim_defined_list = []
-        if self.get_cur_param_data(func_name).dim_dict:
-            for key, target_dict in self.get_cur_param_data(func_name).dim_dict.items():
-                if key in self.parameters or key in self.get_cur_param_data(func_name).dim_seq_set:
+        if self.get_cur_param_data().dim_dict:
+            for key, target_dict in self.get_cur_param_data().dim_dict.items():
+                if key in self.parameters or key in self.get_cur_param_data().dim_seq_set:
                     continue
                 target = list(target_dict.keys())[0]
                 dim_defined_dict[target] = target_dict[target]
                 has_defined = False
-                if len(self.get_cur_param_data(func_name).same_dim_list) > 0:
+                if len(self.get_cur_param_data().same_dim_list) > 0:
                     if key not in dim_defined_list:
-                        for cur_set in self.get_cur_param_data(func_name).same_dim_list:
+                        for cur_set in self.get_cur_param_data().same_dim_list:
                             if key in cur_set:
                                 int_dim = self.get_int_dim(cur_set)
                                 has_defined = True
@@ -261,7 +261,7 @@ class CodeGenMatlab(CodeGen):
                 if not has_defined:
                     test_content.append(test_indent+"    {} = {};".format(key, self.randi_str(rand_int_max)))
                 # +1 because sizes in matlab are 1-indexed
-                if self.get_cur_param_data(func_name).symtable[target].is_sequence() and self.get_cur_param_data(func_name).symtable[target].element_type.is_dynamic():
+                if self.get_cur_param_data().symtable[target].is_sequence() and self.get_cur_param_data().symtable[target].element_type.is_dynamic():
                     if target_dict[target] == 0:
                         dim_content += "    {} = size({}, 1);\n".format(key, target)
                     else:
