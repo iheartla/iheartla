@@ -980,7 +980,7 @@ class TypeWalker(NodeWalker):
             # param_tps.append(param_node.la_type)
             param_tps.append(par_dict[param_node.get_name()])
             par_names.append(param_node.get_name())
-        self.func_data_dict[name_info.ir.get_main_id()].parameters = par_names
+        self.func_data_dict[name_info.ir.get_main_id()].params_data.parameters = par_names
         ir_node.separators = node.separators
         ir_node.la_type = FunctionType(params=param_tps, ret=expr_info.ir.la_type)
         self.symtable[name_info.ir.get_main_id()] = ir_node.la_type
@@ -2149,10 +2149,10 @@ class TypeWalker(NodeWalker):
                 self.get_cur_param_data().remove_target_from_dim_dict(all_ids[0])
             id1 = self.symtable[all_ids[0]].rows
             if not isinstance(id1, int):
-                assert id1 in self.dim_dict or id1 in self.parameters, get_err_msg_info(node.parseinfo, "Sparse matrix: dim {} is not defined".format(id1))
+                assert id1 in self.get_cur_param_data().dim_dict or id1 in self.parameters, get_err_msg_info(node.parseinfo, "Sparse matrix: dim {} is not defined".format(id1))
             id2 = self.symtable[all_ids[0]].cols
             if not isinstance(id2, int):
-                assert id2 in self.dim_dict or id2 in self.parameters, get_err_msg_info(node.parseinfo, "Sparse matrix: dim {} is not defined".format(id2))
+                assert id2 in self.get_cur_param_data().dim_dict or id2 in self.parameters, get_err_msg_info(node.parseinfo, "Sparse matrix: dim {} is not defined".format(id2))
             la_type = MatrixType(rows=id1, cols=id2, sparse=True, index_var=index_var, value_var=value_var)
             self.symtable[new_id] = la_type
         elif op == '+=':
