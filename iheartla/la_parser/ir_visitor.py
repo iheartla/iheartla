@@ -10,12 +10,11 @@ class IRVisitor(object):
         super().__init__()
         self.pre_str = ''
         self.post_str = ''
-        self.symtable = {}
         self.tmp_symtable = {}
         self.def_dict = {}
-        self.parameters = set()
         self.local_func_parsing = False
         self.local_func_name = ''  # function name when visiting expressions
+        # self.parameters = set()
         # self.subscripts = {}
         # self.dim_dict = {}
         # self.seq_dim_dict = {}
@@ -147,6 +146,22 @@ class IRVisitor(object):
         same_symbols.remove(name)
         return same_symbols
 
+    @property
+    def parameters(self):
+        return self.get_cur_param_data().parameters
+
+    @parameters.setter
+    def parameters(self, value):
+        self.get_cur_param_data().parameters = value
+
+    @property
+    def symtable(self):
+        return self.get_cur_param_data().symtable
+
+    @symtable.setter
+    def symtable(self, value):
+        self.get_cur_param_data().symtable = value
+
     def get_cur_param_data(self, func_name=''):
         # either main where/given block or local function block
         # if func_name != '':
@@ -200,24 +215,25 @@ class IRVisitor(object):
         self.logger.info("param_data_list cnt: {}\n".format(len(param_data_list)))
         for param_data in param_data_list:
             if isinstance(param_data, LocalFuncData):
-                self.logger.info("local function name:\n" + str(param_data.name))
+                self.logger.info("local function name:" + str(param_data.name))
                 param_data = param_data.params_data
-            self.logger.info("parameters:\n" + str(param_data.parameters))
-            self.logger.info("subscripts:\n" + str(param_data.subscripts))
-            self.logger.info("dim_dict:\n" + str(param_data.dim_dict))
-            self.logger.info("seq_dim_dict:\n" + str(param_data.seq_dim_dict))
-            self.logger.info("dim_seq_set:\n" + str(param_data.dim_seq_set))
-            self.logger.info("same_dim_list:\n" + str(param_data.same_dim_list))
-            self.logger.info("sub_name_dict:\n" + str(param_data.sub_name_dict) + '\n')
+            self.logger.info("symtable: {}".format(param_data.symtable, hex(id(param_data.symtable))))
+            self.logger.info("parameters: {}".format(param_data.parameters, hex(id(param_data.parameters))))
+            self.logger.info("subscripts: {}".format(param_data.subscripts, hex(id(param_data.subscripts))))
+            self.logger.info("dim_dict: {}".format(param_data.dim_dict, hex(id(param_data.dim_dict))))
+            self.logger.info("seq_dim_dict: {}".format(param_data.seq_dim_dict, hex(id(param_data.seq_dim_dict))))
+            self.logger.info("dim_seq_set: {}".format(param_data.dim_seq_set, hex(id(param_data.dim_seq_set))))
+            self.logger.info("same_dim_list: {}".format(param_data.same_dim_list, hex(id(param_data.same_dim_list))))
+            self.logger.info("sub_name_dict: {}\n".format(param_data.sub_name_dict, hex(id(param_data.sub_name_dict))))
 
     def init_type(self, type_walker, func_name):
-        self.symtable = type_walker.symtable
+        # self.symtable = type_walker.symtable
+        # self.parameters = type_walker.parameters
+        self.main_param = type_walker.main_param
         self.tmp_symtable = type_walker.tmp_symtable
         for key in self.symtable.keys():
             self.def_dict[key] = False
-        self.parameters = type_walker.parameters
         self.func_data_dict = type_walker.func_data_dict  # local function name -> LocalFuncData
-        self.main_param = type_walker.main_param
         self.name_cnt_dict = type_walker.name_cnt_dict
         self.ret_symbol = type_walker.ret_symbol
         self.unofficial_method = type_walker.unofficial_method
