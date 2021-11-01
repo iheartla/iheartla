@@ -54,7 +54,6 @@ class IheartlaBlockPreprocessor(Preprocessor):
 
     def run(self, lines, **kwargs):
         """ Match and store Fenced Code Blocks in the HtmlStash. """
-
         # Check for dependent extensions
         if not self.checked_for_deps:
             for ext in self.md.registeredExtensions:
@@ -66,95 +65,47 @@ class IheartlaBlockPreprocessor(Preprocessor):
             self.checked_for_deps = True
 
         text = "\n".join(lines)
+        pre_text = text
+        source_list = []
+        name_list = []
+        match_list = []
         while 1:
-            m = self.FENCED_BLOCK_RE.search(text)
+            m = self.FENCED_BLOCK_RE.search(pre_text)
             if m:
-                lang, id, classes, config = None, '', [], {}
                 if m.group('attrs') and m.group('code'):
                     file_name = "{}/{}.ihla".format(kwargs['path'], m.group('attrs'))
                     save_to_file(m.group('code'), file_name)
-                    code_list = compile_la_content(m.group('code'), parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MATHJAX, func_name=m.group('attrs'))
-                    print(code_list[1])
-                if m.group('attrs'):
-                    id, classes, config = self.handle_attrs(get_attrs(m.group('attrs')))
-                    if len(classes):
-                        lang = classes.pop(0)
-                else:
-                    if m.group('lang'):
-                        lang = m.group('lang')
-                    if m.group('hl_lines'):
-                        # Support hl_lines outside of attrs for backward-compatibility
-                        config['hl_lines'] = parse_hl_lines(m.group('hl_lines'))
-
-                # If config is not empty, then the codehighlite extension
-                # is enabled, so we call it to highlight the code
-                if self.codehilite_conf and self.codehilite_conf['use_pygments'] and config.get('use_pygments', True):
-                    local_config = self.codehilite_conf.copy()
-                    local_config.update(config)
-                    # Combine classes with cssclass. Ensure cssclass is at end
-                    # as pygments appends a suffix under certain circumstances.
-                    # Ignore ID as Pygments does not offer an option to set it.
-                    if classes:
-                        local_config['css_class'] = '{} {}'.format(
-                            ' '.join(classes),
-                            local_config['css_class']
-                        )
-                    highliter = CodeHilite(
-                        m.group('code'),
-                        lang=lang,
-                        style=local_config.pop('pygments_style', 'default'),
-                        **local_config
-                    )
-
-                    code = highliter.hilite(shebang=False)
-                else:
-                    id_attr = lang_attr = class_attr = kv_pairs = ''
-                    if lang:
-                        lang_attr = ' class="{}{}"'.format(self.config.get('lang_prefix', 'language-'), lang)
-                    if classes:
-                        class_attr = ' class="{}"'.format(' '.join(classes))
-                    if id:
-                        id_attr = ' id="{}"'.format(id)
-                    if self.use_attr_list and config and not config.get('use_pygments', False):
-                        # Only assign key/value pairs to code element if attr_list ext is enabled, key/value pairs
-                        # were defined on the code block, and the `use_pygments` key was not set to True. The
-                        # `use_pygments` key could be either set to False or not defined. It is omitted from output.
-                        kv_pairs = ' ' + ' '.join(
-                            '{k}="{v}"'.format(k=k, v=v) for k, v in config.items() if k != 'use_pygments'
-                        )
-                    code = '<pre{id}{cls}><code{lang}{kv}>{code}</code></pre>'.format(
-                        id=id_attr,
-                        cls=class_attr,
-                        lang=lang_attr,
-                        kv=kv_pairs,
-                        code=self._escape(m.group('code'))
-                    )
-
+                    source_list.append(m.group('code'))
+                    name_list.append(m.group('attrs'))
+                    match_list.append(m.start())
+                pre_text = '{}\n{}\n{}'.format(text[:m.start()], '', pre_text[m.end():])
+            else:
+                break
+        cur_index = 0
+        while 1:
+            m = self.FENCED_BLOCK_RE.search(text)
+            if m:
+                code_list = compile_la_content(source_list[cur_index], parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MATHJAX,
+                                               func_name=name_list[cur_index], path=kwargs['path'])
+                print("name:{} ".format(name_list[cur_index]))
+                print("code_list:{} ".format(code_list))
+                id_attr = lang_attr = class_attr = kv_pairs = ''
+                code = '<pre{id}{cls}><code{lang}{kv}>{code}</code></pre>'.format(
+                    id=id_attr,
+                    cls=class_attr,
+                    lang=lang_attr,
+                    kv=kv_pairs,
+                    code=self._escape(source_list[cur_index])
+                )
                 placeholder = self.md.htmlStash.store(code)
                 text = '{}\n{}\n{}'.format(text[:m.start()],
                                            placeholder,
                                            text[m.end():])
+                cur_index += 1
             else:
                 break
         return text.split("\n")
 
-    def handle_attrs(self, attrs):
-        """ Return tuple: (id, [list, of, classes], {configs}) """
-        id = ''
-        classes = []
-        configs = {}
-        for k, v in attrs:
-            if k == 'id':
-                id = v
-            elif k == '.':
-                classes.append(v)
-            elif k == 'hl_lines':
-                configs[k] = parse_hl_lines(v)
-            elif k in self.bool_options:
-                configs[k] = parseBoolValue(v, fail_on_errors=False, preserve_none=True)
-            else:
-                configs[k] = v
-        return id, classes, configs
 
     def _escape(self, txt):
         """ basic html escaping """

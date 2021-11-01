@@ -404,7 +404,11 @@ def get_file_name(path_name):
 
 def compile_la_content(la_content,
                        parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX | ParserTypeEnum.MATHJAX | ParserTypeEnum.MATLAB,
-                       func_name=None):
+                       func_name=None,
+                       path=None):
+    if path:
+        global _module_path
+        _module_path = Path(path)
     parser = get_default_parser()
     try:
         model = parser.parse(la_content, parseinfo=True)
