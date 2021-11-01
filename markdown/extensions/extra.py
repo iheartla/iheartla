@@ -32,6 +32,7 @@ License: [BSD](https://opensource.org/licenses/bsd-license.php)
 from . import Extension
 
 extensions = [
+    'iheartla_code',
     'fenced_code',
     'footnotes',
     'attr_list',

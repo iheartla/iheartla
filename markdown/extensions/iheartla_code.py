@@ -1,21 +1,3 @@
-"""
-Fenced Code Extension for Python Markdown
-=========================================
-
-This extension adds Fenced Code Blocks to Python-Markdown.
-
-See <https://Python-Markdown.github.io/extensions/fenced_code_blocks>
-for documentation.
-
-Original code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/).
-
-
-All changes Copyright 2008-2014 The Python Markdown Project
-
-License: [BSD](https://opensource.org/licenses/bsd-license.php)
-"""
-
-
 from textwrap import dedent
 from . import Extension
 from ..preprocessors import Preprocessor
@@ -23,9 +5,11 @@ from .codehilite import CodeHilite, CodeHiliteExtension, parse_hl_lines
 from .attr_list import get_attrs, AttrListExtension
 from ..util import parseBoolValue
 import re
+from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
+from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file
 
 
-class FencedCodeExtension(Extension):
+class IheartlaCodeExtension(Extension):
     def __init__(self, **kwargs):
         self.config = {
             'lang_prefix': ['language-', 'Prefix prepended to the language. Default: "language-"']
@@ -36,14 +20,15 @@ class FencedCodeExtension(Extension):
         """ Add FencedBlockPreprocessor to the Markdown instance. """
         md.registerExtension(self)
 
-        md.preprocessors.register(FencedBlockPreprocessor(md, self.getConfigs()), 'fenced_code_block', 25)
+        md.preprocessors.register(IheartlaBlockPreprocessor(md, self.getConfigs()), 'iheartla_code_block', 25)
 
 
-class FencedBlockPreprocessor(Preprocessor):
+class IheartlaBlockPreprocessor(Preprocessor):
     FENCED_BLOCK_RE = re.compile(
         dedent(r'''
             (?P<fence>^(?:~{3,}|`{3,}))[ ]*                          # opening fence
-            ((\{(?P<attrs>[^\}\n]*)\})|                              # (optional {attrs} or
+            iheartla
+            ((\((?P<attrs>[^\}\n]*)\))|                              # (optional {attrs} or
             (\.?(?P<lang>[\w#.+-]*)[ ]*)?                            # optional (.)lang
             (hl_lines=(?P<quot>"|')(?P<hl_lines>.*?)(?P=quot)[ ]*)?) # optional hl_lines)
             \n                                                       # newline (end of opening fence)
@@ -85,6 +70,11 @@ class FencedBlockPreprocessor(Preprocessor):
             m = self.FENCED_BLOCK_RE.search(text)
             if m:
                 lang, id, classes, config = None, '', [], {}
+                if m.group('attrs') and m.group('code'):
+                    file_name = "{}/{}.ihla".format(kwargs['path'], m.group('attrs'))
+                    save_to_file(m.group('code'), file_name)
+                    code_list = compile_la_content(m.group('code'), parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MATHJAX, func_name=m.group('attrs'))
+                    print(code_list[1])
                 if m.group('attrs'):
                     id, classes, config = self.handle_attrs(get_attrs(m.group('attrs')))
                     if len(classes):
@@ -176,4 +166,4 @@ class FencedBlockPreprocessor(Preprocessor):
 
 
 def makeExtension(**kwargs):  # pragma: no cover
-    return FencedCodeExtension(**kwargs)
+    return IheartlaCodeExtension(**kwargs)

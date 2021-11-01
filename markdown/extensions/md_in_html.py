@@ -230,7 +230,7 @@ class HTMLExtractorExtra(HTMLExtractor):
 class HtmlBlockPreprocessor(Preprocessor):
     """Remove html blocks from the text and store them for later retrieval."""
 
-    def run(self, lines):
+    def run(self, lines, **kwargs):
         source = '\n'.join(lines)
         parser = HTMLExtractorExtra(self.md)
         parser.feed(source)

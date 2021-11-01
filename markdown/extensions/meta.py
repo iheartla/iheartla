@@ -45,7 +45,7 @@ class MetaExtension (Extension):
 class MetaPreprocessor(Preprocessor):
     """ Get Meta-Data. """
 
-    def run(self, lines):
+    def run(self, lines, **kwargs):
         """ Parse Meta-Data and store in Markdown.Meta. """
         meta = {}
         key = None

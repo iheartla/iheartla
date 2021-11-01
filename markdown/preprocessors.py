@@ -49,7 +49,7 @@ class Preprocessor(util.Processor):
     Preprocessors must extend markdown.Preprocessor.
 
     """
-    def run(self, lines):
+    def run(self, lines, **kwargs):
         """
         Each subclass of Preprocessor should override the `run` method, which
         takes the document as a list of strings split by newlines and returns
@@ -62,7 +62,7 @@ class Preprocessor(util.Processor):
 class NormalizeWhitespace(Preprocessor):
     """ Normalize whitespace for consistent parsing. """
 
-    def run(self, lines):
+    def run(self, lines, **kwargs):
         source = '\n'.join(lines)
         source = source.replace(util.STX, "").replace(util.ETX, "")
         source = source.replace("\r\n", "\n").replace("\r", "\n") + "\n\n"
@@ -74,7 +74,7 @@ class NormalizeWhitespace(Preprocessor):
 class HtmlBlockPreprocessor(Preprocessor):
     """Remove html blocks from the text and store them for later retrieval."""
 
-    def run(self, lines):
+    def run(self, lines, **kwargs):
         source = '\n'.join(lines)
         parser = HTMLExtractor(self.md)
         parser.feed(source)
