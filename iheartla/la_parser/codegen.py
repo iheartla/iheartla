@@ -21,6 +21,8 @@ class CodeFrame(object):
             content = self.struct  # struct already contains everything
         elif self.parse_type == ParserTypeEnum.LATEX:
             content = self.main
+        elif self.parse_type == ParserTypeEnum.MATHJAX:
+            content = self.main
         return content
 
 

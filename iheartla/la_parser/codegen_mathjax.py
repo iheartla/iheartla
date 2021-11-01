@@ -56,6 +56,7 @@ class CodeGenMathjax(CodeGenLatex):
         for key, value in self.uni_convert_dict.items():
             if key in content:
                 content = content.replace(key, value)
+        self.code_frame.main = self.pre_str + content + self.post_str
         return content
 
     def visit_params_block(self, node, **kwargs):
