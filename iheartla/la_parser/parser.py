@@ -71,13 +71,15 @@ def get_codegen(parser_type):
     return _codegen_dict[parser_type]
 
 
-def walk_model(parser_type, type_walker, node_info, func_name=None):
+def walk_model(parser_type, type_walker, node_info, func_name=None, struct=False):
     gen = get_codegen(parser_type)
     #
     gen.init_type(type_walker, func_name)
     code_frame = gen.visit_code(node_info)
     if parser_type != ParserTypeEnum.LATEX:  # print once
         gen.print_symbols()
+    if struct:
+        return code_frame
     return code_frame.get_code()
 
 def walk_model_frame(parser_type, type_walker, node_info, func_name=None):
@@ -406,7 +408,8 @@ def get_file_name(path_name):
 def compile_la_content(la_content,
                        parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX | ParserTypeEnum.MATHJAX | ParserTypeEnum.MATLAB,
                        func_name=None,
-                       path=None):
+                       path=None,
+                       struct=False):
     if path:
         global _module_path
         _module_path = Path(path)
@@ -417,7 +420,7 @@ def compile_la_content(la_content,
         for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX, ParserTypeEnum.MATLAB]:
             if parser_type & cur_type:
                 type_walker, start_node = parse_ir_node(la_content, model, cur_type)
-                cur_content = walk_model(cur_type, type_walker, start_node, func_name)
+                cur_content = walk_model(cur_type, type_walker, start_node, func_name, struct)
                 ret.append(cur_content)
     except FailedParse as e:
         ret = LaMsg.getInstance().get_parse_error(e)
