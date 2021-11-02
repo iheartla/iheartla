@@ -82,11 +82,16 @@ class IheartlaBlockPreprocessor(Preprocessor):
             else:
                 break
         cur_index = 0
+        lib_header = None
+        lib_content = ''
         while 1:
             m = self.FENCED_BLOCK_RE.search(text)
             if m:
                 code_list = compile_la_content(source_list[cur_index], parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MATHJAX,
-                                               func_name=name_list[cur_index], path=kwargs['path'])
+                                               func_name=name_list[cur_index], path=kwargs['path'], struct=True)
+                if lib_header is None:
+                    lib_header = code_list[0].include
+                lib_content += code_list[0].struct
                 print("name:{} ".format(name_list[cur_index]))
                 print("code_list:{} ".format(code_list))
                 id_attr = lang_attr = class_attr = kv_pairs = ''
@@ -104,6 +109,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 cur_index += 1
             else:
                 break
+        if lib_header is not None:
+            save_to_file(lib_header + lib_content, "{}/lib.h".format(kwargs['path']))
         return text.split("\n")
 
 
