@@ -287,10 +287,13 @@ class CodeGenLatex(CodeGen):
         return params_str + '\\rightarrow ' + ret
 
     def visit_assignment(self, node, **kwargs):
+        content = ''
         if node.right.node_type == IRNodeType.Optimize:
-            return self.visit(node.right, **kwargs)
+            content = self.visit(node.right, **kwargs)
         else:
-            return self.visit(node.left, **kwargs) + " & = " + self.visit(node.right, **kwargs)
+            content = self.visit(node.left, **kwargs) + " & = " + self.visit(node.right, **kwargs)
+        self.code_frame.expr += content
+        return content
 
     def visit_expression(self, node, **kwargs):
         value = self.visit(node.value, **kwargs)
@@ -359,6 +362,7 @@ class CodeGenLatex(CodeGen):
         else:
             def_params = '\\left[ ' + params_str + ' \\right]'
         content = self.visit(node.name, **kwargs) + def_params + " & = " + self.visit(node.expr, **kwargs)
+        self.code_frame.expr += content
         if len(node.defs) > 0:
             self.local_func_parsing = True
             par_list = []

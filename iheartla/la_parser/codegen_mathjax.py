@@ -15,6 +15,8 @@ class CodeGenMathjax(CodeGenLatex):
         self.post_str = r'''
 \end{align*}
 '''[1:]
+        self.code_frame.include = self.pre_str
+        self.code_frame.rand_data = self.post_str
 
     def visit_start(self, node, **kwargs):
         content = ""
