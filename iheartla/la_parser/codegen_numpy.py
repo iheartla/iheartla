@@ -9,12 +9,13 @@ class CodeGenNumpy(CodeGen):
 
     def init_type(self, type_walker, func_name):
         super().init_type(type_walker, func_name)
-        self.pre_str = '''"""\n{}\n"""\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\n'''.format(self.la_content)
+        self.pre_str = '''import numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\n'''
         self.pre_str += "from scipy.integrate import quad\n"
         self.pre_str += "from scipy.optimize import minimize\n"
         self.pre_str += "\n\n"
         self.post_str = ''''''
-        self.code_frame.desc = self.pre_str
+        self.code_frame.desc = '''"""\n{}\n"""\n'''.format(self.la_content)
+        self.code_frame.include = self.pre_str
 
     def get_dim_check_str(self):
         check_list = []

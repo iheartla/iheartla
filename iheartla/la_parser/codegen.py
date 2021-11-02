@@ -10,6 +10,7 @@ class CodeFrame(object):
         self.struct = struct        # return structure
         self.rand_data = rand_data  # random data
         self.main = main            # main function
+        self.expr = ''              # expression content in tex
 
     def get_code(self):
         content = ''
