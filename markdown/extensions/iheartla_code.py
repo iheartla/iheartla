@@ -91,16 +91,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
                                                func_name=name_list[cur_index], path=kwargs['path'], struct=True)
                 if lib_header is None:
                     lib_header = code_list[0].include
-                lib_content += code_list[0].struct
+                lib_content += code_list[0].struct + '\n'
                 print("name:{} ".format(name_list[cur_index]))
                 print("code_list:{} ".format(code_list))
-                id_attr = lang_attr = class_attr = kv_pairs = ''
-                code = '<pre{id}{cls}><code{lang}{kv}>{code}</code></pre>'.format(
-                    id=id_attr,
-                    cls=class_attr,
-                    lang=lang_attr,
-                    kv=kv_pairs,
-                    code=self._escape(source_list[cur_index])
+                code = '<pre><mathjax>{code}</mathjax></pre>'.format(
+                    code=code_list[1].get_mathjax_content()
                 )
                 placeholder = self.md.htmlStash.store(code)
                 text = '{}\n{}\n{}'.format(text[:m.start()],

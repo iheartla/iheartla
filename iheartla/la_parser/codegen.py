@@ -26,6 +26,9 @@ class CodeFrame(object):
             content = self.main
         return content
 
+    def get_mathjax_content(self):
+        return self.include + self.expr + self.rand_data
+
 
 class CodeModule(object):
     def __init__(self, frame=None, name='iheartla', syms=[], params=[]):
