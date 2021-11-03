@@ -11,6 +11,7 @@ class CodeFrame(object):
         self.rand_data = rand_data  # random data
         self.main = main            # main function
         self.expr = ''              # expression content in tex
+        self.pre_block = ''
 
     def get_code(self):
         content = ''
@@ -29,6 +30,14 @@ class CodeFrame(object):
     def get_mathjax_content(self):
         return self.include + self.expr + self.rand_data
 
+    def reset(self):
+        self.desc = ''
+        self.include = ''
+        self.struct = ''
+        self.main = ''
+        self.rand_data = ''
+        self.expr = ''
+
 
 class CodeModule(object):
     def __init__(self, frame=None, name='iheartla', syms=[], params=[]):
@@ -42,6 +51,10 @@ class CodeGen(IRPrinter):
     def __init__(self, parse_type=None):
         super().__init__(parse_type=parse_type)
         self.code_frame = CodeFrame(parse_type)
+
+    def init_type(self, type_walker, func_name):
+        self.code_frame.reset()
+        super().init_type(type_walker, func_name)
 
     def visit_code(self, node, **kwargs):
         self.module_list = node.module_list
