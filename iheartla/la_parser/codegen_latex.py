@@ -5,6 +5,9 @@ from .type_walker import *
 class CodeGenLatex(CodeGen):
     def __init__(self, parse_type=ParserTypeEnum.LATEX):
         super().__init__(parse_type)
+
+    def init_type(self, type_walker, func_name):
+        super().init_type(type_walker, func_name)
         self.local_func_parsing = False
         self.uni_convert_dict = {'ᵢ': '\\textsubscript{i}', 'ⱼ': '\\textsubscript{j}', 'ᵣ': '\\textsubscript{r}',
                                  'ᵤ': '\\textsubscript{u}', 'ᵥ': '\\textsubscript{v}', '𝟙': '\\mathbb{ 1 }',
@@ -292,7 +295,7 @@ class CodeGenLatex(CodeGen):
             content = self.visit(node.right, **kwargs)
         else:
             content = self.visit(node.left, **kwargs) + " & = " + self.visit(node.right, **kwargs)
-        self.code_frame.expr += content
+        self.code_frame.expr += content +'\n'
         return content
 
     def visit_expression(self, node, **kwargs):
@@ -362,7 +365,7 @@ class CodeGenLatex(CodeGen):
         else:
             def_params = '\\left[ ' + params_str + ' \\right]'
         content = self.visit(node.name, **kwargs) + def_params + " & = " + self.visit(node.expr, **kwargs)
-        self.code_frame.expr += content + '\n\n'
+        self.code_frame.expr += content + '\n'
         if len(node.defs) > 0:
             self.local_func_parsing = True
             par_list = []
