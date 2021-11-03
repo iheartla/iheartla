@@ -362,7 +362,7 @@ class CodeGenLatex(CodeGen):
         else:
             def_params = '\\left[ ' + params_str + ' \\right]'
         content = self.visit(node.name, **kwargs) + def_params + " & = " + self.visit(node.expr, **kwargs)
-        self.code_frame.expr += content
+        self.code_frame.expr += content + '\n\n'
         if len(node.defs) > 0:
             self.local_func_parsing = True
             par_list = []
