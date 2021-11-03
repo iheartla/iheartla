@@ -23,7 +23,7 @@ if __name__ == '__main__':
         args.paper = ['/Users/pressure/Downloads/lib_paper/test.md']
         for paper_file in args.paper:
             content = read_from_file(paper_file)
-            html = markdown.markdown(content, extensions=['markdown.extensions.iheartla_code', \
+            body = markdown.markdown(content, extensions=['markdown.extensions.iheartla_code', \
                                                           'markdown.extensions.attr_list', \
                                                           'markdown.extensions.fenced_code', \
                                                           'markdown.extensions.abbr', \
@@ -41,5 +41,18 @@ if __name__ == '__main__':
                                                           'markdown.extensions.smarty', \
                                                           'markdown.extensions.toc', \
                                                           'markdown.extensions.wikilinks'], path=os.path.dirname(Path(paper_file)))
-            save_to_file(html, "hhhh.html")
+            html = r"""<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+{}
+</body>
+</html>""".format(body)
+            save_to_file(html, "/Users/pressure/Downloads/lib_paper/hhhh.html")
             print(html)
