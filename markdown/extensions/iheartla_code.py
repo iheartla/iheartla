@@ -94,7 +94,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 lib_content += code_list[0].struct + '\n'
                 print("name:{} ".format(name_list[cur_index]))
                 print("code_list:{} ".format(code_list))
-                code = '<p>$${code}$$</p>'.format(
+                code = '<p>{code}</p>'.format(
                     code=code_list[1].get_mathjax_content()
                 )
                 placeholder = self.md.htmlStash.store(code)

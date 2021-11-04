@@ -282,7 +282,8 @@ class CodeGenMathML(CodeGen):
         <mo>=</mo>
         {}
       </mtd>
-    </mtr>""".format(self.visit(node.left, **kwargs), self.visit(node.right, **kwargs))
+    </mtr>
+""".format(self.visit(node.left, **kwargs), self.visit(node.right, **kwargs))
         return content
 
     def visit_expression(self, node, **kwargs):
@@ -292,10 +293,14 @@ class CodeGenMathML(CodeGen):
         return value
 
     def visit_add(self, node, **kwargs):
-        return self.visit(node.left, **kwargs) + "\n <mo>+</mo> \n" + self.visit(node.right, **kwargs)
+        return r"""{}
+        <mo>+</mo>
+        {}""".format(self.visit(node.left, **kwargs), self.visit(node.right, **kwargs))
 
     def visit_sub(self, node, **kwargs):
-        return self.visit(node.left, **kwargs) + " - " + self.visit(node.right, **kwargs)
+        return r"""{}
+        <mo>-</mo>
+        {}""".format(self.visit(node.left, **kwargs), self.visit(node.right, **kwargs))
 
     def visit_add_sub(self, node, **kwargs):
         return self.visit(node.left, **kwargs) + " {} ".format(node.op) + self.visit(node.right, **kwargs)
