@@ -87,7 +87,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         while 1:
             m = self.FENCED_BLOCK_RE.search(text)
             if m:
-                code_list = compile_la_content(source_list[cur_index], parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MATHJAX,
+                code_list = compile_la_content(source_list[cur_index], parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MATHML,
                                                func_name=name_list[cur_index], path=kwargs['path'], struct=True)
                 if lib_header is None:
                     lib_header = code_list[0].include

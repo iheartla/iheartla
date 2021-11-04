@@ -6,7 +6,7 @@ from sympy import *
 import regex as re
 
 
-DEBUG_MODE = False
+DEBUG_MODE = True
 DEBUG_PARSER = False  # used for new grammer files
 TEST_MATLAB = False   # used for running tests for MATLAB
 class ParserTypeEnum(IntFlag):
@@ -22,6 +22,7 @@ class ParserTypeEnum(IntFlag):
     ARMADILLO = 64
     TENSORFLOW = 128
     MATHJAX = 256
+    MATHML = 512
 
 
 def is_keyword(name, parser_type=ParserTypeEnum.DEFAULT):
