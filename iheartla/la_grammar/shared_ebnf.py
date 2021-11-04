@@ -4,9 +4,8 @@ Directive
     ;
 
 import::Import
-    = FROM  {hspace}+ package:multi_str {hspace} 
+    = names+:multi_str {{hspace} ',' {hspace} names+:multi_str } {hspace} FROM  {hspace}+ package:multi_str {hspace} 
     {'(' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'} {hspace}
-    ':' {hspace} names+:multi_str {{hspace} ',' {hspace} names+:multi_str }
     ;
 
 where_conditions::WhereConditions

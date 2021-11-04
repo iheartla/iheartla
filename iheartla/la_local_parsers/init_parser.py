@@ -3369,75 +3369,74 @@ class grammarinitParser(Parser):
 
     @tatsumasu('Import')
     def _import_(self):  # noqa
-        self._FROM_()
-
-        def block0():
-            self._hspace_()
-        self._positive_closure(block0)
-        self._multi_str_()
-        self.name_last_node('package')
-
-        def block2():
-            self._hspace_()
-        self._closure(block2)
-
-        def block3():
-            self._token('(')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._identifier_alone_()
-                self.add_last_node_to_name('params')
-
-                def block7():
-
-                    def block8():
-                        self._hspace_()
-                    self._closure(block8)
-                    self._params_separator_()
-                    self.add_last_node_to_name('separators')
-
-                    def block10():
-                        self._hspace_()
-                    self._closure(block10)
-                    self._identifier_alone_()
-                    self.add_last_node_to_name('params')
-                self._closure(block7)
-            self._closure(block4)
-
-            def block12():
-                self._hspace_()
-            self._closure(block12)
-            self._token(')')
-        self._closure(block3)
-
-        def block13():
-            self._hspace_()
-        self._closure(block13)
-        self._token(':')
-
-        def block14():
-            self._hspace_()
-        self._closure(block14)
         self._multi_str_()
         self.add_last_node_to_name('names')
 
-        def block16():
+        def block1():
 
-            def block17():
+            def block2():
                 self._hspace_()
-            self._closure(block17)
+            self._closure(block2)
             self._token(',')
+
+            def block3():
+                self._hspace_()
+            self._closure(block3)
+            self._multi_str_()
+            self.add_last_node_to_name('names')
+        self._closure(block1)
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._FROM_()
+
+        def block6():
+            self._hspace_()
+        self._positive_closure(block6)
+        self._multi_str_()
+        self.name_last_node('package')
+
+        def block8():
+            self._hspace_()
+        self._closure(block8)
+
+        def block9():
+            self._token('(')
+
+            def block10():
+
+                def block11():
+                    self._hspace_()
+                self._closure(block11)
+                self._identifier_alone_()
+                self.add_last_node_to_name('params')
+
+                def block13():
+
+                    def block14():
+                        self._hspace_()
+                    self._closure(block14)
+                    self._params_separator_()
+                    self.add_last_node_to_name('separators')
+
+                    def block16():
+                        self._hspace_()
+                    self._closure(block16)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('params')
+                self._closure(block13)
+            self._closure(block10)
 
             def block18():
                 self._hspace_()
             self._closure(block18)
-            self._multi_str_()
-            self.add_last_node_to_name('names')
-        self._closure(block16)
+            self._token(')')
+        self._closure(block9)
+
+        def block19():
+            self._hspace_()
+        self._closure(block19)
         self.ast._define(
             ['package'],
             ['names', 'params', 'separators']
