@@ -105,7 +105,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             else:
                 break
         if lib_header is not None:
-            save_to_file(lib_header + lib_content, "{}/lib.h".format(kwargs['path']))
+            save_to_file("#pragma once\n" + lib_header + lib_content, "{}/lib.h".format(kwargs['path']))
         return text.split("\n")
 
 
