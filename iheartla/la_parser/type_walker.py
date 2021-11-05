@@ -73,6 +73,7 @@ class TypeWalker(NodeWalker):
         self.tmp_symtable = {}
         self.parameters = []
         self.name_cnt_dict = {}
+        self.def_use_mode = True
         self.unofficial_method = False
         self.is_param_block = False  # where or given block
         self.visualizer = LaVisualizer()
@@ -396,27 +397,65 @@ class TypeWalker(NodeWalker):
         self.multi_lhs_list = multi_lhs_list
         if self.pre_walk:
             return ir_node
-        block_node = BlockNode()
-        for index in range(len(stat_list)):
-            update_ret_type = False
-            if index == len(stat_list) - 1:
-                if type(stat_list[index]).__name__ == 'Assignment':
-                    kwargs[SET_RET_SYMBOL] = True
-                else:
-                    # new symbol for return value
-                    self.ret_symbol = "ret"
-                    update_ret_type = True
-                    kwargs[LHS] = self.ret_symbol
-                    self.lhs_list.append(self.ret_symbol)
-            type_info = self.walk(stat_list[index], **kwargs)
-            ir_node.vblock[index_list[index]] = type_info.ir   # latex use
-            block_node.add_stmt(type_info.ir)
-            if update_ret_type:
-                self.symtable[self.ret_symbol] = type_info.la_type
-        ir_node.stat = block_node
+        self.gen_block_node(stat_list, index_list, ir_node, **kwargs)
         # set properties
         self.main_param.parameters = self.parameters
         return ir_node
+
+    def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
+        block_node = BlockNode()
+        if self.def_use_mode:
+            new_list = []
+            order_list = [-1] * len(stat_list)  # visited order for all statment
+            cnt = 0
+            while cnt < len(stat_list):
+                visited_list = [False] * len(stat_list)
+                for cur_index in range(len(stat_list)):
+                    if order_list[cur_index] == -1 and not visited_list[cur_index]:
+                        cur_stat = stat_list[cur_index]
+                        try:
+                            update_ret_type = False
+                            if cur_index == len(stat_list) - 1:
+                                # last statment
+                                if type(cur_stat).__name__ == 'Assignment':
+                                    kwargs[SET_RET_SYMBOL] = True
+                                else:
+                                    # new symbol for return value
+                                    self.ret_symbol = "ret"
+                                    update_ret_type = True
+                                    kwargs[LHS] = self.ret_symbol
+                                    self.lhs_list.append(self.ret_symbol)
+                            type_info = self.walk(cur_stat, **kwargs)
+                            ir_node.vblock[index_list[cur_index]] = type_info.ir  # latex use
+                            new_list.append(type_info.ir)
+                            if update_ret_type:
+                                self.symtable[self.ret_symbol] = type_info.la_type
+                            order_list[cur_index] = cnt
+                            cnt += 1
+                            break
+                        except AssertionError as e:
+                            visited_list[cur_index] = True
+                            continue
+            block_node.stmts = new_list
+        else:
+            # previous version
+            for index in range(len(stat_list)):
+                update_ret_type = False
+                if index == len(stat_list) - 1:
+                    if type(stat_list[index]).__name__ == 'Assignment':
+                        kwargs[SET_RET_SYMBOL] = True
+                    else:
+                        # new symbol for return value
+                        self.ret_symbol = "ret"
+                        update_ret_type = True
+                        kwargs[LHS] = self.ret_symbol
+                        self.lhs_list.append(self.ret_symbol)
+                type_info = self.walk(stat_list[index], **kwargs)
+                ir_node.vblock[index_list[index]] = type_info.ir  # latex use
+                block_node.add_stmt(type_info.ir)
+                if update_ret_type:
+                    self.symtable[self.ret_symbol] = type_info.la_type
+        ir_node.stat = block_node
 
     ###################################################################
     def extract_all_params(self, raw_param_list, **kwargs):
