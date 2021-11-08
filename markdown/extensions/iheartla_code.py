@@ -9,6 +9,19 @@ from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
 from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file
 
 
+class BlockData(Extension):
+    def __init__(self, match_list=[], code_list=[]):
+        self.match_list = match_list
+        self.code_list = code_list
+
+    def add(self, match, code):
+        self.match_list.append(match)
+        self.code_list.append(code)
+
+    def get_content(self):
+        return '\n'.join(self.code_list)
+
+
 class IheartlaCodeExtension(Extension):
     def __init__(self, **kwargs):
         self.config = {
@@ -63,47 +76,40 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     self.use_attr_list = True
 
             self.checked_for_deps = True
-
         text = "\n".join(lines)
-        pre_text = text
-        source_list = []
-        name_list = []
-        match_list = []
-        while 1:
-            m = self.FENCED_BLOCK_RE.search(pre_text)
-            if m:
-                if m.group('attrs') and m.group('code'):
-                    file_name = "{}/{}.ihla".format(kwargs['path'], m.group('attrs'))
-                    save_to_file(m.group('code'), file_name)
-                    source_list.append(m.group('code'))
-                    name_list.append(m.group('attrs'))
-                    match_list.append(m.start())
-                pre_text = '{}\n{}\n{}'.format(text[:m.start()], '', pre_text[m.end():])
-            else:
-                break
-        cur_index = 0
+        file_dict = {}
+        # Find all blocks
+        for m in self.FENCED_BLOCK_RE.finditer(text):
+            module_name = m.group('attrs')
+            if module_name and m.group('code'):
+                if module_name not in file_dict:
+                    file_dict[module_name] = BlockData([m], [m.group('code')])
+                else:
+                    file_dict[module_name].add(m, m.group('code'))
+        # Save to file
+        for name, block_data in file_dict.items():
+            source = '\n'.join(block_data.code_list)
+            file_name = "{}/{}.ihla".format(kwargs['path'], name)
+            save_to_file(source, file_name)
+        # compile
         lib_header = None
         lib_content = ''
-        while 1:
-            m = self.FENCED_BLOCK_RE.search(text)
-            if m:
-                code_list = compile_la_content(source_list[cur_index], parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MATHML,
-                                               func_name=name_list[cur_index], path=kwargs['path'], struct=True)
-                if lib_header is None:
-                    lib_header = code_list[0].include
-                lib_content += code_list[0].struct + '\n'
-                print("name:{} ".format(name_list[cur_index]))
-                print("code_list:{} ".format(code_list))
-                code = '<p>{code}</p>'.format(
-                    code=code_list[1].get_mathjax_content()
-                )
-                placeholder = self.md.htmlStash.store(code)
-                text = '{}\n{}\n{}'.format(text[:m.start()],
-                                           placeholder,
-                                           text[m.end():])
-                cur_index += 1
-            else:
-                break
+        for name, block_data in file_dict.items():
+            code_list = compile_la_content(block_data.get_content(), parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MATHML,
+                                           func_name=name, path=kwargs['path'], struct=True)
+            if lib_header is None:
+                lib_header = code_list[0].include
+            lib_content += code_list[0].struct + '\n'
+            print("name:{} ".format(name))
+            print("code_list:{} ".format(code_list))
+            code = '<p>{code}</p>'.format(
+                code=code_list[1].get_mathjax_content()
+            )
+            print(code)
+            # placeholder = self.md.htmlStash.store(code)
+            # text = '{}\n{}\n{}'.format(text[:m.start()],
+            #                            placeholder,
+            #                            text[m.end():])
         if lib_header is not None:
             save_to_file("#pragma once\n" + lib_header + lib_content, "{}/lib.h".format(kwargs['path']))
         return text.split("\n")
