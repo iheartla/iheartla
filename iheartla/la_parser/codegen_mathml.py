@@ -25,8 +25,8 @@ class CodeGenMathML(CodeGen):
   </mtable>
 </math> 
 '''[1:]
-        self.code_frame.include = self.pre_str
-        self.code_frame.rand_data = self.post_str
+        self.code_frame.pre_str = self.pre_str
+        self.code_frame.post_str = self.post_str
 
     def convert_special_marks(self, name):
         for mark in ['̃', '̂', '̄']:
@@ -273,7 +273,7 @@ class CodeGenMathML(CodeGen):
             content = self.visit(node.right, **kwargs)
         else:
             content = self.visit(node.left, **kwargs) + " & = " + self.visit(node.right, **kwargs)
-        self.code_frame.expr += r"""    <mtr>
+        content = r"""    <mtr>
       <mtd>
         {}
       </mtd>
@@ -284,6 +284,8 @@ class CodeGenMathML(CodeGen):
       </mtd>
     </mtr>
 """.format(self.visit(node.left, **kwargs), self.visit(node.right, **kwargs))
+        self.code_frame.expr += content
+        self.code_frame.expr_dict[node.raw_text] = content
         return content
 
     def visit_expression(self, node, **kwargs):
