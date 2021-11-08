@@ -121,6 +121,18 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 if len(index_dict[cur_index]) == 1:
                     raw_str = index_dict[cur_index][0]
                     text = text.replace(block_data.block_list[cur_index], code_list[1].pre_str+expr_dict[raw_str]+code_list[1].post_str)
+                else:
+                    # more than one expr in a single block
+                    order_list = []
+                    for raw_str in index_dict[cur_index]:
+                        order_list.append(text.index(raw_str))
+                    sorted_index = sorted(range(len(order_list)), key=lambda k: order_list[k])
+                    content = code_list[1].pre_str
+                    for cur in range(len(sorted_index)):
+                        raw_str = index_dict[cur_index][sorted_index[cur]]
+                        content += expr_dict[raw_str] + '\n'
+                    content += code_list[1].post_str
+                    text = text.replace(block_data.block_list[cur_index], content)
         if lib_header is not None:
             save_to_file("#pragma once\n" + lib_header + lib_content, "{}/lib.h".format(kwargs['path']))
         return text.split("\n")
