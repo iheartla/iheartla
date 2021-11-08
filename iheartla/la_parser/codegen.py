@@ -11,6 +11,9 @@ class CodeFrame(object):
         self.rand_data = rand_data  # random data
         self.main = main            # main function
         self.expr = ''              # expression content in tex
+        self.expr_dict = {}         # raw content : MathML code
+        self.pre_str = ''
+        self.post_str = ''
         self.pre_block = ''
 
     def get_code(self):
@@ -28,7 +31,7 @@ class CodeFrame(object):
         return content
 
     def get_mathjax_content(self):
-        return self.include + self.expr + self.rand_data
+        return self.pre_str + self.expr + self.post_str
 
     def reset(self):
         self.desc = ''
@@ -37,6 +40,9 @@ class CodeFrame(object):
         self.main = ''
         self.rand_data = ''
         self.expr = ''
+        self.pre_str = ''
+        self.post_str = ''
+        self.expr_dict.clear()
 
 
 class CodeModule(object):
