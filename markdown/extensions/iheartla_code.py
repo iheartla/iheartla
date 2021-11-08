@@ -10,13 +10,18 @@ from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file
 
 
 class BlockData(Extension):
-    def __init__(self, match_list=[], code_list=[]):
+    def __init__(self, match_list=[], code_list=[], block_list=[]):
         self.match_list = match_list
         self.code_list = code_list
+        self.block_list = block_list
+        self.math_pre = ''
+        self.math_list = []
+        self.math_post = ''
 
-    def add(self, match, code):
+    def add(self, match, code, block):
         self.match_list.append(match)
         self.code_list.append(code)
+        self.block_list.append(block)
 
     def get_content(self):
         return '\n'.join(self.code_list)
@@ -83,9 +88,9 @@ class IheartlaBlockPreprocessor(Preprocessor):
             module_name = m.group('attrs')
             if module_name and m.group('code'):
                 if module_name not in file_dict:
-                    file_dict[module_name] = BlockData([m], [m.group('code')])
+                    file_dict[module_name] = BlockData([m], [m.group('code')], [m.group(0)])
                 else:
-                    file_dict[module_name].add(m, m.group('code'))
+                    file_dict[module_name].add(m, m.group('code'), m.group(0))
         # Save to file
         for name, block_data in file_dict.items():
             source = '\n'.join(block_data.code_list)
@@ -100,16 +105,22 @@ class IheartlaBlockPreprocessor(Preprocessor):
             if lib_header is None:
                 lib_header = code_list[0].include
             lib_content += code_list[0].struct + '\n'
-            print("name:{} ".format(name))
-            print("code_list:{} ".format(code_list))
-            code = '<p>{code}</p>'.format(
-                code=code_list[1].get_mathjax_content()
-            )
-            print(code)
-            # placeholder = self.md.htmlStash.store(code)
-            # text = '{}\n{}\n{}'.format(text[:m.start()],
-            #                            placeholder,
-            #                            text[m.end():])
+            # Find all expr for each original iheartla block
+            index_dict = {}
+            expr_dict = code_list[1].expr_dict
+            for raw_text, math_code in expr_dict.items():
+                for cur_index in range(len(block_data.code_list)):
+                    if raw_text in block_data.code_list[cur_index]:
+                        if cur_index not in index_dict:
+                            index_dict[cur_index] = [raw_text]
+                        else:
+                            index_dict[cur_index].append(raw_text)
+                        break
+            # Replace math code
+            for cur_index in range(len(block_data.code_list)):
+                if len(index_dict[cur_index]) == 1:
+                    raw_str = index_dict[cur_index][0]
+                    text = text.replace(block_data.block_list[cur_index], code_list[1].pre_str+expr_dict[raw_str]+code_list[1].post_str)
         if lib_header is not None:
             save_to_file("#pragma once\n" + lib_header + lib_content, "{}/lib.h".format(kwargs['path']))
         return text.split("\n")
