@@ -411,7 +411,8 @@ def compile_la_content(la_content,
                        parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX | ParserTypeEnum.MATHJAX | ParserTypeEnum.MATLAB,
                        func_name=None,
                        path=None,
-                       struct=False):
+                       struct=False,
+                       get_json=False):
     if path:
         global _module_path
         _module_path = Path(path)
@@ -419,11 +420,14 @@ def compile_la_content(la_content,
     try:
         model = parser.parse(la_content, parseinfo=True)
         ret = []
+        json = ''
         for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,  ParserTypeEnum.MATHML, ParserTypeEnum.MATLAB]:
             if parser_type & cur_type:
                 type_walker, start_node = parse_ir_node(la_content, model, cur_type)
                 cur_content = walk_model(cur_type, type_walker, start_node, func_name, struct)
                 ret.append(cur_content)
+                if get_json and json == '':
+                    json = type_walker.gen_json_content()
     except FailedParse as e:
         ret = LaMsg.getInstance().get_parse_error(e)
     except FailedCut as e:
@@ -435,7 +439,10 @@ def compile_la_content(la_content,
     except:
         ret = str(sys.exc_info()[0])
     finally:
-        return ret
+        if get_json:
+            return ret, json
+        else:
+            return ret
 
 
 def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX):

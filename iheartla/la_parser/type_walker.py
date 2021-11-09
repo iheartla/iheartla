@@ -131,6 +131,17 @@ class TypeWalker(NodeWalker):
             new_symbol = symbol
         return new_symbol
 
+    def gen_json_content(self):
+        content = ''
+        param_list = []
+        for param in self.parameters:
+            param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(param, self.symtable[param].get_json_content()))
+        def_list = []
+        for lhs in self.lhs_list:
+            def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(lhs, self.symtable[lhs].get_json_content()))
+        content = '''"parameters":[{}], "definition":[{}]'''.format(','.join(param_list), ','.join(def_list))
+        return content
+
     def is_inside_sum(self):
         return len(self.sum_subs) > 0
 

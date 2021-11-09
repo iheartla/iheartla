@@ -99,9 +99,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
         # compile
         lib_header = None
         lib_content = ''
+        json_list = []
         for name, block_data in file_dict.items():
-            code_list = compile_la_content(block_data.get_content(), parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MATHML,
-                                           func_name=name, path=kwargs['path'], struct=True)
+            code_list, json = compile_la_content(block_data.get_content(), parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MATHML,
+                                           func_name=name, path=kwargs['path'], struct=True, get_json=True)
+            json_list.append('''{{"name":"{}", {} }}'''.format(name, json))
             if lib_header is None:
                 lib_header = code_list[0].include
             lib_content += code_list[0].struct + '\n'
@@ -133,8 +135,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
                         content += expr_dict[raw_str] + '\n'
                     content += code_list[1].post_str
                     text = text.replace(block_data.block_list[cur_index], content)
+        json_content = '''{{"equations":[{}] }}'''.format(','.join(json_list))
         if lib_header is not None:
             save_to_file("#pragma once\n" + lib_header + lib_content, "{}/lib.h".format(kwargs['path']))
+        if json_content is not None:
+            save_to_file(json_content, "{}/data.json".format(kwargs['path']))
         return text.split("\n")
 
 
