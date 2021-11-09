@@ -139,6 +139,9 @@ class LaVarType(object):
     def get_signature(self):
         return ''
 
+    def get_json_content(self):
+        return ''
+
 
 class ScalarType(LaVarType):
     def __init__(self, is_int=False, desc=None, element_type=None, symbol=None, index_type=False, is_constant=False, dynamic=DynamicTypeEnum.DYN_INVALID):
@@ -154,6 +157,9 @@ class ScalarType(LaVarType):
     def is_integer_element(self):
         return self.is_int
 
+    def get_json_content(self):
+        return """{"type": "scalar"}"""
+
 
 class SequenceType(LaVarType):
     def __init__(self, size=0, desc=None, element_type=None, symbol=None, dynamic=False):
@@ -168,6 +174,9 @@ class SequenceType(LaVarType):
 
     def is_dynamic(self):
         return self.element_type.is_dynamic()
+
+    def get_json_content(self):
+        return """{{"type": "sequence", "element":{}, "size":{}}}""".format(self.element_type.get_json_content(), self.size)
 
 
 class MatrixType(LaVarType):
@@ -199,6 +208,9 @@ class MatrixType(LaVarType):
     def is_integer_element(self):
         return self.element_type.is_integer_element()
 
+    def get_json_content(self):
+        return """{{"type": "matrix", "element":{}, "rows":{}, "cols":{}}}""".format(self.element_type.get_json_content(), self.rows, self.cols)
+
 
 class VectorType(LaVarType):
     def __init__(self, rows=0, desc=None, element_type=ScalarType(), symbol=None, dynamic=DynamicTypeEnum.DYN_INVALID, rows_ir=None):
@@ -216,6 +228,9 @@ class VectorType(LaVarType):
     def is_integer_element(self):
         return self.element_type.is_integer_element()
 
+    def get_json_content(self):
+        return """{{"type": "vector", "element":{}, "rows":{}}}""".format(self.element_type.get_json_content(), self.rows)
+
 
 class SetType(LaVarType):
     def __init__(self, size=0, desc=None, element_type=None, symbol=None, int_list=None, dynamic=DynamicTypeEnum.DYN_INVALID):
@@ -231,6 +246,9 @@ class SetType(LaVarType):
             if not value:
                 return False
         return True
+
+    def get_json_content(self):
+        return """{{"type": "set", "element":[{}], "size":{}}}""".format(','.join(self.int_list), self.size)
 
 
 class IndexType(LaVarType):
