@@ -10,7 +10,8 @@ from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file
 
 
 class BlockData(Extension):
-    def __init__(self, match_list=[], code_list=[], block_list=[]):
+    def __init__(self, match_list=[], code_list=[], block_list=[], module_name=''):
+        self.module_name = module_name
         self.match_list = match_list
         self.code_list = code_list
         self.block_list = block_list
@@ -88,7 +89,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             module_name = m.group('attrs')
             if module_name and m.group('code'):
                 if module_name not in file_dict:
-                    file_dict[module_name] = BlockData([m], [m.group('code')], [m.group(0)])
+                    file_dict[module_name] = BlockData([m], [m.group('code')], [m.group(0)], module_name)
                 else:
                     file_dict[module_name].add(m, m.group('code'), m.group(0))
         # Save to file
@@ -122,19 +123,22 @@ class IheartlaBlockPreprocessor(Preprocessor):
             for cur_index in range(len(block_data.code_list)):
                 if len(index_dict[cur_index]) == 1:
                     raw_str = index_dict[cur_index][0]
-                    text = text.replace(block_data.block_list[cur_index], code_list[1].pre_str+expr_dict[raw_str]+code_list[1].post_str)
+                    content = expr_dict[raw_str]
                 else:
                     # more than one expr in a single block
                     order_list = []
                     for raw_str in index_dict[cur_index]:
                         order_list.append(text.index(raw_str))
                     sorted_index = sorted(range(len(order_list)), key=lambda k: order_list[k])
-                    content = code_list[1].pre_str
+                    content = ''
                     for cur in range(len(sorted_index)):
                         raw_str = index_dict[cur_index][sorted_index[cur]]
                         content += expr_dict[raw_str] + '\n'
-                    content += code_list[1].post_str
-                    text = text.replace(block_data.block_list[cur_index], content)
+                content = r"""
+<div class='equation' code_block="{}">
+{}{}{}</div>
+""".format(block_data.module_name, code_list[1].pre_str, content, code_list[1].post_str)
+                text = text.replace(block_data.block_list[cur_index], content)
         json_content = '''{{"equations":[{}] }}'''.format(','.join(json_list))
         if lib_header is not None:
             save_to_file("#pragma once\n" + lib_header + lib_content, "{}/lib.h".format(kwargs['path']))
