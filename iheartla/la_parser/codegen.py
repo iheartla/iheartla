@@ -28,6 +28,8 @@ class CodeFrame(object):
             content = self.main
         elif self.parse_type == ParserTypeEnum.MATHJAX:
             content = self.main
+        elif self.parse_type == ParserTypeEnum.MATHML:
+            content = self.main
         return content
 
     def get_mathjax_content(self):
