@@ -11,6 +11,7 @@ class MidPanelEnum(Enum):
     CPP = 2
     MATHJAX = 3
     MATLAB = 4
+    MATHML = 5
 
 
 class MidPanel(wx.Panel):
@@ -20,12 +21,14 @@ class MidPanel(wx.Panel):
         self.cpp_ctrl = CppTextControl(self)
         self.jax_ctrl = LatexControl(self)
         self.mat_ctrl = MatlabTextControl(self)
+        self.mathml_ctrl = LatexControl(self)
         self.cur_type = MidPanelEnum.PYTHON
         self.panel_dict = {
             MidPanelEnum.PYTHON: self.py_ctrl,
             MidPanelEnum.CPP: self.cpp_ctrl,
             MidPanelEnum.MATHJAX: self.jax_ctrl,
             MidPanelEnum.MATLAB: self.mat_ctrl,
+            MidPanelEnum.MATHML: self.mathml_ctrl,
         }
         self.Bind(wx.EVT_SIZE, self.OnSize)
         self.Layout()
@@ -48,6 +51,7 @@ class MidPanel(wx.Panel):
         self.cpp_ctrl.Hide()
         self.jax_ctrl.Hide()
         self.mat_ctrl.Hide()
+        self.mathml_ctrl.Hide()
         if self.cur_type == MidPanelEnum.PYTHON:
             self.py_ctrl.Show()
         elif self.cur_type == MidPanelEnum.CPP:
@@ -56,6 +60,8 @@ class MidPanel(wx.Panel):
             self.jax_ctrl.Show()
         elif self.cur_type == MidPanelEnum.MATLAB:
             self.mat_ctrl.Show()
+        elif self.cur_type == MidPanelEnum.MATHML:
+            self.mathml_ctrl.Show()
 
     def OnSize(self, e):
         self.py_ctrl.SetPosition((0, 0))
@@ -66,3 +72,5 @@ class MidPanel(wx.Panel):
         self.jax_ctrl.SetSize((self.GetSize().width, self.GetSize().height))
         self.mat_ctrl.SetPosition((0, 0))
         self.mat_ctrl.SetSize((self.GetSize().width, self.GetSize().height))
+        self.mathml_ctrl.SetPosition((0, 0))
+        self.mathml_ctrl.SetSize((self.GetSize().width, self.GetSize().height))
