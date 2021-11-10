@@ -329,10 +329,17 @@ class CodeGenMathML(CodeGen):
 
     def visit_summation(self, node, **kwargs):
         if node.cond:
-            sub = '{' + self.visit(node.cond, **kwargs) + '}'
+            sub = self.visit(node.cond, **kwargs)
         else:
             sub = self.visit(node.id)
-        return "\\sum_" + sub + " " + self.visit(node.exp, **kwargs)
+        # return "\\sum_" + sub + " " + self.visit(node.exp, **kwargs)
+        return r'''<munder>
+          <mo data-mjx-texclass="OP">&#x2211;</mo>
+          <mrow data-mjx-texclass="ORD">
+            {}
+          </mrow>
+        </munder>
+'''.format(sub) + self.visit(node.exp, **kwargs)
 
     def visit_function(self, node, **kwargs):
         params = []
@@ -488,6 +495,16 @@ class CodeGenMathML(CodeGen):
                     content = "{}_{{ {}, {} }}".format(main_info, main_index_info, row_info)
             else:
                 content = "{}_{{ {} }}".format(main_info, main_index_info)
+                content = r'''<msub>
+          <mrow data-mjx-texclass="ORD">
+            {}
+          </mrow>
+          <mrow data-mjx-texclass="ORD">
+            <mrow data-mjx-texclass="ORD">
+              {}
+            </mrow>
+          </mrow>
+        </msub>'''.format(main_info, main_index_info)
         return content
 
     def visit_seq_dim_index(self, node, **kwargs):
