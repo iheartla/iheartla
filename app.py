@@ -41,6 +41,7 @@ if __name__ == '__main__':
                                                           'markdown.extensions.smarty', \
                                                           'markdown.extensions.toc', \
                                                           'markdown.extensions.wikilinks'], path=os.path.dirname(Path(paper_file)))
+            json = read_from_file("{}/data.json".format(os.path.dirname(Path(paper_file))))
             html = r"""<html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -50,9 +51,12 @@ if __name__ == '__main__':
     <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
+<script>
+const iheartla_data = JSON.parse('{}');
+</script>
 <body>
 {}
 </body>
-</html>""".format(body)
+</html>""".format(json, body)
             save_to_file(html, "/Users/pressure/Downloads/lib_paper/paper.html")
             print(html)
