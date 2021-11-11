@@ -47,9 +47,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         dedent(r'''
             (?P<fence>^(?:~{3,}|`{3,}))[ ]*                          # opening fence
             iheartla
-            ((\((?P<attrs>[^\}\n]*)\))|                              # (optional {attrs} or
-            (\.?(?P<lang>[\w#.+-]*)[ ]*)?                            # optional (.)lang
-            (hl_lines=(?P<quot>"|')(?P<hl_lines>.*?)(?P=quot)[ ]*)?) # optional hl_lines)
+            (\((?P<module>[^\}\n]*)\))                               # required {module} 
             \n                                                       # newline (end of opening fence)
             (?P<code>.*?)(?<=\n)                                     # the code block
             (?P=fence)[ ]*$                                          # closing fence
@@ -86,7 +84,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         file_dict = {}
         # Find all blocks
         for m in self.FENCED_BLOCK_RE.finditer(text):
-            module_name = m.group('attrs')
+            module_name = m.group('module')
             if module_name and m.group('code'):
                 if module_name not in file_dict:
                     file_dict[module_name] = BlockData([m], [m.group('code')], [m.group(0)], module_name)
