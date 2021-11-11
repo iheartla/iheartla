@@ -88,6 +88,12 @@ function onClickSymbol(symbol, func_name) {
       }
     }
   }
+};
+function onClickEq(func_name, sym_list) { 
+  content = "This equation has " + sym_list.length + " symbols";
+  for(var sym in sym_list){
+  }
+  alert(content);
 };"""
             html = r"""<html lang="en">
 <head>

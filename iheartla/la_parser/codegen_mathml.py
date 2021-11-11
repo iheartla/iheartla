@@ -18,7 +18,7 @@ class CodeGenMathML(CodeGen):
                                  '𝐮': '\\textbf{u}', '𝐯': '\\textbf{v}', '𝐰': '\\textbf{w}', '𝐱': '\\textbf{x}', '𝐲': '\\textbf{y}',
                                  '𝐳': '\\textbf{z}', '⩽': '\\leq', '⩾': '\\geq'}
         self.pre_str = r'''
-<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" onclick="alert('You clicked an equation');">
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" onclick="alert('You clicked an block');">
   <mtable displaystyle="true" columnalign="right left" columnspacing="0em" rowspacing="3pt">
 '''[1:]
         self.post_str = r'''
@@ -268,12 +268,16 @@ class CodeGenMathML(CodeGen):
         return params_str + '\\rightarrow ' + ret
 
     def visit_assignment(self, node, **kwargs):
+        sym_list = ''
+        for sym in node.symbols:
+            sym_list += "'{}'".format(sym) + ','
+        sym_list += "'{}'".format(node.left.get_main_id())
         content = ''
         if node.right.node_type == IRNodeType.Optimize:
             content = self.visit(node.right, **kwargs)
         else:
             content = self.visit(node.left, **kwargs) + " & = " + self.visit(node.right, **kwargs)
-        content = r"""    <mtr>
+        content = r"""    <mtr onclick="event.stopPropagation(); onClickEq('{}', [{}]);">
       <mtd>
         {}
       </mtd>
@@ -283,7 +287,7 @@ class CodeGenMathML(CodeGen):
         {}
       </mtd>
     </mtr>
-""".format(self.visit(node.left, **kwargs), self.visit(node.right, **kwargs))
+""".format(self.func_name, sym_list, node.left.get_main_id(), self.visit(node.right, **kwargs))
         self.code_frame.expr += content
         self.code_frame.expr_dict[node.raw_text] = content
         return content
