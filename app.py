@@ -59,8 +59,8 @@ if __name__ == '__main__':
 
   return content;
 };
-function onClickSymbol(symbol, func_name) {
-  console.log("clicked: " + symbol + " in " + func_name);
+function getSymInfo(symbol, func_name){
+  content = '';
   var found = false;
   for(var eq in iheartla_data.equations){
     if(iheartla_data.equations[eq].name == func_name){
@@ -68,7 +68,7 @@ function onClickSymbol(symbol, func_name) {
         if (iheartla_data.equations[eq].parameters[param].sym == symbol){
           type_info = iheartla_data.equations[eq].parameters[param].type_info;
           found = true;
-          alert(symbol + " is a parameter as a " + getSymTypeInfo(type_info));
+          content = symbol + " is a parameter as a " + getSymTypeInfo(type_info);
           break;
         }
       }
@@ -79,7 +79,7 @@ function onClickSymbol(symbol, func_name) {
         if (iheartla_data.equations[eq].definition[param].sym == symbol){
           type_info = iheartla_data.equations[eq].definition[param].type_info;
           found = true;
-          alert(symbol + " is defined as a " + getSymTypeInfo(type_info));
+          content = symbol + " is defined as a " + getSymTypeInfo(type_info);
           break;
         }
       }
@@ -88,10 +88,16 @@ function onClickSymbol(symbol, func_name) {
       }
     }
   }
+  return content;
+}
+function onClickSymbol(symbol, func_name) {
+  console.log("clicked: " + symbol + " in " + func_name);
+  alert(getSymInfo(symbol, func_name));
 };
 function onClickEq(func_name, sym_list) { 
-  content = "This equation has " + sym_list.length + " symbols";
+  content = "This equation has " + sym_list.length + " symbols\n";
   for(var sym in sym_list){
+    content += getSymInfo(sym_list[sym], func_name) + '\n';
   }
   alert(content);
 };"""

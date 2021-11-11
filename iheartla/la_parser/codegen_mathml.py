@@ -287,7 +287,7 @@ class CodeGenMathML(CodeGen):
         {}
       </mtd>
     </mtr>
-""".format(self.func_name, sym_list, node.left.get_main_id(), self.visit(node.right, **kwargs))
+""".format(self.func_name, sym_list, self.visit(node.left, **kwargs), self.visit(node.right, **kwargs))
         self.code_frame.expr += content
         self.code_frame.expr_dict[node.raw_text] = content
         return content
