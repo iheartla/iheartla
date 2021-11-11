@@ -42,6 +42,53 @@ if __name__ == '__main__':
                                                           'markdown.extensions.toc', \
                                                           'markdown.extensions.wikilinks'], path=os.path.dirname(Path(paper_file)))
             json = read_from_file("{}/data.json".format(os.path.dirname(Path(paper_file))))
+            script = r"""function getSymTypeInfo(type_info){
+  if(type_info.type == 'matrix'){
+    content = "matrix, rows: " + type_info.rows + ", cols: " + type_info.cols;
+  }
+  else if(type_info.type == 'vector'){
+    content = "vector, rows: " + type_info.rows;
+  }
+  else if(type_info.type == 'scalar'){
+    content = "scalar";
+  }
+  else{
+    content = "invalid type";
+  }
+  console.log("type_info.type: " + type_info.type);
+
+  return content;
+};
+function onClickSymbol(symbol, func_name) {
+  console.log("clicked: " + symbol + " in " + func_name);
+  var found = false;
+  for(var eq in iheartla_data.equations){
+    if(iheartla_data.equations[eq].name == func_name){
+      for(var param in iheartla_data.equations[eq].parameters){
+        if (iheartla_data.equations[eq].parameters[param].sym == symbol){
+          type_info = iheartla_data.equations[eq].parameters[param].type_info;
+          found = true;
+          alert(symbol + " is a parameter as a " + getSymTypeInfo(type_info));
+          break;
+        }
+      }
+      if(found){
+        break;
+      }
+      for(var param in iheartla_data.equations[eq].definition){
+        if (iheartla_data.equations[eq].definition[param].sym == symbol){
+          type_info = iheartla_data.equations[eq].definition[param].type_info;
+          found = true;
+          alert(symbol + " is defined as a " + getSymTypeInfo(type_info));
+          break;
+        }
+      }
+      if(found){
+        break;
+      }
+    }
+  }
+};"""
             html = r"""<html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -52,11 +99,12 @@ if __name__ == '__main__':
     <link rel="stylesheet" href="css/style.css">
 </head>
 <script>
-const iheartla_data = JSON.parse('{}');
+const iheartla_data = JSON.parse('{json}');
+{script}
 </script>
 <body>
-{}
+{body}
 </body>
-</html>""".format(json, body)
+</html>""".format(json=json, script=script, body=body)
             save_to_file(html, "/Users/pressure/Downloads/lib_paper/paper.html")
             print(html)
