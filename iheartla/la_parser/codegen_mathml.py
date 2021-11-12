@@ -52,7 +52,7 @@ class CodeGenMathML(CodeGen):
             for subs in node.subs:
                 subs_list.append(self.convert_unicode(subs))
             return self.convert_unicode(node.main_id) + '_{' + ','.join(subs_list) + '}'
-        return r"""<mi data-mjx-variant="-tex-mathit" mathvariant="italic" onclick="event.stopPropagation(); onClickSymbol('{}','{}')" id='{}'>{}</mi>"""\
+        return r"""<mi data-mjx-variant="-tex-mathit" mathvariant="italic" onclick="event.stopPropagation(); onClickSymbol('{}','{}')" sym='{}'>{}</mi>"""\
             .format(self.convert_unicode(node.get_name()), self.func_name, self.convert_unicode(node.get_name()), self.convert_unicode(node.get_name()))
         # return self.convert_unicode(node.get_name())
 
