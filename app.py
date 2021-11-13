@@ -93,10 +93,10 @@ function getSymInfo(symbol, func_name){
 function onClickSymbol(symbol, func_name) {
   console.log("clicked: " + symbol + " in " + func_name);
   // alert(getSymInfo(symbol, func_name));
-  const matches = document.querySelectorAll("mi[sym='C']");
+  const matches = document.querySelectorAll("mjx-mi[sym='" + symbol + "']");
   for (var i = matches.length - 1; i >= 0; i--) {
      console.log(matches[i]);
-     matches[i].setAttribute('color', 'blue');
+     matches[i].setAttribute('class', 'highlight');
   }
   console.log(matches);
 };
@@ -107,6 +107,25 @@ function onClickEq(func_name, sym_list) {
   }
   alert(content);
 };"""
+            style=r"""
+<style>
+body
+{
+  position:static !important;
+  font-size: 12pt;
+  padding-left:  10px;
+  padding-right: 10px;
+  width: 785px;
+  min-height: none;
+  min-height: 0%;
+  border-radius: 8px;
+  margin: auto;
+}
+.highlight {
+ color: red; 
+}
+</style>
+"""
             html = r"""<html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -115,6 +134,7 @@ function onClickEq(func_name, sym_list) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
+{style}
 <script>
 const iheartla_data = JSON.parse('{json}');
 {script}
@@ -122,6 +142,6 @@ const iheartla_data = JSON.parse('{json}');
 <body>
 {body}
 </body>
-</html>""".format(json=json, script=script, body=body)
+</html>""".format(style=style, json=json, script=script, body=body)
             save_to_file(html, "/Users/pressure/Downloads/lib_paper/paper.html")
             print(html)
