@@ -18,7 +18,7 @@ class CodeGenMathML(CodeGen):
                                  '𝐮': '\\textbf{u}', '𝐯': '\\textbf{v}', '𝐰': '\\textbf{w}', '𝐱': '\\textbf{x}', '𝐲': '\\textbf{y}',
                                  '𝐳': '\\textbf{z}', '⩽': '\\leq', '⩾': '\\geq'}
         self.pre_str = r'''
-<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" onclick="alert('You clicked an block');">
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block" onmouseover="alert('You clicked an block');">
   <mtable displaystyle="true" columnalign="right left" columnspacing="0em" rowspacing="3pt">
 '''[1:]
         self.post_str = r'''
@@ -52,7 +52,7 @@ class CodeGenMathML(CodeGen):
             for subs in node.subs:
                 subs_list.append(self.convert_unicode(subs))
             return self.convert_unicode(node.main_id) + '_{' + ','.join(subs_list) + '}'
-        return r"""<mi data-mjx-variant="-tex-mathit" mathvariant="italic" onclick="event.stopPropagation(); onClickSymbol('{}','{}')" sym='{}'>{}</mi>"""\
+        return r"""<mi data-mjx-variant="-tex-mathit" mathvariant="italic" onmouseover="event.stopPropagation(); onClickSymbol(this, '{}','{}')" sym='{}'>{}</mi>"""\
             .format(self.convert_unicode(node.get_name()), self.func_name, self.convert_unicode(node.get_name()), self.convert_unicode(node.get_name()))
         # return self.convert_unicode(node.get_name())
 
@@ -277,7 +277,7 @@ class CodeGenMathML(CodeGen):
             content = self.visit(node.right, **kwargs)
         else:
             content = self.visit(node.left, **kwargs) + " & = " + self.visit(node.right, **kwargs)
-        content = r"""    <mtr onclick="event.stopPropagation(); onClickEq('{}', [{}]);">
+        content = r"""    <mtr onmouseover="event.stopPropagation(); onClickEq(this, '{}', [{}]);">
       <mtd>
         {}
       </mtd>

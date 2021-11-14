@@ -90,7 +90,15 @@ function getSymInfo(symbol, func_name){
   }
   return content;
 }
-function onClickSymbol(symbol, func_name) {
+function onClickSymbol(tag, symbol, func_name) {
+if (typeof tag._tippy === 'undefined'){
+    tippy(tag, {
+        content: getSymInfo(symbol, func_name),
+        placement: 'bottom',
+        animation: 'fade',
+        showOnCreate: true,
+      });
+  }
   console.log("clicked: " + symbol + " in " + func_name);
   // alert(getSymInfo(symbol, func_name));
   const matches = document.querySelectorAll("mjx-mi[sym='" + symbol + "']");
@@ -100,7 +108,7 @@ function onClickSymbol(symbol, func_name) {
   }
   console.log(matches);
 };
-function onClickEq(func_name, sym_list) { 
+function onClickEq(tag, func_name, sym_list) { 
   content = "This equation has " + sym_list.length + " symbols\n";
   for(var sym in sym_list){
     content += getSymInfo(sym_list[sym], func_name) + '\n';
