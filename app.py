@@ -96,13 +96,15 @@ function onClickSymbol(tag, symbol, func_name) {
         content: getSymInfo(symbol, func_name),
         placement: 'bottom',
         animation: 'fade',
+        trigger: 'click', 
+        showOnCreate: true,
         onShow(instance) { 
           tag.setAttribute('class', 'highlight');
           console.log('onShow');
           return true;  
         },
         onHide(instance) {
-          tag.setAttribute('class', 'normal');
+          tag.removeAttribute('class');
           console.log('onHide');
           return true;  
         },
@@ -120,14 +122,15 @@ function onClickEq(tag, func_name, sym_list) {
         content: content,
         placement: 'bottom',
         animation: 'fade',
-        // showOnCreate: true,
+        trigger: 'click', 
+        showOnCreate: true,
         onShow(instance) { 
           tag.setAttribute('class', 'highlight');
           console.log('onShow');
           return true;  
         },
         onHide(instance) {
-          tag.setAttribute('class', 'normal');
+          tag.removeAttribute('class');
           console.log('onHide');
           return true;  
         },
