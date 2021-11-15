@@ -6,6 +6,7 @@ import argparse
 import markdown
 import os.path
 from pathlib import Path
+import shutil
 
 
 if __name__ == '__main__':
@@ -42,6 +43,10 @@ if __name__ == '__main__':
                                                           'markdown.extensions.toc', \
                                                           'markdown.extensions.wikilinks'], path=os.path.dirname(Path(paper_file)))
             json = read_from_file("{}/data.json".format(os.path.dirname(Path(paper_file))))
+            dst = "{}/resource".format(os.path.dirname(Path(paper_file)))
+            if os.path.exists(dst):
+                shutil.rmtree(dst)
+            shutil.copytree("./extras/resource", dst)
             script = r"""function getSymTypeInfo(type_info){
   if(type_info.type == 'matrix'){
     content = "matrix, rows: " + type_info.rows + ", cols: " + type_info.cols;
@@ -147,6 +152,9 @@ function closeOtherTips(){
       matches[i]._tippy.hide();
     }
   }
+};
+function onClickGlossary(){
+  alert('You clicked the glossary');
 };"""
             style=r"""
 <style>
@@ -187,6 +195,7 @@ const iheartla_data = JSON.parse('{json}');
 {script}
 </script>
 <body>
+<img src="./resource/glossary.png" id="glossary" alt="glossary" width="22" height="28" onclick="onClickGlossary()">
 {body}
 </body>
 </html>""".format(style=style, json=json, script=script, body=body)
