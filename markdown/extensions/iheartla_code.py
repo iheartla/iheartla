@@ -100,9 +100,10 @@ class IheartlaBlockPreprocessor(Preprocessor):
         lib_content = ''
         json_list = []
         for name, block_data in file_dict.items():
-            code_list, json = compile_la_content(block_data.get_content(), parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MATHML,
+            code_list, equation_data = compile_la_content(block_data.get_content(), parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MATHML,
                                            func_name=name, path=kwargs['path'], struct=True, get_json=True)
-            json_list.append('''{{"name":"{}", {} }}'''.format(name, json))
+            equation_data.name = name
+            json_list.append('''{{"name":"{}", {} }}'''.format(name, equation_data.gen_json_content()))
             if lib_header is None:
                 lib_header = code_list[0].include
             lib_content += code_list[0].struct + '\n'
