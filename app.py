@@ -91,6 +91,7 @@ function getSymInfo(symbol, func_name){
   return content;
 }
 function onClickSymbol(tag, symbol, func_name) {
+  closeOtherTips();
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
         content: getSymInfo(symbol, func_name),
@@ -113,6 +114,7 @@ function onClickSymbol(tag, symbol, func_name) {
   console.log("clicked: " + symbol + " in " + func_name); 
 };
 function onClickEq(tag, func_name, sym_list) { 
+  closeOtherTips();
   content = "This equation has " + sym_list.length + " symbols\n";
   for(var sym in sym_list){
     content += getSymInfo(sym_list[sym], func_name) + '\n';
@@ -135,6 +137,15 @@ function onClickEq(tag, func_name, sym_list) {
           return true;  
         },
       });
+  }
+};
+function closeOtherTips(){
+  const matches = document.querySelectorAll(".highlight");
+  for (var i = matches.length - 1; i >= 0; i--) {
+    matches[i].removeAttribute('class');
+    if (typeof matches[i]._tippy !== 'undefined'){
+      matches[i]._tippy.hide();
+    }
   }
 };"""
             style=r"""
