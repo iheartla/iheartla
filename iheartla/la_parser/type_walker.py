@@ -32,6 +32,36 @@ class WalkTypeEnum(Enum):
     RETRIEVE_EXPRESSION = 0   # default
     RETRIEVE_VAR = 1
 
+class DependenceData(object):
+    def __init__(self, module='', initialized_list=[], name_list=[]):
+        self.module = module
+        self.name_list = name_list
+        self.initialized_list = initialized_list
+
+
+class EquationData(object):
+    def __init__(self, name='', parameters=[], definition=[], dependence=[], symtable={}, desc_dict={}):
+        self.name = name
+        self.parameters = parameters
+        self.definition = definition
+        self.dependence = dependence
+        self.symtable = symtable
+        self.desc_dict = desc_dict
+
+    def gen_json_content(self):
+        content = ''
+        param_list = []
+        for param in self.parameters:
+            if param in self.desc_dict:
+                param_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(param, self.symtable[param].get_json_content(), self.desc_dict[param]))
+            else:
+                param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(param, self.symtable[param].get_json_content()))
+        def_list = []
+        for lhs in self.definition:
+            def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(lhs, self.symtable[lhs].get_json_content()))
+        content = '''"parameters":[{}], "definition":[{}]'''.format(','.join(param_list), ','.join(def_list))
+        return content
+
 
 WALK_TYPE = "walk_type"
 LHS = "left_hand_side"
@@ -112,6 +142,7 @@ class TypeWalker(NodeWalker):
         self.func_data_dict = {}   # local function name -> LocalFuncData
         #
         self.desc_dict = {}        # comment for parameters
+        self.import_module_list = []
         self.main_param = ParamsData()
 
     def get_cur_param_data(self):
@@ -133,18 +164,7 @@ class TypeWalker(NodeWalker):
         return new_symbol
 
     def gen_json_content(self):
-        content = ''
-        param_list = []
-        for param in self.parameters:
-            if param in self.desc_dict:
-                param_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(param, self.symtable[param].get_json_content(), self.desc_dict[param]))
-            else:
-                param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(param, self.symtable[param].get_json_content()))
-        def_list = []
-        for lhs in self.lhs_list:
-            def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(lhs, self.symtable[lhs].get_json_content()))
-        content = '''"parameters":[{}], "definition":[{}]'''.format(','.join(param_list), ','.join(def_list))
-        return content
+        return EquationData('', copy.deepcopy(self.parameters), copy.deepcopy(self.lhs_list), copy.deepcopy(self.import_module_list),  copy.deepcopy(self.symtable),  copy.deepcopy(self.desc_dict))
 
     def is_inside_sum(self):
         return len(self.sum_subs) > 0
@@ -178,6 +198,7 @@ class TypeWalker(NodeWalker):
         self.local_func_dict.clear()
         self.func_data_dict.clear()
         self.desc_dict.clear()
+        self.import_module_list.clear()
 
     def get_func_symbols(self):
         ret = {}
@@ -873,11 +894,13 @@ class TypeWalker(NodeWalker):
     ###################################################################
     def walk_Import(self, node, **kwargs):
         params = []
+        params_list = []
         module = None
         package = None
         for par in node.params:
             par_info = self.walk(par, **kwargs)
             params.append(par_info.ir)
+            params_list.append(par_info.ir.get_name())
         package_info = self.walk(node.package, **kwargs)
         name_list = []
         name_ir_list = []
@@ -894,6 +917,7 @@ class TypeWalker(NodeWalker):
                                                            "Function {} not exist".format(name))
         else:
             module = package_info.ir
+            self.import_module_list.append(DependenceData(module, params_list, name_list))
         import_node = ImportNode(package=package, module=module, names=name_ir_list, separators=node.separators,
                                      params=params, parse_info=node.parseinfo)
         return import_node
