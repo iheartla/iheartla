@@ -73,7 +73,13 @@ function getSymInfo(symbol, func_name){
         if (iheartla_data.equations[eq].parameters[param].sym == symbol){
           type_info = iheartla_data.equations[eq].parameters[param].type_info;
           found = true;
-          content = symbol + " is a parameter as a " + getSymTypeInfo(type_info);
+
+          if(iheartla_data.equations[eq].parameters[param].desc){
+            content = symbol + " is " + iheartla_data.equations[eq].parameters[param].desc + ", the type is " + getSymTypeInfo(type_info);
+          }
+          else{
+            content = symbol + " is a parameter as a " + getSymTypeInfo(type_info);
+          }
           break;
         }
       }

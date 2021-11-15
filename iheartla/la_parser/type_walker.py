@@ -111,6 +111,7 @@ class TypeWalker(NodeWalker):
         self.local_func_dict = {}  # local function name -> parameter dict
         self.func_data_dict = {}   # local function name -> LocalFuncData
         #
+        self.desc_dict = {}        # comment for parameters
         self.main_param = ParamsData()
 
     def get_cur_param_data(self):
@@ -135,7 +136,10 @@ class TypeWalker(NodeWalker):
         content = ''
         param_list = []
         for param in self.parameters:
-            param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(param, self.symtable[param].get_json_content()))
+            if param in self.desc_dict:
+                param_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(param, self.symtable[param].get_json_content(), self.desc_dict[param]))
+            else:
+                param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(param, self.symtable[param].get_json_content()))
         def_list = []
         for lhs in self.lhs_list:
             def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(lhs, self.symtable[lhs].get_json_content()))
@@ -173,6 +177,7 @@ class TypeWalker(NodeWalker):
         self.local_func_name = ''
         self.local_func_dict.clear()
         self.func_data_dict.clear()
+        self.desc_dict.clear()
 
     def get_func_symbols(self):
         ret = {}
@@ -600,6 +605,8 @@ class TypeWalker(NodeWalker):
             id0_info = self.walk(node.id[id_index], **kwargs)
             ir_node.id.append(id0_info.ir)
             id0 = id0_info.content
+            if node.desc is not None:
+                self.desc_dict[id0] = node.desc
             if True:
                 self.handle_identifier(id0, id0_info.ir, type_node)
                 # self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
