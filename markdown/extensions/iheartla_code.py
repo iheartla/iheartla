@@ -99,11 +99,13 @@ class IheartlaBlockPreprocessor(Preprocessor):
         lib_header = None
         lib_content = ''
         json_list = []
+        equation_list = []
         for name, block_data in file_dict.items():
             code_list, equation_data = compile_la_content(block_data.get_content(), parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MATHML,
                                            func_name=name, path=kwargs['path'], struct=True, get_json=True)
             equation_data.name = name
             json_list.append('''{{"name":"{}", {} }}'''.format(name, equation_data.gen_json_content()))
+            equation_list.append(equation_data)
             if lib_header is None:
                 lib_header = code_list[0].include
             lib_content += code_list[0].struct + '\n'
@@ -139,6 +141,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
 """.format(block_data.module_name, code_list[1].pre_str, content, code_list[1].post_str)
                 text = text.replace(block_data.block_list[cur_index], content)
         json_content = '''{{"equations":[{}] }}'''.format(','.join(json_list))
+        sym_dict = self.get_sym_dict(equation_list)
         if lib_header is not None:
             save_to_file("#pragma once\n" + lib_header + lib_content, "{}/lib.h".format(kwargs['path']))
         if json_content is not None:
@@ -153,6 +156,53 @@ class IheartlaBlockPreprocessor(Preprocessor):
         txt = txt.replace('>', '&gt;')
         txt = txt.replace('"', '&quot;')
         return txt
+
+    def get_sym_dict(self, equation_list):
+        sym_dict = {}
+        for equation in equation_list:
+            # parameters
+            for param in equation.parameters:
+                sym_eq_data = SymEquationData(la_type=equation.symtable[param], desc=equation.desc_dict.get(param), module_name=equation.name, is_defined=False)
+                if param not in sym_dict:
+                    sym_data = SymData(param, sym_equation_list=[sym_eq_data])
+                    sym_dict[param] = sym_data
+                else:
+                    sym_data = sym_dict[param]
+                    sym_data.sym_equation_list.append(sym_eq_data)
+            # new symbols
+            for definition in equation.definition:
+                sym_eq_data = SymEquationData(la_type=equation.symtable[definition], desc=equation.desc_dict.get(definition), module_name=equation.name, is_defined=True)
+                if definition not in sym_dict:
+                    sym_data = SymData(definition, sym_equation_list=[sym_eq_data])
+                    sym_dict[definition] = sym_data
+                else:
+                    sym_data = sym_dict[definition]
+                    sym_data.sym_equation_list.append(sym_eq_data)
+        # sec loop
+        for equation in equation_list:
+            # dependence
+            for dependence in equation.dependence:
+                for name in dependence.name_list:
+                    sym_data = sym_dict[name]
+                    for sym_equation in sym_data.sym_equation_list:
+                        if sym_equation.module_name == dependence.module:
+                            sym_equation.used_list.append(equation.name)
+        return sym_dict 
+
+
+class SymEquationData(object):
+    def __init__(self, la_type, desc=None, module_name='', is_defined=True, used_list=[]):
+        self.la_type = la_type            # type info
+        self.desc = desc                  # comment for the symbol
+        self.module_name = module_name    # the module that defines the symbol
+        self.is_defined = is_defined      # whether defined or from parameters
+        self.used_list = used_list        # the modules that import the symbol
+
+
+class SymData(object):
+    def __init__(self, sym_name, sym_equation_list=[]):
+        self.sym_name = sym_name
+        self.sym_equation_list = sym_equation_list
 
 
 def makeExtension(**kwargs):  # pragma: no cover
