@@ -42,7 +42,9 @@ if __name__ == '__main__':
                                                           'markdown.extensions.smarty', \
                                                           'markdown.extensions.toc', \
                                                           'markdown.extensions.wikilinks'], path=os.path.dirname(Path(paper_file)))
-            json = read_from_file("{}/data.json".format(os.path.dirname(Path(paper_file))))
+            equation_json = read_from_file("{}/data.json".format(os.path.dirname(Path(paper_file))))
+            # equation_data = get_sym_data(json.loads(equation_json))
+            sym_json = '{"B":[{"type_info":{"type":"matrix","rows":2,"cols":2},"desc":"comment for the symbol","equations":[{"module_name":"first","type":"parameter, definition, imported","import_from":"second"},{"module_name":"second","type":"definition"}]},{"type_info":{"type":"vector","rows":2},"desc":"comment for the symbol","equations":[{"module_name":"third","type":"parameter"}]}],"A":[{"type_info":{"type":"matrix","rows":2,"cols":2},"desc":"comment for the symbol","equations":[{"module_name":"first","type":"parameter, definition, imported","import_from":"second"},{"module_name":"second","type":"definition"}]},{"type_info":{"type":"vector","rows":2},"desc":"comment for the symbol","equations":[{"module_name":"third","type":"parameter"}]}],"C":[{"type_info":{"type":"matrix","rows":2,"cols":2},"desc":"comment for the symbol","equations":[{"module_name":"first","type":"parameter, definition, imported","import_from":"second"},{"module_name":"second","type":"definition"}]}]}';
             dst = "{}/resource".format(os.path.dirname(Path(paper_file)))
             if os.path.exists(dst):
                 shutil.rmtree(dst)
@@ -64,6 +66,41 @@ if __name__ == '__main__':
 
   return content;
 };
+function parseSym(symbol){
+  data = sym_data[symbol];
+  console.log(`You clicked ${symbol}`);
+}
+function parseAllSyms(){
+  keys = [];
+  for (var k in sym_data) { 
+    keys.push(k);
+  }
+  keys.sort();
+  info = '<p>Glossary of symbols</p>'
+  for (i = 0; i < keys.length; i++) {
+    k = keys[i];
+    diff_list = sym_data[k];
+    diff_length = diff_list.length;
+    if (diff_length > 1) {
+      content = `<pa onclick="parseSym('${k}');"><pa class="clickable_sym">${k}</pa>: ${diff_length} different definitions</pa><br>`;
+    }
+    else{
+      content = `<pa onclick="parseSym('${k}');"><pa class="clickable_sym">${k}</pa>: ${diff_list[0].desc}</pa><br>`;
+    }
+    console.log(content);
+    info += content;
+  }
+  console.log(document.querySelector("#glossary"));
+  tippy(document.querySelector("#glossary"), {
+        content: info,
+        placement: 'bottom',
+        animation: 'fade',
+        trigger: 'click', 
+        allowHTML: true,
+        interactive: true,
+      }); 
+}
+window.onload = parseAllSyms;
 function getSymInfo(symbol, func_name){
   content = '';
   var found = false;
@@ -182,6 +219,9 @@ body
 .normal {
  color: black; 
 }
+.clickable_sym{
+ color: red; 
+}
 </style>
 """
             html = r"""<html lang="en">
@@ -197,13 +237,14 @@ body
 </head>
 {style}
 <script>
-const iheartla_data = JSON.parse('{json}');
+const iheartla_data = JSON.parse('{equation_json}');
+const sym_data = JSON.parse('{sym_json}');
 {script}
 </script>
 <body>
-<img src="./resource/glossary.png" id="glossary" alt="glossary" width="22" height="28" onclick="onClickGlossary()">
+<img src="./resource/glossary.png" id="glossary" alt="glossary" width="22" height="28">
 {body}
 </body>
-</html>""".format(style=style, json=json, script=script, body=body)
+</html>""".format(style=style, equation_json=equation_json,  sym_json=sym_json, script=script, body=body)
             save_to_file(html, "/Users/pressure/Downloads/lib_paper/paper.html")
             print(html)
