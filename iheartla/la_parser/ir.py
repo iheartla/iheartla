@@ -161,11 +161,11 @@ class StartNode(StmtNode):
         package_func_dict = {}
         for directive in self.directives:
             if directive.package is not None:
-                if directive.package in package_func_dict:
-                    package_func_dict[directive.package] = list(set(package_func_dict[directive.package] + directive.names))
+                if directive.package.get_name() in package_func_dict:
+                    package_func_dict[directive.package.get_name()] = list(set(package_func_dict[directive.package.get_name()] + directive.get_name_list()))
                 else:
-                    package_func_dict[directive.package] = list(set(directive.names))
-                package_func_dict[directive.package].sort()
+                    package_func_dict[directive.package.get_name()] = list(set(directive.get_name_list()))
+                package_func_dict[directive.package.get_name()].sort()
         return package_func_dict
 
     def get_module_pars_list(self):
