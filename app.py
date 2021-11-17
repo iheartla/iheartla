@@ -82,10 +82,15 @@ function parseAllSyms(){
     diff_list = sym_data[k];
     diff_length = diff_list.length;
     if (diff_length > 1) {
-      content = `<pa onclick="parseSym('${k}');"><pa class="clickable_sym">${k}</pa>: ${diff_length} different definitions</pa><br>`;
+      content = `<pa onclick="parseSym('${k}');"><pa class="clickable_sym">${k}</pa>: ${diff_length} different types</pa><br>`;
     }
     else{
-      content = `<pa onclick="parseSym('${k}');"><pa class="clickable_sym">${k}</pa>: ${diff_list[0].desc}</pa><br>`;
+      if (diff_list[0].is_defined){
+        content = `<pa onclick="parseSym('${k}');"><pa class="clickable_sym">${k}</pa>: defined </pa><br>`;
+      }
+      else{
+        content = `<pa onclick="parseSym('${k}');"><pa class="clickable_sym">${k}</pa>: ${diff_list[0].desc}</pa><br>`;
+      }
     }
     console.log(content);
     info += content;
