@@ -49,186 +49,7 @@ if __name__ == '__main__':
             if os.path.exists(dst):
                 shutil.rmtree(dst)
             shutil.copytree("./extras/resource", dst)
-            script = r"""function getSymTypeInfo(type_info){
-  if(type_info.type == 'matrix'){
-    content = "matrix, rows: " + type_info.rows + ", cols: " + type_info.cols;
-  }
-  else if(type_info.type == 'vector'){
-    content = "vector, rows: " + type_info.rows;
-  }
-  else if(type_info.type == 'scalar'){
-    content = "scalar";
-  }
-  else{
-    content = "invalid type";
-  }
-  console.log("type_info.type: " + type_info.type);
-
-  return content;
-};
-function parseSym(symbol){
-  data = sym_data[symbol];
-  console.log(`You clicked ${symbol}`);
-}
-function parseAllSyms(){
-  keys = [];
-  for (var k in sym_data) { 
-    keys.push(k);
-  }
-  keys.sort();
-  info = '<p>Glossary of symbols</p>'
-  for (i = 0; i < keys.length; i++) {
-    k = keys[i];
-    diff_list = sym_data[k];
-    diff_length = diff_list.length;
-    if (diff_length > 1) {
-      content = `<pa onclick="parseSym('${k}');"><pa class="clickable_sym">${k}</pa>: ${diff_length} different types</pa><br>`;
-    }
-    else{
-      if (diff_list[0].is_defined){
-        content = `<pa onclick="parseSym('${k}');"><pa class="clickable_sym">${k}</pa>: defined </pa><br>`;
-      }
-      else{
-        content = `<pa onclick="parseSym('${k}');"><pa class="clickable_sym">${k}</pa>: ${diff_list[0].desc}</pa><br>`;
-      }
-    }
-    console.log(content);
-    info += content;
-  }
-  console.log(document.querySelector("#glossary"));
-  tippy(document.querySelector("#glossary"), {
-        content: info,
-        placement: 'bottom',
-        animation: 'fade',
-        trigger: 'click', 
-        allowHTML: true,
-        interactive: true,
-      }); 
-}
-window.onload = parseAllSyms;
-function getSymInfo(symbol, func_name){
-  content = '';
-  var found = false;
-  for(var eq in iheartla_data.equations){
-    if(iheartla_data.equations[eq].name == func_name){
-      for(var param in iheartla_data.equations[eq].parameters){
-        if (iheartla_data.equations[eq].parameters[param].sym == symbol){
-          type_info = iheartla_data.equations[eq].parameters[param].type_info;
-          found = true;
-
-          if(iheartla_data.equations[eq].parameters[param].desc){
-            content = symbol + " is " + iheartla_data.equations[eq].parameters[param].desc + ", the type is " + getSymTypeInfo(type_info);
-          }
-          else{
-            content = symbol + " is a parameter as a " + getSymTypeInfo(type_info);
-          }
-          break;
-        }
-      }
-      if(found){
-        break;
-      }
-      for(var param in iheartla_data.equations[eq].definition){
-        if (iheartla_data.equations[eq].definition[param].sym == symbol){
-          type_info = iheartla_data.equations[eq].definition[param].type_info;
-          found = true;
-          content = symbol + " is defined as a " + getSymTypeInfo(type_info);
-          break;
-        }
-      }
-      if(found){
-        break;
-      }
-    }
-  }
-  return content;
-}
-function onClickSymbol(tag, symbol, func_name) {
-  closeOtherTips();
-  if (typeof tag._tippy === 'undefined'){
-    tippy(tag, {
-        content: getSymInfo(symbol, func_name),
-        placement: 'bottom',
-        animation: 'fade',
-        trigger: 'click', 
-        showOnCreate: true,
-        onShow(instance) { 
-          tag.setAttribute('class', 'highlight');
-          console.log('onShow');
-          return true;  
-        },
-        onHide(instance) {
-          tag.removeAttribute('class');
-          console.log('onHide');
-          return true;  
-        },
-      });
-  }
-  console.log("clicked: " + symbol + " in " + func_name); 
-};
-function onClickEq(tag, func_name, sym_list) { 
-  closeOtherTips();
-  content = "This equation has " + sym_list.length + " symbols\n";
-  for(var sym in sym_list){
-    content += getSymInfo(sym_list[sym], func_name) + '\n';
-  }
-  if (typeof tag._tippy === 'undefined'){
-    tippy(tag, {
-        content: content,
-        placement: 'bottom',
-        animation: 'fade',
-        trigger: 'click', 
-        showOnCreate: true,
-        onShow(instance) { 
-          tag.setAttribute('class', 'highlight');
-          console.log('onShow');
-          return true;  
-        },
-        onHide(instance) {
-          tag.removeAttribute('class');
-          console.log('onHide');
-          return true;  
-        },
-      });
-  }
-};
-function closeOtherTips(){
-  const matches = document.querySelectorAll(".highlight");
-  for (var i = matches.length - 1; i >= 0; i--) {
-    matches[i].removeAttribute('class');
-    if (typeof matches[i]._tippy !== 'undefined'){
-      matches[i]._tippy.hide();
-    }
-  }
-};
-function onClickGlossary(){
-  alert('You clicked the glossary');
-};"""
-            style=r"""
-<style>
-body
-{
-  position:static !important;
-  font-size: 12pt;
-  padding-left:  10px;
-  padding-right: 10px;
-  width: 785px;
-  min-height: none;
-  min-height: 0%;
-  border-radius: 8px;
-  margin: auto;
-}
-.highlight {
- color: red; 
-}
-.normal {
- color: black; 
-}
-.clickable_sym{
- color: red; 
-}
-</style>
-"""
+            script = r"""window.onload = parseAllSyms;"""
             html = r"""<html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -239,8 +60,9 @@ body
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script type="text/javascript" src='./resource/paper.js'></script>
+    <link rel="stylesheet" href="./resource/paper.css">
 </head>
-{style}
 <script>
 const iheartla_data = JSON.parse('{equation_json}');
 const sym_data = JSON.parse('{sym_json}');
@@ -250,6 +72,6 @@ const sym_data = JSON.parse('{sym_json}');
 <img src="./resource/glossary.png" id="glossary" alt="glossary" width="22" height="28">
 {body}
 </body>
-</html>""".format(style=style, equation_json=equation_json,  sym_json=sym_json, script=script, body=body)
+</html>""".format(equation_json=equation_json,  sym_json=sym_json, script=script, body=body)
             save_to_file(html, "/Users/pressure/Downloads/lib_paper/paper.html")
             print(html)

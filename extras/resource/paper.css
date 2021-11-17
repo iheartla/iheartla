@@ -1,0 +1,29 @@
+body
+{
+  position:static;
+  top: 0;
+  left: 0;
+  font-size: 12pt;
+  padding-left:  10px;
+  padding-right: 10px;
+  width: 785px;
+  min-height: none;
+  min-height: 0%;
+  border-radius: 8px;
+  margin: auto;
+}
+.highlight {
+ color: red; 
+}
+.normal {
+ color: black; 
+}
+.clickable_sym{
+ color: red; 
+}
+.arrow{
+  position:absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
