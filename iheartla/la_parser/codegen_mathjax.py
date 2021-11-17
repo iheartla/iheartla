@@ -23,8 +23,8 @@ class CodeGenMathjax(CodeGenLatex):
 
     def visit_start(self, node, **kwargs):
         content = ""
-        for directive in node.directives:
-            content += self.visit(directive, **kwargs)
+        # for directive in node.directives:
+        #     content += self.visit(directive, **kwargs)
         pre_param = False
         pre_exp = False
         # pre_align = "\\begin{center}\n\\resizebox{\\linewidth}{!}{\n\\begin{minipage}[c]{\\linewidth}\n"

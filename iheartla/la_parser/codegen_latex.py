@@ -127,7 +127,7 @@ class CodeGenLatex(CodeGen):
 
     def visit_import(self, node, **kwargs):
         if node.package:
-            content = "\\text{{from {} import {}}}\\\\\n".format(node.package, ", ".join(node.names))
+            content = "\\text{{from {} import {}}}\\\\\n".format(node.package.get_name(), ", ".join(node.get_name_list()))
         else:
             if len(node.params) > 0:
                 params_str = ''
@@ -143,8 +143,8 @@ class CodeGenLatex(CodeGen):
 
     def visit_start(self, node, **kwargs):
         content = ""
-        for directive in node.directives:
-            content += self.visit(directive, **kwargs)
+        # for directive in node.directives:
+        #     content += self.visit(directive, **kwargs)
         pre_param = False
         pre_exp = False
         # pre_align = "\\begin{center}\n\\resizebox{\\linewidth}{!}{\n\\begin{minipage}[c]{\\linewidth}\n"

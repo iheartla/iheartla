@@ -357,9 +357,9 @@ class TypeWalker(NodeWalker):
         # self.symtable.clear()
         self.visualizer.visualize(node)  # visualize
         ir_node = StartNode(parse_info=node.parseinfo)
-        if node.directive:
-            for directive in node.directive:
-                ir_node.directives.append(self.walk(directive, **kwargs))
+        # if node.directive:
+        #     for directive in node.directive:
+        #         ir_node.directives.append(self.walk(directive, **kwargs))
         # vblock
         vblock_list = []
         multi_lhs_list = []
@@ -375,6 +375,11 @@ class TypeWalker(NodeWalker):
             if type(vblock).__name__ == 'ParamsBlock':
                 vblock_info = param_ir_list[param_ir_index]
                 param_ir_index += 1
+            elif type(vblock).__name__ == 'Import':
+                directive_node = self.walk(vblock, **kwargs)
+                ir_node.directives.append(directive_node)
+                vblock_list.append(directive_node)
+                continue
             else:
                 vblock_info = self.walk(vblock, **kwargs)
             vblock_list.append(vblock_info)
