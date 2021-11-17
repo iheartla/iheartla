@@ -142,6 +142,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 text = text.replace(block_data.block_list[cur_index], content)
         json_content = '''{{"equations":[{}] }}'''.format(','.join(json_list))
         sym_dict = self.get_sym_dict(equation_list)
+        sym_json = self.get_sym_json(sym_dict)
+        save_to_file(sym_json, "{}/sym_data.json".format(kwargs['path']))
         if lib_header is not None:
             save_to_file("#pragma once\n" + lib_header + lib_content, "{}/lib.h".format(kwargs['path']))
         if json_content is not None:
@@ -187,7 +189,19 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     for sym_equation in sym_data.sym_equation_list:
                         if sym_equation.module_name == dependence.module:
                             sym_equation.used_list.append(equation.name)
-        return sym_dict 
+        return sym_dict
+
+    def get_sym_json(self, sym_dict):
+        sym_list = []
+        for sym, sym_data in sym_dict.items():
+            eq_data_list = []
+            for sym_eq_data in sym_data.sym_equation_list:
+                eq_data_list.append('''{{"desc":"{}", "type_info":{}, "def_module":"{}", "is_defined":{}, "used_equations":[{}]}}'''.format(sym_eq_data.desc, sym_eq_data.la_type.get_json_content(),
+                                                                             sym_eq_data.module_name, "true" if sym_eq_data.is_defined else "false", '"' + '","'.join(sym_eq_data.used_list) + '"' ))
+            sym_list.append('''"{}":[{}]'''.format(sym, ",".join(eq_data_list)))
+        return '''{{{}}}'''.format(','.join(sym_list))
+
+
 
 
 class SymEquationData(object):

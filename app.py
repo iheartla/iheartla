@@ -44,7 +44,7 @@ if __name__ == '__main__':
                                                           'markdown.extensions.wikilinks'], path=os.path.dirname(Path(paper_file)))
             equation_json = read_from_file("{}/data.json".format(os.path.dirname(Path(paper_file))))
             # equation_data = get_sym_data(json.loads(equation_json))
-            sym_json = '{"B":[{"type_info":{"type":"matrix","rows":2,"cols":2},"desc":"comment for the symbol","equations":[{"module_name":"first","type":"parameter, definition, imported","import_from":"second"},{"module_name":"second","type":"definition"}]},{"type_info":{"type":"vector","rows":2},"desc":"comment for the symbol","equations":[{"module_name":"third","type":"parameter"}]}],"A":[{"type_info":{"type":"matrix","rows":2,"cols":2},"desc":"comment for the symbol","equations":[{"module_name":"first","type":"parameter, definition, imported","import_from":"second"},{"module_name":"second","type":"definition"}]},{"type_info":{"type":"vector","rows":2},"desc":"comment for the symbol","equations":[{"module_name":"third","type":"parameter"}]}],"C":[{"type_info":{"type":"matrix","rows":2,"cols":2},"desc":"comment for the symbol","equations":[{"module_name":"first","type":"parameter, definition, imported","import_from":"second"},{"module_name":"second","type":"definition"}]}]}';
+            sym_json = read_from_file("{}/sym_data.json".format(os.path.dirname(Path(paper_file))))
             dst = "{}/resource".format(os.path.dirname(Path(paper_file)))
             if os.path.exists(dst):
                 shutil.rmtree(dst)
