@@ -89,55 +89,29 @@ class grammardefaultParser(Parser):
     def _start_(self):  # noqa
 
         def block0():
-            self._separator_with_space_()
-        self._closure(block0)
 
-        def block1():
-            self._hspace_()
-        self._closure(block1)
-
-        def block2():
-            self._Directive_()
-            self.add_last_node_to_name('directive')
-
-            def block4():
-
-                def block5():
-                    self._separator_with_space_()
-                self._positive_closure(block5)
-                self._Directive_()
-                self.add_last_node_to_name('directive')
-            self._closure(block4)
-
-            def block7():
+            def block1():
                 self._separator_with_space_()
-            self._positive_closure(block7)
-        self._closure(block2)
+            self._closure(block1)
 
-        def block8():
-
-            def block9():
-                self._separator_with_space_()
-            self._closure(block9)
-
-            def block10():
+            def block2():
                 self._hspace_()
-            self._closure(block10)
+            self._closure(block2)
             self._valid_block_()
             self.add_last_node_to_name('vblock')
 
-            def block12():
+            def block4():
                 self._separator_with_space_()
-            self._closure(block12)
-        self._positive_closure(block8)
+            self._closure(block4)
+        self._positive_closure(block0)
 
-        def block13():
+        def block5():
             self._blank_()
-        self._closure(block13)
+        self._closure(block5)
         self._check_eof()
         self.ast._define(
             [],
-            ['directive', 'vblock']
+            ['vblock']
         )
 
     @tatsumasu()
@@ -3923,6 +3897,8 @@ class grammardefaultParser(Parser):
     def _valid_block_(self):  # noqa
         with self._choice():
             with self._option():
+                self._Directive_()
+            with self._option():
                 self._params_block_()
             with self._option():
                 self._statements_()
@@ -5618,7 +5594,6 @@ class grammardefaultModelBuilderSemantics(ModelBuilderSemantics):
 
 
 class Start(ModelBase):
-    directive = None
     vblock = None
 
 
