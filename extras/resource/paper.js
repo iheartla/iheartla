@@ -1,4 +1,4 @@
-function drawArrow( startElement, endElement, style='' ) {
+function drawArrow( startElement, endElement, style='' , color='blue') {
     // This pseudocode creates an SVG element for each "arrow". As an alternative,
     // we could always have one SVG element present in the document
     // with absolute position 0,0 (or along the right side of the window)
@@ -9,6 +9,7 @@ function drawArrow( startElement, endElement, style='' ) {
     // var svg = SVG().addTo('body').size('100%', '100%').move(-1010, -410);
     console.log(`start is ${startElement}, end is ${endElement}`)
     var svg = SVG().addTo('body').size('100%', '100%').attr('left', '0px');
+    console.log(`svg is ${svg}`);
     var body = document.querySelector("body");
     var style = body.currentStyle || window.getComputedStyle(body);
     // Name it for selector queries so you can style it and also delete it
@@ -27,21 +28,21 @@ function drawArrow( startElement, endElement, style='' ) {
     var bodyWidth = parseInt(style.width, 10)
     var marginTop = parseInt(style.marginTop, 10)
     console.log(style); 
-    var arrowSize = 10;
-    var offset = 10;
-    var endPointX = endCenterX - bodyRect.x + marginLeft;
-    var endPointY = endCenterY - bodyRect.y + marginTop;
-    // var endPointX = bodyWidth+marginLeft-offset;
+    var arrowSize = 5;
+    var offsetEndX = 20;
+    // var endPointX = endCenterX - bodyRect.x + marginLeft;
     // var endPointY = endCenterY - bodyRect.y + marginTop;
-    // svg.path(`M${bodyWidth+marginLeft-offset} ${startCenterY - bodyRect.y + marginTop} 
-    svg.path(`M${startCenterX - bodyRect.x + marginLeft} ${startCenterY - bodyRect.y + marginTop} 
+    var endPointX = bodyWidth+marginLeft-offsetEndX;
+    var endPointY = endCenterY - bodyRect.y + marginTop;
+    // svg.path(`M${startCenterX - bodyRect.x + marginLeft} ${startCenterY - bodyRect.y + marginTop} 
+    svg.path(`M${bodyWidth+marginLeft-offsetEndX} ${startCenterY - bodyRect.y + marginTop} 
       L ${bodyWidth+marginLeft} ${startCenterY - bodyRect.y + marginTop} 
       L ${bodyWidth+marginLeft} ${endCenterY - bodyRect.y + marginTop} 
       L ${endPointX} ${endPointY} 
       L ${endPointX+arrowSize} ${endPointY-arrowSize} 
       L ${endPointX} ${endPointY} 
       L ${endPointX+arrowSize} ${endPointY+arrowSize} 
-      `).attr({fill: 'white', 'fill-opacity': 0, stroke: 'blue', 'stroke-width': 1})
+      `).attr({fill: 'white', 'fill-opacity': 0, stroke: color, 'stroke-width': 1})
     svg.attr('offset', parseInt(style.marginLeft, 10))
     document.querySelector(".arrow").style.marginLeft = "0px"
 }
@@ -139,15 +140,27 @@ function getSymInfo(symbol, func_name){
   }
   return content;
 }
+function showSymArrow(tag, symbol, func_name){
+  const matches = document.querySelectorAll("mjx-mi[sym='" + symbol + "']");
+    for (var i = matches.length - 1; i >= 0; i--) {
+      matches[i].setAttribute('class', 'highlight');
+      if (matches[i] !== tag ) {
+        drawArrow(tag, matches[i]);
+      }
+    }
+}
 function onClickSymbol(tag, symbol, func_name) {
   closeOtherTips();
-  drawArrow(document.querySelector("#ff"), document.querySelector("#ss"));
+  // drawArrow(document.querySelector("#ff"), document.querySelector("#ss"));
+  showSymArrow(tag, symbol, func_name);
+    // d3.selectAll("mjx-mi[sym='" + symbol + "']").style("class", "highlight");
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
         content: getSymInfo(symbol, func_name),
         placement: 'bottom',
         animation: 'fade',
         trigger: 'click', 
+        theme: 'light',
         showOnCreate: true,
         onShow(instance) { 
           tag.setAttribute('class', 'highlight');
@@ -173,6 +186,10 @@ function onClickEq(tag, func_name, sym_list) {
   content = "This equation has " + sym_list.length + " symbols\n";
   for(var sym in sym_list){
     content += getSymInfo(sym_list[sym], func_name) + '\n';
+    var symTag = tag.querySelector("mjx-mi[sym='" + sym_list[sym] + "']");
+    const matches = document.querySelectorAll("mjx-mi[sym='" + sym_list[sym] + "']");
+    console.log(`tag is ${tag}, symTag is ${symTag}, matches is ${matches}, sym is ${sym_list[sym]}`);
+    showSymArrow(symTag, sym_list[sym], func_name);
   }
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
@@ -187,6 +204,7 @@ function onClickEq(tag, func_name, sym_list) {
           return true;  
         },
         onHide(instance) {
+          removeArrows();
           tag.removeAttribute('class');
           console.log('onHide');
           return true;  
@@ -195,9 +213,11 @@ function onClickEq(tag, func_name, sym_list) {
   }
 };
 function removeArrows(){
-  var arrow = document.querySelector(".arrow");
-  if (arrow) {
-    document.querySelector("body").removeChild(arrow);
+  var matches = document.querySelectorAll(".arrow");
+  if (matches) {
+    for (var i = matches.length - 1; i >= 0; i--) {
+      document.querySelector("body").removeChild(matches[i]);
+    }
   }
 }
 function closeOtherTips(){
