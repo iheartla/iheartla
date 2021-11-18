@@ -51,19 +51,22 @@ if __name__ == '__main__':
             # shutil.copytree("./extras/resource", dst)
             script = r"""window.onload = parseAllSyms;
 function reportWindowSize() {
-  var arrow = document.querySelector(".arrow");
-  if (arrow) {
-    var body = document.querySelector("body");
-    var style = body.currentStyle || window.getComputedStyle(body);
-    var curOffset = parseInt(style.marginLeft, 10)
-    var oldOffset = arrow.getAttribute('offset');
-    arrow.setAttribute('offset', curOffset);
-    // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
-    var arrowStyle = window.getComputedStyle(arrow); 
-    var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
-    arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
-    arrow.style.width = body.style.width;
-    arrow.style.height = body.style.height; 
+  var arrows = document.querySelectorAll(".arrow");
+  if (arrows) {
+    for (var i = arrows.length - 1; i >= 0; i--) {
+      var arrow = arrows[i];
+      var body = document.querySelector("body");
+      var style = body.currentStyle || window.getComputedStyle(body);
+      var curOffset = parseInt(style.marginLeft, 10)
+      var oldOffset = arrow.getAttribute('offset');
+      arrow.setAttribute('offset', curOffset);
+      // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
+      var arrowStyle = window.getComputedStyle(arrow); 
+      var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
+      arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
+      arrow.style.width = body.style.width;
+      arrow.style.height = body.style.height;  
+    }
   }
 }
 window.onresize = reportWindowSize;"""
