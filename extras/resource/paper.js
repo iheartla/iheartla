@@ -7,7 +7,8 @@ function drawArrow( startElement, endElement, style='' ) {
     // You can use vanilla JS or svg.js or snap.js. Probably svg.js is a good fit.
     // Create a new SVG node
     // var svg = SVG().addTo('body').size('100%', '100%').move(-1010, -410);
-    var svg = SVG().addTo('body').size('100%', '100%');
+    console.log(`start is ${startElement}, end is ${endElement}`)
+    var svg = SVG().addTo('body').size('100%', '100%').attr('left', '0px');
     var body = document.querySelector("body");
     var style = body.currentStyle || window.getComputedStyle(body);
     // Name it for selector queries so you can style it and also delete it
@@ -41,6 +42,8 @@ function drawArrow( startElement, endElement, style='' ) {
       L ${endPointX} ${endPointY} 
       L ${endPointX+arrowSize} ${endPointY+arrowSize} 
       `).attr({fill: 'white', 'fill-opacity': 0, stroke: 'blue', 'stroke-width': 1})
+    svg.attr('offset', parseInt(style.marginLeft, 10))
+    document.querySelector(".arrow").style.marginLeft = "0px"
 }
 
 function getSymTypeInfo(type_info){
@@ -154,6 +157,10 @@ function onClickSymbol(tag, symbol, func_name) {
         onHide(instance) {
           removeArrows();
           tag.removeAttribute('class');
+          const matches = document.querySelectorAll("mjx-mi[sym='" + symbol + "']");
+          for (var i = matches.length - 1; i >= 0; i--) {
+            matches[i].removeAttribute('class');
+          }
           console.log('onHide');
           return true;  
         },

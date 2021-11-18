@@ -46,10 +46,27 @@ if __name__ == '__main__':
             # equation_data = get_sym_data(json.loads(equation_json))
             sym_json = read_from_file("{}/sym_data.json".format(os.path.dirname(Path(paper_file))))
             dst = "{}/resource".format(os.path.dirname(Path(paper_file)))
-            if os.path.exists(dst):
-                shutil.rmtree(dst)
-            shutil.copytree("./extras/resource", dst)
-            script = r"""window.onload = parseAllSyms;"""
+            # if os.path.exists(dst):
+            #     shutil.rmtree(dst)
+            # shutil.copytree("./extras/resource", dst)
+            script = r"""window.onload = parseAllSyms;
+function reportWindowSize() {
+  var arrow = document.querySelector(".arrow");
+  if (arrow) {
+    var body = document.querySelector("body");
+    var style = body.currentStyle || window.getComputedStyle(body);
+    var curOffset = parseInt(style.marginLeft, 10)
+    var oldOffset = arrow.getAttribute('offset');
+    arrow.setAttribute('offset', curOffset);
+    // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
+    var arrowStyle = window.getComputedStyle(arrow); 
+    var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
+    arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
+    arrow.style.width = body.style.width;
+    arrow.style.height = body.style.height; 
+  }
+}
+window.onresize = reportWindowSize;"""
             html = r"""<html lang="en">
 <head>
     <meta charset="UTF-8">
