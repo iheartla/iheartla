@@ -1,4 +1,5 @@
-function drawArrow( startElement, endElement, style='' , color='blue') {
+function drawArrow( startElement, endElement, style='' , color='blue', 
+  offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20) {
     // This pseudocode creates an SVG element for each "arrow". As an alternative,
     // we could always have one SVG element present in the document
     // with absolute position 0,0 (or along the right side of the window)
@@ -29,19 +30,20 @@ function drawArrow( startElement, endElement, style='' , color='blue') {
     var marginTop = parseInt(style.marginTop, 10)
     console.log(style); 
     var arrowSize = 5;
-    var offsetEndX = 20;
+    // var offsetEndX = 20;
     // var endPointX = endCenterX - bodyRect.x + marginLeft;
     // var endPointY = endCenterY - bodyRect.y + marginTop;
     var endPointX = bodyWidth+marginLeft-offsetEndX;
     var endPointY = endCenterY - bodyRect.y + marginTop;
+    console.log(`marginTop is ${marginTop}`);
     // svg.path(`M${startCenterX - bodyRect.x + marginLeft} ${startCenterY - bodyRect.y + marginTop} 
-    svg.path(`M${bodyWidth+marginLeft-offsetEndX} ${startCenterY - bodyRect.y + marginTop} 
-      L ${bodyWidth+marginLeft} ${startCenterY - bodyRect.y + marginTop} 
-      L ${bodyWidth+marginLeft} ${endCenterY - bodyRect.y + marginTop} 
-      L ${endPointX} ${endPointY} 
-      L ${endPointX+arrowSize} ${endPointY-arrowSize} 
-      L ${endPointX} ${endPointY} 
-      L ${endPointX+arrowSize} ${endPointY+arrowSize} 
+    svg.path(`M${bodyWidth+marginLeft-offsetEndX} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
+      L ${bodyWidth+marginLeft+offsetVerticalX} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
+      L ${bodyWidth+marginLeft+offsetVerticalX} ${endCenterY - bodyRect.y + marginTop+offsetEndY} 
+      L ${endPointX} ${endPointY+offsetEndY} 
+      L ${endPointX+arrowSize} ${endPointY-arrowSize+offsetEndY} 
+      L ${endPointX} ${endPointY+offsetEndY} 
+      L ${endPointX+arrowSize} ${endPointY+arrowSize+offsetEndY} 
       `).attr({fill: 'white', 'fill-opacity': 0, stroke: color, 'stroke-width': 1})
     svg.attr('offset', parseInt(style.marginLeft, 10))
     document.querySelector(".arrow").style.marginLeft = "0px"
@@ -140,12 +142,13 @@ function getSymInfo(symbol, func_name){
   }
   return content;
 }
-function showSymArrow(tag, symbol, func_name){
+function showSymArrow(tag, symbol, func_name, color='blue', 
+  offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20){
   const matches = document.querySelectorAll("mjx-mi[sym='" + symbol + "']");
     for (var i = matches.length - 1; i >= 0; i--) {
       matches[i].setAttribute('class', 'highlight');
       if (matches[i] !== tag ) {
-        drawArrow(tag, matches[i]);
+        drawArrow(tag, matches[i],'',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
       }
     }
 }
@@ -183,13 +186,22 @@ function onClickSymbol(tag, symbol, func_name) {
 };
 function onClickEq(tag, func_name, sym_list) { 
   closeOtherTips();
+  var colors =['red', 'green', 'blue', 'yellow']
   content = "This equation has " + sym_list.length + " symbols\n";
+  var offsetVerticalX = 0;
+  var offsetStartY = 0;
+  var offsetEndY = 0;
+  var offsetEndX = 30;
   for(var sym in sym_list){
     content += getSymInfo(sym_list[sym], func_name) + '\n';
     var symTag = tag.querySelector("mjx-mi[sym='" + sym_list[sym] + "']");
     const matches = document.querySelectorAll("mjx-mi[sym='" + sym_list[sym] + "']");
     console.log(`tag is ${tag}, symTag is ${symTag}, matches is ${matches}, sym is ${sym_list[sym]}`);
-    showSymArrow(symTag, sym_list[sym], func_name);
+    offsetVerticalX += 5;
+    offsetStartY += 2;
+    offsetEndY += 2;
+    offsetEndX -= 5;
+    showSymArrow(symTag, sym_list[sym], func_name, colors[sym], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
   }
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
