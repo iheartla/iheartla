@@ -12,8 +12,20 @@ body
   border-radius: 8px;
   margin: auto;
 }
+.highlight_red {
+ color: red; 
+}
 .highlight {
  color: red; 
+}
+.highlight_blue {
+ color: blue; 
+}
+.highlight_green {
+ color: green; 
+}
+.highlight_yellow {
+ color: yellow; 
 }
 .normal {
  color: black; 

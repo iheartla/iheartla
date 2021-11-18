@@ -8,16 +8,16 @@ function drawArrow( startElement, endElement, style='' , color='blue',
     // You can use vanilla JS or svg.js or snap.js. Probably svg.js is a good fit.
     // Create a new SVG node
     // var svg = SVG().addTo('body').size('100%', '100%').move(-1010, -410);
-    console.log(`start is ${startElement}, end is ${endElement}`)
+    // console.log(`start is ${startElement}, end is ${endElement}`)
     var svg = SVG().addTo('body').size('100%', '100%').attr('left', '0px');
-    console.log(`svg is ${svg}`);
+    // console.log(`svg is ${svg}`);
     var body = document.querySelector("body");
     var style = body.currentStyle || window.getComputedStyle(body);
     // Name it for selector queries so you can style it and also delete it
     svg.addClass("arrow")
     // Get the position of the start and end elements in absolute coordinates
-    console.log(startElement);
-    console.log(endElement);
+    // console.log(startElement);
+    // console.log(endElement);
     var bodyRect = body.getBoundingClientRect();
     var startRect = startElement.getBoundingClientRect();
     var startCenterX = startRect.x + startRect.width/2;
@@ -28,14 +28,14 @@ function drawArrow( startElement, endElement, style='' , color='blue',
     var marginLeft = parseInt(style.marginLeft, 10)
     var bodyWidth = parseInt(style.width, 10)
     var marginTop = parseInt(style.marginTop, 10)
-    console.log(style); 
+    // console.log(style); 
     var arrowSize = 5;
     // var offsetEndX = 20;
     // var endPointX = endCenterX - bodyRect.x + marginLeft;
     // var endPointY = endCenterY - bodyRect.y + marginTop;
     var endPointX = bodyWidth+marginLeft-offsetEndX;
     var endPointY = endCenterY - bodyRect.y + marginTop;
-    console.log(`marginTop is ${marginTop}`);
+    // console.log(`marginTop is ${marginTop}`);
     // svg.path(`M${startCenterX - bodyRect.x + marginLeft} ${startCenterY - bodyRect.y + marginTop} 
     svg.path(`M${bodyWidth+marginLeft-offsetEndX} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
       L ${bodyWidth+marginLeft+offsetVerticalX} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
@@ -62,13 +62,13 @@ function getSymTypeInfo(type_info){
   else{
     content = "invalid type";
   }
-  console.log("type_info.type: " + type_info.type);
+  // console.log("type_info.type: " + type_info.type);
 
   return content;
 };
 function parseSym(symbol){
   data = sym_data[symbol];
-  console.log(`You clicked ${symbol}`);
+  // console.log(`You clicked ${symbol}`);
 }
 function parseAllSyms(){
   keys = [];
@@ -92,10 +92,10 @@ function parseAllSyms(){
         content = `<pa onclick="parseSym('${k}');"><pa class="clickable_sym">${k}</pa>: ${diff_list[0].desc}</pa><br>`;
       }
     }
-    console.log(content);
+    // console.log(content);
     info += content;
   }
-  console.log(document.querySelector("#glossary"));
+  // console.log(document.querySelector("#glossary"));
   tippy(document.querySelector("#glossary"), {
         content: info,
         placement: 'bottom',
@@ -146,16 +146,16 @@ function showSymArrow(tag, symbol, func_name, color='blue',
   offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20){
   const matches = document.querySelectorAll("mjx-mi[sym='" + symbol + "']");
     for (var i = matches.length - 1; i >= 0; i--) {
-      matches[i].setAttribute('class', 'highlight');
+      matches[i].setAttribute('class', `highlight_${color}`);
       if (matches[i] !== tag ) {
         drawArrow(tag, matches[i],'',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
       }
     }
 }
 function onClickSymbol(tag, symbol, func_name) {
+  resetState();
   closeOtherTips();
-  // drawArrow(document.querySelector("#ff"), document.querySelector("#ss"));
-  showSymArrow(tag, symbol, func_name);
+  showSymArrow(tag, symbol, func_name, color='red');
     // d3.selectAll("mjx-mi[sym='" + symbol + "']").style("class", "highlight");
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
@@ -165,27 +165,21 @@ function onClickSymbol(tag, symbol, func_name) {
         trigger: 'click', 
         theme: 'light',
         showOnCreate: true,
-        onShow(instance) { 
-          tag.setAttribute('class', 'highlight');
-          console.log('onShow');
+        onShow(instance) {
+          // closeOtherTips();
           return true;  
         },
         onHide(instance) {
-          removeArrows();
-          tag.removeAttribute('class');
-          const matches = document.querySelectorAll("mjx-mi[sym='" + symbol + "']");
-          for (var i = matches.length - 1; i >= 0; i--) {
-            matches[i].removeAttribute('class');
-          }
-          console.log('onHide');
+          resetState();
           return true;  
         },
       });
   }
-  console.log("clicked: " + symbol + " in " + func_name); 
+  // console.log("clicked: " + symbol + " in " + func_name); 
 };
 function onClickEq(tag, func_name, sym_list) { 
   closeOtherTips();
+  resetState();
   var colors =['red', 'green', 'blue', 'yellow']
   content = "This equation has " + sym_list.length + " symbols\n";
   var offsetVerticalX = 0;
@@ -196,7 +190,7 @@ function onClickEq(tag, func_name, sym_list) {
     content += getSymInfo(sym_list[sym], func_name) + '\n';
     var symTag = tag.querySelector("mjx-mi[sym='" + sym_list[sym] + "']");
     const matches = document.querySelectorAll("mjx-mi[sym='" + sym_list[sym] + "']");
-    console.log(`tag is ${tag}, symTag is ${symTag}, matches is ${matches}, sym is ${sym_list[sym]}`);
+    // console.log(`tag is ${tag}, symTag is ${symTag}, matches is ${matches}, sym is ${sym_list[sym]}`);
     offsetVerticalX += 5;
     offsetStartY += 2;
     offsetEndY += 2;
@@ -211,19 +205,21 @@ function onClickEq(tag, func_name, sym_list) {
         trigger: 'click', 
         showOnCreate: true,
         onShow(instance) { 
-          tag.setAttribute('class', 'highlight');
-          console.log('onShow');
+          tag.setAttribute('class', 'highlight_fake');
+          // console.log('onShow');
           return true;  
         },
         onHide(instance) {
-          removeArrows();
-          tag.removeAttribute('class');
-          console.log('onHide');
+          resetState();
           return true;  
         },
       });
   }
 };
+function resetState(){
+  removeArrows();
+  removeSymHighlight();
+}
 function removeArrows(){
   var matches = document.querySelectorAll(".arrow");
   if (matches) {
@@ -232,11 +228,15 @@ function removeArrows(){
     }
   }
 }
-function closeOtherTips(){
-  removeArrows();
-  const matches = document.querySelectorAll(".highlight");
+function removeSymHighlight(){
+  const matches = document.querySelectorAll("[class^=highlight]");
   for (var i = matches.length - 1; i >= 0; i--) {
     matches[i].removeAttribute('class');
+  }
+}
+function closeOtherTips(){
+  const matches = document.querySelectorAll("[class^=highlight]");
+  for (var i = matches.length - 1; i >= 0; i--) {
     if (typeof matches[i]._tippy !== 'undefined'){
       matches[i]._tippy.hide();
     }
