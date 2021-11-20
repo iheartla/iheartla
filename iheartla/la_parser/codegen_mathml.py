@@ -47,13 +47,14 @@ class CodeGenMathML(CodeGen):
         return value
 
     def visit_id(self, node, **kwargs):
+        id_str = "{}-{}".format(self.func_name, self.convert_unicode(node.get_name()))
         if node.contain_subscript():
             subs_list = []
             for subs in node.subs:
                 subs_list.append(self.convert_unicode(subs))
             return self.convert_unicode(node.main_id) + '_{' + ','.join(subs_list) + '}'
-        return r"""<mi data-mjx-variant="-tex-mathit" mathvariant="italic" onclick="event.stopPropagation(); onClickSymbol(this, '{}','{}')" sym='{}'>{}</mi>"""\
-            .format(self.convert_unicode(node.get_name()), self.func_name, self.convert_unicode(node.get_name()), self.convert_unicode(node.get_name()))
+        return r"""<mi data-mjx-variant="-tex-mathit" mathvariant="italic" onclick="event.stopPropagation(); onClickSymbol(this, '{}','{}')" id='{}'  sym='{}'>{}</mi>"""\
+            .format(self.convert_unicode(node.get_name()), self.func_name, id_str, self.convert_unicode(node.get_name()), self.convert_unicode(node.get_name()))
         # return self.convert_unicode(node.get_name())
 
     def visit_MatrixVdots(self, node, **kwargs):
