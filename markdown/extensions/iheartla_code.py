@@ -101,7 +101,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         json_list = []
         equation_list = []
         for name, block_data in file_dict.items():
-            code_list, equation_data = compile_la_content(block_data.get_content(), parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MATHML,
+            code_list, equation_data = compile_la_content(block_data.get_content(), parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MACROMATHJAX,
                                            func_name=name, path=kwargs['path'], struct=True, get_json=True)
             equation_data.name = name
             json_list.append('''{{"name":"{}", {} }}'''.format(name, equation_data.gen_json_content()))
@@ -134,10 +134,10 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     content = ''
                     for cur in range(len(sorted_index)):
                         raw_str = index_dict[cur_index][sorted_index[cur]]
-                        content += expr_dict[raw_str] + '\n'
+                        content += expr_dict[raw_str] + '\\\\\n'
                 content = r"""
 <div class='equation' code_block="{}">
-{}{}{}</div>
+$${}{}{}$$</div>
 """.format(block_data.module_name, code_list[1].pre_str, content, code_list[1].post_str)
                 text = text.replace(block_data.block_list[cur_index], content)
         json_content = '''{{"equations":[{}] }}'''.format(','.join(json_list))

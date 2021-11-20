@@ -23,6 +23,7 @@ class ParserTypeEnum(IntFlag):
     TENSORFLOW = 128
     MATHJAX = 256
     MATHML = 512
+    MACROMATHJAX = 1024
 
 
 def is_keyword(name, parser_type=ParserTypeEnum.DEFAULT):
