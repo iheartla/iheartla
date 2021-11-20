@@ -73,7 +73,7 @@ function getGlossarySymInfo(symbol){
   for (var i = 0; i < data_list.length; i++) {
       var data = data_list[i];
       content += `<div> In module ${data.def_module}<br>
-      ${symbol} is ${getSymTypeInfo(data.type_info)}`
+      <a href="#${data.def_module}-${symbol}">${symbol}</a> is ${getSymTypeInfo(data.type_info)}`
       content += `` ;
       if (data.used_equations.length > 0) {
         content += `<br>${symbol} is used in ` ;
