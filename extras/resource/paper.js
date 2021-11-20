@@ -66,9 +66,41 @@ function getSymTypeInfo(type_info){
 
   return content;
 };
-function parseSym(symbol){
+function getGlossarySymInfo(symbol){
+  content = ''
+  data_list = sym_data[symbol];
+  for (var i = 0; i < data_list.length; i++) {
+      var data = data_list[i];
+      content += `${symbol} is defined in module ${data.def_module}, ` 
+      content += `type is : ${getSymTypeInfo(data.type_info)}`
+      if (data.used_equations.length > 0) {
+        for (var i = 0; i < data_list.length; i++) {
+
+        }
+      }
+  }
+  return `<pa>${content}</pa>`;
+}
+function parseSym(tag, symbol){
   data = sym_data[symbol];
-  // console.log(`You clicked ${symbol}`);
+  console.log(`You clicked ${symbol}`);
+  if (typeof tag._tippy === 'undefined'){
+    tippy(tag, {
+        content: getGlossarySymInfo(symbol),
+        placement: 'right',
+        animation: 'fade',
+        trigger: 'click', 
+        // theme: 'material',
+        showOnCreate: true,
+        allowHTML: true,
+        onShow(instance) {
+          return true;  
+        },
+        onHide(instance) { 
+          return true;  
+        },
+      });
+  }
 }
 function parseAllSyms(){
   keys = [];
@@ -82,14 +114,14 @@ function parseAllSyms(){
     diff_list = sym_data[k];
     diff_length = diff_list.length;
     if (diff_length > 1) {
-      content = `<pa onclick="parseSym('${k}');"><pa class="clickable_sym">${k}</pa>: ${diff_length} different types</pa><br>`;
+      content = `<pa onclick="parseSym(this, '${k}');"><pa class="clickable_sym">${k}</pa>: ${diff_length} different types</pa><br>`;
     }
     else{
       if (diff_list[0].is_defined){
-        content = `<pa onclick="parseSym('${k}');"><pa class="clickable_sym">${k}</pa>: defined </pa><br>`;
+        content = `<pa onclick="parseSym(this, '${k}');"><pa class="clickable_sym">${k}</pa>: defined </pa><br>`;
       }
       else{
-        content = `<pa onclick="parseSym('${k}');"><pa class="clickable_sym">${k}</pa>: ${diff_list[0].desc}</pa><br>`;
+        content = `<pa onclick="parseSym(this, '${k}');"><pa class="clickable_sym">${k}</pa>: ${diff_list[0].desc}</pa><br>`;
       }
     }
     // console.log(content);
