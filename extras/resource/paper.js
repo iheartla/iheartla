@@ -69,15 +69,19 @@ function getSymTypeInfo(type_info){
 function getGlossarySymInfo(symbol){
   content = ''
   data_list = sym_data[symbol];
+  console.log(`symbol is ${symbol}, length is ${data_list.length}`)
   for (var i = 0; i < data_list.length; i++) {
       var data = data_list[i];
-      content += `${symbol} is defined in module ${data.def_module}, ` 
-      content += `type is : ${getSymTypeInfo(data.type_info)}`
+      content += `<div> In module ${data.def_module}<br>
+      ${symbol} is ${getSymTypeInfo(data.type_info)}`
+      content += `` ;
       if (data.used_equations.length > 0) {
-        for (var i = 0; i < data_list.length; i++) {
-
+        content += `<br>${symbol} is used in ` ;
+        for (var j = 0; j < data.used_equations.length; j++) {
+          content += data.used_equations[j];
         }
       }
+      content += `</div>`;
   }
   return `<pa>${content}</pa>`;
 }
