@@ -23,6 +23,7 @@ from .codegen_numpy import CodeGenNumpy
 from .codegen_eigen import CodeGenEigen
 from .codegen_latex import CodeGenLatex
 from .codegen_mathjax import CodeGenMathjax
+from .codegen_macromathjax import CodeGenMacroMathjax
 from .codegen_mathml import CodeGenMathML
 from .codegen_matlab import CodeGenMatlab
 from .type_walker import *
@@ -66,6 +67,8 @@ def get_codegen(parser_type):
             gen = CodeGenEigen()
         elif parser_type == ParserTypeEnum.MATHJAX:
             gen = CodeGenMathjax()
+        elif parser_type == ParserTypeEnum.MACROMATHJAX:
+            gen = CodeGenMacroMathjax()
         elif parser_type == ParserTypeEnum.MATHML:
             gen = CodeGenMathML()
         elif parser_type == ParserTypeEnum.MATLAB:
@@ -409,7 +412,7 @@ def get_file_name(path_name):
 
 
 def compile_la_content(la_content,
-                       parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX | ParserTypeEnum.MATHJAX | ParserTypeEnum.MATLAB,
+                       parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX | ParserTypeEnum.MATHJAX | ParserTypeEnum.MATLAB | ParserTypeEnum.MACROMATHJAX,
                        func_name=None,
                        path=None,
                        struct=False,
@@ -422,7 +425,7 @@ def compile_la_content(la_content,
         model = parser.parse(la_content, parseinfo=True)
         ret = []
         json = ''
-        for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,  ParserTypeEnum.MATHML, ParserTypeEnum.MATLAB]:
+        for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,  ParserTypeEnum.MATHML, ParserTypeEnum.MATLAB, ParserTypeEnum.MACROMATHJAX]:
             if parser_type & cur_type:
                 type_walker, start_node = parse_ir_node(la_content, model, cur_type)
                 cur_content = walk_model(cur_type, type_walker, start_node, func_name, struct)
