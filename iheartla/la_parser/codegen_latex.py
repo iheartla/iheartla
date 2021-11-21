@@ -75,8 +75,10 @@ class CodeGenLatex(CodeGen):
             subs_list = []
             for subs in node.subs:
                 subs_list.append(self.convert_unicode(subs))
-            return self.convert_unicode(node.main_id) + '_{' + ','.join(subs_list) + '}'
-        return self.convert_unicode(node.get_name())
+            content = self.convert_unicode(node.main_id) + '_{' + ','.join(subs_list) + '}'
+        else:
+            content = self.convert_unicode(node.get_name())
+        return content
 
     def visit_MatrixVdots(self, node, **kwargs):
         return "\\vdots"

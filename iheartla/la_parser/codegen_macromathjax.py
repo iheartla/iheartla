@@ -13,11 +13,17 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         self.code_frame.post_str = self.post_str
 
     def visit_assignment(self, node, **kwargs):
+        sym_list = ''
+        for sym in node.symbols:
+            sym_list += "'{}'".format(sym) + ','
+        sym_list += "'{}'".format(node.left.get_main_id())
         content = ''
         if node.right.node_type == IRNodeType.Optimize:
             content = self.visit(node.right, **kwargs)
         else:
             content = self.visit(node.left, **kwargs) + " & = " + self.visit(node.right, **kwargs)
+        json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}]);"}}""".format(self.func_name, sym_list)
+        content = "\\arialabel{{ {} }}{{ {} }}".format(json, content)
         self.code_frame.expr += content + "\\\\\n"
         self.code_frame.expr_dict[node.raw_text] = content
         return content
@@ -43,6 +49,20 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             # content += "\\intertext{{{}}} ".format('where') + ', '.join(par_list)
             content += ' \\text{{ where }}  ' + ', '.join(par_list)
             self.local_func_parsing = False
+        return content
+
+    def visit_id(self, node, **kwargs):
+        id_str = "{}-{}".format(self.func_name, node.get_name())
+        if node.contain_subscript():
+            subs_list = []
+            for subs in node.subs:
+                subs_list.append(self.convert_unicode(subs))
+            content = self.convert_unicode(node.main_id) + '_{' + ','.join(subs_list) + '}'
+        else:
+            content = self.convert_unicode(node.get_name())
+        json = """{{"onclick":"event.stopPropagation(); onClickSymbol(this, '{}','{}')", "id":"{}", "sym":"{}"}}""" \
+            .format(node.get_name(), self.func_name, id_str, node.get_name())
+        content = "\\arialabel{{ {} }}{{ {} }}".format(json, content)
         return content
 
 
