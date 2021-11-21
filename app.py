@@ -69,7 +69,27 @@ function reportWindowSize() {
     }
   }
 }
-window.onresize = reportWindowSize;"""
+window.onresize = reportWindowSize;
+MathJax = {
+  loader: {
+    load: ["[ariaLabel]/aria-label.js"],
+    paths: { ariaLabel: "./resource" },
+  },
+  // options: {
+  //   a11y: {
+  //     speech: true, // switch on speech output
+  //     braille: true, // switch on Braille output
+  //     subtitles: true, // show speech as a subtitle
+  //   },
+  //   menuOptions: {
+  //     settings: {
+  //       explorer: true,
+  //     },
+  //   },
+  // },
+  tex: { packages: { "[+]": ["aria-label"] } },
+};
+"""
             html = r"""<html lang="en">
 <head>
     <meta charset="UTF-8">
