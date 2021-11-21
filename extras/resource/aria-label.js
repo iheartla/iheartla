@@ -61,13 +61,16 @@ let GetArgumentMML = function (parser, name) {
     NodeUtil.copyAttributes(arg, mrow);
     return mrow;
 };
+
+
 let ArialabelMethods = {};
+
 /**
  * Implements \arialabel{name}{math}
  * @param {TexParser} parser The calling parser.
  * @param {string} name The TeX string
  */
-ArialabelMethods.Arialabel = function (parser, name) {
+ArialabelMethods.IdLabel = function (parser, name) {
     let thelabel = parser.GetArgument(name);
     console.log(`thelabel is ${thelabel}`)
     const arg = GetArgumentMML(parser, name);
@@ -78,9 +81,31 @@ ArialabelMethods.Arialabel = function (parser, name) {
       NodeUtil.setAttribute(arg, key, value);
     }
     parser.Push(arg);
+}
+
+/**
+ * Implements \arialabel{name}{math}
+ * @param {TexParser} parser The calling parser.
+ * @param {string} name The TeX string
+ */
+ArialabelMethods.EqLabel = function (parser, name) {
+    let thelabel = parser.GetArgument(); 
+    const arg = parser.ParseArg(name); 
+    let data = JSON.parse(thelabel); 
+    // get row list
+    let rows = parser.stack.Top(1).table;
+    // current row
+    let row = rows[rows.length - 1];
+    for (const [key, value] of Object.entries(data)) {
+      // set attributes
+      NodeUtil.setAttribute(row, key, value);
+    }
+    parser.Push(arg); 
 };
+
 new CommandMap('aria-label', {
-    'arialabel': ['Arialabel'],
+    'idlabel': ['IdLabel'],
+    'eqlabel': ['EqLabel'],
 }, ArialabelMethods);
 const configuration = Configuration.create('aria-label', {
     handler: {

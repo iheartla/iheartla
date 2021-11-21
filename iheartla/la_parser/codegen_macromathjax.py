@@ -23,8 +23,8 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         else:
             content = self.visit(node.left, **kwargs) + " & = " + self.visit(node.right, **kwargs)
         json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}]);"}}""".format(self.func_name, sym_list)
-        content = "\\arialabel{{ {} }}{{ {} }}".format(json, content)
-        self.code_frame.expr += content + "\\\\\n"
+        content = content + "\\\\" + "\\eqlabel{{ {} }}{{}}".format(json) + "\n"
+        self.code_frame.expr += content
         self.code_frame.expr_dict[node.raw_text] = content
         return content
 
@@ -62,7 +62,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             content = self.convert_unicode(node.get_name())
         json = """{{"onclick":"event.stopPropagation(); onClickSymbol(this, '{}','{}')", "id":"{}", "sym":"{}"}}""" \
             .format(node.get_name(), self.func_name, id_str, node.get_name())
-        content = "\\arialabel{{ {} }}{{ {} }}".format(json, content)
+        content = "\\idlabel{{ {} }}{{ {} }}".format(json, content)
         return content
 
 

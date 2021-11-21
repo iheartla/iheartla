@@ -134,7 +134,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     content = ''
                     for cur in range(len(sorted_index)):
                         raw_str = index_dict[cur_index][sorted_index[cur]]
-                        content += expr_dict[raw_str] + '\\\\\n'
+                        content += expr_dict[raw_str]
                 content = r"""
 <div class='equation' code_block="{}">
 $${}{}{}$$</div>
