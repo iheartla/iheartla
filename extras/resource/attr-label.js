@@ -17,26 +17,6 @@ const { Configuration } = MathJax._.input.tex.Configuration;
 const { CommandMap } = MathJax._.input.tex.SymbolMap;
 const NodeUtil = MathJax._.input.tex.NodeUtil.default;
 
-function parseAttributes(text, type) {
-   const attr = {};
-   if (text) {
-      let match;
-      while ((match = text.match(/^\s*((?:data-)?[a-z][-a-z]*)\s*=\s*(?:"([^"]*)"|(.*?))(?:\s+|,\s*|$)/i))) {
-         const name = match[1], value = match[2] || match[3]
-         if (type.defaults.hasOwnProperty(name) || ALLOWED.hasOwnProperty(name) || name.substr(0,5) === 'data-') {
-            attr[name] = convertEscapes(value);
-         } else {
-            throw new TexError('BadAttribute', 'Unknown attribute "%1"', name);
-         }
-         text = text.substr(match[0].length);
-      }
-      if (text.length) {
-         throw new TexError('BadAttributeList', 'Can\'t parse as attributes: %1', text);
-      }
-   }
-   return attr;
-}
-
 /**
  * Parses the math argument of the above commands and returns it as single
  * node (in an mrow if necessary). The HTML attributes are then
@@ -63,18 +43,18 @@ let GetArgumentMML = function (parser, name) {
 };
 
 
-let ArialabelMethods = {};
+let AttrlabelMethods = {};
 
 /**
- * Implements \arialabel{name}{math}
+ * Implements \idlabel{name}{math}
  * @param {TexParser} parser The calling parser.
  * @param {string} name The TeX string
  */
-ArialabelMethods.IdLabel = function (parser, name) {
+AttrlabelMethods.IdLabel = function (parser, name) {
     let thelabel = parser.GetArgument(name);
-    console.log(`thelabel is ${thelabel}`)
+    // console.log(`thelabel is ${thelabel}`)
     const arg = GetArgumentMML(parser, name);
-    NodeUtil.setAttribute(arg, 'aria-label', thelabel);
+    NodeUtil.setAttribute(arg, 'attr-label', thelabel);
     let data = JSON.parse(thelabel);
     for (const [key, value] of Object.entries(data)) {
       console.log(`${key}: ${value}`);
@@ -84,11 +64,11 @@ ArialabelMethods.IdLabel = function (parser, name) {
 }
 
 /**
- * Implements \arialabel{name}{math}
+ * Implements \eqlabel{euqation}{}
  * @param {TexParser} parser The calling parser.
  * @param {string} name The TeX string
  */
-ArialabelMethods.EqLabel = function (parser, name) {
+AttrlabelMethods.EqLabel = function (parser, name) {
     let thelabel = parser.GetArgument(); 
     const arg = parser.ParseArg(name); 
     let data = JSON.parse(thelabel); 
@@ -103,12 +83,13 @@ ArialabelMethods.EqLabel = function (parser, name) {
     parser.Push(arg); 
 };
 
-new CommandMap('aria-label', {
+new CommandMap('attr-label', {
     'idlabel': ['IdLabel'],
     'eqlabel': ['EqLabel'],
-}, ArialabelMethods);
-const configuration = Configuration.create('aria-label', {
+}, AttrlabelMethods);
+
+const configuration = Configuration.create('attr-label', {
     handler: {
-        macro: ['aria-label']
+        macro: ['attr-label']
     }
 });

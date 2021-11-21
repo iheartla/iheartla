@@ -72,8 +72,8 @@ function reportWindowSize() {
 window.onresize = reportWindowSize;
 MathJax = {
   loader: {
-    load: ["[ariaLabel]/aria-label.js"],
-    paths: { ariaLabel: "./resource" },
+    load: ["[attrLabel]/attr-label.js"],
+    paths: { attrLabel: "./resource" },
   },
   // options: {
   //   a11y: {
@@ -87,7 +87,7 @@ MathJax = {
   //     },
   //   },
   // },
-  tex: { packages: { "[+]": ["aria-label"] } },
+  tex: { packages: { "[+]": ["attr-label"] } },
 };
 """
             html = r"""<html lang="en">
