@@ -180,7 +180,7 @@ function getSymInfo(symbol, func_name){
 }
 function showSymArrow(tag, symbol, func_name, color='blue', 
   offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20){
-  const matches = document.querySelectorAll("mjx-mi[sym='" + symbol + "']");
+  const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "']");
     for (var i = matches.length - 1; i >= 0; i--) {
       matches[i].setAttribute('class', `highlight_${color}`);
       if (matches[i] !== tag ) {
@@ -224,8 +224,8 @@ function onClickEq(tag, func_name, sym_list) {
   var offsetEndX = 30;
   for(var sym in sym_list){
     content += getSymInfo(sym_list[sym], func_name) + '\n';
-    var symTag = tag.querySelector("mjx-mi[sym='" + sym_list[sym] + "']");
-    const matches = document.querySelectorAll("mjx-mi[sym='" + sym_list[sym] + "']");
+    var symTag = tag.querySelector("mjx-texatom[sym='" + sym_list[sym] + "']");
+    const matches = document.querySelectorAll("mjx-texatom[sym='" + sym_list[sym] + "']");
     // console.log(`tag is ${tag}, symTag is ${symTag}, matches is ${matches}, sym is ${sym_list[sym]}`);
     offsetVerticalX += 5;
     offsetStartY += 2;

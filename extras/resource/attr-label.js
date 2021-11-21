@@ -57,7 +57,7 @@ AttrlabelMethods.IdLabel = function (parser, name) {
     NodeUtil.setAttribute(arg, 'attr-label', thelabel);
     let data = JSON.parse(thelabel);
     for (const [key, value] of Object.entries(data)) {
-      console.log(`${key}: ${value}`);
+      // console.log(`${key}: ${value}`);
       NodeUtil.setAttribute(arg, key, value);
     }
     parser.Push(arg);

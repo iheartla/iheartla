@@ -100,6 +100,7 @@ MathJax = {
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js"></script>
     <script type="text/javascript" src='./resource/paper.js'></script>
     <link rel="stylesheet" href="./resource/paper.css">
 </head>
