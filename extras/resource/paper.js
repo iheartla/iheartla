@@ -83,7 +83,7 @@ function getGlossarySymInfo(symbol){
       }
       content += `</div>`;
   }
-  return `<pa>${content}</pa>`;
+  return `<span>${content}</span>`;
 }
 function parseSym(tag, symbol){
   data = sym_data[symbol];
@@ -97,6 +97,7 @@ function parseSym(tag, symbol){
         // theme: 'material',
         showOnCreate: true,
         allowHTML: true,
+        interactive: true,
         onShow(instance) {
           return true;  
         },
@@ -118,14 +119,14 @@ function parseAllSyms(){
     diff_list = sym_data[k];
     diff_length = diff_list.length;
     if (diff_length > 1) {
-      content = `<pa onclick="parseSym(this, '${k}');"><pa class="clickable_sym">${k}</pa>: ${diff_length} different types</pa><br>`;
+      content = `<span onclick="parseSym(this, '${k}');"><span class="clickable_sym">${k}</span>: ${diff_length} different types</span><br>`;
     }
     else{
       if (diff_list[0].is_defined){
-        content = `<pa onclick="parseSym(this, '${k}');"><pa class="clickable_sym">${k}</pa>: defined </pa><br>`;
+        content = `<span onclick="parseSym(this, '${k}');"><span class="clickable_sym">${k}</span>: defined </span><br>`;
       }
       else{
-        content = `<pa onclick="parseSym(this, '${k}');"><pa class="clickable_sym">${k}</pa>: ${diff_list[0].desc}</pa><br>`;
+        content = `<span onclick="parseSym(this, '${k}');"><span class="clickable_sym">${k}</span>: ${diff_list[0].desc}</span><br>`;
       }
     }
     // console.log(content);

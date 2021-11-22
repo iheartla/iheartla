@@ -40,3 +40,7 @@ body
   z-index: 10;
   pointer-events: none;
 }
+span
+{
+  width: 100%;
+}
