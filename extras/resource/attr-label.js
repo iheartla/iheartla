@@ -83,9 +83,22 @@ AttrlabelMethods.EqLabel = function (parser, name) {
     parser.Push(arg); 
 };
 
+/**
+ * Implements \eqlabel{euqation}{}
+ * @param {TexParser} parser The calling parser.
+ * @param {string} name The TeX string
+ */
+AttrlabelMethods.ProseLabel = function (parser, name) {
+    let modulelabel = parser.GetArgument(); 
+    const arg = parser.ParseArg(name);  
+    NodeUtil.setAttribute(arg, "module", modulelabel);
+    parser.Push(arg); 
+};
+
 new CommandMap('attr-label', {
     'idlabel': ['IdLabel'],
     'eqlabel': ['EqLabel'],
+    'proselabel': ['ProseLabel'],
 }, AttrlabelMethods);
 
 const configuration = Configuration.create('attr-label', {
