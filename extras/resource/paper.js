@@ -182,16 +182,23 @@ function getSymInfo(symbol, func_name){
 function showSymArrow(tag, symbol, func_name, color='blue', 
   offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20){
   const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "']");
-    for (var i = matches.length - 1; i >= 0; i--) {
-      matches[i].setAttribute('class', `highlight_${color}`);
-      if (matches[i] !== tag ) {
-        drawArrow(tag, matches[i],'',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
-      }
+  for (var i = matches.length - 1; i >= 0; i--) {
+    matches[i].setAttribute('class', `highlight_${color}`);
+    if (matches[i] !== tag ) {
+      drawArrow(tag, matches[i],'',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
     }
+  }
+}
+function highlightProse(symbol, func_name, color='red'){
+  const matches = document.querySelectorAll("[module='" + func_name + "']");
+  for (var i = matches.length - 1; i >= 0; i--) {
+    matches[i].setAttribute('class', `highlight_${color}`);
+  }
 }
 function onClickSymbol(tag, symbol, func_name) {
   resetState();
   closeOtherTips();
+  highlightProse(symbol, func_name);
   showSymArrow(tag, symbol, func_name, color='red');
     // d3.selectAll("mjx-mi[sym='" + symbol + "']").style("class", "highlight");
   if (typeof tag._tippy === 'undefined'){
