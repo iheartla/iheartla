@@ -54,7 +54,7 @@ AttrlabelMethods.IdLabel = function (parser, name) {
     let thelabel = parser.GetArgument(name);
     // console.log(`thelabel is ${thelabel}`)
     const arg = GetArgumentMML(parser, name);
-    NodeUtil.setAttribute(arg, 'attr-label', thelabel);
+    // NodeUtil.setAttribute(arg, 'attr-label', thelabel);
     let data = JSON.parse(thelabel);
     for (const [key, value] of Object.entries(data)) {
       // console.log(`${key}: ${value}`);
