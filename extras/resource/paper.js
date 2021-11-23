@@ -189,10 +189,39 @@ function showSymArrow(tag, symbol, func_name, color='blue',
     }
   }
 }
+function highlightSym(symbol, func_name, color='red'){
+  const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "']");
+  for (var i = matches.length - 1; i >= 0; i--) {
+    matches[i].setAttribute('class', `highlight_${color}`);
+  }
+}
 function highlightProse(symbol, func_name, color='red'){
   const matches = document.querySelectorAll("[module='" + func_name + "']");
   for (var i = matches.length - 1; i >= 0; i--) {
     matches[i].setAttribute('class', `highlight_${color}`);
+  }
+}
+function onClickProse(tag, symbol, func_name) {
+  console.log(`onClickProse, ${tag}, ${symbol}, ${func_name}`);
+  highlightSym(symbol, func_name);
+  highlightProse(symbol, func_name);
+  if (typeof tag._tippy === 'undefined'){
+    tippy(tag, {
+        content: getSymInfo(symbol, func_name),
+        placement: 'bottom',
+        animation: 'fade',
+        trigger: 'click', 
+        theme: 'light',
+        showOnCreate: true,
+        onShow(instance) {
+          // closeOtherTips();
+          return true;  
+        },
+        onHide(instance) {
+          resetState();
+          return true;  
+        },
+      });
   }
 }
 function onClickSymbol(tag, symbol, func_name) {

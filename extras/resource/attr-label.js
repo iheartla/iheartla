@@ -28,7 +28,6 @@ const NodeUtil = MathJax._.input.tex.NodeUtil.default;
 let GetArgumentMML = function (parser, name) {
     // console.log(`parser :${parser}, name:${name}`)
     let arg = parser.ParseArg(name);
-    // console.log(`arg :${arg}`)
     if (!NodeUtil.isInferred(arg)) {
         return arg;
     }
@@ -91,7 +90,9 @@ AttrlabelMethods.EqLabel = function (parser, name) {
 AttrlabelMethods.ProseLabel = function (parser, name) {
     let modulelabel = parser.GetArgument(); 
     const arg = parser.ParseArg(name);  
+    let param = arg.coreMO().childNodes[0].getText();
     NodeUtil.setAttribute(arg, "module", modulelabel);
+    NodeUtil.setAttribute(arg, "onclick", `event.stopPropagation(); onClickProse(this, '${param}', '${modulelabel}');`);
     parser.Push(arg); 
 };
 
