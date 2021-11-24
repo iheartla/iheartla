@@ -179,15 +179,33 @@ function getSymInfo(symbol, func_name){
   }
   return content;
 }
-function showSymArrow(tag, symbol, func_name, color='blue', 
+function showSymArrow(tag, symbol, func_name, type='def', color='blue', 
   offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20){
-  const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "'][func='"+ func_name + "']");
-  for (var i = matches.length - 1; i >= 0; i--) {
-    matches[i].setAttribute('class', `highlight_${color}`);
-    if (matches[i] !== tag ) {
-      drawArrow(tag, matches[i],'',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+  tag.setAttribute('class', `highlight_${color}`);
+  console.log(`type are ${type}`)
+  if (type === 'def' ) {
+    // Point to usage
+    const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "'][func='"+ func_name + "'][type='use']");
+    for (var i = matches.length - 1; i >= 0; i--) {
+      matches[i].setAttribute('class', `highlight_${color}`);
+      if (matches[i] !== tag ) {
+        drawArrow(tag, matches[i],'',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+      }
     }
   }
+  else{
+    // Point from def
+    const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "'][func='"+ func_name + "'][type='def']");
+    console.log(`matches are ${matches}`)
+    if (matches !== 'undefined') {}
+      for (var i = matches.length - 1; i >= 0; i--) {
+        matches[i].setAttribute('class', `highlight_${color}`);
+        if (matches[i] !== tag ) {
+          drawArrow(matches[i], tag, '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+        }
+      }
+  }
+  
 }
 function highlightSym(symbol, func_name, color='red'){
   const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "']");
@@ -224,11 +242,21 @@ function onClickProse(tag, symbol, func_name) {
       });
   }
 }
+/**
+ * Click a symbol in equations
+ *
+ * @param {object} tag The current xml tag
+ * @param {string} symbol The symbol name
+ * @param {string} func_name The equation/context name
+ * @param {string} type The type for the symbol: 'def','prose','use'
+ * @return 
+ */
 function onClickSymbol(tag, symbol, func_name, type='def') {
+  console.log(`the type is ${type}`)
   resetState();
   closeOtherTips();
   highlightProse(symbol, func_name);
-  showSymArrow(tag, symbol, func_name, color='red');
+  showSymArrow(tag, symbol, func_name, type, color='red');
     // d3.selectAll("mjx-mi[sym='" + symbol + "']").style("class", "highlight");
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
@@ -268,7 +296,7 @@ function onClickEq(tag, func_name, sym_list) {
     offsetStartY += 2;
     offsetEndY += 2;
     offsetEndX -= 5;
-    showSymArrow(symTag, sym_list[sym], func_name, colors[sym], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+    showSymArrow(symTag, sym_list[sym], func_name, 'def', colors[sym], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
   }
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
