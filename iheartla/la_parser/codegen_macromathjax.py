@@ -21,7 +21,10 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         if node.right.node_type == IRNodeType.Optimize:
             content = self.visit(node.right, **kwargs)
         else:
-            content = self.visit(node.left, **kwargs) + " & = " + self.visit(node.right, **kwargs)
+            self.visiting_lhs = True
+            left_content = self.visit(node.left, **kwargs)
+            self.visiting_lhs = False
+            content = left_content + " & = " + self.visit(node.right, **kwargs)
         json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}]);"}}""".format(self.func_name, sym_list)
         content = content + "\\\\" + "\\eqlabel{{ {} }}{{}}".format(json) + "\n"
         self.code_frame.expr += content
@@ -60,8 +63,8 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             content = self.convert_unicode(node.main_id) + '_{' + ','.join(subs_list) + '}'
         else:
             content = self.convert_unicode(node.get_name())
-        json = """{{"onclick":"event.stopPropagation(); onClickSymbol(this, '{}','{}')", "id":"{}", "sym":"{}", "func":"{}"}}""" \
-            .format(node.get_name(), self.func_name, id_str, node.get_name(), self.func_name)
+        json = """{{"onclick":"event.stopPropagation(); onClickSymbol(this, '{}','{}', '{}')", "id":"{}", "sym":"{}", "func":"{}", "type":"{}"}}""" \
+            .format(node.get_name(), self.func_name, "def" if self.visiting_lhs else "use", id_str, node.get_name(), self.func_name, "def" if self.visiting_lhs else "use")
         content = "\\idlabel{{ {} }}{{ {} }}".format(json, content)
         return content
 
