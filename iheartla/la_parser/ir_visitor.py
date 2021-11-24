@@ -36,6 +36,7 @@ class IRVisitor(object):
         self.func_name = 'myExpression'
         self.param_name_test = 'p'  # param name for test function
         self.convert_matrix = False
+        self.visiting_lhs = False
         self.lhs_list = []
         self.module_list = []
         self.module_syms = {}

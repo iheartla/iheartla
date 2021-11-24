@@ -224,7 +224,7 @@ function onClickProse(tag, symbol, func_name) {
       });
   }
 }
-function onClickSymbol(tag, symbol, func_name) {
+function onClickSymbol(tag, symbol, func_name, type='def') {
   resetState();
   closeOtherTips();
   highlightProse(symbol, func_name);
