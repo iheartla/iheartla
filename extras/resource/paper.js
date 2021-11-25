@@ -182,7 +182,6 @@ function getSymInfo(symbol, func_name){
 function showSymArrow(tag, symbol, func_name, type='def', color='blue', 
   offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20){
   tag.setAttribute('class', `highlight_${color}`);
-  console.log(`type are ${type}`)
   if (type === 'def' ) {
     // Point to usage
     const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "'][func='"+ func_name + "'][type='use']");
@@ -196,7 +195,6 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
   else{
     // Point from def
     const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "'][func='"+ func_name + "'][type='def']");
-    console.log(`matches are ${matches}`)
     if (matches !== 'undefined') {}
       for (var i = matches.length - 1; i >= 0; i--) {
         matches[i].setAttribute('class', `highlight_${color}`);
@@ -256,7 +254,7 @@ function onClickSymbol(tag, symbol, func_name, type='def') {
   resetState();
   closeOtherTips();
   highlightProse(symbol, func_name);
-  showSymArrow(tag, symbol, func_name, type, color='red');
+  showSymArrow(tag, symbol, func_name, type='def', color='red');
     // d3.selectAll("mjx-mi[sym='" + symbol + "']").style("class", "highlight");
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
@@ -287,16 +285,22 @@ function onClickEq(tag, func_name, sym_list) {
   var offsetStartY = 0;
   var offsetEndY = 0;
   var offsetEndX = 30;
-  for(var sym in sym_list){
-    content += getSymInfo(sym_list[sym], func_name) + '\n';
-    var symTag = tag.querySelector("mjx-texatom[sym='" + sym_list[sym] + "']");
-    const matches = document.querySelectorAll("mjx-texatom[sym='" + sym_list[sym] + "']");
+  for (var i = sym_list.length - 1; i >= 0; i--) {
+    sym = sym_list[i];
+    content += getSymInfo(sym_list[i], func_name) + '\n';
+    var symTag = tag.querySelector("mjx-texatom[sym='" + sym_list[i] + "']");
+    const matches = document.querySelectorAll("mjx-texatom[sym='" + sym_list[i] + "']");
     // console.log(`tag is ${tag}, symTag is ${symTag}, matches is ${matches}, sym is ${sym_list[sym]}`);
     offsetVerticalX += 5;
     offsetStartY += 2;
     offsetEndY += 2;
     offsetEndX -= 5;
-    showSymArrow(symTag, sym_list[sym], func_name, 'def', colors[sym], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+    if (i === sym_list.length - 1) {
+      showSymArrow(symTag, sym_list[i], func_name, 'def', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+    }
+    else{
+      showSymArrow(symTag, sym_list[i], func_name, 'use', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+    }
   }
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
