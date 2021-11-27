@@ -9,10 +9,12 @@ function drawArrow( startElement, endElement, style='' , color='blue',
     // Create a new SVG node
     // var svg = SVG().addTo('body').size('100%', '100%').move(-1010, -410);
     // console.log(`start is ${startElement}, end is ${endElement}`)
-    var svg = SVG().addTo('body').size('100%', '100%').attr('left', '0px');
     // console.log(`svg is ${svg}`);
     var body = document.querySelector("body");
-    var style = body.currentStyle || window.getComputedStyle(body);
+    var style = window.getComputedStyle(body);
+    var newWidth = parseInt(style.width, 10) + parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+    var newHeight = parseInt(style.height, 10);
+    var svg = SVG().addTo('body').size(`${newWidth}px`, `${newHeight}px`).attr('left', '0px');
     // Name it for selector queries so you can style it and also delete it
     svg.addClass("arrow")
     // Get the position of the start and end elements in absolute coordinates

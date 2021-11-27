@@ -56,7 +56,7 @@ function reportWindowSize() {
     for (var i = arrows.length - 1; i >= 0; i--) {
       var arrow = arrows[i];
       var body = document.querySelector("body");
-      var style = body.currentStyle || window.getComputedStyle(body);
+      var style = window.getComputedStyle(body);
       var curOffset = parseInt(style.marginLeft, 10)
       var oldOffset = arrow.getAttribute('offset');
       arrow.setAttribute('offset', curOffset);
@@ -64,8 +64,10 @@ function reportWindowSize() {
       var arrowStyle = window.getComputedStyle(arrow); 
       var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
       arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
-      arrow.style.width = body.style.width;
-      arrow.style.height = body.style.height;  
+      var newWidth = parseInt(style.width, 10) + parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+      arrow.style.width = `${newWidth}px`;
+      arrow.style.height = style.height; 
+      // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
     }
   }
 }
