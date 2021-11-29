@@ -87,10 +87,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
         text = "\n".join(lines)
         file_dict = {}
         # Find all prose
+        prose_dict = {}
         for m in self.SPAN_BLOCK_RE.finditer(text):
-            print(m.group('context'))
-            print(m.group('symbol'))
-            print(m.group('code'))
+            desc = m.group('code')
+            new_desc = desc.replace("${}$".format(m.group('symbol')), r"""$\proselabel{{{}}}{{{}}}$""".format(m.group('context'), m.group('symbol')))
+            text = text.replace(desc, new_desc)
         # Find all blocks
         for m in self.FENCED_BLOCK_RE.finditer(text):
             module_name = m.group('module')
