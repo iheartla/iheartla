@@ -92,6 +92,7 @@ AttrlabelMethods.ProseLabel = function (parser, name) {
     const arg = parser.ParseArg(name);  
     let param = arg.coreMO().childNodes[0].getText();
     NodeUtil.setAttribute(arg, "module", modulelabel);
+    NodeUtil.setAttribute(arg, "sym", param);
     NodeUtil.setAttribute(arg, "onclick", `event.stopPropagation(); onClickProse(this, '${param}', '${modulelabel}');`);
     parser.Push(arg); 
 };
