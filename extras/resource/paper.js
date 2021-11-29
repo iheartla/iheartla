@@ -197,24 +197,25 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
   else{
     // Point from def
     const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "'][func='"+ func_name + "'][type='def']");
-    if (matches !== 'undefined') {}
+    if (matches !== 'undefined') {
       for (var i = matches.length - 1; i >= 0; i--) {
         matches[i].setAttribute('class', `highlight_${color}`);
         if (matches[i] !== tag ) {
           drawArrow(matches[i], tag, '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
         }
       }
+    }
   }
   // prose label
-  const prose = document.querySelectorAll("[sym='" + symbol + "'][module='"+ func_name + "']");
-  console.log(`${symbol}, ${func_name}, sice is ${prose.length}`)
-  if (prose !== 'undefined') {}
+  const prose = document.querySelectorAll("mjx-mi[sym='" + symbol + "'][module='"+ func_name + "']");
+  if (prose !== 'undefined') {
     for (var i = prose.length - 1; i >= 0; i--) {
       // matches[i].setAttribute('class', `highlight_${color}`);
       if (prose[i] !== tag ) {
         drawArrow(tag, prose[i], '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
       }
     }
+  }
 }
 function highlightSym(symbol, func_name, color='red'){
   const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "']");
@@ -223,7 +224,7 @@ function highlightSym(symbol, func_name, color='red'){
   }
 }
 function highlightProse(symbol, func_name, color='red'){
-  const matches = document.querySelectorAll("[module='" + func_name + "']");
+  const matches = document.querySelectorAll("[sym='" + symbol + "'][module='" + func_name + "']");
   for (var i = matches.length - 1; i >= 0; i--) {
     matches[i].setAttribute('class', `highlight_${color}`);
   }
