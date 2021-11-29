@@ -88,6 +88,7 @@ function getProseArg(parser, name, type='def'){
     let param = arg.coreMO().childNodes[0].getText();
     NodeUtil.setAttribute(arg, "module", modulelabel);
     NodeUtil.setAttribute(arg, "sym", param);
+    NodeUtil.setAttribute(arg, "type", type);
     NodeUtil.setAttribute(arg, "onclick", `event.stopPropagation(); onClickProse(this, '${param}', '${modulelabel}', '${type}');`);
     return arg;
 }

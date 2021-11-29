@@ -193,11 +193,24 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
         drawArrow(tag, matches[i],'',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
       }
     }
+    // prose label
+    const prose = document.querySelectorAll("mjx-mi[sym='" + symbol + "'][module='"+ func_name + "']");
+    if (prose !== 'undefined') {
+      for (var i = prose.length - 1; i >= 0; i--) {
+        // matches[i].setAttribute('class', `highlight_${color}`);
+        if (prose[i] !== tag ) {
+          drawArrow(tag, prose[i], '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+        }
+      }
+    }
   }
   else{
+    console.log(`${type}`)
     // Point from def
     const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "'][func='"+ func_name + "'][type='def']");
-    if (matches !== 'undefined') {
+    console.log(`matches.length is ${matches.length}`)
+    if (matches !== 'undefined' && matches.length !== 0) {
+    console.log(`${matches.length} prose`)
       for (var i = matches.length - 1; i >= 0; i--) {
         matches[i].setAttribute('class', `highlight_${color}`);
         if (matches[i] !== tag ) {
@@ -205,14 +218,17 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
         }
       }
     }
-  }
-  // prose label
-  const prose = document.querySelectorAll("mjx-mi[sym='" + symbol + "'][module='"+ func_name + "']");
-  if (prose !== 'undefined') {
-    for (var i = prose.length - 1; i >= 0; i--) {
-      // matches[i].setAttribute('class', `highlight_${color}`);
-      if (prose[i] !== tag ) {
-        drawArrow(tag, prose[i], '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+    else{
+    console.log(`${type} prose`)
+      // defined in prose
+      const prose = document.querySelectorAll("mjx-mi[sym='" + symbol + "'][module='"+ func_name + "'][type='def']");
+      if (prose !== 'undefined') {
+        for (var i = prose.length - 1; i >= 0; i--) {
+          // matches[i].setAttribute('class', `highlight_${color}`);
+          if (prose[i] !== tag ) {
+            drawArrow(prose[i], tag, '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+          }
+        }
       }
     }
   }
@@ -266,7 +282,7 @@ function onClickSymbol(tag, symbol, func_name, type='def') {
   resetState();
   closeOtherTips();
   highlightProse(symbol, func_name);
-  showSymArrow(tag, symbol, func_name, type='def', color='red');
+  showSymArrow(tag, symbol, func_name, type, color='red');
     // d3.selectAll("mjx-mi[sym='" + symbol + "']").style("class", "highlight");
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
