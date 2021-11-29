@@ -54,7 +54,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
         '''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
-
+    # Match string: <span class="def:context:symbol">***</span>
+    SPAN_BLOCK_RE = re.compile(
+        dedent(r'''(<span\ class="def:)(?P<context>\b\w+\b)(:)(?P<symbol>\b\w+\b)(">)(?P<code>.*?)(</span>)'''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
     def __init__(self, md, config):
         super().__init__(md)
         self.config = config
@@ -82,6 +86,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
             self.checked_for_deps = True
         text = "\n".join(lines)
         file_dict = {}
+        # Find all prose
+        for m in self.SPAN_BLOCK_RE.finditer(text):
+            print(m.group('context'))
+            print(m.group('symbol'))
+            print(m.group('code'))
         # Find all blocks
         for m in self.FENCED_BLOCK_RE.finditer(text):
             module_name = m.group('module')
