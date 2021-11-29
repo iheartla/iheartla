@@ -82,25 +82,39 @@ AttrlabelMethods.EqLabel = function (parser, name) {
     parser.Push(arg); 
 };
 
+function getProseArg(parser, name, type='def'){
+    let modulelabel = parser.GetArgument(); 
+    const arg = parser.ParseArg(name);  
+    let param = arg.coreMO().childNodes[0].getText();
+    NodeUtil.setAttribute(arg, "module", modulelabel);
+    NodeUtil.setAttribute(arg, "sym", param);
+    NodeUtil.setAttribute(arg, "onclick", `event.stopPropagation(); onClickProse(this, '${param}', '${modulelabel}', '${type}');`);
+    return arg;
+}
+
 /**
  * Implements \eqlabel{euqation}{}
  * @param {TexParser} parser The calling parser.
  * @param {string} name The TeX string
  */
 AttrlabelMethods.ProseLabel = function (parser, name) {
-    let modulelabel = parser.GetArgument(); 
-    const arg = parser.ParseArg(name);  
-    let param = arg.coreMO().childNodes[0].getText();
-    NodeUtil.setAttribute(arg, "module", modulelabel);
-    NodeUtil.setAttribute(arg, "sym", param);
-    NodeUtil.setAttribute(arg, "onclick", `event.stopPropagation(); onClickProse(this, '${param}', '${modulelabel}');`);
-    parser.Push(arg); 
+    parser.Push(getProseArg(parser, name, 'use')); 
+};
+
+/**
+ * Implements \eqlabel{euqation}{}
+ * @param {TexParser} parser The calling parser.
+ * @param {string} name The TeX string
+ */
+AttrlabelMethods.ProseDefLabel = function (parser, name) { 
+    parser.Push(getProseArg(parser, name, 'def')); 
 };
 
 new CommandMap('attr-label', {
     'idlabel': ['IdLabel'],
     'eqlabel': ['EqLabel'],
     'proselabel': ['ProseLabel'],
+    'prosedeflabel': ['ProseDefLabel'],
 }, AttrlabelMethods);
 
 const configuration = Configuration.create('attr-label', {

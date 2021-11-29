@@ -228,7 +228,7 @@ function highlightProse(symbol, func_name, color='red'){
     matches[i].setAttribute('class', `highlight_${color}`);
   }
 }
-function onClickProse(tag, symbol, func_name) {
+function onClickProse(tag, symbol, func_name, type='def') {
   console.log(`onClickProse, ${tag}, ${symbol}, ${func_name}`);
   highlightSym(symbol, func_name);
   highlightProse(symbol, func_name);
