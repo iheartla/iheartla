@@ -72,6 +72,8 @@ function reportWindowSize() {
   }
 }
 window.onresize = reportWindowSize;
+"""
+            mathjax = r'''<script>
 MathJax = {
   loader: {
     load: ["[attrLabel]/attr-label.js"],
@@ -93,11 +95,12 @@ MathJax = {
    inlineMath: [['$', '$'], ['\\(', '\\)']]
    },
 };
-"""
+    </script>'''
             html = r"""<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+    {mathjax}
     <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
@@ -115,6 +118,6 @@ const sym_data = JSON.parse('{sym_json}');
 <img src="./resource/glossary.png" id="glossary" alt="glossary" width="22" height="28">
 {body}
 </body>
-</html>""".format(equation_json=equation_json,  sym_json=sym_json, script=script, body=body)
+</html>""".format(mathjax=mathjax, equation_json=equation_json,  sym_json=sym_json, script=script, body=body)
             save_to_file(html, "/Users/pressure/Downloads/lib_paper/paper.html")
-            print(html)
+            # print(html)
