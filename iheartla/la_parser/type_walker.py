@@ -40,13 +40,14 @@ class DependenceData(object):
 
 
 class EquationData(object):
-    def __init__(self, name='', parameters=[], definition=[], dependence=[], symtable={}, desc_dict={}):
+    def __init__(self, name='', parameters=[], definition=[], dependence=[], symtable={}, desc_dict={}, la_content=''):
         self.name = name
         self.parameters = parameters
         self.definition = definition
         self.dependence = dependence
         self.symtable = symtable
         self.desc_dict = desc_dict
+        self.la_content = la_content
 
     def gen_json_content(self):
         content = ''
@@ -59,7 +60,8 @@ class EquationData(object):
         def_list = []
         for lhs in self.definition:
             def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(lhs, self.symtable[lhs].get_json_content()))
-        content = '''"parameters":[{}], "definition":[{}]'''.format(','.join(param_list), ','.join(def_list))
+        self.la_content = self.la_content.replace('\n', '\\\\n')
+        content = '''"parameters":[{}], "definition":[{}], "source":"{}"'''.format(','.join(param_list), ','.join(def_list), self.la_content)
         return content
 
 
@@ -164,7 +166,8 @@ class TypeWalker(NodeWalker):
         return new_symbol
 
     def gen_json_content(self):
-        return EquationData('', copy.deepcopy(self.parameters), copy.deepcopy(self.lhs_list), copy.deepcopy(self.import_module_list),  copy.deepcopy(self.symtable),  copy.deepcopy(self.desc_dict))
+        return EquationData('', copy.deepcopy(self.parameters), copy.deepcopy(self.lhs_list),
+                            copy.deepcopy(self.import_module_list),  copy.deepcopy(self.symtable),  copy.deepcopy(self.desc_dict), self.la_content)
 
     def is_inside_sum(self):
         return len(self.sum_subs) > 0
