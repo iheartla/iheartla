@@ -234,7 +234,7 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
   }
 }
 function highlightSym(symbol, func_name, color='red'){
-  const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "']");
+  const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "'][func='" + func_name + "']");
   for (var i = matches.length - 1; i >= 0; i--) {
     matches[i].setAttribute('class', `highlight_${color}`);
   }
