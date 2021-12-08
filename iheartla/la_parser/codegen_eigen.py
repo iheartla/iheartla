@@ -232,9 +232,9 @@ class CodeGenEigen(CodeGen):
 
     def get_ret_display(self):
         # print return value in main function
-        la_type = self.symtable[self.ret_symbol]
         main_content = ["    {} func_value({});".format(self.get_result_type(), ', '.join(self.parameters))]
-        if la_type is not None:
+        if self.ret_symbol is not None:
+            la_type = self.symtable[self.ret_symbol]
             if la_type.is_matrix() or la_type.is_vector() or la_type.is_scalar():
                 main_content.append('    std::cout<<"return value:\\n"<<func_value.{}<<std::endl;'.format(self.ret_symbol))
             elif la_type.is_sequence():
