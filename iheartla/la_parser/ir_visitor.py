@@ -163,6 +163,18 @@ class IRVisitor(object):
     def symtable(self, value):
         self.get_cur_param_data().symtable = value
 
+    def get_sym_type(self, sym):
+        """
+        find the type for a symbol, uses local scope if possible, otherwise uses global symtable
+        :param sym: symbol name
+        :return: la type
+        """
+        if self.local_func_parsing:
+            if self.local_func_name in self.func_data_dict:
+                if sym in self.func_data_dict[self.local_func_name].params_data.symtable:
+                    return self.func_data_dict[self.local_func_name].params_data.symtable[sym]
+        return self.main_param.symtable[sym]
+
     def get_cur_param_data(self, func_name=''):
         # either main where/given block or local function block
         # if func_name != '':
@@ -599,7 +611,7 @@ class IRVisitor(object):
 
     def get_dim_check_str(self):
         check_list = []
-        for cur_set in self.same_dim_list:
+        for cur_set in self.get_cur_param_data().same_dim_list:
             cur_list = list(cur_set)
             for cur_index in range(1, len(cur_list)):
                 check_list.append("{} == {}".format(cur_list[0], cur_list[cur_index]))
@@ -615,8 +627,8 @@ class IRVisitor(object):
         return prefix + "\n{}".format(prefix).join(lines) + '\n'
 
     def convert_bound_symbol(self, name):
-        if name in self.dim_seq_set:
-            main_dict = self.dim_dict[name]
+        if name in self.get_cur_param_data().dim_seq_set:
+            main_dict = self.get_cur_param_data().dim_dict[name]
             for key, value in main_dict.items():
                 return key
         return name
