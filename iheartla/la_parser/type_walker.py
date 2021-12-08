@@ -464,7 +464,7 @@ class TypeWalker(NodeWalker):
                                 # last statment
                                 if type(cur_stat).__name__ == 'Assignment':
                                     kwargs[SET_RET_SYMBOL] = True
-                                else:
+                                elif type(cur_stat).__name__ != 'LocalFunc':
                                     # new symbol for return value
                                     self.ret_symbol = "ret"
                                     update_ret_type = True
@@ -489,7 +489,7 @@ class TypeWalker(NodeWalker):
                 if index == len(stat_list) - 1:
                     if type(stat_list[index]).__name__ == 'Assignment':
                         kwargs[SET_RET_SYMBOL] = True
-                    else:
+                    elif type(stat_list[index]).__name__ != 'LocalFunc':
                         # new symbol for return value
                         self.ret_symbol = "ret"
                         update_ret_type = True
