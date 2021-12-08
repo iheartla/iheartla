@@ -511,37 +511,38 @@ class CodeGenNumpy(CodeGen):
         content = []
         exp_info = self.visit(node.exp)
         exp_str = exp_info.content
-        if self.symtable[assign_id].is_matrix():
-            content.append("{} = np.zeros(({}, {}))\n".format(assign_id, self.symtable[assign_id].rows, self.symtable[assign_id].cols))
-        elif self.symtable[assign_id].is_vector():
-            content.append("{} = np.zeros(({}, ))\n".format(assign_id, self.symtable[assign_id].rows))
+        assign_id_type = self.get_sym_type(assign_id)
+        if assign_id_type.is_matrix():
+            content.append("{} = np.zeros(({}, {}))\n".format(assign_id, assign_id_type.rows, assign_id_type.cols))
+        elif assign_id_type.is_vector():
+            content.append("{} = np.zeros(({}, ))\n".format(assign_id, assign_id_type.rows))
             # content.append("{} = np.zeros(({}, 1))\n".format(assign_id, self.symtable[assign_id].rows))
-        elif self.symtable[assign_id].is_sequence():
-            ele_type = self.symtable[assign_id].element_type
-            content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, self.symtable[assign_id].size, ele_type.rows, ele_type.cols))
+        elif assign_id_type.is_sequence():
+            ele_type = assign_id_type.element_type
+            content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, assign_id_type.size, ele_type.rows, ele_type.cols))
         else:
             content.append("{} = 0\n".format(assign_id))
         sym_info = node.sym_dict[target_var[0]]
-        if self.symtable[target_var[0]].is_matrix():
+        if self.get_sym_type(target_var[0]).is_matrix():
             if sub == sym_info[0]:
                 content.append("for {} in range(1, {}.shape[0]+1):\n".format(sub, target_var[0]))
             else:
                 content.append("for {} in range(1, {}.shape[1]+1):\n".format(sub, target_var[0]))
-        elif self.symtable[target_var[0]].is_sequence():
+        elif self.get_sym_type(target_var[0]).is_sequence():
             sym_list = node.sym_dict[target_var[0]]
             sub_index = sym_list.index(sub)
             if sub_index == 0:
                 size_str = "len({})".format(self.convert_bound_symbol(target_var[0]))
             elif sub_index == 1:
-                if self.symtable[target_var[0]].element_type.is_dynamic_row():
+                if self.get_sym_type(target_var[0]).element_type.is_dynamic_row():
                     size_str = "{}[{}-1].shape[0]".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
                 else:
-                    size_str = "{}".format(self.symtable[target_var[0]].element_type.rows)
+                    size_str = "{}".format(self.get_sym_type(target_var[0]).element_type.rows)
             else:
-                if self.symtable[target_var[0]].element_type.is_dynamic_col():
+                if self.get_sym_type(target_var[0]).element_type.is_dynamic_col():
                     size_str = "{}[{}-1].shape[1]".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
                 else:
-                    size_str = "{}".format(self.symtable[target_var[0]].element_type.cols)
+                    size_str = "{}".format(self.get_sym_type(target_var[0]).element_type.cols)
             content.append("for {} in range(1, {}+1):\n".format(sub, size_str))
         else:
             content.append("for {} in range(1, len({})+1):\n".format(sub, self.convert_bound_symbol(target_var[0])))
@@ -608,7 +609,9 @@ class CodeGenNumpy(CodeGen):
         type_checks = self.update_prelist_str(type_checks, '    ')
         if len(type_checks) > 0:
             content += type_checks + '\n'
-        content += '        return {}\n'.format(self.visit(node.expr, **kwargs).content)
+        expr_info = self.visit(node.expr, **kwargs)
+        content += self.update_prelist_str(expr_info.pre_list, "    ")
+        content += '        return {}\n'.format(expr_info.content)
         if self.local_func_def != '':
             self.local_func_def += '\n'
         self.local_func_def += content
