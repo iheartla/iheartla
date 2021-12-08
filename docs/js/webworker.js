@@ -8,10 +8,12 @@ self.onmessage = async(event) => {
           indexURL : self.location.origin + "/iheartla/js/pyodide/"
         });
         let wheel = self.location.origin + `/iheartla-0.0.1-py3-none-any.whl`
+        let tatsu = self.location.origin + `/TatSu-4.4.0-py2.py3-none-any.whl`
         pythonCode = `
 import micropip
-micropip.install('appdirs')
-micropip.install('tatsu')
+micropip.install('appdirs') 
+micropip.install('regex') 
+micropip.install('${tatsu}')
 micropip.install('${wheel}')
 `
     }
