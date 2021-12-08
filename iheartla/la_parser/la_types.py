@@ -176,7 +176,7 @@ class SequenceType(LaVarType):
         return self.element_type.is_dynamic()
 
     def get_json_content(self):
-        return """{{"type": "sequence", "element":{}, "size":{}}}""".format(self.element_type.get_json_content(), self.size)
+        return """{{"type": "sequence", "element":{}, "size":"{}"}}""".format(self.element_type.get_json_content(), self.size)
 
 
 class MatrixType(LaVarType):

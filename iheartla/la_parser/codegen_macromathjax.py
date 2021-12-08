@@ -43,7 +43,15 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         else:
             def_params = '\\left[ ' + params_str + ' \\right]'
         content = self.visit(node.name, **kwargs) + def_params + " & = " + self.visit(node.expr, **kwargs)
-        self.code_frame.expr += content + '\n'
+        sym_list = ''
+        for sym in node.symbols:
+            sym_list += "'{}'".format(sym) + ','
+        sym_list += "'{}'".format(node.name.get_main_id())
+        json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}]);"}}""".format(self.func_name,
+                                                                                                   sym_list)
+        saved_content = content + "\\\\" + "\\eqlabel{{ {} }}{{}}".format(json) + "\n"
+        self.code_frame.expr += saved_content + '\n'
+        self.code_frame.expr_dict[node.raw_text] = saved_content
         if len(node.defs) > 0:
             self.local_func_parsing = True
             par_list = []

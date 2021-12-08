@@ -1072,6 +1072,7 @@ class TypeWalker(NodeWalker):
         self.func_data_dict[name_info.ir.get_main_id()].params_data.parameters = par_names
         ir_node.separators = node.separators
         ir_node.la_type = FunctionType(params=param_tps, ret=expr_info.ir.la_type)
+        ir_node.symbols = expr_info.symbols
         self.symtable[name_info.ir.get_main_id()] = ir_node.la_type
         self.local_func_parsing = False
         return NodeInfo(ir=ir_node)
