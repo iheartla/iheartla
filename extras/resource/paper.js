@@ -186,10 +186,11 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
   tag.setAttribute('class', `highlight_${color}`);
   if (type === 'def' ) {
     // Point to usage
-    const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "'][func='"+ func_name + "'][type='use']");
+    const matches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "'][type='use']");
     for (var i = matches.length - 1; i >= 0; i--) {
       matches[i].setAttribute('class', `highlight_${color}`);
-      if (matches[i] !== tag ) {
+      // console.log(`${i} is ${matches[i].innerHTML}`)
+      if (matches[i] !== tag && matches[i].tagName.startsWith("MJX")) {
         drawArrow(tag, matches[i],'',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
       }
     }
@@ -205,21 +206,20 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
     }
   }
   else{
-    console.log(`${type}`)
     // Point from def
-    const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "'][func='"+ func_name + "'][type='def']");
-    console.log(`matches.length is ${matches.length}`)
+    const matches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "'][type='def']");
+    // console.log(`matches.length is ${matches.length}`)
     if (matches !== 'undefined' && matches.length !== 0) {
-    console.log(`${matches.length} prose`)
+      // console.log(`${matches.length} prose`)
       for (var i = matches.length - 1; i >= 0; i--) {
+        // console.log(`${i} is ${matches[i].innerHTML}, tag is ${matches[i].tagName}`)
         matches[i].setAttribute('class', `highlight_${color}`);
-        if (matches[i] !== tag ) {
+        if (matches[i] !== tag && matches[i].tagName.startsWith("MJX")) {
           drawArrow(matches[i], tag, '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
         }
       }
     }
     else{
-    console.log(`${type} prose`)
       // defined in prose
       const prose = document.querySelectorAll("mjx-mi[sym='" + symbol + "'][module='"+ func_name + "'][type='def']");
       if (prose !== 'undefined') {
@@ -278,7 +278,7 @@ function onClickProse(tag, symbol, func_name, type='def') {
  * @return 
  */
 function onClickSymbol(tag, symbol, func_name, type='def') {
-  console.log(`the type is ${type}`)
+  // console.log(`the type is ${type}, sym is ${symbol}`)
   resetState();
   closeOtherTips();
   highlightProse(symbol, func_name);

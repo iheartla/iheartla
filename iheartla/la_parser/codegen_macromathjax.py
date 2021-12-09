@@ -71,7 +71,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             content = self.convert_unicode(node.main_id) + '_{' + ','.join(subs_list) + '}'
         else:
             content = self.convert_unicode(node.get_name())
-        json = """{{"onclick":"event.stopPropagation(); onClickSymbol(this, '{}','{}', '{}')", "id":"{}", "sym":"{}", "func":"{}", "type":"{}"}}""" \
+        json = """{{"onclick":"event.stopPropagation(); onClickSymbol(this, '{}','{}', '{}')", "id":"{}", "sym":"{}", "func":"{}", "type":"{}", "case":"equation"}}""" \
             .format(node.get_name(), self.func_name, "def" if self.visiting_lhs else "use", id_str, node.get_name(), self.func_name, "def" if self.visiting_lhs else "use")
         content = "\\idlabel{{ {} }}{{ {} }}".format(json, content)
         return content
