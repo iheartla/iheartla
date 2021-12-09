@@ -307,7 +307,7 @@ function onClickSymbol(tag, symbol, func_name, type='def') {
 function onClickEq(tag, func_name, sym_list) { 
   closeOtherTips();
   resetState();
-  var colors =['red', 'green', 'blue', 'yellow']
+  var colors =['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink', 'Tomato', 'Orange', 'DarkRed', 'LightCoral', 'Khaki']
   content = "This equation has " + sym_list.length + " symbols\n";
   var offsetVerticalX = 0;
   var offsetStartY = 0;

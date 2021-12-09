@@ -12,8 +12,15 @@ body
   border-radius: 8px;
   margin: auto;
 }
+/*https://htmlcolorcodes.com/color-names/*/
 .highlight_red {
  color: red; 
+}
+.highlight_DarkRed {
+ color: #8B0000; 
+}
+.highlight_LightCoral {
+ color: #F08080; 
 }
 .highlight {
  color: red; 
@@ -21,11 +28,32 @@ body
 .highlight_blue {
  color: blue; 
 }
+.highlight_DeepSkyBlue {
+ color: #00BFFF; 
+}
 .highlight_green {
  color: green; 
 }
+.highlight_YellowGreen {
+ color: #9ACD32; 
+}
 .highlight_yellow {
  color: yellow; 
+}
+.highlight_Khaki {
+ color: #F0E68C; 
+}
+.highlight_HotPink {
+ color: #FF69B4; 
+}
+.highlight_Tomato {
+ color: #FF6347; 
+}
+.highlight_Orange {
+ color: #FFA500; 
+}
+.highlight_Gold {
+ color: #FFD700; 
 }
 .normal {
  color: black; 
