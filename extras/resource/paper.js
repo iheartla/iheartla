@@ -224,8 +224,8 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
       const prose = document.querySelectorAll("mjx-mi[sym='" + symbol + "'][module='"+ func_name + "'][type='def']");
       if (prose !== 'undefined') {
         for (var i = prose.length - 1; i >= 0; i--) {
-          // matches[i].setAttribute('class', `highlight_${color}`);
           if (prose[i] !== tag ) {
+            prose[i].setAttribute('class', `highlight_${color}`);
             drawArrow(prose[i], tag, '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
           }
         }
