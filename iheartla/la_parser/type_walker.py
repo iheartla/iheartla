@@ -1707,6 +1707,7 @@ class TypeWalker(NodeWalker):
                     ret_type.cols = name_type.ret.cols
             elif name_type.ret.is_set():
                 ret_type = SetType(size=name_type.ret.size, int_list=name_type.ret.int_list)
+            symbols.add(ir_node.name.get_name())
             node_info = NodeInfo(ret_type, symbols=symbols)
             ir_node.la_type = ret_type
             node_info.ir = ir_node
