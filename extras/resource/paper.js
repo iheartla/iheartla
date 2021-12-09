@@ -195,15 +195,15 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
       }
     }
     // prose label
-    const prose = document.querySelectorAll("mjx-mi[sym='" + symbol + "'][module='"+ func_name + "']");
-    if (prose !== 'undefined') {
-      for (var i = prose.length - 1; i >= 0; i--) {
-        // matches[i].setAttribute('class', `highlight_${color}`);
-        if (prose[i] !== tag ) {
-          drawArrow(tag, prose[i], '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
-        }
-      }
-    }
+    // const prose = document.querySelectorAll("mjx-mi[sym='" + symbol + "'][module='"+ func_name + "']");
+    // if (prose !== 'undefined') {
+    //   for (var i = prose.length - 1; i >= 0; i--) {
+    //     // matches[i].setAttribute('class', `highlight_${color}`);
+    //     if (prose[i] !== tag ) {
+    //       drawArrow(tag, prose[i], '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+    //     }
+    //   }
+    // }
   }
   else{
     // Point from def
@@ -316,18 +316,21 @@ function onClickEq(tag, func_name, sym_list) {
   for (var i = sym_list.length - 1; i >= 0; i--) {
     sym = sym_list[i];
     content += getSymInfo(sym_list[i], func_name) + '\n';
-    var symTag = tag.querySelector("mjx-texatom[sym='" + sym_list[i] + "']");
-    const matches = document.querySelectorAll("mjx-texatom[sym='" + sym_list[i] + "']");
+    var symTag = tag.querySelector("[case='equation'][sym='" + sym_list[i] + "']");
+    const matches = document.querySelectorAll("[case='equation'][sym='" + sym_list[i] + "']");
     // console.log(`tag is ${tag}, symTag is ${symTag}, matches is ${matches}, sym is ${sym_list[sym]}`);
     offsetVerticalX += 5;
     offsetStartY += 2;
     offsetEndY += 2;
     offsetEndX -= 5;
-    if (i === sym_list.length - 1) {
-      showSymArrow(symTag, sym_list[i], func_name, 'def', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
-    }
-    else{
-      showSymArrow(symTag, sym_list[i], func_name, 'use', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+    if (symTag !== null){
+      console.log(`symTag is ${symTag}`);
+      if (i === sym_list.length - 1) {
+        showSymArrow(symTag, sym_list[i], func_name, 'def', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+      }
+      else{
+        showSymArrow(symTag, sym_list[i], func_name, 'use', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+      }
     }
   }
   if (typeof tag._tippy === 'undefined'){
