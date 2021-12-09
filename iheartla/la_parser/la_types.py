@@ -274,6 +274,12 @@ class FunctionType(LaVarType):
     def ret_template(self):
         return len(self.ret_symbols) > 0
 
+    def get_json_content(self):
+        param_list = []
+        for param in self.params:
+            param_list.append(param.get_json_content())
+        return """{{"type": "function", "params":[{}], "ret":{}}}""".format(','.join(param_list), self.ret.get_json_content())
+
 
 class SummationAttrs(object):
     def __init__(self, subs=None, var_list=None):
