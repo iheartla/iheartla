@@ -249,6 +249,9 @@ function onClickProse(tag, symbol, func_name, type='def') {
   console.log(`onClickProse, ${tag}, ${symbol}, ${func_name}`);
   highlightSym(symbol, func_name);
   highlightProse(symbol, func_name);
+  if (type !== 'def') {
+    showSymArrow(tag, symbol, func_name, 'use', color='red');
+  }
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
         content: getSymInfo(symbol, func_name),
