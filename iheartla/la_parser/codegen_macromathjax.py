@@ -12,10 +12,18 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         self.code_frame.pre_str = self.pre_str
         self.code_frame.post_str = self.post_str
 
+    def filter_subscript(self, symbol):
+        # x_i to x
+        if '_' in symbol:
+            split_res = symbol.split('_')
+            return split_res[0]
+        else:
+            return symbol
+
     def visit_assignment(self, node, **kwargs):
         sym_list = ''
         for sym in node.symbols:
-            sym_list += "'{}'".format(sym) + ','
+            sym_list += "'{}'".format(self.filter_subscript(sym)) + ','
         sym_list += "'{}'".format(node.left.get_main_id())
         content = ''
         if node.right.node_type == IRNodeType.Optimize:
@@ -45,7 +53,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         content = self.visit(node.name, **kwargs) + def_params + " & = " + self.visit(node.expr, **kwargs)
         sym_list = ''
         for sym in node.symbols:
-            sym_list += "'{}'".format(sym) + ','
+            sym_list += "'{}'".format(self.filter_subscript(sym)) + ','
         sym_list += "'{}'".format(node.name.get_main_id())
         json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}]);"}}""".format(self.func_name,
                                                                                                    sym_list)
