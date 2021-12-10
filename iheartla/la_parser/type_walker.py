@@ -2356,16 +2356,16 @@ class TypeWalker(NodeWalker):
                             assert '0' == cur_ir.raw_text or '1' == cur_ir.raw_text, get_err_msg_info(cur_ir.parse_info, "Can not lift {}".format(cur_ir.raw_text))
                     list_dim[(i, j)] = [type_array[i][j].rows, type_array[i][j].cols]
         node_type = MatrixType(rows=rows, cols=cols, block=block, sparse=sparse, list_dim=list_dim, item_types=node_info.content)
-        node_info = NodeInfo(node_type)
+        ret_node_info = NodeInfo(node_type, symbols=node_info.symbols)
         if LHS in kwargs:
             lhs = kwargs[LHS]
             new_id = self.generate_var_name(lhs)
             self.symtable[new_id] = MatrixType(rows=rows, cols=cols, block=block, sparse=sparse, list_dim=list_dim, item_types=node_info.content)
-            node_info.symbol = new_id
+            ret_node_info.symbol = new_id
             ir_node.symbol = new_id
-        ir_node.la_type = node_info.la_type
-        node_info.ir = ir_node
-        return node_info
+        ir_node.la_type = ret_node_info.la_type
+        ret_node_info.ir = ir_node
+        return ret_node_info
 
     def walk_MatrixRows(self, node, **kwargs):
         ir_node = MatrixRowsNode(parse_info=node.parseinfo, raw_text=node.text)
