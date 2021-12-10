@@ -4,6 +4,7 @@ body
   top: 0;
   left: 0;
   font-size: 12pt;
+  font-family: "Linux Libertine";
   padding-left:  10px;
   padding-right: 10px;
   width: 785px;
@@ -71,4 +72,60 @@ body
 span
 {
   width: 100%;
+}
+
+@font-face {
+    font-family: 'Linux Libertine'; /* normal */
+    src: url('./fonts/linux-libertine/LinLibertine_R.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Linux Libertine'; /* italic */
+    src: url('./fonts/linux-libertine/LinLibertine_RI.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Linux Libertine'; /* bold */
+    src: url('./fonts/linux-libertine/LinLibertine_RB.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Linux Libertine'; /* bold */
+    src: url('./fonts/linux-libertine/LinLibertine_RBI.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Linux Biolinum'; /* normal */
+    src: url('./fonts/linux-biolinum/LinBiolinum_R.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Linux Biolinum'; /* italic */
+    src: url('./fonts/linux-biolinum/LinBiolinum_RI.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Linux Biolinum'; /* bold */
+    src: url('./fonts/linux-biolinum/LinBiolinum_RB.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Linux Biolinum'; /* bold */
+    src: url('./fonts/linux-biolinum/LinBiolinum_RBI.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
 }
