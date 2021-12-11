@@ -4,7 +4,7 @@ body
   top: 0;
   left: 0;
   font-size: 12pt;
-  font-family: "Linux Libertine";
+  font-family: "Linux Libertine", monospace;
   padding-left:  10px;
   padding-right: 10px;
   width: 785px;
@@ -12,6 +12,18 @@ body
   min-height: 0%;
   border-radius: 8px;
   margin: auto;
+}
+mjx-container mjx-utext {
+  font-family: "Linux Libertine", monospace;
+}
+mjx-container svg text {
+  font-family: "Linux Libertine", monospace;
+}
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
 }
 /*https://htmlcolorcodes.com/color-names/*/
 .highlight_red {

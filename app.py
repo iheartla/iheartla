@@ -25,6 +25,7 @@ if __name__ == '__main__':
         for paper_file in args.paper:
             content = read_from_file(paper_file)
             body = markdown.markdown(content, extensions=['markdown.extensions.iheartla_code', \
+                                                          'markdown.extensions.mdx_math', \
                                                           'markdown.extensions.attr_list', \
                                                           'markdown.extensions.fenced_code', \
                                                           'markdown.extensions.abbr', \
@@ -75,6 +76,12 @@ window.onresize = reportWindowSize;
 """
             mathjax = r'''<script>
 MathJax = {
+  chtml: {
+      mtextInheritFont: false,
+      merrorInheritFont: false,
+      mtextFont: "Linux Libertine",
+      merrorFont: "Linux Libertine",
+    },
   loader: {
     load: ["[attrLabel]/attr-label.js"],
     paths: { attrLabel: "./resource" },
