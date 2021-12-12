@@ -1190,7 +1190,7 @@ class CodeGenEigen(CodeGen):
     def visit_assignment(self, node, **kwargs):
         type_info = node
         # visit matrix first
-        content = "    // {}\n".format(node.raw_text)
+        content = self.update_prelist_str([node.raw_text], '    // ')
         left_info = self.visit(node.left, **kwargs)
         left_id = left_info.content
         kwargs[LHS] = left_id
