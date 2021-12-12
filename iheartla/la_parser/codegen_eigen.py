@@ -802,7 +802,7 @@ class CodeGenEigen(CodeGen):
         pre_list += if_info.content
         other_info = self.visit(node.other, **kwargs)
         pre_list.append('    else{\n')
-        pre_list.append('        {} = {}\n'.format(self.visit(assign_node.left, **kwargs).content, other_info.content))
+        pre_list.append('        {} = {};\n'.format(self.visit(assign_node.left, **kwargs).content, other_info.content))
         pre_list.append('    }\n')
         return CodeNodeInfo(cur_m_id, pre_list)
 

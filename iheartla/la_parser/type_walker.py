@@ -464,7 +464,7 @@ class TypeWalker(NodeWalker):
                                 # last statment
                                 if type(cur_stat).__name__ == 'Assignment':
                                     kwargs[SET_RET_SYMBOL] = True
-                                elif type(cur_stat).__name__ != 'LocalFunc':
+                                elif type(cur_stat).__name__ != 'LocalFunc' and type(cur_stat).__name__ != 'MultiCondExpr':
                                     # new symbol for return value
                                     self.ret_symbol = "ret"
                                     update_ret_type = True
@@ -489,7 +489,7 @@ class TypeWalker(NodeWalker):
                 if index == len(stat_list) - 1:
                     if type(stat_list[index]).__name__ == 'Assignment':
                         kwargs[SET_RET_SYMBOL] = True
-                    elif type(stat_list[index]).__name__ != 'LocalFunc':
+                    elif type(stat_list[index]).__name__ != 'LocalFunc' and type(stat_list[index]).__name__ != 'MultiCondExpr':
                         # new symbol for return value
                         self.ret_symbol = "ret"
                         update_ret_type = True
@@ -2313,6 +2313,7 @@ class TypeWalker(NodeWalker):
         ir_node.cond = cond_info.ir
         stat_info = self.walk(node.stat, **kwargs)
         ir_node.stat = stat_info.ir
+        ir_node.la_type = ir_node.stat.la_type
         return NodeInfo(ir=ir_node)
 
     def walk_Vector(self, node, **kwargs):
