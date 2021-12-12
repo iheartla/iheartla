@@ -793,6 +793,19 @@ class CodeGenEigen(CodeGen):
         left_info.pre_list += pre_list
         return left_info
 
+    def visit_multi_conditionals(self, node, **kwargs):
+        assign_node = node.get_ancestor(IRNodeType.Assignment)
+        type_info = node
+        cur_m_id = ''
+        pre_list = []
+        if_info = self.visit(node.ifs, **kwargs)
+        pre_list += if_info.content
+        other_info = self.visit(node.other, **kwargs)
+        pre_list.append('    else{\n')
+        pre_list.append('        {} = {}\n'.format(self.visit(assign_node.left, **kwargs).content, other_info.content))
+        pre_list.append('    }\n')
+        return CodeNodeInfo(cur_m_id, pre_list)
+
     def visit_sparse_matrix(self, node, **kwargs):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         type_info = node
@@ -807,53 +820,74 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo(cur_m_id, pre_list)
 
     def visit_sparse_ifs(self, node, **kwargs):
-        pre_list = []
-        if node.in_cond_only:
+        if node.get_ancestor(IRNodeType.Assignment).right.is_node(IRNodeType.SparseMatrix):
+            pre_list = []
+            if node.in_cond_only:
+                ret = []
+                for cond in node.cond_list:
+                    cond_info = self.visit(cond, **kwargs)
+                    for index in range(len(cond_info.content)):
+                        cond_info.content[index] = self.update_prelist_str([cond_info.content[index]], '    ')
+                    ret += cond_info.pre_list
+                    ret += cond_info.content
+            else:
+                assign_node = node.get_ancestor(IRNodeType.Assignment)
+                sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
+                subs = assign_node.left.subs
+                ret = ["    for( int {}=1; {}<={}; {}++){{\n".format(subs[0], subs[0], sparse_node.la_type.rows, subs[0]),
+                       "        for( int {}=1; {}<={}; {}++){{\n".format(subs[1], subs[1], sparse_node.la_type.cols, subs[1])]
+                for cond in node.cond_list:
+                    cond_info = self.visit(cond, **kwargs)
+                    for index in range(len(cond_info.content)):
+                        cond_info.content[index] = '            ' + cond_info.content[index]
+                    ret += cond_info.content
+                    pre_list += cond_info.pre_list
+                ret.append("        }\n")
+                ret.append("    }\n")
+        else:
+            pre_list = []
             ret = []
             for cond in node.cond_list:
                 cond_info = self.visit(cond, **kwargs)
                 for index in range(len(cond_info.content)):
-                    cond_info.content[index] = self.update_prelist_str([cond_info.content[index]], '    ')
-                ret += cond_info.pre_list
-                ret += cond_info.content
-        else:
-            assign_node = node.get_ancestor(IRNodeType.Assignment)
-            sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
-            subs = assign_node.left.subs
-            ret = ["    for( int {}=1; {}<={}; {}++){{\n".format(subs[0], subs[0], sparse_node.la_type.rows, subs[0]),
-                   "        for( int {}=1; {}<={}; {}++){{\n".format(subs[1], subs[1], sparse_node.la_type.cols, subs[1])]
-            for cond in node.cond_list:
-                cond_info = self.visit(cond, **kwargs)
-                for index in range(len(cond_info.content)):
-                    cond_info.content[index] = '            ' + cond_info.content[index]
+                    cond_info.content[index] = '    ' + cond_info.content[index]
                 ret += cond_info.content
                 pre_list += cond_info.pre_list
-            ret.append("        }\n")
-            ret.append("    }\n")
         return CodeNodeInfo(ret, pre_list)
 
     def visit_sparse_if(self, node, **kwargs):
-        self.convert_matrix = True
         assign_node = node.get_ancestor(IRNodeType.Assignment)
-        subs = assign_node.left.subs
-        cond_info = self.visit(node.cond, **kwargs)
-        stat_info = self.visit(node.stat, **kwargs)
-        content = cond_info.pre_list
-        stat_content = stat_info.content
-        # replace '_ij' with '(i,j)'
-        stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '({}, {})'.format(subs[0], subs[1]))
-        if node.loop:
-            content += stat_info.pre_list
-            content.append(cond_info.content)
-            content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(
-                assign_node.left.main.main_id, subs[0], subs[1], stat_content))
-            content.append('}\n')
+        if assign_node.right.is_node(IRNodeType.SparseMatrix):
+            self.convert_matrix = True
+            assign_node = node.get_ancestor(IRNodeType.Assignment)
+            subs = assign_node.left.subs
+            cond_info = self.visit(node.cond, **kwargs)
+            stat_info = self.visit(node.stat, **kwargs)
+            content = cond_info.pre_list
+            stat_content = stat_info.content
+            # replace '_ij' with '(i,j)'
+            stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '({}, {})'.format(subs[0], subs[1]))
+            if node.loop:
+                content += stat_info.pre_list
+                content.append(cond_info.content)
+                content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(
+                    assign_node.left.main.main_id, subs[0], subs[1], stat_content))
+                content.append('}\n')
+            else:
+                content.append('{}({}){{\n'.format("if" if node.first_in_list else "else if",cond_info.content))
+                content += stat_info.pre_list
+                content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(assign_node.left.main.main_id, subs[0], subs[1], stat_content))
+                content.append('}\n')
+            self.convert_matrix = False
         else:
-            content.append('{}({}){{\n'.format("if" if node.first_in_list else "else if",cond_info.content))
+            cond_info = self.visit(node.cond, **kwargs)
+            stat_info = self.visit(node.stat, **kwargs)
+            content = cond_info.pre_list
+            stat_content = stat_info.content
+            content.append('{}({}){{\n'.format("if" if node.first_in_list else "else if", cond_info.content))
             content += stat_info.pre_list
-            content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(assign_node.left.main.main_id, subs[0], subs[1], stat_content))
+            content.append("    {} = {};\n".format(self.visit(assign_node.left, **kwargs).content, stat_content))
             content.append('}\n')
-        self.convert_matrix = False
         return CodeNodeInfo(content)
 
     def visit_sparse_other(self, node, **kwargs):
@@ -1279,6 +1313,8 @@ class CodeGenEigen(CodeGen):
                 content = "".join(right_info.pre_list) + content
             if type(node.right).__name__ == 'SparseMatrix':
                 content = right_info.content
+            elif node.right.is_node(IRNodeType.MultiConds):
+                pass
             else:
                 op = ' = '
                 if node.op == '+=':

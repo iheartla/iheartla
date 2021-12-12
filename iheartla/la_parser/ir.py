@@ -68,6 +68,7 @@ class IRNodeType(Enum):
     NumMatrix = 309
     Vector = 310
     ToMatrix = 311
+    MultiConds = 312
     #
     MatrixIndex = 320
     VectorIndex = 321
@@ -721,6 +722,14 @@ class SolverNode(ExprNode):
         self.left = None
         self.right = None
         self.pow = None   # -> pow node
+
+
+class MultiCondNode(ExprNode):
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.MultiConds, parse_info=parse_info, raw_text=raw_text)
+        self.ifs = None
+        self.other = None
+        self.lhs = None
 
 
 class SparseMatrixNode(ExprNode):
