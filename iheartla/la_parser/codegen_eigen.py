@@ -1298,14 +1298,15 @@ class CodeGenEigen(CodeGen):
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                             self.symtable[sequence].size, left_subs[0])
                 else:
+                    # vector
                     right_exp += "    {} = {}".format(left_info.content, right_info.content)
-                    content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
-                                                         self.symtable[sequence].rows)
+                    content += "    {}.resize({});\n".format(sequence, self.symtable[sequence].rows)
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                             self.symtable[sequence].rows, left_subs[0])
                 if right_info.pre_list:
                     content += self.update_prelist_str(right_info.pre_list, "    ")
-                content += "    " + right_exp + ";\n"
+                if not node.right.is_node(IRNodeType.MultiConds):
+                    content += "    " + right_exp + ";\n"
                 content += '    }\n'
         #
         else:
