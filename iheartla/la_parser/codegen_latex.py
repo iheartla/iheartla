@@ -419,6 +419,15 @@ class CodeGenLatex(CodeGen):
     def visit_cast(self, node, **kwargs):
         return self.visit(node.value, **kwargs)
 
+    def visit_multi_conditionals(self, node, **kwargs):
+        ifs = self.visit(node.ifs, **kwargs)
+        if node.other:
+            other = self.visit(node.other, **kwargs)
+            content = '{} {} {} & \\text{{otherwise}} {}'.format("\\begin{cases}", ifs, other, "\\end{cases}")
+        else:
+            content = '{} {} {} '.format("\\begin{cases}", ifs, "\\end{cases}")
+        return content
+
     def visit_sparse_matrix(self, node, **kwargs):
         if node.id1:
             id1_info = self.visit(node.id1, **kwargs)

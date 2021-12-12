@@ -2204,74 +2204,96 @@ class TypeWalker(NodeWalker):
         return content
 
     def walk_MultiCondExpr(self, node, **kwargs):
-        ir_node = SparseMatrixNode(parse_info=node.parseinfo)
         if LHS in kwargs:
             lhs = kwargs[LHS]
         if ASSIGN_OP in kwargs:
             op = kwargs[ASSIGN_OP]
         all_ids = self.get_all_ids(lhs)
-        # ifsNode
-        ifs_info = self.walk(node.ifs, **kwargs)
-        ifs_node = SparseIfsNode(parse_info=node.ifs.parseinfo)
-        first = True
-        in_cond_only = True
-        for ir in ifs_info.ir:
-            ir.first_in_list = first
-            first = False
-            ifs_node.cond_list.append(ir)
-            ir.set_parent(ifs_node)
-            if not (ir.cond.cond.node_type == IRNodeType.In and ir.cond.cond.same_subs(all_ids[1])):
-                in_cond_only = False
-        ifs_node.set_in_cond_only(in_cond_only)
-        ifs_node.set_parent(ir_node)
-        ir_node.ifs = ifs_node
-        # otherwise
-        if node.other:
-            ir_node.other = self.walk(node.other, **kwargs).ir
-        # definition
-        index_var = self.generate_var_name("{}{}{}".format(all_ids[0], all_ids[1][0], all_ids[1][1]))
-        value_var = self.generate_var_name("{}vals".format(all_ids[0]))
-        if op == '=':  # require dims
-            new_id = self.generate_var_name('sparse')
-            id_name = new_id
-            assert all_ids[0] in self.symtable, get_err_msg_info(node.parseinfo, "Sparse matrix: need dim")
-            if all_ids[0] in self.parameters:
-                self.parameters.remove(all_ids[0])  # not a parameter
-                self.get_cur_param_data().remove_target_from_dim_dict(all_ids[0])
-            id1 = self.symtable[all_ids[0]].rows
-            if not isinstance(id1, int):
-                assert id1 in self.get_cur_param_data().dim_dict or id1 in self.parameters, get_err_msg_info(node.parseinfo, "Sparse matrix: dim {} is not defined".format(id1))
-            id2 = self.symtable[all_ids[0]].cols
-            if not isinstance(id2, int):
-                assert id2 in self.get_cur_param_data().dim_dict or id2 in self.parameters, get_err_msg_info(node.parseinfo, "Sparse matrix: dim {} is not defined".format(id2))
-            la_type = MatrixType(rows=id1, cols=id2, sparse=True, index_var=index_var, value_var=value_var)
-            self.symtable[new_id] = la_type
-        elif op == '+=':
-            assert all_ids[0] in self.symtable, get_err_msg_info(node.parseinfo, "{} is not defined".format(all_ids[0]))
-            la_type = self.symtable[all_ids[0]]
-            id_name = all_ids[0]
-            id1 = self.symtable[all_ids[0]].rows
-            if not isinstance(id1, int):
-                assert id1 in self.symtable, get_err_msg_info(node.parseinfo,
-                                                                   "Sparse matrix: dim {} is not defined".format(id1))
-            id2 = self.symtable[all_ids[0]].cols
-            if not isinstance(id2, int):
-                assert id2 in self.symtable, get_err_msg_info(node.parseinfo,
-                                                                   "Sparse matrix: dim {} is not defined".format(id2))
-            # if node.id1:
-            #     id1_info = self.walk(node.id1, **kwargs)
-            #     id1 = id1_info.content
-            #     ir_node.id1 = id1_info.ir
-            #     id2_info = self.walk(node.id2, **kwargs)
-            #     id2 = id2_info.content
-            #     ir_node.id2 = id2_info.ir
-            #     assert id1 == la_type.rows and id2 == la_type.cols, get_err_msg_info(node.parseinfo, "Sparse matrix: dim mismatch")
+        if all_ids[0] in self.symtable and self.symtable[all_ids[0]].is_sparse_matrix():
+            # sparse matrix
+            ir_node = SparseMatrixNode(parse_info=node.parseinfo)
+            # ifsNode
+            ifs_info = self.walk(node.ifs, **kwargs)
+            ifs_node = SparseIfsNode(parse_info=node.ifs.parseinfo)
+            first = True
+            in_cond_only = True
+            for ir in ifs_info.ir:
+                ir.first_in_list = first
+                first = False
+                ifs_node.cond_list.append(ir)
+                ir.set_parent(ifs_node)
+                if not (ir.cond.cond.node_type == IRNodeType.In and ir.cond.cond.same_subs(all_ids[1])):
+                    in_cond_only = False
+            ifs_node.set_in_cond_only(in_cond_only)
+            ifs_node.set_parent(ir_node)
+            ir_node.ifs = ifs_node
+            # otherwise
+            if node.other:
+                ir_node.other = self.walk(node.other, **kwargs).ir
+            # definition
+            index_var = self.generate_var_name("{}{}{}".format(all_ids[0], all_ids[1][0], all_ids[1][1]))
+            value_var = self.generate_var_name("{}vals".format(all_ids[0]))
+            if op == '=':  # require dims
+                new_id = self.generate_var_name('sparse')
+                id_name = new_id
+                assert all_ids[0] in self.symtable, get_err_msg_info(node.parseinfo, "Sparse matrix: need dim")
+                if all_ids[0] in self.parameters:
+                    self.parameters.remove(all_ids[0])  # not a parameter
+                    self.get_cur_param_data().remove_target_from_dim_dict(all_ids[0])
+                id1 = self.symtable[all_ids[0]].rows
+                if not isinstance(id1, int):
+                    assert id1 in self.get_cur_param_data().dim_dict or id1 in self.parameters, get_err_msg_info(node.parseinfo, "Sparse matrix: dim {} is not defined".format(id1))
+                id2 = self.symtable[all_ids[0]].cols
+                if not isinstance(id2, int):
+                    assert id2 in self.get_cur_param_data().dim_dict or id2 in self.parameters, get_err_msg_info(node.parseinfo, "Sparse matrix: dim {} is not defined".format(id2))
+                la_type = MatrixType(rows=id1, cols=id2, sparse=True, index_var=index_var, value_var=value_var)
+                self.symtable[new_id] = la_type
+            elif op == '+=':
+                assert all_ids[0] in self.symtable, get_err_msg_info(node.parseinfo, "{} is not defined".format(all_ids[0]))
+                la_type = self.symtable[all_ids[0]]
+                id_name = all_ids[0]
+                id1 = self.symtable[all_ids[0]].rows
+                if not isinstance(id1, int):
+                    assert id1 in self.symtable, get_err_msg_info(node.parseinfo,
+                                                                       "Sparse matrix: dim {} is not defined".format(id1))
+                id2 = self.symtable[all_ids[0]].cols
+                if not isinstance(id2, int):
+                    assert id2 in self.symtable, get_err_msg_info(node.parseinfo,
+                                                                       "Sparse matrix: dim {} is not defined".format(id2))
+                # if node.id1:
+                #     id1_info = self.walk(node.id1, **kwargs)
+                #     id1 = id1_info.content
+                #     ir_node.id1 = id1_info.ir
+                #     id2_info = self.walk(node.id2, **kwargs)
+                #     id2 = id2_info.content
+                #     ir_node.id2 = id2_info.ir
+                #     assert id1 == la_type.rows and id2 == la_type.cols, get_err_msg_info(node.parseinfo, "Sparse matrix: dim mismatch")
 
-        node_info = NodeInfo(la_type)
-        node_info.symbol = id_name
-        ir_node.la_type = la_type
-        ir_node.symbol = node_info.symbol
-        node_info.ir = ir_node
+            node_info = NodeInfo(la_type)
+            node_info.symbol = id_name
+            ir_node.la_type = la_type
+            ir_node.symbol = node_info.symbol
+            node_info.ir = ir_node
+        else:
+            # normal multi conditionals
+            ir_node = MultiCondNode(parse_info=node.parseinfo)
+            # ifsNode
+            ifs_info = self.walk(node.ifs, **kwargs)
+            ifs_node = SparseIfsNode(parse_info=node.ifs.parseinfo)
+            ifs_node.set_parent(ir_node)
+            first = True
+            for ir in ifs_info.ir:
+                ir.first_in_list = first
+                first = False
+                ifs_node.cond_list.append(ir)
+                ir.set_parent(ifs_node)
+                la_type = ir.la_type
+            ir_node.ifs = ifs_node
+            if node.other:
+                ir_node.other = self.walk(node.other, **kwargs).ir
+            node_info = NodeInfo(la_type)
+            ir_node.la_type = la_type
+            node_info.ir = ir_node
         return node_info
 
     def walk_MultiIfs(self, node, **kwargs):

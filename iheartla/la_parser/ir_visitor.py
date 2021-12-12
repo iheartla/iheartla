@@ -318,6 +318,7 @@ class IRVisitor(object):
             IRNodeType.MatrixRow: "visit_matrix_row",
             IRNodeType.MatrixRowCommas: "visit_matrix_row_commas",
             IRNodeType.ExpInMatrix: "visit_exp_in_matrix",
+            IRNodeType.MultiConds: "visit_multi_conditionals",
             IRNodeType.SparseMatrix: "visit_sparse_matrix",
             IRNodeType.SparseIfs: "visit_sparse_ifs",
             IRNodeType.SparseIf: "visit_sparse_if",
