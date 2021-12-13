@@ -743,6 +743,20 @@ class CodeGenMatlab(CodeGen):
         left_info.content = "({}\{})".format(left_info.content, right_info.content)
         return left_info
 
+    def visit_multi_conditionals(self, node, **kwargs):
+        assign_node = node.get_ancestor(IRNodeType.Assignment)
+        type_info = node
+        cur_m_id = ''
+        pre_list = []
+        if_info = self.visit(node.ifs, **kwargs)
+        pre_list += if_info.content
+        if node.other:
+            other_info = self.visit(node.other, **kwargs)
+            pre_list.append('    else\n')
+            pre_list.append('        {} = {};\n'.format(self.visit(assign_node.left, **kwargs).content, other_info.content))
+        pre_list.append('    end\n'.format(self.visit(assign_node.left, **kwargs).content, other_info.content))
+        return CodeNodeInfo(cur_m_id, pre_list)
+
     def visit_sparse_matrix(self, node, **kwargs):
         op_type = kwargs[ASSIGN_TYPE]
         lhs = kwargs[LHS]
@@ -773,55 +787,74 @@ class CodeGenMatlab(CodeGen):
         return CodeNodeInfo(cur_m_id, pre_list)
 
     def visit_sparse_ifs(self, node, **kwargs):
-        assign_node = node.get_ancestor(IRNodeType.Assignment)
-        sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
-        subs = assign_node.left.subs
-        ret = ["    for {} = 1:{}\n".format(subs[0], sparse_node.la_type.rows),
-               "        for {} = 1:{}\n".format(subs[1], sparse_node.la_type.cols)]
-        pre_list = []
-        if node.in_cond_only:
+        if node.get_ancestor(IRNodeType.Assignment).right.is_node(IRNodeType.SparseMatrix):
+            assign_node = node.get_ancestor(IRNodeType.Assignment)
+            sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
+            subs = assign_node.left.subs
+            ret = ["    for {} = 1:{}\n".format(subs[0], sparse_node.la_type.rows),
+                   "        for {} = 1:{}\n".format(subs[1], sparse_node.la_type.cols)]
+            pre_list = []
+            if node.in_cond_only:
+                ret = []
+                for cond in node.cond_list:
+                    cond_info = self.visit(cond, **kwargs)
+                    for index in range(len(cond_info.content)):
+                        cond_info.content[index] = self.update_prelist_str([cond_info.content[index]], '    ')
+                    ret += cond_info.pre_list
+                    ret += cond_info.content
+            else:
+                for cond in node.cond_list:
+                    cond_info = self.visit(cond, **kwargs)
+                    for index in range(len(cond_info.content)):
+                        cond_info.content[index] = '            ' + cond_info.content[index]
+                    ret += cond_info.content
+                    pre_list += cond_info.pre_list
+                ret += '            end\n'
+                ret += "        end\n"
+                ret += "    end\n"
+        else:
+            pre_list = []
             ret = []
             for cond in node.cond_list:
                 cond_info = self.visit(cond, **kwargs)
                 for index in range(len(cond_info.content)):
-                    cond_info.content[index] = self.update_prelist_str([cond_info.content[index]], '    ')
-                ret += cond_info.pre_list
-                ret += cond_info.content
-        else:
-            for cond in node.cond_list:
-                cond_info = self.visit(cond, **kwargs)
-                for index in range(len(cond_info.content)):
-                    cond_info.content[index] = '            ' + cond_info.content[index]
+                    cond_info.content[index] = '    ' + cond_info.content[index]
                 ret += cond_info.content
                 pre_list += cond_info.pre_list
-            ret += '            end\n'
-            ret += "        end\n"
-            ret += "    end\n"
         return CodeNodeInfo(ret, pre_list)
 
     def visit_sparse_if(self, node, **kwargs):
-        self.convert_matrix = True
         assign_node = node.get_ancestor(IRNodeType.Assignment)
-        sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
-        subs = assign_node.left.subs
-        cond_info = self.visit(node.cond, **kwargs)
-        stat_info = self.visit(node.stat, **kwargs)
-        content = []
-        stat_content = stat_info.content
-        # replace '_ij' with '(i,j)'
-        stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '({},{})'.format(subs[0], subs[1]))
-        if node.loop:
-            content += stat_info.pre_list
-            content.append(cond_info.content)
-            content.append('    {}(1:2,end+1) = [{};{}];\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
-            content.append('    {}(end+1) = {};\n'.format(sparse_node.la_type.value_var, stat_content))
-            content.append('end\n')
+        if assign_node.right.is_node(IRNodeType.SparseMatrix):
+            self.convert_matrix = True
+            sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
+            subs = assign_node.left.subs
+            cond_info = self.visit(node.cond, **kwargs)
+            stat_info = self.visit(node.stat, **kwargs)
+            content = []
+            stat_content = stat_info.content
+            # replace '_ij' with '(i,j)'
+            stat_content = stat_content.replace('_{}{}'.format(subs[0], subs[1]), '({},{})'.format(subs[0], subs[1]))
+            if node.loop:
+                content += stat_info.pre_list
+                content.append(cond_info.content)
+                content.append('    {}(1:2,end+1) = [{};{}];\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
+                content.append('    {}(end+1) = {};\n'.format(sparse_node.la_type.value_var, stat_content))
+                content.append('end\n')
+            else:
+                content.append('{} {}\n'.format("if" if node.first_in_list else "elseif",cond_info.content))
+                # https://www.mathworks.com/matlabcentral/answers/392985-why-does-is-take-o-n-2-to-append-elements-in-matlab-when-it-takes-o-n-amortized-time-in-theory#comment_1520858
+                content.append('    {}(1:2,end+1) = [{};{}];\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
+                content.append('    {}(end+1) = {};\n'.format(   sparse_node.la_type.value_var, stat_content))
+            self.convert_matrix = False
         else:
-            content.append('{} {}\n'.format("if" if node.first_in_list else "elseif",cond_info.content))
-            # https://www.mathworks.com/matlabcentral/answers/392985-why-does-is-take-o-n-2-to-append-elements-in-matlab-when-it-takes-o-n-amortized-time-in-theory#comment_1520858
-            content.append('    {}(1:2,end+1) = [{};{}];\n'.format(sparse_node.la_type.index_var, subs[0], subs[1]))
-            content.append('    {}(end+1) = {};\n'.format(   sparse_node.la_type.value_var, stat_content))
-        self.convert_matrix = False
+            cond_info = self.visit(node.cond, **kwargs)
+            stat_info = self.visit(node.stat, **kwargs)
+            content = cond_info.pre_list
+            stat_content = stat_info.content
+            content.append('{} {}\n'.format("if" if node.first_in_list else "elseif", cond_info.content))
+            content += stat_info.pre_list
+            content.append("    {} = {};\n".format(self.visit(assign_node.left, **kwargs).content, stat_content))
         return CodeNodeInfo(content)
 
     def visit_sparse_other(self, node, **kwargs):
@@ -1193,7 +1226,8 @@ class CodeGenMatlab(CodeGen):
             op = ' = '
             if node.op == '+=':
                 op = ' += '
-            right_exp += '    ' + self.get_main_id(left_id) + op + right_info.content
+            if not node.right.is_node(IRNodeType.MultiConds):
+                right_exp += '    ' + self.get_main_id(left_id) + op + right_info.content
             content += right_exp + ';\n'
         la_remove_key(LHS, **kwargs)
         return CodeNodeInfo(content)
