@@ -46,7 +46,7 @@ function drawArrow( startElement, endElement, style='' , color='blue',
       L ${endPointX+arrowSize} ${endPointY-arrowSize+offsetEndY} 
       L ${endPointX} ${endPointY+offsetEndY} 
       L ${endPointX+arrowSize} ${endPointY+arrowSize+offsetEndY} 
-      `).attr({fill: 'white', 'fill-opacity': 0, stroke: color, 'stroke-width': 1})
+      `).attr({fill: 'white', 'fill-opacity': 0, stroke: color, 'stroke-width': 2, 'stroke-linejoin': 'bevel', 'stroke-linecap': 'square'})
     svg.attr('offset', parseInt(style.marginLeft, 10))
     document.querySelector(".arrow").style.marginLeft = "0px"
 }

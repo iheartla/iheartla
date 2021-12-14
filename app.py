@@ -76,28 +76,10 @@ window.onresize = reportWindowSize;
 """
             mathjax = r'''<script>
 MathJax = {
-  chtml: {
-      mtextInheritFont: false,
-      merrorInheritFont: false,
-      mtextFont: "Linux Libertine",
-      merrorFont: "Linux Libertine",
-    },
   loader: {
     load: ["[attrLabel]/attr-label.js"],
     paths: { attrLabel: "./resource" },
   },
-  // options: {
-  //   a11y: {
-  //     speech: true, // switch on speech output
-  //     braille: true, // switch on Braille output
-  //     subtitles: true, // show speech as a subtitle
-  //   },
-  //   menuOptions: {
-  //     settings: {
-  //       explorer: true,
-  //     },
-  //   },
-  // },
   tex: { packages: { "[+]": ["attr-label"] },
    inlineMath: [['$', '$'], ['\\(', '\\)']]
    },

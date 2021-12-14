@@ -4,7 +4,7 @@ body
   top: 0;
   left: 0;
   font-size: 12pt;
-  font-family: "Linux Libertine", monospace;
+  font-family: "Linux Libertine", serif;
   padding-left:  10px;
   padding-right: 10px;
   width: 785px;
@@ -13,11 +13,18 @@ body
   border-radius: 8px;
   margin: auto;
 }
-mjx-container mjx-utext {
-  font-family: "Linux Libertine", monospace;
+/*mjx-container mjx-utext {
+  font-family: "Linux Libertine", serif;
 }
 mjx-container svg text {
-  font-family: "Linux Libertine", monospace;
+  font-family: "Linux Libertine", serif;
+}*/
+figcaption {
+  font-family: "Linux Biolinum", sans;
+  font-weight: normal;
+}
+h1,h2,h3,h4,h5 {
+  font-family: "Linux Biolinum", sans;
 }
 .center {
   display: block;
