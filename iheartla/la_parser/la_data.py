@@ -48,9 +48,13 @@ class ParamsData(object):
                 break
 
     def reset(self):
+        self.arith_dim_list.clear()
+        self.same_dim_list.clear()
         self.subscripts.clear()
         self.sub_name_dict.clear()
         self.dim_dict.clear()
         self.seq_dim_dict.clear()
         self.dim_seq_set.clear()
         self.ids_dict.clear()
+        self.parameters.clear()
+        self.symtable.clear()
