@@ -211,8 +211,10 @@ $${}{}{}$$</div>
                     used_list_str = '"' + '","'.join(sym_eq_data.used_list) + '"'
                 eq_data_list.append('''{{"desc":"{}", "type_info":{}, "def_module":"{}", "is_defined":{}, "used_equations":{}}}'''.format(sym_eq_data.desc, sym_eq_data.la_type.get_json_content(),
                                                                              sym_eq_data.module_name, "true" if sym_eq_data.is_defined else "false", used_list_str ))
-            sym_list.append('''"{}":[{}]'''.format(sym, ",".join(eq_data_list)))
-        return '''{{{}}}'''.format(','.join(sym_list))
+            sym_list.append('''"{}":[{}]'''.format(sym.replace('\\', '\\\\\\\\'), ",".join(eq_data_list)))
+        content = '''{{{}}}'''.format(','.join(sym_list))
+        content = content.replace('`', '')
+        return content
 
 
 

@@ -107,6 +107,7 @@ function parseSym(tag, symbol){
           return true;  
         },
       });
+    MathJax.typeset();
   }
 }
 function parseAllSyms(){
@@ -120,15 +121,16 @@ function parseAllSyms(){
     k = keys[i];
     diff_list = sym_data[k];
     diff_length = diff_list.length;
+    ck = k.replace("\\","\\\\");
     if (diff_length > 1) {
-      content = `<span onclick="parseSym(this, '${k}');"><span class="clickable_sym">${k}</span>: ${diff_length} different types</span><br>`;
+      content = `<span onclick="parseSym(this, '${ck}');"><span class="clickable_sym">${k}</span>: ${diff_length} different types</span><br>`;
     }
     else{
       if (diff_list[0].is_defined){
-        content = `<span onclick="parseSym(this, '${k}');"><span class="clickable_sym">${k}</span>: defined </span><br>`;
+        content = `<span onclick="parseSym(this, '${ck}');"><span class="clickable_sym">${k}</span>: defined </span><br>`;
       }
       else{
-        content = `<span onclick="parseSym(this, '${k}');"><span class="clickable_sym">${k}</span>: ${diff_list[0].desc}</span><br>`;
+        content = `<span onclick="parseSym(this, '${ck}');"><span class="clickable_sym">${k}</span>: ${diff_list[0].desc}</span><br>`;
       }
     }
     // console.log(content);
@@ -142,6 +144,10 @@ function parseAllSyms(){
         trigger: 'click', 
         allowHTML: true,
         interactive: true,
+        onShown(instance) {
+          MathJax.typeset();
+          return true;  
+        },
       }); 
 }
 function getSymInfo(symbol, func_name){
