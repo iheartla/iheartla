@@ -280,12 +280,12 @@ function onClickProse(tag, symbol, func_name, type='def') {
  * @param {string} type The type for the symbol: 'def','prose','use'
  * @return 
  */
-function onClickSymbol(tag, symbol, func_name, type='def') {
+function onClickSymbol(tag, symbol, func_name, type='def', color='red') {
   // console.log(`the type is ${type}, sym is ${symbol}`)
   resetState();
   closeOtherTips();
-  highlightProse(symbol, func_name);
-  showSymArrow(tag, symbol, func_name, type, color='red');
+  highlightProse(symbol, func_name, color);
+  showSymArrow(tag, symbol, func_name, type, color);
     // d3.selectAll("mjx-mi[sym='" + symbol + "']").style("class", "highlight");
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
@@ -328,6 +328,7 @@ function onClickEq(tag, func_name, sym_list) {
     offsetEndX -= 5;
     if (symTag !== null){
       console.log(`symTag is ${symTag}`);
+      highlightProse(sym_list[i], func_name, colors[i]);
       if (i === sym_list.length - 1) {
         showSymArrow(symTag, sym_list[i], func_name, 'def', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
       }
