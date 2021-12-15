@@ -85,7 +85,12 @@ AttrlabelMethods.EqLabel = function (parser, name) {
 function getProseArg(parser, name, type='def'){
     let modulelabel = parser.GetArgument(); 
     const arg = parser.ParseArg(name);  
-    let param = arg.coreMO().childNodes[0].getText();
+    // let param = arg.coreMO().childNodes[0].getText();
+    var raw = parser.string.replace(`${name}{${modulelabel}}`,'');
+    raw = raw.substring(1, raw.length-1);
+    let param = `$${raw}$`;
+    // console.log(`param is ${param}, string is ${parser.string}, raw is ${raw} `);
+    param = param.replace("\\","\\\\");
     NodeUtil.setAttribute(arg, "module", modulelabel);
     NodeUtil.setAttribute(arg, "sym", param);
     NodeUtil.setAttribute(arg, "type", type);

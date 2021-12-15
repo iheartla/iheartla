@@ -22,7 +22,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
 
     def convert_content(self, symbol):
         # avoid error in js
-        return symbol.replace('\\', "\\\\").replace('`', '')
+        return symbol.replace('\\', "\\\\\\\\").replace('`', '')
 
     def visit_assignment(self, node, **kwargs):
         sym_list = ''

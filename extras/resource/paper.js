@@ -239,7 +239,8 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
     }
   }
 }
-function highlightSym(symbol, func_name, color='red'){
+function highlightSym(symbol, func_name, color='red'){ 
+  symbol = symbol.replace("\\","\\\\\\\\"); 
   // syms in prose and derivations
   const matches = document.querySelectorAll("[sym='" + symbol + "'][module='" + func_name + "']");
   for (var i = matches.length - 1; i >= 0; i--) {
@@ -286,7 +287,7 @@ function onClickProse(tag, symbol, func_name, type='def') {
  * @return 
  */
 function onClickSymbol(tag, symbol, func_name, type='def', color='red') {
-  // console.log(`the type is ${type}, sym is ${symbol}`)
+  console.log(`the type is ${type}, sym is ${symbol}`)
   resetState();
   closeOtherTips();
   highlightSym(symbol, func_name, color);
