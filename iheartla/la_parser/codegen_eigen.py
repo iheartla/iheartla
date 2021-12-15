@@ -559,7 +559,7 @@ class CodeGenEigen(CodeGen):
         main_content.append('}')
         self.code_frame.main = '\n'.join(main_content)
         self.code_frame.rand_data = '\n'.join(test_function)
-        self.code_frame.struct = content
+        self.code_frame.struct = self.trim_content(content)
         content += '\n\n' + '\n'.join(test_function) + '\n\n\n' + '\n'.join(main_content)
         # convert special string in identifiers
         content = self.trim_content(content)
