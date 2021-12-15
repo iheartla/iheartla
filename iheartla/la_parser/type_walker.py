@@ -60,8 +60,11 @@ class EquationData(object):
         def_list = []
         for lhs in self.definition:
             def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(lhs, self.symtable[lhs].get_json_content()))
-        self.la_content = self.la_content.replace('\n', '\\\\n')
+        # self.la_content = self.la_content.replace('\n', '\\\\n')
         content = '''"parameters":[{}], "definition":[{}], "source":"{}"'''.format(','.join(param_list), ','.join(def_list), self.la_content)
+        content = content.replace('\\', '\\\\\\\\')
+        content = content.replace('`', '')
+        content = content.replace('\n', '\\\\n')
         return content
 
 

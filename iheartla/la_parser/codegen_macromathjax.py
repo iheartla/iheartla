@@ -14,17 +14,21 @@ class CodeGenMacroMathjax(CodeGenMathjax):
 
     def filter_subscript(self, symbol):
         # x_i to x
-        if '_' in symbol:
+        if '`' not in symbol and '_' in symbol:
             split_res = symbol.split('_')
             return split_res[0]
         else:
             return symbol
 
+    def convert_content(self, symbol):
+        # avoid error in js
+        return symbol.replace('\\', "\\\\").replace('`', '')
+
     def visit_assignment(self, node, **kwargs):
         sym_list = ''
         for sym in node.symbols:
-            sym_list += "'{}'".format(self.filter_subscript(sym)) + ','
-        sym_list += "'{}'".format(node.left.get_main_id())
+            sym_list += "'{}'".format(self.convert_content(self.filter_subscript(sym))) + ','
+        sym_list += "'{}'".format(self.convert_content(node.left.get_main_id()))
         content = ''
         if node.right.node_type == IRNodeType.Optimize:
             content = self.visit(node.right, **kwargs)
@@ -53,8 +57,8 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         content = self.visit(node.name, **kwargs) + def_params + " & = " + self.visit(node.expr, **kwargs)
         sym_list = ''
         for sym in node.symbols:
-            sym_list += "'{}'".format(self.filter_subscript(sym)) + ','
-        sym_list += "'{}'".format(node.name.get_main_id())
+            sym_list += "'{}'".format(self.convert_content(self.filter_subscript(sym))) + ','
+        sym_list += "'{}'".format(self.convert_content(node.name.get_main_id()))
         json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}]);"}}""".format(self.func_name,
                                                                                                    sym_list)
         saved_content = content + "\\\\" + "\\eqlabel{{ {} }}{{}}".format(json) + "\n"
@@ -71,7 +75,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         return content
 
     def visit_id(self, node, **kwargs):
-        id_str = "{}-{}".format(self.func_name, node.get_name())
+        id_str = "{}-{}".format(self.func_name, self.convert_content(node.get_name()))
         if node.contain_subscript():
             subs_list = []
             for subs in node.subs:
@@ -80,7 +84,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         else:
             content = self.convert_unicode(node.get_name())
         json = """{{"onclick":"event.stopPropagation(); onClickSymbol(this, '{}','{}', '{}')", "id":"{}", "sym":"{}", "func":"{}", "type":"{}", "case":"equation"}}""" \
-            .format(node.get_name(), self.func_name, "def" if self.visiting_lhs else "use", id_str, node.get_name(), self.func_name, "def" if self.visiting_lhs else "use")
+            .format(self.convert_content(node.get_name()), self.func_name, "def" if self.visiting_lhs else "use", id_str, self.convert_content(node.get_name()), self.func_name, "def" if self.visiting_lhs else "use")
         content = "\\idlabel{{ {} }}{{ {} }}".format(json, content)
         return content
 
