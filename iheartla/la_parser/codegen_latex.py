@@ -63,12 +63,28 @@ class CodeGenLatex(CodeGen):
             return self.convert_special_marks(name)
             # return name
         text = name.replace('`', '')
-        special_list = ['_', '&', '^', '%', '$', '#', '{', '}']
-        text = text.replace('\\', '\\textbackslash{}')
-        for special in special_list:
-            text = text.replace(special, '\\{}'.format(special))
-        value = "\\textit{{{}}}".format(text)
-        return value
+        pattern = re.compile("\$(?P<context>.*)\$")
+        def convert(param):
+            special_list = ['_', '&', '^', '%', '$', '#', '{', '}']
+            text = param.replace('\\', '\\textbackslash{}')
+            for special in special_list:
+                text = text.replace(special, '\\{}'.format(special))
+            return text
+        res = ''
+        first = True
+        end = 0
+        for m in pattern.finditer(name):
+            if first:
+                tmp = convert(text[0:m.start()-1])
+                if len(tmp) > 0:
+                    res += "\\textit{{{}}}".format(tmp)
+                first = False
+            end = m.end()
+            res += m.group('context')
+        tmp = convert(text[end-1:])
+        if len(tmp) > 0:
+            res += "\\textit{{{}}}".format(tmp)
+        return res
 
     def visit_id(self, node, **kwargs):
         if node.contain_subscript():
