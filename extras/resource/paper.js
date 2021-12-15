@@ -234,21 +234,20 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
   }
 }
 function highlightSym(symbol, func_name, color='red'){
-  const matches = document.querySelectorAll("mjx-texatom[sym='" + symbol + "'][func='" + func_name + "']");
-  for (var i = matches.length - 1; i >= 0; i--) {
-    matches[i].setAttribute('class', `highlight_${color}`);
-  }
-}
-function highlightProse(symbol, func_name, color='red'){
+  // syms in prose and derivations
   const matches = document.querySelectorAll("[sym='" + symbol + "'][module='" + func_name + "']");
   for (var i = matches.length - 1; i >= 0; i--) {
     matches[i].setAttribute('class', `highlight_${color}`);
+  }
+  // syms in equation
+  const eqMatches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "']");
+  for (var i = eqMatches.length - 1; i >= 0; i--) {
+    eqMatches[i].setAttribute('class', `highlight_${color}`);
   }
 }
 function onClickProse(tag, symbol, func_name, type='def') {
   console.log(`onClickProse, ${tag}, ${symbol}, ${func_name}`);
   highlightSym(symbol, func_name);
-  highlightProse(symbol, func_name);
   if (type !== 'def') {
     showSymArrow(tag, symbol, func_name, 'use', color='red');
   }
@@ -284,7 +283,7 @@ function onClickSymbol(tag, symbol, func_name, type='def', color='red') {
   // console.log(`the type is ${type}, sym is ${symbol}`)
   resetState();
   closeOtherTips();
-  highlightProse(symbol, func_name, color);
+  highlightSym(symbol, func_name, color);
   showSymArrow(tag, symbol, func_name, type, color);
     // d3.selectAll("mjx-mi[sym='" + symbol + "']").style("class", "highlight");
   if (typeof tag._tippy === 'undefined'){
@@ -328,7 +327,7 @@ function onClickEq(tag, func_name, sym_list) {
     offsetEndX -= 5;
     if (symTag !== null){
       console.log(`symTag is ${symTag}`);
-      highlightProse(sym_list[i], func_name, colors[i]);
+      highlightSym(sym_list[i], func_name, colors[i]);
       if (i === sym_list.length - 1) {
         showSymArrow(symTag, sym_list[i], func_name, 'def', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
       }
