@@ -59,6 +59,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
         dedent(r'''(<span\ class="def:)(?P<context>\b\w+\b)(:)(?P<symbol>\b\w+\b)(">)(?P<code>.*?)(</span>)'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
+    # Match string: ❤️context: a=sin(θ)❤️
+    INLINE_RE = re.compile(
+        dedent(r'''❤(?P<module>\b\w+\b)(:)(?P<code>.*?)❤'''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
     def __init__(self, md, config):
         super().__init__(md)
         self.config = config
@@ -93,6 +98,14 @@ class IheartlaBlockPreprocessor(Preprocessor):
             new_desc = desc.replace("${}$".format(m.group('symbol')), r"""$\prosedeflabel{{{}}}{{{}}}$""".format(m.group('context'), m.group('symbol')))
             text = text.replace(desc, new_desc)
         # Find all blocks
+        for m in self.INLINE_RE.finditer(text):
+            module_name = m.group('module')
+            if module_name and m.group('code'):
+                if module_name not in file_dict:
+                    file_dict[module_name] = BlockData([m], [m.group('code')], [m.group(0)], module_name)
+                else:
+                    file_dict[module_name].add(m, m.group('code'), m.group(0))
+        # Find all inline blocks
         for m in self.FENCED_BLOCK_RE.finditer(text):
             module_name = m.group('module')
             if module_name and m.group('code'):
