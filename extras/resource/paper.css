@@ -26,6 +26,9 @@ figcaption {
 h1,h2,h3,h4,h5 {
   font-family: "Linux Biolinum", sans;
 }
+a.detail{
+  color: red; 
+}
 .center {
   display: block;
   margin-left: auto;
