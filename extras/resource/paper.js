@@ -53,16 +53,19 @@ function drawArrow( startElement, endElement, style='' , color='blue',
 
 function getSymTypeInfo(type_info){
   if(type_info.type == 'matrix'){
-    content = "matrix, rows: " + type_info.rows + ", cols: " + type_info.cols;
+    content = "a matrix, rows: " + type_info.rows + ", cols: " + type_info.cols;
   }
   else if(type_info.type == 'vector'){
-    content = "vector, rows: " + type_info.rows;
+    content = "a vector, rows: " + type_info.rows;
   }
   else if(type_info.type == 'scalar'){
-    content = "scalar";
+    content = "a scalar";
+  }
+  else if(type_info.type == 'sequence'){
+    content = "a sequence";
   }
   else{
-    content = "invalid type";
+    content = "an invalid type";
   }
   // console.log("type_info.type: " + type_info.type);
 
