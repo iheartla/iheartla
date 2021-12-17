@@ -7,11 +7,14 @@ body
   font-family: "Linux Libertine", serif;
   padding-left:  10px;
   padding-right: 10px;
-  width: 785px;
+  width: 585px;
   min-height: none;
   min-height: 0%;
   border-radius: 8px;
   margin: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
 }
 /*mjx-container mjx-utext {
   font-family: "Linux Libertine", serif;
