@@ -152,6 +152,7 @@ function parseAllSyms(){
           return true;  
         },
       }); 
+  MathJax.typeset();
 }
 function getSymInfo(symbol, func_name){
   content = '';
@@ -278,6 +279,7 @@ function onClickProse(tag, symbol, func_name, type='def') {
           return true;  
         },
       });
+    MathJax.typeset();
   }
 }
 /**
@@ -313,6 +315,7 @@ function onClickSymbol(tag, symbol, func_name, type='def', color='red') {
           return true;  
         },
       });
+    MathJax.typeset();
   }
   // console.log("clicked: " + symbol + " in " + func_name); 
 };
@@ -363,6 +366,7 @@ function onClickEq(tag, func_name, sym_list) {
           return true;  
         },
       });
+    MathJax.typeset();
   }
 };
 function resetState(){
