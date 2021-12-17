@@ -167,6 +167,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
 <div class='equation' code_block="{}">
 $${}{}{}$$</div>
 """.format(block_data.module_name, code_list[1].pre_str, content, code_list[1].post_str)
+                content = self.md.htmlStash.store(content)
                 text = text.replace(block_data.block_list[cur_index], content)
         json_content = '''{{"equations":[{}] }}'''.format(','.join(json_list))
         sym_dict = self.get_sym_dict(equation_list)
