@@ -7,6 +7,8 @@ import markdown
 import os.path
 from pathlib import Path
 import shutil
+import re
+from textwrap import dedent
 
 
 if __name__ == '__main__':
@@ -108,5 +110,16 @@ const sym_data = JSON.parse('{sym_json}');
 {body}
 </body>
 </html>""".format(mathjax=mathjax, equation_json=equation_json,  sym_json=sym_json, script=script, body=body)
+            # numbering
+            EQ_BLOCK_RE = re.compile(
+                dedent(r'''(\$\$)(?P<code>.*?)(\$\$)'''),
+                re.MULTILINE | re.DOTALL | re.VERBOSE
+            )
+            num = 1
+            for m in EQ_BLOCK_RE.finditer(html):
+                equation = m.group('code')
+                if '\\notag' not in equation:
+                    html = html.replace(equation, "{}\\tag{{{}}}".format(equation, num))
+                    num += 1
             save_to_file(html, "/Users/pressure/Downloads/lib_paper/paper.html")
             # print(html)
