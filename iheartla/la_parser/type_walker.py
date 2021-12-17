@@ -457,6 +457,7 @@ class TypeWalker(NodeWalker):
             new_list = []
             order_list = [-1] * len(stat_list)  # visited order for all statment
             cnt = 0
+            retries = 0
             while cnt < len(stat_list):
                 visited_list = [False] * len(stat_list)
                 for cur_index in range(len(stat_list)):
@@ -483,7 +484,10 @@ class TypeWalker(NodeWalker):
                             cnt += 1
                             break
                         except AssertionError as e:
+                            retries += 1
                             visited_list[cur_index] = True
+                            if retries >= len(stat_list):
+                                raise e
                             continue
             block_node.stmts = new_list
         else:
