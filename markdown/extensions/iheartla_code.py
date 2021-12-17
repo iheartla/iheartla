@@ -10,19 +10,21 @@ from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file
 
 
 class BlockData(Extension):
-    def __init__(self, match_list=[], code_list=[], block_list=[], module_name=''):
+    def __init__(self, match_list=[], code_list=[], block_list=[], inline_list=[], module_name=''):
         self.module_name = module_name
         self.match_list = match_list
         self.code_list = code_list
         self.block_list = block_list
+        self.inline_list = inline_list
         self.math_pre = ''
         self.math_list = []
         self.math_post = ''
 
-    def add(self, match, code, block):
+    def add(self, match, code, block, inline=False):
         self.match_list.append(match)
         self.code_list.append(code)
         self.block_list.append(block)
+        self.inline_list.append(inline)
 
     def get_content(self):
         return '\n'.join(self.code_list)
@@ -97,22 +99,22 @@ class IheartlaBlockPreprocessor(Preprocessor):
             desc = m.group('code')
             new_desc = desc.replace("${}$".format(m.group('symbol')), r"""$\prosedeflabel{{{}}}{{{}}}$""".format(m.group('context'), m.group('symbol')))
             text = text.replace(desc, new_desc)
-        # Find all blocks
+        # Find all inline blocks
         for m in self.INLINE_RE.finditer(text):
             module_name = m.group('module')
             if module_name and m.group('code'):
                 if module_name not in file_dict:
-                    file_dict[module_name] = BlockData([m], [m.group('code')], [m.group(0)], module_name)
+                    file_dict[module_name] = BlockData([m], [m.group('code')], [m.group(0)], [True], module_name)
                 else:
-                    file_dict[module_name].add(m, m.group('code'), m.group(0))
-        # Find all inline blocks
+                    file_dict[module_name].add(m, m.group('code'), m.group(0), True)
+        # Find all blocks
         for m in self.FENCED_BLOCK_RE.finditer(text):
             module_name = m.group('module')
             if module_name and m.group('code'):
                 if module_name not in file_dict:
-                    file_dict[module_name] = BlockData([m], [m.group('code')], [m.group(0)], module_name)
+                    file_dict[module_name] = BlockData([m], [m.group('code')], [m.group(0)], [False], module_name)
                 else:
-                    file_dict[module_name].add(m, m.group('code'), m.group(0))
+                    file_dict[module_name].add(m, m.group('code'), m.group(0), False)
         # Save to file
         for name, block_data in file_dict.items():
             source = '\n'.join(block_data.code_list)
@@ -158,7 +160,10 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     for cur in range(len(sorted_index)):
                         raw_str = index_dict[cur_index][sorted_index[cur]]
                         content += expr_dict[raw_str]
-                content = r"""
+                if block_data.inline_list[cur_index]:
+                    content = r"""<span class='equation' code_block="{}">${}{}{}$</span>""".format(block_data.module_name, code_list[1].pre_str, content, code_list[1].post_str)
+                else:
+                    content = r"""
 <div class='equation' code_block="{}">
 $${}{}{}$$</div>
 """.format(block_data.module_name, code_list[1].pre_str, content, code_list[1].post_str)
