@@ -119,7 +119,7 @@ const sym_data = JSON.parse('{sym_json}');
             for m in EQ_BLOCK_RE.finditer(html):
                 equation = m.group('code')
                 if '\\notag' not in equation:
-                    html = html.replace(equation, "{}\\tag{{{}}}".format(equation, num))
+                    html = html.replace(equation, "{}\\tag{{{}}}\\label{{{}}}".format(equation, num, num))
                     num += 1
             save_to_file(html, "/Users/pressure/Downloads/lib_paper/paper.html")
             # print(html)
