@@ -451,6 +451,24 @@ class TypeWalker(NodeWalker):
         self.main_param.parameters = self.parameters
         return ir_node
 
+    def push_environment(self):
+        # save variable changes when parsing *expressions*
+        self.saved_symtable = copy.deepcopy(self.symtable)
+        self.saved_sum_subs = copy.deepcopy(self.sum_subs)
+        self.saved_sum_sym_list = copy.deepcopy(self.sum_sym_list)
+        self.saved_lhs_subs = copy.deepcopy(self.lhs_subs)
+        self.saved_lhs_sym_list = copy.deepcopy(self.lhs_sym_list)
+        self.saved_sum_conds = copy.deepcopy(self.sum_conds)
+        self.saved_lhs_sub_dict = copy.deepcopy(self.lhs_sub_dict)
+
+    def pop_environment(self):
+        self.symtable = self.saved_symtable
+        self.sum_subs = self.saved_sum_subs
+        self.sum_sym_list = self.saved_sum_sym_list
+        self.lhs_subs = self.saved_lhs_subs
+        self.sum_conds = self.saved_sum_conds
+        self.lhs_sub_dict = self.saved_lhs_sub_dict
+
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
         block_node = BlockNode()
         if self.def_use_mode:
@@ -463,6 +481,8 @@ class TypeWalker(NodeWalker):
                 for cur_index in range(len(stat_list)):
                     if order_list[cur_index] == -1 and not visited_list[cur_index]:
                         cur_stat = stat_list[cur_index]
+                        # try to parse
+                        self.push_environment()
                         try:
                             update_ret_type = False
                             if cur_index == len(stat_list) - 1:
@@ -488,6 +508,8 @@ class TypeWalker(NodeWalker):
                             visited_list[cur_index] = True
                             if retries >= len(stat_list):
                                 raise e
+                            # parse failed, pop saved env
+                            self.pop_environment()
                             continue
             block_node.stmts = new_list
         else:
