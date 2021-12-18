@@ -245,6 +245,7 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
 }
 function highlightSym(symbol, func_name, color='red'){ 
   symbol = symbol.replace("\\","\\\\\\\\"); 
+  console.log(`In highlightSym, symbol: ${symbol}`)
   // syms in prose and derivations
   const matches = document.querySelectorAll("[sym='" + symbol + "'][module='" + func_name + "']");
   for (var i = matches.length - 1; i >= 0; i--) {
@@ -257,7 +258,7 @@ function highlightSym(symbol, func_name, color='red'){
   }
 }
 function onClickProse(tag, symbol, func_name, type='def') {
-  console.log(`onClickProse, ${tag}, ${symbol}, ${func_name}`);
+  console.log(`onClickProse, ${tag}, symbol is ${symbol}, ${func_name}`);
   highlightSym(symbol, func_name);
   if (type !== 'def') {
     showSymArrow(tag, symbol, func_name, 'use', color='red');
@@ -330,22 +331,24 @@ function onClickEq(tag, func_name, sym_list) {
   var offsetEndX = 30;
   for (var i = sym_list.length - 1; i >= 0; i--) {
     sym = sym_list[i];
+    // sym = sym.replace("\\","\\\\");
+    sym = sym.replace("\\","\\\\\\\\"); 
     content += getSymInfo(sym_list[i], func_name) + '<br>';
-    var symTag = tag.querySelector("[case='equation'][sym='" + sym_list[i] + "']");
-    const matches = document.querySelectorAll("[case='equation'][sym='" + sym_list[i] + "']");
-    // console.log(`tag is ${tag}, symTag is ${symTag}, matches is ${matches}, sym is ${sym_list[sym]}`);
+    var symTag = tag.querySelector("[case='equation'][sym='" + sym + "']");
+    const matches = document.querySelectorAll("[case='equation'][sym='" + sym + "']");
+    console.log(`tag is ${tag}, sym is ${sym}, symTag is ${symTag}, matches is ${matches}`);
     offsetVerticalX += 5;
     offsetStartY += 2;
     offsetEndY += 2;
     offsetEndX -= 5;
+    highlightSym(sym, func_name, colors[i]);
     if (symTag !== null){
-      console.log(`symTag is ${symTag}`);
-      highlightSym(sym_list[i], func_name, colors[i]);
+      // console.log(`symTag is ${symTag}`);
       if (i === sym_list.length - 1) {
-        showSymArrow(symTag, sym_list[i], func_name, 'def', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+        showSymArrow(symTag, sym, func_name, 'def', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
       }
       else{
-        showSymArrow(symTag, sym_list[i], func_name, 'use', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+        showSymArrow(symTag, sym, func_name, 'use', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
       }
     }
   }
