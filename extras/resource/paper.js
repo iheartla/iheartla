@@ -323,14 +323,14 @@ function onClickEq(tag, func_name, sym_list) {
   closeOtherTips();
   resetState();
   var colors =['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink', 'Tomato', 'Orange', 'DarkRed', 'LightCoral', 'Khaki']
-  content = "This equation has " + sym_list.length + " symbols\n";
+  content = "This equation has " + sym_list.length + " symbols:<br>";
   var offsetVerticalX = 0;
   var offsetStartY = 0;
   var offsetEndY = 0;
   var offsetEndX = 30;
   for (var i = sym_list.length - 1; i >= 0; i--) {
     sym = sym_list[i];
-    content += getSymInfo(sym_list[i], func_name) + '\n';
+    content += getSymInfo(sym_list[i], func_name) + '<br>';
     var symTag = tag.querySelector("[case='equation'][sym='" + sym_list[i] + "']");
     const matches = document.querySelectorAll("[case='equation'][sym='" + sym_list[i] + "']");
     // console.log(`tag is ${tag}, symTag is ${symTag}, matches is ${matches}, sym is ${sym_list[sym]}`);
@@ -356,6 +356,8 @@ function onClickEq(tag, func_name, sym_list) {
         animation: 'fade',
         trigger: 'click', 
         showOnCreate: true,
+        allowHTML: true,
+        // interactive: true,
         onShow(instance) { 
           tag.setAttribute('class', 'highlight_fake');
           // console.log('onShow');
