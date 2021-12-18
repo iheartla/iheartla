@@ -1,11 +1,17 @@
 from .codegen import *
 from .codegen_mathjax import CodeGenMathjax
 from .type_walker import *
+import regex as re
+from textwrap import dedent
 
 
 class CodeGenMacroMathjax(CodeGenMathjax):
     def __init__(self):
         super().__init__(ParserTypeEnum.MACROMATHJAX)
+        self.BLOCK_RE = re.compile(
+                dedent(r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(\_)(?P<sub>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)'''),
+                re.MULTILINE | re.DOTALL | re.VERBOSE
+            )
 
     def init_type(self, type_walker, func_name):
         super().init_type(type_walker, func_name)
@@ -14,11 +20,10 @@ class CodeGenMacroMathjax(CodeGenMathjax):
 
     def filter_subscript(self, symbol):
         # x_i to x
-        if '`' not in symbol and '_' in symbol:
-            split_res = symbol.split('_')
-            return split_res[0]
-        else:
-            return symbol
+        for m in self.BLOCK_RE.finditer(symbol):
+            main = m.group('main')
+            return main
+        return symbol
 
     def convert_content(self, symbol):
         # avoid error in js
