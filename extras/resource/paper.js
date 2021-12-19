@@ -196,12 +196,22 @@ function getSymInfo(symbol, func_name){
 }
 function showSymArrow(tag, symbol, func_name, type='def', color='blue', 
   offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20){
-  tag.setAttribute('class', `highlight_${color}`);
+  symbol = symbol.replace("\\","\\\\\\\\");
+  // console.log(`In showSymArrow, symbol:${symbol}`);
+  showArrow(tag, symbol, func_name, type, color, offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+  let asymbol = getOtherSym(symbol);
+  showArrow(tag, asymbol, func_name, type, color, offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+}
+function showArrow(tag, symbol, func_name, type='def', color='blue', 
+  offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20){
+  // tag.setAttribute('class', `highlight_${color}`);
+  // console.log(`In showArrow, sym:${symbol}`);
   if (type === 'def' ) {
     // Point to usage
     const matches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "'][type='use']");
+    // console.log(`matches length:${matches.length}`);
     for (var i = matches.length - 1; i >= 0; i--) {
-      matches[i].setAttribute('class', `highlight_${color}`);
+      // matches[i].setAttribute('class', `highlight_${color}`);
       // console.log(`${i} is ${matches[i].innerHTML}`)
       if (matches[i] !== tag && matches[i].tagName.startsWith("MJX")) {
         drawArrow(tag, matches[i],'',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
@@ -226,19 +236,22 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
       // console.log(`${matches.length} prose`)
       for (var i = matches.length - 1; i >= 0; i--) {
         // console.log(`${i} is ${matches[i].innerHTML}, tag is ${matches[i].tagName}`)
-        matches[i].setAttribute('class', `highlight_${color}`);
+        // matches[i].setAttribute('class', `highlight_${color}`);
         if (matches[i] !== tag && matches[i].tagName.startsWith("MJX")) {
           drawArrow(matches[i], tag, '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
         }
       }
     }
     else{
-      // defined in prose
-      const prose = document.querySelectorAll("mjx-mi[sym='" + symbol + "'][module='"+ func_name + "'][type='def']");
+      // defined in prose: mjx-mi mjx-msub
+      // const prose = document.querySelectorAll("mjx-mi[sym='" + symbol + "'][module='"+ func_name + "'][type='def']");
+      const prose = document.querySelectorAll("[sym='" + symbol + "'][module='"+ func_name + "'][type='def']");
+      // console.log(`prose.length is ${prose.length}`);
       if (prose !== 'undefined') {
         for (var i = prose.length - 1; i >= 0; i--) {
+          // console.log(`${i} is ${prose[i].innerHTML}, tag is ${prose[i].tagName}, parentElement:${prose[i].parentElement.innerHTML}`)
           if (prose[i] !== tag ) {
-            prose[i].setAttribute('class', `highlight_${color}`);
+            // prose[i].setAttribute('class', `highlight_${color}`);
             drawArrow(prose[i], tag, '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
           }
         }
@@ -265,13 +278,13 @@ function getDollarSym(symbol){
 }
 function highlightSym(symbol, func_name, color='red'){ 
   symbol = symbol.replace("\\","\\\\\\\\"); 
-  console.log(`In highlightSym, symbol: ${symbol}`)
+  // console.log(`In highlightSym, symbol: ${symbol}`)
   highlightSymInProseAndEquation(symbol, func_name, color);
   let asymbol = getOtherSym(symbol);
   highlightSymInProseAndEquation(asymbol, func_name, color);
 }
 function highlightSymInProseAndEquation(symbol, func_name, color='red'){ 
-  console.log(`symbol is ${symbol}`);
+  // console.log(`symbol is ${symbol}`);
   // syms in prose and derivations
   let matches = document.querySelectorAll("[sym='" + symbol + "'][module='" + func_name + "']");
   for (var i = matches.length - 1; i >= 0; i--) {
@@ -363,7 +376,7 @@ function onClickEq(tag, func_name, sym_list) {
     content += getSymInfo(sym_list[i], func_name) + '<br>';
     var symTag = tag.querySelector("[case='equation'][sym='" + sym + "']");
     const matches = document.querySelectorAll("[case='equation'][sym='" + sym + "']");
-    console.log(`tag is ${tag}, sym is ${sym}, symTag is ${symTag}, matches is ${matches}`);
+    // console.log(`tag is ${tag}, sym is ${sym}, symTag is ${symTag}, matches is ${matches}`);
     offsetVerticalX += 5;
     offsetStartY += 2;
     offsetEndY += 2;
@@ -371,10 +384,10 @@ function onClickEq(tag, func_name, sym_list) {
     if (symTag !== null){
       // console.log(`symTag is ${symTag}`);
       if (i === sym_list.length - 1) {
-        showSymArrow(symTag, sym, func_name, 'def', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+        showSymArrow(symTag, sym_list[i], func_name, 'def', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
       }
       else{
-        showSymArrow(symTag, sym, func_name, 'use', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+        showSymArrow(symTag, sym_list[i], func_name, 'use', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
       }
     }
   }

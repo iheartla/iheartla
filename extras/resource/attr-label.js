@@ -105,7 +105,7 @@ function getProseArg(parser, name, type='def'){
     // let param = arg.coreMO().childNodes[0].getText();
     let param = `${raw}`;
     // let param = `$${raw}$`;
-    console.log(`param is ${param}, string is ${parser.string}, raw is ${raw}`);
+    // console.log(`param is ${param}, string is ${parser.string}, raw is ${raw}`);
     param = param.replace("\\","\\\\");
     NodeUtil.setAttribute(arg, "module", modulelabel);
     NodeUtil.setAttribute(arg, "sym", param);
