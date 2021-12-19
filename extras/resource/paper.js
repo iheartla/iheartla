@@ -157,18 +157,20 @@ function parseAllSyms(){
 function getSymInfo(symbol, func_name){
   content = '';
   var found = false;
+  var dollarSym = getDollarSym(symbol);
+  var otherSym = getOtherSym(symbol);
   for(var eq in iheartla_data.equations){
     if(iheartla_data.equations[eq].name == func_name){
       for(var param in iheartla_data.equations[eq].parameters){
-        if (iheartla_data.equations[eq].parameters[param].sym == symbol){
+        if (iheartla_data.equations[eq].parameters[param].sym == symbol || 
+          iheartla_data.equations[eq].parameters[param].sym == otherSym ){
           type_info = iheartla_data.equations[eq].parameters[param].type_info;
           found = true;
-
           if(iheartla_data.equations[eq].parameters[param].desc){
-            content = symbol + " is " + iheartla_data.equations[eq].parameters[param].desc + ", the type is " + getSymTypeInfo(type_info);
+            content = dollarSym + " is " + iheartla_data.equations[eq].parameters[param].desc + ", the type is " + getSymTypeInfo(type_info);
           }
           else{
-            content = symbol + " is a parameter as a " + getSymTypeInfo(type_info);
+            content = dollarSym + " is a parameter as a " + getSymTypeInfo(type_info);
           }
           break;
         }
@@ -177,10 +179,11 @@ function getSymInfo(symbol, func_name){
         break;
       }
       for(var param in iheartla_data.equations[eq].definition){
-        if (iheartla_data.equations[eq].definition[param].sym == symbol){
+        if (iheartla_data.equations[eq].definition[param].sym == symbol || 
+          iheartla_data.equations[eq].definition[param].sym == otherSym){
           type_info = iheartla_data.equations[eq].definition[param].type_info;
           found = true;
-          content = symbol + " is defined as a " + getSymTypeInfo(type_info);
+          content = dollarSym + " is defined as a " + getSymTypeInfo(type_info);
           break;
         }
       }
@@ -243,16 +246,39 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
     }
   }
 }
+function getOtherSym(symbol){
+  if (symbol.includes('$')){
+    symbol = symbol.replaceAll('$','');
+  }
+  else{
+    symbol = `$${symbol}$`;
+  }
+  return symbol;
+}
+function getDollarSym(symbol){
+  if (symbol.includes('$')){
+    return symbol;
+  }
+  else{
+    return `$${symbol}$`;
+  }
+}
 function highlightSym(symbol, func_name, color='red'){ 
   symbol = symbol.replace("\\","\\\\\\\\"); 
   console.log(`In highlightSym, symbol: ${symbol}`)
+  highlightSymInProseAndEquation(symbol, func_name, color);
+  let asymbol = getOtherSym(symbol);
+  highlightSymInProseAndEquation(asymbol, func_name, color);
+}
+function highlightSymInProseAndEquation(symbol, func_name, color='red'){ 
+  console.log(`symbol is ${symbol}`);
   // syms in prose and derivations
-  const matches = document.querySelectorAll("[sym='" + symbol + "'][module='" + func_name + "']");
+  let matches = document.querySelectorAll("[sym='" + symbol + "'][module='" + func_name + "']");
   for (var i = matches.length - 1; i >= 0; i--) {
     matches[i].setAttribute('class', `highlight_${color}`);
   }
   // syms in equation
-  const eqMatches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "']");
+  let eqMatches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "']");
   for (var i = eqMatches.length - 1; i >= 0; i--) {
     eqMatches[i].setAttribute('class', `highlight_${color}`);
   }
@@ -331,6 +357,7 @@ function onClickEq(tag, func_name, sym_list) {
   var offsetEndX = 30;
   for (var i = sym_list.length - 1; i >= 0; i--) {
     sym = sym_list[i];
+    highlightSym(sym, func_name, colors[i]);
     // sym = sym.replace("\\","\\\\");
     sym = sym.replace("\\","\\\\\\\\"); 
     content += getSymInfo(sym_list[i], func_name) + '<br>';
@@ -341,7 +368,6 @@ function onClickEq(tag, func_name, sym_list) {
     offsetStartY += 2;
     offsetEndY += 2;
     offsetEndX -= 5;
-    highlightSym(sym, func_name, colors[i]);
     if (symTag !== null){
       // console.log(`symTag is ${symTag}`);
       if (i === sym_list.length - 1) {
