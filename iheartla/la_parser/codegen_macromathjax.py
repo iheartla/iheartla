@@ -20,7 +20,8 @@ class CodeGenMacroMathjax(CodeGenMathjax):
 
     def filter_subscript(self, symbol):
         # x_i to x
-        for m in self.BLOCK_RE.finditer(symbol):
+        m = self.BLOCK_RE.fullmatch(symbol)
+        if m:
             main = m.group('main')
             return main
         return symbol
