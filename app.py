@@ -85,6 +85,9 @@ MathJax = {
   tex: { packages: { "[+]": ["attr-label"] },
    inlineMath: [['$', '$'], ['\\(', '\\)']]
    },
+   options: {
+    enableAssistiveMml: false
+  },
 };
     </script>'''
             html = r"""<html lang="en">
