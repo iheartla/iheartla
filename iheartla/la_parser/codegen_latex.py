@@ -346,7 +346,7 @@ class CodeGenLatex(CodeGen):
             if node.right.node_type == IRNodeType.Factor and node.right.sub:  # sub expression
                 right_content = self.visit(node.right.sub.value, **kwargs)
             else:
-                right_content = self.visit(node.right, **kwargs)
+                right_content = self.visit(node.right, **kwargs)    
             return "\\frac{" + left_content + "}{" +right_content + "}"
         else:
             return self.visit(node.left, **kwargs) + "÷" + self.visit(node.right, **kwargs)
@@ -355,7 +355,9 @@ class CodeGenLatex(CodeGen):
         if node.cond:
             sub = '{' + self.visit(node.cond, **kwargs) + '}'
         else:
-            sub = self.visit(node.id)
+            kwargs['is_sub'] = True
+            sub = self.visit(node.id, **kwargs)
+            del kwargs['is_sub']
         return "\\sum_" + sub + " " + self.visit(node.exp, **kwargs)
 
     def visit_function(self, node, **kwargs):
@@ -486,6 +488,7 @@ class CodeGenLatex(CodeGen):
 
     def visit_matrix_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
+        kwargs['is_sub'] = True
         if node.row_index is not None:
             row_info = self.visit(node.row_index, **kwargs)
         else:
@@ -498,11 +501,13 @@ class CodeGenLatex(CodeGen):
 
     def visit_vector_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
+        kwargs['is_sub'] = True
         index_info = self.visit(node.row_index, **kwargs)
         return "{}_{{ {} }}".format(main_info, index_info)
 
     def visit_sequence_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
+        kwargs['is_sub'] = True
         main_index_info = self.visit(node.main_index, **kwargs)
         if node.slice_matrix:
             if node.row_index is not None:
@@ -525,6 +530,7 @@ class CodeGenLatex(CodeGen):
 
     def visit_seq_dim_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
+        kwargs['is_sub'] = True
         main_index_info = self.visit(node.main_index, **kwargs)
         content = "{}_{{ {} }}".format(main_info, main_index_info)
         return content
