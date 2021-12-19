@@ -101,6 +101,9 @@ function getProseArg(parser, name, type='def'){
       }
     }
     let raw = remain.substring(1, endIndex);
+    if (raw.substring(0,1) == '{' && raw.substring(raw.length-1, raw.length) == '}') {
+      raw = raw.substring(1, raw.length-1);
+    }
     const arg = parser.ParseArg(name);  
     // let param = arg.coreMO().childNodes[0].getText();
     let param = `${raw}`;
