@@ -449,6 +449,7 @@ class TypeWalker(NodeWalker):
         self.gen_block_node(stat_list, index_list, ir_node, **kwargs)
         # set properties
         self.main_param.parameters = self.parameters
+        self.main_param.symtable = self.symtable
         return ir_node
 
     def push_environment(self):
