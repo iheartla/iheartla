@@ -15,6 +15,7 @@ body
   -webkit-hyphens: auto;
   -ms-hyphens: auto;
   hyphens: auto;
+  text-align: justify;
 }
 /*mjx-container mjx-utext {
   font-family: "Linux Libertine", serif;
