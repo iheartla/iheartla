@@ -66,6 +66,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
         dedent(r'''❤(?P<module>\b\w+\b)(:)(?P<code>.*?)❤'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
+    #
+    REFERENCE_RE = re.compile(
+        dedent(r'''\#(\s*)REFERENCES'''),
+        re.DOTALL | re.VERBOSE
+    )
     def __init__(self, md, config):
         super().__init__(md)
         self.config = config
@@ -80,6 +85,23 @@ class IheartlaBlockPreprocessor(Preprocessor):
             'use_pygments'
         ]
 
+    def handle_reference(self, text):
+        ref_list = []
+        for m in self.REFERENCE_RE.finditer(text):
+            ref_list.append(m)
+            # print("m is :{}".format(m.group()))
+        if len(ref_list) > 0:
+            m = ref_list[len(ref_list) - 1]
+            remain_lines = text[m.end():].split('\n')
+            ref_index = 0
+            # print(remain_lines)
+            for index in range(len(remain_lines)):
+                if dedent(remain_lines[index]) != '':
+                    remain_lines[index] = "[ref{}]:{}".format(ref_index, remain_lines[index])
+                    ref_index += 1
+            text = text[:m.end()] + '\n'.join(remain_lines)
+        return text
+
     def run(self, lines, **kwargs):
         """ Match and store Fenced Code Blocks in the HtmlStash. """
         # Check for dependent extensions
@@ -92,6 +114,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
 
             self.checked_for_deps = True
         text = "\n".join(lines)
+        #
+        text = self.handle_reference(text)
         file_dict = {}
         # Find all prose
         prose_dict = {}
