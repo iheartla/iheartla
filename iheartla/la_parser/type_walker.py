@@ -514,7 +514,7 @@ class TypeWalker(NodeWalker):
                         except AssertionError as e:
                             retries += 1
                             visited_list[cur_index] = True
-                            if retries >= len(stat_list):
+                            if retries > len(stat_list):
                                 raise e
                             # parse failed, pop saved env
                             self.pop_environment()
