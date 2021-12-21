@@ -1322,7 +1322,7 @@ class CodeGenEigen(CodeGen):
                 if node.op == '+=':
                     op = ' += '
                 type_def = ""
-                if not self.def_dict[node.left.get_main_id()]:
+                if node.left.get_main_id() in self.def_dict and not self.def_dict[node.left.get_main_id()]:
                     # type_def = self.get_ctype(self.symtable[node.left.get_main_id()]) + ' '
                     self.def_dict[node.left.get_main_id()] = True
                 right_exp += '    ' + type_def + node.left.get_main_id() + op + right_info.content + ';'

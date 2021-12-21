@@ -461,6 +461,9 @@ class TypeWalker(NodeWalker):
         self.saved_lhs_sym_list = copy.deepcopy(self.lhs_sym_list)
         self.saved_sum_conds = copy.deepcopy(self.sum_conds)
         self.saved_lhs_sub_dict = copy.deepcopy(self.lhs_sub_dict)
+        #
+        self.saved_func_data_dict = copy.deepcopy(self.func_data_dict)
+        self.saved_local_func_dict = copy.deepcopy(self.local_func_dict)
 
     def pop_environment(self):
         self.symtable = self.saved_symtable
@@ -469,6 +472,10 @@ class TypeWalker(NodeWalker):
         self.lhs_subs = self.saved_lhs_subs
         self.sum_conds = self.saved_sum_conds
         self.lhs_sub_dict = self.saved_lhs_sub_dict
+        self.local_func_dict = self.saved_local_func_dict
+        self.func_data_dict = self.saved_func_data_dict
+        self.local_func_parsing = False
+        self.is_param_block = False
 
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
         block_node = BlockNode()
