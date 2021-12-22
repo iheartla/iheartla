@@ -25,6 +25,40 @@ def handle_abstract(text):
         break
     return text
 
+def handle_sections(text):
+    map_dict = {}
+    def get_section_list(content, index=1):
+        tag = ''
+        sec_list = []
+        title_list = []
+        SECTION_RE = re.compile(
+            dedent(r'''\<h{}\ id\=\"(?P<id>[^<>]*)\"\>(?P<title>[^<>]*)\<\/h{}\>\n'''.format(index, index)),
+            re.DOTALL | re.VERBOSE
+        )
+        end_list = []
+        for m in SECTION_RE.finditer(content):
+            # print("id:{}".format(m.group('id')))
+            sec_list.append(m.group('id'))
+            title_list.append(m.group('title'))
+            end_list.append(m.end())
+        end_list.append(len(content))
+        if len(sec_list) > 0:
+            tag += "<ul>"
+            for cur_index in range(len(sec_list)):
+                tag += "<li><a href='#{}'>{}</a>".format(sec_list[cur_index], title_list[cur_index])
+                cur_content = content[end_list[cur_index]:end_list[cur_index+1]]
+                cur_list, cur_tag = get_section_list(cur_content, index+1)
+                if len(cur_list) > 0:
+                    map_dict[sec_list[cur_index]] = cur_list
+                    tag += cur_tag
+                tag += "</li>"
+            tag += "</ul>"
+        return sec_list, tag
+    res_list, res_tag = get_section_list(text, 1)
+    # print("res_list:{}, map_dict:{}".format(res_list, map_dict))
+    # print("res_tag:{}".format(res_tag))
+    text = "{}\n{}".format(res_tag, text)
+    return text
 
 if __name__ == '__main__':
     LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
@@ -38,7 +72,11 @@ if __name__ == '__main__':
         import iheartla.la_tools.parser_manager
         iheartla.la_tools.parser_manager.recreate_local_parser_cache()
     else:
-        args.paper = ['/Users/pressure/Downloads/lib_paper/test.md']
+        # args.paper = ['/Users/pressure/Downloads/lib_paper/test.md']
+        # args.paper = ['/Users/pressure/Downloads/injective.md']
+        # args.paper = ['/Users/pressure/Downloads/artist_demo.md']
+        args.paper = ['/Users/pressure/Documents/git/paper_md/ICP/icp.md']
+        # args.paper = ['/Users/pressure/Downloads/pm.md']
         for paper_file in args.paper:
             content = read_from_file(paper_file)
             body = markdown.markdown(content, extensions=['markdown.extensions.iheartla_code', \
@@ -61,6 +99,7 @@ if __name__ == '__main__':
                                                           'markdown.extensions.toc', \
                                                           'markdown.extensions.wikilinks'], path=os.path.dirname(Path(paper_file)))
             body = handle_abstract(body)
+            body = handle_sections(body)
             equation_json = read_from_file("{}/data.json".format(os.path.dirname(Path(paper_file))))
             # equation_data = get_sym_data(json.loads(equation_json))
             sym_json = read_from_file("{}/sym_data.json".format(os.path.dirname(Path(paper_file))))
@@ -140,5 +179,8 @@ const sym_data = JSON.parse('{sym_json}');
                 if '\\notag' not in equation:
                     html = html.replace(equation, "{}\\tag{{{}}}\\label{{{}}}".format(equation, num, num))
                     num += 1
-            save_to_file(html, "/Users/pressure/Downloads/lib_paper/paper.html")
+            # save_to_file(html, "/Users/pressure/Downloads/lib_paper/paper.html")
+            # save_to_file(html, "/Users/pressure/Downloads/lib_paper/artist_demo.html")
+            save_to_file(html, "/Users/pressure/Downloads/lib_paper/isp_demo.html")
+            # save_to_file(html, "/Users/pressure/Downloads/lib_paper/pm.html")
             # print(html)
