@@ -23,16 +23,19 @@ def handle_abstract(text):
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
     # print("abstract:{}".format())
+    res_abstract = ''
     for m in ABSTRACT_RE.finditer(text):
         abstract = m.group('abstract')
-        text = text.replace("<p>{}</p>".format(abstract), "<p class='abstract'>{}</p>".format(abstract))
+        res_abstract = "<p class='abstract'>{}</p>".format(abstract)
+        text = text.replace("<p>{}</p>".format(abstract), '')
         # print("abstract:{}".format(m.group('abstract')))
         break
-    return text
+    return text, res_abstract
 
 def handle_sections(text):
     map_dict = {}
-    def get_section_list(content, index=1):
+    order_dict = {}
+    def get_section_list(content, index=1, pre_str=''):
         tag = ''
         sec_list = []
         title_list = []
@@ -41,10 +44,18 @@ def handle_sections(text):
             re.DOTALL | re.VERBOSE
         )
         end_list = []
+        cur_order = 1
         for m in SECTION_RE.finditer(content):
             # print("id:{}".format(m.group('id')))
-            sec_list.append(m.group('id'))
-            title_list.append(m.group('title'))
+            id_str = m.group('id')
+            sec_list.append(id_str)
+            if pre_str == '':
+                title = "{}&nbsp;{}".format(cur_order, m.group('title'))
+            else:
+                title = "{}.{}&nbsp;{}".format(pre_str, cur_order, m.group('title'))
+            title_list.append(title)
+            order_dict[m.group()] = "<h{} id='{}'>{}</h{}>".format(index, id_str, title, index)
+            cur_order += 1
             end_list.append(m.end())
         end_list.append(len(content))
         if len(sec_list) > 0:
@@ -52,17 +63,23 @@ def handle_sections(text):
             for cur_index in range(len(sec_list)):
                 tag += "<li><a href='#{}'>{}</a>".format(sec_list[cur_index], title_list[cur_index])
                 cur_content = content[end_list[cur_index]:end_list[cur_index+1]]
-                cur_list, cur_tag = get_section_list(cur_content, index+1)
+                if pre_str == '':
+                    new_pre = cur_index+1
+                else:
+                    new_pre = "{}.{}".format(pre_str, cur_index+1)
+                cur_list, cur_tag = get_section_list(cur_content, index+1, new_pre)
                 if len(cur_list) > 0:
                     map_dict[sec_list[cur_index]] = cur_list
                     tag += cur_tag
                 tag += "</li>"
             tag += "</ul>"
         return sec_list, tag
-    res_list, res_tag = get_section_list(text, 1)
+    res_list, res_tag = get_section_list(text, 1, pre_str='')
     # print("res_list:{}, map_dict:{}".format(res_list, map_dict))
     # print("res_tag:{}".format(res_tag))
     text = "{}\n{}".format(res_tag, text)
+    for k, v in order_dict.items():
+        text = text.replace(k, v)
     return text
 
 if __name__ == '__main__':
@@ -104,8 +121,9 @@ if __name__ == '__main__':
                                                           'markdown.extensions.toc', \
                                                           'markdown.extensions.wikilinks'], path=os.path.dirname(Path(paper_file)))
             body = md.convert(content)
-            body = handle_abstract(body)
+            body, abstract = handle_abstract(body)
             body = handle_sections(body)
+            body = abstract + body
             body = handle_title(body, md.Meta)
             equation_json = read_from_file("{}/data.json".format(os.path.dirname(Path(paper_file))))
             # equation_data = get_sym_data(json.loads(equation_json))
