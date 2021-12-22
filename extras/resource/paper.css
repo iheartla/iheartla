@@ -17,6 +17,27 @@ body
   hyphens: auto;
   text-align: justify;
 }
+.title{
+    margin: 13.4px 0 13.4px;
+    padding: 15px 0 3px;
+    border-top: none;
+    clear: both;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 120%;
+    text-align: center;
+}
+.author{
+    border-top: none;
+    clear: both;
+    font-size: 16px;
+    line-height: 120%;
+    text-align: center;
+}
+a:link, a:visited {
+    color: #38A;
+    text-decoration: none;
+}
 /*mjx-container mjx-utext {
   font-family: "Linux Libertine", serif;
 }
@@ -29,6 +50,24 @@ figcaption {
 }
 h1,h2,h3,h4,h5 {
   font-family: "Linux Biolinum", sans;
+  page-break-after: avoid;
+  break-after: avoid;
+  margin: 13.4px 0 13.4px;
+  padding: 15px 0 3px;
+  border-top: none;
+  clear: both;
+}
+h1{
+    border-bottom: 3px solid;
+    font-size: 20px;
+    font-weight: bold;
+}
+h2{
+    counter-reset: h3 h4 h5 h6;
+    border-bottom: 2px solid #999;
+    color: #555;
+    font-weight: bold;
+    font-size: 18px;
 }
 a.detail{
   color: red; 
