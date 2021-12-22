@@ -288,12 +288,26 @@ function highlightSymInProseAndEquation(symbol, func_name, color='red'){
   // syms in prose and derivations
   let matches = document.querySelectorAll("[sym='" + symbol + "'][module='" + func_name + "']");
   for (var i = matches.length - 1; i >= 0; i--) {
-    matches[i].setAttribute('class', `highlight_${color}`);
+    var curClass = matches[i].getAttribute('class');
+    if (curClass !== '') {
+      curClass = `highlight_${color}` + ' ' + curClass;
+    }
+    else{
+      curClass = `highlight_${color}`;
+    }
+    matches[i].setAttribute('class', curClass);
   }
   // syms in equation
   let eqMatches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "']");
   for (var i = eqMatches.length - 1; i >= 0; i--) {
-    eqMatches[i].setAttribute('class', `highlight_${color}`);
+    var curClass = eqMatches[i].getAttribute('class');
+    if (curClass !== '') {
+      curClass = `highlight_${color}` + ' ' + curClass;
+    }
+    else{
+      curClass = `highlight_${color}`;
+    }
+    eqMatches[i].setAttribute('class', curClass);
   }
 }
 function onClickProse(tag, symbol, func_name, type='def') {
@@ -428,7 +442,9 @@ function removeArrows(){
 function removeSymHighlight(){
   const matches = document.querySelectorAll("[class^=highlight]");
   for (var i = matches.length - 1; i >= 0; i--) {
-    matches[i].removeAttribute('class');
+    var cur = matches[i].getAttribute('class');
+    const classArray = cur.split(' ');
+    matches[i].setAttribute('class', cur.replace(classArray[0], ''));
   }
 }
 function closeOtherTips(){

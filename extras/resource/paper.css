@@ -78,6 +78,11 @@ a.detail{
   margin-right: auto;
   width: 50%;
 }
+.paperSymbol{
+  /*color: red; */
+  border-bottom: 1px dotted #000;
+  text-decoration: none;
+}
 /*https://htmlcolorcodes.com/color-names/*/
 .highlight_red {
  color: red; 

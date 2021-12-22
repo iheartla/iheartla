@@ -59,6 +59,7 @@ AttrlabelMethods.IdLabel = function (parser, name) {
       // console.log(`${key}: ${value}`);
       NodeUtil.setAttribute(arg, key, value);
     }
+    NodeUtil.setAttribute(arg, "class", 'paperSymbol');
     parser.Push(arg);
 }
 
@@ -113,6 +114,7 @@ function getProseArg(parser, name, type='def'){
     NodeUtil.setAttribute(arg, "module", modulelabel);
     NodeUtil.setAttribute(arg, "sym", param);
     NodeUtil.setAttribute(arg, "type", type);
+    NodeUtil.setAttribute(arg, "class", 'paperSymbol');
     NodeUtil.setAttribute(arg, "onclick", `event.stopPropagation(); onClickProse(this, '${param}', '${modulelabel}', '${type}');`);
     return arg;
 }
