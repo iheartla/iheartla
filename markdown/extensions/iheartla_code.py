@@ -1,6 +1,7 @@
 from textwrap import dedent
 from . import Extension
 from ..preprocessors import Preprocessor
+from ..postprocessors import Postprocessor
 from .codehilite import CodeHilite, CodeHiliteExtension, parse_hl_lines
 from .attr_list import get_attrs, AttrListExtension
 from ..util import parseBoolValue
@@ -42,6 +43,25 @@ class IheartlaCodeExtension(Extension):
         md.registerExtension(self)
 
         md.preprocessors.register(IheartlaBlockPreprocessor(md, self.getConfigs()), 'iheartla_code_block', 25)
+        md.postprocessors.register(IheartlaBlockPostprocessor(md, self.getConfigs()), 'iheartla_code_post_block', 26)
+
+
+class IheartlaBlockPostprocessor(Postprocessor):
+    #
+    REFERENCE_RE = re.compile(
+        dedent(r'''\<p\>\[ref(?P<index>\d*)\]:(?P<context>[^<>]*)<\/p\>'''),
+        re.DOTALL | re.VERBOSE
+    )
+    def __init__(self, md, config):
+        super().__init__(md)
+        self.config = config
+
+    def run(self, text):
+        for m in self.REFERENCE_RE.finditer(text):
+            # print("cur:{}".format(m.group('context')))
+            text = text.replace(m.group(), "<p id='ref{}'>{}</p>".format(m.group('index'), m.group('context')))
+        # return '<pre>\n' + re.sub('<', '&lt;', text) + '</pre>\n'
+        return text
 
 
 class IheartlaBlockPreprocessor(Preprocessor):
