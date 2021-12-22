@@ -11,6 +11,11 @@ import re
 from textwrap import dedent
 
 
+def handle_title(text, dict):
+    title = dict["title"]
+    author = dict["author"]
+    return "<div class='title'>{}</div><div class='author'>{}</div>{}".format(title[0], author[0], text)
+
 def handle_abstract(text):
     # abstract = text[:text.index('\n<h1')]
     ABSTRACT_RE = re.compile(
@@ -79,7 +84,7 @@ if __name__ == '__main__':
         # args.paper = ['/Users/pressure/Downloads/pm.md']
         for paper_file in args.paper:
             content = read_from_file(paper_file)
-            body = markdown.markdown(content, extensions=['markdown.extensions.iheartla_code', \
+            md = markdown.Markdown(extensions=['markdown.extensions.iheartla_code', \
                                                           'markdown.extensions.mdx_math', \
                                                           'markdown.extensions.attr_list', \
                                                           'markdown.extensions.fenced_code', \
@@ -98,8 +103,10 @@ if __name__ == '__main__':
                                                           'markdown.extensions.smarty', \
                                                           'markdown.extensions.toc', \
                                                           'markdown.extensions.wikilinks'], path=os.path.dirname(Path(paper_file)))
+            body = md.convert(content)
             body = handle_abstract(body)
             body = handle_sections(body)
+            body = handle_title(body, md.Meta)
             equation_json = read_from_file("{}/data.json".format(os.path.dirname(Path(paper_file))))
             # equation_data = get_sym_data(json.loads(equation_json))
             sym_json = read_from_file("{}/sym_data.json".format(os.path.dirname(Path(paper_file))))
@@ -164,7 +171,7 @@ const sym_data = JSON.parse('{sym_json}');
 {script}
 </script>
 <body>
-<img src="./resource/glossary.png" id="glossary" alt="glossary" width="22" height="28">
+<img src="./resource/glossary.png" id="glossary" alt="glossary" width="22" height="28"><br>
 {body}
 </body>
 </html>""".format(mathjax=mathjax, equation_json=equation_json,  sym_json=sym_json, script=script, body=body)
