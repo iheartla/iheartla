@@ -11,6 +11,21 @@ import re
 from textwrap import dedent
 
 
+def handle_abstract(text):
+    # abstract = text[:text.index('\n<h1')]
+    ABSTRACT_RE = re.compile(
+        dedent(r'''\<p\>(?P<abstract>[^<>]*)\<\/p\>\n\<h1'''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
+    # print("abstract:{}".format())
+    for m in ABSTRACT_RE.finditer(text):
+        abstract = m.group('abstract')
+        text = text.replace("<p>{}</p>".format(abstract), "<p class='abstract'>{}</p>".format(abstract))
+        # print("abstract:{}".format(m.group('abstract')))
+        break
+    return text
+
+
 if __name__ == '__main__':
     LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
     arg_parser = argparse.ArgumentParser(description='I Heart LA paper compiler')
@@ -45,6 +60,7 @@ if __name__ == '__main__':
                                                           'markdown.extensions.smarty', \
                                                           'markdown.extensions.toc', \
                                                           'markdown.extensions.wikilinks'], path=os.path.dirname(Path(paper_file)))
+            body = handle_abstract(body)
             equation_json = read_from_file("{}/data.json".format(os.path.dirname(Path(paper_file))))
             # equation_data = get_sym_data(json.loads(equation_json))
             sym_json = read_from_file("{}/sym_data.json".format(os.path.dirname(Path(paper_file))))
