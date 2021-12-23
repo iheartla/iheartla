@@ -489,6 +489,7 @@ class TypeWalker(NodeWalker):
                 for cur_index in range(len(stat_list)):
                     if order_list[cur_index] == -1 and not visited_list[cur_index]:
                         cur_stat = stat_list[cur_index]
+                        self.logger.debug("tried stat:{}, retries:{}".format(cur_stat.text, retries))
                         # try to parse
                         self.push_environment()
                         try:
@@ -1751,8 +1752,9 @@ class TypeWalker(NodeWalker):
             node_info.ir = ir_node
             return node_info
         else:
-            assert len(node.params) == 1, "Not a function"  # never reach
-            return self.make_mul_info(name_info, self.walk(node.params[0], **kwargs))
+            assert False, "Not a function"
+            # assert len(node.params) == 1, "Not a function"  # never reach
+            # return self.make_mul_info(name_info, self.walk(node.params[0], **kwargs))
 
     def walk_IfCondition(self, node, **kwargs):
         ir_node = IfNode(parse_info=node.parseinfo)
