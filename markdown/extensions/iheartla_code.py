@@ -106,6 +106,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
         '''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
+    # Match string: \proselabel{A}  \prosedeflabel{A}
+    PROSE_RE = re.compile(
+        dedent(r'''\\prose(?P<def>(def)?)label\{(?P<symbol>[^{}$]*)\}(?!\{)'''),
+        re.MULTILINE | re.VERBOSE
+    )
     def __init__(self, md, config):
         super().__init__(md)
         self.config = config
@@ -120,10 +125,16 @@ class IheartlaBlockPreprocessor(Preprocessor):
             'use_pygments'
         ]
 
+    def handle_prose_label(self, text, context):
+        for m in self.PROSE_RE.finditer(text):
+            print("prose match: {}, def:{}, symbol:{}".format(m.group(), m.group('def'), m.group('symbol')))
+            text = text.replace(m.group(), "\\prose{}label{{{}}}{{{}}}".format(m.group('def'), context, m.group('symbol')))
+        return text
+
     def handle_raw_code(self, text, context):
         for m in self.RAW_CODE_BLOCK_RE.finditer(text):
-            print(m.group())
-            text.replace(m.group(), "{}iheartla({})".format(m.group('fence'), context))
+            # print(m.group())
+            text = text.replace(m.group(), "{}iheartla({})".format(m.group('fence'), context))
         return text
 
     def handle_context(self, text):
@@ -138,6 +149,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         text_list.append(text[start_index:len(text)])
         for index in range(len(text_list)):
             text_list[index] = self.handle_raw_code(text_list[index], context_list[index])
+            text_list[index] = self.handle_prose_label(text_list[index], context_list[index])
         return ''.join(text_list)
 
 
