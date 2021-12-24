@@ -12,9 +12,15 @@ from textwrap import dedent
 
 
 def handle_title(text, dict):
-    title = dict["title"]
-    author = dict["author"]
-    return "<div class='title'>{}</div><div class='author'>{}</div>{}".format(title[0], author[0], text)
+    content = ''
+    if "title" in dict:
+        title = dict["title"]
+        content += "<div class='title'>{}</div>".format(title[0])
+    if "author" in dict:
+        author = dict["author"]
+        content += "<div class='author'>{}</div>".format(author[0])
+    content += text
+    return content
 
 def handle_abstract(text):
     # abstract = text[:text.index('\n<h1')]
@@ -94,10 +100,10 @@ if __name__ == '__main__':
         import iheartla.la_tools.parser_manager
         iheartla.la_tools.parser_manager.recreate_local_parser_cache()
     else:
-        # args.paper = ['/Users/pressure/Downloads/lib_paper/test.md']
+        args.paper = ['/Users/pressure/Downloads/lib_paper/test.md']
         # args.paper = ['/Users/pressure/Downloads/injective.md']
         # args.paper = ['/Users/pressure/Downloads/artist_demo.md']
-        args.paper = ['/Users/pressure/Documents/git/paper_md/ICP/icp.md']
+        # args.paper = ['/Users/pressure/Documents/git/paper_md/ICP/icp.md']
         # args.paper = ['/Users/pressure/Downloads/pm.md']
         for paper_file in args.paper:
             content = read_from_file(paper_file)
@@ -204,8 +210,8 @@ const sym_data = JSON.parse('{sym_json}');
                 if '\\notag' not in equation:
                     html = html.replace(equation, "{}\\tag{{{}}}\\label{{{}}}".format(equation, num, num))
                     num += 1
-            # save_to_file(html, "/Users/pressure/Downloads/lib_paper/paper.html")
+            save_to_file(html, "/Users/pressure/Downloads/lib_paper/paper.html")
             # save_to_file(html, "/Users/pressure/Downloads/lib_paper/artist_demo.html")
-            save_to_file(html, "/Users/pressure/Downloads/lib_paper/isp_demo.html")
+            # save_to_file(html, "/Users/pressure/Downloads/lib_paper/isp_demo.html")
             # save_to_file(html, "/Users/pressure/Downloads/lib_paper/pm.html")
             # print(html)
