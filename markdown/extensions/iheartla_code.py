@@ -5,7 +5,7 @@ from ..postprocessors import Postprocessor
 from .codehilite import CodeHilite, CodeHiliteExtension, parse_hl_lines
 from .attr_list import get_attrs, AttrListExtension
 from ..util import parseBoolValue
-import re
+import regex as re
 from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
 from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file
 
@@ -91,6 +91,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
         dedent(r'''\#(\s*)REFERENCES'''),
         re.DOTALL | re.VERBOSE
     )
+    #
+    CONTEXT_RE = re.compile(
+        dedent(r'''(?<=\n)(\s*)❤(\s*):(\s*)(?P<context>.*)\n'''),
+        re.MULTILINE | re.VERBOSE
+    )
     def __init__(self, md, config):
         super().__init__(md)
         self.config = config
@@ -104,6 +109,19 @@ class IheartlaBlockPreprocessor(Preprocessor):
             'noclasses',
             'use_pygments'
         ]
+
+    def handle_context(self, text):
+        start_index = 0
+        text_list = []
+        context_list = ['']
+        for m in self.CONTEXT_RE.finditer(text):
+            print(m.group('context'))
+            context_list.append(m.group('context'))
+            text_list.append(text[start_index: m.start()])
+            start_index = m.end()
+        text_list.append(text[start_index:len(text)])
+        return ''.join(text_list)
+
 
     def handle_reference(self, text):
         ref_list = []
@@ -135,6 +153,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             self.checked_for_deps = True
         text = "\n".join(lines)
         #
+        text = self.handle_context(text)
         text = self.handle_reference(text)
         file_dict = {}
         # Find all prose
