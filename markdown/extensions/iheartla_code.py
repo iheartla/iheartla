@@ -65,6 +65,7 @@ class IheartlaBlockPostprocessor(Postprocessor):
 
 
 class IheartlaBlockPreprocessor(Preprocessor):
+    # Match string: ``` iheartla (context)
     FENCED_BLOCK_RE = re.compile(
         dedent(r'''
             (?P<fence>^(?:~{3,}|`{3,}))[ ]*                          # opening fence
@@ -86,15 +87,24 @@ class IheartlaBlockPreprocessor(Preprocessor):
         dedent(r'''❤(?P<module>\b\w+\b)(:)(?P<code>.*?)❤'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
-    #
+    # Match string: # REFERENCES
     REFERENCE_RE = re.compile(
         dedent(r'''\#(\s*)REFERENCES'''),
         re.DOTALL | re.VERBOSE
     )
-    #
+    # Match string: ❤ : context
     CONTEXT_RE = re.compile(
         dedent(r'''(?<=\n)(\s*)❤(\s*):(\s*)(?P<context>.*)\n'''),
         re.MULTILINE | re.VERBOSE
+    )
+    # Match string: ``` iheartla
+    RAW_CODE_BLOCK_RE = re.compile(
+        dedent(r'''
+            (?P<fence>^(?:~{3,}|`{3,}))[ ]*                          # opening fence
+            iheartla
+            \n                                                       # newline (end of opening fence)
+        '''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
     )
     def __init__(self, md, config):
         super().__init__(md)
@@ -110,6 +120,12 @@ class IheartlaBlockPreprocessor(Preprocessor):
             'use_pygments'
         ]
 
+    def handle_raw_code(self, text, context):
+        for m in self.RAW_CODE_BLOCK_RE.finditer(text):
+            print(m.group())
+            text.replace(m.group(), "{}iheartla({})".format(m.group('fence'), context))
+        return text
+
     def handle_context(self, text):
         start_index = 0
         text_list = []
@@ -120,6 +136,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
             text_list.append(text[start_index: m.start()])
             start_index = m.end()
         text_list.append(text[start_index:len(text)])
+        for index in range(len(text_list)):
+            text_list[index] = self.handle_raw_code(text_list[index], context_list[index])
         return ''.join(text_list)
 
 
