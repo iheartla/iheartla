@@ -376,6 +376,22 @@ function onClickSymbol(tag, symbol, func_name, type='def', color='red') {
 function onClickEq(tag, func_name, sym_list) { 
   closeOtherTips();
   resetState();
+  // Scale equation and append new div
+  var div = tag.closest("div");
+  var mjx = tag.closest("mjx-container");
+  mjx.classList.remove("eqNormal");
+  mjx.classList.add("eqHighlight");
+  const symDiv = document.createElement("div");
+  symDiv.innerHTML = content;
+  content = `<div class='euqation_highlight'> ${content} </div>`
+  div.appendChild(symDiv)
+  symDiv.classList.add("eqInfo", "faded-out");
+  MathJax.typeset();
+  requestAnimationFrame(() => {
+    symDiv.classList.remove("faded-out")
+  })
+  console.log(`div is ${div.innerHTML}`);
+  //
   var colors =['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink', 'Tomato', 'Orange', 'DarkRed', 'LightCoral', 'Khaki']
   content = "This equation has " + sym_list.length + " symbols:<br>";
   var offsetVerticalX = 0;
@@ -430,6 +446,21 @@ function onClickEq(tag, func_name, sym_list) {
 function resetState(){
   removeArrows();
   removeSymHighlight();
+  removeAddedDiv();
+  resetEqScale();
+}
+function resetEqScale(argument) {
+  const matches = document.querySelectorAll(".eqHighlight");
+  for (var i = matches.length - 1; i >= 0; i--) {
+    matches[i].classList.remove('eqHighlight');
+    matches[i].classList.add('eqNormal');
+  }
+}
+function removeAddedDiv() {
+  const matches = document.querySelectorAll(".eqInfo");
+  for (var i = matches.length - 1; i >= 0; i--) {
+    matches[i].parentNode.removeChild(matches[i]);
+  }
 }
 function removeArrows(){
   var matches = document.querySelectorAll(".arrow");

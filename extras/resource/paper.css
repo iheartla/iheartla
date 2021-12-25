@@ -34,6 +34,20 @@ body
     line-height: 120%;
     text-align: center;
 }
+.eqInfo {
+  background-color: #38A;
+  transition: opacity 4000ms;
+  will-change: opacity;
+  text-align: center;
+}
+.eqHighlight{
+  transform: scale(1.2);
+  transition-duration: 0.2s;
+}
+.eqNormal{
+  transform: none;
+  transition-duration: 0.2s;
+}
 a:link, a:visited {
     color: #38A;
     text-decoration: none;
