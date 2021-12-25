@@ -387,15 +387,17 @@ function onClickEq(tag, func_name, sym_list) {
   resetState();
   content = getEquationContent(func_name, sym_list);
   // Scale equation and append new div
+  document.body.classList.add("opShallow");
   var div = tag.closest("div");
   var mjx = tag.closest("mjx-container");
   mjx.classList.remove("eqNormal");
   mjx.classList.add("eqHighlight");
+  div.classList.add("eqDivHighlight");
   const symDiv = document.createElement("div");
   symDiv.innerHTML = content
   // content = `<div class='euqation_highlight'> ${content} </div>`
   div.appendChild(symDiv)
-  symDiv.classList.add("eqInfo", "faded-out");
+  symDiv.classList.add("eqInfo");
   MathJax.typeset();
   requestAnimationFrame(() => {
     symDiv.classList.remove("faded-out")
@@ -452,6 +454,7 @@ function onClickEq(tag, func_name, sym_list) {
   }
 };
 function resetState(){
+  document.body.classList.remove("opShallow");
   removeArrows();
   removeSymHighlight();
   removeAddedDiv();
@@ -462,6 +465,11 @@ function resetEqScale(argument) {
   for (var i = matches.length - 1; i >= 0; i--) {
     matches[i].classList.remove('eqHighlight');
     matches[i].classList.add('eqNormal');
+  }
+  // 
+  const matchesDiv = document.querySelectorAll(".eqDivHighlight");
+  for (var i = matchesDiv.length - 1; i >= 0; i--) {
+    matchesDiv[i].classList.remove('eqDivHighlight'); 
   }
 }
 function removeAddedDiv() {
