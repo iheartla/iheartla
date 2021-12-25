@@ -373,17 +373,27 @@ function onClickSymbol(tag, symbol, func_name, type='def', color='red') {
   }
   // console.log("clicked: " + symbol + " in " + func_name); 
 };
+function getEquationContent(func_name, sym_list){
+  content = "This equation has " + sym_list.length + " symbols:<br>";
+  for (var i = sym_list.length - 1; i >= 0; i--) {
+    sym = sym_list[i];
+    sym = sym.replace("\\","\\\\\\\\"); 
+    content += getSymInfo(sym_list[i], func_name) + '<br>';
+  }
+  return content;
+}
 function onClickEq(tag, func_name, sym_list) { 
   closeOtherTips();
   resetState();
+  content = getEquationContent(func_name, sym_list);
   // Scale equation and append new div
   var div = tag.closest("div");
   var mjx = tag.closest("mjx-container");
   mjx.classList.remove("eqNormal");
   mjx.classList.add("eqHighlight");
   const symDiv = document.createElement("div");
-  symDiv.innerHTML = content;
-  content = `<div class='euqation_highlight'> ${content} </div>`
+  symDiv.innerHTML = content
+  // content = `<div class='euqation_highlight'> ${content} </div>`
   div.appendChild(symDiv)
   symDiv.classList.add("eqInfo", "faded-out");
   MathJax.typeset();
@@ -392,8 +402,7 @@ function onClickEq(tag, func_name, sym_list) {
   })
   console.log(`div is ${div.innerHTML}`);
   //
-  var colors =['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink', 'Tomato', 'Orange', 'DarkRed', 'LightCoral', 'Khaki']
-  content = "This equation has " + sym_list.length + " symbols:<br>";
+  var colors =['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink', 'Tomato', 'Orange', 'DarkRed', 'LightCoral', 'Khaki'];
   var offsetVerticalX = 0;
   var offsetStartY = 0;
   var offsetEndY = 0;
@@ -403,7 +412,6 @@ function onClickEq(tag, func_name, sym_list) {
     highlightSym(sym, func_name, colors[i]);
     // sym = sym.replace("\\","\\\\");
     sym = sym.replace("\\","\\\\\\\\"); 
-    content += getSymInfo(sym_list[i], func_name) + '<br>';
     var symTag = tag.querySelector("[case='equation'][sym='" + sym + "']");
     const matches = document.querySelectorAll("[case='equation'][sym='" + sym + "']");
     // console.log(`tag is ${tag}, sym is ${sym}, symTag is ${symTag}, matches is ${matches}`);
