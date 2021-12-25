@@ -432,25 +432,25 @@ function onClickEq(tag, func_name, sym_list) {
     }
   }
   if (typeof tag._tippy === 'undefined'){
-    tippy(tag, {
-        content: content,
-        placement: 'bottom',
-        animation: 'fade',
-        trigger: 'click', 
-        showOnCreate: true,
-        allowHTML: true,
-        // interactive: true,
-        onShow(instance) { 
-          tag.setAttribute('class', 'highlight_fake');
-          // console.log('onShow');
-          return true;  
-        },
-        onHide(instance) {
-          resetState();
-          return true;  
-        },
-      });
-    MathJax.typeset();
+    // tippy(tag, {
+    //     content: content,
+    //     placement: 'bottom',
+    //     animation: 'fade',
+    //     trigger: 'click', 
+    //     showOnCreate: true,
+    //     allowHTML: true,
+    //     // interactive: true,
+    //     onShow(instance) { 
+    //       tag.setAttribute('class', 'highlight_fake');
+    //       // console.log('onShow');
+    //       return true;  
+    //     },
+    //     onHide(instance) {
+    //       resetState();
+    //       return true;  
+    //     },
+    //   });
+    // MathJax.typeset();
   }
 };
 function resetState(){

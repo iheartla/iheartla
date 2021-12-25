@@ -66,7 +66,7 @@ body
   opacity: 1;
 }
 .eqHighlight{
-  transform: scale(1.2);
+  transform: scale(1.1);
   transition-duration: 1s;
   /*background-color: #B8D0E8;*/
   opacity: 1;
