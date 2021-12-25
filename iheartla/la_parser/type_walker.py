@@ -2426,6 +2426,12 @@ class TypeWalker(NodeWalker):
             self.symtable[new_id] = MatrixType(rows=rows, cols=cols, block=block, sparse=sparse, list_dim=list_dim, item_types=node_info.content)
             ret_node_info.symbol = new_id
             ir_node.symbol = new_id
+        elif self.local_func_parsing:
+            new_id = self.generate_var_name(self.local_func_name)
+            self.get_cur_param_data().symtable[new_id] = MatrixType(rows=rows, cols=cols, block=block, sparse=sparse, list_dim=list_dim,
+                                               item_types=node_info.content)
+            ret_node_info.symbol = new_id
+            ir_node.symbol = new_id
         ir_node.la_type = ret_node_info.la_type
         ret_node_info.ir = ir_node
         return ret_node_info
