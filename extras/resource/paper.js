@@ -399,38 +399,37 @@ function onClickEq(tag, func_name, sym_list) {
   div.appendChild(symDiv)
   symDiv.classList.add("eqInfo");
   MathJax.typeset();
-  requestAnimationFrame(() => {
-    symDiv.classList.remove("faded-out")
-  })
-  console.log(`div is ${div.innerHTML}`);
+  // console.log(`div is ${div.innerHTML}`);
   //
-  var colors =['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink', 'Tomato', 'Orange', 'DarkRed', 'LightCoral', 'Khaki'];
-  var offsetVerticalX = 0;
-  var offsetStartY = 0;
-  var offsetEndY = 0;
-  var offsetEndX = 30;
-  for (var i = sym_list.length - 1; i >= 0; i--) {
-    sym = sym_list[i];
-    highlightSym(sym, func_name, colors[i]);
-    // sym = sym.replace("\\","\\\\");
-    sym = sym.replace("\\","\\\\\\\\"); 
-    var symTag = tag.querySelector("[case='equation'][sym='" + sym + "']");
-    const matches = document.querySelectorAll("[case='equation'][sym='" + sym + "']");
-    // console.log(`tag is ${tag}, sym is ${sym}, symTag is ${symTag}, matches is ${matches}`);
-    offsetVerticalX += 5;
-    offsetStartY += 2;
-    offsetEndY += 2;
-    offsetEndX -= 5;
-    if (symTag !== null){
-      // console.log(`symTag is ${symTag}`);
-      if (i === sym_list.length - 1) {
-        showSymArrow(symTag, sym_list[i], func_name, 'def', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
-      }
-      else{
-        showSymArrow(symTag, sym_list[i], func_name, 'use', colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+  function showAllArrows(){
+    var colors =['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink', 'Tomato', 'Orange', 'DarkRed', 'LightCoral', 'Khaki'];
+    var offsetVerticalX = 0;
+    var offsetStartY = 0;
+    var offsetEndY = 0;
+    var offsetEndX = 30;
+    for (var i = sym_list.length - 1; i >= 0; i--) {
+      sym = sym_list[i];
+      highlightSym(sym, func_name, colors[i]);
+      // sym = sym.replace("\\","\\\\");
+      sym = sym.replace("\\","\\\\\\\\"); 
+      var symTag = tag.querySelector("[case='equation'][sym='" + sym + "']");
+      const matches = document.querySelectorAll("[case='equation'][sym='" + sym + "']");
+      // console.log(`tag is ${tag}, sym is ${sym}, symTag is ${symTag}, matches is ${matches}`);
+      offsetVerticalX += 5;
+      offsetStartY += 2;
+      offsetEndY += 2;
+      offsetEndX -= 5;
+      if (symTag !== null){
+        // console.log(`symTag is ${symTag}`);
+        var t = 'use';
+        if (i === sym_list.length - 1) {
+          t = 'def';
+        }
+        showSymArrow(symTag, sym_list[i], func_name, t, colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
       }
     }
   }
+  setTimeout(showAllArrows, 1000);
   if (typeof tag._tippy === 'undefined'){
     // tippy(tag, {
     //     content: content,
