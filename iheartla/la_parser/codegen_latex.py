@@ -542,7 +542,7 @@ class CodeGenLatex(CodeGen):
         content_list = []
         for item in node.items:
             content_list.append(self.visit(item, **kwargs))
-        return '\\left( {} \\right)'.format(','.join(content_list))
+        return '\\begin{pmatrix}\n' + '\\\\'.join(content_list) + '\\end{pmatrix}'
 
     def visit_MatrixRows(self, node, **kwargs):
         ret = []
