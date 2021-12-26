@@ -297,6 +297,18 @@ function highlightSymInProseAndEquation(symbol, func_name, color='red'){
     }
     matches[i].setAttribute('class', curClass);
   }
+  // span prose 
+  let spanMatches = document.querySelectorAll("span[sym='" + symbol + "'][context='" + func_name + "']");
+  for (var i = spanMatches.length - 1; i >= 0; i--) {
+    var curClass = spanMatches[i].getAttribute('class');
+    if (curClass !== '') {
+      curClass = `highlight_prose` + ' ' + curClass;
+    }
+    else{
+      curClass = `highlight_prose`;
+    }
+    spanMatches[i].setAttribute('class', curClass);
+  }
   // syms in equation
   let eqMatches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "']");
   for (var i = eqMatches.length - 1; i >= 0; i--) {

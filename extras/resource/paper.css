@@ -133,6 +133,9 @@ a.detail{
   text-decoration: none;
 }
 /*https://htmlcolorcodes.com/color-names/*/
+.highlight_prose {
+ color: #5A97D4; 
+}
 .highlight_red {
  color: red; 
 }

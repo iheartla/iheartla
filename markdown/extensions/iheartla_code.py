@@ -204,7 +204,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         for m in self.SPAN_BLOCK_RE.finditer(text):
             desc = m.group('code')
             new_desc = desc.replace("${}$".format(m.group('symbol')), r"""$\prosedeflabel{{{}}}{{{}}}$""".format(m.group('context'), m.group('symbol')))
-            text = text.replace(desc, new_desc)
+            text = text.replace(m.group(), "<span sym='{}' context='{}'> {} </span>".format(m.group('symbol'), m.group('context'), new_desc))
         # Find all inline blocks
         for m in self.INLINE_RE.finditer(text):
             # print("Inline block: {}".format(m.group()))
