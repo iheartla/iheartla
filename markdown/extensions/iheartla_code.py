@@ -84,7 +84,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
     )
     # Match string: ❤️context: a=sin(θ)❤️
     INLINE_RE = re.compile(
-        dedent(r'''❤(?P<module>\b\w+\b)(:)(?P<code>.*?)❤'''),
+        dedent(r'''❤(\s*)(?P<module>\b\w+\b)(\s*)(:)(?P<code>.*?)❤'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
     # Match string: # REFERENCES
@@ -94,7 +94,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
     )
     # Match string: ❤ : context
     CONTEXT_RE = re.compile(
-        dedent(r'''(?<=\n)(\s*)❤(\s*):(\s*)(?P<context>.*)\n'''),
+        dedent(r'''(?<=\n)(\s*)❤(\s*):(\s*)(?P<context>[^\n❤]*)\n'''),
         re.MULTILINE | re.VERBOSE
     )
     # Match string: ``` iheartla
@@ -104,6 +104,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
             iheartla
             \n                                                       # newline (end of opening fence)
         '''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
+    # Match string: ❤: a=sin(θ)❤
+    RAW_CODE_INLINE_RE = re.compile(
+        dedent(r'''❤(\s*):(?P<code>[^❤]*?)❤'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
     # Match string: \proselabel{A}  \prosedeflabel{A}
@@ -127,7 +132,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
 
     def handle_prose_label(self, text, context):
         for m in self.PROSE_RE.finditer(text):
-            print("prose match: {}, def:{}, symbol:{}".format(m.group(), m.group('def'), m.group('symbol')))
+            # print("prose match: {}, def:{}, symbol:{}".format(m.group(), m.group('def'), m.group('symbol')))
             text = text.replace(m.group(), "\\prose{}label{{{}}}{{{}}}".format(m.group('def'), context, m.group('symbol')))
         return text
 
@@ -137,18 +142,26 @@ class IheartlaBlockPreprocessor(Preprocessor):
             text = text.replace(m.group(), "{}iheartla({})".format(m.group('fence'), context))
         return text
 
+    def handle_inline_raw_code(self, text, context):
+        for m in self.RAW_CODE_INLINE_RE.finditer(text):
+            # print("inline_raw_code: {}".format(m.group()))
+            # print("new: {}".format("❤ {}:{}❤".format(context, m.group('code'))))
+            text = text.replace(m.group(), "❤ {}:{}❤".format(context, m.group('code')))
+        return text
+
     def handle_context(self, text):
         start_index = 0
         text_list = []
         context_list = ['']
         for m in self.CONTEXT_RE.finditer(text):
-            print(m.group('context'))
+            # print("parsed context: {}".format(m.group('context')))
             context_list.append(m.group('context'))
             text_list.append(text[start_index: m.start()])
             start_index = m.end()
         text_list.append(text[start_index:len(text)])
         for index in range(len(text_list)):
             text_list[index] = self.handle_raw_code(text_list[index], context_list[index])
+            text_list[index] = self.handle_inline_raw_code(text_list[index], context_list[index])
             text_list[index] = self.handle_prose_label(text_list[index], context_list[index])
         return ''.join(text_list)
 
@@ -194,6 +207,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             text = text.replace(desc, new_desc)
         # Find all inline blocks
         for m in self.INLINE_RE.finditer(text):
+            # print("Inline block: {}".format(m.group()))
             module_name = m.group('module')
             if module_name and m.group('code'):
                 if module_name not in file_dict:
