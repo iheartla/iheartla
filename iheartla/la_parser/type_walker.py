@@ -2374,6 +2374,11 @@ class TypeWalker(NodeWalker):
             new_id = self.generate_var_name(lhs)
             self.symtable[new_id] = ir_node.la_type
             ir_node.symbol = new_id
+        elif self.local_func_parsing:
+            new_id = self.generate_var_name(self.local_func_name)
+            self.get_cur_param_data().symtable[new_id] = ir_node.la_type
+            ir_node.symbol = new_id
+
         return node_info
 
     def walk_Matrix(self, node, **kwargs):
