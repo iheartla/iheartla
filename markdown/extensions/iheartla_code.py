@@ -82,6 +82,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
         dedent(r'''(<span\ class="def:)(?P<context>\b\w+\b)(:)(?P<symbol>\b\w+\b)(">)(?P<code>.*?)(</span>)'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
+    # Match string: <span class="def:symbol">***</span>
+    SPAN_SIMPLE_RE = re.compile(
+        dedent(r'''(<span\ class="def:)(?P<symbol>\b\w+\b)(">)(?P<code>.*?)(</span>)'''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
     # Match string: ❤️context: a=sin(θ)❤️
     INLINE_RE = re.compile(
         dedent(r'''❤(\s*)(?P<module>\b\w+\b)(\s*)(:)(?P<code>.*?)❤'''),
@@ -149,6 +154,13 @@ class IheartlaBlockPreprocessor(Preprocessor):
             text = text.replace(m.group(), "❤ {}:{}❤".format(context, m.group('code')))
         return text
 
+    def handle_simple_span_code(self, text, context):
+        for m in self.SPAN_SIMPLE_RE.finditer(text):
+            # print("simple_span_code: {}".format(m.group()))
+            # print("new: {}".format('<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code'))))
+            text = text.replace(m.group(), '<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code')))
+        return text
+
     def handle_context(self, text):
         start_index = 0
         text_list = []
@@ -163,6 +175,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             text_list[index] = self.handle_raw_code(text_list[index], context_list[index])
             text_list[index] = self.handle_inline_raw_code(text_list[index], context_list[index])
             text_list[index] = self.handle_prose_label(text_list[index], context_list[index])
+            text_list[index] = self.handle_simple_span_code(text_list[index], context_list[index])
         return ''.join(text_list)
 
 
