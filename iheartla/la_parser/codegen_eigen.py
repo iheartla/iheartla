@@ -557,8 +557,8 @@ class CodeGenEigen(CodeGen):
         main_content += self.get_ret_display()
         main_content.append('    return 0;')
         main_content.append('}')
-        self.code_frame.main = '\n'.join(main_content)
-        self.code_frame.rand_data = '\n'.join(test_function)
+        self.code_frame.main = self.trim_content('\n'.join(main_content))
+        self.code_frame.rand_data = self.trim_content('\n'.join(test_function))
         self.code_frame.struct = self.trim_content(content)
         content += '\n\n' + '\n'.join(test_function) + '\n\n\n' + '\n'.join(main_content)
         # convert special string in identifiers
