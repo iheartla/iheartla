@@ -144,7 +144,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
     def handle_raw_code(self, text, context):
         for m in self.RAW_CODE_BLOCK_RE.finditer(text):
             # print(m.group())
-            text = text.replace(m.group(), "{}iheartla({})".format(m.group('fence'), context))
+            text = text.replace(m.group(), "{}iheartla({})\n".format(m.group('fence'), context))
         return text
 
     def handle_inline_raw_code(self, text, context):
