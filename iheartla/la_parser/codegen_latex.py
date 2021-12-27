@@ -634,7 +634,11 @@ class CodeGenLatex(CodeGen):
         return "{{{}}}^T".format(self.visit(node.f, **kwargs))
 
     def visit_squareroot(self, node, **kwargs):
-        return "\sqrt{{{}}}".format(self.visit(node.value, **kwargs))
+        if node.value.node_type == IRNodeType.Factor and node.value.sub:  # sub expression
+            content = self.visit(node.value.sub.value, **kwargs)
+        else:
+            content = self.visit(node.value, **kwargs)
+        return "\sqrt{{{}}}".format(content)
 
     def visit_derivative(self, node, **kwargs):
         return "\\partial" + self.visit(node.value, **kwargs)
