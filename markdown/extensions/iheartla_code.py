@@ -79,12 +79,12 @@ class IheartlaBlockPreprocessor(Preprocessor):
     )
     # Match string: <span class="def:context:symbol">***</span>
     SPAN_BLOCK_RE = re.compile(
-        dedent(r'''(<span\ class="def:)(?P<context>\b\w+\b)(:)(?P<symbol>\b\w+\b)(">)(?P<code>.*?)(</span>)'''),
+        dedent(r'''<span\ class=(?P<quote>"|')def:(?P<context>\b\w+\b)(:)(?P<symbol>\b\w+\b)(?P=quote)>(?P<code>.*?)</span>'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
     # Match string: <span class="def:symbol">***</span>
     SPAN_SIMPLE_RE = re.compile(
-        dedent(r'''(<span\ class="def:)(?P<symbol>\b\w+\b)(">)(?P<code>.*?)(</span>)'''),
+        dedent(r'''<span\ class=(?P<quote>"|')def:(?P<symbol>\b\w+\b)(?P=quote)>(?P<code>.*?)(</span>)'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
     # Match string: ❤️context: a=sin(θ)❤️
