@@ -472,7 +472,7 @@ class CodeGenNumpy(CodeGen):
         test_function += test_content
         test_function.append('    return {}'.format(', '.join(self.parameters)))
         main_content.append("    func_value = {}({})".format(self.func_name, ', '.join(self.parameters)))
-        if self.symtable[self.ret_symbol] is not None:
+        if self.ret_symbol in self.symtable and self.symtable[self.ret_symbol] is not None:
             main_content.append('    print("return value: ", func_value.{})'.format(self.ret_symbol))
         self.code_frame.main = self.trim_content('\n'.join(main_content))
         self.code_frame.rand_data = self.trim_content('\n'.join(test_function))
