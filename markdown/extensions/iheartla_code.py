@@ -69,8 +69,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
     FENCED_BLOCK_RE = re.compile(
         dedent(r'''
             (?P<fence>^(?:~{3,}|`{3,}))[ ]*                          # opening fence
-            iheartla
-            (\((?P<module>[^\}\n]*)\))                               # required {module} 
+            iheartla\s*
+            (\(\s*(?P<module>[^ \}\n]*)\s*\))                        # required {module} 
             \n                                                       # newline (end of opening fence)
             (?P<code>.*?)(?<=\n)                                     # the code block
             (?P=fence)[ ]*$                                          # closing fence
@@ -106,7 +106,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
     RAW_CODE_BLOCK_RE = re.compile(
         dedent(r'''
             (?P<fence>^(?:~{3,}|`{3,}))[ ]*                          # opening fence
-            iheartla
+            iheartla\s*
             \n                                                       # newline (end of opening fence)
         '''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
