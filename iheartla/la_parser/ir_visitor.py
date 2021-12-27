@@ -637,7 +637,7 @@ class IRVisitor(object):
     def convert_unicode(self, name):
         if '`' not in name and self.parse_type != ParserTypeEnum.MATLAB:
             return name
-        content = name.replace('`', '')
+        content = name.replace('`$', '').replace('$`', '').replace('`', '')
         new_list = []
         pre_unicode = False
         for e in content:
@@ -679,7 +679,7 @@ class IRVisitor(object):
             ids_list += all_ids[1]
         names_dict = []
         # purge asterisks (and make unique, why not)
-        ids_list = [x for x in list(set(ids_list))  if x != '*']
+        ids_list = [x for x in list(set(ids_list)) if x != '*']
         # This is conducting the replacements at the output string level rather
         # than the variable name level. If one name appears in another (e.g., φ
         # in `x(φ)` then this leads to clashes, hence the awkward sort.
