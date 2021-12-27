@@ -511,6 +511,8 @@ class TypeWalker(NodeWalker):
                                 self.symtable[self.ret_symbol] = type_info.la_type
                             order_list[cur_index] = cnt
                             cnt += 1
+                            retries = 0
+                            self.logger.debug("expr index:{}, stat:{}".format(cnt, cur_stat.text))
                             break
                         except AssertionError as e:
                             retries += 1
