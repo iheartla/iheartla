@@ -1568,10 +1568,11 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         )
 
     @tatsumasu('MultiIfs')
+    @leftrec
     def _multi_if_conditions_(self):  # noqa
         with self._choice():
             with self._option():
-                self._single_if_condition_()
+                self._multi_if_conditions_()
                 self.name_last_node('ifs')
 
                 def block1():

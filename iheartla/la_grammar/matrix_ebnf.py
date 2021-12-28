@@ -15,7 +15,7 @@ multi_cond_expr::MultiCondExpr
     ;
     
 multi_if_conditions::MultiIfs
-    = ifs:single_if_condition {separator_with_space}+ value:single_if_condition
+    = ifs:multi_if_conditions {separator_with_space}+ value:single_if_condition
     | value:single_if_condition
     ;
 
