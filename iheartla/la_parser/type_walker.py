@@ -1100,6 +1100,7 @@ class TypeWalker(NodeWalker):
         ir_node = LocalFuncNode(name=name_info.ir, expr=expr_info.ir,
                                 parse_info=node.parseinfo, raw_text=node.text, defs=par_defs,
                                 def_type=LocalFuncDefType.LocalFuncDefParenthesis if node.def_p else LocalFuncDefType.LocalFuncDefBracket)
+        ir_node.expr.set_parent(ir_node)
         param_tps = []
         par_names = []
         for index in range(len(node.params)):
@@ -2248,6 +2249,8 @@ class TypeWalker(NodeWalker):
     def walk_MultiCondExpr(self, node, **kwargs):
         if LHS in kwargs:
             lhs = kwargs[LHS]
+        elif self.local_func_parsing:
+            lhs = self.local_func_name
         if ASSIGN_OP in kwargs:
             op = kwargs[ASSIGN_OP]
         all_ids = self.get_all_ids(lhs)
