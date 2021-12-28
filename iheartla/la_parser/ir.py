@@ -802,6 +802,9 @@ class IndexNode(ExprNode):
     def contain_sub_sym(self, sym):
         return False
 
+    def get_name(self):
+        return self.raw_text if self.raw_text is not None else ''
+
     def process_subs_dict(self, subs_dict):
         if len(subs_dict) == 0:
             return

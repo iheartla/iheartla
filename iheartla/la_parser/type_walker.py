@@ -1671,7 +1671,7 @@ class TypeWalker(NodeWalker):
             if contains_sub_symbol(node.name):
                 split_res = split_sub_string(node.name)
                 name = self.filter_symbol(split_res[0])
-                ir_node = SequenceIndexNode()
+                ir_node = SequenceIndexNode(raw_text=node.name)
                 ir_node.main = IdNode(name, parse_info=node.parseinfo)
                 ir_node.main.la_type = self.symtable[name]
                 ir_node.main_index = IdNode(split_res[-1], parse_info=node.parseinfo)
