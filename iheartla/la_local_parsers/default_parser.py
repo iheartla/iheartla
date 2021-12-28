@@ -487,8 +487,6 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._power_operator_()
             with self._option():
-                self._function_operator_()
-            with self._option():
                 self._inner_product_operator_()
             with self._option():
                 self._frobenius_product_operator_()
@@ -506,6 +504,8 @@ class grammardefaultParser(Parser):
                 self._trans_operator_()
             with self._option():
                 self._sqrt_operator_()
+            with self._option():
+                self._function_operator_()
             with self._option():
                 self._builtin_operators_()
             self._error('no available options')
@@ -1999,8 +1999,6 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._power_in_matrix_operator_()
             with self._option():
-                self._function_operator_()
-            with self._option():
                 self._inner_product_operator_()
             with self._option():
                 self._frobenius_product_in_matrix_operator_()
@@ -2018,6 +2016,8 @@ class grammardefaultParser(Parser):
                 self._trans_in_matrix_operator_()
             with self._option():
                 self._sqrt_in_matrix_operator_()
+            with self._option():
+                self._function_operator_()
             with self._option():
                 self._builtin_operators_()
             self._error('no available options')

@@ -5,7 +5,6 @@ operations
     | solver_operator
     | norm_operator
     | power_operator
-    | function_operator
     | inner_product_operator
     | frobenius_product_operator
     | hadamard_product_operator
@@ -15,6 +14,7 @@ operations
     | integral_operator
     | trans_operator
     | sqrt_operator
+    | function_operator
     | builtin_operators
     ;
 

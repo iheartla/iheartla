@@ -105,7 +105,6 @@ operations_in_matrix
     | solver_in_matrix_operator
     | norm_operator
     | power_in_matrix_operator
-    | function_operator
     | inner_product_operator
     | frobenius_product_in_matrix_operator
     | hadamard_product_in_matrix_operator
@@ -115,6 +114,7 @@ operations_in_matrix
     | integral_operator
     | trans_in_matrix_operator
     | sqrt_in_matrix_operator
+    | function_operator
     | builtin_operators
     ;
 
