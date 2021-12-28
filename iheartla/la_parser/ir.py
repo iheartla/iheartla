@@ -111,7 +111,10 @@ class IRNode(object):
                 if parent.node_type == node_type:
                     return parent
                 else:
-                    parent = parent.parent()
+                    if parent.parent:
+                        parent = parent.parent()
+                    else:
+                        parent = None
         return None
 
     def get_child(self, node_type):
