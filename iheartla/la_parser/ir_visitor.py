@@ -37,6 +37,7 @@ class IRVisitor(object):
         self.param_name_test = 'p'  # param name for test function
         self.convert_matrix = False
         self.visiting_lhs = False
+        self.visiting_func_name = False
         self.lhs_list = []
         self.module_list = []
         self.module_syms = {}
