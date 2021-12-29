@@ -64,6 +64,9 @@ function getSymTypeInfo(type_info){
   else if(type_info.type == 'sequence'){
     content = "a sequence";
   }
+  else if(type_info.type == 'function'){
+    content = "a function";
+  }
   else{
     content = "an invalid type";
   }
