@@ -43,16 +43,24 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             left_content = self.visit(node.left, **kwargs)
             self.visiting_lhs = False
             content = left_content + " & = " + self.visit(node.right, **kwargs)
-        json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}]);"}}""".format(self.func_name, sym_list)
+        json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], false, []);"}}""".format(self.func_name, sym_list)
         content = content + "\\\\" + "\\eqlabel{{ {} }}{{}}".format(json) + "\n"
         self.code_frame.expr += content
         self.code_frame.expr_dict[node.raw_text] = content
         return content
 
     def visit_local_func(self, node, **kwargs):
+        self.local_func_parsing = True
+        self.visiting_func_name = True
+        func_name = self.visit(node.name, **kwargs)
+        self.visiting_func_name = False
+        self.local_func_name = node.name.get_name()
         params_str = ''
+        # raw local params
+        local_param_list = []
         if len(node.params) > 0:
             for index in range(len(node.params)):
+                local_param_list.append("'{}'".format(self.convert_content(self.filter_subscript(node.params[index].get_name()))))
                 params_str += self.visit(node.params[index], **kwargs)
                 if index < len(node.params)-1:
                     params_str += node.separators[index] + ''
@@ -60,27 +68,25 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             def_params = '\\left( ' + params_str + ' \\right)'
         else:
             def_params = '\\left[ ' + params_str + ' \\right]'
-        self.visiting_func_name = True
-        func_name = self.visit(node.name, **kwargs)
-        self.visiting_func_name = False
         content = func_name + def_params + " & = " + self.visit(node.expr, **kwargs)
         sym_list = ''
         for sym in node.symbols:
             sym_list += "'{}'".format(self.convert_content(self.filter_subscript(sym))) + ','
         sym_list += "'{}'".format(self.convert_content(node.name.get_main_id()))
-        json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}]);"}}""".format(self.func_name,
-                                                                                                   sym_list)
+
+        json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], true, [{}]);"}}""".format(self.func_name,
+                                                                                                   sym_list, ', '.join(local_param_list))
         saved_content = content + "\\\\" + "\\eqlabel{{ {} }}{{}}".format(json) + "\n"
         self.code_frame.expr += saved_content + '\n'
         self.code_frame.expr_dict[node.raw_text] = saved_content
         if len(node.defs) > 0:
-            self.local_func_parsing = True
             par_list = []
             for par in node.defs:
                 par_list.append(self.visit(par, **kwargs))
             # content += "\\intertext{{{}}} ".format('where') + ', '.join(par_list)
             content += ' \\text{{ where }}  ' + ', '.join(par_list)
             self.local_func_parsing = False
+        self.local_func_parsing = True
         return content
 
     def visit_id(self, node, **kwargs):
@@ -97,8 +103,13 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         use_type = "use"
         if self.visiting_lhs or self.visiting_func_name:
             use_type = "def"
-        json = """{{"onclick":"event.stopPropagation(); onClickSymbol(this, '{}','{}', '{}')", "id":"{}", "sym":"{}", "func":"{}", "type":"{}", "case":"equation"}}""" \
-            .format(self.convert_content(node.get_name()), self.func_name, use_type, id_str, self.convert_content(node.get_name()), self.func_name, use_type)
+        local_param = False
+        local_func_name = ''
+        if self.local_func_parsing:
+            local_param = self.is_local_param(node.get_name())
+            local_func_name = self.local_func_name
+        json = """{{"onclick":"event.stopPropagation(); onClickSymbol(this, '{}', '{}', '{}', '{}', '{}')", "id":"{}", "sym":"{}", "func":"{}", "type":"{}", "case":"equation"}}""" \
+            .format(self.convert_content(node.get_name()), self.func_name, use_type, local_param, local_func_name, id_str, self.convert_content(node.get_name()), self.func_name, use_type)
         content = "\\idlabel{{ {} }}{{ {{{}}} }}".format(json, content)
         return content
 
