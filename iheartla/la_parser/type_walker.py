@@ -40,14 +40,15 @@ class DependenceData(object):
 
 
 class EquationData(object):
-    def __init__(self, name='', parameters=[], definition=[], dependence=[], symtable={}, desc_dict={}, la_content=''):
+    def __init__(self, name='', parameters=[], definition=[], dependence=[], symtable={}, desc_dict={}, la_content='', func_data_dict={}):
         self.name = name
-        self.parameters = parameters
-        self.definition = definition
+        self.parameters = parameters  # parameters for source file
+        self.definition = definition  # lhs symbols
         self.dependence = dependence
         self.symtable = symtable
         self.desc_dict = desc_dict
         self.la_content = la_content
+        self.func_data_dict = func_data_dict
 
     def gen_json_content(self):
         content = ''
@@ -60,8 +61,16 @@ class EquationData(object):
         def_list = []
         for lhs in self.definition:
             def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(lhs, self.symtable[lhs].get_json_content()))
+        #
+        func_list = []
+        for k, v in self.func_data_dict.items():
+            def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(k, self.symtable[k].get_json_content()))
+            local_param_list = []
+            for local_param in v.params_data.parameters:
+                local_param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(local_param, v.params_data.symtable[local_param].get_json_content()))
+            func_list.append('''{{"name":"{}", "parameters":[{}]}}'''.format(k, ','.join(local_param_list)))
         # self.la_content = self.la_content.replace('\n', '\\\\n')
-        content = '''"parameters":[{}], "definition":[{}], "source":"{}"'''.format(','.join(param_list), ','.join(def_list), self.la_content)
+        content = '''"parameters":[{}], "definition":[{}], "local_func":[{}], "source":"{}"'''.format(','.join(param_list), ','.join(def_list), ','.join(func_list), self.la_content)
         content = content.replace('\\', '\\\\\\\\')
         content = content.replace('`', '')
         content = content.replace('\n', '\\\\n')
@@ -170,7 +179,7 @@ class TypeWalker(NodeWalker):
 
     def gen_json_content(self):
         return EquationData('', copy.deepcopy(self.parameters), copy.deepcopy(self.lhs_list),
-                            copy.deepcopy(self.import_module_list),  copy.deepcopy(self.symtable),  copy.deepcopy(self.desc_dict), self.la_content)
+                            copy.deepcopy(self.import_module_list),  copy.deepcopy(self.symtable),  copy.deepcopy(self.desc_dict), self.la_content, copy.deepcopy(self.func_data_dict))
 
     def is_inside_sum(self):
         return len(self.sum_subs) > 0
