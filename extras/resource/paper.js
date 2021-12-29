@@ -358,9 +358,12 @@ function onClickProse(tag, symbol, func_name, type='def') {
  * @param {string} symbol The symbol name
  * @param {string} func_name The equation/context name
  * @param {string} type The type for the symbol: 'def','prose','use'
+ * @param {string} isLocalParam whether it's a parameter
+ * @param {string} localFuncName function name
+ * @param {string} color 
  * @return 
  */
-function onClickSymbol(tag, symbol, func_name, type='def', color='red') {
+function onClickSymbol(tag, symbol, func_name, type='def', isLocalParam=false, localFuncName='', color='red') {
   console.log(`the type is ${type}, sym is ${symbol}`)
   resetState();
   closeOtherTips();
@@ -397,7 +400,18 @@ function getEquationContent(func_name, sym_list){
   }
   return content;
 }
-function onClickEq(tag, func_name, sym_list) { 
+
+/**
+ * Click an equation
+ *
+ * @param {object} tag The current xml tag
+ * @param {string} func_name The current module name
+ * @param {string} sym_list The symbols in the equation, the last one is the function name
+ * @param {string} isLocalFunc whether it's a local function
+ * @param {string} localParams the parameters
+ * @return 
+ */
+function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localParams=[]) { 
   closeOtherTips();
   resetState();
   content = getEquationContent(func_name, sym_list);
