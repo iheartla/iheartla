@@ -157,41 +157,64 @@ function parseAllSyms(){
       }); 
   MathJax.typeset();
 }
-function getSymInfo(symbol, func_name){
+function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName=''){
   content = '';
   var found = false;
   var dollarSym = getDollarSym(symbol);
   var otherSym = getOtherSym(symbol);
+  var otherFuncName = getOtherSym(localFuncName);
   for(var eq in iheartla_data.equations){
     if(iheartla_data.equations[eq].name == func_name){
-      for(var param in iheartla_data.equations[eq].parameters){
-        if (iheartla_data.equations[eq].parameters[param].sym == symbol || 
-          iheartla_data.equations[eq].parameters[param].sym == otherSym ){
-          type_info = iheartla_data.equations[eq].parameters[param].type_info;
-          found = true;
-          if(iheartla_data.equations[eq].parameters[param].desc){
-            content = dollarSym + " is " + iheartla_data.equations[eq].parameters[param].desc + ", the type is " + getSymTypeInfo(type_info);
+      if (isLocalParam) {
+        // local parameter
+        for(var localFunc in iheartla_data.equations[eq].local_func){
+          var curLocalFunc = iheartla_data.equations[eq].local_func[localFunc].name;
+          if (curLocalFunc == localFuncName || curLocalFunc == otherFuncName) {
+            for(var param in iheartla_data.equations[eq].local_func[localFunc].parameters){
+              var curParam = iheartla_data.equations[eq].local_func[localFunc].parameters[param].sym;
+              if (curParam == symbol || curParam == otherSym) {
+                type_info = iheartla_data.equations[eq].local_func[localFunc].parameters[param].type_info;
+                found = true;
+                content = dollarSym + " is a local parameter as a " + getSymTypeInfo(type_info);
+              }
+            }
           }
-          else{
-            content = dollarSym + " is a parameter as a " + getSymTypeInfo(type_info);
-          }
+        }
+        if(found){
           break;
         }
       }
-      if(found){
-        break;
-      }
-      for(var param in iheartla_data.equations[eq].definition){
-        if (iheartla_data.equations[eq].definition[param].sym == symbol || 
-          iheartla_data.equations[eq].definition[param].sym == otherSym){
-          type_info = iheartla_data.equations[eq].definition[param].type_info;
-          found = true;
-          content = dollarSym + " is defined as a " + getSymTypeInfo(type_info);
+      else{
+        // parameters or definitions
+        for(var param in iheartla_data.equations[eq].parameters){
+          if (iheartla_data.equations[eq].parameters[param].sym == symbol || 
+            iheartla_data.equations[eq].parameters[param].sym == otherSym ){
+            type_info = iheartla_data.equations[eq].parameters[param].type_info;
+            found = true;
+            if(iheartla_data.equations[eq].parameters[param].desc){
+              content = dollarSym + " is " + iheartla_data.equations[eq].parameters[param].desc + ", the type is " + getSymTypeInfo(type_info);
+            }
+            else{
+              content = dollarSym + " is a parameter as a " + getSymTypeInfo(type_info);
+            }
+            break;
+          }
+        }
+        if(found){
           break;
         }
-      }
-      if(found){
-        break;
+        for(var param in iheartla_data.equations[eq].definition){
+          if (iheartla_data.equations[eq].definition[param].sym == symbol || 
+            iheartla_data.equations[eq].definition[param].sym == otherSym){
+            type_info = iheartla_data.equations[eq].definition[param].type_info;
+            found = true;
+            content = dollarSym + " is defined as a " + getSymTypeInfo(type_info);
+            break;
+          }
+        }
+        if(found){
+          break;
+        }
       }
     }
   }
@@ -279,14 +302,32 @@ function getDollarSym(symbol){
     return `$${symbol}$`;
   }
 }
-function highlightSym(symbol, func_name, color='red'){ 
+function highlightSym(symbol, func_name, isLocalParam=false, localFuncName='', color='red'){ 
   symbol = symbol.replace("\\","\\\\\\\\"); 
   // console.log(`In highlightSym, symbol: ${symbol}`)
-  highlightSymInProseAndEquation(symbol, func_name, color);
+  highlightSymInProseAndEquation(symbol, func_name, isLocalParam, localFuncName, color);
   let asymbol = getOtherSym(symbol);
-  highlightSymInProseAndEquation(asymbol, func_name, color);
+  highlightSymInProseAndEquation(asymbol, func_name, isLocalParam, localFuncName, color);
 }
-function highlightSymInProseAndEquation(symbol, func_name, color='red'){ 
+function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, localFuncName='', color='red'){ 
+  if (isLocalParam) {
+    // console.log(`localFuncName is ${localFuncName}`)
+    var search = "[sym='" + symbol + "'][module='" + func_name + "'][func='" + localFuncName + "']";
+    // console.log(`search str is ${search}`)
+    // only hightlight the same symbols in the local function
+    let matches = document.querySelectorAll("[sym='" + symbol + "'][func='" + func_name + "'][localfunc='" + localFuncName + "']");
+    for (var i = matches.length - 1; i >= 0; i--) {
+      var curClass = matches[i].getAttribute('class');
+      if (curClass !== '') {
+        curClass = `highlight_${color}` + ' ' + curClass;
+      }
+      else{
+        curClass = `highlight_${color}`;
+      }
+      matches[i].setAttribute('class', curClass);
+    }
+    return;
+  }
   // console.log(`symbol is ${symbol}`);
   // syms in prose and derivations
   let matches = document.querySelectorAll("[sym='" + symbol + "'][module='" + func_name + "']");
@@ -367,12 +408,12 @@ function onClickSymbol(tag, symbol, func_name, type='def', isLocalParam=false, l
   console.log(`the type is ${type}, sym is ${symbol}`)
   resetState();
   closeOtherTips();
-  highlightSym(symbol, func_name, color);
+  highlightSym(symbol, func_name, isLocalParam, localFuncName, color);
   showSymArrow(tag, symbol, func_name, type, color);
     // d3.selectAll("mjx-mi[sym='" + symbol + "']").style("class", "highlight");
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
-        content: getSymInfo(symbol, func_name),
+        content: getSymInfo(symbol, func_name, isLocalParam, localFuncName),
         placement: 'bottom',
         animation: 'fade',
         trigger: 'click', 
@@ -391,12 +432,16 @@ function onClickSymbol(tag, symbol, func_name, type='def', isLocalParam=false, l
   }
   // console.log("clicked: " + symbol + " in " + func_name); 
 };
-function getEquationContent(func_name, sym_list){
+function getEquationContent(func_name, sym_list, isLocalFunc=false, localFunc='', localParams=[]){
   content = "This equation has " + sym_list.length + " symbols:<br>";
   for (var i = sym_list.length - 1; i >= 0; i--) {
     sym = sym_list[i];
     sym = sym.replace("\\","\\\\\\\\"); 
-    content += getSymInfo(sym_list[i], func_name) + '<br>';
+    var isLocalParam = false;
+    if (localParams.includes(sym)) {
+      isLocalParam = true;
+    }
+    content += getSymInfo(sym_list[i], func_name, isLocalParam, localFunc) + '<br>';
   }
   return content;
 }
@@ -411,10 +456,10 @@ function getEquationContent(func_name, sym_list){
  * @param {string} localParams the parameters
  * @return 
  */
-function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localParams=[]) { 
+function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', localParams=[]) { 
   closeOtherTips();
   resetState();
-  content = getEquationContent(func_name, sym_list);
+  content = getEquationContent(func_name, sym_list, isLocalFunc, localFunc, localParams);
   // Scale equation and append new div
   document.body.classList.add("opShallow");
   var div = tag.closest("div");
@@ -438,7 +483,12 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localParams=[]) 
     var offsetEndX = 30;
     for (var i = sym_list.length - 1; i >= 0; i--) {
       sym = sym_list[i];
-      highlightSym(sym, func_name, colors[i]);
+      var isLocalParam = false;
+      if (localParams.includes(sym)) {
+        isLocalParam = true;
+        console.log(`sym:${sym}, isLocalParam:${isLocalParam}`)
+      }
+      highlightSym(sym, func_name, isLocalParam, localFunc, colors[i]);
       // sym = sym.replace("\\","\\\\");
       sym = sym.replace("\\","\\\\\\\\"); 
       var symTag = tag.querySelector("[case='equation'][sym='" + sym + "']");
