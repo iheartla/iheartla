@@ -60,7 +60,10 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             def_params = '\\left( ' + params_str + ' \\right)'
         else:
             def_params = '\\left[ ' + params_str + ' \\right]'
-        content = self.visit(node.name, **kwargs) + def_params + " & = " + self.visit(node.expr, **kwargs)
+        self.visiting_func_name = True
+        func_name = self.visit(node.name, **kwargs)
+        self.visiting_func_name = False
+        content = func_name + def_params + " & = " + self.visit(node.expr, **kwargs)
         sym_list = ''
         for sym in node.symbols:
             sym_list += "'{}'".format(self.convert_content(self.filter_subscript(sym))) + ','
@@ -91,8 +94,11 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             content = self.convert_unicode(node.get_name())
         if 'is_sub' in kwargs:
             return content
+        use_type = "use"
+        if self.visiting_lhs or self.visiting_func_name:
+            use_type = "def"
         json = """{{"onclick":"event.stopPropagation(); onClickSymbol(this, '{}','{}', '{}')", "id":"{}", "sym":"{}", "func":"{}", "type":"{}", "case":"equation"}}""" \
-            .format(self.convert_content(node.get_name()), self.func_name, "def" if self.visiting_lhs else "use", id_str, self.convert_content(node.get_name()), self.func_name, "def" if self.visiting_lhs else "use")
+            .format(self.convert_content(node.get_name()), self.func_name, use_type, id_str, self.convert_content(node.get_name()), self.func_name, use_type)
         content = "\\idlabel{{ {} }}{{ {{{}}} }}".format(json, content)
         return content
 
