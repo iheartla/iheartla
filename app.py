@@ -100,16 +100,6 @@ if __name__ == '__main__':
         import iheartla.la_tools.parser_manager
         iheartla.la_tools.parser_manager.recreate_local_parser_cache()
     else:
-        # args.paper = ['/Users/pressure/Downloads/lib_paper/test.md']
-        # args.paper = ['/Users/pressure/Downloads/injective.md']
-        # args.paper = ['/Users/pressure/Downloads/artist_demo.md']
-        # args.paper = ['/Users/pressure/Documents/git/paper_md/ICP/icp.md']
-        # args.paper = ['/Users/pressure/Documents/git/paper_md/LiveCap/LiveCap.md']
-        # args.paper = ['/Users/pressure/Documents/git/paper_md/Judder/judder.md']
-        # args.paper = ['/Users/pressure/Documents/git/paper_md/Pipeline/pipeline.md']
-        # args.paper = ['/Users/pressure/Documents/git/paper_md/Illumination/illumination.md']
-        args.paper = ['/Users/pressure/Documents/git/paper_md/Portrait/portrait.md']
-        # args.paper = ['/Users/pressure/Downloads/pm.md']
         for paper_file in args.paper:
             content = read_from_file(paper_file)
             md = markdown.Markdown(extensions=['markdown.extensions.iheartla_code', \
@@ -140,9 +130,9 @@ if __name__ == '__main__':
             # equation_data = get_sym_data(json.loads(equation_json))
             sym_json = read_from_file("{}/sym_data.json".format(os.path.dirname(Path(paper_file))))
             dst = "{}/resource".format(os.path.dirname(Path(paper_file)))
-            # if os.path.exists(dst):
-            #     shutil.rmtree(dst)
-            # shutil.copytree("./extras/resource", dst)
+            if os.path.exists(dst):
+                shutil.rmtree(dst)
+            shutil.copytree("./extras/resource", dst)
             script = r"""window.onload = parseAllSyms;
 function reportWindowSize() {
   var arrows = document.querySelectorAll(".arrow");
@@ -218,13 +208,6 @@ const sym_data = JSON.parse('{sym_json}');
                 if '\\notag' not in equation:
                     html = html.replace(equation, "{}\\tag{{{}}}\\label{{{}}}".format(equation, num, num))
                     num += 1
-            # save_to_file(html, "/Users/pressure/Downloads/lib_paper/paper.html")
-            # save_to_file(html, "/Users/pressure/Downloads/lib_paper/LiveCap.html")
-            # save_to_file(html, "/Users/pressure/Downloads/lib_paper/judder.html")
-            # save_to_file(html, "/Users/pressure/Downloads/lib_paper/pipeline.html")
-            # save_to_file(html, "/Users/pressure/Downloads/lib_paper/illumination.html")
-            save_to_file(html, "/Users/pressure/Downloads/lib_paper/portrait.html")
-            # save_to_file(html, "/Users/pressure/Downloads/lib_paper/artist_demo.html")
-            # save_to_file(html, "/Users/pressure/Downloads/lib_paper/isp_demo.html")
-            # save_to_file(html, "/Users/pressure/Downloads/lib_paper/pm.html")
+            base_name = os.path.basename(Path(paper_file))
+            save_to_file(html, "{}/{}.html".format(os.path.dirname(Path(paper_file)), os.path.splitext(base_name)[0]))
             # print(html)
