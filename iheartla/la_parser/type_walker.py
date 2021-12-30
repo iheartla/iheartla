@@ -1539,7 +1539,7 @@ class TypeWalker(NodeWalker):
         if left_info.la_type.is_matrix():
             assert is_same_expr(left_info.la_type.cols, right_info.la_type.cols), get_err_msg_info(node.parseinfo,
                                                                                         "Hadamard product error. Parameters {} and {} must have the same dimension".format(node.left.text, node.right.text))
-            ir_node.la_type = MatrixType(rows=left_info.la_type.rows, cols=left_info.la_type.rows)
+            ir_node.la_type = MatrixType(rows=left_info.la_type.rows, cols=left_info.la_type.cols)
         else:
             ir_node.la_type = VectorType(rows=left_info.la_type.rows)
         return NodeInfo(ir_node.la_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
