@@ -462,18 +462,6 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
   content = getEquationContent(func_name, sym_list, isLocalFunc, localFunc, localParams);
   // Scale equation and append new div
   document.body.classList.add("opShallow");
-  var div = tag.closest("div");
-  var mjx = tag.closest("mjx-container");
-  mjx.classList.remove("eqNormal");
-  mjx.classList.add("eqHighlight");
-  div.classList.add("eqDivHighlight");
-  const symDiv = document.createElement("div");
-  symDiv.innerHTML = content
-  // content = `<div class='euqation_highlight'> ${content} </div>`
-  div.appendChild(symDiv)
-  symDiv.classList.add("eqInfo");
-  MathJax.typeset();
-  // console.log(`div is ${div.innerHTML}`);
   //
   function showAllArrows(){
     var colors =['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink', 'Tomato', 'Orange', 'DarkRed', 'LightCoral', 'Khaki'];
@@ -508,27 +496,46 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
       }
     }
   }
-  setTimeout(showAllArrows, 1000);
-  if (typeof tag._tippy === 'undefined'){
-    // tippy(tag, {
-    //     content: content,
-    //     placement: 'bottom',
-    //     animation: 'fade',
-    //     trigger: 'click', 
-    //     showOnCreate: true,
-    //     allowHTML: true,
-    //     // interactive: true,
-    //     onShow(instance) { 
-    //       tag.setAttribute('class', 'highlight_fake');
-    //       // console.log('onShow');
-    //       return true;  
-    //     },
-    //     onHide(instance) {
-    //       resetState();
-    //       return true;  
-    //     },
-    //   });
-    // MathJax.typeset();
+
+  var div = tag.closest("div");
+  if (div) {
+    // not inline
+    var mjx = tag.closest("mjx-container");
+    mjx.classList.remove("eqNormal");
+    mjx.classList.add("eqHighlight");
+    div.classList.add("eqDivHighlight");
+    const symDiv = document.createElement("div");
+    symDiv.innerHTML = content
+    // content = `<div class='euqation_highlight'> ${content} </div>`
+    div.appendChild(symDiv)
+    symDiv.classList.add("eqInfo");
+    MathJax.typeset();
+    // console.log(`div is ${div.innerHTML}`);
+    setTimeout(showAllArrows, 1000);
+  }
+  else{
+    showAllArrows();
+    if (typeof tag._tippy === 'undefined'){
+      tippy(tag, {
+          content: content,
+          placement: 'bottom',
+          animation: 'fade',
+          trigger: 'click', 
+          showOnCreate: true,
+          allowHTML: true,
+          // interactive: true,
+          onShow(instance) { 
+            tag.setAttribute('class', 'highlight_fake');
+            // console.log('onShow');
+            return true;  
+          },
+          onHide(instance) {
+            resetState();
+            return true;  
+          },
+        });
+      MathJax.typeset();
+    }
   }
 };
 function resetState(){
