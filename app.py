@@ -92,9 +92,11 @@ if __name__ == '__main__':
     LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
     arg_parser = argparse.ArgumentParser(description='I Heart LA paper compiler')
     arg_parser.add_argument('--regenerate-grammar', action='store_true', help='Regenerate grammar files')
+    arg_parser.add_argument('--resource_dir', help='resource path')
     arg_parser.add_argument('--paper', nargs='*', help='paper text')
     args = arg_parser.parse_args()
-    print(args.paper)
+    resource_dir = args.resource_dir if args.resource_dir else '.'
+    # print("args.paper is {}, resource_dir is {}".format(args.paper, resource_dir))
     if args.regenerate_grammar:
         la_helper.DEBUG_PARSER = True
         import iheartla.la_tools.parser_manager
@@ -132,7 +134,7 @@ if __name__ == '__main__':
             dst = "{}/resource".format(os.path.dirname(Path(paper_file)))
             if os.path.exists(dst):
                 shutil.rmtree(dst)
-            shutil.copytree("./extras/resource", dst)
+            shutil.copytree("/Users/pressure/Downloads/linear_algebra/extras/resource", dst)
             script = r"""window.onload = parseAllSyms;
 function reportWindowSize() {
   var arrows = document.querySelectorAll(".arrow");
@@ -164,7 +166,7 @@ document.addEventListener("click", function(evt){
 MathJax = {
   loader: {
     load: ["[attrLabel]/attr-label.js"],
-    paths: { attrLabel: "./resource" },
+    paths: { attrLabel: "''' + resource_dir + '''/resource" },
   },
   tex: { packages: { "[+]": ["attr-label"] },
    inlineMath: [['$', '$'], ['\\(', '\\)']]
@@ -182,10 +184,10 @@ MathJax = {
     <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
-    <script src="./resource/d3.min.js"></script>
-    <script src="./resource/svg.min.js"></script>
-    <script type="text/javascript" src='./resource/paper.js'></script>
-    <link rel="stylesheet" href="./resource/paper.css">
+    <script src="{resource_dir}/resource/d3.min.js"></script>
+    <script src="{resource_dir}/resource/svg.min.js"></script>
+    <script type="text/javascript" src='{resource_dir}/resource/paper.js'></script>
+    <link rel="stylesheet" href="{resource_dir}/resource/paper.css">
 </head>
 <script>
 const iheartla_data = JSON.parse('{equation_json}');
@@ -193,10 +195,10 @@ const sym_data = JSON.parse('{sym_json}');
 {script}
 </script>
 <body>
-<img src="./resource/glossary.png" id="glossary" alt="glossary" width="22" height="28"><br>
+<img src="{resource_dir}/resource/glossary.png" id="glossary" alt="glossary" width="22" height="28"><br>
 {body}
 </body>
-</html>""".format(mathjax=mathjax, equation_json=equation_json,  sym_json=sym_json, script=script, body=body)
+</html>""".format(mathjax=mathjax, equation_json=equation_json,  sym_json=sym_json, script=script, body=body, resource_dir=resource_dir)
             # numbering
             EQ_BLOCK_RE = re.compile(
                 dedent(r'''(\$\$)(?P<code>.*?)(\$\$)'''),
