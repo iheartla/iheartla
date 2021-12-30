@@ -169,7 +169,7 @@ MathJax = {
     paths: { attrLabel: "''' + resource_dir + '''/resource" },
   },
   tex: { packages: { "[+]": ["attr-label"] },
-   inlineMath: [['$', '$'], ['\\(', '\\)']]
+   inlineMath: [['$', '$']]
    },
    options: {
     enableAssistiveMml: false
