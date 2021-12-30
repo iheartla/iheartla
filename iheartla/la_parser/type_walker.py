@@ -2372,6 +2372,7 @@ class TypeWalker(NodeWalker):
         return NodeInfo(ir=ir_node)
 
     def walk_Vector(self, node, **kwargs):
+        symbols = set()
         ir_node = VectorNode(parse_info=node.parseinfo, raw_text=node.text)
         dim_list = []
         for exp in node.exp:
@@ -2382,8 +2383,9 @@ class TypeWalker(NodeWalker):
                 dim_list.append(exp_info.la_type.rows)
             else:
                 dim_list.append(1)
+            symbols = symbols.union(exp_info.symbols)
         ir_node.la_type = VectorType(rows=self.get_sum_value(dim_list))
-        node_info = NodeInfo(ir=ir_node, la_type=ir_node.la_type)
+        node_info = NodeInfo(ir=ir_node, la_type=ir_node.la_type, symbols=symbols)
         if LHS in kwargs:
             lhs = kwargs[LHS]
             new_id = self.generate_var_name(lhs)
