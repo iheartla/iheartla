@@ -246,7 +246,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         json_list = []
         equation_list = []
         for name, block_data in file_dict.items():
-            code_list, equation_data = compile_la_content(block_data.get_content(), parser_type=ParserTypeEnum.EIGEN | ParserTypeEnum.MACROMATHJAX,
+            code_list, equation_data = compile_la_content(block_data.get_content(), parser_type=self.md.parser_type | ParserTypeEnum.MACROMATHJAX,
                                            func_name=name, path=kwargs['path'], struct=True, get_json=True)
             equation_data.name = name
             json_list.append('''{{"name":"{}", {} }}'''.format(name, equation_data.gen_json_content()))

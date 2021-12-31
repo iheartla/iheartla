@@ -70,6 +70,7 @@ class Markdown:
         self.tab_length = kwargs.get('tab_length', 4)
 
         self.path = kwargs.get('path', './')
+        self.parser_type = kwargs.get('parser_type', 4)
         self.ESCAPED_CHARS = ['\\', '`', '*', '_', '{', '}', '[', ']',
                               '(', ')', '>', '#', '+', '-', '.', '!']
 

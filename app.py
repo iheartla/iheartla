@@ -1,6 +1,7 @@
 import iheartla.la_tools.la_helper as la_helper
 from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file
 from iheartla.la_tools.la_logger import LaLogger
+from iheartla.la_parser.parser import ParserTypeEnum
 import logging
 import argparse
 import markdown
@@ -93,6 +94,7 @@ if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser(description='I Heart LA paper compiler')
     arg_parser.add_argument('--regenerate-grammar', action='store_true', help='Regenerate grammar files')
     arg_parser.add_argument('--resource_dir', help='resource path')
+    arg_parser.add_argument('-o', '--output', help='The output language', choices=['numpy', 'eigen', 'latex','matlab'])
     arg_parser.add_argument('--paper', nargs='*', help='paper text')
     args = arg_parser.parse_args()
     resource_dir = args.resource_dir if args.resource_dir else '.'
@@ -102,6 +104,18 @@ if __name__ == '__main__':
         import iheartla.la_tools.parser_manager
         iheartla.la_tools.parser_manager.recreate_local_parser_cache()
     else:
+        parser_type = ParserTypeEnum.DEFAULT
+        out_dict = {"numpy": ParserTypeEnum.NUMPY, "eigen": ParserTypeEnum.EIGEN, "latex": ParserTypeEnum.LATEX,
+                    "mathjax": ParserTypeEnum.MATHJAX, "matlab": ParserTypeEnum.MATLAB}
+        if args.output:
+            # when output args are present _only_ output those
+            parser_type = ParserTypeEnum.INVALID
+            out_list = args.output.split(",")
+            for out in out_list:
+                assert out in out_dict, "Parameters after -o or --output can only be numpy, eigen, latex, or matlab"
+                parser_type = parser_type | out_dict[out]
+        else:
+            parser_type = ParserTypeEnum.EIGEN
         for paper_file in args.paper:
             content = read_from_file(paper_file)
             md = markdown.Markdown(extensions=['markdown.extensions.iheartla_code', \
@@ -122,7 +136,7 @@ if __name__ == '__main__':
                                                           'markdown.extensions.sane_lists', \
                                                           'markdown.extensions.smarty', \
                                                           'markdown.extensions.toc', \
-                                                          'markdown.extensions.wikilinks'], path=os.path.dirname(Path(paper_file)))
+                                                          'markdown.extensions.wikilinks'], path=os.path.dirname(Path(paper_file)), parser_type=parser_type)
             body = md.convert(content)
             body, abstract = handle_abstract(body)
             body = handle_sections(body)
