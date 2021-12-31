@@ -209,7 +209,7 @@ class MatrixType(LaVarType):
         return self.element_type.is_integer_element()
 
     def get_json_content(self):
-        return """{{"type": "matrix", "element":{}, "rows":{}, "cols":{}}}""".format(self.element_type.get_json_content(), self.rows, self.cols)
+        return """{{"type": "matrix", "element":{}, "rows":"{}", "cols":"{}"}}""".format(self.element_type.get_json_content(), self.rows, self.cols)
 
 
 class VectorType(LaVarType):
@@ -230,7 +230,7 @@ class VectorType(LaVarType):
         return self.element_type.is_integer_element()
 
     def get_json_content(self):
-        return """{{"type": "vector", "element":{}, "rows":{}}}""".format(self.element_type.get_json_content(), self.rows)
+        return """{{"type": "vector", "element":{}, "rows":"{}"}}""".format(self.element_type.get_json_content(), self.rows)
 
 
 class SetType(LaVarType):
