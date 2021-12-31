@@ -241,22 +241,19 @@ class IheartlaBlockPreprocessor(Preprocessor):
             file_name = "{}/{}.ihla".format(kwargs['path'], name)
             save_to_file(source, file_name)
         # compile
-        lib_header = None
-        lib_content = ''
         json_list = []
         equation_list = []
+        full_code_sequence = []
         for name, block_data in file_dict.items():
             code_list, equation_data = compile_la_content(block_data.get_content(), parser_type=self.md.parser_type | ParserTypeEnum.MACROMATHJAX,
                                            func_name=name, path=kwargs['path'], struct=True, get_json=True)
             equation_data.name = name
             json_list.append('''{{"name":"{}", {} }}'''.format(name, equation_data.gen_json_content()))
             equation_list.append(equation_data)
-            if lib_header is None:
-                lib_header = code_list[0].include
-            lib_content += code_list[0].struct + '\n'
+            full_code_sequence.append(code_list[:-1])
             # Find all expr for each original iheartla block
             index_dict = {}
-            expr_dict = code_list[1].expr_dict
+            expr_dict = code_list[-1].expr_dict
             for raw_text, math_code in expr_dict.items():
                 for cur_index in range(len(block_data.code_list)):
                     if raw_text in block_data.code_list[cur_index]:
@@ -286,18 +283,66 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     content = r"""
 <div class='equation' code_block="{}">
 $${}{}{}$$</div>
-""".format(block_data.module_name, code_list[1].pre_str, content, code_list[1].post_str)
+""".format(block_data.module_name, code_list[-1].pre_str, content, code_list[-1].post_str)
                 content = self.md.htmlStash.store(content)
                 text = text.replace(block_data.block_list[cur_index], content)
         json_content = '''{{"equations":[{}] }}'''.format(','.join(json_list))
         sym_dict = self.get_sym_dict(equation_list)
         sym_json = self.get_sym_json(sym_dict)
         save_to_file(sym_json, "{}/sym_data.json".format(kwargs['path']))
-        if lib_header is not None:
-            save_to_file("#pragma once\n" + lib_header + lib_content, "{}/lib.h".format(kwargs['path']))
+        self.save_code(full_code_sequence)
         if json_content is not None:
             save_to_file(json_content, "{}/data.json".format(kwargs['path']))
         return text.split("\n")
+
+    def save_code(self, full_code_sequence):
+        def get_frame_list(index):
+            frame_list = []
+            for code_list in full_code_sequence:
+                frame_list.append(code_list[index])
+            return frame_list
+        cur_index = 0
+        for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,
+                         ParserTypeEnum.MATHML, ParserTypeEnum.MATLAB, ParserTypeEnum.MACROMATHJAX]:
+            if self.md.parser_type & cur_type:
+                self.save_with_type(get_frame_list(cur_index), cur_type)
+                cur_index += 1
+
+    def save_with_type(self, code_frame_list, parser_type):
+        if parser_type == ParserTypeEnum.EIGEN:
+            self.save_cpp(code_frame_list)
+        elif parser_type == ParserTypeEnum.NUMPY:
+            self.save_python(code_frame_list)
+        elif parser_type == ParserTypeEnum.MATLAB:
+            self.save_matlab(code_frame_list)
+
+    def save_cpp(self, code_frame_list):
+        lib_header = None
+        lib_content = ''
+        for code_frame in code_frame_list:
+            if lib_header is None:
+                lib_header = code_frame.include
+            lib_content += code_frame.struct + '\n'
+        if lib_header is not None:
+            save_to_file("#pragma once\n" + lib_header + lib_content, "{}/lib.h".format(self.md.path))
+
+    def save_python(self, code_frame_list):
+        lib_header = None
+        lib_content = ''
+        for code_frame in code_frame_list:
+            if lib_header is None:
+                lib_header = code_frame.include
+            lib_content += code_frame.struct + '\n'
+        if lib_header is not None:
+            save_to_file(lib_header + lib_content, "{}/lib.py".format(self.md.path))
+
+    def save_matlab(self, code_frame_list):
+        lib_content = ''
+        for code_frame in code_frame_list:
+            lib_content += code_frame.struct + '\n'
+        if lib_content != '':
+            save_to_file(lib_content, "{}/lib.m".format(self.md.path))
+
 
 
     def _escape(self, txt):
