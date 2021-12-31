@@ -9,9 +9,10 @@ class CodeGenMacroMathjax(CodeGenMathjax):
     def __init__(self):
         super().__init__(ParserTypeEnum.MACROMATHJAX)
         self.BLOCK_RE = re.compile(
-                dedent(r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(\_)(?P<sub>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)'''),
-                re.MULTILINE | re.DOTALL | re.VERBOSE
-            )
+            dedent(
+                r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(\_)(?P<sub>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)'''),
+            re.MULTILINE | re.DOTALL | re.VERBOSE
+        )
 
     def init_type(self, type_walker, func_name):
         super().init_type(type_walker, func_name)
@@ -31,10 +32,11 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         return symbol.replace('\\', "\\\\\\\\").replace('`', '')
 
     def visit_assignment(self, node, **kwargs):
-        sym_list = ''
+        sym_list = []
         for sym in node.symbols:
-            sym_list += "'{}'".format(self.convert_content(self.filter_subscript(sym))) + ','
-        sym_list += "'{}'".format(self.convert_content(node.left.get_main_id()))
+            sym_list.append("'{}'".format(self.convert_content(self.filter_subscript(sym))))
+        sym_list = list(set(sym_list))
+        sym_list.append("'{}'".format(self.convert_content(node.left.get_main_id())))
         content = ''
         if node.right.node_type == IRNodeType.Optimize:
             content = self.visit(node.right, **kwargs)
@@ -43,7 +45,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             left_content = self.visit(node.left, **kwargs)
             self.visiting_lhs = False
             content = left_content + " & = " + self.visit(node.right, **kwargs)
-        json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], false, []);"}}""".format(self.func_name, sym_list)
+        json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], false, []);"}}""".format(self.func_name, ', '.join(sym_list))
         content = content + "\\\\" + "\\eqlabel{{ {} }}{{}}".format(json) + "\n"
         self.code_frame.expr += content
         self.code_frame.expr_dict[node.raw_text] = content
@@ -69,13 +71,13 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         else:
             def_params = '\\left[ ' + params_str + ' \\right]'
         content = func_name + def_params + " & = " + self.visit(node.expr, **kwargs)
-        sym_list = ''
+        sym_list = []
         for sym in node.symbols:
-            sym_list += "'{}'".format(self.convert_content(self.filter_subscript(sym))) + ','
-        sym_list += "'{}'".format(self.convert_content(node.name.get_main_id()))
-
+            sym_list.append("'{}'".format(self.convert_content(self.filter_subscript(sym))))
+        sym_list = list(set(sym_list))
+        sym_list.append("'{}'".format(self.convert_content(node.name.get_main_id())))
         json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], true, '{}', [{}]);"}}""".format(self.func_name,
-                                                                                                   sym_list, self.local_func_name, ', '.join(local_param_list))
+                                                                                                   ', '.join(sym_list), self.local_func_name, ', '.join(local_param_list))
         saved_content = content + "\\\\" + "\\eqlabel{{ {} }}{{}}".format(json) + "\n"
         self.code_frame.expr += saved_content + '\n'
         self.code_frame.expr_dict[node.raw_text] = saved_content
