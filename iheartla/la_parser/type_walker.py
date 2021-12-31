@@ -2331,11 +2331,13 @@ class TypeWalker(NodeWalker):
             node_info.ir = ir_node
         else:
             # normal multi conditionals
+            symbols = set()
             ir_node = MultiCondNode(parse_info=node.parseinfo)
             # ifsNode
             ifs_info = self.walk(node.ifs, **kwargs)
             ifs_node = SparseIfsNode(parse_info=node.ifs.parseinfo)
             ifs_node.set_parent(ir_node)
+            symbols = symbols.union(ifs_info.symbols)
             first = True
             for ir in ifs_info.ir:
                 ir.first_in_list = first
@@ -2345,31 +2347,39 @@ class TypeWalker(NodeWalker):
                 la_type = ir.la_type
             ir_node.ifs = ifs_node
             if node.other:
-                ir_node.other = self.walk(node.other, **kwargs).ir
-            node_info = NodeInfo(la_type)
+                other_info = self.walk(node.other, **kwargs)
+                ir_node.other = other_info.ir
+                symbols = symbols.union(other_info.symbols)
+            node_info = NodeInfo(la_type, symbols=symbols)
             ir_node.la_type = la_type
             node_info.ir = ir_node
         return node_info
 
     def walk_MultiIfs(self, node, **kwargs):
+        symbols = set()
         ir_list = []
         if node.ifs:
             node_info = self.walk(node.ifs, **kwargs)
             ir_list += node_info.ir
+            symbols = symbols.union(node_info.symbols)
         if node.value:
             node_info = self.walk(node.value, **kwargs)
             ir_list.append(node_info.ir)
-        ret_info = NodeInfo(ir=ir_list)
+            symbols = symbols.union(node_info.symbols)
+        ret_info = NodeInfo(ir=ir_list, symbols=symbols)
         return ret_info
 
     def walk_SingleIf(self, node, **kwargs):
+        symbols = set()
         ir_node = SparseIfNode(parse_info=node.parseinfo)
         cond_info = self.walk(node.cond, **kwargs)
+        symbols = symbols.union(cond_info.symbols)
         ir_node.cond = cond_info.ir
         stat_info = self.walk(node.stat, **kwargs)
+        symbols = symbols.union(stat_info.symbols)
         ir_node.stat = stat_info.ir
         ir_node.la_type = ir_node.stat.la_type
-        return NodeInfo(ir=ir_node)
+        return NodeInfo(ir=ir_node, symbols=symbols)
 
     def walk_Vector(self, node, **kwargs):
         symbols = set()
