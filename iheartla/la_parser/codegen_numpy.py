@@ -100,7 +100,8 @@ class CodeGenNumpy(CodeGen):
     def visit_id(self, node, **kwargs):
         content = node.get_name()
         prefix = False
-        if not self.is_local_param(content) and content not in self.parameters and content not in self.local_func_syms:
+        # if not self.is_local_param(content) and content not in self.parameters and content not in self.local_func_syms:
+        if content in self.lhs_list:
             prefix = True
         content = self.filter_symbol(content)
         if content in self.name_convention_dict:
