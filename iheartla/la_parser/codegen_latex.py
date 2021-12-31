@@ -358,7 +358,7 @@ class CodeGenLatex(CodeGen):
             kwargs['is_sub'] = True
             sub = self.visit(node.id, **kwargs)
             del kwargs['is_sub']
-        return "\\sum_" + sub + " " + self.visit(node.exp, **kwargs)
+        return "\\sum_{" + sub + "} " + self.visit(node.exp, **kwargs)
 
     def visit_function(self, node, **kwargs):
         params = []
