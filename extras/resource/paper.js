@@ -346,10 +346,10 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
   for (var i = spanMatches.length - 1; i >= 0; i--) {
     var curClass = spanMatches[i].getAttribute('class');
     if (curClass !== '') {
-      curClass = `highlight_prose` + ' ' + curClass;
+      curClass = `highlight_${color}` + ' ' + curClass;
     }
     else{
-      curClass = `highlight_prose`;
+      curClass = `highlight_${color}`;
     }
     spanMatches[i].setAttribute('class', curClass);
   }
