@@ -9,10 +9,9 @@ class CodeGenMacroMathjax(CodeGenMathjax):
     def __init__(self):
         super().__init__(ParserTypeEnum.MACROMATHJAX)
         self.BLOCK_RE = re.compile(
-            dedent(
-                r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(\_)(?P<sub>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)'''),
-            re.MULTILINE | re.DOTALL | re.VERBOSE
-        )
+                dedent(r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(\_)(?P<sub>((`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)+)'''),
+                re.MULTILINE | re.DOTALL | re.VERBOSE
+            )
 
     def init_type(self, type_walker, func_name):
         super().init_type(type_walker, func_name)
@@ -24,6 +23,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         m = self.BLOCK_RE.fullmatch(symbol)
         if m:
             main = m.group('main')
+            # print("filter_subscript, symbol:{}, main:{} ".format(symbol, main))
             return main
         return symbol
 
@@ -93,15 +93,17 @@ class CodeGenMacroMathjax(CodeGenMathjax):
 
     def visit_id(self, node, **kwargs):
         id_str = "{}-{}".format(self.func_name, self.convert_content(node.get_name()))
+        sub_str = ''
         if node.contain_subscript():
             subs_list = []
             for subs in node.subs:
                 subs_list.append(self.convert_unicode(subs))
-            content = self.convert_unicode(node.main_id) + '_{' + ','.join(subs_list) + '}'
+            sub_str = '_{' + ','.join(subs_list) + '}'
+            content = self.convert_unicode(node.main_id)
         else:
             content = self.convert_unicode(node.get_name())
         if 'is_sub' in kwargs:
-            return content
+            return content + sub_str
         use_type = "use"
         if self.visiting_lhs or self.visiting_func_name:
             use_type = "def"
@@ -111,8 +113,8 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             local_param = self.is_local_param(node.get_name())
             local_func_name = self.local_func_name
         json = """{{"onclick":"event.stopPropagation(); onClickSymbol(this, '{}', '{}', '{}', {}, '{}')", "id":"{}", "sym":"{}", "func":"{}",  "localFunc":"{}", "type":"{}", "case":"equation"}}""" \
-            .format(self.convert_content(node.get_name()), self.func_name, use_type, 'true' if local_param else 'false', local_func_name, id_str, self.convert_content(node.get_name()), self.func_name, local_func_name, use_type)
+            .format(self.convert_content(node.get_main_id()), self.func_name, use_type, 'true' if local_param else 'false', local_func_name, id_str, self.convert_content(node.get_main_id()), self.func_name, local_func_name, use_type)
         content = "\\idlabel{{ {} }}{{ {{{}}} }}".format(json, content)
-        return content
+        return content + sub_str
 
 
