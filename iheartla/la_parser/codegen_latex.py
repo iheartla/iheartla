@@ -116,13 +116,13 @@ class CodeGenLatex(CodeGen):
             content = 'e'
         return content
 
-    def visit_double(self, node):
+    def visit_double(self, node, **kwargs):
         return str(node.value)
 
     def visit_fraction(self, node, **kwargs):
         return str(node.unicode)
 
-    def visit_integer(self, node):
+    def visit_integer(self, node, **kwargs):
         return str(node.value)
 
     def visit_IdentifierSubscript(self, node, **kwargs):
