@@ -55,7 +55,7 @@ body
   /*transition: width 2s;*/
   /*color: white;*/
   animation-name: eqShowup;
-  animation-duration: 1s;
+  animation-duration: 0.5s;
   /*opacity: 1;*/
 }
 .opShallow{
@@ -67,7 +67,7 @@ body
 }
 .eqHighlight{
   transform: scale(1.1);
-  transition-duration: 1s;
+  transition-duration: 0.5s;
   /*background-color: #B8D0E8;*/
   opacity: 1;
 }

@@ -511,7 +511,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
     symDiv.classList.add("eqInfo");
     MathJax.typeset();
     // console.log(`div is ${div.innerHTML}`);
-    setTimeout(showAllArrows, 1000);
+    setTimeout(showAllArrows, 500);
   }
   else{
     showAllArrows();
