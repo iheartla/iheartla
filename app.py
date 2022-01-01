@@ -16,27 +16,33 @@ def handle_title(text, dict):
     content = ''
     if "title" in dict:
         title = dict["title"]
-        content += "<div class='title'>{}</div>".format(title[0])
+        content += "<div class='title'>{}</div>".format(title)
     if "author" in dict:
-        author = dict["author"]
-        content += "<div class='author'>{}</div>".format(author[0])
+        authors = dict["author"]
+        for author in authors:
+            content += "<div class='author'>{}, {}</div>".format(author['name'], author['affiliation'])
     content += text
     return content
 
-def handle_abstract(text):
+def handle_abstract(text, dict):
     # abstract = text[:text.index('\n<h1')]
-    ABSTRACT_RE = re.compile(
-        dedent(r'''\<p\>(?P<abstract>[^<>]*)\<\/p\>\n\<h1'''),
-        re.MULTILINE | re.DOTALL | re.VERBOSE
-    )
-    # print("abstract:{}".format())
+    # ABSTRACT_RE = re.compile(
+    #     dedent(r'''\<p\>(?P<abstract>[^<>]*)\<\/p\>\n\<h1'''),
+    #     re.MULTILINE | re.DOTALL | re.VERBOSE
+    # )
+    # # print("abstract:{}".format())
+    # res_abstract = ''
+    # for m in ABSTRACT_RE.finditer(text):
+    #     abstract = m.group('abstract')
+    #     res_abstract = "<p class='abstract'>{}</p>".format(abstract)
+    #     text = text.replace("<p>{}</p>".format(abstract), '')
+    #     # print("abstract:{}".format(m.group('abstract')))
+    #     break
     res_abstract = ''
-    for m in ABSTRACT_RE.finditer(text):
-        abstract = m.group('abstract')
+    if "abstract" in dict:
+        abstract = dict['abstract']
         res_abstract = "<p class='abstract'>{}</p>".format(abstract)
         text = text.replace("<p>{}</p>".format(abstract), '')
-        # print("abstract:{}".format(m.group('abstract')))
-        break
     return text, res_abstract
 
 def handle_sections(text):
@@ -138,7 +144,7 @@ if __name__ == '__main__':
                                                           'markdown.extensions.toc', \
                                                           'markdown.extensions.wikilinks'], path=os.path.dirname(Path(paper_file)), parser_type=parser_type)
             body = md.convert(content)
-            body, abstract = handle_abstract(body)
+            body, abstract = handle_abstract(body, md.Meta)
             body = handle_sections(body)
             body = abstract + body
             body = handle_title(body, md.Meta)
