@@ -152,9 +152,9 @@ if __name__ == '__main__':
             # equation_data = get_sym_data(json.loads(equation_json))
             sym_json = read_from_file("{}/sym_data.json".format(os.path.dirname(Path(paper_file))))
             dst = "{}/resource".format(os.path.dirname(Path(paper_file)))
-            if os.path.exists(dst):
-                shutil.rmtree(dst)
-            shutil.copytree("/Users/pressure/Downloads/linear_algebra/extras/resource", dst)
+            # if os.path.exists(dst):
+            #     shutil.rmtree(dst)
+            # shutil.copytree("/Users/pressure/Downloads/linear_algebra/extras/resource", dst)
             script = r"""window.onload = parseAllSyms;
 function reportWindowSize() {
   var arrows = document.querySelectorAll(".arrow");
