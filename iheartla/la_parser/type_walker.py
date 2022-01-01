@@ -50,30 +50,38 @@ class EquationData(object):
         self.la_content = la_content
         self.func_data_dict = func_data_dict
 
+    def trim(self, content):
+        # print("before:{}, after:{}".format(content, content.replace('"', '\\"').replace("'", "\\'")))
+        return content
+
     def gen_json_content(self):
         content = ''
         param_list = []
         for param in self.parameters:
             if param in self.desc_dict:
-                param_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(param, self.symtable[param].get_json_content(), self.desc_dict[param]))
+                param_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(param), self.symtable[param].get_json_content(), self.desc_dict[param]))
             else:
-                param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(param, self.symtable[param].get_json_content()))
+                param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(param), self.symtable[param].get_json_content()))
         def_list = []
         for lhs in self.definition:
-            def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(lhs, self.symtable[lhs].get_json_content()))
+            def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(lhs), self.symtable[lhs].get_json_content()))
         #
         func_list = []
         for k, v in self.func_data_dict.items():
-            def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(k, self.symtable[k].get_json_content()))
+            def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(k), self.symtable[k].get_json_content()))
             local_param_list = []
             for local_param in v.params_data.parameters:
-                local_param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(local_param, v.params_data.symtable[local_param].get_json_content()))
-            func_list.append('''{{"name":"{}", "parameters":[{}]}}'''.format(k, ','.join(local_param_list)))
+                local_param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(local_param), v.params_data.symtable[local_param].get_json_content()))
+            func_list.append('''{{"name":"{}", "parameters":[{}]}}'''.format(self.trim(k), ','.join(local_param_list)))
         # self.la_content = self.la_content.replace('\n', '\\\\n')
-        content = '''"parameters":[{}], "definition":[{}], "local_func":[{}], "source":"{}"'''.format(','.join(param_list), ','.join(def_list), ','.join(func_list), self.la_content)
+        content = '''"parameters":[{}], "definition":[{}], "local_func":[{}]'''.format(','.join(param_list), ','.join(def_list), ','.join(func_list))
         content = content.replace('\\', '\\\\\\\\')
-        content = content.replace('`', '')
         content = content.replace('\n', '\\\\n')
+        content = content.replace('`', '')
+        content += ''', "source":"{}"'''.format(self.trim(self.la_content).replace('\\', '\\\\\\\\').replace('\n', '\\\\n'))
+        # content = content.replace('\\\\\\\\"', '\\"')
+        # content = content.replace("\\\\\\\\'", "\\'")
+        # print(content)
         return content
 
 
