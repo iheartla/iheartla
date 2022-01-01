@@ -12,6 +12,10 @@ class CodeGenMacroMathjax(CodeGenMathjax):
                 dedent(r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(\_)(?P<sub>((`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)+)'''),
                 re.MULTILINE | re.DOTALL | re.VERBOSE
             )
+        self.UNICODE_RE = re.compile(
+                dedent(r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(?P<sub>[\u2080-\u2089]+)'''),
+                re.MULTILINE | re.DOTALL | re.VERBOSE
+            )
 
     def init_type(self, type_walker, func_name):
         super().init_type(type_walker, func_name)
@@ -25,6 +29,10 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             main = m.group('main')
             # print("filter_subscript, symbol:{}, main:{} ".format(symbol, main))
             return main
+        else:
+            m = self.UNICODE_RE.fullmatch(symbol)
+            if m:
+                return m.group('main')
         return symbol
 
     def convert_content(self, symbol):
