@@ -572,6 +572,26 @@ class ParserFileManager(object):
         else:
             self._BUILTIN_KEYWORDS_()"""
                 def_parser = def_parser.replace(keywords_original, keywords_new)
+                #
+                builtin_keys = r"""
+            with self._option():
+                self._pattern('ℝ')
+            with self._option():
+                self._pattern('ℤ')
+            with self._option():
+                self._pattern('ᵀ')"""
+                builtin_keys_new = r"""
+            with self._option():
+                self._pattern('ℝ')
+            with self._option():
+                self._pattern('ℤ')
+            with self._option():
+                self._pattern('ᵀ')
+            for new_id in self.new_func_list:
+                with self._option():
+                    self._pattern(new_id)"""
+                # def_parser = def_parser.replace(builtin_keys, builtin_keys_new)
+                #
                 save_to_file(def_parser, os.path.join(la_local_parsers, 'default_parser.py'))
 
 
