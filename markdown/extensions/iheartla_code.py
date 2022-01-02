@@ -121,6 +121,14 @@ class IheartlaBlockPreprocessor(Preprocessor):
         dedent(r'''\\prose(?P<def>(def)?)label\{(?P<symbol>[^{}$]*)\}(?!\{)'''),
         re.MULTILINE | re.VERBOSE
     )
+    # Match string:  $$ eq $$, $ eq $
+    MATH_RE = re.compile(
+        dedent(r'''(?<!\\)    # negative look-behind to make sure start is not escaped 
+        ((?<!\$)\${1,2}(?!\$))
+        ((?P<code>.*?))(?<!\\)
+        (?<!\$)\1(?!\$)'''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
     def __init__(self, md, config):
         super().__init__(md)
         self.config = config
@@ -134,6 +142,36 @@ class IheartlaBlockPreprocessor(Preprocessor):
             'noclasses',
             'use_pygments'
         ]
+
+    def handle_math(self, text, context, sym_list):
+        for m in self.MATH_RE.finditer(text):
+            content = m.group('code')
+            for sym in sym_list:
+                PROSE_RE = re.compile(
+                    dedent(r'''(?<!(    # negative begins
+                    (\\(proselabel|prosedeflabel)({{([a-z\s]+)}})?{{(\s*)))
+                    |
+                    ([a-z\\])
+                    ) # negative ends
+                    ({})
+                    (?![a-z\\])'''.format(sym)),
+                    re.MULTILINE | re.DOTALL | re.VERBOSE
+                )
+                changed = True
+                while changed:
+                    changed = False
+                    for target in PROSE_RE.finditer(content):
+                        changed = True
+                        content = content[:target.start()] + "\\proselabel{{{}}}{{{}}}".format(context,
+                                                                                               sym) + content[
+                                                                                                      target.end():]
+                        break
+            if content != m.group('code'):
+                # print("text is{}".format(text))
+                # print("handle_math, content:{}, group:{}, full:{}".format(content, m.group('code'), m.group()))
+                text = text.replace(m.group(), "{}{}{}".format(m.group(1), content, m.group(1)))
+                # print("handle_math, after:{}".format(text))
+        return text
 
     def handle_prose_label(self, text, context):
         for m in self.PROSE_RE.finditer(text):
@@ -206,16 +244,19 @@ class IheartlaBlockPreprocessor(Preprocessor):
             context_list.append(cur_context)
             text_list.append(text[start_index: m.start()])
             start_index = m.end()
+        text_list.append(text[start_index:len(text)])
+        for index in range(len(text_list)):
+            sym_list = []
+            cur_context = context_list[index]
             if cur_context in equation_dict:
                 equation_data = equation_dict[cur_context]
                 sym_list = equation_data.gen_sym_list()
-                print("cur_context:{}, sym_list:{}".format(cur_context, sym_list))
-        text_list.append(text[start_index:len(text)])
-        for index in range(len(text_list)):
+                # print("cur_context:{}, sym_list:{}".format(cur_context, sym_list))
             # text_list[index] = self.handle_raw_code(text_list[index], context_list[index])
             # text_list[index] = self.handle_inline_raw_code(text_list[index], context_list[index])
-            text_list[index] = self.handle_prose_label(text_list[index], context_list[index])
-            text_list[index] = self.handle_simple_span_code(text_list[index], context_list[index])
+            text_list[index] = self.handle_prose_label(text_list[index], cur_context)
+            text_list[index] = self.handle_simple_span_code(text_list[index], cur_context)
+            text_list[index] = self.handle_math(text_list[index], cur_context, sym_list)
         return ''.join(text_list)
 
     def handle_iheartla_code(self, text):
