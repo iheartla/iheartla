@@ -262,6 +262,7 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN):
                 extra_list.append('`{}`'.format(key))
         key_list += extra_list
         key_list = [re.escape(item).replace('/', '\\/') for item in key_list]
+        key_list = sorted(key_list, key=len, reverse=True)
         func_rule = "/" + "/|/".join(key_list) + "/"
         extra_dict['funcs'] = key_list
         log_la("func_rule:" + func_rule)
