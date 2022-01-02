@@ -146,15 +146,16 @@ class IheartlaBlockPreprocessor(Preprocessor):
     def handle_math(self, text, context, sym_list):
         for m in self.MATH_RE.finditer(text):
             content = m.group('code')
+            # print("current equation:{}".format(m.group()))
             for sym in sym_list:
                 PROSE_RE = re.compile(
                     dedent(r'''(?<!(    # negative begins
-                    (\\(proselabel|prosedeflabel)({{([a-z\s]+)}})?{{(\s*)))
+                    (\\(proselabel|prosedeflabel)({{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\s]+)}})?{{(\s*)))
                     |
-                    ([a-z\\])
+                    ([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\\])
                     ) # negative ends
                     ({})
-                    (?![a-z\\])'''.format(sym)),
+                    (?![a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\\])'''.format(sym)),
                     re.MULTILINE | re.DOTALL | re.VERBOSE
                 )
                 changed = True
@@ -168,9 +169,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
                         break
             if content != m.group('code'):
                 # print("text is{}".format(text))
-                # print("handle_math, content:{}, group:{}, full:{}".format(content, m.group('code'), m.group()))
+                # print("handle_math, content:{}, group:{}, full:{}".format(content, m.group(), m.group()))
                 text = text.replace(m.group(), "{}{}{}".format(m.group(1), content, m.group(1)))
+                # print("handle_math, m.group():{}, replaced:{}".format(m.group(), "{}{}{}".format(m.group(1), content, m.group(1))))
                 # print("handle_math, after:{}".format(text))
+        # print("after, text:{}\n".format(text))
         return text
 
     def handle_prose_label(self, text, context):
@@ -251,7 +254,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             if cur_context in equation_dict:
                 equation_data = equation_dict[cur_context]
                 sym_list = equation_data.gen_sym_list()
-                # print("cur_context:{}, sym_list:{}".format(cur_context, sym_list))
+                print("cur_context:{}, sym_list:{}".format(cur_context, sym_list))
             # text_list[index] = self.handle_raw_code(text_list[index], context_list[index])
             # text_list[index] = self.handle_inline_raw_code(text_list[index], context_list[index])
             text_list[index] = self.handle_prose_label(text_list[index], cur_context)
@@ -335,7 +338,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         $${}{}{}$$</div>
         """.format(block_data.module_name, code_list[-1].pre_str, content, code_list[-1].post_str)
                 content = self.md.htmlStash.store(content)
-                # text = text.replace(block_data.block_list[cur_index], content)
+                text = text.replace(block_data.block_list[cur_index], content)
                 replace_dict[block_data.block_list[cur_index]] = content
         json_content = '''{{"equations":[{}] }}'''.format(','.join(json_list))
         sym_dict = self.get_sym_dict(equation_dict.values())
@@ -382,8 +385,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
         text, equation_dict, replace_dict = self.handle_iheartla_code(text)
         text = self.handle_context_post(text, equation_dict)
         text = self.handle_span_code(text)
-        for k, v in replace_dict.items():
-            text = text.replace(k, v)
+        # for k, v in replace_dict.items():
+        #     text = text.replace(k, v)
         return text.split("\n")
 
     def save_code(self, full_code_sequence):
