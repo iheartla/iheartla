@@ -50,6 +50,15 @@ class EquationData(object):
         self.la_content = la_content
         self.func_data_dict = func_data_dict
 
+    def gen_sym_list(self):
+        sym_list = self.parameters + self.definition
+        for param in self.parameters:
+            sym_list.append(param)
+        for k, v in self.func_data_dict.items():
+            sym_list = sym_list + v.params_data.parameters
+        sym_list = [sym.replace('`', '') for sym in sym_list]
+        return list(set(sym_list))
+
     def trim(self, content):
         # print("before:{}, after:{}".format(content, content.replace('"', '\\"').replace("'", "\\'")))
         return content
