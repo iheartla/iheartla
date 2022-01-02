@@ -57,7 +57,7 @@ class EquationData(object):
         for k, v in self.func_data_dict.items():
             sym_list = sym_list + v.params_data.parameters
             sym_list.append(k)
-        sym_list = [sym.replace('`', '') for sym in sym_list]
+        sym_list = [sym.replace('`$', '').replace('$`', '').replace('`', '') for sym in sym_list]
         return list(set(sym_list))
 
     def trim(self, content):
