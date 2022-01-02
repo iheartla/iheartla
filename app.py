@@ -221,7 +221,7 @@ const sym_data = JSON.parse('{sym_json}');
 </html>""".format(mathjax=mathjax, equation_json=equation_json,  sym_json=sym_json, script=script, body=body, resource_dir=resource_dir)
             # numbering
             EQ_BLOCK_RE = re.compile(
-                dedent(r'''(\$\$)(?P<code>.*?)(\$\$)'''),
+                dedent(r'''(?<!\\)((?<!\$)\${1,2}(?!\$))((?P<code>.*?))(?<!\\)(?<!\$)\1(?!\$)'''),
                 re.MULTILINE | re.DOTALL | re.VERBOSE
             )
             num = 1
