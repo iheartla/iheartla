@@ -163,7 +163,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     changed = False
                     for target in PROSE_RE.finditer(content):
                         changed = True
-                        content = content[:target.start()] + "\\proselabel{{{}}}{{{}}}".format(context,
+                        content = content[:target.start()] + "{{\\proselabel{{{}}}{{{}}}}}".format(context,
                                                                                                sym) + content[
                                                                                                       target.end():]
                         break
@@ -179,7 +179,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
     def handle_prose_label(self, text, context):
         for m in self.PROSE_RE.finditer(text):
             # print("prose match: {}, def:{}, symbol:{}".format(m.group(), m.group('def'), m.group('symbol')))
-            text = text.replace(m.group(), "\\prose{}label{{{}}}{{{}}}".format(m.group('def'), context, m.group('symbol')))
+            text = text.replace(m.group(), "{{\\prose{}label{{{}}}{{{}}}}}".format(m.group('def'), context, m.group('symbol')))
         return text
 
     def handle_raw_code(self, text, context):
