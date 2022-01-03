@@ -228,7 +228,7 @@ const sym_data = JSON.parse('{sym_json}');
             for m in EQ_BLOCK_RE.finditer(html):
                 equation = m.group('code')
                 if '\\notag' not in equation:
-                    html = html.replace(equation, "{}\\tag{{{}}}\\label{{{}}}".format(equation, num, num))
+                    html = html.replace(m.group(), "$${}\\tag{{{}}}\\label{{{}}}$$".format(equation, num, num))
                     num += 1
             base_name = os.path.basename(Path(paper_file))
             save_to_file(html, "{}/{}.html".format(os.path.dirname(Path(paper_file)), os.path.splitext(base_name)[0]))
