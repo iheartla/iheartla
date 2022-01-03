@@ -150,7 +150,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             for sym in sym_list:
                 PROSE_RE = re.compile(
                     dedent(r'''(?<!(    # negative begins
-                    (\\(proselabel|prosedeflabel)({{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\s]+)}})?{{(\s*)))
+                    (\\(proselabel|prosedeflabel)({{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\s]+)}})?{{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}_{{()\s]*)))
                     |
                     ([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\\])
                     ) # negative ends
