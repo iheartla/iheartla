@@ -474,6 +474,7 @@ class CodeGenLatex(CodeGen):
         return CodeNodeInfo('    '.join(content))
 
     def visit_num_matrix(self, node, **kwargs):
+        kwargs['is_sub'] = True
         id1_info = self.visit(node.id1, **kwargs)
         if node.id:
             content = "I_{{ {} }}".format(id1_info)
