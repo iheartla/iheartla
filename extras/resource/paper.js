@@ -367,6 +367,7 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
   }
 }
 function onClickProse(tag, symbol, func_name, type='def') {
+  resetState();
   console.log(`onClickProse, ${tag}, symbol is ${symbol}, ${func_name}`);
   highlightSym(symbol, func_name);
   if (type !== 'def') {
@@ -407,7 +408,7 @@ function onClickProse(tag, symbol, func_name, type='def') {
 function onClickSymbol(tag, symbol, func_name, type='def', isLocalParam=false, localFuncName='', color='red') {
   console.log(`the type is ${type}, sym is ${symbol}`)
   resetState();
-  closeOtherTips();
+  // closeOtherTips();
   highlightSym(symbol, func_name, isLocalParam, localFuncName, color);
   showSymArrow(tag, symbol, func_name, type, color);
     // d3.selectAll("mjx-mi[sym='" + symbol + "']").style("class", "highlight");
@@ -457,7 +458,7 @@ function getEquationContent(func_name, sym_list, isLocalFunc=false, localFunc=''
  * @return 
  */
 function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', localParams=[]) { 
-  closeOtherTips();
+  // closeOtherTips();
   resetState();
   content = getEquationContent(func_name, sym_list, isLocalFunc, localFunc, localParams);
   // Scale equation and append new div
@@ -539,11 +540,13 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
   }
 };
 function resetState(){
+  console.log(`reset all`);
   document.body.classList.remove("opShallow");
   removeArrows();
   removeSymHighlight();
   removeAddedDiv();
   resetEqScale();
+  closeOtherTips();
 }
 function resetEqScale(argument) {
   const matches = document.querySelectorAll(".eqHighlight");
