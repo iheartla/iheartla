@@ -155,7 +155,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     ([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\\])
                     ) # negative ends
                     ({})
-                    (?![a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\\])'''.format(sym)),
+                    (?![a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\\])'''.format(sym.replace('(', '\(').replace(')', '\)').replace('{', '\{').replace('}', '\}'))),
                     re.MULTILINE | re.DOTALL | re.VERBOSE
                 )
                 changed = True
