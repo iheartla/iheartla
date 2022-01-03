@@ -163,7 +163,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     changed = False
                     for target in PROSE_RE.finditer(content):
                         changed = True
-                        content = content[:target.start()] + "{{\\proselabel{{{}}}{{{}}}}}".format(context,
+                        content = content[:target.start()] + "{{\\proselabel{{{}}}{{{{{}}}}}}}".format(context,
                                                                                                sym) + content[
                                                                                                       target.end():]
                         break
