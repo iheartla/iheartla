@@ -58,7 +58,7 @@ class EquationData(object):
             sym_list = sym_list + v.params_data.parameters
             sym_list.append(k)
         sym_list = [sym.replace('`$', '').replace('$`', '').replace('`', '') for sym in sym_list]
-        return list(set(sym_list))
+        return sorted(list(set(sym_list)), key=len, reverse=True)
 
     def trim(self, content):
         # print("before:{}, after:{}".format(content, content.replace('"', '\\"').replace("'", "\\'")))
