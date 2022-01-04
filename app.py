@@ -160,7 +160,7 @@ if __name__ == '__main__':
             # if os.path.exists(dst):
             #     shutil.rmtree(dst)
             # shutil.copytree("/Users/pressure/Downloads/linear_algebra/extras/resource", dst)
-            script = r"""window.onload = parseAllSyms;
+            script = r"""window.onload = onLoad;
 function reportWindowSize() {
   var arrows = document.querySelectorAll(".arrow");
   if (arrows) {
@@ -181,6 +181,7 @@ function reportWindowSize() {
       // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
     }
   }
+  adjsutGlossaryBtn();
 }
 window.onresize = reportWindowSize;
 document.addEventListener("click", function(evt){

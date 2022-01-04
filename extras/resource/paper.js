@@ -116,6 +116,17 @@ function parseSym(tag, symbol){
     MathJax.typeset();
   }
 }
+function adjsutGlossaryBtn(){
+  var body = document.querySelector("body");
+  var style = window.getComputedStyle(body);
+  var curOffset = parseInt(style.marginLeft, 10)
+  var glossaryBtn = document.querySelector(".glossary");
+  glossaryBtn.style.left = `${curOffset-30}px`;
+}
+function onLoad(){
+  parseAllSyms();
+  adjsutGlossaryBtn();
+}
 function parseAllSyms(){
   keys = [];
   for (var k in sym_data) { 

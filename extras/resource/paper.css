@@ -34,6 +34,10 @@ body
     line-height: 120%;
     text-align: center;
 }
+.glossary{
+  position: fixed;
+  top: 10;
+}
 @keyframes eqShowup {
   from {
     opacity: 0;
