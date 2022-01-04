@@ -113,8 +113,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
     )
     # Match string: ❤: a=sin(θ)❤
     RAW_CODE_INLINE_RE = re.compile(
-        dedent(r'''❤(\s*):(?P<code>[^❤]*?)❤'''),
-        re.MULTILINE | re.DOTALL | re.VERBOSE
+        dedent(r'''❤(?P<code>[^❤]*)❤'''),
+        re.MULTILINE | re.VERBOSE
     )
     # Match string: \proselabel{A}  \prosedeflabel{A}
     PROSE_RE = re.compile(
@@ -200,8 +200,9 @@ class IheartlaBlockPreprocessor(Preprocessor):
     def handle_inline_raw_code(self, text, context):
         for m in self.RAW_CODE_INLINE_RE.finditer(text):
             # print("inline_raw_code: {}".format(m.group()))
-            # print("new: {}".format("❤ {}:{}❤".format(context, m.group('code'))))
-            text = text.replace(m.group(), "❤ {}:{}❤".format(context, m.group('code')))
+            if not self.INLINE_RE.fullmatch(m.group()):
+                # print("new: {}".format("❤ {}:{}❤".format(context, m.group('code'))))
+                text = text.replace(m.group(), "❤ {}:{}❤".format(context, m.group('code')))
         return text
 
     def handle_simple_span_code(self, text, context):
