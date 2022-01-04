@@ -124,7 +124,9 @@ if __name__ == '__main__':
             parser_type = ParserTypeEnum.EIGEN
         for paper_file in args.paper:
             content = read_from_file(paper_file)
-            md = markdown.Markdown(extensions=['markdown.extensions.iheartla_code', \
+            base_name = os.path.basename(Path(paper_file))
+            md = markdown.Markdown(extensions=['markdown.extensions.mdx_bib', \
+                                               'markdown.extensions.iheartla_code', \
                                                           'markdown.extensions.mdx_math', \
                                                           'markdown.extensions.attr_list', \
                                                           'markdown.extensions.fenced_code', \
@@ -142,7 +144,10 @@ if __name__ == '__main__':
                                                           'markdown.extensions.sane_lists', \
                                                           'markdown.extensions.smarty', \
                                                           'markdown.extensions.toc', \
-                                                          'markdown.extensions.wikilinks'], path=os.path.dirname(Path(paper_file)), parser_type=parser_type)
+                                                          'markdown.extensions.wikilinks'],
+                                   path=os.path.dirname(Path(paper_file)),
+                                   parser_type=parser_type,
+                                   bibtex_file='{}/{}.bib'.format(os.path.dirname(Path(paper_file)), os.path.splitext(base_name)[0]))
             body = md.convert(content)
             body, abstract = handle_abstract(body, md.Meta)
             body = handle_sections(body)
@@ -215,7 +220,7 @@ const sym_data = JSON.parse('{sym_json}');
 {script}
 </script>
 <body>
-<img src="{resource_dir}/resource/glossary.png" id="glossary" alt="glossary" width="22" height="28"><br>
+<img src="{resource_dir}/resource/glossary.png" id="glossary" class="glossary" alt="glossary" width="22" height="28"><br>
 {body}
 </body>
 </html>""".format(mathjax=mathjax, equation_json=equation_json,  sym_json=sym_json, script=script, body=body, resource_dir=resource_dir)
@@ -230,6 +235,5 @@ const sym_data = JSON.parse('{sym_json}');
                 if '\\notag' not in equation:
                     html = html.replace(m.group(), "$${}\\tag{{{}}}\\label{{{}}}$$".format(equation, num, num))
                     num += 1
-            base_name = os.path.basename(Path(paper_file))
             save_to_file(html, "{}/{}.html".format(os.path.dirname(Path(paper_file)), os.path.splitext(base_name)[0]))
             # print(html)

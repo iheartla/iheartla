@@ -33,10 +33,10 @@ class BlockData(Extension):
 
 class IheartlaCodeExtension(Extension):
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.config = {
             'lang_prefix': ['language-', 'Prefix prepended to the language. Default: "language-"']
         }
-        super().__init__(**kwargs)
 
     def extendMarkdown(self, md):
         """ Add FencedBlockPreprocessor to the Markdown instance. """
