@@ -57,9 +57,9 @@ class IheartlaBlockPostprocessor(Postprocessor):
         self.config = config
 
     def run(self, text):
-        for m in self.REFERENCE_RE.finditer(text):
-            # print("cur:{}".format(m.group('context')))
-            text = text.replace(m.group(), "<p id='ref{}'>{}</p>".format(m.group('index'), m.group('context')))
+        # for m in self.REFERENCE_RE.finditer(text):
+        #     # print("cur:{}".format(m.group('context')))
+        #     text = text.replace(m.group(), "<p id='ref{}'>{}</p>".format(m.group('index'), m.group('context')))
         # return '<pre>\n' + re.sub('<', '&lt;', text) + '</pre>\n'
         return text
 
@@ -147,7 +147,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         """
         Escape special characters in regular expression
         """
-        escape_list = ['(', ')', '{', '}', '^', '+', '-', '.']
+        escape_list = ['\\', '(', ')', '{', '}', '^', '+', '-', '.']
         for es in escape_list:
             sym = sym.replace(es, '\\' + es)
         return sym
@@ -391,7 +391,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         text = "\n".join(lines)
         #
         text = self.handle_context_pre(text)
-        text = self.handle_reference(text)
+        # text = self.handle_reference(text)
         text, equation_dict, replace_dict = self.handle_iheartla_code(text)
         text = self.handle_context_post(text, equation_dict)
         text = self.handle_span_code(text)
