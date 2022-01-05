@@ -361,20 +361,23 @@ class IheartlaBlockPreprocessor(Preprocessor):
 
 
     def handle_reference(self, text):
-        ref_list = []
-        for m in self.REFERENCE_RE.finditer(text):
-            ref_list.append(m)
-            # print("m is :{}".format(m.group()))
-        if len(ref_list) > 0:
-            m = ref_list[len(ref_list) - 1]
-            remain_lines = text[m.end():].split('\n')
-            ref_index = 0
-            # print(remain_lines)
-            for index in range(len(remain_lines)):
-                if dedent(remain_lines[index]) != '':
-                    remain_lines[index] = "[ref{}]:{}".format(ref_index, remain_lines[index])
-                    ref_index += 1
-            text = text[:m.end()] + '\n'.join(remain_lines)
+        res_list = self.REFERENCE_RE.findall(text)
+        if len(res_list) == 0 and self.md.Meta.get("full_paper", True):
+            text += "\n# REFERENCE\n"
+        # ref_list = []
+        # for m in self.REFERENCE_RE.finditer(text):
+        #     ref_list.append(m)
+        #     # print("m is :{}".format(m.group()))
+        # if len(ref_list) > 0:
+        #     m = ref_list[len(ref_list) - 1]
+        #     remain_lines = text[m.end():].split('\n')
+        #     ref_index = 0
+        #     # print(remain_lines)
+        #     for index in range(len(remain_lines)):
+        #         if dedent(remain_lines[index]) != '':
+        #             remain_lines[index] = "[ref{}]:{}".format(ref_index, remain_lines[index])
+        #             ref_index += 1
+        #     text = text[:m.end()] + '\n'.join(remain_lines)
         return text
 
     def run(self, lines, **kwargs):
@@ -391,7 +394,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         text = "\n".join(lines)
         #
         text = self.handle_context_pre(text)
-        # text = self.handle_reference(text)
+        text = self.handle_reference(text)
         text, equation_dict, replace_dict = self.handle_iheartla_code(text)
         text = self.handle_context_post(text, equation_dict)
         text = self.handle_span_code(text)
