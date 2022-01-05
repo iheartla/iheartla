@@ -50,27 +50,54 @@ class Bibliography(object):
     def referenceID(self, citekey):
         return "ref-" + citekey
 
+    def formatCitationKey(self, citekey):
+        content = citekey
+        if citekey in self.bibsource:
+            ref = self.bibsource[citekey]
+            authors = ref.persons["author"]
+            if len(authors) == 1:
+                content = authors[0].last()[0] + ' ' + ref.fields.get("year")
+            elif len(authors) == 2:
+                content = authors[0].last()[0] + ' and ' + authors[1].last()[0] + ' ' + ref.fields.get("year")
+            else:
+                content = authors[0].last()[0] + ' et al. ' + ref.fields.get("year")
+        return content
+
     def formatAuthor(self, author):
-        out = "%s %s." % (author.last()[0], author.first()[0][0])
-        if author.middle():
-            out += "%s." % (author.middle()[0][0])
+        # print(author)
+        out = ''
+        if author and len(author.last()) > 0 and len(author.first()) > 0:
+            out += author.first()[0]
+            if author.middle():
+                out += " %s." % (author.middle()[0])
+            out += " %s" % (author.last()[0])
         return out
 
+    def formatAuthorList(self, authors):
+        if len(authors) == 1:
+            content = self.formatAuthor(authors[0])
+        elif len(authors) == 2:
+            content = self.formatAuthor(authors[0]) + ' and ' + self.formatAuthor(authors[1])
+        else:
+            content = ", ".join(map(self.formatAuthor, authors[:-1])) + ' and ' + self.formatAuthor(authors[-1])
+        return content
+
     def formatReference(self, ref):
-        authors = ", ".join(map(self.formatAuthor, ref.persons["author"]))
+        authors = self.formatAuthorList(ref.persons["author"])
         title = ref.fields["title"]
         journal = ref.fields.get("journal", "")
         volume = ref.fields.get("volume", "")
         year = ref.fields.get("year")
 
-        reference = "<p>%s: <i>%s</i>." % (authors, title)
+        reference = "<p>%s. %s. %s." % (authors, year, title)
         if journal:
-            reference += " %s." % journal
+            reference += " <i>%s</i>" % journal
             if volume:
-                reference += " <b>%s</b>," % volume
-
-        reference += " (%s)</p>" % year
-
+                reference += " %s," % volume
+            else:
+                reference += ","
+            reference += " (%s)" % year
+        reference += " </p>"
         return reference
 
     def makeBibliography(self, root):
@@ -88,8 +115,8 @@ class Bibliography(object):
         for id in self.citations:
             tr = etree.SubElement(tbody, "tr")
             tr.set("id", self.referenceID(id))
-            ref_id = etree.SubElement(tr, "td")
-            ref_id.text = id
+            # ref_id = etree.SubElement(tr, "td")
+            # ref_id.text = id
             ref_txt = etree.SubElement(tr, "td")
             if id in self.references:
                 self.extension.parser.parseChunk(ref_txt, self.references[id])
@@ -97,7 +124,6 @@ class Bibliography(object):
                 ref_txt.text = self.formatReference(self.bibsource[id])
             else:
                 ref_txt.text = "Missing citation"
-
         return div
 
 
@@ -160,7 +186,7 @@ class CitationsPattern(Pattern):
             a.set('id', self.bib.citationID(id))
             a.set('href', '#' + self.bib.referenceID(id))
             a.set('class', 'citation')
-            a.text = id
+            a.text = self.bib.formatCitationKey(id)
 
             return a
         else:
