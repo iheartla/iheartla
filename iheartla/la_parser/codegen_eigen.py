@@ -675,7 +675,8 @@ class CodeGenEigen(CodeGen):
         content += '    {\n'
         # get dimension content
         dim_defined_dict, test_content, dim_content = self.gen_dim_content(name_info.content)
-        content += self.update_prelist_str([dim_content], '    ')
+        if dim_content != '':
+            content += self.update_prelist_str([dim_content], '    ')
         #
         main_declaration = []
         # Handle sequences first
@@ -686,16 +687,18 @@ class CodeGenEigen(CodeGen):
         #
         type_checks += self.get_dim_check_str()
         type_checks += self.get_arith_dim_check_str()
-        type_checks = self.update_prelist_str(type_checks, '    ')
         if len(type_checks) > 0:
+            type_checks = self.update_prelist_str(type_checks, '    ')
             content += type_checks + '\n'
         expr_info = self.visit(node.expr, **kwargs)
         if node.expr.is_node(IRNodeType.MultiConds):
             content += '        {} {}_ret;\n'.format(self.get_ctype(node.expr.la_type), name_info.content)
-            content += self.update_prelist_str(expr_info.pre_list, "    ")
+            if len(expr_info.pre_list) > 0:
+                content += self.update_prelist_str(expr_info.pre_list, "    ")
             content += '        return {}_ret;'.format(name_info.content)
         else:
-            content += self.update_prelist_str(expr_info.pre_list, "    ")
+            if len(expr_info.pre_list) > 0:
+                content += self.update_prelist_str(expr_info.pre_list, "    ")
             content += '        return ' + expr_info.content + ';'
         content += '    \n    }\n'
         self.local_func_def += content

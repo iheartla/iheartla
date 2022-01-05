@@ -656,15 +656,18 @@ class CodeGenMatlab(CodeGen):
             self.get_param_content(test_indent, type_declare, test_generated_sym_set, rand_func_name)
         test_content += param_test_content
         #
-        content += self.update_prelist_str(type_declare, '    ')
-        content += self.update_prelist_str([dim_content], '    ')
+        if len(type_declare) > 0:
+            content += self.update_prelist_str(type_declare, '    ')
+        if dim_content != '':
+            content += self.update_prelist_str([dim_content], '    ')
         type_checks += self.get_dim_check_str()
         type_checks += self.get_arith_dim_check_str()
-        type_checks = self.update_prelist_str(type_checks, '    ')
         if len(type_checks) > 0:
+            type_checks = self.update_prelist_str(type_checks, '    ')
             content += type_checks + '\n'
         expr_info = self.visit(node.expr, **kwargs)
-        content += self.update_prelist_str(expr_info.pre_list, "    ")
+        if len(expr_info.pre_list) > 0:
+            content += self.update_prelist_str(expr_info.pre_list, "    ")
         if not node.expr.is_node(IRNodeType.MultiConds):
             content += '        ret = {};\n'.format(expr_info.content)
         content += '    end\n\n'
