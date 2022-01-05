@@ -71,6 +71,10 @@ class Bibliography(object):
             if author.middle():
                 out += " %s." % (author.middle()[0])
             out += " %s" % (author.last()[0])
+        elif len(author.last()) > 0:
+            out += " %s" % (author.last()[0])
+        elif len(author.first()) > 0:
+            out += " %s" % (author.first()[0])
         return out
 
     def formatAuthorList(self, authors):
