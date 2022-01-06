@@ -481,6 +481,15 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 else:
                     sym_data = sym_dict[definition]
                     sym_data.sym_equation_list.append(sym_eq_data)
+            # local functions
+            for func_name, func_params in equation.func_data_dict.items():
+                sym_eq_data = SymEquationData(la_type=equation.symtable[func_name], desc=equation.desc_dict.get(func_name), module_name=equation.name, is_defined=True)
+                if func_name not in sym_dict:
+                    sym_data = SymData(func_name, sym_equation_list=[sym_eq_data])
+                    sym_dict[func_name] = sym_data
+                else:
+                    sym_data = sym_dict[func_name]
+                    sym_data.sym_equation_list.append(sym_eq_data)
         # sec loop
         for equation in equation_list:
             # dependence
