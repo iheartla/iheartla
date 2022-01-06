@@ -229,6 +229,9 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName=''){
       }
     }
   }
+  if (content == '') {
+    content = `${dollarSym} is a parameter in local function`;
+  }
   return content;
 }
 function showSymArrow(tag, symbol, func_name, type='def', color='blue', 
