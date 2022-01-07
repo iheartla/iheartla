@@ -356,16 +356,24 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
     matches[i].setAttribute('class', curClass);
   }
   // span prose 
-  let spanMatches = document.querySelectorAll("span[sym='" + symbol + "'][context='" + func_name + "']");
+  let spanMatches = document.querySelectorAll("span[sym*='" + symbol + "'][context='" + func_name + "']");
   for (var i = spanMatches.length - 1; i >= 0; i--) {
     var curClass = spanMatches[i].getAttribute('class');
-    if (curClass !== '') {
-      curClass = `highlight_${color}` + ' ' + curClass;
+    var curSym = spanMatches[i].getAttribute('sym');
+    const curSymList = curSym.split(' ');
+    // console.log(`i is ${i}, curSymList is ${curSymList} `)
+    for (var j = curSymList.length - 1; j >= 0; j--) {
+      if (curSymList[j] === symbol) {
+        if (curClass !== '') {
+          curClass = `highlight_${color}` + ' ' + curClass;
+        }
+        else{
+          curClass = `highlight_${color}`;
+        }
+        spanMatches[i].setAttribute('class', curClass);
+        break;
+      }
     }
-    else{
-      curClass = `highlight_${color}`;
-    }
-    spanMatches[i].setAttribute('class', curClass);
   }
   // syms in equation
   let eqMatches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "']");
