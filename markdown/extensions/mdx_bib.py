@@ -8,7 +8,8 @@ from markdown.util import etree
 from pybtex.database.input import bibtex
 
 from collections import OrderedDict
-import re
+import regex as re
+from textwrap import dedent
 
 BRACKET_RE = re.compile(r'\[([^\[]+)\]')
 CITE_RE = re.compile(r'@(\w+)')
@@ -17,7 +18,10 @@ INDENT_RE = re.compile(r'\A\t| {4}(.*)')
 
 CITATION_RE = r'@(\w+)'
 
-
+FIGURE_CAP_RE = re.compile(
+        dedent(r"""<figcaption(?P<attr>[^><]*)>(?P<before>.*)(?P<cite>@(\w+))(?P<after>.*)</figcaption>"""),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
 class Bibliography(object):
     """ Keep track of document references and citations for exporting """
 
@@ -150,6 +154,13 @@ class CitationsPreprocessor(Preprocessor):
                 break
         return " ".join(linesOut), i
 
+    def handle_citation_fig(self, text):
+        for m in FIGURE_CAP_RE.finditer(text):
+            cite_key = m.group('cite')[1:]
+            new_cite = r"""<a class="citation" href="#ref-{}" id="cite-{}">{}</a>""".format(cite_key, cite_key, self.bib.formatCitationKey(cite_key))
+            text = text.replace(m.group(), "<figcaption{}>{}{}{}</figcaption> ".format(m.group('attr'), m.group('before'), new_cite, m.group('after')))
+        return text.split("\n")
+
     def run(self, lines, **kwargs):
         linesOut = []
         i = 0
@@ -172,8 +183,7 @@ class CitationsPreprocessor(Preprocessor):
                     self.bib.addCitation(c)
             linesOut.append(lines[i])
             i += 1
-
-        return linesOut
+        return self.handle_citation_fig("\n".join(linesOut))
 
 
 class CitationsPattern(Pattern):
