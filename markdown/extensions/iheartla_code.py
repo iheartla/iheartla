@@ -188,7 +188,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
     def handle_prose_label(self, text, context):
         for m in self.PROSE_RE.finditer(text):
             # print("prose match: {}, def:{}, symbol:{}".format(m.group(), m.group('def'), m.group('symbol')))
-            text = text.replace(m.group(), "{{\\prose{}label{{{}}}{{{}}}}}".format(m.group('def'), context, m.group('symbol')))
+            text = text.replace(m.group(), "{{\\prose{}label{{{}}}{{{{{}}}}}}}".format(m.group('def'), context, m.group('symbol')))
         return text
 
     def handle_raw_code(self, text, context):
@@ -217,7 +217,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             desc = m.group('code')
             sym_list = m.group('symbol').split(' ')
             for sym in sym_list:
-                desc = desc.replace("${}$".format(sym), r"""$\prosedeflabel{{{}}}{{{}}}$""".format(m.group('context'), sym))
+                desc = desc.replace("${}$".format(sym), r"""$\prosedeflabel{{{}}}{{{{{}}}}}$""".format(m.group('context'), sym))
             text = text.replace(m.group(), "<span sym='{}' context='{}'> {} </span>".format(m.group('symbol'), m.group('context'), desc))
         return text
 
