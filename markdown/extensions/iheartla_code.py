@@ -147,7 +147,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         """
         Escape special characters in regular expression
         """
-        escape_list = ['\\', '(', ')', '{', '}', '^', '+', '-', '.']
+        escape_list = ['\\', '(', ')', '{', '}', '^', '+', '-', '.', '*']
         for es in escape_list:
             sym = sym.replace(es, '\\' + es)
         return sym
@@ -161,10 +161,10 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     dedent(r'''(?<!(    # negative begins
                     (\\(proselabel|prosedeflabel)({{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\s]+)}})?{{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}_{{()\s]*)))
                     |
-                    ([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\\])
+                    ([^\s]+)
                     ) # negative ends
                     ({})
-                    (?![a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\\])'''.format(self.escape_sym(sym))),
+                    (?![^\s]+)'''.format(self.escape_sym(sym))),
                     re.MULTILINE | re.DOTALL | re.VERBOSE
                 )
                 changed = True
