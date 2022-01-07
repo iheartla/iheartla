@@ -79,12 +79,12 @@ class IheartlaBlockPreprocessor(Preprocessor):
     )
     # Match string: <span class="def:context:symbol">***</span>
     SPAN_BLOCK_RE = re.compile(
-        dedent(r'''<span\ class=(?P<quote>"|')def:(?P<context>\b\w+\b)(:)(?P<symbol>\b\w+\b)(?P=quote)>(?P<code>.*?)</span>'''),
+        dedent(r'''<span\ class=(?P<quote>"|')def:(?P<context>\b\w+\b)(:)(?P<symbol>[^:>'"]*)(?P=quote)>(?P<code>.*?)</span>'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
     # Match string: <span class="def:symbol">***</span>
     SPAN_SIMPLE_RE = re.compile(
-        dedent(r'''<span\ class=(?P<quote>"|')def:(?P<symbol>\b\w+\b)(?P=quote)>(?P<code>.*?)(</span>)'''),
+        dedent(r'''<span\ class=(?P<quote>"|')def:(?P<symbol>[^:>'"]*)(?P=quote)>(?P<code>.*?)(</span>)'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
     # Match string: ❤️context: a=sin(θ)❤️
@@ -215,8 +215,10 @@ class IheartlaBlockPreprocessor(Preprocessor):
     def handle_span_code(self, text):
         for m in self.SPAN_BLOCK_RE.finditer(text):
             desc = m.group('code')
-            new_desc = desc.replace("${}$".format(m.group('symbol')), r"""$\prosedeflabel{{{}}}{{{}}}$""".format(m.group('context'), m.group('symbol')))
-            text = text.replace(m.group(), "<span sym='{}' context='{}'> {} </span>".format(m.group('symbol'), m.group('context'), new_desc))
+            sym_list = m.group('symbol').split(' ')
+            for sym in sym_list:
+                desc = desc.replace("${}$".format(sym), r"""$\prosedeflabel{{{}}}{{{}}}$""".format(m.group('context'), sym))
+            text = text.replace(m.group(), "<span sym='{}' context='{}'> {} </span>".format(m.group('symbol'), m.group('context'), desc))
         return text
 
     def handle_context_pre(self, text):
@@ -394,10 +396,10 @@ class IheartlaBlockPreprocessor(Preprocessor):
         text = "\n".join(lines)
         #
         text = self.handle_context_pre(text)
+        text = self.handle_span_code(text)
         text = self.handle_reference(text)
         text, equation_dict, replace_dict = self.handle_iheartla_code(text)
         text = self.handle_context_post(text, equation_dict)
-        text = self.handle_span_code(text)
         # for k, v in replace_dict.items():
         #     text = text.replace(k, v)
         return text.split("\n")
