@@ -1998,7 +1998,7 @@ class TypeWalker(NodeWalker):
                         ir_node.la_type = la_type
                         ir_node.process_subs_dict(self.lhs_sub_dict)
                         return NodeInfo(la_type, content_symbol,
-                                        {content_symbol},
+                                        {node.text},
                                         ir_node)
                     la_type = self.symtable[left_info.content].element_type
                     ir_node = SequenceIndexNode(parse_info=node.parseinfo)
@@ -2050,7 +2050,7 @@ class TypeWalker(NodeWalker):
                     ir_node.la_type = la_type
                     ir_node.process_subs_dict(self.lhs_sub_dict)
                     return NodeInfo(la_type, content_symbol,
-                                             {content_symbol},
+                                             {node.text},
                                              ir_node)
                 elif self.symtable[left_info.content].is_matrix():
                     assert len(node.right) == 2, get_err_msg_info(left_info.ir.parse_info,
@@ -2078,7 +2078,7 @@ class TypeWalker(NodeWalker):
                         ir_node.col_index = col_index_info.ir
                     ir_node.la_type = la_type
                     ir_node.process_subs_dict(self.lhs_sub_dict)
-                    node_info = NodeInfo(la_type, content_symbol, {content_symbol},
+                    node_info = NodeInfo(la_type, content_symbol, {node.text},
                                          ir_node)
                     return node_info
                 elif self.symtable[left_info.content].is_vector():
@@ -2095,7 +2095,7 @@ class TypeWalker(NodeWalker):
                     ir_node.row_index = index_info.ir
                     ir_node.la_type = self.symtable[left_info.content].element_type
                     ir_node.process_subs_dict(self.lhs_sub_dict)
-                    node_info = NodeInfo(self.symtable[left_info.content].element_type, content_symbol, {content_symbol}, ir_node)
+                    node_info = NodeInfo(self.symtable[left_info.content].element_type, content_symbol, {node.text}, ir_node)
                     return node_info
         #
         for value in node.right:
