@@ -216,8 +216,27 @@ class IheartlaBlockPreprocessor(Preprocessor):
         for m in self.SPAN_BLOCK_RE.finditer(text):
             desc = m.group('code')
             sym_list = m.group('symbol').split(' ')
+            # print("handle_span_code, matched:{}".format(m.group()))
             for sym in sym_list:
-                desc = desc.replace("${}$".format(sym), r"""$\prosedeflabel{{{}}}{{{{{}}}}}$""".format(m.group('context'), sym))
+                PROSE_RE = re.compile(
+                    dedent(r'''(?<!(    # negative begins
+                    (\\(proselabel|prosedeflabel)({{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\s]+)}})?{{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}_{{()\s]*)))
+                    |
+                    ([^\s]+)
+                    ) # negative ends
+                    ({})
+                    (?![^\s]+)'''.format(self.escape_sym(sym))),
+                    re.MULTILINE | re.DOTALL | re.VERBOSE
+                )
+                changed = True
+                while changed:
+                    changed = False
+                    for target in PROSE_RE.finditer(desc):
+                        changed = True
+                        desc = desc[:target.start()] + "{{\\prosedeflabel{{{}}}{{{{{}}}}}}}".format(m.group('context'), sym) + desc[target.end():]
+                        break
+                # desc = desc.replace("${}$".format(sym), r"""$\prosedeflabel{{{}}}{{{{{}}}}}$""".format(m.group('context'), sym))
+                # print("handle_span_code, desc:{}".format(desc))
             text = text.replace(m.group(), "<span sym='{}' context='{}'> {} </span>".format(m.group('symbol'), m.group('context'), desc))
         return text
 
