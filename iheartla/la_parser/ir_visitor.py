@@ -638,10 +638,12 @@ class IRVisitor(object):
     def convert_unicode(self, name):
         if '`' not in name and self.parse_type != ParserTypeEnum.MATLAB:
             return name
-        content = name.replace('`$', '').replace('$`', '').replace('`', '')
+        remove_list = ['`$', '$`', '`', '(', ')', '{', '}', '\\', '-']
+        for rm in remove_list:
+            name = name.replace(rm, '')
         new_list = []
         pre_unicode = False
-        for e in content:
+        for e in name:
             if self.parse_type == ParserTypeEnum.NUMPY or self.parse_type == ParserTypeEnum.MATLAB:
                 # make sure identifier is valid in numpy
                 if e.isnumeric() and e in self.uni_num_dict:
@@ -654,7 +656,7 @@ class IRVisitor(object):
             elif e.isspace():
                 new_list.append('')
             else:
-                if  self.parse_type == ParserTypeEnum.MATLAB and e in self.common_symbol_dict:
+                if self.parse_type == ParserTypeEnum.MATLAB and e in self.common_symbol_dict:
                     new_list.append(self.common_symbol_dict[e])
                 else:
                     try:
