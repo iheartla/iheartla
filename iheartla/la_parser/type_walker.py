@@ -1629,7 +1629,10 @@ class TypeWalker(NodeWalker):
                 # transpose
                 ir_node.t = node.t
                 assert base_info.la_type.is_matrix() or base_info.la_type.is_vector(), get_err_msg_info(base_info.ir.parse_info,"Transpose error. The base must be a matrix or vecotr")
-                ir_node.la_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows, sparse=base_info.la_type.sparse)
+                sparse = False
+                if base_info.la_type.is_matrix():
+                    sparse = base_info.la_type.sparse
+                ir_node.la_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows, sparse=sparse)
         elif node.r:
             ir_node.r = node.r
             if base_info.la_type.is_matrix():
