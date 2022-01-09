@@ -129,6 +129,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
         (?<!\$)\1(?!\$)'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
+    # Match string:  \n \s
+    BLANK_RE = re.compile(
+        dedent(r'''[\n\s]*'''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
     def __init__(self, md, config):
         super().__init__(md)
         self.config = config
@@ -310,19 +315,25 @@ class IheartlaBlockPreprocessor(Preprocessor):
         for m in self.INLINE_RE.finditer(text):
             # print("Inline block: {}".format(m.group()))
             module_name = m.group('module')
-            if module_name and m.group('code'):
+            code = m.group('code')
+            if '.' in module_name and self.BLANK_RE.fullmatch(code):
+                code = read_from_file("{}/{}".format(self.md.path, module_name))
+            if module_name and code:
                 if module_name not in file_dict:
-                    file_dict[module_name] = BlockData([m], [m.group('code')], [m.group(0)], [True], module_name)
+                    file_dict[module_name] = BlockData([m], [code], [m.group(0)], [True], module_name)
                 else:
-                    file_dict[module_name].add(m, m.group('code'), m.group(0), True)
+                    file_dict[module_name].add(m, code, m.group(0), True)
         # Find all blocks
         for m in self.FENCED_BLOCK_RE.finditer(text):
             module_name = m.group('module')
-            if module_name and m.group('code'):
+            code = m.group('code')
+            if '.' in module_name and self.BLANK_RE.fullmatch(code):
+                code = read_from_file("{}/{}".format(self.md.path, module_name))
+            if module_name and code:
                 if module_name not in file_dict:
-                    file_dict[module_name] = BlockData([m], [m.group('code')], [m.group(0)], [False], module_name)
+                    file_dict[module_name] = BlockData([m], [code], [m.group(0)], [False], module_name)
                 else:
-                    file_dict[module_name].add(m, m.group('code'), m.group(0), False)
+                    file_dict[module_name].add(m, code, m.group(0), False)
         # Save to file
         for name, block_data in file_dict.items():
             source = '\n'.join(block_data.code_list)
