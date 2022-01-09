@@ -99,7 +99,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
     )
     # Match string: ❤ : context
     CONTEXT_RE = re.compile(
-        dedent(r'''(?<=(\n)*)(\s*)❤(\s*):(\s*)(?P<context>[^\n❤\s]*)(\s*)\n'''),
+        dedent(r'''(?<=(\n)*)(\s*)❤(\s*):(\s*)(?P<context>[^\n❤\s]*)(\s*)(?=(\n)+)'''),
         re.MULTILINE | re.VERBOSE
     )
     # Match string: ``` iheartla
