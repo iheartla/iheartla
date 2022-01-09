@@ -89,8 +89,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
     )
     # Match string: ❤️context: a=sin(θ)❤️
     INLINE_RE = re.compile(
-        dedent(r'''❤(\s*)(?P<module>\b\w+\b)(\s*)(:)(?P<code>.*?)❤'''),
-        re.MULTILINE | re.DOTALL | re.VERBOSE
+        dedent(r'''❤(\s*)(?P<module>[a-zA-Z0-9\.]*)(\s*)(:)(?P<code>.*?)❤'''),
+        re.MULTILINE | re.VERBOSE
     )
     # Match string: # REFERENCES
     REFERENCE_RE = re.compile(
