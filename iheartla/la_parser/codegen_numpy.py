@@ -108,8 +108,8 @@ class CodeGenNumpy(CodeGen):
             content = self.name_convention_dict[content]
         if self.convert_matrix and node.contain_subscript():
             if len(node.subs) == 2:
-                if self.symtable[node.main_id].is_matrix():
-                    if self.symtable[node.main_id].sparse:
+                if self.get_sym_type(node.main_id).is_matrix():
+                    if self.get_sym_type(node.main_id).sparse:
                         content = "{}.tocsr()[{}, {}]".format(node.main_id, node.subs[0], node.subs[1])
                     else:
                         content = "{}[{}][{}]".format(node.main_id, node.subs[0], node.subs[1])
@@ -120,7 +120,7 @@ class CodeGenNumpy(CodeGen):
     def get_struct_definition(self, def_str, stat_str):
         assign_list = []
         for parameter in self.lhs_list:
-            if parameter in self.symtable and self.symtable[parameter] is not None:
+            if parameter in self.symtable and self.get_sym_type(parameter) is not None:
                 assign_list.append("self.{} = {}".format(parameter, parameter))
         def_struct = ''
         init_struct = ''
@@ -176,20 +176,20 @@ class CodeGenNumpy(CodeGen):
                 for cur_sym in sym_set:
                     if first:
                         first = False
-                        cur_test_content.append('    for i in range({}):'.format(self.symtable[cur_sym].size))
+                        cur_test_content.append('    for i in range({}):'.format(self.get_sym_type(cur_sym).size))
                     dim_dict = new_seq_dim_dict[cur_sym]
                     defined_content.append('    {} = []'.format(cur_sym))
-                    if self.symtable[cur_sym].element_type.is_vector():
+                    if self.get_sym_type(cur_sym).element_type.is_vector():
                         # determined
-                        if self.symtable[cur_sym].element_type.is_integer_element():
+                        if self.get_sym_type(cur_sym).element_type.is_integer_element():
                             cur_block_content.append('        {}.append(np.random.randint({}, size=({})))'.format(cur_sym, rand_int_max, rand_name_dict[dim_dict[1]]))
                         else:
                             cur_block_content.append('        {}.append(np.random.randn({}))'.format(cur_sym, rand_name_dict[dim_dict[1]]))
                     else:
                         # matrix
-                        row_str = self.symtable[cur_sym].element_type.rows if not self.symtable[cur_sym].element_type.is_dynamic_row() else rand_name_dict[dim_dict[1]]
-                        col_str = self.symtable[cur_sym].element_type.cols if not self.symtable[cur_sym].element_type.is_dynamic_col() else rand_name_dict[dim_dict[2]]
-                        if self.symtable[cur_sym].element_type.is_integer_element():
+                        row_str = self.get_sym_type(cur_sym).element_type.rows if not self.get_sym_type(cur_sym).element_type.is_dynamic_row() else rand_name_dict[dim_dict[1]]
+                        col_str = self.get_sym_type(cur_sym).element_type.cols if not self.get_sym_type(cur_sym).element_type.is_dynamic_col() else rand_name_dict[dim_dict[2]]
+                        if self.get_sym_type(cur_sym).element_type.is_integer_element():
                             cur_block_content.append('        {}.append(np.random.randint({}, size=({}, {})))'.format(cur_sym, rand_int_max, row_str, col_str))
                         else:
                             cur_block_content.append('        {}.append(np.random.randn({}, {}))'.format(cur_sym, row_str, col_str))
@@ -208,17 +208,17 @@ class CodeGenNumpy(CodeGen):
         par_des_list = []
         test_par_list = []
         for parameter in self.parameters:
-            if self.symtable[parameter].desc:
+            if self.get_sym_type(parameter).desc:
                 show_doc = True
-                doc.append('    :param :{} :{}'.format(parameter, self.symtable[parameter].desc))
-            if self.symtable[parameter].is_sequence():
-                ele_type = self.symtable[parameter].element_type
+                doc.append('    :param :{} :{}'.format(parameter, self.get_sym_type(parameter).desc))
+            if self.get_sym_type(parameter).is_sequence():
+                ele_type = self.get_sym_type(parameter).element_type
                 data_type = ele_type.element_type
                 if ele_type.is_matrix() and ele_type.sparse:
-                    type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].size))
+                    type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.get_sym_type(parameter).size))
                     type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
                     test_content.append('    {} = []'.format(parameter))
-                    test_content.append('    for i in range({}):'.format(self.symtable[parameter].size))
+                    test_content.append('    for i in range({}):'.format(self.get_sym_type(parameter).size))
                     if isinstance(data_type, LaVarType) and data_type.is_scalar() and data_type.is_int:
                         test_content.append(
                             '        {}.append(sparse.random({}, {}, dtype=np.integer, density=0.25))'.format(parameter, ele_type.rows, ele_type.cols))
@@ -230,37 +230,37 @@ class CodeGenNumpy(CodeGen):
                     size_str = ""
                     if ele_type.is_matrix():
                         if not ele_type.is_dynamic():
-                            type_checks.append('    assert {}.shape == ({}, {}, {})'.format(parameter, self.symtable[parameter].size, ele_type.rows, ele_type.cols))
-                            size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
+                            type_checks.append('    assert {}.shape == ({}, {}, {})'.format(parameter, self.get_sym_type(parameter).size, ele_type.rows, ele_type.cols))
+                            size_str = '{}, {}, {}'.format(self.get_sym_type(parameter).size, ele_type.rows, ele_type.cols)
                         else:
                             if parameter not in test_generated_sym_set:
                                 row_str = 'np.random.randint({})'.format(rand_int_max) if ele_type.is_dynamic_row() else ele_type.rows
                                 col_str = 'np.random.randint({})'.format(rand_int_max) if ele_type.is_dynamic_col() else ele_type.cols
-                                # size_str = '{}, {}, {}'.format(self.symtable[parameter].size, row_str, col_str)
+                                # size_str = '{}, {}, {}'.format(self.get_sym_type(parameter).size, row_str, col_str)
                                 test_content.append('    {} = []'.format(parameter))
-                                test_content.append('    for i in range({}):'.format(self.symtable[parameter].size))
+                                test_content.append('    for i in range({}):'.format(self.get_sym_type(parameter).size))
                                 if ele_type.is_integer_element():
                                     test_content.append('        {}.append(np.random.randint({}, size=({}, {})))'.format(parameter, rand_int_max, row_str, col_str))
                                 else:
                                     test_content.append('        {}.append(np.random.randn({}, {}))'.format(parameter, row_str, col_str))
                     elif ele_type.is_vector():
-                        # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
-                        # size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)
+                        # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.get_sym_type(parameter).size, ele_type.rows))
+                        # size_str = '{}, {}, 1'.format(self.get_sym_type(parameter).size, ele_type.rows)
                         if not ele_type.is_dynamic():
-                            type_checks.append('    assert {}.shape == ({}, {}, )'.format(parameter, self.symtable[parameter].size, ele_type.rows))
-                            size_str = '{}, {}, '.format(self.symtable[parameter].size, ele_type.rows)
+                            type_checks.append('    assert {}.shape == ({}, {}, )'.format(parameter, self.get_sym_type(parameter).size, ele_type.rows))
+                            size_str = '{}, {}, '.format(self.get_sym_type(parameter).size, ele_type.rows)
                         else:
                             if parameter not in test_generated_sym_set:
                                 test_content.append('    {} = []'.format(parameter))
-                                test_content.append('    for i in range({}):'.format(self.symtable[parameter].size))
+                                test_content.append('    for i in range({}):'.format(self.get_sym_type(parameter).size))
                                 if ele_type.is_integer_element():
                                     test_content.append('        {}.append(np.random.randint({}, size=(np.random.randint({}) ,)))'.format(parameter, rand_int_max, rand_int_max))
                                 else:
                                     test_content.append('        {}.append(np.random.randn(np.random.randint({})))'.format(parameter, rand_int_max))
-                            # size_str = '{}, np.random.randint({}), '.format(self.symtable[parameter].size, rand_int_max)
+                            # size_str = '{}, np.random.randint({}), '.format(self.get_sym_type(parameter).size, rand_int_max)
                     elif ele_type.is_scalar():
-                        type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].size))
-                        size_str = '{}'.format(self.symtable[parameter].size)
+                        type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.get_sym_type(parameter).size))
+                        size_str = '{}'.format(self.get_sym_type(parameter).size)
                     if isinstance(data_type, LaVarType):
                         if data_type.is_scalar() and data_type.is_int:
                             if ele_type.is_dynamic():
@@ -271,7 +271,7 @@ class CodeGenNumpy(CodeGen):
                                 test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, size_str))
                         elif ele_type.is_set():
                             test_content.append('    {} = []'.format(parameter))
-                            test_content.append('    for i in range({}):'.format(self.symtable[parameter].size))
+                            test_content.append('    for i in range({}):'.format(self.get_sym_type(parameter).size))
                             set_content = self.get_set_test_list("{}_tmp".format(parameter),
                                                                  self.generate_var_name("dim"), 'j', ele_type,
                                                                  rand_int_max, '    ')
@@ -289,7 +289,7 @@ class CodeGenNumpy(CodeGen):
                     else:
                         if ele_type.is_function():
                             test_content.append('    {} = []'.format(parameter))
-                            test_content.append('    for i in range({}):'.format(self.symtable[parameter].size))
+                            test_content.append('    for i in range({}):'.format(self.get_sym_type(parameter).size))
                             func_content = self.get_func_test_str("{}_f".format(parameter), ele_type, rand_int_max)
                             func_content = ["    {}".format(line) for line in func_content]
                             test_content += func_content
@@ -302,65 +302,65 @@ class CodeGenNumpy(CodeGen):
                                 type_declare.append('    {} = np.asarray({}, dtype={})'.format(parameter, parameter,
                                                                                                "np.integer" if ele_type.is_integer_element() else "np.float64"))
                             test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
-            elif self.symtable[parameter].is_matrix():
-                element_type = self.symtable[parameter].element_type
+            elif self.get_sym_type(parameter).is_matrix():
+                element_type = self.get_sym_type(parameter).element_type
                 if isinstance(element_type, LaVarType):
-                    if self.symtable[parameter].sparse:
+                    if self.get_sym_type(parameter).sparse:
                         if element_type.is_scalar() and element_type.is_int:
                             test_content.append(
-                                '    {} = sparse.random({}, {}, dtype=np.integer, density=0.25)'.format(parameter, self.symtable[parameter].rows,
-                                                                          self.symtable[parameter].cols))
+                                '    {} = sparse.random({}, {}, dtype=np.integer, density=0.25)'.format(parameter, self.get_sym_type(parameter).rows,
+                                                                          self.get_sym_type(parameter).cols))
                         else:
                             test_content.append(
-                                '    {} = sparse.random({}, {}, dtype=np.float64, density=0.25)'.format(parameter, self.symtable[parameter].rows,
-                                                                        self.symtable[parameter].cols))
+                                '    {} = sparse.random({}, {}, dtype=np.float64, density=0.25)'.format(parameter, self.get_sym_type(parameter).rows,
+                                                                        self.get_sym_type(parameter).cols))
                     else:
                         # dense
                         if element_type.is_scalar() and element_type.is_int:
                             type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
-                            test_content.append('    {} = np.random.randint({}, size=({}, {}))'.format(parameter, rand_int_max, self.symtable[parameter].rows, self.symtable[parameter].cols))
+                            test_content.append('    {} = np.random.randint({}, size=({}, {}))'.format(parameter, rand_int_max, self.get_sym_type(parameter).rows, self.get_sym_type(parameter).cols))
                         else:
                             type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
-                            test_content.append('    {} = np.random.randn({}, {})'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
+                            test_content.append('    {} = np.random.randn({}, {})'.format(parameter, self.get_sym_type(parameter).rows, self.get_sym_type(parameter).cols))
                 else:
-                    if self.symtable[parameter].sparse:
+                    if self.get_sym_type(parameter).sparse:
                         test_content.append(
-                            '    {} = sparse.random({}, {}, dtype=np.float64, density=0.25)'.format(parameter, self.symtable[parameter].rows,
-                                                                      self.symtable[parameter].cols))
+                            '    {} = sparse.random({}, {}, dtype=np.float64, density=0.25)'.format(parameter, self.get_sym_type(parameter).rows,
+                                                                      self.get_sym_type(parameter).cols))
                     else:
                         type_checks.append('    {} = np.asarray({})'.format(parameter, parameter))
-                        test_content.append('    {} = np.random.randn({}, {})'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
-                type_checks.append('    assert {}.shape == ({}, {})'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
-            elif self.symtable[parameter].is_vector():
-                element_type = self.symtable[parameter].element_type
+                        test_content.append('    {} = np.random.randn({}, {})'.format(parameter, self.get_sym_type(parameter).rows, self.get_sym_type(parameter).cols))
+                type_checks.append('    assert {}.shape == ({}, {})'.format(parameter, self.get_sym_type(parameter).rows, self.get_sym_type(parameter).cols))
+            elif self.get_sym_type(parameter).is_vector():
+                element_type = self.get_sym_type(parameter).element_type
                 if isinstance(element_type, LaVarType):
                     if element_type.is_scalar() and element_type.is_int:
                         type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
-                        test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, self.symtable[parameter].rows))
+                        test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, self.get_sym_type(parameter).rows))
                     else:
                         type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
-                        test_content.append('    {} = np.random.randn({})'.format(parameter, self.symtable[parameter].rows))
+                        test_content.append('    {} = np.random.randn({})'.format(parameter, self.get_sym_type(parameter).rows))
                 else:
                     type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
-                    test_content.append('    {} = np.random.randn({})'.format(parameter, self.symtable[parameter].rows))
-                type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].rows))
-                # type_checks.append('    assert {}.shape == ({}, 1)'.format(parameter, self.symtable[parameter].rows))
-                # test_content.append('    {} = {}.reshape(({}, 1))'.format(parameter, parameter, self.symtable[parameter].rows))
-            elif self.symtable[parameter].is_scalar():
+                    test_content.append('    {} = np.random.randn({})'.format(parameter, self.get_sym_type(parameter).rows))
+                type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.get_sym_type(parameter).rows))
+                # type_checks.append('    assert {}.shape == ({}, 1)'.format(parameter, self.get_sym_type(parameter).rows))
+                # test_content.append('    {} = {}.reshape(({}, 1))'.format(parameter, parameter, self.get_sym_type(parameter).rows))
+            elif self.get_sym_type(parameter).is_scalar():
                 type_checks.append('    assert np.ndim({}) == 0'.format(parameter))
-                if self.symtable[parameter].is_int:
+                if self.get_sym_type(parameter).is_int:
                     test_function.append('    {} = np.random.randint({})'.format(parameter, rand_int_max))
                 else:
                     test_function.append('    {} = np.random.randn()'.format(parameter))
-            elif self.symtable[parameter].is_set():
+            elif self.get_sym_type(parameter).is_set():
                 type_declare.append('    {} = frozenset({})'.format(parameter, parameter))
                 # type_checks.append('    assert isinstance({}, list) and len({}) > 0'.format(parameter, parameter))
-                if self.symtable[parameter].size > 1:
-                    type_checks.append('    assert all( len(el) == {} for el in {} )'.format(self.symtable[parameter].size, parameter))
-                test_content += self.get_set_test_list(parameter, self.generate_var_name("dim"), 'i', self.symtable[parameter],
+                if self.get_sym_type(parameter).size > 1:
+                    type_checks.append('    assert all( len(el) == {} for el in {} )'.format(self.get_sym_type(parameter).size, parameter))
+                test_content += self.get_set_test_list(parameter, self.generate_var_name("dim"), 'i', self.get_sym_type(parameter),
                                                        rand_int_max, '    ')
-            elif self.symtable[parameter].is_function():
-                test_content += self.get_func_test_str(parameter, self.symtable[parameter], rand_int_max)
+            elif self.get_sym_type(parameter).is_function():
+                test_content += self.get_func_test_str(parameter, self.get_sym_type(parameter), rand_int_max)
             main_content.append('    print("{}:", {})'.format(parameter, parameter))
         return type_checks, doc, test_content, test_function, par_des_list, test_par_list
 
@@ -473,7 +473,7 @@ class CodeGenNumpy(CodeGen):
         test_function += test_content
         test_function.append('    return {}'.format(', '.join(self.parameters)))
         main_content.append("    func_value = {}({})".format(self.func_name, ', '.join(self.parameters)))
-        if self.ret_symbol in self.symtable and self.symtable[self.ret_symbol] is not None:
+        if self.ret_symbol in self.symtable and self.get_sym_type(self.ret_symbol) is not None:
             main_content.append('    print("return value: ", func_value.{})'.format(self.ret_symbol))
         self.code_frame.main = self.trim_content('\n'.join(main_content))
         self.code_frame.rand_data = self.trim_content('\n'.join(test_function))
@@ -517,7 +517,7 @@ class CodeGenNumpy(CodeGen):
             content.append("{} = np.zeros(({}, {}))\n".format(assign_id, assign_id_type.rows, assign_id_type.cols))
         elif assign_id_type.is_vector():
             content.append("{} = np.zeros(({}, ))\n".format(assign_id, assign_id_type.rows))
-            # content.append("{} = np.zeros(({}, 1))\n".format(assign_id, self.symtable[assign_id].rows))
+            # content.append("{} = np.zeros(({}, 1))\n".format(assign_id, self.get_sym_type(assign_id).rows))
         elif assign_id_type.is_sequence():
             ele_type = assign_id_type.element_type
             content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, assign_id_type.size, ele_type.rows, ele_type.cols))
@@ -732,18 +732,18 @@ class CodeGenNumpy(CodeGen):
         pre_list += if_info.content
         # assignment
         if op_type == '=':
-            pre_list.append("    {} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(cur_m_id, value_var, index_var, self.symtable[cur_m_id].rows,
-                                                          self.symtable[cur_m_id].cols))
+            pre_list.append("    {} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(cur_m_id, value_var, index_var, self.get_sym_type(cur_m_id).rows,
+                                                          self.get_sym_type(cur_m_id).cols))
         elif op_type == '+=':
             # left_ids = self.get_all_ids(lhs)
             # left_subs = left_ids[1]
             pre_list.append(
                 "    {} = scipy.sparse.coo_matrix(({}+{}.data.tolist(), np.hstack((np.asarray({}).T, np.asarray(({}.row, {}.col))))), shape=({}, {}))\n".format(cur_m_id, value_var, cur_m_id,
                                                                                                     index_var, cur_m_id, cur_m_id,
-                                                                                                    self.symtable[
-                                                                                                        cur_m_id].rows,
-                                                                                                    self.symtable[
-                                                                                                        cur_m_id].cols))
+                                                                                                    self.get_sym_type(
+                                                                                                        cur_m_id).rows,
+                                                                                                    self.get_sym_type(
+                                                                                                        cur_m_id).cols))
 
         return CodeNodeInfo(cur_m_id, pre_list)
 
@@ -889,7 +889,7 @@ class CodeGenNumpy(CodeGen):
                         ret[i][j] = '({}).reshape({}, 1)'.format(ret[i][j], node.la_type.item_types[i][j].la_type.rows)
                 all_rows.append('[' + ', '.join(ret[i]) + ']')
             # matrix
-            if self.symtable[cur_m_id].sparse and self.symtable[cur_m_id].block:
+            if self.get_sym_type(cur_m_id).sparse and self.get_sym_type(cur_m_id).block:
                 m_content += 'sparse.bmat([{}])'.format(', '.join(all_rows))
                 if len(ret) > 1 and len(ret[0]) > 1:
                     content += '{} = {}\n'.format(cur_m_id, m_content)
@@ -916,8 +916,8 @@ class CodeGenNumpy(CodeGen):
                     content += '{} = np.vstack(({}))\n'.format(cur_m_id, ', '.join(ret))
         else:
             # dense
-            content += '{} = np.zeros(({}, {}))\n'.format(cur_m_id, self.symtable[cur_m_id].rows,
-                                                          self.symtable[cur_m_id].cols)
+            content += '{} = np.zeros(({}, {}))\n'.format(cur_m_id, self.get_sym_type(cur_m_id).rows,
+                                                          self.get_sym_type(cur_m_id).cols)
             for i in range(len(ret)):
                 content += "    {}[{}] = [{}]\n".format(cur_m_id, i, ', '.join(ret[i]))
         #####################
@@ -961,7 +961,7 @@ class CodeGenNumpy(CodeGen):
                     col_content = col_info.content
                 else:
                     col_content = "{}-1".format(col_info.content)
-                if self.symtable[main_info.content].sparse:
+                if self.get_sym_type(main_info.content).sparse:
                     content = "{}.tocsr()[{}, {}]".format(main_info.content, row_content, col_content)
                 else:
                     content = "{}[{}, {}]".format(main_info.content, row_content, col_content)
@@ -1086,26 +1086,26 @@ class CodeGenNumpy(CodeGen):
             if len(left_subs) == 2: # matrix only
                 sequence = left_ids[0]  # y left_subs[0]
                 sub_strs = left_subs[0] + left_subs[1]
-                if self.symtable[sequence].is_matrix() and self.symtable[sequence].sparse:
+                if self.get_sym_type(sequence).is_matrix() and self.get_sym_type(sequence).sparse:
                     if left_subs[0] == left_subs[1]:  # L_ii
                         content = ""
-                        if self.symtable[sequence].diagonal:
+                        if self.get_sym_type(sequence).diagonal:
                             # add definition
                             if sequence not in self.declared_symbols:
-                                content += "    {} = []\n".format(self.symtable[sequence].index_var)
-                                content += "    {} = []\n".format(self.symtable[sequence].value_var)
-                        content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
+                                content += "    {} = []\n".format(self.get_sym_type(sequence).index_var)
+                                content += "    {} = []\n".format(self.get_sym_type(sequence).value_var)
+                        content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
                         if right_info.pre_list:
                             content += self.update_prelist_str(right_info.pre_list, "    ")
-                        content += "        {}.append(({} - 1, {} - 1))\n".format(self.symtable[sequence].index_var, left_subs[0], left_subs[0])
-                        content += "        {}.append({})\n".format(self.symtable[sequence].value_var, right_info.content)
+                        content += "        {}.append(({} - 1, {} - 1))\n".format(self.get_sym_type(sequence).index_var, left_subs[0], left_subs[0])
+                        content += "        {}.append({})\n".format(self.get_sym_type(sequence).value_var, right_info.content)
                         content += "    {} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(sequence,
-                                                                                                            self.symtable[sequence].value_var,
-                                                                                                            self.symtable[sequence].index_var,
-                                                                                                            self.symtable[
-                                                                                                                sequence].rows,
-                                                                                                            self.symtable[
-                                                                                                                sequence].cols)
+                                                                                                            self.get_sym_type(sequence).value_var,
+                                                                                                            self.get_sym_type(sequence).index_var,
+                                                                                                            self.get_sym_type(
+                                                                                                                sequence).rows,
+                                                                                                            self.get_sym_type(
+                                                                                                                sequence).cols)
                     else:  # L_ij
                         if right_info.pre_list:
                             content += "".join(right_info.pre_list)
@@ -1115,7 +1115,7 @@ class CodeGenNumpy(CodeGen):
                 elif left_subs[0] == left_subs[1]:
                     # L_ii
                     content = ""
-                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
+                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
                     if right_info.pre_list:
                         content += self.update_prelist_str(right_info.pre_list, "    ")
                     content += "        {}[{}-1][{}-1] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
@@ -1125,15 +1125,15 @@ class CodeGenNumpy(CodeGen):
                             var_ids = self.get_all_ids(right_var)
                             right_info.content = right_info.content.replace(right_var, "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
                     right_exp += "    {}[{}-1][{}-1] = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
-                    if self.symtable[sequence].is_matrix():
+                    if self.get_sym_type(sequence).is_matrix():
                         if node.op == '=':
                             # declare
                             if sequence not in self.declared_symbols:
                                 content += "    {} = np.zeros(({}, {}))\n".format(sequence,
-                                                                                  self.symtable[sequence].rows,
-                                                                                  self.symtable[sequence].cols)
-                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
-                    content += "        for {} in range(1, {}+1):\n".format(left_subs[1], self.symtable[sequence].cols)
+                                                                                  self.get_sym_type(sequence).rows,
+                                                                                  self.get_sym_type(sequence).cols)
+                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
+                    content += "        for {} in range(1, {}+1):\n".format(left_subs[1], self.get_sym_type(sequence).cols)
                     if right_info.pre_list:
                         content += self.update_prelist_str(right_info.pre_list, "        ")
                     content += "        " + right_exp
@@ -1147,22 +1147,22 @@ class CodeGenNumpy(CodeGen):
                         right_info.content = right_info.content.replace(right_var, "{}[{}]".format(var_ids[0], var_ids[1][0]))
 
                 right_exp += "    {} = {}".format(left_info.content, right_info.content)
-                ele_type = self.symtable[sequence].element_type
-                if self.symtable[sequence].is_sequence():
+                ele_type = self.get_sym_type(sequence).element_type
+                if self.get_sym_type(sequence).is_sequence():
                     if ele_type.is_matrix():
-                        content += "    {} = np.zeros(({}, {}, {}))\n".format(sequence, self.symtable[sequence].size, ele_type.rows, ele_type.cols)
+                        content += "    {} = np.zeros(({}, {}, {}))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows, ele_type.cols)
                     elif ele_type.is_vector():
-                        content += "    {} = np.zeros(({}, {}, ))\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
-                        # content += "    {} = np.zeros(({}, {}, 1))\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
+                        content += "    {} = np.zeros(({}, {}, ))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows)
+                        # content += "    {} = np.zeros(({}, {}, 1))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows)
                     elif ele_type.is_function():
-                        content += "    {} = np.zeros({}, dtype=object)\n".format(sequence, self.symtable[sequence].size)
+                        content += "    {} = np.zeros({}, dtype=object)\n".format(sequence, self.get_sym_type(sequence).size)
                     else:
-                        content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].size)
-                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].size)
+                        content += "    {} = np.zeros({})\n".format(sequence, self.get_sym_type(sequence).size)
+                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).size)
                 else:
                     # vector
-                    content += "    {} = np.zeros({})\n".format(sequence, self.symtable[sequence].rows)
-                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.symtable[sequence].rows)
+                    content += "    {} = np.zeros({})\n".format(sequence, self.get_sym_type(sequence).rows)
+                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
                 if right_info.pre_list:
                     content += self.update_prelist_str(right_info.pre_list, "    ")
                 content += "    " + right_exp
