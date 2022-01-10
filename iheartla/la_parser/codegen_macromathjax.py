@@ -45,7 +45,6 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             sym_list.append("'{}'".format(self.convert_content(self.filter_subscript(sym))))
         sym_list = list(set(sym_list))
         sym_list.append("'{}'".format(self.convert_content(node.left.get_main_id())))
-        content = ''
         if node.right.node_type == IRNodeType.Optimize:
             content = self.visit(node.right, **kwargs)
         else:

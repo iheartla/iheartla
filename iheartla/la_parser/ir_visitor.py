@@ -54,6 +54,8 @@ class IRVisitor(object):
         # common math decorations to English names, e.g., v̄ → v_bar, rather than unicode names , e.g., v̄ → v_combining_macron 
         # ^ is translated into _, .e.g, s^k → s_k
         # ℓ → ell rather than script_small_l
+        self.comment_placeholder = 'iheartlacomment'
+        self.comment_dict = {}
         self.common_symbol_dict = {
             ',': '', '(':'',')':'', 'Α': 'Alpha', 'Β': 'Beta', 'Γ': 'Gamma', 'Δ': 'Delta', 'Ε': 'Epsilon', 'Ζ': 'Zeta', 'Η': 'Eta', 'Θ': 'Theta', 'Ι': 'Iota', 'Κ': 'Kappa', 'Λ': 'Lambda', 'Μ': 'Mu', 'Ν': 'Nu', 'Ξ': 'Xi', 'Ο': 'Omicron', 'Π': 'Pi', 'Ρ': 'Rho', 'Σ': 'Sigma', '∑': 'Sigma', 'Τ': 'Tau', 'Υ': 'Upsilon', 'Φ': 'Phi', 'Χ': 'Chi', 'Ψ': 'Psi', 'Ω': 'Omega', 'α': 'alpha', 'β': 'beta', 'γ': 'gamma', 'δ': 'delta', 'ε': 'epsilon', 'ζ': 'zeta', 'η': 'eta', 'θ': 'theta', 'ι': 'iota', 'κ': 'kappa', 'λ': 'lambda', 'μ': 'mu', 'ν': 'nu', 'ξ': 'xi', 'ο': 'omicron', 'π': 'pi', 'ρ': 'rho', 'ς': 'sigma', 'σ': 'sigma', 'τ': 'tau', 'υ': 'upsilon', 'ϕ': 'phi', 'φ': 'phi', 'χ': 'chi', 'ψ': 'psi', 'ω': 'omega', 'ₐ':'_a','ᵢ': '_i', 'ⱼ': '_j', 'ₖ': '_k', 'ₘ': '_m', 'ₙ': '_n','ᵣ': '_r', 'ₛ': '_s', '\u0302': '_hat', '\u0303': '_tilde', '\u0304': '_bar', '\u0305': '_wide_bar', '\u0307': '_dot', '\u0308': '_double_dot', '\u030C': '_check', '\u20D7': '_vec', 'ã': 'a_tilde', '^': '_', 'ℓ': 'ell',
             '𝐀': 'bold_A', '𝐁': 'bold_B', '𝐂': 'bold_C', '𝐃': 'bold_D', '𝐄': 'bold_E', '𝐅': 'bold_F', '𝐆': 'bold_G', '𝐇': 'bold_H', '𝐈': 'bold_I', '𝐉': 'bold_J', '𝐊': 'bold_K', '𝐋': 'bold_L', '𝐌': 'bold_M', '𝐍': 'bold_N', '𝐎': 'bold_O', '𝐏': 'bold_P', '𝐐': 'bold_Q', '𝐑': 'bold_R', '𝐒': 'bold_S', '𝐓': 'bold_T', '𝐔': 'bold_U', '𝐕': 'bold_V', '𝐖': 'bold_W', '𝐗': 'bold_X', '𝐘': 'bold_Y', '𝐙': 'bold_Z', '𝐚': 'bold_a', '𝐛': 'bold_b', '𝐜': 'bold_c', '𝐝': 'bold_d', '𝐞': 'bold_e', '𝐟': 'bold_f', '𝐠': 'bold_g', '𝐡': 'bold_h', '𝐢': 'bold_i', '𝐣': 'bold_j', '𝐤': 'bold_k', '𝐥': 'bold_l', '𝐦': 'bold_m', '𝐧': 'bold_n', '𝐨': 'bold_o', '𝐩': 'bold_p', '𝐪': 'bold_q', '𝐫': 'bold_r', '𝐬': 'bold_s', '𝐭': 'bold_t', '𝐮': 'bold_u', '𝐯': 'bold_v', '𝐰': 'bold_w', '𝐱': 'bold_x', '𝐲': 'bold_y', '𝐳': 'bold_z',
@@ -262,6 +264,7 @@ class IRVisitor(object):
         # self.print_symbols()
         self.declared_symbols.clear()
         self.local_func_def = ''
+        self.comment_dict.clear()
 
     def visit_code(self, node, **kwargs):
         self.content = self.pre_str + self.visit(node) + self.post_str
@@ -672,6 +675,11 @@ class IRVisitor(object):
         ret = re.sub("_+", "_", ''.join(new_list)).strip("_")
         return ret
 
+    def fill_comment(self, content):
+        for k, v in self.comment_dict.items():
+            content = content.replace(k, v)
+        return content
+
     def trim_content(self, content):
         # convert special string in identifiers
         res = content
@@ -700,7 +708,7 @@ class IRVisitor(object):
                     new_str = '_' + new_str
                 names_dict.append(new_str)
                 res = res.replace(special, new_str)
-        return res
+        return self.fill_comment(res)
 
     def filter_symbol(self, symbol):
         if '`' in symbol:
