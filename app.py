@@ -121,7 +121,7 @@ if __name__ == '__main__':
                 assert out in out_dict, "Parameters after -o or --output can only be numpy, eigen, latex, or matlab"
                 parser_type = parser_type | out_dict[out]
         else:
-            parser_type = ParserTypeEnum.EIGEN
+            parser_type = ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.MATLAB
         for paper_file in args.paper:
             content = read_from_file(paper_file)
             base_name = os.path.basename(Path(paper_file))
