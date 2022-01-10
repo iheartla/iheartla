@@ -287,6 +287,10 @@ function showArrow(tag, symbol, func_name, type='def', color='blue',
       // const prose = document.querySelectorAll("mjx-mi[sym='" + symbol + "'][module='"+ func_name + "'][type='def']");
       const prose = document.querySelectorAll("[sym='" + symbol + "'][module='"+ func_name + "'][type='def']");
       // console.log(`prose.length is ${prose.length}`);
+      // let new_sym = symbol.replace("\\\\\\\\", "\\"); 
+      // new_sym = symbol;
+      // const prose = document.querySelectorAll("[sym='" + new_sym + "'][module='"+ func_name + "'][type='def']");
+      // console.log(`prose.length is ${prose.length}`);
       if (prose !== 'undefined') {
         for (var i = prose.length - 1; i >= 0; i--) {
           // console.log(`${i} is ${prose[i].innerHTML}, tag is ${prose[i].tagName}, parentElement:${prose[i].parentElement.innerHTML}`)
