@@ -125,8 +125,8 @@ class CodeGenMatlab(CodeGen):
             content = self.name_convention_dict[content]
         if self.convert_matrix and node.contain_subscript():
             if len(node.subs) == 2:
-                if self.symtable[node.main_id].is_matrix():
-                    if self.symtable[node.main_id].sparse:
+                if self.get_sym_type(node.main_id).is_matrix():
+                    if self.get_sym_type(node.main_id).sparse:
                         content = "{}({}, {})".format(node.main_id, node.subs[0], node.subs[1])
                     else:
                         content = "{}({}, {})".format(node.main_id, node.subs[0], node.subs[1])
@@ -162,7 +162,7 @@ class CodeGenMatlab(CodeGen):
         ret_name = self.get_result_name()
         assign_list = []
         for parameter in self.lhs_list:
-            if parameter in self.symtable and self.symtable[parameter] is not None:
+            if parameter in self.symtable and self.get_sym_type(parameter) is not None:
                 assign_list.append("    {}.{} = {};".format(ret_name, parameter, parameter))
         for parameter in self.local_func_syms:
             assign_list.append("    {}.{} = @{};".format(ret_name, parameter, parameter))
@@ -202,20 +202,20 @@ class CodeGenMatlab(CodeGen):
                 for cur_sym in sym_set:
                     if first:
                         first = False
-                        cur_test_content.append('        for i = 1:{}'.format(self.symtable[cur_sym].size))
+                        cur_test_content.append('        for i = 1:{}'.format(self.get_sym_type(cur_sym).size))
                     dim_dict = new_seq_dim_dict[cur_sym]
-                    defined_content.append('        {} = {{}};'.format(cur_sym, self.symtable[cur_sym].size))
-                    if self.symtable[cur_sym].element_type.is_vector():
+                    defined_content.append('        {} = {{}};'.format(cur_sym, self.get_sym_type(cur_sym).size))
+                    if self.get_sym_type(cur_sym).element_type.is_vector():
                         # determined
-                        if self.symtable[cur_sym].element_type.is_integer_element():
+                        if self.get_sym_type(cur_sym).element_type.is_integer_element():
                             cur_block_content.append('            {} = [{}; randi({}, {})];'.format(cur_sym, cur_sym, rand_int_max, rand_name_dict[dim_dict[1]]))
                         else:
                             cur_block_content.append('            {} = [{}; randn({})];'.format(cur_sym, cur_sym, rand_name_dict[dim_dict[1]]))
                     else:
                         # matrix
-                        row_str = self.symtable[cur_sym].element_type.rows if not self.symtable[cur_sym].element_type.is_dynamic_row() else rand_name_dict[dim_dict[1]]
-                        col_str = self.symtable[cur_sym].element_type.cols if not self.symtable[cur_sym].element_type.is_dynamic_col() else rand_name_dict[dim_dict[2]]
-                        if self.symtable[cur_sym].element_type.is_integer_element():
+                        row_str = self.get_sym_type(cur_sym).element_type.rows if not self.get_sym_type(cur_sym).element_type.is_dynamic_row() else rand_name_dict[dim_dict[1]]
+                        col_str = self.get_sym_type(cur_sym).element_type.cols if not self.get_sym_type(cur_sym).element_type.is_dynamic_col() else rand_name_dict[dim_dict[2]]
+                        if self.get_sym_type(cur_sym).element_type.is_integer_element():
                             cur_block_content.append('            {} = [{}; randi({}, {}, {})];'.format(cur_sym, cur_sym, rand_int_max, row_str, col_str))
                         else:
                             cur_block_content.append('            {} = [{}; randn({}, {})];'.format(cur_sym, cur_sym, row_str, col_str))
@@ -277,19 +277,19 @@ class CodeGenMatlab(CodeGen):
         type_checks = []
         rand_int_max = 10
         for parameter in self.parameters:
-            if self.symtable[parameter].desc:
+            if self.get_sym_type(parameter).desc:
                 show_doc = True
-                doc.append('    :param :{} :{}'.format(parameter, self.symtable[parameter].desc))
-            if self.symtable[parameter].is_sequence():
-                ele_type = self.symtable[parameter].element_type
+                doc.append('    :param :{} :{}'.format(parameter, self.get_sym_type(parameter).desc))
+            if self.get_sym_type(parameter).is_sequence():
+                ele_type = self.get_sym_type(parameter).element_type
                 data_type = ele_type.element_type
                 if ele_type.is_matrix() and ele_type.sparse:
-                    type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.symtable[parameter].size))
+                    type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.get_sym_type(parameter).size))
                     # Alec: I don't understand what this was doing for python,
                     # so I don't know if it would be important for matlab
                     # type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
                     test_content.append(test_indent+'    {} = [];'.format(parameter))
-                    test_content.append(test_indent+'    for i = 1:{}'.format(self.symtable[parameter].size))
+                    test_content.append(test_indent+'    for i = 1:{}'.format(self.get_sym_type(parameter).size))
                     if isinstance(data_type, LaVarType) and data_type.is_scalar() and data_type.is_int:
                         test_content.append(test_indent+
                             '        {}.append(sparse.random({}, {}, dtype=np.integer, density=0.25))'.format(parameter, ele_type.rows, ele_type.cols))
@@ -302,48 +302,48 @@ class CodeGenMatlab(CodeGen):
                     sizes = []
                     if ele_type.is_matrix():
                         if not ele_type.is_dynamic():
-                            type_checks.append('    assert( isequal(size({}), [{}, {}, {}]) );'.format(parameter, self.symtable[parameter].size, ele_type.rows, ele_type.cols))
-                            #size_str = '{}, {}, {}'.format(self.symtable[parameter].size, ele_type.rows, ele_type.cols)
-                            sizes = [self.symtable[parameter].size, ele_type.rows, ele_type.cols]
+                            type_checks.append('    assert( isequal(size({}), [{}, {}, {}]) );'.format(parameter, self.get_sym_type(parameter).size, ele_type.rows, ele_type.cols))
+                            #size_str = '{}, {}, {}'.format(self.get_sym_type(parameter).size, ele_type.rows, ele_type.cols)
+                            sizes = [self.get_sym_type(parameter).size, ele_type.rows, ele_type.cols]
                         else:
                             if parameter not in test_generated_sym_set:
                                 row_str = 'randi({})'.format(rand_int_max) if ele_type.is_dynamic_row() else ele_type.rows
                                 col_str = 'randi({})'.format(rand_int_max) if ele_type.is_dynamic_col() else ele_type.cols
-                                # sizes = [self.symtable[parameter].size, row_str, col_str]
+                                # sizes = [self.get_sym_type(parameter).size, row_str, col_str]
                                 test_content.append('        {} = {{}};'.format(parameter))
-                                test_content.append('        for i = 1:{}'.format(self.symtable[parameter].size))
+                                test_content.append('        for i = 1:{}'.format(self.get_sym_type(parameter).size))
                                 if ele_type.is_integer_element():
                                     test_content.append('            {} = [{}; randi({}, {}, {})];'.format(parameter, parameter, rand_int_max, row_str, col_str))
                                 else:
                                     test_content.append('            {} = [{}; randn({}, {})];'.format(parameter, parameter, row_str, col_str))
                                 test_content.append('        end')
                     elif ele_type.is_vector():
-                        # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.symtable[parameter].size, ele_type.rows))
-                        # size_str = '{}, {}, 1'.format(self.symtable[parameter].size, ele_type.rows)
+                        # type_checks.append('    assert {}.shape == ({}, {}, 1)'.format(parameter, self.get_sym_type(parameter).size, ele_type.rows))
+                        # size_str = '{}, {}, 1'.format(self.get_sym_type(parameter).size, ele_type.rows)
                         if not ele_type.is_dynamic():
-                            type_checks.append('    assert( isequal(size({}), [{}, {}]) );'.format(parameter, self.symtable[parameter].size, ele_type.rows))
-                            #size_str = '{}, {}'.format(self.symtable[parameter].size, ele_type.rows)
-                            sizes = [self.symtable[parameter].size, ele_type.rows]
+                            type_checks.append('    assert( isequal(size({}), [{}, {}]) );'.format(parameter, self.get_sym_type(parameter).size, ele_type.rows))
+                            #size_str = '{}, {}'.format(self.get_sym_type(parameter).size, ele_type.rows)
+                            sizes = [self.get_sym_type(parameter).size, ele_type.rows]
                         else:
                             if parameter not in test_generated_sym_set:
                                 test_content.append('        {} = {{}};'.format(parameter))
-                                test_content.append('        for i = 1:{}'.format(self.symtable[parameter].size))
+                                test_content.append('        for i = 1:{}'.format(self.get_sym_type(parameter).size))
                                 if ele_type.is_integer_element():
                                     test_content.append('            {} = [{}; randi({}, randi({}))];'.format(parameter, parameter, rand_int_max, rand_int_max))
                                 else:
                                     test_content.append('            {} = [{}; randn(randi({}))];'.format(parameter, parameter, rand_int_max))
                                 test_content.append('        end')
-                                # sizes = [self.symtable[parameter].size, 'randi({})'.format(rand_int_max)]
+                                # sizes = [self.get_sym_type(parameter).size, 'randi({})'.format(rand_int_max)]
                     elif ele_type.is_scalar():
                         # Alec: is scalar? but then should
-                        # self.symtable[parameter].size always be 1? What's
+                        # self.get_sym_type(parameter).size always be 1? What's
                         # meant by "scalar" here?
                         #
                         # Force inputs to be treated as column vectors
                         type_declare.append('    {} = reshape({},[],1);'.format(parameter,parameter));
-                        type_checks.append('    assert( size({},1) == {} );'.format(parameter, self.symtable[parameter].size))
-                        #size_str = '{}'.format(self.symtable[parameter].size)
-                        sizes = [self.symtable[parameter].size]
+                        type_checks.append('    assert( size({},1) == {} );'.format(parameter, self.get_sym_type(parameter).size))
+                        #size_str = '{}'.format(self.get_sym_type(parameter).size)
+                        sizes = [self.get_sym_type(parameter).size]
                     if isinstance(data_type, LaVarType):
                         if data_type.is_scalar() and data_type.is_int:
                             #type_declare.append('    {} = np.asarray({}, dtype=np.int)'.format(parameter, parameter))
@@ -351,7 +351,7 @@ class CodeGenMatlab(CodeGen):
                                 test_content.append('        {} = {};'.format(parameter, self.randi_str(rand_int_max,sizes)))
                         elif ele_type.is_set():
                             test_content.append('        {} = {{}};'.format(parameter))
-                            test_content.append('        for i = 1:{}'.format(self.symtable[parameter].size))
+                            test_content.append('        for i = 1:{}'.format(self.get_sym_type(parameter).size))
                             set_content = self.get_set_test_list("{}_tmp".format(parameter),
                                                                  self.generate_var_name("dim"), 'j', ele_type,
                                                                  rand_int_max, '    ')
@@ -367,7 +367,7 @@ class CodeGenMatlab(CodeGen):
                     else:
                         if ele_type.is_function():
                             test_content.append('        {} = {{}};'.format(parameter))
-                            test_content.append('        for i = 1:{}'.format(self.symtable[parameter].size))
+                            test_content.append('        for i = 1:{}'.format(self.get_sym_type(parameter).size))
                             func_content = self.get_func_test_str("{}_f".format(parameter), ele_type, rand_int_max)
                             func_content = ["         {}".format(line) for line in func_content]
                             test_content += func_content
@@ -377,97 +377,97 @@ class CodeGenMatlab(CodeGen):
                         else:
                             #type_declare.append('    {} = np.asarray({}, dtype={})'.format(parameter, parameter, "np.integer" if ele_type.is_integer_element() else "np.float64"))
                             test_content.append('        {} = {};'.format(parameter, self.randn_str(sizes)))
-            elif self.symtable[parameter].is_matrix():
-                element_type = self.symtable[parameter].element_type
+            elif self.get_sym_type(parameter).is_matrix():
+                element_type = self.get_sym_type(parameter).element_type
                 if isinstance(element_type, LaVarType):
-                    if self.symtable[parameter].sparse:
+                    if self.get_sym_type(parameter).sparse:
                         if element_type.is_scalar() and element_type.is_int:
                             test_content.append(test_indent+
-                                '    {} = sparse.random({}, {}, dtype=np.integer, density=0.25)'.format(parameter, self.symtable[parameter].rows,
-                                                                          self.symtable[parameter].cols))
+                                '    {} = sparse.random({}, {}, dtype=np.integer, density=0.25)'.format(parameter, self.get_sym_type(parameter).rows,
+                                                                          self.get_sym_type(parameter).cols))
                         else:
                             test_content.append(test_indent+
-                                '    {} = sparse.random({}, {}, dtype=np.float64, density=0.25)'.format(parameter, self.symtable[parameter].rows,
-                                                                        self.symtable[parameter].cols))
+                                '    {} = sparse.random({}, {}, dtype=np.float64, density=0.25)'.format(parameter, self.get_sym_type(parameter).rows,
+                                                                        self.get_sym_type(parameter).cols))
                     else:
                         # dense
                         if element_type.is_scalar() and element_type.is_int:
                             # Alec: I don't understand what this was doing for python,
                             # so I don't know if it would be important for matlab
                             #type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
-                            test_content.append(test_indent+'    {} = randi({}, {}, {});'.format(parameter, rand_int_max, self.symtable[parameter].rows, self.symtable[parameter].cols))
+                            test_content.append(test_indent+'    {} = randi({}, {}, {});'.format(parameter, rand_int_max, self.get_sym_type(parameter).rows, self.get_sym_type(parameter).cols))
                         else:
                             # Alec: I don't understand what this was doing for python,
                             # so I don't know if it would be important for matlab
                             #type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
-                            test_content.append(test_indent+'    {} = randn({}, {});'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
+                            test_content.append(test_indent+'    {} = randn({}, {});'.format(parameter, self.get_sym_type(parameter).rows, self.get_sym_type(parameter).cols))
                 else:
-                    if self.symtable[parameter].sparse:
+                    if self.get_sym_type(parameter).sparse:
                         test_content.append(test_indent+
-                            '    {} = sparse.random({}, {}, dtype=np.float64, density=0.25)'.format(parameter, self.symtable[parameter].rows,
-                                                                      self.symtable[parameter].cols))
+                            '    {} = sparse.random({}, {}, dtype=np.float64, density=0.25)'.format(parameter, self.get_sym_type(parameter).rows,
+                                                                      self.get_sym_type(parameter).cols))
                     else:
                         type_checks.append('    {} = np.asarray({})'.format(parameter, parameter))
-                        test_content.append(test_indent+'    {} = randn({}, {});'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
-                type_checks.append('    assert( isequal(size({}), [{}, {}]) );'.format(parameter, self.symtable[parameter].rows, self.symtable[parameter].cols))
-            elif self.symtable[parameter].is_vector():
-                element_type = self.symtable[parameter].element_type
+                        test_content.append(test_indent+'    {} = randn({}, {});'.format(parameter, self.get_sym_type(parameter).rows, self.get_sym_type(parameter).cols))
+                type_checks.append('    assert( isequal(size({}), [{}, {}]) );'.format(parameter, self.get_sym_type(parameter).rows, self.get_sym_type(parameter).cols))
+            elif self.get_sym_type(parameter).is_vector():
+                element_type = self.get_sym_type(parameter).element_type
                 type_declare.append('    {} = reshape({},[],1);'.format(parameter, parameter))
                 if isinstance(element_type, LaVarType):
                     if element_type.is_scalar() and element_type.is_int:
                         #type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
-                        test_content.append(test_indent+'    {} = randi({}, {});'.format(parameter, rand_int_max, self.symtable[parameter].rows))
+                        test_content.append(test_indent+'    {} = randi({}, {});'.format(parameter, rand_int_max, self.get_sym_type(parameter).rows))
                     else:
                         #type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
-                        test_content.append(test_indent+'    {} = randn({},1);'.format(parameter, self.symtable[parameter].rows))
+                        test_content.append(test_indent+'    {} = randn({},1);'.format(parameter, self.get_sym_type(parameter).rows))
                 else:
                     #type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
-                    test_content.append(test_indent+'    {} = randn({},1)'.format(parameter, self.symtable[parameter].rows))
-                type_checks.append('    assert( numel({}) == {} );'.format(parameter, self.symtable[parameter].rows))
-                # type_checks.append('    assert {}.shape == ({}, 1)'.format(parameter, self.symtable[parameter].rows))
-                # test_content.append(test_indent+'    {} = {}.reshape(({}, 1))'.format(parameter, parameter, self.symtable[parameter].rows))
-            elif self.symtable[parameter].is_scalar():
+                    test_content.append(test_indent+'    {} = randn({},1)'.format(parameter, self.get_sym_type(parameter).rows))
+                type_checks.append('    assert( numel({}) == {} );'.format(parameter, self.get_sym_type(parameter).rows))
+                # type_checks.append('    assert {}.shape == ({}, 1)'.format(parameter, self.get_sym_type(parameter).rows))
+                # test_content.append(test_indent+'    {} = {}.reshape(({}, 1))'.format(parameter, parameter, self.get_sym_type(parameter).rows))
+            elif self.get_sym_type(parameter).is_scalar():
                 type_checks.append('    assert(numel({}) == 1);'.format(parameter))
-                if self.symtable[parameter].is_int:
+                if self.get_sym_type(parameter).is_int:
                     test_function.append(test_indent+'    {} = randi({});'.format(parameter, rand_int_max))
                 else:
                     test_function.append(test_indent+'    {} = randn();'.format(parameter))
-            elif self.symtable[parameter].is_set():
+            elif self.get_sym_type(parameter).is_set():
                 # turning off this check until deciding how sets will be
                 # stored.
                 #
                 #type_checks.append('    assert isinstance({}, list) and len({}) > 0'.format(parameter, parameter))
-                if self.symtable[parameter].size > 1:
-                    type_checks.append('    assert(size({},2) == {})'.format(parameter, self.symtable[parameter].size))
+                if self.get_sym_type(parameter).size > 1:
+                    type_checks.append('    assert(size({},2) == {})'.format(parameter, self.get_sym_type(parameter).size))
                 test_content += self.get_set_test_list(parameter, self.generate_var_name("dim"), 'i',
-                                                       self.symtable[parameter],
+                                                       self.get_sym_type(parameter),
                                                        rand_int_max, '        ')
-            elif self.symtable[parameter].is_function():
+            elif self.get_sym_type(parameter).is_function():
                 param_list = []
                 dim_definition = []
-                if self.symtable[parameter].ret_template():
-                    for ret_dim in self.symtable[parameter].ret_symbols:
-                        param_i = self.symtable[parameter].template_symbols[ret_dim]
-                        if self.symtable[parameter].params[param_i].is_vector():
+                if self.get_sym_type(parameter).ret_template():
+                    for ret_dim in self.get_sym_type(parameter).ret_symbols:
+                        param_i = self.get_sym_type(parameter).template_symbols[ret_dim]
+                        if self.get_sym_type(parameter).params[param_i].is_vector():
                             dim_definition.append('        {} = {}{}.shape[0]'.format(ret_dim, self.param_name_test, param_i))
-                        elif self.symtable[parameter].params[param_i].is_matrix():
-                            if ret_dim == self.symtable[parameter].params[param_i].rows:
+                        elif self.get_sym_type(parameter).params[param_i].is_matrix():
+                            if ret_dim == self.get_sym_type(parameter).params[param_i].rows:
                                 dim_definition.append('        {} = {}{}.shape[0]'.format(ret_dim, self.param_name_test, param_i))
                             else:
                                 dim_definition.append('        {} = {}{}.shape[1]'.format(ret_dim, self.param_name_test, param_i))
-                for index in range(len(self.symtable[parameter].params)):
+                for index in range(len(self.get_sym_type(parameter).params)):
                     param_list.append('{}{}'.format(self.param_name_test, index))
                 test_content.append(test_indent+"    {} = @{};".format(parameter,parameter+"Func"))
                 test_content.append(test_indent+"    rseed = randi(2^32);")
                 test_content.append(test_indent+"    function tmp =  {}({})".format(parameter+"Func", ', '.join(param_list)))
                 test_content.append(test_indent+"        rng(rseed);")
                 test_content += dim_definition
-                if self.symtable[parameter].ret.is_set():
-                   test_content += self.get_set_test_list('tmp', self.generate_var_name("dim"), 'i', self.symtable[parameter].ret, rand_int_max, '            ')
+                if self.get_sym_type(parameter).ret.is_set():
+                   test_content += self.get_set_test_list('tmp', self.generate_var_name("dim"), 'i', self.get_sym_type(parameter).ret, rand_int_max, '            ')
                 else:
-                   test_content.append(test_indent+"        tmp = {};".format(self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
+                   test_content.append(test_indent+"        tmp = {};".format(self.get_rand_test_str(self.get_sym_type(parameter).ret, rand_int_max)))
                 test_content.append(test_indent+"    end\n")
-                # test_content.append(test_indent+'    {} = lambda {}: {}'.format(parameter, ', '.join(param_list), self.get_rand_test_str(self.symtable[parameter].ret, rand_int_max)))
+                # test_content.append(test_indent+'    {} = lambda {}: {}'.format(parameter, ', '.join(param_list), self.get_rand_test_str(self.get_sym_type(parameter).ret, rand_int_max)))
         return type_checks, doc, test_content, test_function
 
     def visit_block(self, node, **kwargs):
@@ -780,18 +780,18 @@ class CodeGenMatlab(CodeGen):
         pre_list += if_info.content
         # assignment
         if op_type == '=':
-            pre_list.append("    {} = sparse({}(1,:),{}(2,:),{},{},{});\n".format(cur_m_id, index_var, index_var, value_var, self.symtable[cur_m_id].rows,
-                                                          self.symtable[cur_m_id].cols))
+            pre_list.append("    {} = sparse({}(1,:),{}(2,:),{},{},{});\n".format(cur_m_id, index_var, index_var, value_var, self.get_sym_type(cur_m_id).rows,
+                                                          self.get_sym_type(cur_m_id).cols))
         elif op_type == '+=':
             # left_ids = self.get_all_ids(lhs)
             # left_subs = left_ids[1]
             pre_list.append(
                 "    {} = scipy.sparse.coo_matrix(({}+{}.data.tolist(), np.hstack((np.asarray({}).T, np.asarray(({}.row, {}.col))))), shape=({}, {}))\n".format(cur_m_id, value_var, cur_m_id,
                                                                                                     index_var, cur_m_id, cur_m_id,
-                                                                                                    self.symtable[
-                                                                                                        cur_m_id].rows,
-                                                                                                    self.symtable[
-                                                                                                        cur_m_id].cols))
+                                                                                                    self.get_sym_type(
+                                                                                                        cur_m_id).rows,
+                                                                                                    self.get_sym_type(
+                                                                                                        cur_m_id).cols))
 
         return CodeNodeInfo(cur_m_id, pre_list)
 
@@ -942,7 +942,7 @@ class CodeGenMatlab(CodeGen):
                         ret[i][j] = 'reshape({}, [{}, 1])'.format(ret[i][j], node.la_type.item_types[i][j].la_type.rows)
                 all_rows.append('[' + ', '.join(ret[i]) + ']')
             # matrix
-            #if self.symtable[cur_m_id].sparse and self.symtable[cur_m_id].block:
+            #if self.get_sym_type(cur_m_id).sparse and self.get_sym_type(cur_m_id).block:
             #    m_content += 'sparse.bmat([{}])'.format(', '.join(all_rows))
             #    if len(ret) > 1 and len(ret[0]) > 1:
             #        content += '{} = {}\n'.format(cur_m_id, m_content)
@@ -970,8 +970,8 @@ class CodeGenMatlab(CodeGen):
             #    content += '{} = np.vstack(({}))\n'.format(cur_m_id, ', '.join(ret))
         else:
             # dense
-            content += '{} = zeros({}, {});\n'.format(cur_m_id, self.symtable[cur_m_id].rows,
-                                                          self.symtable[cur_m_id].cols)
+            content += '{} = zeros({}, {});\n'.format(cur_m_id, self.get_sym_type(cur_m_id).rows,
+                                                          self.get_sym_type(cur_m_id).cols)
             for i in range(len(ret)):
                 content += "    {}({},:) = [{}];\n".format(cur_m_id, i+1, ', '.join(ret[i]))
         #####################
@@ -1015,7 +1015,7 @@ class CodeGenMatlab(CodeGen):
                     col_content = col_info.content
                 else:
                     col_content = "{}".format(col_info.content)
-                if self.symtable[main_info.content].sparse:
+                if self.get_sym_type(main_info.content).sparse:
                     content = "{}({}, {})".format(main_info.content, row_content, col_content)
                 else:
                     content = "{}({}, {})".format(main_info.content, row_content, col_content)
@@ -1049,13 +1049,13 @@ class CodeGenMatlab(CodeGen):
         if node.slice_matrix:
             if node.row_index is not None:
                 row_content = self.visit(node.row_index, **kwargs).content
-                if self.symtable[main_info.content].is_dynamic():
+                if self.get_sym_type(main_info.content).is_dynamic():
                     content = "{}{{{}}}({}, :)".format(main_info.content, main_index_content, row_content)
                 else:
                     content = "{}({})({}, :)".format(main_info.content, main_index_content, row_content)
             else:
                 col_content = self.visit(node.col_index, **kwargs).content
-                if self.symtable[main_info.content].is_dynamic():
+                if self.get_sym_type(main_info.content).is_dynamic():
                     content = "{}{{{}}}(:, {})".format(main_info.content, main_index_content, col_content)
                 else:
                     content = "{}({})(:, {})".format(main_info.content, main_index_content, col_content)
@@ -1064,19 +1064,19 @@ class CodeGenMatlab(CodeGen):
                 row_content = self.visit(node.row_index, **kwargs).content
                 if node.col_index is not None:
                     col_content = self.visit(node.col_index, **kwargs).content
-                    if self.symtable[main_info.content].is_dynamic():
+                    if self.get_sym_type(main_info.content).is_dynamic():
                         content = "{}{{{}}}({},{})".format(main_info.content, main_index_content, row_content,
                                                         col_content)
                     else:
                         content = "{}({},{},{})".format(main_info.content, main_index_content, row_content,
                                                          col_content)
                 else:
-                    if self.symtable[main_info.content].is_dynamic():
+                    if self.get_sym_type(main_info.content).is_dynamic():
                         content = "{}{{{}}}({})".format(main_info.content, main_index_content, row_content)
                     else:
                         content = "{}({},{})".format(main_info.content, main_index_content, row_content)
             else:
-                if self.symtable[main_info.content].is_dynamic():
+                if self.get_sym_type(main_info.content).is_dynamic():
                     content = "{}{{{}}}".format(main_info.content, main_index_content)
                 else:
                     if node.la_type.is_vector():
@@ -1156,27 +1156,27 @@ class CodeGenMatlab(CodeGen):
             if len(left_subs) == 2: # matrix only
                 sequence = left_ids[0]  # y left_subs[0]
                 sub_strs = left_subs[0] + left_subs[1]
-                if self.symtable[sequence].is_matrix() and self.symtable[sequence].sparse:
+                if self.get_sym_type(sequence).is_matrix() and self.get_sym_type(sequence).sparse:
                     if left_subs[0] == left_subs[1]:  # L_ii
                         content = ""
-                        if self.symtable[sequence].diagonal:
+                        if self.get_sym_type(sequence).diagonal:
                             # add definition
-                            content += "    {} = zeros(2,0);\n".format(self.symtable[sequence].index_var)
-                            content += "    {} = zeros(1,0);\n".format(self.symtable[sequence].value_var)
-                        content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].rows)
+                            content += "    {} = zeros(2,0);\n".format(self.get_sym_type(sequence).index_var)
+                            content += "    {} = zeros(1,0);\n".format(self.get_sym_type(sequence).value_var)
+                        content += "    for {} = 1:{}\n".format(left_subs[0], self.get_sym_type(sequence).rows)
                         if right_info.pre_list:
                             content += self.update_prelist_str(right_info.pre_list, "    ")
                         # https://www.mathworks.com/matlabcentral/answers/392985-why-does-is-take-o-n-2-to-append-elements-in-matlab-when-it-takes-o-n-amortized-time-in-theory#comment_1520858
-                        content += "        {}(1:2,end+1) = [{};{}];\n".format(self.symtable[sequence].index_var, left_subs[0], left_subs[0])
-                        content += "        {}(end+1) = {};\n".format(self.symtable[sequence].value_var, right_info.content)
+                        content += "        {}(1:2,end+1) = [{};{}];\n".format(self.get_sym_type(sequence).index_var, left_subs[0], left_subs[0])
+                        content += "        {}(end+1) = {};\n".format(self.get_sym_type(sequence).value_var, right_info.content)
                         content += "    end\n"
                         content += "    {} = sparse({}(1,:),{}(2,:),{},{},{});\n".format(
                             sequence,
-                            self.symtable[sequence].index_var,
-                            self.symtable[sequence].index_var,
-                            self.symtable[sequence].value_var,
-                            self.symtable[ sequence].rows,
-                            self.symtable[ sequence].cols)
+                            self.get_sym_type(sequence).index_var,
+                            self.get_sym_type(sequence).index_var,
+                            self.get_sym_type(sequence).value_var,
+                            self.get_sym_type( sequence).rows,
+                            self.get_sym_type( sequence).cols)
                     else:  # L_ij
                         if right_info.pre_list:
                             content += "".join(right_info.pre_list)
@@ -1186,7 +1186,7 @@ class CodeGenMatlab(CodeGen):
                 elif left_subs[0] == left_subs[1]:
                     # L_ii
                     content = ""
-                    content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].rows)
+                    content += "    for {} = 1:{}\n".format(left_subs[0], self.get_sym_type(sequence).rows)
                     if right_info.pre_list:
                         content += self.update_prelist_str(right_info.pre_list, "    ")
                     content += "        {}({}, {}) = {};\n".format(sequence, left_subs[0], left_subs[0], right_info.content)
@@ -1197,14 +1197,14 @@ class CodeGenMatlab(CodeGen):
                             var_ids = self.get_all_ids(right_var)
                             right_info.content = right_info.content.replace(right_var, "{}({}, {})".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
                     right_exp += "    {}({}, {}) = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
-                    if self.symtable[sequence].is_matrix():
+                    if self.get_sym_type(sequence).is_matrix():
                         if node.op == '=':
                             # declare
                             content += "    {} = zeros({}, {});\n".format(sequence,
-                                                                              self.symtable[sequence].rows,
-                                                                              self.symtable[sequence].cols)
-                    content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].rows)
-                    content += "        for {} = 1:{}\n".format(left_subs[1], self.symtable[sequence].cols)
+                                                                              self.get_sym_type(sequence).rows,
+                                                                              self.get_sym_type(sequence).cols)
+                    content += "    for {} = 1:{}\n".format(left_subs[0], self.get_sym_type(sequence).rows)
+                    content += "        for {} = 1:{}\n".format(left_subs[1], self.get_sym_type(sequence).cols)
                     if right_info.pre_list:
                         content += self.update_prelist_str(right_info.pre_list, "        ")
                     content += "        " + right_exp + ';\n'
@@ -1228,19 +1228,19 @@ class CodeGenMatlab(CodeGen):
                     left_content = left_content[:-1]
                     right_content = "({})'".format(right_content);
                 right_exp += "    {} = {}".format(left_content,right_content);
-                ele_type = self.symtable[sequence].element_type
-                if self.symtable[sequence].is_sequence():
+                ele_type = self.get_sym_type(sequence).element_type
+                if self.get_sym_type(sequence).is_sequence():
                     if ele_type.is_matrix():
-                        content += "    {} = zeros({}, {}, {});\n".format(sequence, self.symtable[sequence].size, ele_type.rows, ele_type.cols)
+                        content += "    {} = zeros({}, {}, {});\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows, ele_type.cols)
                     elif ele_type.is_vector():
-                        content += "    {} = zeros({}, {});\n".format(sequence, self.symtable[sequence].size, ele_type.rows)
+                        content += "    {} = zeros({}, {});\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows)
                     else:
-                        content += "    {} = zeros({},1);\n".format(sequence, self.symtable[sequence].size)
-                    content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].size)
+                        content += "    {} = zeros({},1);\n".format(sequence, self.get_sym_type(sequence).size)
+                    content += "    for {} = 1:{}\n".format(left_subs[0], self.get_sym_type(sequence).size)
                 else:
                     # vector
-                    content += "    {} = zeros({},1);\n".format(sequence, self.symtable[sequence].rows)
-                    content += "    for {} = 1:{}\n".format(left_subs[0], self.symtable[sequence].rows)
+                    content += "    {} = zeros({},1);\n".format(sequence, self.get_sym_type(sequence).rows)
+                    content += "    for {} = 1:{}\n".format(left_subs[0], self.get_sym_type(sequence).rows)
                 if right_info.pre_list:
                     content += self.update_prelist_str(right_info.pre_list, "    ")
                 content += "    " + right_exp+";\n"

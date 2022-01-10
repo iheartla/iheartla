@@ -190,8 +190,8 @@ class CodeGenEigen(CodeGen):
             content = self.name_convention_dict[content]
         if self.convert_matrix and node.contain_subscript():
             if len(node.subs) == 2:
-                if self.symtable[node.main_id].is_matrix():
-                    if self.symtable[node.main_id].sparse:
+                if self.get_sym_type(node.main_id).is_matrix():
+                    if self.get_sym_type(node.main_id).sparse:
                         content = "{}.coeff({}, {})".format(node.main_id, node.subs[0], node.subs[1])
                     else:
                         content = "{}({}, {})".format(node.main_id, node.subs[0], node.subs[1])
@@ -202,17 +202,17 @@ class CodeGenEigen(CodeGen):
         def_list = []
         # assign_list = []
         for parameter in self.lhs_list:
-            if parameter in self.symtable and self.symtable[parameter] is not None:
+            if parameter in self.symtable and self.get_sym_type(parameter) is not None:
                 # not local func
-                item_list.append("    {} {};".format(self.get_ctype(self.symtable[parameter]), parameter))
-                def_list.append("const {} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
+                item_list.append("    {} {};".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
+                def_list.append("const {} & {}".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
                 # assign_list.append("{}({})".format(parameter, parameter))
         def_struct = ''
         init_struct = ''
         init_var = ''
         if len(self.module_list) > 0:
             for parameter in self.module_syms:
-                item_list.append("    {} {};".format(self.get_ctype(self.symtable[parameter]), parameter))
+                item_list.append("    {} {};".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
             for module in self.module_list:
                 def_struct += self.update_prelist_str([module.frame.struct], '    ')
                 if len(module.params) > 0:
@@ -234,7 +234,7 @@ class CodeGenEigen(CodeGen):
         # print return value in main function
         main_content = ["    {} func_value({});".format(self.get_result_type(), ', '.join(self.parameters))]
         if self.ret_symbol is not None:
-            la_type = self.symtable[self.ret_symbol]
+            la_type = self.get_sym_type(self.ret_symbol)
             if la_type.is_matrix() or la_type.is_vector() or la_type.is_scalar():
                 main_content.append('    std::cout<<"return value:\\n"<<func_value.{}<<std::endl;'.format(self.ret_symbol))
             elif la_type.is_sequence():
@@ -259,25 +259,25 @@ class CodeGenEigen(CodeGen):
         par_des_list = []
         test_par_list = []
         for parameter in self.parameters:
-            main_declaration.append("    {} {};".format(self.get_ctype(self.symtable[parameter]), parameter))
-            par_des_list.append("const {} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
-            test_par_list.append("{} & {}".format(self.get_ctype(self.symtable[parameter]), parameter))
-            if self.symtable[parameter].desc:
+            main_declaration.append("    {} {};".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
+            par_des_list.append("const {} & {}".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
+            test_par_list.append("{} & {}".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
+            if self.get_sym_type(parameter).desc:
                 # show_doc = True
-                doc.append('@param {} {}'.format(parameter, self.symtable[parameter].desc))
-            if self.symtable[parameter].is_sequence():
-                ele_type = self.symtable[parameter].element_type
+                doc.append('@param {} {}'.format(parameter, self.get_sym_type(parameter).desc))
+            if self.get_sym_type(parameter).is_sequence():
+                ele_type = self.get_sym_type(parameter).element_type
                 data_type = ele_type.element_type
                 integer_type = False
                 if parameter not in test_generated_sym_set:
-                    test_content.append('    {}.resize({});'.format(parameter, self.symtable[parameter].size))
-                    test_content.append('    for(int i=0; i<{}; i++){{'.format(self.symtable[parameter].size))
+                    test_content.append('    {}.resize({});'.format(parameter, self.get_sym_type(parameter).size))
+                    test_content.append('    for(int i=0; i<{}; i++){{'.format(self.get_sym_type(parameter).size))
                 if isinstance(data_type, LaVarType):
                     if data_type.is_scalar() and data_type.is_int:
                         integer_type = True
                 if not (parameter in dim_defined_dict and dim_defined_dict[parameter] == 0):
                     type_checks.append(
-                        '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].size))
+                        '    assert( {}.size() == {} );'.format(parameter, self.get_sym_type(parameter).size))
                 if ele_type.is_matrix():
                     if not ele_type.is_dim_constant() and not ele_type.is_dynamic():
                         type_checks.append('    for( const auto& el : {} ) {{'.format(parameter))
@@ -316,54 +316,54 @@ class CodeGenEigen(CodeGen):
                     test_content += set_content
                 if parameter not in test_generated_sym_set:
                     test_content.append('    }')
-            elif self.symtable[parameter].is_matrix():
-                element_type = self.symtable[parameter].element_type
+            elif self.get_sym_type(parameter).is_matrix():
+                element_type = self.get_sym_type(parameter).element_type
                 sparse_view = ''
-                if self.symtable[parameter].sparse:
+                if self.get_sym_type(parameter).sparse:
                     sparse_view = '.sparseView()'
                 if isinstance(element_type, LaVarType):
                     if element_type.is_scalar() and element_type.is_int:
                         test_content.append(
-                            '    {} = Eigen::MatrixXi::Random({}, {}){};'.format(parameter, self.symtable[parameter].rows,
-                                                                               self.symtable[parameter].cols, sparse_view))
+                            '    {} = Eigen::MatrixXi::Random({}, {}){};'.format(parameter, self.get_sym_type(parameter).rows,
+                                                                               self.get_sym_type(parameter).cols, sparse_view))
                     else:
                         test_content.append(
-                            '    {} = Eigen::MatrixXd::Random({}, {}){};'.format(parameter, self.symtable[parameter].rows,
-                                                                               self.symtable[parameter].cols, sparse_view))
+                            '    {} = Eigen::MatrixXd::Random({}, {}){};'.format(parameter, self.get_sym_type(parameter).rows,
+                                                                               self.get_sym_type(parameter).cols, sparse_view))
                 else:
                     test_content.append(
-                        '    {} = Eigen::MatrixXd::Random({}, {}){};'.format(parameter, self.symtable[parameter].rows,
-                                                                           self.symtable[parameter].cols,sparse_view))
-                if not self.symtable[parameter].is_dim_constant() or self.symtable[parameter].sparse:
+                        '    {} = Eigen::MatrixXd::Random({}, {}){};'.format(parameter, self.get_sym_type(parameter).rows,
+                                                                           self.get_sym_type(parameter).cols,sparse_view))
+                if not self.get_sym_type(parameter).is_dim_constant() or self.get_sym_type(parameter).sparse:
                     if not (parameter in dim_defined_dict and dim_defined_dict[parameter] == 0):
                         type_checks.append(
-                            '    assert( {}.rows() == {} );'.format(parameter, self.symtable[parameter].rows))
+                            '    assert( {}.rows() == {} );'.format(parameter, self.get_sym_type(parameter).rows))
                     if not (parameter in dim_defined_dict and dim_defined_dict[parameter] == 1):
                         type_checks.append(
-                            '    assert( {}.cols() == {} );'.format(parameter, self.symtable[parameter].cols))
-            elif self.symtable[parameter].is_vector():
-                element_type = self.symtable[parameter].element_type
+                            '    assert( {}.cols() == {} );'.format(parameter, self.get_sym_type(parameter).cols))
+            elif self.get_sym_type(parameter).is_vector():
+                element_type = self.get_sym_type(parameter).element_type
                 if isinstance(element_type, LaVarType):
                     if element_type.is_scalar() and element_type.is_int:
                         test_content.append(
-                            '    {} = Eigen::VectorXi::Random({});'.format(parameter, self.symtable[parameter].rows))
+                            '    {} = Eigen::VectorXi::Random({});'.format(parameter, self.get_sym_type(parameter).rows))
                     else:
                         test_content.append(
-                            '    {} = Eigen::VectorXd::Random({});'.format(parameter, self.symtable[parameter].rows))
+                            '    {} = Eigen::VectorXd::Random({});'.format(parameter, self.get_sym_type(parameter).rows))
                 else:
                     test_content.append(
-                        '    {} = Eigen::VectorXd::Random({});'.format(parameter, self.symtable[parameter].rows))
-                if not self.symtable[parameter].is_dim_constant():
+                        '    {} = Eigen::VectorXd::Random({});'.format(parameter, self.get_sym_type(parameter).rows))
+                if not self.get_sym_type(parameter).is_dim_constant():
                     if not (parameter in dim_defined_dict and dim_defined_dict[parameter] == 0):
                         type_checks.append(
-                            '    assert( {}.size() == {} );'.format(parameter, self.symtable[parameter].rows))
-            elif self.symtable[parameter].is_scalar():
+                            '    assert( {}.size() == {} );'.format(parameter, self.get_sym_type(parameter).rows))
+            elif self.get_sym_type(parameter).is_scalar():
                 test_function.append('    {} = rand() % {};'.format(parameter, rand_int_max))
-            elif self.symtable[parameter].is_set():
-                test_content += self.get_set_test_list(parameter, self.generate_var_name("dim"), 'i', self.symtable[parameter],
+            elif self.get_sym_type(parameter).is_set():
+                test_content += self.get_set_test_list(parameter, self.generate_var_name("dim"), 'i', self.get_sym_type(parameter),
                                        rand_int_max, '    ')
-            elif self.symtable[parameter].is_function():
-                test_content += self.get_func_test_str(parameter, self.symtable[parameter], rand_int_max)
+            elif self.get_sym_type(parameter).is_function():
+                test_content += self.get_func_test_str(parameter, self.get_sym_type(parameter), rand_int_max)
         return type_checks, doc, test_content, test_function, par_des_list, test_par_list
 
     def gen_dim_content(self, rand_int_max=10):
@@ -454,21 +454,21 @@ class CodeGenEigen(CodeGen):
                 for cur_sym in sym_set:
                     if first:
                         first = False
-                        cur_test_content.append('    for(int i=0; i<{}; i++){{'.format(self.symtable[cur_sym].size))
+                        cur_test_content.append('    for(int i=0; i<{}; i++){{'.format(self.get_sym_type(cur_sym).size))
                     dim_dict = new_seq_dim_dict[cur_sym]
-                    defined_content.append('    {}.resize({});'.format(cur_sym, self.symtable[cur_sym].size))
-                    if self.symtable[cur_sym].element_type.is_vector():
-                        vector_type_str = 'VectorXi' if self.symtable[cur_sym].element_type.is_integer_element() else 'VectorXd'
+                    defined_content.append('    {}.resize({});'.format(cur_sym, self.get_sym_type(cur_sym).size))
+                    if self.get_sym_type(cur_sym).element_type.is_vector():
+                        vector_type_str = 'VectorXi' if self.get_sym_type(cur_sym).element_type.is_integer_element() else 'VectorXd'
                         # determined
                         cur_block_content.append('        {}[i] = Eigen::{}::Random({});'.format(cur_sym, vector_type_str, rand_name_dict[dim_dict[1]]))
                     else:
                         # matrix
                         sparse_view = ''
-                        if self.symtable[cur_sym].element_type.sparse:
+                        if self.get_sym_type(cur_sym).element_type.sparse:
                             sparse_view = '.sparseView()'
-                        matrix_type_str = 'MatrixXi' if self.symtable[cur_sym].element_type.is_integer_element() else 'MatrixXd'
-                        row_str = self.symtable[cur_sym].element_type.rows if not self.symtable[cur_sym].element_type.is_dynamic_row() else rand_name_dict[dim_dict[1]]
-                        col_str = self.symtable[cur_sym].element_type.cols if not self.symtable[cur_sym].element_type.is_dynamic_col() else rand_name_dict[dim_dict[2]]
+                        matrix_type_str = 'MatrixXi' if self.get_sym_type(cur_sym).element_type.is_integer_element() else 'MatrixXd'
+                        row_str = self.get_sym_type(cur_sym).element_type.rows if not self.get_sym_type(cur_sym).element_type.is_dynamic_row() else rand_name_dict[dim_dict[1]]
+                        col_str = self.get_sym_type(cur_sym).element_type.cols if not self.get_sym_type(cur_sym).element_type.is_dynamic_col() else rand_name_dict[dim_dict[2]]
                         cur_block_content.append('        {}[i] = Eigen::{}::Random({}, {}){};'.format(cur_sym, matrix_type_str, row_str, col_str,
                                                                                   sparse_view))
                 cur_test_content = defined_content + cur_test_content + cur_block_content
@@ -526,7 +526,7 @@ class CodeGenEigen(CodeGen):
                         self.visit(node.stmts[index], **kwargs)
                         continue
                     kwargs[LHS] = self.ret_symbol
-                    ret_str = "    " + self.get_ctype(self.symtable[self.ret_symbol]) + " " + self.ret_symbol + ' = '
+                    ret_str = "    " + self.get_ctype(self.get_sym_type(self.ret_symbol)) + " " + self.ret_symbol + ' = '
                     need_semicolon = True
             else:
                 if type(node.stmts[index]).__name__ != 'AssignNode':
@@ -626,7 +626,7 @@ class CodeGenEigen(CodeGen):
                 if self.get_sym_type(target_var[0]).element_type.is_dynamic_row():
                     size_str = "{}.at({}-1).rows()".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
                 else:
-                    size_str = "{}".format(self.symtable[target_var[0]].element_type.rows)
+                    size_str = "{}".format(self.get_sym_type(target_var[0]).element_type.rows)
             else:
                 if self.get_sym_type(target_var[0]).element_type.is_dynamic_col():
                     size_str = "{}.at({}-1).cols()".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
@@ -931,10 +931,10 @@ class CodeGenEigen(CodeGen):
             item_info = self.visit(item, **kwargs)
             ret.append(item_info.content)
             pre_list += item_info.pre_list
-        if self.symtable[cur_m_id].is_dim_constant():
-            content = '    Eigen::Matrix<double, {}, 1> {};\n'.format(self.symtable[cur_m_id].rows, cur_m_id)
+        if self.get_sym_type(cur_m_id).is_dim_constant():
+            content = '    Eigen::Matrix<double, {}, 1> {};\n'.format(self.get_sym_type(cur_m_id).rows, cur_m_id)
         else:
-            content = '    Eigen::VectorXd {}({});\n'.format(cur_m_id, self.symtable[cur_m_id].rows)
+            content = '    Eigen::VectorXd {}({});\n'.format(cur_m_id, self.get_sym_type(cur_m_id).rows)
         content += '    {} << {};\n'.format(cur_m_id, ", ".join(ret))
         pre_list.append(content)
         return CodeNodeInfo(cur_m_id, pre_list=pre_list)
@@ -974,13 +974,13 @@ class CodeGenEigen(CodeGen):
                         else:
                             ret[i][j] = '{}({}, {})'.format(func_name, dims[0], dims[1])
         # matrix
-        if self.symtable[cur_m_id].sparse and self.symtable[cur_m_id].block:
+        if self.get_sym_type(cur_m_id).sparse and self.get_sym_type(cur_m_id).block:
             row_index = 0       # start position for item
             # convert to sparse matrix
             sparse_id = "{}".format(cur_m_id)
             sparse_triplet = "tripletList{}".format(cur_m_id)
             tmp_sparse_name = self.generate_var_name("tmp")
-            content += 'Eigen::SparseMatrix<double> {}({}, {});\n'.format(cur_m_id, self.symtable[cur_m_id].rows, self.symtable[cur_m_id].cols)
+            content += 'Eigen::SparseMatrix<double> {}({}, {});\n'.format(cur_m_id, self.get_sym_type(cur_m_id).rows, self.get_sym_type(cur_m_id).cols)
             content += '    std::vector<Eigen::Triplet<double> > {};\n'.format(sparse_triplet)
             first_item = True
             for i in range(len(ret)):
@@ -1056,12 +1056,12 @@ class CodeGenEigen(CodeGen):
             cur_m_id = sparse_id
         else:
             # dense
-            if self.symtable[cur_m_id].is_dim_constant():
-                content += 'Eigen::Matrix<double, {}, {}> {};\n'.format(self.symtable[cur_m_id].rows,
-                                                                        self.symtable[cur_m_id].cols, cur_m_id)
+            if self.get_sym_type(cur_m_id).is_dim_constant():
+                content += 'Eigen::Matrix<double, {}, {}> {};\n'.format(self.get_sym_type(cur_m_id).rows,
+                                                                        self.get_sym_type(cur_m_id).cols, cur_m_id)
             else:
-                content += 'Eigen::MatrixXd {}({}, {});\n'.format(cur_m_id, self.symtable[cur_m_id].rows,
-                                                                    self.symtable[cur_m_id].cols)
+                content += 'Eigen::MatrixXd {}({}, {});\n'.format(cur_m_id, self.get_sym_type(cur_m_id).rows,
+                                                                    self.get_sym_type(cur_m_id).cols)
             if type_info.la_type:
                 all_rows = []
                 m_content = ""
@@ -1116,7 +1116,7 @@ class CodeGenEigen(CodeGen):
                     col_content = col_info.content
                 else:
                     col_content = "{}-1".format(col_info.content)
-                if self.symtable[main_info.content].sparse:
+                if self.get_sym_type(main_info.content).sparse:
                     content = "{}.coeff({}, {})".format(main_info.content, row_content, col_content)
                 else:
                     content = "{}({}, {})".format(main_info.content, row_content, col_content)
@@ -1236,19 +1236,19 @@ class CodeGenEigen(CodeGen):
             if len(left_subs) == 2:  # matrix only
                 sequence = left_ids[0]  # y left_subs[0]
                 sub_strs = left_subs[0] + left_subs[1]
-                if self.symtable[sequence].is_matrix() and self.symtable[sequence].sparse:
+                if self.get_sym_type(sequence).is_matrix() and self.get_sym_type(sequence).sparse:
                     if left_subs[0] == left_subs[1]:  # L_ii
-                        if self.symtable[sequence].diagonal:
+                        if self.get_sym_type(sequence).diagonal:
                             # add definition
                             if sequence not in self.declared_symbols:
                                 content += "    Eigen::SparseMatrix<double> {}({}, {});\n".format(sequence,
-                                                                                                 self.symtable[sequence].rows,
-                                                                                                 self.symtable[sequence].cols)
+                                                                                                 self.get_sym_type(sequence).rows,
+                                                                                                 self.get_sym_type(sequence).cols)
                                 content += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(sequence)
                             else:
                                 content += '    tripletList_{}.clear();\n'.format(sequence)
                         content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
-                                                                                 self.symtable[sequence].rows,
+                                                                                 self.get_sym_type(sequence).rows,
                                                                                  left_subs[0])
                         if right_info.pre_list:
                             content += self.update_prelist_str(right_info.pre_list, "    ")
@@ -1267,8 +1267,8 @@ class CodeGenEigen(CodeGen):
                         if node.op != '+=':
                             if node.left.get_main_id() not in self.declared_symbols:
                                 def_str = "    Eigen::SparseMatrix<double> {}({}, {});\n".format(node.left.get_main_id(),
-                                                                                                 self.symtable[node.left.get_main_id()].rows,
-                                                                                                 self.symtable[node.left.get_main_id()].cols)
+                                                                                                 self.get_sym_type(node.left.get_main_id()).rows,
+                                                                                                 self.get_sym_type(node.left.get_main_id()).cols)
                                 def_str += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(
                                 node.left.get_main_id())
                             else:
@@ -1279,7 +1279,7 @@ class CodeGenEigen(CodeGen):
                     # L_ii
                     content = ""
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
-                                                                            self.symtable[sequence].rows, left_subs[0])
+                                                                            self.get_sym_type(sequence).rows, left_subs[0])
                     if right_info.pre_list:
                         content += self.update_prelist_str(right_info.pre_list, "    ")
                     content += "        {}({}-1, {}-1) = {};\n".format(sequence, left_subs[0], left_subs[0], right_info.content)
@@ -1291,19 +1291,19 @@ class CodeGenEigen(CodeGen):
                             right_info.content = right_info.content.replace(right_var, "{}({}, {})".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
                     right_exp += "    {}({}-1, {}-1) = {}".format(node.left.get_main_id(), left_subs[0], left_subs[1],
                                                                right_info.content)
-                    if self.symtable[sequence].is_matrix():
+                    if self.get_sym_type(sequence).is_matrix():
                         if node.op == '=':
                             # declare
                             if sequence not in self.declared_symbols:
                                 content += "    Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".format(sequence,
-                                                                                                              self.symtable[
-                                                                                                                  sequence].rows,
-                                                                                                              self.symtable[
-                                                                                                                  sequence].cols)
+                                                                                                              self.get_sym_type(
+                                                                                                                  sequence).rows,
+                                                                                                              self.get_sym_type(
+                                                                                                                  sequence).cols)
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
-                                                                            self.symtable[sequence].rows, left_subs[0])
+                                                                            self.get_sym_type(sequence).rows, left_subs[0])
                     content += "        for( int {}=1; {}<={}; {}++){{\n".format(left_subs[1], left_subs[1],
-                                                                                self.symtable[sequence].cols,
+                                                                                self.get_sym_type(sequence).cols,
                                                                                 left_subs[1])
                     if right_info.pre_list:
                         content += self.update_prelist_str(right_info.pre_list, "        ")
@@ -1320,20 +1320,20 @@ class CodeGenEigen(CodeGen):
                         right_info.content = right_info.content.replace(right_var,
                                                                         "{}.at({})".format(var_ids[0], var_ids[1][0]))
 
-                ele_type = self.symtable[sequence].element_type
+                ele_type = self.get_sym_type(sequence).element_type
                 # definition
-                if self.symtable[sequence].is_sequence():
+                if self.get_sym_type(sequence).is_sequence():
                     right_exp += "    {} = {}".format(left_info.content, right_info.content)
-                    content += "    {} {}({});\n".format(self.get_ctype(self.symtable[sequence]), sequence,
-                                                         self.symtable[sequence].size)
+                    content += "    {} {}({});\n".format(self.get_ctype(self.get_sym_type(sequence)), sequence,
+                                                         self.get_sym_type(sequence).size)
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
-                                                                            self.symtable[sequence].size, left_subs[0])
+                                                                            self.get_sym_type(sequence).size, left_subs[0])
                 else:
                     # vector
                     right_exp += "    {} = {}".format(left_info.content, right_info.content)
-                    content += "    {}.resize({});\n".format(sequence, self.symtable[sequence].rows)
+                    content += "    {}.resize({});\n".format(sequence, self.get_sym_type(sequence).rows)
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
-                                                                            self.symtable[sequence].rows, left_subs[0])
+                                                                            self.get_sym_type(sequence).rows, left_subs[0])
                 if right_info.pre_list:
                     content += self.update_prelist_str(right_info.pre_list, "    ")
                 if not node.right.is_node(IRNodeType.MultiConds):
@@ -1353,7 +1353,7 @@ class CodeGenEigen(CodeGen):
                     op = ' += '
                 type_def = ""
                 if node.left.get_main_id() in self.def_dict and not self.def_dict[node.left.get_main_id()]:
-                    # type_def = self.get_ctype(self.symtable[node.left.get_main_id()]) + ' '
+                    # type_def = self.get_ctype(self.get_sym_type(node.left.get_main_id())) + ' '
                     self.def_dict[node.left.get_main_id()] = True
                 right_exp += '    ' + type_def + node.left.get_main_id() + op + right_info.content + ';'
                 content += right_exp + '\n'
@@ -1462,7 +1462,7 @@ class CodeGenEigen(CodeGen):
                 else:
                     item_content = "{}+1".format(item_info.content)
                 item_list.append(item_content)
-        content = '{}.find({}({})) == {}.end()'.format(right_info.content, self.get_set_item_str(self.symtable[right_info.content]), ', '.join(item_list),right_info.content)
+        content = '{}.find({}({})) == {}.end()'.format(right_info.content, self.get_set_item_str(self.get_sym_type(right_info.content)), ', '.join(item_list),right_info.content)
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_bin_comp(self, node, **kwargs):
