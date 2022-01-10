@@ -133,7 +133,7 @@ assignment::Assignment
     | left:identifier {hspace} op:'+=' {hspace} {separator_with_space} right:right_hand_side {hspace}
     ;
     
-    
+#### name:(func_id | identifier)
 local_func::LocalFunc
     = name:identifier def_p:'(' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')' {hspace} 
     op:'=' {hspace} expr:right_hand_side {{hspace} (WHERE | GIVEN ) {hspace} defs+:where_condition {{hspace} ',' {hspace} defs+:where_condition}}
