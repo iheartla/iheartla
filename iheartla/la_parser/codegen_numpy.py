@@ -961,7 +961,7 @@ class CodeGenNumpy(CodeGen):
                     col_content = col_info.content
                 else:
                     col_content = "{}-1".format(col_info.content)
-                if self.get_sym_type(main_info.content).sparse:
+                if self.get_sym_type(node.main.main_id).sparse:
                     content = "{}.tocsr()[{}, {}]".format(main_info.content, row_content, col_content)
                 else:
                     content = "{}[{}, {}]".format(main_info.content, row_content, col_content)
@@ -1099,7 +1099,7 @@ class CodeGenNumpy(CodeGen):
                             content += self.update_prelist_str(right_info.pre_list, "    ")
                         content += "        {}.append(({} - 1, {} - 1))\n".format(self.get_sym_type(sequence).index_var, left_subs[0], left_subs[0])
                         content += "        {}.append({})\n".format(self.get_sym_type(sequence).value_var, right_info.content)
-                        content += "    {} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(sequence,
+                        content += "    self.{} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(sequence,
                                                                                                             self.get_sym_type(sequence).value_var,
                                                                                                             self.get_sym_type(sequence).index_var,
                                                                                                             self.get_sym_type(
@@ -1118,18 +1118,18 @@ class CodeGenNumpy(CodeGen):
                     content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
                     if right_info.pre_list:
                         content += self.update_prelist_str(right_info.pre_list, "    ")
-                    content += "        {}[{}-1][{}-1] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
+                    content += "        self.{}[{}-1][{}-1] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
                 else:
                     for right_var in type_info.symbols:
                         if sub_strs in right_var:
                             var_ids = self.get_all_ids(right_var)
                             right_info.content = right_info.content.replace(right_var, "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
-                    right_exp += "    {}[{}-1][{}-1] = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
+                    right_exp += "    self.{}[{}-1][{}-1] = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
                     if self.get_sym_type(sequence).is_matrix():
                         if node.op == '=':
                             # declare
                             if sequence not in self.declared_symbols:
-                                content += "    {} = np.zeros(({}, {}))\n".format(sequence,
+                                content += "    self.{} = np.zeros(({}, {}))\n".format(sequence,
                                                                                   self.get_sym_type(sequence).rows,
                                                                                   self.get_sym_type(sequence).cols)
                     content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
@@ -1146,22 +1146,22 @@ class CodeGenNumpy(CodeGen):
                         var_ids = self.get_all_ids(right_var)
                         right_info.content = right_info.content.replace(right_var, "{}[{}]".format(var_ids[0], var_ids[1][0]))
 
-                right_exp += "    {} = {}".format(left_info.content, right_info.content)
+                right_exp += "    self.{} = {}".format(left_info.content, right_info.content)
                 ele_type = self.get_sym_type(sequence).element_type
                 if self.get_sym_type(sequence).is_sequence():
                     if ele_type.is_matrix():
-                        content += "    {} = np.zeros(({}, {}, {}))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows, ele_type.cols)
+                        content += "    self.{} = np.zeros(({}, {}, {}))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows, ele_type.cols)
                     elif ele_type.is_vector():
-                        content += "    {} = np.zeros(({}, {}, ))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows)
+                        content += "    self.{} = np.zeros(({}, {}, ))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows)
                         # content += "    {} = np.zeros(({}, {}, 1))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows)
                     elif ele_type.is_function():
-                        content += "    {} = np.zeros({}, dtype=object)\n".format(sequence, self.get_sym_type(sequence).size)
+                        content += "    self.{} = np.zeros({}, dtype=object)\n".format(sequence, self.get_sym_type(sequence).size)
                     else:
-                        content += "    {} = np.zeros({})\n".format(sequence, self.get_sym_type(sequence).size)
+                        content += "    self.{} = np.zeros({})\n".format(sequence, self.get_sym_type(sequence).size)
                     content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).size)
                 else:
                     # vector
-                    content += "    {} = np.zeros({})\n".format(sequence, self.get_sym_type(sequence).rows)
+                    content += "    self.{} = np.zeros({})\n".format(sequence, self.get_sym_type(sequence).rows)
                     content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
                 if right_info.pre_list:
                     content += self.update_prelist_str(right_info.pre_list, "    ")
