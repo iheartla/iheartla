@@ -380,7 +380,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                         content += expr_dict[raw_str]
                 if block_data.inline_list[cur_index]:
                     content = r"""<span class='equation' code_block="{}">${}{}{}$</span>""".format(
-                        block_data.module_name, code_list[1].pre_str, content, code_list[1].post_str)
+                        block_data.module_name, code_list[-1].pre_str, content, code_list[-1].post_str)
                 else:
                     content = r"""
         <div class='equation' code_block="{}">
