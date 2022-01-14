@@ -328,24 +328,24 @@ function highlightSym(symbol, func_name, isLocalParam=false, localFuncName='', c
   highlightSymInProseAndEquation(asymbol, func_name, isLocalParam, localFuncName, color);
 }
 function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, localFuncName='', color='red'){ 
-  if (isLocalParam) {
-    // console.log(`localFuncName is ${localFuncName}`)
-    var search = "[sym='" + symbol + "'][module='" + func_name + "'][func='" + localFuncName + "']";
-    // console.log(`search str is ${search}`)
-    // only hightlight the same symbols in the local function
-    let matches = document.querySelectorAll("[sym='" + symbol + "'][func='" + func_name + "'][localfunc='" + localFuncName + "']");
-    for (var i = matches.length - 1; i >= 0; i--) {
-      var curClass = matches[i].getAttribute('class');
-      if (curClass !== '') {
-        curClass = `highlight_${color}` + ' ' + curClass;
-      }
-      else{
-        curClass = `highlight_${color}`;
-      }
-      matches[i].setAttribute('class', curClass);
-    }
-    return;
-  }
+  // if (isLocalParam) {
+  //   // console.log(`localFuncName is ${localFuncName}`)
+  //   var search = "[sym='" + symbol + "'][module='" + func_name + "'][func='" + localFuncName + "']";
+  //   // console.log(`search str is ${search}`)
+  //   // only hightlight the same symbols in the local function
+  //   let matches = document.querySelectorAll("[sym='" + symbol + "'][func='" + func_name + "'][localfunc='" + localFuncName + "']");
+  //   for (var i = matches.length - 1; i >= 0; i--) {
+  //     var curClass = matches[i].getAttribute('class');
+  //     if (curClass !== '') {
+  //       curClass = `highlight_${color}` + ' ' + curClass;
+  //     }
+  //     else{
+  //       curClass = `highlight_${color}`;
+  //     }
+  //     matches[i].setAttribute('class', curClass);
+  //   }
+  //   return;
+  // }
   // console.log(`symbol is ${symbol}`);
   // syms in prose and derivations
   let matches = document.querySelectorAll("[sym='" + symbol + "'][module='" + func_name + "']");
