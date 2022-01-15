@@ -166,7 +166,7 @@ class CodeGenMatlab(CodeGen):
                 assign_list.append("    {}.{} = {};".format(ret_name, parameter, parameter))
         for parameter in self.local_func_syms:
             assign_list.append("    {}.{} = @{};".format(ret_name, parameter, parameter))
-        return "\n".join(assign_list) + '\n'
+        return "\n".join(assign_list) + self.get_used_params_content() + '\n'
 
     def get_ret_struct(self):
         return "{}({})".format(self.get_result_name(), ', '.join(self.lhs_list))
@@ -269,6 +269,16 @@ class CodeGenMatlab(CodeGen):
                 else:
                     dim_content += "    {} = size({}, {});\n".format(key, target, target_dict[target]+1)
         return dim_defined_dict, test_content, dim_content
+
+    def get_used_params_content(self):
+        """Copy Parameters that are used in local functions as struct members"""
+        assign_list = []
+        for param in self.used_params:
+            assign_list.append("{}.{} = {};".format(self.get_result_name(), param, param))
+        if len(assign_list) > 0:
+            return '\n' + '    \n'.join(assign_list)
+        else:
+            return ''
 
     def get_param_content(self, test_indent, type_declare, test_generated_sym_set, rand_func_name):
         test_content = []
