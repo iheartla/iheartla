@@ -1,3 +1,5 @@
+var colors =['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink', 
+             'Tomato', 'Orange', 'DarkRed', 'LightCoral', 'Khaki'];
 function drawArrow( startElement, endElement, style='' , color='blue', 
   offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20) {
     // This pseudocode creates an SVG element for each "arrow". As an alternative,
@@ -168,8 +170,8 @@ function parseAllSyms(){
       }); 
   MathJax.typeset();
 }
-function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName=''){
-  content = '';
+function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', color='red'){
+  content = `<span class="highlight_${color}">`
   var found = false;
   var dollarSym = getDollarSym(symbol);
   var otherSym = getOtherSym(symbol);
@@ -186,7 +188,7 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName=''){
               if (curParam == symbol || curParam == otherSym) {
                 type_info = iheartla_data.equations[eq].local_func[localFunc].parameters[param].type_info;
                 found = true;
-                content = dollarSym + " is a local parameter as a " + getSymTypeInfo(type_info);
+                content += dollarSym + "</span>"+ " is a local parameter as a " + getSymTypeInfo(type_info);
               }
             }
           }
@@ -203,10 +205,10 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName=''){
             type_info = iheartla_data.equations[eq].parameters[param].type_info;
             found = true;
             if(iheartla_data.equations[eq].parameters[param].desc){
-              content = dollarSym + " is " + iheartla_data.equations[eq].parameters[param].desc + ", the type is " + getSymTypeInfo(type_info);
+              content += dollarSym + "</span>"+ " is " + iheartla_data.equations[eq].parameters[param].desc + ", the type is " + getSymTypeInfo(type_info);
             }
             else{
-              content = dollarSym + " is a parameter as a " + getSymTypeInfo(type_info);
+              content += dollarSym + "</span>"+ " is a parameter as a " + getSymTypeInfo(type_info);
             }
             break;
           }
@@ -219,7 +221,7 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName=''){
             iheartla_data.equations[eq].definition[param].sym == otherSym){
             type_info = iheartla_data.equations[eq].definition[param].type_info;
             found = true;
-            content = dollarSym + " is defined as a " + getSymTypeInfo(type_info);
+            content += dollarSym + "</span>"+ " is defined as a " + getSymTypeInfo(type_info);
             break;
           }
         }
@@ -231,7 +233,7 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName=''){
   }
   if (content == '') {
     content = `${dollarSym} is a parameter in local function`;
-  }
+  } 
   return content;
 }
 function showSymArrow(tag, symbol, func_name, type='def', color='blue', 
@@ -408,6 +410,7 @@ function onClickProse(tag, symbol, func_name, type='def') {
         trigger: 'click', 
         theme: 'light',
         showOnCreate: true,
+        allowHTML: true,
         onShow(instance) {
           // closeOtherTips();
           return true;  
@@ -441,12 +444,13 @@ function onClickSymbol(tag, symbol, func_name, type='def', isLocalParam=false, l
     // d3.selectAll("mjx-mi[sym='" + symbol + "']").style("class", "highlight");
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
-        content: getSymInfo(symbol, func_name, isLocalParam, localFuncName),
+        content: getSymInfo(symbol, func_name, isLocalParam, localFuncName, color),
         placement: 'bottom',
         animation: 'fade',
         trigger: 'click', 
         theme: 'light',
         showOnCreate: true,
+        allowHTML: true,
         onShow(instance) {
           // closeOtherTips();
           return true;  
@@ -461,7 +465,7 @@ function onClickSymbol(tag, symbol, func_name, type='def', isLocalParam=false, l
   // console.log("clicked: " + symbol + " in " + func_name); 
 };
 function getEquationContent(func_name, sym_list, isLocalFunc=false, localFunc='', localParams=[]){
-  content = "This equation has " + sym_list.length + " symbols:<br>";
+  content = `<span class="highlight_grey">This equation has ${sym_list.length} symbols:</span><br>`;
   for (var i = sym_list.length - 1; i >= 0; i--) {
     sym = sym_list[i];
     sym = sym.replace("\\","\\\\\\\\"); 
@@ -469,7 +473,7 @@ function getEquationContent(func_name, sym_list, isLocalFunc=false, localFunc=''
     if (localParams.includes(sym)) {
       isLocalParam = true;
     }
-    content += getSymInfo(sym_list[i], func_name, isLocalParam, localFunc) + '<br>';
+    content += getSymInfo(sym_list[i], func_name, isLocalParam, localFunc, colors[i]) + '<br>';
   }
   return content;
 }
@@ -492,7 +496,6 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
   document.body.classList.add("opShallow");
   //
   function showAllArrows(){
-    var colors =['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink', 'Tomato', 'Orange', 'DarkRed', 'LightCoral', 'Khaki'];
     var offsetVerticalX = 0;
     var offsetStartY = 0;
     var offsetEndY = 0;

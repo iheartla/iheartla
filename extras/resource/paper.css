@@ -54,7 +54,7 @@ body
   background-color: #B8D0E8;
   /*transition: opacity 4000ms;*/
   /*will-change: opacity;*/
-  text-align: center;
+  text-align: left;
   /*transition-duration: 2.2s;*/
   /*transition: width 2s;*/
   /*color: white;*/
@@ -142,6 +142,9 @@ a.detail{
 }
 .highlight_red {
  color: red; 
+}
+.highlight_grey {
+ color: #666666; 
 }
 .highlight_DarkRed {
  color: #8B0000; 
