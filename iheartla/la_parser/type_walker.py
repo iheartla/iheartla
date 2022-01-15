@@ -176,6 +176,7 @@ class TypeWalker(NodeWalker):
         self.desc_dict = {}        # comment for parameters
         self.import_module_list = []
         self.main_param = ParamsData()
+        self.used_params = []
 
     def get_cur_param_data(self):
         # either main where/given block or local function block
@@ -495,6 +496,7 @@ class TypeWalker(NodeWalker):
         #
         self.saved_func_data_dict = copy.deepcopy(self.func_data_dict)
         self.saved_local_func_dict = copy.deepcopy(self.local_func_dict)
+        self.saved_used_params = copy.deepcopy(self.used_params)
 
     def pop_environment(self):
         self.symtable = self.saved_symtable
@@ -505,6 +507,7 @@ class TypeWalker(NodeWalker):
         self.lhs_sub_dict = self.saved_lhs_sub_dict
         self.local_func_dict = self.saved_local_func_dict
         self.func_data_dict = self.saved_func_data_dict
+        self.used_params = self.saved_used_params
         self.local_func_parsing = False
         self.is_param_block = False
 
@@ -2132,6 +2135,8 @@ class TypeWalker(NodeWalker):
         value = self.filter_symbol(value)
         #
         ir_node = IdNode(value, parse_info=node.parseinfo)
+        if self.local_func_parsing and value in self.parameters and value not in self.used_params:
+            self.used_params.append(value)
         node_type = self.get_sym_type(value)
         # if value in self.symtable:
         #     node_type = self.symtable[value]

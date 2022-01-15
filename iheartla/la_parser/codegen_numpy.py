@@ -136,6 +136,7 @@ class CodeGenNumpy(CodeGen):
                     init_var += "        self.{} = _{}.{}\n".format(sym, module.name, sym)
         content = ["class {}:".format(self.get_result_type()),
                    "    def __init__(self,{}".format(def_str[3:]),
+                   self.get_used_params_content(),
                    ]
         end_str = self.local_func_def + def_struct
         if end_str != '':
@@ -196,6 +197,13 @@ class CodeGenNumpy(CodeGen):
                 cur_test_content = defined_content + cur_test_content + cur_block_content
                 test_content += cur_test_content
         return visited_sym_set, test_content
+
+    def get_used_params_content(self):
+        """Copy Parameters that are used in local functions as struct members"""
+        assign_list = []
+        for param in self.used_params:
+            assign_list.append("        self.{} = {}\n".format(param, param))
+        return ''.join(assign_list)
 
     def get_param_content(self, main_content, type_declare, test_generated_sym_set, dim_defined_dict):
         type_checks = []

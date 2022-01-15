@@ -85,6 +85,7 @@ class IRVisitor(object):
             '𝟶': 'mono_0', '𝟷': 'mono_1', '𝟸': 'mono_2', '𝟹': 'mono_3', '𝟺': 'mono_4', '𝟻': 'mono_5', '𝟼': 'mono_6', '𝟽': 'mono_7', '𝟾': 'mono_8', '𝟿': 'mono_9',
             }
         self.declared_symbols = set()
+        self.used_params = []
 
     def add_name_conventions(self, con_dict):
         for key, value in con_dict.items():
@@ -241,6 +242,7 @@ class IRVisitor(object):
             self.logger.info("dim_seq_set: {}".format(param_data.dim_seq_set, hex(id(param_data.dim_seq_set))))
             self.logger.info("same_dim_list: {}".format(param_data.same_dim_list, hex(id(param_data.same_dim_list))))
             self.logger.info("sub_name_dict: {}\n".format(param_data.sub_name_dict, hex(id(param_data.sub_name_dict))))
+        self.logger.info("used params:{}".format(self.used_params))
 
     def init_type(self, type_walker, func_name):
         # self.symtable = type_walker.symtable
@@ -257,6 +259,7 @@ class IRVisitor(object):
         self.la_content = type_walker.la_content
         self.local_func_syms = type_walker.local_func_syms
         self.local_func_dict = type_walker.local_func_dict
+        self.used_params = type_walker.used_params
         if func_name is not None:
             self.func_name = func_name
         else:

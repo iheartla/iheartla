@@ -198,6 +198,7 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo(content)
 
     def get_struct_definition(self, def_str, stat_str):
+        init_content, assign_content = self.get_used_params_content()
         item_list = []
         def_list = []
         # assign_list = []
@@ -223,12 +224,13 @@ class CodeGenEigen(CodeGen):
                     init_var += "        {} = _{}.{};\n".format(sym, module.name, sym)
         content = ["struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),
+                   init_content,
                    self.local_func_def,
                    # "    {}({})".format(self.get_result_type(), ',\n               '.join(def_list)),
                    # "    : {}".format(',\n    '.join(assign_list)),
                    # "    {}",
                    ]
-        return "\n".join(content) + def_struct + def_str + init_struct + init_var + stat_str + '    }\n' + "};\n"
+        return "\n".join(content) + def_struct + def_str + init_struct + assign_content + init_var + stat_str + '    }\n' + "};\n"
 
     def get_ret_display(self):
         # print return value in main function
@@ -248,6 +250,15 @@ class CodeGenEigen(CodeGen):
 
     def get_ret_struct(self):
         return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list + self.local_func_syms))
+
+    def get_used_params_content(self):
+        """Copy Parameters that are used in local functions as struct members"""
+        init_list = []
+        assign_list = []
+        for param in self.used_params:
+            init_list.append("    {} {};".format(self.get_ctype(self.get_sym_type(param)), param))
+            assign_list.append("        this->{} = {};\n".format(param, param))
+        return '\n'.join(init_list), ''.join(assign_list)
 
     def get_param_content(self, main_declaration, test_generated_sym_set, dim_defined_dict):
         type_checks = []
