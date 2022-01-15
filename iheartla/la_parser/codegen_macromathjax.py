@@ -13,7 +13,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
                 re.MULTILINE | re.DOTALL | re.VERBOSE
             )
         self.UNICODE_RE = re.compile(
-                dedent(r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(?P<sub>[\u2080-\u2089]+)'''),
+                dedent(r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(?P<sub>[\u2080-\u2089,]+)'''),
                 re.MULTILINE | re.DOTALL | re.VERBOSE
             )
 
