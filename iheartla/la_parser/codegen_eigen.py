@@ -1335,8 +1335,7 @@ class CodeGenEigen(CodeGen):
                 # definition
                 if self.get_sym_type(sequence).is_sequence():
                     right_exp += "    {} = {}".format(left_info.content, right_info.content)
-                    content += "    {} {}({});\n".format(self.get_ctype(self.get_sym_type(sequence)), sequence,
-                                                         self.get_sym_type(sequence).size)
+                    content += "    {}.resize({});\n".format(sequence, self.get_sym_type(sequence).size)
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                             self.get_sym_type(sequence).size, left_subs[0])
                 else:
