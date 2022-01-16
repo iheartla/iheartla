@@ -108,6 +108,7 @@ function parseSym(tag, symbol){
         showOnCreate: true,
         allowHTML: true,
         interactive: true,
+        arrow: tippy.roundArrow.repeat(2),
         onShow(instance) {
           return true;  
         },
@@ -163,6 +164,7 @@ function parseAllSyms(){
         trigger: 'click', 
         allowHTML: true,
         interactive: true,
+        arrow: tippy.roundArrow.repeat(2),
         onShown(instance) {
           MathJax.typeset();
           return true;  
@@ -411,6 +413,7 @@ function onClickProse(tag, symbol, func_name, type='def') {
         theme: 'light',
         showOnCreate: true,
         allowHTML: true,
+        arrow: tippy.roundArrow.repeat(2),
         onShow(instance) {
           // closeOtherTips();
           return true;  
@@ -555,6 +558,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
           trigger: 'click', 
           showOnCreate: true,
           allowHTML: true,
+          arrow: tippy.roundArrow.repeat(2),
           // interactive: true,
           onShow(instance) { 
             tag.setAttribute('class', 'highlight_fake');

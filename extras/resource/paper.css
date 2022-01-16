@@ -50,6 +50,11 @@ body
     /*background-color: #B8D0E8;*/
   }
 }
+
+/* About the tips
+https://atomiks.github.io/tippyjs/v6/themes/
+https://github.com/atomiks/tippyjs/issues/720
+*/
 /* The rectangle border */
 .tippy-box {
   background-color: white;
@@ -65,8 +70,8 @@ body
 /* The fill */
 .tippy-box[data-theme~='light'] > .tippy-svg-arrow > svg:last-child {
   fill: white;
-}
-
+  bottom: 15.4px;
+} 
 .eqInfo {
   /*background-color: #B8D0E8;*/
   /*transition: opacity 4000ms;*/
