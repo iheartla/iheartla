@@ -210,6 +210,8 @@ MathJax = {
     <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/svg-arrow.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/border.css" />
     <script src="{resource_dir}/resource/d3.min.js"></script>
     <script src="{resource_dir}/resource/svg.min.js"></script>
     <script type="text/javascript" src='{resource_dir}/resource/paper.js'></script>

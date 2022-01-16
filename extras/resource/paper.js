@@ -451,6 +451,7 @@ function onClickSymbol(tag, symbol, func_name, type='def', isLocalParam=false, l
         theme: 'light',
         showOnCreate: true,
         allowHTML: true,
+        arrow: tippy.roundArrow.repeat(2),
         onShow(instance) {
           // closeOtherTips();
           return true;  

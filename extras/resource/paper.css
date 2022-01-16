@@ -42,16 +42,33 @@ body
   from {
     opacity: 0;
     max-height: 0;
-    background-color: #B8D0E8;
+    /*background-color: #B8D0E8;*/
   }
   to {
     opacity: 1;
     max-height: 1000px;
-    background-color: #B8D0E8;
+    /*background-color: #B8D0E8;*/
   }
 }
+/* The rectangle border */
+.tippy-box {
+  background-color: white;
+  color: black;
+  border: 1px solid #666666;
+}
+
+/* The triangle border */
+.tippy-box[data-theme~='light'] > .tippy-svg-arrow > svg:first-child {
+  fill: #666666;
+}
+
+/* The fill */
+.tippy-box[data-theme~='light'] > .tippy-svg-arrow > svg:last-child {
+  fill: white;
+}
+
 .eqInfo {
-  background-color: #B8D0E8;
+  /*background-color: #B8D0E8;*/
   /*transition: opacity 4000ms;*/
   /*will-change: opacity;*/
   text-align: left;
@@ -76,7 +93,7 @@ body
   opacity: 1;
 }
 .eqDivHighlight{
-  background-color: #B8D0E8;
+  /*background-color: #B8D0E8;*/
 }
 .eqNormal{
   transform: none;
