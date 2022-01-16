@@ -162,6 +162,7 @@ function parseAllSyms(){
         placement: 'bottom',
         animation: 'fade',
         trigger: 'click', 
+        theme: 'light',
         allowHTML: true,
         interactive: true,
         arrow: tippy.roundArrow.repeat(2),
