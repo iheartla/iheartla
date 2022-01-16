@@ -182,8 +182,8 @@ function parseAllSyms(){
       }); 
   MathJax.typeset();
 }
-function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', color='red'){
-  content = `<span class="highlight_${color}">`
+function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', color='red', attrs=''){
+  content = `<span class="highlight_${color}" sym="${symbol}" ${attrs}>`
   var found = false;
   var dollarSym = getDollarSym(symbol);
   var otherSym = getOtherSym(symbol);
@@ -487,7 +487,7 @@ function getEquationContent(func_name, sym_list, isLocalFunc=false, localFunc=''
     if (localParams.includes(sym)) {
       isLocalParam = true;
     }
-    content += getSymInfo(sym_list[i], func_name, isLocalParam, localFunc, colors[i]) + '<br>';
+    content += getSymInfo(sym_list[i], func_name, isLocalParam, localFunc, colors[i], `case='equationInfo'`) + '<br>';
   }
   return content;
 }
@@ -524,7 +524,9 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
       highlightSym(sym, func_name, isLocalParam, localFunc, colors[i]);
       // sym = sym.replace("\\","\\\\");
       sym = sym.replace("\\","\\\\\\\\"); 
-      var symTag = tag.querySelector("[case='equation'][sym='" + sym + "']");
+      // var parentTag = ;
+      var parentTag = tag.closest("div");
+      var symTag = parentTag.querySelector("[case='equationInfo'][sym='" + sym + "']");
       const matches = document.querySelectorAll("[case='equation'][sym='" + sym + "']");
       // console.log(`tag is ${tag}, sym is ${sym}, symTag is ${symTag}, matches is ${matches}`);
       offsetVerticalX += 5;
