@@ -37,17 +37,26 @@ function drawArrow( startElement, endElement, style='' , color='blue',
     // var offsetEndX = 20;
     // var endPointX = endCenterX - bodyRect.x + marginLeft;
     // var endPointY = endCenterY - bodyRect.y + marginTop;
-    var endPointX = bodyWidth+marginLeft-offsetEndX;
+    // var endPointX = bodyWidth+marginLeft-offsetEndX;
+    var endPointX = marginLeft+offsetEndX;
     var endPointY = endCenterY - bodyRect.y + marginTop;
     // console.log(`marginTop is ${marginTop}`);
     // svg.path(`M${startCenterX - bodyRect.x + marginLeft} ${startCenterY - bodyRect.y + marginTop} 
-    svg.path(`M${bodyWidth+marginLeft-offsetEndX} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
-      L ${bodyWidth+marginLeft+offsetVerticalX} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
-      L ${bodyWidth+marginLeft+offsetVerticalX} ${endCenterY - bodyRect.y + marginTop+offsetEndY} 
+    // svg.path(`M${bodyWidth+marginLeft-offsetEndX} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
+    //   L ${bodyWidth+marginLeft+offsetVerticalX} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
+    //   L ${bodyWidth+marginLeft+offsetVerticalX} ${endCenterY - bodyRect.y + marginTop+offsetEndY} 
+    //   L ${endPointX} ${endPointY+offsetEndY} 
+    //   L ${endPointX+arrowSize} ${endPointY-arrowSize+offsetEndY} 
+    //   L ${endPointX} ${endPointY+offsetEndY} 
+    //   L ${endPointX+arrowSize} ${endPointY+arrowSize+offsetEndY} 
+    //   `).attr({fill: 'white', 'fill-opacity': 0, stroke: color, 'stroke-width': 2, 'stroke-linejoin': 'bevel', 'stroke-linecap': 'square'})
+    svg.path(`M${(marginLeft+offsetEndX)} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
+      L ${(marginLeft-offsetVerticalX)} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
+      L ${(marginLeft-offsetVerticalX)} ${endCenterY - bodyRect.y + marginTop+offsetEndY} 
       L ${endPointX} ${endPointY+offsetEndY} 
-      L ${endPointX+arrowSize} ${endPointY-arrowSize+offsetEndY} 
+      L ${endPointX-arrowSize} ${endPointY-arrowSize+offsetEndY} 
       L ${endPointX} ${endPointY+offsetEndY} 
-      L ${endPointX+arrowSize} ${endPointY+arrowSize+offsetEndY} 
+      L ${endPointX-arrowSize} ${endPointY+arrowSize+offsetEndY} 
       `).attr({fill: 'white', 'fill-opacity': 0, stroke: color, 'stroke-width': 2, 'stroke-linejoin': 'bevel', 'stroke-linecap': 'square'})
     svg.attr('offset', parseInt(style.marginLeft, 10))
     document.querySelector(".arrow").style.marginLeft = "0px"
