@@ -554,7 +554,13 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
     const symDiv = document.createElement("div");
     symDiv.innerHTML = content
     // content = `<div class='euqation_highlight'> ${content} </div>`
-    div.appendChild(symDiv)
+    div.appendChild(symDiv);
+    var topLine = document.createElement("HR");
+    div.prepend(topLine)
+    topLine.className = "eqInfo";
+    var bottomLine = document.createElement("HR");
+    bottomLine.className = "eqInfo";
+    div.appendChild(bottomLine)
     symDiv.classList.add("eqInfo");
     MathJax.typeset();
     // console.log(`div is ${div.innerHTML}`);
