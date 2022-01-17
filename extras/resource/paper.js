@@ -5,6 +5,7 @@ var centerXDict = {};
 var centerYDict = {};
 
 function getXOffset(){
+  // vertical left boundary
   var base = 10; // starting point
   var res = 0;
   var distance = 5; 
@@ -23,7 +24,7 @@ function getXOffset(){
 
 function getYOffset(base){ 
   var res = 0;
-  var distance = 1; 
+  var distance = 3; 
   if (base in centerYDict) { 
     cur_index = centerYDict[base];
     if (cur_index % 2 == 1) {
@@ -72,9 +73,6 @@ function drawArrow( startElement, endElement, style='' , color='blue',
     var endRect = endElement.getBoundingClientRect();
     var endCenterX = endRect.x + endRect.width/2;
     var endCenterY = endRect.y + endRect.height/2;
-
-    // var ff = getOffset(startCenterX, false); 
-    // var ff1 = getOffset(startCenterY, true); 
 
     offsetStartY = getYOffset(startCenterY); 
     offsetEndY = getYOffset(offsetEndY);
@@ -325,11 +323,17 @@ function showArrow(tag, symbol, func_name, type='def', color='blue',
     // Point to usage
     const matches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "'][type='use']");
     // console.log(`matches length:${matches.length}`);
+    var cur_list = [];
     for (var i = matches.length - 1; i >= 0; i--) {
       // matches[i].setAttribute('class', `highlight_${color}`);
       // console.log(`${i} is ${matches[i].innerHTML}`)
       if (matches[i] !== tag && matches[i].tagName.startsWith("MJX")) {
-        drawArrow(tag, matches[i],'',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX, isEquation, startEq, endEq);
+        var curRect = matches[i].getBoundingClientRect();
+        var curCenterY = curRect.y + curRect.height/2;
+        if (!(cur_list.includes(curCenterY))) {
+          cur_list.push(curCenterY);
+          drawArrow(tag, matches[i],'',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX, isEquation, startEq, endEq);
+        } 
       }
     }
     // prose label
@@ -349,11 +353,17 @@ function showArrow(tag, symbol, func_name, type='def', color='blue',
     // console.log(`matches.length is ${matches.length}`)
     if (matches !== 'undefined' && matches.length !== 0) {
       // console.log(`${matches.length} prose`)
+      var cur_list = [];
       for (var i = matches.length - 1; i >= 0; i--) {
         // console.log(`${i} is ${matches[i].innerHTML}, tag is ${matches[i].tagName}`)
         // matches[i].setAttribute('class', `highlight_${color}`);
         if (matches[i] !== tag && matches[i].tagName.startsWith("MJX")) {
-          drawArrow(matches[i], tag, '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX, isEquation, startEq, endEq);
+          var curRect = matches[i].getBoundingClientRect();
+          var curCenterY = curRect.y + curRect.height/2; 
+          if (!(cur_list.includes(curCenterY))) {
+            cur_list.push(curCenterY);
+            drawArrow(matches[i], tag, '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX, isEquation, startEq, endEq);
+          } 
         }
       }
     }
@@ -367,11 +377,17 @@ function showArrow(tag, symbol, func_name, type='def', color='blue',
       // const prose = document.querySelectorAll("[sym='" + new_sym + "'][module='"+ func_name + "'][type='def']");
       // console.log(`prose.length is ${prose.length}`);
       if (prose !== 'undefined') {
+        var cur_list = [];
         for (var i = prose.length - 1; i >= 0; i--) {
           // console.log(`${i} is ${prose[i].innerHTML}, tag is ${prose[i].tagName}, parentElement:${prose[i].parentElement.innerHTML}`)
           if (prose[i] !== tag ) {
             // prose[i].setAttribute('class', `highlight_${color}`);
-            drawArrow(prose[i], tag, '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX, isEquation, startEq, endEq);
+            var curRect = prose[i].getBoundingClientRect();
+            var curCenterY = curRect.y + curRect.height/2; 
+            if (!(cur_list.includes(curCenterY))) {
+                cur_list.push(curCenterY);
+                drawArrow(prose[i], tag, '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX, isEquation, startEq, endEq);
+            } 
           }
         }
       }
