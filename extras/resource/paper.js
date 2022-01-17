@@ -110,10 +110,10 @@ function parseSym(tag, symbol){
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
         content: getGlossarySymInfo(symbol),
-        placement: 'left',
+        placement: 'right',
         animation: 'fade',
         trigger: 'click', 
-        // theme: 'material',
+        theme: 'light',
         showOnCreate: true,
         allowHTML: true,
         interactive: true,
@@ -131,9 +131,10 @@ function parseSym(tag, symbol){
 function adjsutGlossaryBtn(){
   var body = document.querySelector("body");
   var style = window.getComputedStyle(body);
+  var curWidth = parseInt(style.width, 10)
   var curOffset = parseInt(style.marginLeft, 10)
   var glossaryBtn = document.querySelector(".glossary");
-  glossaryBtn.style.left = `${curOffset-30}px`;
+  glossaryBtn.style.left = `${curOffset + curWidth +  30}px`;
 }
 function onLoad(){
   parseAllSyms();
@@ -168,7 +169,7 @@ function parseAllSyms(){
   // console.log(document.querySelector("#glossary"));
   tippy(document.querySelector("#glossary"), {
         content: info,
-        placement: 'bottom',
+        placement: 'right',
         animation: 'fade',
         trigger: 'click', 
         theme: 'light',
@@ -561,7 +562,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
     var bottomLine = document.createElement("HR");
     bottomLine.className = "eqInfo";
     div.appendChild(bottomLine)
-    symDiv.classList.add("eqInfo");
+    symDiv.classList.add("eqInfoDiv");
     MathJax.typeset();
     // console.log(`div is ${div.innerHTML}`);
     setTimeout(showAllArrows, 500);
@@ -614,7 +615,7 @@ function resetEqScale(argument) {
   }
 }
 function removeAddedDiv() {
-  const matches = document.querySelectorAll(".eqInfo");
+  const matches = document.querySelectorAll("[class*=eqInfo]");
   for (var i = matches.length - 1; i >= 0; i--) {
     matches[i].parentNode.removeChild(matches[i]);
   }

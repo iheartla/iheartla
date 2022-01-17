@@ -72,7 +72,7 @@ https://github.com/atomiks/tippyjs/issues/720
   fill: white;
   bottom: 15.4px;
 } 
-.eqInfo {
+.eqInfoDiv {
   /*background-color: #B8D0E8;*/
   /*transition: opacity 4000ms;*/
   /*will-change: opacity;*/
@@ -82,6 +82,7 @@ https://github.com/atomiks/tippyjs/issues/720
   /*color: white;*/
   animation-name: eqShowup;
   animation-duration: 0.5s;
+  margin-left: 20px;
   /*opacity: 1;*/
 }
 .opShallow{
