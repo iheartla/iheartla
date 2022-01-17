@@ -6,7 +6,7 @@ var centerYDict = {};
 
 function getXOffset(){
   // vertical left boundary
-  var base = 10; // starting point
+  var base = 20; // starting point
   var res = 0;
   var distance = 5; 
   if (base in centerXDict) { 
@@ -43,6 +43,25 @@ function getYOffset(base){
   return res;
 }
 
+
+var offsetEndXDict = {};
+function getOffsetEndX(base){ 
+  var base = 0; // starting point
+  var res = 0;
+  var distance = 5; 
+  if (base in offsetEndXDict) { 
+    cur_index = offsetEndXDict[base];
+    res = cur_index * distance;
+    offsetEndXDict[base] = cur_index + 1;
+  }
+  else{
+    offsetEndXDict[base] = 1;
+    res = 0;
+  } 
+  // console.log(`getXOffset, res:${res}`);
+  return base - res;
+}
+
 function drawArrow( startElement, endElement, style='' , color='blue', 
   offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20, isEquation=false,
   startEq=false, endEq=false) { 
@@ -76,9 +95,8 @@ function drawArrow( startElement, endElement, style='' , color='blue',
 
     offsetStartY = getYOffset(startCenterY); 
     offsetEndY = getYOffset(offsetEndY);
-
     offsetVerticalX = getXOffset(); 
-
+    offsetEndX = getOffsetEndX(startCenterY);
 
     var marginLeft = parseInt(style.marginLeft, 10)
     var bodyWidth = parseInt(style.width, 10)
@@ -89,7 +107,6 @@ function drawArrow( startElement, endElement, style='' , color='blue',
     // var endPointX = endCenterX - bodyRect.x + marginLeft;
     // var endPointY = endCenterY - bodyRect.y + marginTop;
     // var endPointX = bodyWidth+marginLeft-offsetEndX;
-    var endPointX = marginLeft+offsetEndX;
     var endPointY = endCenterY - bodyRect.y + marginTop;
     // console.log(`marginTop is ${marginTop}`);
     // svg.path(`M${startCenterX - bodyRect.x + marginLeft} ${startCenterY - bodyRect.y + marginTop} 
@@ -101,14 +118,18 @@ function drawArrow( startElement, endElement, style='' , color='blue',
     //   L ${endPointX} ${endPointY+offsetEndY} 
     //   L ${endPointX+arrowSize} ${endPointY+arrowSize+offsetEndY} 
     //   `).attr({fill: 'white', 'fill-opacity': 0, stroke: color, 'stroke-width': 2, 'stroke-linejoin': 'bevel', 'stroke-linecap': 'square'})
+    offsetEndX = 0; 
     if (startEq) { 
-      offsetEndX = 20; }
-    else if (endEq){ 
-      endPointX = marginLeft + 20; 
+      offsetEndX = 20; 
     }
+    if (endEq){ 
+      offsetEndX = 20; 
+    }
+    var endPointX = marginLeft+offsetEndX; 
     svg.path(`M${(marginLeft+offsetEndX)} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
       L ${(marginLeft-offsetVerticalX)} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
       L ${(marginLeft-offsetVerticalX)} ${endCenterY - bodyRect.y + marginTop+offsetEndY} 
+
       L ${endPointX} ${endPointY+offsetEndY} 
       L ${endPointX-arrowSize} ${endPointY-arrowSize+offsetEndY} 
       L ${endPointX} ${endPointY+offsetEndY} 
@@ -629,6 +650,10 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
         else{
           endEq = true;
         } 
+        if (!div) {
+          startEq = false;
+          endEq = false;
+        }
         showSymArrow(symTag, sym_list[i], func_name, t, colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX, true, startEq, endEq);
       }
     }
@@ -684,6 +709,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
 function resetState(){
   centerXDict = {};
   centerYDict = {};
+  offsetEndXDict = {};
   // console.log(`reset all`);
   document.body.classList.remove("opShallow");
   removeArrows();
