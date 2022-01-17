@@ -509,6 +509,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
   content = getEquationContent(func_name, sym_list, isLocalFunc, localFunc, localParams);
   // Scale equation and append new div
   document.body.classList.add("opShallow");
+  var div = tag.closest("div.equation");
   //
   function showAllArrows(){
     var offsetVerticalX = 0;
@@ -525,9 +526,15 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
       highlightSym(sym, func_name, isLocalParam, localFunc, colors[i]);
       // sym = sym.replace("\\","\\\\");
       sym = sym.replace("\\","\\\\\\\\"); 
-      // var parentTag = ;
-      var parentTag = tag.closest("div");
-      var symTag = parentTag.querySelector("[case='equationInfo'][sym='" + sym + "']");
+      var symTag;
+      if (div) {
+        var parentTag = tag.closest("div");
+        symTag = parentTag.querySelector("[case='equationInfo'][sym='" + sym + "']");
+      }
+      else{
+        // inline
+        symTag = tag.querySelector("[case='equation'][sym='" + sym + "']");
+      }
       const matches = document.querySelectorAll("[case='equation'][sym='" + sym + "']");
       // console.log(`tag is ${tag}, sym is ${sym}, symTag is ${symTag}, matches is ${matches}`);
       offsetVerticalX += 5;
@@ -544,8 +551,6 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
       }
     }
   }
-
-  var div = tag.closest("div");
   if (div) {
     // not inline
     var mjx = tag.closest("mjx-container");
@@ -575,6 +580,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
           placement: 'bottom',
           animation: 'fade',
           trigger: 'click', 
+          theme: 'light',
           showOnCreate: true,
           allowHTML: true,
           arrow: tippy.roundArrow.repeat(2),
