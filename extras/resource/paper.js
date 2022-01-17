@@ -1,7 +1,50 @@
 var colors =['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink', 
              'Tomato', 'Orange', 'DarkRed', 'LightCoral', 'Khaki'];
+
+var centerXDict = {};
+var centerYDict = {};
+
+function getXOffset(){
+  var base = 10; // starting point
+  var res = 0;
+  var distance = 5; 
+  if (base in centerXDict) { 
+    cur_index = centerXDict[base];
+    res = cur_index * distance;
+    centerXDict[base] = cur_index + 1;
+  }
+  else{
+    centerXDict[base] = 1;
+    res = 0;
+  } 
+  // console.log(`getXOffset, res:${res}`);
+  return base + res;
+}
+
+function getYOffset(base){ 
+  var res = 0;
+  var distance = 1; 
+  if (base in centerYDict) { 
+    cur_index = centerYDict[base];
+    if (cur_index % 2 == 1) {
+      res = parseInt(cur_index / 2, 10) * distance;
+    }
+    else{
+      res = -parseInt(cur_index / 2, 10) * distance;
+    }
+    centerYDict[base] = cur_index + 1;
+  }
+  else{
+    centerYDict[base] = 2;
+    res = 0;
+  } 
+  // console.log(`getYOffset, res:${res}`);
+  return res;
+}
+
 function drawArrow( startElement, endElement, style='' , color='blue', 
-  offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20) {
+  offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20, isEquation=false,
+  startEq=false, endEq=false) { 
     // This pseudocode creates an SVG element for each "arrow". As an alternative,
     // we could always have one SVG element present in the document
     // with absolute position 0,0 (or along the right side of the window)
@@ -29,6 +72,16 @@ function drawArrow( startElement, endElement, style='' , color='blue',
     var endRect = endElement.getBoundingClientRect();
     var endCenterX = endRect.x + endRect.width/2;
     var endCenterY = endRect.y + endRect.height/2;
+
+    // var ff = getOffset(startCenterX, false); 
+    // var ff1 = getOffset(startCenterY, true); 
+
+    offsetStartY = getYOffset(startCenterY); 
+    offsetEndY = getYOffset(offsetEndY);
+
+    offsetVerticalX = getXOffset(); 
+
+
     var marginLeft = parseInt(style.marginLeft, 10)
     var bodyWidth = parseInt(style.width, 10)
     var marginTop = parseInt(style.marginTop, 10)
@@ -50,6 +103,11 @@ function drawArrow( startElement, endElement, style='' , color='blue',
     //   L ${endPointX} ${endPointY+offsetEndY} 
     //   L ${endPointX+arrowSize} ${endPointY+arrowSize+offsetEndY} 
     //   `).attr({fill: 'white', 'fill-opacity': 0, stroke: color, 'stroke-width': 2, 'stroke-linejoin': 'bevel', 'stroke-linecap': 'square'})
+    if (startEq) { 
+      offsetEndX = 20; }
+    else if (endEq){ 
+      endPointX = marginLeft + 20; 
+    }
     svg.path(`M${(marginLeft+offsetEndX)} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
       L ${(marginLeft-offsetVerticalX)} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
       L ${(marginLeft-offsetVerticalX)} ${endCenterY - bodyRect.y + marginTop+offsetEndY} 
@@ -250,17 +308,19 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', col
   return content;
 }
 function showSymArrow(tag, symbol, func_name, type='def', color='blue', 
-  offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20){
+  offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20, isEquation=false,
+  startEq=false, endEq=false){ 
   symbol = symbol.replace("\\","\\\\\\\\");
   // console.log(`In showSymArrow, symbol:${symbol}`);
-  showArrow(tag, symbol, func_name, type, color, offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+  showArrow(tag, symbol, func_name, type, color, offsetVerticalX, offsetStartY, offsetEndY, offsetEndX, isEquation, startEq, endEq);
   let asymbol = getOtherSym(symbol);
-  showArrow(tag, asymbol, func_name, type, color, offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+  showArrow(tag, asymbol, func_name, type, color, offsetVerticalX, offsetStartY, offsetEndY, offsetEndX, isEquation, startEq, endEq);
 }
 function showArrow(tag, symbol, func_name, type='def', color='blue', 
-  offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20){
+  offsetVerticalX=0, offsetStartY=0, offsetEndY=0, offsetEndX=20, isEquation=false,
+  startEq=false, endEq=false){
   // tag.setAttribute('class', `highlight_${color}`);
-  // console.log(`In showArrow, sym:${symbol}`);
+  // console.log(`In showArrow, sym:${symbol}`); 
   if (type === 'def' ) {
     // Point to usage
     const matches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "'][type='use']");
@@ -269,7 +329,7 @@ function showArrow(tag, symbol, func_name, type='def', color='blue',
       // matches[i].setAttribute('class', `highlight_${color}`);
       // console.log(`${i} is ${matches[i].innerHTML}`)
       if (matches[i] !== tag && matches[i].tagName.startsWith("MJX")) {
-        drawArrow(tag, matches[i],'',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+        drawArrow(tag, matches[i],'',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX, isEquation, startEq, endEq);
       }
     }
     // prose label
@@ -293,7 +353,7 @@ function showArrow(tag, symbol, func_name, type='def', color='blue',
         // console.log(`${i} is ${matches[i].innerHTML}, tag is ${matches[i].tagName}`)
         // matches[i].setAttribute('class', `highlight_${color}`);
         if (matches[i] !== tag && matches[i].tagName.startsWith("MJX")) {
-          drawArrow(matches[i], tag, '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+          drawArrow(matches[i], tag, '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX, isEquation, startEq, endEq);
         }
       }
     }
@@ -311,7 +371,7 @@ function showArrow(tag, symbol, func_name, type='def', color='blue',
           // console.log(`${i} is ${prose[i].innerHTML}, tag is ${prose[i].tagName}, parentElement:${prose[i].parentElement.innerHTML}`)
           if (prose[i] !== tag ) {
             // prose[i].setAttribute('class', `highlight_${color}`);
-            drawArrow(prose[i], tag, '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+            drawArrow(prose[i], tag, '',color,offsetVerticalX, offsetStartY, offsetEndY, offsetEndX, isEquation, startEq, endEq);
           }
         }
       }
@@ -544,10 +604,16 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
       if (symTag !== null){
         // console.log(`symTag is ${symTag}`);
         var t = 'use';
+        var startEq = false;
+        var endEq = false;
         if (i === sym_list.length - 1) {
           t = 'def';
+          startEq = true;
         }
-        showSymArrow(symTag, sym_list[i], func_name, t, colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX);
+        else{
+          endEq = true;
+        } 
+        showSymArrow(symTag, sym_list[i], func_name, t, colors[i], offsetVerticalX, offsetStartY, offsetEndY, offsetEndX, true, startEq, endEq);
       }
     }
   }
@@ -600,6 +666,8 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
   }
 };
 function resetState(){
+  centerXDict = {};
+  centerYDict = {};
   // console.log(`reset all`);
   document.body.classList.remove("opShallow");
   removeArrows();
