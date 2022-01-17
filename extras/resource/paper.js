@@ -638,15 +638,18 @@ function removeSymHighlight(){
   // ^= matches "start with", *= matches "contains"
   const matches = document.querySelectorAll("[class*=highlight]");
   for (var i = matches.length - 1; i >= 0; i--) {
-    var cur = matches[i].getAttribute('class');
-    const classArray = cur.split(' ');
-    let new_classes = [];
-    for (var j = classArray.length - 1; j >= 0; j--) {
-      if (classArray[j] !== ' ' && ! classArray[j].includes('highlight')) {
-        new_classes.push(classArray[j]);
+    var spanTag = matches[i].closest("div.tippy-box");
+    if(spanTag == null){
+      var cur = matches[i].getAttribute('class');
+      const classArray = cur.split(' ');
+      let new_classes = [];
+      for (var j = classArray.length - 1; j >= 0; j--) {
+        if (classArray[j] !== ' ' && ! classArray[j].includes('highlight')) {
+          new_classes.push(classArray[j]);
+        }
       }
+      matches[i].setAttribute('class', new_classes.join(' '));
     }
-    matches[i].setAttribute('class', new_classes.join(' '));
   }
 }
 function closeOtherTips(){
