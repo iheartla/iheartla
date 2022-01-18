@@ -4,6 +4,26 @@ var colors =['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink',
 var centerXDict = {};
 var centerYDict = {};
 
+function alreadyExist(dict, content){
+  var threshold = 2;   // different symbols from the same line
+  for (const [key, value] of Object.entries(centerYDict)) {
+    if (Math.abs(key - content) < threshold) {
+      // console.log(`Math.abs(key - content): ${Math.abs(key - content)}`)
+      return true;
+    }
+  }
+  return false;
+}
+function getDictValue(dict, content){
+  var threshold = 2;   // different symbols from the same line
+  for (const [key, value] of Object.entries(centerYDict)) {
+    if (Math.abs(key - content) < threshold) { 
+      return value;
+    }
+  }
+  return 0;
+}
+
 function getXOffset(){
   // vertical left boundary
   var base = 20; // starting point
@@ -25,8 +45,8 @@ function getXOffset(){
 function getYOffset(base){ 
   var res = 0;
   var distance = 3; 
-  if (base in centerYDict) { 
-    cur_index = centerYDict[base];
+  if (alreadyExist(centerYDict, base)) { 
+    cur_index = getDictValue(centerYDict, base);
     if (cur_index % 2 == 1) {
       res = parseInt(cur_index / 2, 10) * distance;
     }
@@ -38,8 +58,11 @@ function getYOffset(base){
   else{
     centerYDict[base] = 2;
     res = 0;
-  } 
-  // console.log(`getYOffset, res:${res}`);
+  }
+  // for (const [key, value] of Object.entries(centerYDict)) {
+  //   console.log(key, value);
+  // }
+  // console.log(`centerYDict, centerYDict:${centerYDict}`);
   return res;
 }
 
