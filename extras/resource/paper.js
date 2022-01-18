@@ -85,6 +85,17 @@ function getOffsetEndX(center){
   return base - res;
 }
 
+function getElementCenterY(element){
+  // the height of different mjx-container tags in the same line should be the same
+  var container = element.closest("mjx-container");
+  if (container) {
+    var containerRect = container.getBoundingClientRect();
+    return containerRect.y + containerRect.height/2;
+  }
+  var eleRect = element.getBoundingClientRect();
+  return eleRect.y + eleRect.height/2;
+}
+
 function drawArrow(startElement, endElement, style='', color='blue', 
   isEquation=false, startEq=false, endEq=false) { 
     // This pseudocode creates an SVG element for each "arrow". As an alternative,
@@ -110,10 +121,10 @@ function drawArrow(startElement, endElement, style='', color='blue',
     var bodyRect = body.getBoundingClientRect();
     var startRect = startElement.getBoundingClientRect();
     var startCenterX = startRect.x + startRect.width/2;
-    var startCenterY = startRect.y + startRect.height/2;
+    var startCenterY = getElementCenterY(startElement);
     var endRect = endElement.getBoundingClientRect();
     var endCenterX = endRect.x + endRect.width/2;
-    var endCenterY = endRect.y + endRect.height/2;
+    var endCenterY = getElementCenterY(endElement);
 
     var offsetStartY = getYOffset(startCenterY); 
     var offsetEndY = getYOffset(endCenterY);
