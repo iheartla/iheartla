@@ -45,10 +45,10 @@ def handle_abstract(text, dict):
         text = text.replace("<p>{}</p>".format(abstract), '')
     return text, res_abstract
 
-def handle_sections(text):
+def handle_sections(text, dict):
     map_dict = {}
     order_dict = {}
-    def get_section_list(content, index=1, pre_str=''):
+    def get_section_list(content, index=1, pre_str='', cur_base_list=[]):
         tag = ''
         sec_list = []
         title_list = []
@@ -57,7 +57,10 @@ def handle_sections(text):
             re.DOTALL | re.VERBOSE
         )
         end_list = []
-        cur_order = 1
+        cur_base = 1
+        if len(cur_base_list) > 0:
+            cur_base = cur_base_list.pop(0)
+        cur_order = cur_base
         for m in SECTION_RE.finditer(content):
             # print("id:{}".format(m.group('id')))
             id_str = m.group('id')
@@ -73,21 +76,26 @@ def handle_sections(text):
         end_list.append(len(content))
         if len(sec_list) > 0:
             tag += "<ul>"
+            pre_cur_index = cur_base
             for cur_index in range(len(sec_list)):
                 tag += "<li><a href='#{}'>{}</a>".format(sec_list[cur_index], title_list[cur_index])
                 cur_content = content[end_list[cur_index]:end_list[cur_index+1]]
                 if pre_str == '':
-                    new_pre = cur_index+1
+                    new_pre = pre_cur_index
                 else:
-                    new_pre = "{}.{}".format(pre_str, cur_index+1)
-                cur_list, cur_tag = get_section_list(cur_content, index+1, new_pre)
+                    new_pre = "{}.{}".format(pre_str, pre_cur_index)
+                cur_list, cur_tag = get_section_list(cur_content, index+1, new_pre, cur_base_list)
                 if len(cur_list) > 0:
                     map_dict[sec_list[cur_index]] = cur_list
                     tag += cur_tag
                 tag += "</li>"
+                pre_cur_index += 1
             tag += "</ul>"
         return sec_list, tag
-    res_list, res_tag = get_section_list(text, 1, pre_str='')
+    section_base_list = []
+    if 'sectionBase' in dict:
+        section_base_list = dict['sectionBase']
+    res_list, res_tag = get_section_list(text, 1, pre_str='', cur_base_list=section_base_list)
     # print("res_list:{}, map_dict:{}".format(res_list, map_dict))
     # print("res_tag:{}".format(res_tag))
     text = "{}\n{}".format(res_tag, text)
@@ -150,7 +158,7 @@ if __name__ == '__main__':
                                    bibtex_file='{}/{}.bib'.format(os.path.dirname(Path(paper_file)), os.path.splitext(base_name)[0]))
             body = md.convert(content)
             body, abstract = handle_abstract(body, md.Meta)
-            body = handle_sections(body)
+            body = handle_sections(body, md.Meta)
             body = abstract + body
             body = handle_title(body, md.Meta)
             equation_json = read_from_file("{}/data.json".format(os.path.dirname(Path(paper_file))))
