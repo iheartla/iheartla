@@ -71,7 +71,7 @@ var offsetEndXDict = {};
 function getOffsetEndX(center){ 
   var base = 0; // starting point
   var res = 0;
-  var distance = 5; 
+  var distance = 7; 
   if (center in offsetEndXDict) { 
     cur_index = offsetEndXDict[center];
     res = cur_index * distance;
@@ -130,7 +130,7 @@ function drawArrow(startElement, endElement, style='', color='blue',
     var offsetEndY = getYOffset(endCenterY);
     var offsetVerticalX = getXOffset(); 
 
-    var offsetEndX = getOffsetEndX(endCenterY);
+    var offsetEndX = getOffsetEndX(endCenterY); 
 
     var marginLeft = parseInt(style.marginLeft, 10)
     var bodyWidth = parseInt(style.width, 10)
@@ -156,11 +156,11 @@ function drawArrow(startElement, endElement, style='', color='blue',
     if (startEq) { 
       offsetStartX = 20; 
     }
+    var extraOffset = 0;
     if (endEq){ 
-      offsetEndX = 20; 
+      extraOffset = 20; 
     }
-    // console.log(`offsetEndX is ${offsetEndX}`)
-    var endPointX = marginLeft+offsetEndX; 
+    var endPointX = marginLeft+offsetEndX+extraOffset;  
     svg.path(`M${(marginLeft+offsetStartX)} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
       L ${(marginLeft-offsetVerticalX)} ${startCenterY - bodyRect.y + marginTop+offsetStartY} 
       L ${(marginLeft-offsetVerticalX)} ${endCenterY - bodyRect.y + marginTop+offsetEndY} 
