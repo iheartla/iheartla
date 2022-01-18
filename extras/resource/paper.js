@@ -263,7 +263,7 @@ function parseAllSyms(){
     k = keys[i];
     diff_list = sym_data[k];
     diff_length = diff_list.length;
-    ck = k.replace("\\","\\\\");
+    ck = k.replaceAll("\\","\\\\");
     if (diff_length > 1) {
       content = `<span onclick="parseSym(this, '${ck}');"><span class="clickable_sym">${k}</span>: ${diff_length} different types</span><br>`;
     }
@@ -363,7 +363,7 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', col
 }
 function showSymArrow(tag, symbol, func_name, type='def', color='blue', 
   isEquation=false, startEq=false, endEq=false){ 
-  symbol = symbol.replace("\\","\\\\\\\\");
+  symbol = symbol.replaceAll("\\","\\\\\\\\");
   // console.log(`In showSymArrow, symbol:${symbol}`);
   showArrow(tag, symbol, func_name, type, color, isEquation, startEq, endEq);
   let asymbol = getOtherSym(symbol);
@@ -466,7 +466,7 @@ function getDollarSym(symbol){
   }
 }
 function highlightSym(symbol, func_name, isLocalParam=false, localFuncName='', color='red'){ 
-  symbol = symbol.replace("\\","\\\\\\\\"); 
+  symbol = symbol.replaceAll("\\","\\\\\\\\"); 
   // console.log(`In highlightSym, symbol: ${symbol}`)
   highlightSymInProseAndEquation(symbol, func_name, isLocalParam, localFuncName, color);
   let asymbol = getOtherSym(symbol);
@@ -505,7 +505,7 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
     matches[i].setAttribute('class', curClass);
   }
   // span prose 
-  let new_sym = symbol.replace("\\\\\\\\", "\\"); 
+  let new_sym = symbol.replaceAll("\\\\\\\\", "\\"); 
   let spanMatches = document.querySelectorAll("span[sym*='" + new_sym + "'][context='" + func_name + "']");
   for (var i = spanMatches.length - 1; i >= 0; i--) {
     var curClass = spanMatches[i].getAttribute('class');
@@ -613,7 +613,7 @@ function getEquationContent(func_name, sym_list, isLocalFunc=false, localFunc=''
   content = `<span class="highlight_grey">This equation has ${sym_list.length} symbols:</span><br>`;
   for (var i = sym_list.length - 1; i >= 0; i--) {
     sym = sym_list[i];
-    sym = sym.replace("\\","\\\\\\\\"); 
+    sym = sym.replaceAll("\\","\\\\\\\\"); 
     var isLocalParam = false;
     if (localParams.includes(sym)) {
       isLocalParam = true;
@@ -651,7 +651,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
       }
       highlightSym(sym, func_name, isLocalParam, localFunc, colors[i]);
       // sym = sym.replace("\\","\\\\");
-      sym = sym.replace("\\","\\\\\\\\"); 
+      sym = sym.replaceAll("\\","\\\\\\\\"); 
       var symTag;
       if (div) {
         var parentTag = tag.closest("div");
