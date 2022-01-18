@@ -152,7 +152,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         """
         Escape special characters in regular expression
         """
-        escape_list = ['\\', '(', ')', '{', '}', '^', '+', '-', '.', '*']
+        escape_list = ['\\', '(', ')', '{', '}', '^', '+', '-', '.', '*', ' ']
         for es in escape_list:
             sym = sym.replace(es, '\\' + es)
         return sym
