@@ -505,12 +505,12 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
     matches[i].setAttribute('class', curClass);
   }
   // span prose 
-  let new_sym = symbol.replaceAll("\\\\\\\\", "\\"); 
-  let spanMatches = document.querySelectorAll("span[sym*='" + new_sym + "'][context='" + func_name + "']");
+  let new_sym = symbol.replaceAll("\\\\\\\\", "\\\\"); 
+  let spanMatches = document.querySelectorAll("span[sym*='" + symbol + "'][context='" + func_name + "']"); 
   for (var i = spanMatches.length - 1; i >= 0; i--) {
     var curClass = spanMatches[i].getAttribute('class');
     var curSym = spanMatches[i].getAttribute('sym');
-    const curSymList = curSym.split(' ');
+    const curSymList = curSym.split('$'); 
     // console.log(`i is ${i}, curSymList is ${curSymList} `)
     for (var j = curSymList.length - 1; j >= 0; j--) {
       if (curSymList[j] === new_sym) {
