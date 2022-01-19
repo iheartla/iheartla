@@ -5,6 +5,7 @@ from ..postprocessors import Postprocessor
 from .codehilite import CodeHilite, CodeHiliteExtension, parse_hl_lines
 from .attr_list import get_attrs, AttrListExtension
 from ..util import parseBoolValue
+import copy
 import regex as re
 from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
 from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file
@@ -436,6 +437,13 @@ class IheartlaBlockPreprocessor(Preprocessor):
         text, equation_dict, replace_dict = self.handle_iheartla_code(text)
         text, span_dict = self.handle_span_code(text)
         equation_dict = self.merge_desc(equation_dict, span_dict)
+        self.process_metadata(equation_dict)
+        text = self.handle_context_post(text, equation_dict)
+        # for k, v in replace_dict.items():
+        #     text = text.replace(k, v)
+        return text.split("\n")
+
+    def process_metadata(self, equation_dict):
         # Save sym data to file
         sym_dict = self.get_sym_dict(equation_dict.values())
         sym_json = self.get_sym_json(sym_dict)
@@ -447,11 +455,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         json_content = '''{{"equations":[{}] }}'''.format(','.join(json_list))
         if json_content is not None:
             save_to_file(json_content, "{}/data.json".format(self.md.path))
-
-        text = self.handle_context_post(text, equation_dict)
-        # for k, v in replace_dict.items():
-        #     text = text.replace(k, v)
-        return text.split("\n")
+        #
 
     def merge_desc(self, equation_dict, span_dict):
         for context, cur_dict in span_dict.items():
@@ -521,12 +525,14 @@ class IheartlaBlockPreprocessor(Preprocessor):
 
     def get_sym_dict(self, equation_list):
         sym_dict = {}
+        node_dict = {}
         for equation in equation_list:
             # parameters
             for param in equation.parameters:
                 sym_eq_data = SymEquationData(la_type=equation.symtable[param], desc=equation.desc_dict.get(param), module_name=equation.name, is_defined=False)
                 if param not in sym_dict:
                     sym_data = SymData(param, sym_equation_list=[sym_eq_data])
+                    node_dict[param] = SymNode(param)
                     sym_dict[param] = sym_data
                 else:
                     sym_data = sym_dict[param]
@@ -536,6 +542,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 sym_eq_data = SymEquationData(la_type=equation.symtable[definition], desc=equation.desc_dict.get(definition), module_name=equation.name, is_defined=True)
                 if definition not in sym_dict:
                     sym_data = SymData(definition, sym_equation_list=[sym_eq_data])
+                    node_dict[definition] = SymNode(definition)
                     sym_dict[definition] = sym_data
                 else:
                     sym_data = sym_dict[definition]
@@ -545,10 +552,18 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 sym_eq_data = SymEquationData(la_type=equation.symtable[func_name], desc=equation.desc_dict.get(func_name), module_name=equation.name, is_defined=True)
                 if func_name not in sym_dict:
                     sym_data = SymData(func_name, sym_equation_list=[sym_eq_data])
+                    node_dict[func_name] = SymNode(func_name)
                     sym_dict[func_name] = sym_data
                 else:
                     sym_data = sym_dict[func_name]
                     sym_data.sym_equation_list.append(sym_eq_data)
+            # expr list
+            for sym_list in equation.expr_dict.values():
+                # print("cur sym_list:{}".format(sym_list))
+                for sym in sym_list:
+                    node_dict[sym].add_neighbors(sym_list)
+                # for k, v in node_dict.items():
+                #     print("k:{}, v.name:{}, v.neighbors:{}".format(k, v.name, v.neighbors))
         # sec loop
         for equation in equation_list:
             # dependence
@@ -576,10 +591,25 @@ class IheartlaBlockPreprocessor(Preprocessor):
         return content
 
 
+class SymNode(object):
+    def __init__(self, name='', neighbors=None):
+        if neighbors is None:
+            neighbors = []
+        self.name = name
+        self.neighbors = neighbors
+
+    def add_neighbors(self, neighbors=None):
+        if neighbors is None:
+            neighbors = []
+        for nei in neighbors:
+            if (nei != self.name) and (nei not in self.neighbors):
+                self.neighbors.append(nei)
 
 
 class SymEquationData(object):
-    def __init__(self, la_type, desc=None, module_name='', is_defined=True, used_list=[]):
+    def __init__(self, la_type, desc=None, module_name='', is_defined=True, used_list=None):
+        if used_list is None:
+            used_list = []
         self.la_type = la_type            # type info
         self.desc = desc                  # comment for the symbol
         self.module_name = module_name    # the module that defines the symbol
@@ -588,7 +618,9 @@ class SymEquationData(object):
 
 
 class SymData(object):
-    def __init__(self, sym_name, sym_equation_list=[]):
+    def __init__(self, sym_name, sym_equation_list=None):
+        if sym_equation_list is None:
+            sym_equation_list = []
         self.sym_name = sym_name
         self.sym_equation_list = sym_equation_list
 
