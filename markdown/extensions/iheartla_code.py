@@ -6,6 +6,7 @@ from .codehilite import CodeHilite, CodeHiliteExtension, parse_hl_lines
 from .attr_list import get_attrs, AttrListExtension
 from ..util import parseBoolValue
 import copy
+from collections import OrderedDict
 import regex as re
 from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
 from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file
@@ -573,7 +574,63 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     for sym_equation in sym_data.sym_equation_list:
                         if sym_equation.module_name == dependence.module:
                             sym_equation.used_list.append(equation.name)
+        #
+        self.assign_colors(node_dict, sym_dict)
         return sym_dict
+
+    def assign_colors(self, node_dict, sym_dict):
+        """
+        Implementation of Algorithm 3 from https://arxiv.org/pdf/2104.13755.pdf
+        """
+        # sort keys
+        sym_list = list(node_dict.keys())
+        def partition(arr, low, high):
+            i = (low - 1)
+            pivot = len(node_dict[arr[high]].neighbors)
+            for j in range(low, high):
+                if len(node_dict[arr[j]].neighbors) <= pivot:
+                    i = i + 1
+                    arr[i], arr[j] = arr[j], arr[i]
+            arr[i + 1], arr[high] = arr[high], arr[i + 1]
+            return (i + 1)
+        def quickSort(arr, low, high):
+            if len(arr) == 1:
+                return arr
+            if low < high:
+                pi = partition(arr, low, high)
+                quickSort(arr, low, pi - 1)
+                quickSort(arr, pi + 1, high)
+        quickSort(sym_list, 0, len(sym_list)-1)
+        # assign colors
+        pallette = []
+        color_dict = {}
+        def get_color_list():
+            return ['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink',
+                    'Tomato', 'Orange', 'DarkRed', 'LightCoral', 'Khaki']
+        all_colors = get_color_list()
+        def get_new_color(all_colors):
+            if len(all_colors) == 0:
+                all_colors = get_color_list()
+            return all_colors.pop(0)
+        def get_neighbor_colors(sym):
+            nei_colors = []
+            for nei in node_dict[sym].neighbors:
+                if nei in color_dict:
+                    nei_colors.append(color_dict[nei])
+            return nei_colors
+        for cur_sym in sym_list:
+            cur_nei_colors = get_neighbor_colors(cur_sym)
+            c = None
+            for cur_color in pallette:
+                if cur_color not in cur_nei_colors:
+                    c = cur_color
+                    break
+            if c is None:
+                c = get_new_color(all_colors)
+            pallette.append(c)
+            color_dict[cur_sym] = c
+        for cur_sym, cur_color in color_dict.items():
+            sym_dict[cur_sym].color = cur_color
 
     def get_sym_json(self, sym_dict):
         sym_list = []
@@ -618,11 +675,12 @@ class SymEquationData(object):
 
 
 class SymData(object):
-    def __init__(self, sym_name, sym_equation_list=None):
+    def __init__(self, sym_name, sym_equation_list=None, color=None):
         if sym_equation_list is None:
             sym_equation_list = []
         self.sym_name = sym_name
         self.sym_equation_list = sym_equation_list
+        self.color = color
 
 
 def makeExtension(**kwargs):  # pragma: no cover
