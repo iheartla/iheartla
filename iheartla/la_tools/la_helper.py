@@ -1,6 +1,7 @@
 from enum import Enum, IntFlag
 from tatsu._version import __version__
 import sys
+from textwrap import dedent
 import keyword
 from sympy import *
 import regex as re
@@ -110,3 +111,26 @@ def split_sub_string(identifier):
                     results[i] = convert_dict[results[i]]
         return results
     return identifier.split('_')
+
+
+BLOCK_RE = re.compile(
+        dedent(r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(\_)(?P<sub>((`[^`]*`)|([A-Za-z0-9\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)+)'''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
+UNICODE_RE = re.compile(
+        dedent(r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(?P<sub>[\u2080-\u2089,]+)'''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
+
+def filter_subscript(symbol):
+    # x_i to x
+    m = BLOCK_RE.fullmatch(symbol)
+    if m:
+        main = m.group('main')
+        # print("filter_subscript, symbol:{}, main:{} ".format(symbol, main))
+        return main
+    else:
+        m = UNICODE_RE.fullmatch(symbol)
+        if m:
+            return m.group('main')
+    return symbol

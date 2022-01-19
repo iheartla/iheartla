@@ -1,6 +1,7 @@
 from .codegen import *
 from .codegen_mathjax import CodeGenMathjax
 from .type_walker import *
+from ..la_tools.la_helper import filter_subscript
 import regex as re
 from textwrap import dedent
 
@@ -8,32 +9,11 @@ from textwrap import dedent
 class CodeGenMacroMathjax(CodeGenMathjax):
     def __init__(self):
         super().__init__(ParserTypeEnum.MACROMATHJAX)
-        self.BLOCK_RE = re.compile(
-                dedent(r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(\_)(?P<sub>((`[^`]*`)|([A-Za-z0-9\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)+)'''),
-                re.MULTILINE | re.DOTALL | re.VERBOSE
-            )
-        self.UNICODE_RE = re.compile(
-                dedent(r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(?P<sub>[\u2080-\u2089,]+)'''),
-                re.MULTILINE | re.DOTALL | re.VERBOSE
-            )
 
     def init_type(self, type_walker, func_name):
         super().init_type(type_walker, func_name)
         self.code_frame.pre_str = self.pre_str
         self.code_frame.post_str = self.post_str
-
-    def filter_subscript(self, symbol):
-        # x_i to x
-        m = self.BLOCK_RE.fullmatch(symbol)
-        if m:
-            main = m.group('main')
-            # print("filter_subscript, symbol:{}, main:{} ".format(symbol, main))
-            return main
-        else:
-            m = self.UNICODE_RE.fullmatch(symbol)
-            if m:
-                return m.group('main')
-        return symbol
 
     def convert_content(self, symbol):
         # avoid error in js
@@ -42,7 +22,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
     def visit_assignment(self, node, **kwargs):
         sym_list = []
         for sym in node.symbols:
-            sym_list.append("'{}'".format(self.convert_content(self.filter_subscript(sym))))
+            sym_list.append("'{}'".format(self.convert_content(filter_subscript(sym))))
         sym_list = list(set(sym_list))
         sym_list.append("'{}'".format(self.convert_content(node.left.get_main_id())))
         if node.right.node_type == IRNodeType.Optimize:
@@ -63,13 +43,13 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         self.visiting_func_name = True
         func_name = self.visit(node.name, **kwargs)
         self.visiting_func_name = False
-        self.local_func_name = self.convert_content(self.filter_subscript(node.name.get_name()))
+        self.local_func_name = self.convert_content(filter_subscript(node.name.get_name()))
         params_str = ''
         # raw local params
         local_param_list = []
         if len(node.params) > 0:
             for index in range(len(node.params)):
-                local_param_list.append("'{}'".format(self.convert_content(self.filter_subscript(node.params[index].get_name()))))
+                local_param_list.append("'{}'".format(self.convert_content(filter_subscript(node.params[index].get_name()))))
                 params_str += self.visit(node.params[index], **kwargs)
                 if index < len(node.params)-1:
                     params_str += node.separators[index] + ''
@@ -80,7 +60,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         content = func_name + def_params + " & = " + self.visit(node.expr, **kwargs)
         sym_list = []
         for sym in node.symbols:
-            sym_list.append("'{}'".format(self.convert_content(self.filter_subscript(sym))))
+            sym_list.append("'{}'".format(self.convert_content(filter_subscript(sym))))
         sym_list = list(set(sym_list))
         sym_list.append("'{}'".format(self.convert_content(node.name.get_main_id())))
         json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], true, '{}', [{}]);"}}""".format(self.func_name,
