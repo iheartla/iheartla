@@ -347,7 +347,6 @@ class IheartlaBlockPreprocessor(Preprocessor):
             file_name = "{}/{}.ihla".format(self.md.path, name)
             save_to_file(source, file_name)
         # compile
-        json_list = []
         equation_dict = {}
         full_code_sequence = []
         for name, block_data in file_dict.items():
@@ -356,7 +355,6 @@ class IheartlaBlockPreprocessor(Preprocessor):
                                                           func_name=name, path=self.md.path, struct=True,
                                                           get_json=True)
             equation_data.name = name
-            json_list.append('''{{"name":"{}", {} }}'''.format(name, equation_data.gen_json_content()))
             equation_dict[name] = equation_data
             full_code_sequence.append(code_list[:-1])
             # Find all expr for each original iheartla block
@@ -396,10 +394,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 content = self.md.htmlStash.store(content)
                 text = text.replace(block_data.block_list[cur_index], content)
                 replace_dict[block_data.block_list[cur_index]] = content
-        json_content = '''{{"equations":[{}] }}'''.format(','.join(json_list))
         self.save_code(full_code_sequence)
-        if json_content is not None:
-            save_to_file(json_content, "{}/data.json".format(self.md.path))
         return text, equation_dict, replace_dict
 
 
@@ -445,6 +440,14 @@ class IheartlaBlockPreprocessor(Preprocessor):
         sym_dict = self.get_sym_dict(equation_dict.values())
         sym_json = self.get_sym_json(sym_dict)
         save_to_file(sym_json, "{}/sym_data.json".format(self.md.path))
+        #
+        json_list = []
+        for name, equation_data in equation_dict.items():
+            json_list.append('''{{"name":"{}", {} }}'''.format(name, equation_data.gen_json_content()))
+        json_content = '''{{"equations":[{}] }}'''.format(','.join(json_list))
+        if json_content is not None:
+            save_to_file(json_content, "{}/data.json".format(self.md.path))
+
         text = self.handle_context_post(text, equation_dict)
         # for k, v in replace_dict.items():
         #     text = text.replace(k, v)
