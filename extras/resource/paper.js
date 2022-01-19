@@ -200,12 +200,13 @@ function getSymTypeInfo(type_info){
 function getGlossarySymInfo(symbol){
   content = ''
   data_list = sym_data[symbol];
-  console.log(`symbol is ${symbol}, length is ${data_list.length}`)
+  var cur_color = `highlight_${getSymColor(symbol)}`;
+  // console.log(`symbol is ${symbol}, cur_color is ${cur_color}, length is ${data_list.length}`)
   for (var i = 0; i < data_list.length; i++) {
       var id_tag = symbol.replaceAll("\\","\\\\");
       var data = data_list[i];
       content += `<div> In module ${data.def_module}<br>
-      <a class='detail' href="#${data.def_module}-${id_tag}">${symbol}</a> is ${getSymTypeInfo(data.type_info)}`
+      <a class='${cur_color}' href="#${data.def_module}-${id_tag}">${symbol}</a> is ${getSymTypeInfo(data.type_info)}`
       content += `` ;
       if (data.used_equations.length > 0) {
         content += `<br>${symbol} is used in ` ;
@@ -262,24 +263,26 @@ function parseAllSyms(){
   info = '<p>Glossary of symbols</p>'
   for (i = 0; i < keys.length; i++) {
     k = keys[i];
+    var cur_color = `highlight_${getSymColor(k)}`;
     diff_list = sym_data[k];
     diff_length = diff_list.length;
     ck = k.replaceAll("\\","\\\\");
     if (diff_length > 1) {
-      content = `<span onclick="parseSym(this, '${ck}');"><span class="clickable_sym">${k}</span>: ${diff_length} different types</span><br>`;
+      content = `<span onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: ${diff_length} different types</span><br>`;
     }
     else{
       if (diff_list[0].is_defined){
-        content = `<span onclick="parseSym(this, '${ck}');"><span class="clickable_sym">${k}</span>: defined </span><br>`;
+        content = `<span onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: defined </span><br>`;
       }
       else{
-        content = `<span onclick="parseSym(this, '${ck}');"><span class="clickable_sym">${k}</span>: ${diff_list[0].desc}</span><br>`;
+        content = `<span onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: ${diff_list[0].desc}</span><br>`;
       }
     }
     // console.log(content);
     info += content;
   }
-  // console.log(document.querySelector("#glossary"));
+
+  console.log(document.querySelector("#glossary"));
   tippy(document.querySelector("#glossary"), {
         content: info,
         placement: 'right',
@@ -296,8 +299,23 @@ function parseAllSyms(){
       }); 
   MathJax.typeset();
 }
+function getSymColor(symbol){
+  color = 'red'
+  if (sym_data.hasOwnProperty(symbol)) { 
+    color = sym_data[symbol][0].color;
+  }
+  else{
+    var dollarSym = getDollarSym(symbol);
+    if (sym_data.hasOwnProperty(dollarSym)) {  
+      color = sym_data[dollarSym][0].color;
+    } 
+  } 
+  // console.log(`symbol is ${symbol}, color is ${color}`)
+  return color;
+}
 function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', color='red', attrs=''){
-  content = `<span class="highlight_${color}" sym="${symbol}" ${attrs}>`
+  var cur_color = getSymColor(symbol);
+  content = `<span class="highlight_${cur_color}" sym="${symbol}" ${attrs}>`
   var found = false;
   var dollarSym = getDollarSym(symbol);
   var otherSym = getOtherSym(symbol);
@@ -373,7 +391,7 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
 function showArrow(tag, symbol, func_name, type='def', color='blue', 
   isEquation=false, startEq=false, endEq=false){
   // tag.setAttribute('class', `highlight_${color}`);
-  // console.log(`In showArrow, sym:${symbol}`); 
+  // console.log(`In showArrow, sym:${symbol}, color:${color}`); 
   if (type === 'def' ) {
     // Point to usage
     const matches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "'][type='use']");
@@ -470,7 +488,7 @@ function highlightSym(symbol, func_name, isLocalParam=false, localFuncName='', c
   symbol = symbol.replaceAll("\\","\\\\\\\\"); 
   // console.log(`In highlightSym, symbol: ${symbol}`)
   highlightSymInProseAndEquation(symbol, func_name, isLocalParam, localFuncName, color);
-  let asymbol = getOtherSym(symbol);
+  let asymbol = getOtherSym(symbol); 
   highlightSymInProseAndEquation(asymbol, func_name, isLocalParam, localFuncName, color);
 }
 function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, localFuncName='', color='red'){ 
@@ -542,9 +560,11 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
 function onClickProse(tag, symbol, func_name, type='def') {
   resetState();
   // console.log(`onClickProse, ${tag}, symbol is ${symbol}, ${func_name}`);
-  highlightSym(symbol, func_name);
+  var cur_color = getSymColor(symbol);
+  highlightSym(symbol, func_name, isLocalParam=false, localFuncName='', color=cur_color);
+  // console.log(`onClickProse, cur_color:${cur_color}, symbol is ${symbol}`);
   if (type !== 'def') {
-    showSymArrow(tag, symbol, func_name, 'use', color='red');
+    showSymArrow(tag, symbol, func_name, 'use', color=cur_color);
   }
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
@@ -581,11 +601,12 @@ function onClickProse(tag, symbol, func_name, type='def') {
  * @return 
  */
 function onClickSymbol(tag, symbol, func_name, type='def', isLocalParam=false, localFuncName='', color='red') {
-  console.log(`the type is ${type}, sym is ${symbol}`)
+  // console.log(`the type is ${type}, sym is ${symbol}, color is ${color}`,)
   resetState();
   // closeOtherTips();
-  highlightSym(symbol, func_name, isLocalParam, localFuncName, color);
-  showSymArrow(tag, symbol, func_name, type, color);
+  var cur_color = getSymColor(symbol);
+  highlightSym(symbol, func_name, isLocalParam, localFuncName, cur_color);
+  showSymArrow(tag, symbol, func_name, type, cur_color);
     // d3.selectAll("mjx-mi[sym='" + symbol + "']").style("class", "highlight");
   if (typeof tag._tippy === 'undefined'){
     tippy(tag, {
@@ -645,12 +666,13 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
   function showAllArrows(){
     for (var i = sym_list.length - 1; i >= 0; i--) {
       sym = sym_list[i];
+      var cur_color = getSymColor(sym);
       var isLocalParam = false;
       if (localParams.includes(sym)) {
         isLocalParam = true;
-        console.log(`sym:${sym}, isLocalParam:${isLocalParam}`)
+        // console.log(`sym:${sym}, isLocalParam:${isLocalParam}`)
       }
-      highlightSym(sym, func_name, isLocalParam, localFunc, colors[i]);
+      highlightSym(sym, func_name, isLocalParam, localFunc, cur_color);
       // sym = sym.replace("\\","\\\\");
       sym = sym.replaceAll("\\","\\\\\\\\"); 
       var symTag;
@@ -680,7 +702,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
           startEq = false;
           endEq = false;
         }
-        showSymArrow(symTag, sym_list[i], func_name, t, colors[i], true, startEq, endEq);
+        showSymArrow(symTag, sym_list[i], func_name, t, cur_color, true, startEq, endEq);
       }
     }
   }
