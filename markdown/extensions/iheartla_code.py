@@ -218,9 +218,15 @@ class IheartlaBlockPreprocessor(Preprocessor):
         return text
 
     def handle_span_code(self, text):
+        span_dict = {}
         for m in self.SPAN_BLOCK_RE.finditer(text):
+            cur_dict = {}
+            if m.group('context') in span_dict:
+                cur_dict = span_dict[m.group('context')]
             desc = m.group('code')
             sym_list = m.group('symbol').split(';')
+            for sym in sym_list:
+                cur_dict[sym] = desc
             # print("handle_span_code, matched:{}".format(m.group()))
             # Multiple math blocks
             for math in self.MATH_RE.finditer(desc):
@@ -250,7 +256,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     desc = desc.replace(math.group(), r"""${}$""".format(code))
             # print("handle_span_code, desc:{}".format(desc))
             text = text.replace(m.group(), "<span sym='{}' context='{}'> {} </span>".format(m.group('symbol').replace('\\','\\\\'), m.group('context'), desc))
-        return text
+            span_dict[m.group('context')] = cur_dict
+        return text, span_dict
 
     def handle_context_pre(self, text):
         """
@@ -390,9 +397,6 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 text = text.replace(block_data.block_list[cur_index], content)
                 replace_dict[block_data.block_list[cur_index]] = content
         json_content = '''{{"equations":[{}] }}'''.format(','.join(json_list))
-        sym_dict = self.get_sym_dict(equation_dict.values())
-        sym_json = self.get_sym_json(sym_dict)
-        save_to_file(sym_json, "{}/sym_data.json".format(self.md.path))
         self.save_code(full_code_sequence)
         if json_content is not None:
             save_to_file(json_content, "{}/data.json".format(self.md.path))
@@ -435,11 +439,24 @@ class IheartlaBlockPreprocessor(Preprocessor):
         text = self.handle_context_pre(text)
         text = self.handle_reference(text)
         text, equation_dict, replace_dict = self.handle_iheartla_code(text)
-        text = self.handle_span_code(text)
+        text, span_dict = self.handle_span_code(text)
+        equation_dict = self.merge_desc(equation_dict, span_dict)
+        # Save sym data to file
+        sym_dict = self.get_sym_dict(equation_dict.values())
+        sym_json = self.get_sym_json(sym_dict)
+        save_to_file(sym_json, "{}/sym_data.json".format(self.md.path))
         text = self.handle_context_post(text, equation_dict)
         # for k, v in replace_dict.items():
         #     text = text.replace(k, v)
         return text.split("\n")
+
+    def merge_desc(self, equation_dict, span_dict):
+        for context, cur_dict in span_dict.items():
+            if context in equation_dict:
+                for sym, desc in cur_dict.items():
+                    if sym not in equation_dict[context].desc_dict:
+                        equation_dict[context].desc_dict[sym] = desc
+        return equation_dict
 
     def save_code(self, full_code_sequence):
         def get_frame_list(index):
