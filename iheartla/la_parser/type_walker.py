@@ -6,6 +6,7 @@ from ..la_tools.la_logger import *
 from ..la_tools.la_msg import *
 from ..la_tools.la_helper import *
 import regex as re
+from ..la_tools.la_helper import filter_subscript
 
 ## Make the visualizer
 try: from ..la_tools.la_visualizer import LaVisualizer
@@ -49,7 +50,10 @@ class EquationData(object):
         self.desc_dict = desc_dict
         self.la_content = la_content
         self.func_data_dict = func_data_dict
-        self.expr_dict = expr_dict
+        self.expr_dict = {}
+        # remove subscript in symbol
+        for key, value in expr_dict.items():
+            self.expr_dict[key] = [filter_subscript(val) for val in value]
 
     def gen_sym_list(self):
         sym_list = self.parameters + self.definition
