@@ -40,7 +40,7 @@ class DependenceData(object):
 
 
 class EquationData(object):
-    def __init__(self, name='', parameters=[], definition=[], dependence=[], symtable={}, desc_dict={}, la_content='', func_data_dict={}):
+    def __init__(self, name='', parameters=[], definition=[], dependence=[], symtable={}, desc_dict={}, la_content='', func_data_dict={}, expr_dict={}):
         self.name = name
         self.parameters = parameters  # parameters for source file
         self.definition = definition  # lhs symbols
@@ -49,6 +49,7 @@ class EquationData(object):
         self.desc_dict = desc_dict
         self.la_content = la_content
         self.func_data_dict = func_data_dict
+        self.expr_dict = expr_dict
 
     def gen_sym_list(self):
         sym_list = self.parameters + self.definition
@@ -177,6 +178,7 @@ class TypeWalker(NodeWalker):
         self.import_module_list = []
         self.main_param = ParamsData()
         self.used_params = []
+        self.expr_dict = {}        # lhs id -> symbols in current expr
 
     def get_cur_param_data(self):
         # either main where/given block or local function block
@@ -198,7 +200,9 @@ class TypeWalker(NodeWalker):
 
     def gen_json_content(self):
         return EquationData('', copy.deepcopy(self.parameters), copy.deepcopy(self.lhs_list),
-                            copy.deepcopy(self.import_module_list),  copy.deepcopy(self.symtable),  copy.deepcopy(self.desc_dict), self.la_content, copy.deepcopy(self.func_data_dict))
+                            copy.deepcopy(self.import_module_list),  copy.deepcopy(self.symtable),
+                            copy.deepcopy(self.desc_dict), self.la_content,
+                            copy.deepcopy(self.func_data_dict), copy.deepcopy(self.expr_dict))
 
     def is_inside_sum(self):
         return len(self.sum_subs) > 0
@@ -234,6 +238,7 @@ class TypeWalker(NodeWalker):
         self.desc_dict.clear()
         self.import_module_list.clear()
         self.main_param.reset()
+        self.expr_dict.clear()
 
     def get_func_symbols(self):
         ret = {}
@@ -1114,7 +1119,6 @@ class TypeWalker(NodeWalker):
 
     def walk_LocalFunc(self, node, **kwargs):
         self.local_func_parsing = True
-        local_func_name = node.name
         if isinstance(node.name, str):
             local_func_name = node.name
         else:
@@ -1153,6 +1157,7 @@ class TypeWalker(NodeWalker):
         ir_node.symbols = expr_info.symbols
         self.symtable[local_func_name] = ir_node.la_type
         self.local_func_parsing = False
+        self.expr_dict[local_func_name] = list(ir_node.symbols) + [local_func_name]
         return NodeInfo(ir=ir_node)
 
     def walk_Assignment(self, node, **kwargs):
@@ -1314,6 +1319,7 @@ class TypeWalker(NodeWalker):
                 self.symtable[id0] = right_type
         assign_node.symbols = right_info.symbols
         right_info.ir = assign_node
+        self.expr_dict[assign_node.left.get_main_id()] = list(right_info.symbols) + [assign_node.left.get_main_id()]
         return right_info
 
     def walk_Summation(self, node, **kwargs):
