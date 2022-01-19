@@ -202,9 +202,10 @@ function getGlossarySymInfo(symbol){
   data_list = sym_data[symbol];
   console.log(`symbol is ${symbol}, length is ${data_list.length}`)
   for (var i = 0; i < data_list.length; i++) {
+      var id_tag = symbol.replaceAll("\\","\\\\");
       var data = data_list[i];
       content += `<div> In module ${data.def_module}<br>
-      <a class='detail' href="#${data.def_module}-${symbol}">${symbol}</a> is ${getSymTypeInfo(data.type_info)}`
+      <a class='detail' href="#${data.def_module}-${id_tag}">${symbol}</a> is ${getSymTypeInfo(data.type_info)}`
       content += `` ;
       if (data.used_equations.length > 0) {
         content += `<br>${symbol} is used in ` ;
