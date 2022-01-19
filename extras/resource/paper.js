@@ -510,7 +510,7 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
   for (var i = spanMatches.length - 1; i >= 0; i--) {
     var curClass = spanMatches[i].getAttribute('class');
     var curSym = spanMatches[i].getAttribute('sym');
-    const curSymList = curSym.split('$'); 
+    const curSymList = curSym.split(';'); 
     // console.log(`i is ${i}, curSymList is ${curSymList} `)
     for (var j = curSymList.length - 1; j >= 0; j--) {
       if (curSymList[j] === new_sym) {

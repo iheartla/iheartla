@@ -220,7 +220,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
     def handle_span_code(self, text):
         for m in self.SPAN_BLOCK_RE.finditer(text):
             desc = m.group('code')
-            sym_list = m.group('symbol').split('$')
+            sym_list = m.group('symbol').split(';')
             # print("handle_span_code, matched:{}".format(m.group()))
             # Multiple math blocks
             for math in self.MATH_RE.finditer(desc):
