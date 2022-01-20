@@ -176,13 +176,13 @@ function drawArrow(startElement, endElement, style='', color='blue',
 
 function getTypeInfo(type_info){
   if(type_info.type == 'matrix'){
-    content = `R^{${type_info.rows}×${type_info.cols}}`;
+    content = `\\mathbb{R}^{${type_info.rows}×${type_info.cols}}`;
   }
   else if(type_info.type == 'vector'){
-    content = `R^{${type_info.rows}}`;  
+    content = `\\mathbb{R}^{${type_info.rows}}`;  
   }
   else if(type_info.type == 'scalar'){
-    content = "R";
+    content = "\\mathbb{R}";
   }
   else if(type_info.type == 'sequence'){
     content = getTypeInfo(type_info.element);
@@ -319,6 +319,10 @@ function parseAllSyms(){
     // console.log(content);
     info += content;
   }
+
+  // var glossaryDiv = document.querySelector(".glossary");
+  // glossaryDiv.innerHTML = info;
+  // console.log(document.querySelector("#glossary"));
   tippy(document.querySelector("#glossary"), {
         content: info,
         placement: 'right',
