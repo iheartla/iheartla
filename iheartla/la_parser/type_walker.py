@@ -723,7 +723,7 @@ class TypeWalker(NodeWalker):
             ir_node.id.append(id0_info.ir)
             id0 = id0_info.content
             if node.desc is not None:
-                self.desc_dict[id0] = node.desc
+                self.desc_dict[id0_info.ir.get_main_id()] = node.desc
             if True:
                 self.handle_identifier(id0, id0_info.ir, type_node)
                 # self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
