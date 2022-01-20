@@ -568,10 +568,19 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 else:
                     sym_data = sym_dict[func_name]
                     sym_data.sym_equation_list.append(sym_eq_data)
+                for local_param in func_params.params_data.parameters:
+                    if local_param not in sym_dict:
+                        sym_data = SymData(local_param, sym_equation_list=[sym_eq_data])
+                        node_dict[local_param] = SymNode(local_param)
+                        sym_dict[local_param] = sym_data
             # expr list
             for sym_list in equation.expr_dict.values():
                 # print("cur sym_list:{}".format(sym_list))
+                # print("node_dict:{}".format(node_dict))
                 for sym in sym_list:
+                    if sym not in node_dict:
+                        node_dict[sym] = SymNode(sym)
+                        # Maybe local param in local func
                     node_dict[sym].add_neighbors(sym_list)
                 # for k, v in node_dict.items():
                 #     print("k:{}, v.name:{}, v.neighbors:{}".format(k, v.name, v.neighbors))
@@ -640,7 +649,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
             pallette.append(c)
             color_dict[cur_sym] = c
         for cur_sym, cur_color in color_dict.items():
-            sym_dict[cur_sym].color = cur_color
+            if cur_sym in sym_dict:
+                sym_dict[cur_sym].color = cur_color
 
     def get_sym_json(self, sym_dict):
         sym_list = []
