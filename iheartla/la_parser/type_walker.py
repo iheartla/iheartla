@@ -80,7 +80,10 @@ class EquationData(object):
                 param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(param), self.symtable[param].get_json_content()))
         def_list = []
         for lhs in self.definition:
-            def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(lhs), self.symtable[lhs].get_json_content()))
+            if lhs in self.desc_dict:
+                def_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(lhs), self.symtable[lhs].get_json_content(), self.desc_dict[lhs]))
+            else:
+                def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(lhs), self.symtable[lhs].get_json_content()))
         #
         func_list = []
         for k, v in self.func_data_dict.items():
