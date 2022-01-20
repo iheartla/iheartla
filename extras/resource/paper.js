@@ -272,7 +272,12 @@ function parseAllSyms(){
     }
     else{
       if (diff_list[0].is_defined){
-        content = `<span onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: defined </span><br>`;
+        if(diff_list[0].desc && diff_list[0].desc != 'None' ){
+          content = `<span onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: ${diff_list[0].desc} </span><br>`;
+        }
+        else{
+          content = `<span onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: defined </span><br>`;
+        }
       }
       else{
         content = `<span onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: ${diff_list[0].desc}</span><br>`;
@@ -363,7 +368,12 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', col
             iheartla_data.equations[eq].definition[param].sym == otherSym){
             type_info = iheartla_data.equations[eq].definition[param].type_info;
             found = true;
-            content += dollarSym + "</span>"+ " is defined as a " + getSymTypeInfo(type_info);
+            if(iheartla_data.equations[eq].definition[param].desc){
+              content += dollarSym + "</span>"+ " is " + iheartla_data.equations[eq].definition[param].desc;
+            }
+            else{
+              content += dollarSym + "</span>"+ " is defined as a " + getSymTypeInfo(type_info);
+            }
             break;
           }
         }
