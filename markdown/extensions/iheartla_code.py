@@ -469,11 +469,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
                         for cur_key in equation_dict[context].sym_list:
                             if cur_sym in cur_key:
                                 cur_sym = cur_key
-                                print("converted, before:{}, after:{}".format(sym, cur_sym))
+                                # print("converted, before:{}, after:{}".format(sym, cur_sym))
                     if cur_sym not in equation_dict[context].desc_dict:
                         equation_dict[context].desc_dict[cur_sym] = desc
-        for k, v in equation_dict[context].desc_dict.items():
-            print("k:{}, v:{}".format(k, v))
+            # for k, v in equation_dict[context].desc_dict.items():
+            #     print("k:{}, v:{}".format(k, v))
         return equation_dict
 
     def save_code(self, full_code_sequence):
@@ -650,8 +650,12 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 used_list_str = '[]'
                 if len(sym_eq_data.used_list) > 0:
                     used_list_str = '"' + '","'.join(sym_eq_data.used_list) + '"'
+                cur_desc = sym_eq_data.desc
+                if sym_eq_data.desc:
+                    cur_desc = cur_desc.replace('\\', '\\\\\\\\')
+                # print(" sym_eq_data.desc:{}".format( sym_eq_data.desc))
                 eq_data_list.append('''{{"desc":"{}", "type_info":{}, "def_module":"{}", "is_defined":{}, "used_equations":{}, "color":"{}"}}'''.format(
-                    sym_eq_data.desc, sym_eq_data.la_type.get_json_content(),
+                    cur_desc, sym_eq_data.la_type.get_json_content(),
                     sym_eq_data.module_name, "true" if sym_eq_data.is_defined else "false", used_list_str,
                     sym_data.color))
             sym_list.append('''"{}":[{}]'''.format(sym.replace('\\', '\\\\\\\\'), ",".join(eq_data_list)))
