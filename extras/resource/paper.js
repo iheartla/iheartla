@@ -289,7 +289,7 @@ function parseAllSyms(){
     keys.push(k);
   }
   keys.sort();
-  info = '<p>Glossary of symbols</p>'
+  info = `<p class='glosary_title'>Glossary of symbols</p>`
   for (i = 0; i < keys.length; i++) {
     k = keys[i];
     var cur_color = `highlight_${getSymColor(k)}`;
@@ -297,15 +297,15 @@ function parseAllSyms(){
     diff_length = diff_list.length;
     ck = k.replaceAll("\\","\\\\");
     if (diff_length > 1) {
-      content = `<span onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: ${diff_length} different types</span><br>`;
+      content = `<span class='glosary_line' onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: ${diff_length} different types</span><br>`;
     }
     else{
       if (diff_list[0].is_defined){
         if(diff_list[0].desc && diff_list[0].desc != 'None' ){
-          content = `<span onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: ${diff_list[0].desc} </span><br>`;
+          content = `<span class='glosary_line' onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: ${diff_list[0].desc} </span><br>`;
         }
         else{
-          content = `<span onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: defined </span><br>`;
+          content = `<span class='glosary_line' onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: defined </span><br>`;
         }
       }
       else{
@@ -313,30 +313,30 @@ function parseAllSyms(){
         if(diff_list[0].desc && diff_list[0].desc == 'None' ){
           cur_desc = 'parameter';
         }
-        content = `<span onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: ${cur_desc}</span><br>`;
+        content = `<span class='glosary_line' onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: ${cur_desc}</span><br>`;
       }
     }
     // console.log(content);
     info += content;
   }
 
-  // var glossaryDiv = document.querySelector(".glossary");
-  // glossaryDiv.innerHTML = info;
-  // console.log(document.querySelector("#glossary"));
-  tippy(document.querySelector("#glossary"), {
-        content: info,
-        placement: 'right',
-        animation: 'fade',
-        trigger: 'click', 
-        theme: 'light',
-        allowHTML: true,
-        interactive: true,
-        arrow: tippy.roundArrow.repeat(2),
-        onShown(instance) {
-          MathJax.typeset();
-          return true;  
-        },
-      }); 
+  var glossaryDiv = document.querySelector(".glossary");
+  glossaryDiv.innerHTML = info;
+  console.log(document.querySelector("#glossary"));
+    // tippy(document.querySelector("#glossary"), {
+    //       content: info,
+    //       placement: 'right',
+    //       animation: 'fade',
+    //       trigger: 'click', 
+    //       theme: 'light',
+    //       allowHTML: true,
+    //       interactive: true,
+    //       arrow: tippy.roundArrow.repeat(2),
+    //       onShown(instance) {
+    //         MathJax.typeset();
+    //         return true;  
+    //       },
+    //     }); 
   MathJax.typeset();
 }
 function getSymColor(symbol){
@@ -846,7 +846,8 @@ function removeSymHighlight(){
   const matches = document.querySelectorAll("[class*=highlight]");
   for (var i = matches.length - 1; i >= 0; i--) {
     var spanTag = matches[i].closest("div.tippy-box");
-    if(spanTag == null){
+    var glossaryTag = matches[i].closest("div.glossary");
+    if(spanTag == null && glossaryTag == null){
       var cur = matches[i].getAttribute('class');
       const classArray = cur.split(' ');
       let new_classes = [];

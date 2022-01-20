@@ -37,6 +37,16 @@ body
 .glossary{
   position: fixed;
   top: 10;
+  border: 1px solid #666666;
+  margin-left: 20px;
+  /*margin-bottom: 100px;*/
+}
+.glosary_title{
+  text-align: center;
+}
+.glosary_line{
+  margin-left: 10px;
+  margin-right: 10px;
 }
 @keyframes eqShowup {
   from {

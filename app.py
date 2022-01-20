@@ -231,8 +231,8 @@ const sym_data = JSON.parse('{sym_json}');
 {script}
 </script>
 <body>
-<img src="{resource_dir}/resource/glossary.png" id="glossary" class="glossary" alt="glossary" width="22" height="28"><br>
 {body}
+<div id="glossary" class="glossary"><br>
 </body>
 </html>""".format(mathjax=mathjax, equation_json=equation_json,  sym_json=sym_json, script=script, body=body, resource_dir=resource_dir)
             # numbering
