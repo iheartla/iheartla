@@ -280,7 +280,11 @@ function parseAllSyms(){
         }
       }
       else{
-        content = `<span onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: ${diff_list[0].desc}</span><br>`;
+        var cur_desc = diff_list[0].desc;
+        if(diff_list[0].desc && diff_list[0].desc == 'None' ){
+          cur_desc = 'parameter';
+        }
+        content = `<span onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: ${cur_desc}</span><br>`;
       }
     }
     // console.log(content);
