@@ -174,29 +174,58 @@ function drawArrow(startElement, endElement, style='', color='blue',
     document.querySelector(".arrow").style.marginLeft = "0px"
 }
 
-function getSymTypeInfo(type_info){
+function getTypeInfo(type_info){
   if(type_info.type == 'matrix'){
-    content = `matrix in $R^{${type_info.rows}×${type_info.cols}}$`;
+    content = `R^{${type_info.rows}×${type_info.cols}}`;
   }
   else if(type_info.type == 'vector'){
-    content = `vector in $R^{${type_info.rows}}$`;
+    content = `R^{${type_info.rows}}`;  
   }
   else if(type_info.type == 'scalar'){
-    content = "scalar";
+    content = "R";
   }
   else if(type_info.type == 'sequence'){
-    content = "sequence";
+    content = getTypeInfo(type_info.element);
   }
   else if(type_info.type == 'function'){
-    content = "function";
+    var param_list = [];
+    for (var i = 0; i <= type_info.params.length - 1; i++) {
+      param_list.push(getTypeInfo(type_info.params[i])); 
+    }
+    var ret = getTypeInfo(type_info.ret)
+    content = `${param_list.join()} \\rightarrow ${ret}`;
   }
   else{
     content = "special type";
+  }
+  return content;
+}
+
+function getSymTypeInfo(type_info){
+  var info = getTypeInfo(type_info);
+  if(type_info.type == 'matrix'){
+    content = `a matrix in $${info}$`;
+  }
+  else if(type_info.type == 'vector'){
+    content = `a vector in $${info}$`;
+  }
+  else if(type_info.type == 'scalar'){
+    content =  `in $${info}$`;
+  }
+  else if(type_info.type == 'sequence'){
+    content = `a sequence of $${info}$`;
+  }
+  else if(type_info.type == 'function'){
+    content = `a function of $${info}$`;
+  }
+  else{
+    content = `set type`;
   }
   // console.log("type_info.type: " + type_info.type);
 
   return content;
 };
+
 function getGlossarySymInfo(symbol){
   content = ''
   data_list = sym_data[symbol];
@@ -339,7 +368,8 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', col
               if (curParam == symbol || curParam == otherSym) {
                 type_info = iheartla_data.equations[eq].local_func[localFunc].parameters[param].type_info;
                 found = true;
-                content += dollarSym + "</span>"+ " is a local parameter as a " + getSymTypeInfo(type_info);
+                // content += dollarSym + "</span>"+ " is a local parameter as a " + getSymTypeInfo(type_info);
+                content += `${dollarSym}</span> is ${getSymTypeInfo(type_info)}`;
               }
             }
           }
@@ -356,10 +386,11 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', col
             type_info = iheartla_data.equations[eq].parameters[param].type_info;
             found = true;
             if(iheartla_data.equations[eq].parameters[param].desc){
-              content += dollarSym + "</span>"+ " is " + iheartla_data.equations[eq].parameters[param].desc;
+              // content += dollarSym + "</span>"+ " is " + iheartla_data.equations[eq].parameters[param].desc;
+              content += `${dollarSym}</span> is ${getSymTypeInfo(type_info)}: ${iheartla_data.equations[eq].parameters[param].desc}`;
             }
             else{
-              content += dollarSym + "</span>"+ " is a parameter as a " + getSymTypeInfo(type_info);
+              content += `${dollarSym}</span> is ${getSymTypeInfo(type_info)}`
             }
             break;
           }
@@ -373,10 +404,12 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', col
             type_info = iheartla_data.equations[eq].definition[param].type_info;
             found = true;
             if(iheartla_data.equations[eq].definition[param].desc){
-              content += dollarSym + "</span>"+ " is " + iheartla_data.equations[eq].definition[param].desc;
+              // content += dollarSym + "</span>"+ " is " + iheartla_data.equations[eq].definition[param].desc;
+              content += `${dollarSym}</span> is ${getSymTypeInfo(type_info)}: ${iheartla_data.equations[eq].definition[param].desc}`;
             }
             else{
-              content += dollarSym + "</span>"+ " is defined as a " + getSymTypeInfo(type_info);
+              // content += dollarSym + "</span>"+ " is defined as " + getSymTypeInfo(type_info);
+              content += `${dollarSym}</span> is ${getSymTypeInfo(type_info)}`;
             }
             break;
           }
