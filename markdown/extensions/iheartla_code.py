@@ -462,8 +462,18 @@ class IheartlaBlockPreprocessor(Preprocessor):
         for context, cur_dict in span_dict.items():
             if context in equation_dict:
                 for sym, desc in cur_dict.items():
-                    if sym not in equation_dict[context].desc_dict:
-                        equation_dict[context].desc_dict[sym] = desc
+                    # print("sym:{}, desc:{}".format(sym, desc))
+                    cur_sym = sym
+                    if cur_sym not in equation_dict[context].symtable:
+                        # need to convert sym to the right symbol in symtable, e.g. \command -> `$\command$`
+                        for cur_key in equation_dict[context].sym_list:
+                            if cur_sym in cur_key:
+                                cur_sym = cur_key
+                                print("converted, before:{}, after:{}".format(sym, cur_sym))
+                    if cur_sym not in equation_dict[context].desc_dict:
+                        equation_dict[context].desc_dict[cur_sym] = desc
+        for k, v in equation_dict[context].desc_dict.items():
+            print("k:{}, v:{}".format(k, v))
         return equation_dict
 
     def save_code(self, full_code_sequence):

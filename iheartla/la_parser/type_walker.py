@@ -54,6 +54,7 @@ class EquationData(object):
         # remove subscript in symbol
         for key, value in expr_dict.items():
             self.expr_dict[key] = [filter_subscript(val) for val in value]
+        self.sym_list = list(self.parameters) + list(self.definition) + list(self.func_data_dict.keys())
 
     def gen_sym_list(self):
         sym_list = self.parameters + self.definition
