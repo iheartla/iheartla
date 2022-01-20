@@ -176,22 +176,22 @@ function drawArrow(startElement, endElement, style='', color='blue',
 
 function getSymTypeInfo(type_info){
   if(type_info.type == 'matrix'){
-    content = "a matrix, rows: " + type_info.rows + ", cols: " + type_info.cols;
+    content = `matrix in $R^{${type_info.rows}×${type_info.cols}}$`;
   }
   else if(type_info.type == 'vector'){
-    content = "a vector, rows: " + type_info.rows;
+    content = `vector in $R^{${type_info.rows}}$`;
   }
   else if(type_info.type == 'scalar'){
-    content = "a scalar";
+    content = "scalar";
   }
   else if(type_info.type == 'sequence'){
-    content = "a sequence";
+    content = "sequence";
   }
   else if(type_info.type == 'function'){
-    content = "a function";
+    content = "function";
   }
   else{
-    content = "an invalid type";
+    content = "special type";
   }
   // console.log("type_info.type: " + type_info.type);
 
@@ -281,8 +281,6 @@ function parseAllSyms(){
     // console.log(content);
     info += content;
   }
-
-  console.log(document.querySelector("#glossary"));
   tippy(document.querySelector("#glossary"), {
         content: info,
         placement: 'right',
@@ -349,7 +347,7 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', col
             type_info = iheartla_data.equations[eq].parameters[param].type_info;
             found = true;
             if(iheartla_data.equations[eq].parameters[param].desc){
-              content += dollarSym + "</span>"+ " is " + iheartla_data.equations[eq].parameters[param].desc + ", the type is " + getSymTypeInfo(type_info);
+              content += dollarSym + "</span>"+ " is " + iheartla_data.equations[eq].parameters[param].desc;
             }
             else{
               content += dollarSym + "</span>"+ " is a parameter as a " + getSymTypeInfo(type_info);
