@@ -358,24 +358,22 @@ function updateGlossarySyms(cur_context){
     k = keys[i];
     var cur_color = `highlight_${getSymColor(k)}`;
     diff_list = sym_data[k];
-    diff_length = diff_list.length;
     ck = k.replaceAll("\\","\\\\");
-    if (diff_length > 1) {
-      content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[0].def_module}');"><span class="${cur_color} paperSymbol">${k}</span>: ${diff_length} different types</span><br>`;
-    }
-    else{
-      var cur_info = getSymTypeInfo(diff_list[0].type_info)
-      if(diff_list[0].desc && diff_list[0].desc != 'None' ){
-        content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[0].def_module}');"><span class="${cur_color} paperSymbol">${k}</span> ${cur_info}: ${diff_list[0].desc} </span><br>`;
+    for (var j = 0; j < diff_list.length; j++) {
+      if (diff_list[j].def_module == cur_context) {
+        var cur_info = getSymTypeInfo(diff_list[j].type_info)
+        if(diff_list[j].desc && diff_list[j].desc != 'None' ){
+          content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span class="${cur_color} paperSymbol">${k}</span> ${cur_info}: ${diff_list[j].desc} </span><br>`;
+        }
+        else{
+          content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span class="${cur_color} paperSymbol">${k}</span> ${cur_info} </span><br>`;
+        }
+        break;
       }
-      else{
-        content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[0].def_module}');"><span class="${cur_color} paperSymbol">${k}</span> ${cur_info} </span><br>`;
-      }
     }
-    // console.log(content);
     info += content;
   }
-
+  // update
   var glossaryDiv = document.querySelector(".glossary");
   glossaryDiv.innerHTML = info;
   MathJax.typeset();
