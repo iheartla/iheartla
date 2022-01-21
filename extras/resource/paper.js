@@ -316,15 +316,15 @@ function parseAllSyms(){
     diff_length = diff_list.length;
     ck = k.replaceAll("\\","\\\\");
     if (diff_length > 1) {
-      content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[0].def_module}');"><span class="${cur_color}">${k}</span>: ${diff_length} different types</span><br>`;
+      content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[0].def_module}');"><span class="${cur_color} paperSymbol">${k}</span>: ${diff_length} different types</span><br>`;
     }
     else{
       var cur_info = getSymTypeInfo(diff_list[0].type_info)
       if(diff_list[0].desc && diff_list[0].desc != 'None' ){
-        content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[0].def_module}');"><span class="${cur_color}">${k}</span> ${cur_info}: ${diff_list[0].desc} </span><br>`;
+        content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[0].def_module}');"><span class="${cur_color} paperSymbol">${k}</span> ${cur_info}: ${diff_list[0].desc} </span><br>`;
       }
       else{
-        content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[0].def_module}');"><span class="${cur_color}">${k}</span> ${cur_info} </span><br>`;
+        content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[0].def_module}');"><span class="${cur_color} paperSymbol">${k}</span> ${cur_info} </span><br>`;
       }
     }
     // console.log(content);
@@ -333,7 +333,6 @@ function parseAllSyms(){
 
   var glossaryDiv = document.querySelector(".glossary");
   glossaryDiv.innerHTML = info;
-  console.log(document.querySelector("#glossary"));
     // tippy(document.querySelector("#glossary"), {
     //       content: info,
     //       placement: 'right',
