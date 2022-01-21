@@ -113,16 +113,22 @@ def handle_context_block(text):
     text_list = []
     context_list = ['']
     matched_list = ['']
+    context_dict = {}
     for m in CONTEXT_RE.finditer(text):
+        cur_context = m.group('context')
         # print("parsed context: {}".format(m.group('context')))
-        context_list.append(m.group('context'))
+        context_list.append(cur_context)
         matched_list.append(m.group())
         text_list.append(text[start_index: m.start()])
         start_index = m.end()
+        if cur_context not in context_dict:
+            context_dict[cur_context] = 0
     text_list.append(text[start_index:len(text)])
     for index in range(len(text_list)):
-        if context_list[index] != '':
-            text_list[index] = "<div class='context' id='context-{}' context='{}'>{}</div>".format(context_list[index], context_list[index], text_list[index])
+        cur_context = context_list[index]
+        if cur_context != '':
+            text_list[index] = "<div class='context' id='context-{}-{}' context='{}'>{}</div>".format(cur_context, context_dict[cur_context], cur_context, text_list[index])
+            context_dict[cur_context] += 1
     return ''.join(text_list)
 
 if __name__ == '__main__':

@@ -308,7 +308,9 @@ function addObversers(){
   var observer = new IntersectionObserver(changes => {
     for (const change of changes) {
       var cur_ = change.target.getAttribute('context');
+      var curId = change.target.getAttribute('id');
       visibleDict[cur_] = change.isIntersecting;
+      // console.log(`current:${cur_}, curId:${curId}, isVisible:${change.isVisible}, isIntersecting:${change.isIntersecting}`)
       if (change.isIntersecting) {
         updateGlossarySyms(cur_);
       }
@@ -331,10 +333,15 @@ function addObversers(){
       // console.log(`${cur_} isIntersecting:${change.isIntersecting}`);
     }
   }, {});
+  context_dict = {}
   for (var index in iheartla_data.context) {
     var context = iheartla_data.context[index]
-    var cur_context = document.querySelector(`#context-${context}`)
-    // console.log(`context is ${context}, cur_context is ${cur_context}`)
+    if(!(context in context_dict)){
+      context_dict[context] = 0
+    }
+    var cur_context = document.querySelector(`#context-${context}-${context_dict[context]}`)
+    context_dict[context] += 1;
+    // console.log(`context is ${context}, cur_context is ${cur_context}, index:${context_dict[context]}`)
     observer.observe(cur_context, options);
   } 
 }
