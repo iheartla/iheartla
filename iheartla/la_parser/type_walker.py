@@ -1162,7 +1162,7 @@ class TypeWalker(NodeWalker):
         self.func_data_dict[local_func_name].params_data.parameters = par_names
         ir_node.separators = node.separators
         ir_node.la_type = FunctionType(params=param_tps, ret=expr_info.ir.la_type)
-        ir_node.symbols = expr_info.symbols
+        ir_node.symbols = expr_info.symbols.union(set(par_names))
         self.symtable[local_func_name] = ir_node.la_type
         self.local_func_parsing = False
         self.expr_dict[local_func_name] = list(ir_node.symbols) + [local_func_name]
