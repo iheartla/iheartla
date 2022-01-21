@@ -284,7 +284,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             text_list[index] = self.handle_raw_span_code(text_list[index], context_list[index])
             full_text += text_list[index]
             # text_list[index] = self.handle_prose_label(text_list[index], context_list[index])
-        return full_text
+        return full_text, context_list
 
     def handle_context_post(self, text, equation_dict):
         """
@@ -437,18 +437,18 @@ class IheartlaBlockPreprocessor(Preprocessor):
             self.checked_for_deps = True
         text = "\n".join(lines)
         #
-        text = self.handle_context_pre(text)
+        text, context_list = self.handle_context_pre(text)
         text = self.handle_reference(text)
         text, equation_dict, replace_dict = self.handle_iheartla_code(text)
         text, span_dict = self.handle_span_code(text)
         equation_dict = self.merge_desc(equation_dict, span_dict)
-        self.process_metadata(equation_dict)
+        self.process_metadata(equation_dict, context_list)
         text = self.handle_context_post(text, equation_dict)
         # for k, v in replace_dict.items():
         #     text = text.replace(k, v)
         return text.split("\n")
 
-    def process_metadata(self, equation_dict):
+    def process_metadata(self, equation_dict, context_list):
         # Save sym data to file
         sym_dict = self.get_sym_dict(equation_dict.values())
         sym_json = self.get_sym_json(sym_dict)
@@ -457,7 +457,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
         json_list = []
         for name, equation_data in equation_dict.items():
             json_list.append('''{{"name":"{}", {} }}'''.format(name, equation_data.gen_json_content()))
-        json_content = '''{{"equations":[{}] }}'''.format(','.join(json_list))
+        context_json_list = []
+        for context in context_list:
+            if context != '':
+                context_json_list.append('"{}"'.format(context))
+        json_content = '''{{"equations":[{}], "context":[{}] }}'''.format(','.join(json_list), ','.join(context_json_list))
         if json_content is not None:
             save_to_file(json_content, "{}/data.json".format(self.md.path))
         #
