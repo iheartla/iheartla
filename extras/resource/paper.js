@@ -298,11 +298,41 @@ function adjsutGlossaryBtn(){
   var glossaryBtn = document.querySelector(".glossary");
   glossaryBtn.style.left = `${curOffset + curWidth +  30}px`;
 }
-function onLoad(){
-  parseAllSyms();
-  adjsutGlossaryBtn();
+function addObversers(){
+  let options = {
+    root: document.body,
+    rootMargin: '0px',
+    threshold: 0.5
+  }
+  var observer = new IntersectionObserver(changes => {
+    for (const change of changes) {
+      var cur_ = change.target.getAttribute('context');
+      if (change.isIntersecting) {
+        updateGlossarySyms(cur_);
+      }
+      // console.log(change.time);               // Timestamp when the change occurred
+      // console.log(change.rootBounds);         // Unclipped area of root
+      // console.log(change.boundingClientRect); // target.boundingClientRect()
+      // console.log(change.intersectionRect);   // boundingClientRect, clipped by its containing block ancestors, and intersected with rootBounds
+      // console.log(`cur_:${cur_}, change.intersectionRatio:${change.intersectionRatio}`);  // Ratio of intersectionRect area to boundingClientRect area
+      // console.log(change.target);             // the Element target
+      // console.log(`fir_context isVisible:${change.isVisible}`);
+      // console.log(`fir_context isIntersecting:${change.isIntersecting}`);
+    }
+  }, {});
+  for (var index in iheartla_data.context) {
+    var context = iheartla_data.context[index]
+    var cur_context = document.querySelector(`#context-${context}`)
+    // console.log(`context is ${context}, cur_context is ${cur_context}`)
+    observer.observe(cur_context, options);
+  } 
 }
-function parseAllSyms(){
+function onLoad(){
+  adjsutGlossaryBtn();
+  addObversers();
+}
+function updateGlossarySyms(cur_context){
+  console.log(`cur_context: ${cur_context}`)
   keys = [];
   for (var k in sym_data) { 
     keys.push(k);
