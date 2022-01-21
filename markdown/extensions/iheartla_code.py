@@ -312,6 +312,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             # text_list[index] = self.handle_inline_raw_code(text_list[index], context_list[index])
             text_list[index] = self.handle_prose_label(text_list[index], cur_context)
             text_list[index] = self.handle_math(text_list[index], cur_context, sym_list)
+            text_list[index] = "<span class='context'>{}</span>".format(cur_context) + text_list[index]
         return ''.join(text_list)
 
     def handle_iheartla_code(self, text):

@@ -34,12 +34,18 @@ body
     line-height: 120%;
     text-align: center;
 }
+.context{
+   display:none;
+}
 .glossary{
   position: fixed;
   top: 10;
   border: 1px solid #666666;
   margin-left: 20px;
   /*margin-bottom: 100px;*/
+  background-color: white;
+  z-index: 10;
+  /*max-height: 0;*/
 }
 .glosary_title{
   text-align: center;
