@@ -3,6 +3,8 @@ var colors =['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink',
 
 var centerXDict = {};
 var centerYDict = {};
+var offsetEndXDict = {};
+var visiableDict = {};   // visiability for context div
 
 function alreadyExist(dict, content){
   var threshold = 2;   // different symbols from the same line
@@ -66,8 +68,6 @@ function getYOffset(base){
   return res;
 }
 
-
-var offsetEndXDict = {};
 function getOffsetEndX(center){ 
   var base = 0; // starting point
   var res = 0;
@@ -307,17 +307,27 @@ function addObversers(){
   var observer = new IntersectionObserver(changes => {
     for (const change of changes) {
       var cur_ = change.target.getAttribute('context');
+      visiableDict[cur_] = change.isIntersecting;
       if (change.isIntersecting) {
         updateGlossarySyms(cur_);
+      }
+      else{
+        // find the visiable context
+        for (const [key, value] of Object.entries(visiableDict)) {
+          if (value) {
+            updateGlossarySyms(key);
+            break;
+          }
+        }
       }
       // console.log(change.time);               // Timestamp when the change occurred
       // console.log(change.rootBounds);         // Unclipped area of root
       // console.log(change.boundingClientRect); // target.boundingClientRect()
       // console.log(change.intersectionRect);   // boundingClientRect, clipped by its containing block ancestors, and intersected with rootBounds
-      // console.log(`cur_:${cur_}, change.intersectionRatio:${change.intersectionRatio}`);  // Ratio of intersectionRect area to boundingClientRect area
+      // console.log(`${cur_}, change.intersectionRatio:${change.intersectionRatio}`);  // Ratio of intersectionRect area to boundingClientRect area
       // console.log(change.target);             // the Element target
-      // console.log(`fir_context isVisible:${change.isVisible}`);
-      // console.log(`fir_context isIntersecting:${change.isIntersecting}`);
+      // console.log(`${cur_} isVisible:${change.isVisible}`);
+      // console.log(`${cur_} isIntersecting:${change.isIntersecting}`);
     }
   }, {});
   for (var index in iheartla_data.context) {
@@ -332,6 +342,7 @@ function onLoad(){
   addObversers();
 }
 function updateGlossarySyms(cur_context){
+  // console.log(`Current visiable context: ${cur_context}`);
   keys = [];
   for (var k in sym_data) { 
     var cur_data = sym_data[k];
