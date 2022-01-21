@@ -8,7 +8,7 @@ import markdown
 import os.path
 from pathlib import Path
 import shutil
-import re
+import regex as re
 from textwrap import dedent
 
 
@@ -103,6 +103,28 @@ def handle_sections(text, dict):
         text = text.replace(k, v)
     return text
 
+def handle_context_block(text):
+    # Match string: ❤ : context
+    CONTEXT_RE = re.compile(
+        dedent(r'''<div>❤(\s*):(\s*)(?P<context>[a-zA-Z0-9]*)<\/div>'''),
+        re.MULTILINE | re.VERBOSE
+    )
+    start_index = 0
+    text_list = []
+    context_list = ['']
+    matched_list = ['']
+    for m in CONTEXT_RE.finditer(text):
+        # print("parsed context: {}".format(m.group('context')))
+        context_list.append(m.group('context'))
+        matched_list.append(m.group())
+        text_list.append(text[start_index: m.start()])
+        start_index = m.end()
+    text_list.append(text[start_index:len(text)])
+    for index in range(len(text_list)):
+        if context_list[index] != '':
+            text_list[index] = "<div class='context' id='context-{}' context='{}'>{}</div>".format(context_list[index], context_list[index], text_list[index])
+    return ''.join(text_list)
+
 if __name__ == '__main__':
     LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
     arg_parser = argparse.ArgumentParser(description='I Heart LA paper compiler')
@@ -161,6 +183,7 @@ if __name__ == '__main__':
             body = handle_sections(body, md.Meta)
             body = abstract + body
             body = handle_title(body, md.Meta)
+            body = handle_context_block(body)
             equation_json = read_from_file("{}/data.json".format(os.path.dirname(Path(paper_file))))
             # equation_data = get_sym_data(json.loads(equation_json))
             sym_json = read_from_file("{}/sym_data.json".format(os.path.dirname(Path(paper_file))))

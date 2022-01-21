@@ -101,7 +101,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
     )
     # Match string: ❤ : context
     CONTEXT_RE = re.compile(
-        dedent(r'''(?<=(\n)*)(\s*)❤(\s*):(\s*)(?P<context>[^\n❤\s]*)(\s*)(?=(\n)+)'''),
+        dedent(r'''(?<=(\n)*)([\t\r\f\v]*)❤(\s*):(\s*)(?P<context>[^\n❤\s]*)(\s*)(?=(\n)+)'''),
         re.MULTILINE | re.VERBOSE
     )
     # Match string: ``` iheartla
@@ -294,10 +294,12 @@ class IheartlaBlockPreprocessor(Preprocessor):
         start_index = 0
         text_list = []
         context_list = ['']
+        raw_context = ['']
         for m in self.CONTEXT_RE.finditer(text):
             # print("parsed context: {}".format(m.group('context')))
             cur_context = m.group('context')
             context_list.append(cur_context)
+            raw_context.append(m.group())
             text_list.append(text[start_index: m.start()])
             start_index = m.end()
         text_list.append(text[start_index:len(text)])
@@ -312,7 +314,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
             # text_list[index] = self.handle_inline_raw_code(text_list[index], context_list[index])
             text_list[index] = self.handle_prose_label(text_list[index], cur_context)
             text_list[index] = self.handle_math(text_list[index], cur_context, sym_list)
-            text_list[index] = "<span class='context'>{}</span>".format(cur_context) + text_list[index]
+            if context_list[index] != '':
+                text_list[index] = "<div>❤:{}</div>".format(context_list[index]) + text_list[index]
         return ''.join(text_list)
 
     def handle_iheartla_code(self, text):
