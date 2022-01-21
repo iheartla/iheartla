@@ -249,6 +249,7 @@ class TypeWalker(NodeWalker):
         self.desc_dict.clear()
         self.import_module_list.clear()
         self.main_param.reset()
+        self.used_params.clear()
         self.expr_dict.clear()
 
     def get_func_symbols(self):
