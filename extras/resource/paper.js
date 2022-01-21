@@ -204,19 +204,19 @@ function getTypeInfo(type_info){
 function getSymTypeInfo(type_info){
   var info = getTypeInfo(type_info);
   if(type_info.type == 'matrix'){
-    content = `a matrix in $${info}$`;
+    content = `$\\in ${info}$`;
   }
   else if(type_info.type == 'vector'){
-    content = `a vector in $${info}$`;
+    content = `$\\in ${info}$`;
   }
   else if(type_info.type == 'scalar'){
-    content =  `in $${info}$`;
+    content =  `$\\in ${info}$`;
   }
   else if(type_info.type == 'sequence'){
-    content = `a sequence of $${info}$`;
+    content = `$\\in sequence of ${info}$`;
   }
   else if(type_info.type == 'function'){
-    content = `a function of $${info}$`;
+    content = `$\\in ${info}$`;
   }
   else{
     content = `set type`;
@@ -225,6 +225,21 @@ function getSymTypeInfo(type_info){
 
   return content;
 };
+
+function getGlossarySymId(symbol, context){
+  console.log(`getGlossarySymId, symbol:${symbol}, context:${context}`)
+  content = ''
+  data_list = sym_data[symbol];
+  for (var i = 0; i < data_list.length; i++) {
+      var id_tag = symbol.replaceAll("\\","\\\\");
+      var data = data_list[i];
+      if (data.def_module == context) {
+        content = `${data.def_module}-${id_tag}`
+        break;
+      }
+  }
+  return content;
+}
 
 function getGlossarySymInfo(symbol){
   content = ''
@@ -247,29 +262,33 @@ function getGlossarySymInfo(symbol){
   }
   return `<span>${content}</span>`;
 }
-function parseSym(tag, symbol){
-  data = sym_data[symbol];
-  console.log(`You clicked ${symbol}`);
-  if (typeof tag._tippy === 'undefined'){
-    tippy(tag, {
-        content: getGlossarySymInfo(symbol),
-        placement: 'right',
-        animation: 'fade',
-        trigger: 'click', 
-        theme: 'light',
-        showOnCreate: true,
-        allowHTML: true,
-        interactive: true,
-        arrow: tippy.roundArrow.repeat(2),
-        onShow(instance) {
-          return true;  
-        },
-        onHide(instance) { 
-          return true;  
-        },
-      });
-    MathJax.typeset();
+function parseSym(tag, symbol, module){
+  var targetId = getGlossarySymId(symbol, module);
+  if (targetId != '') {
+    document.getElementById(targetId).scrollIntoView();
   }
+  // data = sym_data[symbol];
+  // console.log(`You clicked ${symbol}`);
+  // if (typeof tag._tippy === 'undefined'){
+  //   tippy(tag, {
+  //       content: getGlossarySymInfo(symbol),
+  //       placement: 'right',
+  //       animation: 'fade',
+  //       trigger: 'click', 
+  //       theme: 'light',
+  //       showOnCreate: true,
+  //       allowHTML: true,
+  //       interactive: true,
+  //       arrow: tippy.roundArrow.repeat(2),
+  //       onShow(instance) {
+  //         return true;  
+  //       },
+  //       onHide(instance) { 
+  //         return true;  
+  //       },
+  //     });
+  //   MathJax.typeset();
+  // }
 }
 function adjsutGlossaryBtn(){
   var body = document.querySelector("body");
@@ -297,23 +316,15 @@ function parseAllSyms(){
     diff_length = diff_list.length;
     ck = k.replaceAll("\\","\\\\");
     if (diff_length > 1) {
-      content = `<span class='glosary_line' onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: ${diff_length} different types</span><br>`;
+      content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[0].def_module}');"><span class="${cur_color}">${k}</span>: ${diff_length} different types</span><br>`;
     }
     else{
-      if (diff_list[0].is_defined){
-        if(diff_list[0].desc && diff_list[0].desc != 'None' ){
-          content = `<span class='glosary_line' onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: ${diff_list[0].desc} </span><br>`;
-        }
-        else{
-          content = `<span class='glosary_line' onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: defined </span><br>`;
-        }
+      var cur_info = getSymTypeInfo(diff_list[0].type_info)
+      if(diff_list[0].desc && diff_list[0].desc != 'None' ){
+        content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[0].def_module}');"><span class="${cur_color}">${k}</span> ${cur_info}: ${diff_list[0].desc} </span><br>`;
       }
       else{
-        var cur_desc = diff_list[0].desc;
-        if(diff_list[0].desc && diff_list[0].desc == 'None' ){
-          cur_desc = 'parameter';
-        }
-        content = `<span class='glosary_line' onclick="parseSym(this, '${ck}');"><span class="${cur_color}">${k}</span>: ${cur_desc}</span><br>`;
+        content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[0].def_module}');"><span class="${cur_color}">${k}</span> ${cur_info} </span><br>`;
       }
     }
     // console.log(content);
@@ -391,10 +402,10 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', col
             found = true;
             if(iheartla_data.equations[eq].parameters[param].desc){
               // content += dollarSym + "</span>"+ " is " + iheartla_data.equations[eq].parameters[param].desc;
-              content += `${dollarSym}</span> is ${getSymTypeInfo(type_info)}: ${iheartla_data.equations[eq].parameters[param].desc}`;
+              content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}: ${iheartla_data.equations[eq].parameters[param].desc}`;
             }
             else{
-              content += `${dollarSym}</span> is ${getSymTypeInfo(type_info)}`
+              content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}`
             }
             break;
           }
@@ -409,11 +420,11 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', col
             found = true;
             if(iheartla_data.equations[eq].definition[param].desc){
               // content += dollarSym + "</span>"+ " is " + iheartla_data.equations[eq].definition[param].desc;
-              content += `${dollarSym}</span> is ${getSymTypeInfo(type_info)}: ${iheartla_data.equations[eq].definition[param].desc}`;
+              content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}: ${iheartla_data.equations[eq].definition[param].desc}`;
             }
             else{
               // content += dollarSym + "</span>"+ " is defined as " + getSymTypeInfo(type_info);
-              content += `${dollarSym}</span> is ${getSymTypeInfo(type_info)}`;
+              content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}`;
             }
             break;
           }
