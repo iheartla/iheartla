@@ -265,7 +265,8 @@ function getGlossarySymInfo(symbol){
 function parseSym(tag, symbol, module){
   var targetId = getGlossarySymId(symbol, module);
   if (targetId != '') {
-    document.getElementById(targetId).scrollIntoView();
+    location.hash = targetId;
+    // document.getElementById(targetId).scrollIntoView();
   }
   // data = sym_data[symbol];
   // console.log(`You clicked ${symbol}`);
