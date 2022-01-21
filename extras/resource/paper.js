@@ -227,7 +227,7 @@ function getSymTypeInfo(type_info){
 };
 
 function getGlossarySymId(symbol, context){
-  console.log(`getGlossarySymId, symbol:${symbol}, context:${context}`)
+  // console.log(`getGlossarySymId, symbol:${symbol}, context:${context}`)
   content = ''
   data_list = sym_data[symbol];
   for (var i = 0; i < data_list.length; i++) {
@@ -332,13 +332,17 @@ function onLoad(){
   addObversers();
 }
 function updateGlossarySyms(cur_context){
-  console.log(`cur_context: ${cur_context}`)
   keys = [];
   for (var k in sym_data) { 
-    keys.push(k);
+    var cur_data = sym_data[k];
+    for (var i = 0; i < cur_data.length; i++) {
+      if (cur_data[i].def_module == cur_context) {
+        keys.push(k);
+      }
+    }
   }
   keys.sort();
-  info = `<p class='glosary_title'>Glossary of symbols</p>`
+  info = `<p class='glosary_title'>Glossary of ${cur_context}</p>`
   for (i = 0; i < keys.length; i++) {
     k = keys[i];
     var cur_color = `highlight_${getSymColor(k)}`;
@@ -363,20 +367,6 @@ function updateGlossarySyms(cur_context){
 
   var glossaryDiv = document.querySelector(".glossary");
   glossaryDiv.innerHTML = info;
-    // tippy(document.querySelector("#glossary"), {
-    //       content: info,
-    //       placement: 'right',
-    //       animation: 'fade',
-    //       trigger: 'click', 
-    //       theme: 'light',
-    //       allowHTML: true,
-    //       interactive: true,
-    //       arrow: tippy.roundArrow.repeat(2),
-    //       onShown(instance) {
-    //         MathJax.typeset();
-    //         return true;  
-    //       },
-    //     }); 
   MathJax.typeset();
 }
 function getSymColor(symbol){
