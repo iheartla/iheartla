@@ -213,7 +213,7 @@ function getSymTypeInfo(type_info){
     content =  `$\\in ${info}$`;
   }
   else if(type_info.type == 'sequence'){
-    content = `$\\in sequence of ${info}$`;
+    content = `$\\in$ sequence of $${info}$`;
   }
   else if(type_info.type == 'function'){
     content = `$\\in ${info}$`;
