@@ -51,6 +51,8 @@ class EquationData(object):
         self.la_content = la_content
         self.func_data_dict = func_data_dict
         self.expr_dict = {}
+        # for key in self.desc_dict.keys():
+        #     self.desc_dict[key] = self.desc_dict[key].replace('"', '\"')
         # remove subscript in symbol
         for key, value in expr_dict.items():
             self.expr_dict[key] = [filter_subscript(val) for val in value]
@@ -75,13 +77,13 @@ class EquationData(object):
         param_list = []
         for param in self.parameters:
             if param in self.desc_dict:
-                param_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(param), self.symtable[param].get_json_content(), self.desc_dict[param]))
+                param_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(param), self.symtable[param].get_json_content(), self.desc_dict[param].replace('"', '\\"')))
             else:
                 param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(param), self.symtable[param].get_json_content()))
         def_list = []
         for lhs in self.definition:
             if lhs in self.desc_dict:
-                def_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(lhs), self.symtable[lhs].get_json_content(), self.desc_dict[lhs]))
+                def_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(lhs), self.symtable[lhs].get_json_content(), self.desc_dict[lhs].replace('"', '\\"')))
             else:
                 def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(lhs), self.symtable[lhs].get_json_content()))
         #
@@ -97,6 +99,7 @@ class EquationData(object):
         content = content.replace('\\', '\\\\\\\\')
         content = content.replace('\n', '\\\\n')
         content = content.replace('`', '')
+        content = content.replace('\\\\\\\\"', '\\\\"')
         content += ''', "source":"{}"'''.format(self.trim(self.la_content).replace('\\', '\\\\\\\\').replace('\n', '\\\\n'))
         # content = content.replace('\\\\\\\\"', '\\"')
         # content = content.replace("\\\\\\\\'", "\\'")

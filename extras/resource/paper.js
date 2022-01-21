@@ -4,7 +4,7 @@ var colors =['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink',
 var centerXDict = {};
 var centerYDict = {};
 var offsetEndXDict = {};
-var visiableDict = {};   // visiability for context div
+var visibleDict = {};   // visiability for context div
 
 function alreadyExist(dict, content){
   var threshold = 2;   // different symbols from the same line
@@ -308,13 +308,13 @@ function addObversers(){
   var observer = new IntersectionObserver(changes => {
     for (const change of changes) {
       var cur_ = change.target.getAttribute('context');
-      visiableDict[cur_] = change.isIntersecting;
+      visibleDict[cur_] = change.isIntersecting;
       if (change.isIntersecting) {
         updateGlossarySyms(cur_);
       }
       else{
-        // find the visiable context
-        for (const [key, value] of Object.entries(visiableDict)) {
+        // find the visible context
+        for (const [key, value] of Object.entries(visibleDict)) {
           if (value) {
             updateGlossarySyms(key);
             break;
@@ -343,7 +343,7 @@ function onLoad(){
   addObversers();
 }
 function updateGlossarySyms(cur_context){
-  // console.log(`Current visiable context: ${cur_context}`);
+  // console.log(`Current visible context: ${cur_context}`);
   keys = [];
   for (var k in sym_data) { 
     var cur_data = sym_data[k];
