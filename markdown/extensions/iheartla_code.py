@@ -480,6 +480,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                                 # print("converted, before:{}, after:{}".format(sym, cur_sym))
                     if cur_sym not in equation_dict[context].desc_dict:
                         equation_dict[context].desc_dict[cur_sym] = desc
+                        # print("assign:{}, desc:{}".format(cur_sym, desc))
             # for k, v in equation_dict[context].desc_dict.items():
             #     print("k:{}, v:{}".format(k, v))
         return equation_dict
@@ -577,10 +578,16 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     sym_data = sym_dict[func_name]
                     sym_data.sym_equation_list.append(sym_eq_data)
                 for local_param in func_params.params_data.parameters:
+                    param_eq_data = SymEquationData(la_type=func_params.params_data.symtable[local_param],
+                                                    desc=equation.desc_dict.get(local_param), module_name=equation.name,
+                                                    is_defined=False)
                     if local_param not in sym_dict:
-                        sym_data = SymData(local_param, sym_equation_list=[sym_eq_data])
+                        sym_data = SymData(local_param, sym_equation_list=[param_eq_data])
                         node_dict[local_param] = SymNode(local_param)
                         sym_dict[local_param] = sym_data
+                    else:
+                        sym_data = sym_dict[local_param]
+                        sym_data.sym_equation_list.append(param_eq_data)
             # expr list
             for sym_list in equation.expr_dict.values():
                 # print("cur sym_list:{}".format(sym_list))
