@@ -424,7 +424,8 @@ function getSymColor(symbol){
 }
 function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', color='red', attrs=''){
   var cur_color = getSymColor(symbol);
-  content = `<span class="highlight_${cur_color}" sym="${symbol}" ${attrs}>`
+  var symAttr = symbol.replaceAll("\\", "\\\\");
+  content = `<span class="highlight_${cur_color}" sym="${symAttr}" ${attrs}>`
   var dollarSym = getDollarSym(symbol);
   var otherSym = getOtherSym(symbol);
   var otherFuncName = getOtherSym(localFuncName);
