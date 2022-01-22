@@ -240,6 +240,20 @@ function getGlossarySymId(symbol, context){
   }
   return content;
 }
+function getGlossarySymType(symbol, context){
+  // get from sym_data rather than iheartla_data
+  content = ''
+  data_list = sym_data[symbol];
+  for (var i = 0; i < data_list.length; i++) {
+      var id_tag = symbol.replaceAll("\\","\\\\");
+      var data = data_list[i];
+      if (data.def_module == context) {
+        content = data.type_info;
+        break;
+      }
+  }
+  return content;
+}
 
 function getGlossarySymInfo(symbol){
   content = ''
@@ -420,7 +434,13 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', col
                 type_info = iheartla_data.equations[eq].local_func[localFunc].parameters[param].type_info;
                 found = true;
                 // content += dollarSym + "</span>"+ " is a local parameter as a " + getSymTypeInfo(type_info);
-                content += `${dollarSym}</span> is ${getSymTypeInfo(type_info)}`;
+                // var glossarySymType = getGlossarySymType(symbol, func_name);
+                if(iheartla_data.equations[eq].local_func[localFunc].parameters[param].desc){
+                  content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}: ${iheartla_data.equations[eq].local_func[localFunc].parameters[param].desc}`;
+                }
+                else{
+                  content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}`;
+                }
               }
             }
           }

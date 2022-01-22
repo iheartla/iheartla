@@ -89,10 +89,16 @@ class EquationData(object):
         #
         func_list = []
         for k, v in self.func_data_dict.items():
-            def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(k), self.symtable[k].get_json_content()))
+            if k in self.desc_dict:
+                def_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(k), self.symtable[k].get_json_content(), self.desc_dict[k].replace('"', '\\"')))
+            else:
+                def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(k), self.symtable[k].get_json_content()))
             local_param_list = []
             for local_param in v.params_data.parameters:
-                local_param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(local_param), v.params_data.symtable[local_param].get_json_content()))
+                if local_param in self.desc_dict:
+                    local_param_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(local_param), v.params_data.symtable[local_param].get_json_content(), self.desc_dict[local_param].replace('"', '\\"')))
+                else:
+                    local_param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(local_param), v.params_data.symtable[local_param].get_json_content()))
             func_list.append('''{{"name":"{}", "parameters":[{}]}}'''.format(self.trim(k), ','.join(local_param_list)))
         # self.la_content = self.la_content.replace('\n', '\\\\n')
         content = '''"parameters":[{}], "definition":[{}], "local_func":[{}]'''.format(','.join(param_list), ','.join(def_list), ','.join(func_list))
