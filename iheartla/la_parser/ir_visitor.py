@@ -691,6 +691,8 @@ class IRVisitor(object):
             all_ids = self.get_all_ids(ids)
             # these can contain asterisks from vector/matrix slicing 
             ids_list += all_ids[1]
+        for key, func_data in self.func_data_dict.items():
+            ids_list += list(func_data.params_data.symtable.keys())
         names_dict = []
         # purge asterisks (and make unique, why not)
         ids_list = [x for x in list(set(ids_list)) if x != '*']
