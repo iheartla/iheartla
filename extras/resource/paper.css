@@ -39,17 +39,22 @@ body
   top: 10;
   border: 1px solid #666666;
   margin-left: 20px;
+  margin-right: 20px;
   /*margin-bottom: 100px;*/
   background-color: white;
   z-index: 10;
   /*max-height: 0;*/
 }
 .glosary_title{
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
   text-align: center;
 }
 .glosary_line{
   margin-left: 10px;
   margin-right: 10px;
+  /*margin-bottom: 10px;*/
 }
 @keyframes eqShowup {
   from {
