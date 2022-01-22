@@ -467,12 +467,13 @@ class IheartlaBlockPreprocessor(Preprocessor):
         #
 
     def merge_desc(self, equation_dict, span_dict):
+        # merge description from span tags
         for context, cur_dict in span_dict.items():
             if context in equation_dict:
                 for sym, desc in cur_dict.items():
                     # print("sym:{}, desc:{}".format(sym, desc))
                     cur_sym = sym
-                    if cur_sym not in equation_dict[context].symtable:
+                    if cur_sym not in equation_dict[context].sym_list:
                         # need to convert sym to the right symbol in symtable, e.g. \command -> `$\command$`
                         for cur_key in equation_dict[context].sym_list:
                             if cur_sym in cur_key:
@@ -586,8 +587,18 @@ class IheartlaBlockPreprocessor(Preprocessor):
                         node_dict[local_param] = SymNode(local_param)
                         sym_dict[local_param] = sym_data
                     else:
+                        # In a context, there may be multiple local parameters, check
                         sym_data = sym_dict[local_param]
-                        sym_data.sym_equation_list.append(param_eq_data)
+                        existed = False
+                        for cur_eq_data in sym_data.sym_equation_list:
+                            if cur_eq_data.module_name == param_eq_data.module_name:
+                                existed = True
+                                # print("existed, name:{}, desc:{}".format(local_param, param_eq_data.desc))
+                                if cur_eq_data.desc == '' and param_eq_data.desc != '':
+                                    cur_eq_data.desc = param_eq_data.desc
+                                    # print("Update param desc, name:{}, desc:{}".format(local_param, param_eq_data.desc))
+                        if not existed:
+                            sym_data.sym_equation_list.append(param_eq_data)
             # expr list
             for sym_list in equation.expr_dict.values():
                 # print("cur sym_list:{}".format(sym_list))
