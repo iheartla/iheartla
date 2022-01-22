@@ -242,17 +242,25 @@ function getGlossarySymId(symbol, context){
 }
 function getGlossarySymType(symbol, context){
   // get from sym_data rather than iheartla_data
-  content = ''
-  data_list = sym_data[symbol];
-  for (var i = 0; i < data_list.length; i++) {
-      var id_tag = symbol.replaceAll("\\","\\\\");
-      var data = data_list[i];
-      if (data.def_module == context) {
-        content = data.type_info;
-        break;
+  var content = ''
+  var desc = '' 
+  var dollarSym = getDollarSym(symbol);
+  var otherSym = getOtherSym(symbol);
+  for (var k in sym_data) { 
+    if (k == symbol || k == otherSym) {
+      var cur_data = sym_data[k];
+      for (var i = 0; i < cur_data.length; i++) {
+        if (cur_data[i].def_module == context) {
+          keys.push(k);
+          content = cur_data[i].type_info;
+          desc = cur_data[i].desc;
+          break;
+        }
       }
+      break;
+    }
   }
-  return content;
+  return [content, desc];
 }
 
 function getGlossarySymInfo(symbol){
@@ -417,84 +425,92 @@ function getSymColor(symbol){
 function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', color='red', attrs=''){
   var cur_color = getSymColor(symbol);
   content = `<span class="highlight_${cur_color}" sym="${symbol}" ${attrs}>`
-  var found = false;
   var dollarSym = getDollarSym(symbol);
   var otherSym = getOtherSym(symbol);
   var otherFuncName = getOtherSym(localFuncName);
-  for(var eq in iheartla_data.equations){
-    if(iheartla_data.equations[eq].name == func_name){
-      if (isLocalParam) {
-        // local parameter
-        for(var localFunc in iheartla_data.equations[eq].local_func){
-          var curLocalFunc = iheartla_data.equations[eq].local_func[localFunc].name;
-          if (curLocalFunc == localFuncName || curLocalFunc == otherFuncName) {
-            for(var param in iheartla_data.equations[eq].local_func[localFunc].parameters){
-              var curParam = iheartla_data.equations[eq].local_func[localFunc].parameters[param].sym;
-              if (curParam == symbol || curParam == otherSym) {
-                type_info = iheartla_data.equations[eq].local_func[localFunc].parameters[param].type_info;
-                found = true;
-                // content += dollarSym + "</span>"+ " is a local parameter as a " + getSymTypeInfo(type_info);
-                // var glossarySymType = getGlossarySymType(symbol, func_name);
-                if(iheartla_data.equations[eq].local_func[localFunc].parameters[param].desc){
-                  content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}: ${iheartla_data.equations[eq].local_func[localFunc].parameters[param].desc}`;
-                }
-                else{
-                  content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}`;
-                }
-              }
-            }
-          }
-        }
-        if(found){
-          break;
-        }
-      }
-      else{
-        // parameters or definitions
-        for(var param in iheartla_data.equations[eq].parameters){
-          if (iheartla_data.equations[eq].parameters[param].sym == symbol || 
-            iheartla_data.equations[eq].parameters[param].sym == otherSym ){
-            type_info = iheartla_data.equations[eq].parameters[param].type_info;
-            found = true;
-            if(iheartla_data.equations[eq].parameters[param].desc){
-              // content += dollarSym + "</span>"+ " is " + iheartla_data.equations[eq].parameters[param].desc;
-              content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}: ${iheartla_data.equations[eq].parameters[param].desc}`;
-            }
-            else{
-              content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}`
-            }
-            break;
-          }
-        }
-        if(found){
-          break;
-        }
-        for(var param in iheartla_data.equations[eq].definition){
-          if (iheartla_data.equations[eq].definition[param].sym == symbol || 
-            iheartla_data.equations[eq].definition[param].sym == otherSym){
-            type_info = iheartla_data.equations[eq].definition[param].type_info;
-            found = true;
-            if(iheartla_data.equations[eq].definition[param].desc){
-              // content += dollarSym + "</span>"+ " is " + iheartla_data.equations[eq].definition[param].desc;
-              content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}: ${iheartla_data.equations[eq].definition[param].desc}`;
-            }
-            else{
-              // content += dollarSym + "</span>"+ " is defined as " + getSymTypeInfo(type_info);
-              content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}`;
-            }
-            break;
-          }
-        }
-        if(found){
-          break;
-        }
-      }
-    }
+  const [cur_type, cur_desc] = getGlossarySymType(symbol, func_name);
+  if(cur_desc && cur_desc != 'None'){
+    content += `${dollarSym}</span> ${getSymTypeInfo(cur_type)}: ${cur_desc}`;
   }
-  if (content == '') {
-    content = `${dollarSym} is a parameter in local function`;
-  } 
+  else{
+    content += `${dollarSym}</span> ${getSymTypeInfo(cur_type)}`;
+  }
   return content;
+  // var found = false;
+  // for(var eq in iheartla_data.equations){
+  //   if(iheartla_data.equations[eq].name == func_name){
+  //     if (isLocalParam) {
+  //       // local parameter
+  //       for(var localFunc in iheartla_data.equations[eq].local_func){
+  //         var curLocalFunc = iheartla_data.equations[eq].local_func[localFunc].name;
+  //         if (curLocalFunc == localFuncName || curLocalFunc == otherFuncName) {
+  //           for(var param in iheartla_data.equations[eq].local_func[localFunc].parameters){
+  //             var curParam = iheartla_data.equations[eq].local_func[localFunc].parameters[param].sym;
+  //             if (curParam == symbol || curParam == otherSym) {
+  //               type_info = iheartla_data.equations[eq].local_func[localFunc].parameters[param].type_info;
+  //               found = true;
+  //               // content += dollarSym + "</span>"+ " is a local parameter as a " + getSymTypeInfo(type_info);
+  //               // var glossarySymType = getGlossarySymType(symbol, func_name);
+  //               if(iheartla_data.equations[eq].local_func[localFunc].parameters[param].desc){
+  //                 content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}: ${iheartla_data.equations[eq].local_func[localFunc].parameters[param].desc}`;
+  //               }
+  //               else{
+  //                 content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}`;
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //       if(found){
+  //         break;
+  //       }
+  //     }
+  //     else{
+  //       // parameters or definitions
+  //       for(var param in iheartla_data.equations[eq].parameters){
+  //         if (iheartla_data.equations[eq].parameters[param].sym == symbol || 
+  //           iheartla_data.equations[eq].parameters[param].sym == otherSym ){
+  //           type_info = iheartla_data.equations[eq].parameters[param].type_info;
+  //           found = true;
+  //           if(iheartla_data.equations[eq].parameters[param].desc){
+  //             // content += dollarSym + "</span>"+ " is " + iheartla_data.equations[eq].parameters[param].desc;
+  //             content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}: ${iheartla_data.equations[eq].parameters[param].desc}`;
+  //           }
+  //           else{
+  //             content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}`
+  //           }
+  //           break;
+  //         }
+  //       }
+  //       if(found){
+  //         break;
+  //       }
+  //       for(var param in iheartla_data.equations[eq].definition){
+  //         if (iheartla_data.equations[eq].definition[param].sym == symbol || 
+  //           iheartla_data.equations[eq].definition[param].sym == otherSym){
+  //           type_info = iheartla_data.equations[eq].definition[param].type_info;
+  //           found = true;
+  //           if(iheartla_data.equations[eq].definition[param].desc){
+  //             // content += dollarSym + "</span>"+ " is " + iheartla_data.equations[eq].definition[param].desc;
+  //             content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}: ${iheartla_data.equations[eq].definition[param].desc}`;
+  //           }
+  //           else{
+  //             // content += dollarSym + "</span>"+ " is defined as " + getSymTypeInfo(type_info);
+  //             content += `${dollarSym}</span> ${getSymTypeInfo(type_info)}`;
+  //           }
+  //           break;
+  //         }
+  //       }
+  //       if(found){
+  //         break;
+  //       }
+  //     }
+  //   }
+  // }
+  // if (content == '') {
+  //   content = `${dollarSym} is a parameter in local function`;
+  // } 
+  // return content;
 }
 function showSymArrow(tag, symbol, func_name, type='def', color='blue', 
   isEquation=false, startEq=false, endEq=false){ 
