@@ -93,7 +93,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
     )
     # Match string: ❤️context: a=sin(θ)❤️
     INLINE_RE = re.compile(
-        dedent(r'''❤(?P<module>[^\n:❤]*)(:)(?P<code>.*?)❤'''),
+        dedent(r'''❤(?P<module>[a-zA-Z0-9\.\t\r\f\v ]*)(:)(?P<code>.*?)❤'''),
         re.MULTILINE | re.VERBOSE
     )
     # Match string: # REFERENCES
@@ -103,7 +103,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
     )
     # Match string: ❤ : context
     CONTEXT_RE = re.compile(
-        dedent(r'''(?<=(\n)*)([\t\r\f\v]*)❤(\s*):(?P<context>[^\n❤]*)(?=\n)'''),
+        dedent(r'''(?<=(\n)*)([\t\r\f\v ]*)❤(\s*):(?P<context>[^\n❤]*)(?=\n)'''),
         re.MULTILINE | re.VERBOSE
     )
     # Match string: ``` iheartla
