@@ -127,7 +127,7 @@ def handle_context_block(text):
     for index in range(len(text_list)):
         cur_context = context_list[index]
         if cur_context != '':
-            text_list[index] = "<div class='context' id='context-{}-{}' context='{}'>{}</div>".format(cur_context, context_dict[cur_context], cur_context, text_list[index])
+            text_list[index] = "<div class='context' id='context-{}-{}' context='{}'>{}</div>".format(cur_context.replace(" ", ""), context_dict[cur_context], cur_context, text_list[index])
             context_dict[cur_context] += 1
     return ''.join(text_list)
 

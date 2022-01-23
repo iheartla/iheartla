@@ -361,9 +361,11 @@ function addObversers(){
     if(!(context in context_dict)){
       context_dict[context] = 0
     }
-    var cur_context = document.querySelector(`#context-${context}-${context_dict[context]}`)
+    // console.log(`#context-${context}-${context_dict[context]}`)
+    var noSpaceContext = context.replace(/ /g, "");
+    var cur_context = document.querySelector(`#context-${noSpaceContext}-${context_dict[context]}`)
     context_dict[context] += 1;
-    // console.log(`context is ${context}, cur_context is ${cur_context}, index:${context_dict[context]}`)
+    // console.log(`context is ${context}, cur_context is ${noSpaceContext}, index:${context_dict[context]}`)
     observer.observe(cur_context, options);
   } 
 }
