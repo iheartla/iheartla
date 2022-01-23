@@ -13,21 +13,23 @@ from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file
 
 
 class BlockData(Extension):
-    def __init__(self, match_list=[], code_list=[], block_list=[], inline_list=[], module_name=''):
+    def __init__(self, match_list=[], code_list=[], block_list=[], inline_list=[], number_list=[], module_name=''):
         self.module_name = module_name
         self.match_list = match_list
         self.code_list = code_list
         self.block_list = block_list
         self.inline_list = inline_list
+        self.number_list = number_list
         self.math_pre = ''
         self.math_list = []
         self.math_post = ''
 
-    def add(self, match, code, block, inline=False):
+    def add(self, match, code, block, inline=False, number=True):
         self.match_list.append(match)
         self.code_list.append(code)
         self.block_list.append(block)
         self.inline_list.append(inline)
+        self.number_list.append(number)
 
     def get_content(self):
         return '\n'.join(self.code_list)
@@ -109,6 +111,15 @@ class IheartlaBlockPreprocessor(Preprocessor):
         dedent(r'''
             (?P<fence>^(?:~{3,}|`{3,}))[ ]*                          # opening fence
             iheartla\s*
+            \n                                                       # newline (end of opening fence)
+        '''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
+    # Match string: ``` iheartla_unnumbered
+    RAW_NUM_CODE_BLOCK_RE = re.compile(
+        dedent(r'''
+            (?P<fence>^(?:~{3,}|`{3,}))[ ]*                          # opening fence
+            iheartla_unnumbered\s*
             \n                                                       # newline (end of opening fence)
         '''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
@@ -202,6 +213,9 @@ class IheartlaBlockPreprocessor(Preprocessor):
         for m in self.RAW_CODE_BLOCK_RE.finditer(text):
             # print(m.group())
             text = text.replace(m.group(), "{}iheartla({})\n".format(m.group('fence'), context))
+        for m in self.RAW_NUM_CODE_BLOCK_RE.finditer(text):
+            # print(m.group())
+            text = text.replace(m.group(), "{}iheartla({}, unnumbered)\n".format(m.group('fence'), context))
         return text
 
     def handle_inline_raw_code(self, text, context):
@@ -333,20 +347,25 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 code = read_from_file("{}/{}".format(self.md.path, module_name))
             if module_name and code:
                 if module_name not in file_dict:
-                    file_dict[module_name] = BlockData([m], [code], [m.group(0)], [True], module_name)
+                    file_dict[module_name] = BlockData([m], [code], [m.group(0)], [True], [False], module_name)
                 else:
-                    file_dict[module_name].add(m, code, m.group(0), True)
+                    file_dict[module_name].add(m, code, m.group(0), True, False)
         # Find all blocks
         for m in self.FENCED_BLOCK_RE.finditer(text):
-            module_name = m.group('module').strip()
+            module_attr_list = m.group('module').strip().split(',')
+            module_attr_list = [t.strip() for t in module_attr_list]
+            module_name = module_attr_list[0].strip()
+            numbered = True
+            if 'unnumbered' in module_attr_list[1:]:
+                numbered = False
             code = m.group('code')
             if '.' in module_name and self.BLANK_RE.fullmatch(code):
                 code = read_from_file("{}/{}".format(self.md.path, module_name))
             if module_name and code:
                 if module_name not in file_dict:
-                    file_dict[module_name] = BlockData([m], [code], [m.group(0)], [False], module_name)
+                    file_dict[module_name] = BlockData([m], [code], [m.group(0)], [False], [numbered], module_name)
                 else:
-                    file_dict[module_name].add(m, code, m.group(0), False)
+                    file_dict[module_name].add(m, code, m.group(0), False, numbered)
         # Save to file
         for name, block_data in file_dict.items():
             source = '\n'.join(block_data.code_list)
@@ -393,10 +412,13 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     content = r"""<span class='equation' code_block="{}">${}{}{}$</span>""".format(
                         block_data.module_name, code_list[-1].pre_str, content, code_list[-1].post_str)
                 else:
+                    tag_info = ''
+                    if not block_data.number_list[cur_index]:
+                        tag_info = r"""\notag"""
                     content = r"""
         <div class='equation' code_block="{}">
-        $${}{}{}$$</div>
-        """.format(block_data.module_name, code_list[-1].pre_str, content, code_list[-1].post_str)
+        $${}{}{}{}$$</div>
+        """.format(block_data.module_name, code_list[-1].pre_str, content, code_list[-1].post_str, tag_info)
                 content = self.md.htmlStash.store(content)
                 text = text.replace(block_data.block_list[cur_index], content)
                 replace_dict[block_data.block_list[cur_index]] = content
