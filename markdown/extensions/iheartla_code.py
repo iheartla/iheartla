@@ -72,7 +72,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         dedent(r'''
             (?P<fence>^(?:~{3,}|`{3,}))[ ]*                          # opening fence
             iheartla\s*
-            (\(\s*(?P<module>[^ \}\n]*)\s*\))                        # required {module} 
+            (\((?P<module>[^\}\n]*)\))                        # required {module} 
             \n                                                       # newline (end of opening fence)
             (?P<code>.*?)(?<=\n)                                     # the code block
             (?P=fence)[ ]*$                                          # closing fence
@@ -91,7 +91,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
     )
     # Match string: ❤️context: a=sin(θ)❤️
     INLINE_RE = re.compile(
-        dedent(r'''❤(\s*)(?P<module>[a-zA-Z0-9\.]*)(\s*)(:)(?P<code>.*?)❤'''),
+        dedent(r'''❤(?P<module>[^\n:❤]*)(:)(?P<code>.*?)❤'''),
         re.MULTILINE | re.VERBOSE
     )
     # Match string: # REFERENCES
@@ -101,7 +101,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
     )
     # Match string: ❤ : context
     CONTEXT_RE = re.compile(
-        dedent(r'''(?<=(\n)*)([\t\r\f\v]*)❤(\s*):(\s*)(?P<context>[^\n❤\s]*)(\s*)(?=(\n)+)'''),
+        dedent(r'''(?<=(\n)*)([\t\r\f\v]*)❤(\s*):(?P<context>[^\n❤]*)(?=\n)'''),
         re.MULTILINE | re.VERBOSE
     )
     # Match string: ``` iheartla
@@ -113,7 +113,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         '''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
-    # Match string: ❤: a=sin(θ)❤
+    # Match string: ❤ a=sin(θ)❤
     RAW_CODE_INLINE_RE = re.compile(
         dedent(r'''❤(?P<code>[^❤]*)❤'''),
         re.MULTILINE | re.VERBOSE
@@ -271,7 +271,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         matched_list = ['']
         for m in self.CONTEXT_RE.finditer(text):
             # print("parsed context: {}".format(m.group('context')))
-            context_list.append(m.group('context'))
+            context_list.append(m.group('context').strip())
             matched_list.append(m.group())
             text_list.append(text[start_index: m.start()])
             start_index = m.end()
@@ -297,7 +297,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         raw_context = ['']
         for m in self.CONTEXT_RE.finditer(text):
             # print("parsed context: {}".format(m.group('context')))
-            cur_context = m.group('context')
+            cur_context = m.group('context').strip()
             context_list.append(cur_context)
             raw_context.append(m.group())
             text_list.append(text[start_index: m.start()])
@@ -327,7 +327,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         # Find all inline blocks
         for m in self.INLINE_RE.finditer(text):
             # print("Inline block: {}".format(m.group()))
-            module_name = m.group('module')
+            module_name = m.group('module').strip()
             code = m.group('code')
             if '.' in module_name and self.BLANK_RE.fullmatch(code):
                 code = read_from_file("{}/{}".format(self.md.path, module_name))
@@ -338,7 +338,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     file_dict[module_name].add(m, code, m.group(0), True)
         # Find all blocks
         for m in self.FENCED_BLOCK_RE.finditer(text):
-            module_name = m.group('module')
+            module_name = m.group('module').strip()
             code = m.group('code')
             if '.' in module_name and self.BLANK_RE.fullmatch(code):
                 code = read_from_file("{}/{}".format(self.md.path, module_name))

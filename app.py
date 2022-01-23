@@ -106,7 +106,7 @@ def handle_sections(text, dict):
 def handle_context_block(text):
     # Match string: ❤ : context
     CONTEXT_RE = re.compile(
-        dedent(r'''<div>❤(\s*):(\s*)(?P<context>[a-zA-Z0-9]*)<\/div>'''),
+        dedent(r'''<div>❤(\s*):(?P<context>[^\n❤]*)<\/div>'''),
         re.MULTILINE | re.VERBOSE
     )
     start_index = 0
@@ -115,7 +115,7 @@ def handle_context_block(text):
     matched_list = ['']
     context_dict = {}
     for m in CONTEXT_RE.finditer(text):
-        cur_context = m.group('context')
+        cur_context = m.group('context').strip()
         # print("parsed context: {}".format(m.group('context')))
         context_list.append(cur_context)
         matched_list.append(m.group())
