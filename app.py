@@ -269,7 +269,7 @@ const sym_data = JSON.parse('{sym_json}');
                 dedent(r'''(?<!\\)((?<!\$)\${2}(?!\$))((?P<code>.*?))(?<!\\)(?<!\$)\1(?!\$)'''),
                 re.MULTILINE | re.DOTALL | re.VERBOSE
             )
-            num = 1
+            num = md.Meta.get('eqBase', 1)
             for m in EQ_BLOCK_RE.finditer(html):
                 equation = m.group('code')
                 if '\\notag' not in equation:
