@@ -509,6 +509,16 @@ class CodeGenNumpy(CodeGen):
                     name_convention[var] = "{}[{}]".format(var_ids[0], var_ids[1][0])
         for sym, subs in node.sym_dict.items():
             target_var.append(sym)
+        # try to first use dim of parameters
+        target_var = list(set(target_var))
+        param_l = []
+        remain_l = []
+        for cur_v in target_var:
+            if cur_v in self.main_param.parameters:
+                param_l.append(cur_v)
+            else:
+                remain_l.append(cur_v)
+        target_var = param_l + remain_l
         self.add_name_conventions(name_convention)
         #
         assign_id = node.symbol
