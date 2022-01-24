@@ -491,6 +491,17 @@ class CodeGenNumpy(CodeGen):
         content = self.trim_content(content)
         return content
 
+    def get_target_name(self, c_var):
+        """check whether there's a need to prepend `self.`"""
+        content = c_var
+        if self.local_func_parsing:
+            if c_var not in self.func_data_dict[self.local_func_name].params_data.parameters:
+                content = "self.{}".format(c_var)
+        else:
+            if c_var not in self.main_param.parameters:
+                content = "self.{}".format(c_var)
+        return content
+
     def visit_summation(self, node, **kwargs):
         target_var = []
         sub = self.visit(node.id).content
@@ -551,20 +562,20 @@ class CodeGenNumpy(CodeGen):
             sym_list = node.sym_dict[target_var[0]]
             sub_index = sym_list.index(sub)
             if sub_index == 0:
-                size_str = "len({})".format(self.convert_bound_symbol(target_var[0]))
+                size_str = "len({})".format(self.get_target_name(self.convert_bound_symbol(target_var[0])))
             elif sub_index == 1:
                 if self.get_sym_type(target_var[0]).element_type.is_dynamic_row():
-                    size_str = "{}[{}-1].shape[0]".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
+                    size_str = "{}[{}-1].shape[0]".format(self.get_target_name(self.convert_bound_symbol(target_var[0])), sym_list[0])
                 else:
                     size_str = "{}".format(self.get_sym_type(target_var[0]).element_type.rows)
             else:
                 if self.get_sym_type(target_var[0]).element_type.is_dynamic_col():
-                    size_str = "{}[{}-1].shape[1]".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
+                    size_str = "{}[{}-1].shape[1]".format(self.get_target_name(self.convert_bound_symbol(target_var[0])), sym_list[0])
                 else:
                     size_str = "{}".format(self.get_sym_type(target_var[0]).element_type.cols)
             content.append("for {} in range(1, {}+1):\n".format(sub, size_str))
         else:
-            content.append("for {} in range(1, len({})+1):\n".format(sub, self.convert_bound_symbol(target_var[0])))
+            content.append("for {} in range(1, len({})+1):\n".format(sub, self.get_target_name(self.convert_bound_symbol(target_var[0]))))
         exp_pre_list = []
         if exp_info.pre_list:   # catch pre_list
             list_content = "".join(exp_info.pre_list)
