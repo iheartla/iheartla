@@ -1735,6 +1735,8 @@ class TypeWalker(NodeWalker):
 
     def walk_Function(self, node, **kwargs):
         if isinstance(node.name, str):
+            if self.local_func_parsing and node.name in self.parameters and node.name not in self.used_params:
+                self.used_params.append(node.name)
             if contains_sub_symbol(node.name):
                 split_res = split_sub_string(node.name)
                 name = self.filter_symbol(split_res[0])
