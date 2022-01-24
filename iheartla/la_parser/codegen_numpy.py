@@ -680,7 +680,10 @@ class CodeGenNumpy(CodeGen):
     def visit_power(self, node, **kwargs):
         base_info = self.visit(node.base, **kwargs)
         if node.t:
-            base_info.content = "{}.T".format(base_info.content)
+            if node.base.la_type.is_vector():
+                base_info.content = "{}.T.reshape(1, {})".format(base_info.content, node.base.la_type.rows)
+            else:
+                base_info.content = "{}.T".format(base_info.content)
         elif node.r:
             if node.la_type.is_scalar():
                 base_info.content = "1 / ({})".format(base_info.content)
