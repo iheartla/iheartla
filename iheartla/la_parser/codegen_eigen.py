@@ -152,7 +152,7 @@ class CodeGenEigen(CodeGen):
                         dim_definition.append(
                             '        long {} = {}{}.cols();'.format(ret_dim, self.param_name_test, param_i))
         test_content.append(
-            '    {} = []({})->{}{{'.format(var_name, self.get_func_params_str(func_type, name_required),
+            '    {} = [&]({})->{}{{'.format(var_name, self.get_func_params_str(func_type, name_required),
                                            self.get_ctype(func_type.ret)))
         test_content += dim_definition
         if func_type.ret.is_set():
