@@ -1154,7 +1154,8 @@ class CodeGenNumpy(CodeGen):
                         var_ids = self.get_all_ids(right_var)
                         right_info.content = right_info.content.replace(right_var, "{}[{}]".format(var_ids[0], var_ids[1][0]))
 
-                right_exp += "    self.{} = {}".format(left_info.content, right_info.content)
+                right_exp += "    {} = {}".format(left_info.content, right_info.content)
+
                 ele_type = self.get_sym_type(sequence).element_type
                 if self.get_sym_type(sequence).is_sequence():
                     if ele_type.is_matrix():
