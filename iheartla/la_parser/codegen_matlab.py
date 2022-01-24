@@ -459,12 +459,12 @@ class CodeGenMatlab(CodeGen):
                     for ret_dim in self.get_sym_type(parameter).ret_symbols:
                         param_i = self.get_sym_type(parameter).template_symbols[ret_dim]
                         if self.get_sym_type(parameter).params[param_i].is_vector():
-                            dim_definition.append('        {} = {}{}.shape[0]'.format(ret_dim, self.param_name_test, param_i))
+                            dim_definition.append('            {} = size({}{}, 1);'.format(ret_dim, self.param_name_test, param_i))
                         elif self.get_sym_type(parameter).params[param_i].is_matrix():
                             if ret_dim == self.get_sym_type(parameter).params[param_i].rows:
-                                dim_definition.append('        {} = {}{}.shape[0]'.format(ret_dim, self.param_name_test, param_i))
+                                dim_definition.append('            {} = size({}{}, 1);'.format(ret_dim, self.param_name_test, param_i))
                             else:
-                                dim_definition.append('        {} = {}{}.shape[1]'.format(ret_dim, self.param_name_test, param_i))
+                                dim_definition.append('            {} = size({}{}, 2);'.format(ret_dim, self.param_name_test, param_i))
                 for index in range(len(self.get_sym_type(parameter).params)):
                     param_list.append('{}{}'.format(self.param_name_test, index))
                 test_content.append(test_indent+"    {} = @{};".format(parameter,parameter+"Func"))
