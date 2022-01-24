@@ -710,7 +710,10 @@ class IRVisitor(object):
             new_str = new_str.replace('-', '_')
             if new_str != special:
                 while new_str in names_dict or new_str in self.symtable.keys() or self.is_keyword(new_str):
-                    new_str = '_' + new_str
+                    if self.parse_type == ParserTypeEnum.MATLAB:
+                        new_str = new_str + '_'
+                    else:
+                        new_str = '_' + new_str
                 names_dict.append(new_str)
                 res = res.replace(special, new_str)
         return self.fill_comment(res)
