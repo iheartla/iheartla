@@ -101,8 +101,29 @@ class CodeGenNumpy(CodeGen):
         content = node.get_name()
         prefix = False
         # if not self.is_local_param(content) and content not in self.parameters and content not in self.local_func_syms:
+        # if self.local_func_parsing:
+        #     if self.local_func_name != '':
+        #         if content not in self.func_data_dict[self.local_func_name].params_data.parameters:
+        #             prefix = True
+        # else:
+        #     if content not in self.main_param.parameters:
+        #         prefix = True
         if content in self.lhs_list:
             prefix = True
+        elif self.local_func_parsing:
+            is_param = False
+            if self.local_func_name != '':
+                for key, value in self.func_data_dict.items():
+                    if content in value.params_data.parameters:
+                        is_param = True
+                        break
+            if not is_param and content in self.used_params:
+                prefix = True
+        else:
+            if len(self.module_list) > 0:
+                for module in self.module_list:
+                    if len(module.syms) > 0 and content in module.syms:
+                        prefix = True
         content = self.filter_symbol(content)
         if content in self.name_convention_dict:
             content = self.name_convention_dict[content]
