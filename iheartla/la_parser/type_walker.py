@@ -91,6 +91,25 @@ class EquationData(object):
                 def_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(lhs), self.symtable[lhs].get_json_content(), self.desc_dict[lhs].replace('"', '\\"')))
             else:
                 def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(lhs), self.symtable[lhs].get_json_content()))
+        # module dependence, get the sym info
+        dependence_list = []
+        for dep_data in self.dependence:
+            sym_list = []
+            init_list = []
+            for param in dep_data.initialized_list:
+                init_list.append('"{}"'.format(param))
+            for sym in dep_data.name_list:
+                if sym in self.desc_dict:
+                    sym_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(sym),
+                                                                                             self.symtable[
+                                                                                                 sym].get_json_content(),
+                                                                                             self.desc_dict[
+                                                                                                 sym].replace('"',
+                                                                                                              '\\"')))
+                else:
+                    sym_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(sym),
+                                                                                self.symtable[sym].get_json_content()))
+            dependence_list.append('''{{"module":"{}", "syms":[{}], "initialization":[{}]}}'''.format(dep_data.module, ','.join(sym_list), ','.join(init_list)))
         #
         func_list = []
         for k, v in self.func_data_dict.items():
@@ -106,7 +125,7 @@ class EquationData(object):
                     local_param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(local_param), v.params_data.symtable[local_param].get_json_content()))
             func_list.append('''{{"name":"{}", "parameters":[{}]}}'''.format(self.trim(k), ','.join(local_param_list)))
         # self.la_content = self.la_content.replace('\n', '\\\\n')
-        content = '''"parameters":[{}], "definition":[{}], "local_func":[{}]'''.format(','.join(param_list), ','.join(def_list), ','.join(func_list))
+        content = '''"parameters":[{}], "definition":[{}], "local_func":[{}], "dependence":[{}]'''.format(','.join(param_list), ','.join(def_list), ','.join(func_list), ','.join(dependence_list))
         content = content.replace('\\', '\\\\\\\\')
         content = content.replace('\n', '\\\\n')
         content = content.replace('`', '')
@@ -1028,7 +1047,7 @@ class TypeWalker(NodeWalker):
                                                            "Function {} not exist".format(name))
         else:
             module = package_info.ir
-            self.import_module_list.append(DependenceData(module, params_list, name_list))
+            self.import_module_list.append(DependenceData(module.get_name(), params_list, name_list))
         import_node = ImportNode(package=package, module=module, names=name_ir_list, separators=node.separators,
                                      params=params, parse_info=node.parseinfo)
         return import_node
