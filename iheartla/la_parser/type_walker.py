@@ -61,6 +61,8 @@ class EquationData(object):
         for key, value in self.func_data_dict.items():
             self.sym_list.append(key)
             self.sym_list += list(value.params_data.symtable.keys())
+        for dep_data in self.dependence:
+            self.sym_list += dep_data.name_list
         self.sym_list = list(set(self.sym_list))
 
     def gen_sym_list(self):
