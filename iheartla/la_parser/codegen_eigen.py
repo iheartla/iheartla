@@ -197,7 +197,7 @@ class CodeGenEigen(CodeGen):
                         content = "{}({}, {})".format(node.main_id, node.subs[0], node.subs[1])
         return CodeNodeInfo(content)
 
-    def get_struct_definition(self, def_str, stat_str):
+    def get_struct_definition(self, pre_str, def_str, stat_str):
         init_content, assign_content = self.get_used_params_content()
         item_list = []
         def_list = []
@@ -209,19 +209,29 @@ class CodeGenEigen(CodeGen):
                 def_list.append("const {} & {}".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
                 # assign_list.append("{}({})".format(parameter, parameter))
         def_struct = ''
+        declare_modules = ''
         init_struct = ''
         init_var = ''
+        imported_function = ''   # import function from other modules
         if len(self.module_list) > 0:
+            init_struct += '    :\n'
+            init_struct_list = []
             for parameter in self.module_syms:
-                item_list.append("    {} {};".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
+                if not self.symtable[parameter].is_function():
+                    item_list.append("    {} {};".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
             for module in self.module_list:
                 def_struct += self.update_prelist_str([module.frame.struct], '    ')
+                declare_modules += "    {} _{};\n".format(module.name, module.name)
                 if len(module.params) > 0:
-                    init_struct += "        {} _{}({});\n".format(module.name, module.name, ', '.join(module.params))
+                    init_struct_list.append("    _{}({})".format(module.name, ', '.join(module.params)))
                 else:
-                    init_struct += "        {} _{}();\n".format(module.name, module.name)
+                    init_struct_list.append("    _{}()".format(module.name))
                 for sym in module.syms:
-                    init_var += "        {} = _{}.{};\n".format(sym, module.name, sym)
+                    if self.symtable[sym].is_function():
+                        imported_function += self.copy_func_impl(sym, module.name)
+                    else:
+                        init_var += "        {} = _{}.{};\n".format(sym, module.name, sym)
+            init_struct += ',\n'.join(init_struct_list) + '\n'
         content = ["struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),
                    init_content,
@@ -230,7 +240,20 @@ class CodeGenEigen(CodeGen):
                    # "    : {}".format(',\n    '.join(assign_list)),
                    # "    {}",
                    ]
-        return "\n".join(content) + def_struct + def_str + init_struct + assign_content + init_var + stat_str + '    }\n' + "};\n"
+        return "\n".join(content) + def_struct + declare_modules + imported_function + pre_str + init_struct + '    {\n' + def_str + assign_content + init_var + stat_str + '    }\n' + "};\n"
+
+    def copy_func_impl(self, sym, module_name):
+        """implement function from other modules"""
+        ret_type = self.get_ctype(self.symtable[sym].ret)
+        param_list = []
+        init_list = []
+        for cur_index in range(len(self.symtable[sym].params)):
+            param_list.append("{} p{}".format(self.get_ctype(self.symtable[sym].params[cur_index]), cur_index))
+            init_list.append("p{}".format(cur_index))
+        content_list = ["    {} {}({}){{\n".format(ret_type, sym, ','.join(param_list)),
+                        "        return _{}.{}({});\n".format(module_name, sym, ','.join(init_list)),
+                        "    };\n"]
+        return ''.join(content_list)
 
     def get_ret_display(self):
         # print return value in main function
@@ -512,15 +535,17 @@ class CodeGenEigen(CodeGen):
                 self.ret_symbol)
         ret_type = self.get_result_type()
         if len(self.parameters) == 0:
-            content += self.func_name + '(' + ')\n{\n'  # func name
+            content += self.func_name + '(' + ')\n'  # func name
             test_function.insert(0, "void {}({})".format(rand_func_name, ', '.join(test_par_list)))
         elif len(self.parameters) == 1:
-            content += self.func_name + '(' + ', '.join(par_des_list) + ')\n{\n'  # func name
+            content += self.func_name + '(' + ', '.join(par_des_list) + ')\n'  # func name
             test_function.insert(0, "void {}({})".format(rand_func_name, ', '.join(test_par_list)))
         else:
-            content += self.func_name + '(\n    ' + ',\n    '.join(par_des_list) + ')\n{\n'  # func name
+            content += self.func_name + '(\n    ' + ',\n    '.join(par_des_list) + ')\n'  # func name
             test_function.insert(0, "void {}({})".format(rand_func_name, ',\n    '.join(test_par_list)))
         # merge content
+        pre_content = content
+        content = ''
         content += dim_content
         type_checks += self.get_dim_check_str()
         type_checks += self.get_arith_dim_check_str()
@@ -555,7 +580,7 @@ class CodeGenEigen(CodeGen):
 
         # content += stats_content
         # content += '\n}\n'
-        content = self.get_struct_definition(self.update_prelist_str([content], '    '), self.update_prelist_str([stats_content], '    '))
+        content = self.get_struct_definition(self.update_prelist_str([pre_content], '    '), self.update_prelist_str([content], '    '), self.update_prelist_str([stats_content], '    '))
         # return value
         # ret_value = self.get_ret_struct()
         # content += '    return ' + ret_value + ';'
