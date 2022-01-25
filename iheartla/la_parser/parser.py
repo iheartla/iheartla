@@ -218,11 +218,84 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN):
     # type walker
     type_walker = get_type_walker()
     start_node = type_walker.walk(model, pre_walk=True)
-    # deal with function
-    func_dict = type_walker.get_func_symbols()
-    multi_list = []
     extra_dict = {}
     parse_key = _default_key
+    # deal with packages
+    dependent_modules = []
+    if len(start_node.directives) > 0:
+        dependent_modules = start_node.get_module_directives()
+        # include directives
+        package_name_dict = start_node.get_package_dict()
+        package_name_list = []
+        key_names = []
+        for package in package_name_dict:
+            name_list = package_name_dict[package]
+            if 'e' in name_list:
+                if DEBUG_PARSER:
+                    current_content = current_content.replace("pi;", "pi|e;")
+                    current_content = current_content.replace("BUILTIN_KEYWORDS;", "BUILTIN_KEYWORDS|e;")
+                name_list.remove('e')
+                parse_key += 'e;'
+                package_name_list.append('e')
+            for name in name_list:
+                key_names.append("{}_func".format(name))
+        package_name_list += key_names
+        if len(key_names) > 0:
+            # add new rules
+            if DEBUG_PARSER:
+                keyword_index = current_content.find('predefined_built_operators;')
+                current_content = current_content[:keyword_index] + '|'.join(key_names) + '|' + current_content[
+                                                                                                keyword_index:]
+            parse_key += ';'.join(key_names)
+        extra_dict['pkg'] = package_name_list
+    # get new parser
+    # parser = get_compiled_parser(current_content, parse_key, extra_dict)
+    # model = parser.parse(content, parseinfo=True)
+    # dependent modules
+    existed_syms_dict = {}
+    module_list = []
+    module_param_list = []
+    module_sym_list = []
+    if len(dependent_modules) > 0:
+        for module in dependent_modules:
+            try:
+                parse_info = module.module.parse_info
+                err_msg = "Invalid module:{}".format(module.module.get_name())
+                module_file = "{}/{}.ihla".format(_module_path, module.module.get_name())
+                module_content = read_from_file(module_file)
+                # Init parser
+                parser = get_default_parser()
+                new_model = parser.parse(module_content, parseinfo=True)
+                tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model, parser_type)
+                pre_frame = walk_model_frame(parser_type, tmp_type_walker, tmp_start_node, module.module.get_name())
+                name_list = []
+                par_list = []
+                for sym in module.names:
+                    if sym.get_name() not in tmp_type_walker.symtable:
+                        parse_info = sym.parse_info
+                        err_msg = "Symbol {} doesn't exist in module {}".format(sym.get_name(), module.module.get_name())
+                        raise
+                    existed_syms_dict[sym.get_name()] = copy.deepcopy(tmp_type_walker.symtable[sym.get_name()])
+                    name_list.append(sym.get_name())
+                for par in module.params:
+                    par_list.append(par.get_name())
+                if len(tmp_type_walker.parameters) != len(module.params):
+                    parse_info = sym.parse_info
+                    err_msg = "Parameters doesn't match, need {} while given {}".format(len(tmp_type_walker.parameters), len(module.params))
+                    raise
+                module_list.append(CodeModule(frame=pre_frame, name=module.module.get_name(), syms=name_list, params=par_list))
+                module_param_list.append(copy.deepcopy(tmp_type_walker.parameters))
+                module_sym_list.append(copy.deepcopy(tmp_type_walker.symtable))
+            except:
+                assert False, get_err_msg_info(parse_info, err_msg)
+    #
+    # deal with function
+    func_dict = type_walker.get_func_symbols()
+    #
+    for name, la_type in existed_syms_dict.items():
+        if la_type.is_function():
+            func_dict[name] = "importFP;" + name
+    multi_list = []
     for parameter in type_walker.parameters:
         if _id_pattern.fullmatch(parameter):
             continue  # valid single identifier
@@ -269,74 +342,9 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN):
         if DEBUG_PARSER:
             current_content = current_content.replace("func_id='!!!';", "func_id={};".format(func_rule))
         parse_key += "func symbol:{}, func sig:{}".format(','.join(func_dict.keys()), ";".join(func_dict.values()))
-    # deal with packages
-    dependent_modules = []
-    if len(start_node.directives) > 0:
-        dependent_modules = start_node.get_module_directives()
-        # include directives
-        package_name_dict = start_node.get_package_dict()
-        package_name_list = []
-        key_names = []
-        for package in package_name_dict:
-            name_list = package_name_dict[package]
-            if 'e' in name_list:
-                if DEBUG_PARSER:
-                    current_content = current_content.replace("pi;", "pi|e;")
-                    current_content = current_content.replace("BUILTIN_KEYWORDS;", "BUILTIN_KEYWORDS|e;")
-                name_list.remove('e')
-                parse_key += 'e;'
-                package_name_list.append('e')
-            for name in name_list:
-                key_names.append("{}_func".format(name))
-        package_name_list += key_names
-        if len(key_names) > 0:
-            # add new rules
-            if DEBUG_PARSER:
-                keyword_index = current_content.find('predefined_built_operators;')
-                current_content = current_content[:keyword_index] + '|'.join(key_names) + '|' + current_content[
-                                                                                                keyword_index:]
-            parse_key += ';'.join(key_names)
-        extra_dict['pkg'] = package_name_list
     # get new parser
     parser = get_compiled_parser(current_content, parse_key, extra_dict)
     model = parser.parse(content, parseinfo=True)
-    # dependent modules
-    existed_syms_dict = {}
-    module_list = []
-    module_param_list = []
-    module_sym_list = []
-    if len(dependent_modules) > 0:
-        for module in dependent_modules:
-            try:
-                parse_info = module.module.parse_info
-                err_msg = "Invalid module:{}".format(module.module.get_name())
-                module_file = "{}/{}.ihla".format(_module_path, module.module.get_name())
-                module_content = read_from_file(module_file)
-                # Init parser
-                parser = get_default_parser()
-                new_model = parser.parse(module_content, parseinfo=True)
-                tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model, parser_type)
-                pre_frame = walk_model_frame(parser_type, tmp_type_walker, tmp_start_node, module.module.get_name())
-                name_list = []
-                par_list = []
-                for sym in module.names:
-                    if sym.get_name() not in tmp_type_walker.symtable:
-                        parse_info = sym.parse_info
-                        err_msg = "Symbol {} doesn't exist in module {}".format(sym.get_name(), module.module.get_name())
-                        raise
-                    existed_syms_dict[sym.get_name()] = copy.deepcopy(tmp_type_walker.symtable[sym.get_name()])
-                    name_list.append(sym.get_name())
-                for par in module.params:
-                    par_list.append(par.get_name())
-                if len(tmp_type_walker.parameters) != len(module.params):
-                    parse_info = sym.parse_info
-                    err_msg = "Parameters doesn't match, need {} while given {}".format(len(tmp_type_walker.parameters), len(module.params))
-                    raise
-                module_list.append(CodeModule(frame=pre_frame, name=module.module.get_name(), syms=name_list, params=par_list))
-                module_param_list.append(copy.deepcopy(tmp_type_walker.parameters))
-                module_sym_list.append(copy.deepcopy(tmp_type_walker.symtable))
-            except:
-                assert False, get_err_msg_info(parse_info, err_msg)
     # second parsing
     type_walker.reset_state(content)  # reset
     type_walker.symtable.update(existed_syms_dict)
