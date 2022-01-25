@@ -621,6 +621,18 @@ class IheartlaBlockPreprocessor(Preprocessor):
                                     # print("Update param desc, name:{}, desc:{}".format(local_param, param_eq_data.desc))
                         if not existed:
                             sym_data.sym_equation_list.append(param_eq_data)
+            for dep_data in equation.dependence:
+                for dep_sym in dep_data.name_list:
+                    sym_eq_data = SymEquationData(la_type=equation.symtable[dep_sym],
+                                                  desc=equation.desc_dict.get(dep_sym), module_name=equation.name,
+                                                  is_defined=True)
+                    if dep_sym not in sym_dict:
+                        sym_data = SymData(dep_sym, sym_equation_list=[sym_eq_data])
+                        node_dict[dep_sym] = SymNode(dep_sym)
+                        sym_dict[dep_sym] = sym_data
+                    else:
+                        sym_data = sym_dict[dep_sym]
+                        sym_data.sym_equation_list.append(sym_eq_data)
             # expr list
             for sym_list in equation.expr_dict.values():
                 # print("cur sym_list:{}".format(sym_list))
