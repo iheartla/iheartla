@@ -1474,7 +1474,8 @@ class TypeWalker(NodeWalker):
         base_id = base_node.get_main_id()
         self.symtable[base_id] = base_type.la_type
         self.tmp_symtable[base_id] = base_type.la_type
-        exp_node = self.walk(node.exp, **kwargs).ir
+        exp_info = self.walk(node.exp, **kwargs)
+        exp_node = exp_info.ir
         cond_list = []
         if node.cond:
             cond_list = self.walk(node.cond, **kwargs)
@@ -1483,7 +1484,7 @@ class TypeWalker(NodeWalker):
         assert exp_node.la_type.is_scalar(), get_err_msg_info(exp_node.parse_info, "Objective function must return a scalar")
         opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node, base_type, parse_info=node.parseinfo)
         opt_node.la_type = ScalarType()
-        node_info = NodeInfo(opt_node.la_type, ir=opt_node)
+        node_info = NodeInfo(opt_node.la_type, ir=opt_node, symbols=exp_info.symbols)
         return node_info
 
     def walk_MultiCond(self, node, **kwargs):
