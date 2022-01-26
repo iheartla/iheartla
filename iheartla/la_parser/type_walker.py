@@ -66,12 +66,7 @@ class EquationData(object):
         self.sym_list = list(set(self.sym_list))
 
     def gen_sym_list(self):
-        sym_list = self.parameters + self.definition
-        for param in self.parameters:
-            sym_list.append(param)
-        for k, v in self.func_data_dict.items():
-            sym_list = sym_list + v.params_data.parameters
-            sym_list.append(k)
+        sym_list = copy.deepcopy(self.sym_list)
         sym_list = [sym.replace('`$', '').replace('$`', '').replace('`', '') for sym in sym_list]
         return sorted(list(set(sym_list)), key=len, reverse=True)
 
