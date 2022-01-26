@@ -257,6 +257,8 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN):
     module_list = []
     module_param_list = []
     module_sym_list = []
+    # deal with function
+    func_dict = type_walker.get_func_symbols()
     if len(dependent_modules) > 0:
         for module in dependent_modules:
             try:
@@ -290,8 +292,6 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN):
             except:
                 assert False, get_err_msg_info(parse_info, err_msg)
     #
-    # deal with function
-    func_dict = type_walker.get_func_symbols()
     #
     for name, la_type in existed_syms_dict.items():
         if la_type.is_function():
