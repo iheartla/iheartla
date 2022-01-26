@@ -697,6 +697,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 if nei in color_dict:
                     nei_colors.append(color_dict[nei])
             return nei_colors
+        sym_list.reverse()
         for cur_sym in sym_list:
             cur_nei_colors = get_neighbor_colors(cur_sym)
             c = None
@@ -706,7 +707,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     break
             if c is None:
                 c = get_new_color(all_colors)
-            pallette.append(c)
+                pallette.append(c)
+            else:
+                # shuffle c to the back of pallete
+                pallette.remove(c)
+                pallette.append(c)
             color_dict[cur_sym] = c
         for cur_sym, cur_color in color_dict.items():
             if cur_sym in sym_dict:
