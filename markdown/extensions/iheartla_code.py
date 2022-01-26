@@ -727,7 +727,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     used_list_str = '"' + '","'.join(sym_eq_data.used_list) + '"'
                 cur_desc = sym_eq_data.desc
                 if sym_eq_data.desc:
-                    cur_desc = cur_desc.replace('\\', '\\\\\\\\').replace('"', '\\\\"')
+                    cur_desc = cur_desc.replace('\\', '\\\\\\\\').replace('"', '\\\\"').replace("'", "\\\\'")
                 # print(" sym_eq_data.desc:{}".format( sym_eq_data.desc))
                 eq_data_list.append('''{{"desc":"{}", "type_info":{}, "def_module":"{}", "is_defined":{}, "used_equations":{}, "color":"{}"}}'''.format(
                     cur_desc, sym_eq_data.la_type.get_json_content(),
