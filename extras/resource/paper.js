@@ -219,7 +219,7 @@ function getSymTypeInfo(type_info){
     content = `$\\in ${info}$`;
   }
   else{
-    content = `set type`;
+    content = `scalar type`;
   }
   // console.log("type_info.type: " + type_info.type);
 
