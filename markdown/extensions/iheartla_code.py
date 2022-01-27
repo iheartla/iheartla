@@ -88,12 +88,12 @@ class IheartlaBlockPreprocessor(Preprocessor):
     )
     # Match string: <span class="def:context:symbol">***</span>
     EASY_SPAN_CONTEXT_BLOCK_RE = re.compile(
-        dedent(r'''<span\ class=(?P<quote>"|')def:(?P<context>[^\n:❤]*)(?P=quote)>(?P<code>.*?)</span>'''),
+        dedent(r'''<span\ class=(?P<quote>"|')def:(?P<context>[^\n:❤'"]*)(?P=quote)>(?P<code>.*?)</span>'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
     # Match string: <span class="def:context:symbol">***</span>
     SPAN_BLOCK_RE = re.compile(
-        dedent(r'''<span\ class=(?P<quote>"|')def:(?P<context>[^\n:❤]*)(:)(?P<symbol>[^:>'"]*)(?P=quote)>(?P<code>.*?)</span>'''),
+        dedent(r'''<span\ class=(?P<quote>"|')def:(?P<context>[^\n:❤'"]*)(:)(?P<symbol>[^:>'"]*)(?P=quote)>(?P<code>.*?)</span>'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
     # Match string: <span class="def:symbol">***</span>
