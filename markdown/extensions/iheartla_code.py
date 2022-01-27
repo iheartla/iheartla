@@ -81,6 +81,16 @@ class IheartlaBlockPreprocessor(Preprocessor):
         '''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
+    # Match string: <span class="def">***</span>
+    EASY_SPAN_BLOCK_RE = re.compile(
+        dedent(r'''<span\ class=(?P<quote>"|')def(?P=quote)>(?P<code>.*?)</span>'''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
+    # Match string: <span class="def:context:symbol">***</span>
+    EASY_SPAN_CONTEXT_BLOCK_RE = re.compile(
+        dedent(r'''<span\ class=(?P<quote>"|')def:(?P<context>[^\n:❤]*)(?P=quote)>(?P<code>.*?)</span>'''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
     # Match string: <span class="def:context:symbol">***</span>
     SPAN_BLOCK_RE = re.compile(
         dedent(r'''<span\ class=(?P<quote>"|')def:(?P<context>[^\n:❤]*)(:)(?P<symbol>[^:>'"]*)(?P=quote)>(?P<code>.*?)</span>'''),
@@ -203,6 +213,54 @@ class IheartlaBlockPreprocessor(Preprocessor):
         # print("after, text:{}\n".format(text))
         return text
 
+    def handle_easy_span_context_math(self, text, equation_dict, span_dict):
+        for m in self.EASY_SPAN_CONTEXT_BLOCK_RE.finditer(text):
+            sym_list = equation_dict[m.group('context')].gen_sym_list()
+            found_list = []
+            desc = m.group('code')
+            # sym_list = m.group('symbol').split(';')
+            cur_dict = {}
+            if m.group('context') in span_dict:
+                cur_dict = span_dict[m.group('context')]
+            # print("handle_span_code, matched:{}".format(m.group()))
+            # Multiple math blocks
+            for math in self.MATH_RE.finditer(desc):
+                code = math.group("code")
+                modified = False
+                for sym in sym_list:
+                    PROSE_RE = re.compile(
+                        dedent(r'''(?<!(    # negative begins
+                                                    (\\(proselabel|prosedeflabel)({{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\s]+)}})?{{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}_{{()\s]*)))
+                                                    |
+                                                    ([^\s]+)
+                                                    ) # negative ends
+                                                    ({})
+                                                    (?![^\s]+)'''.format(self.escape_sym(sym))),
+                        re.MULTILINE | re.DOTALL | re.VERBOSE
+                    )
+                    changed = True
+                    while changed:
+                        changed = False
+                        for target in PROSE_RE.finditer(code):
+                            modified = True
+                            changed = True
+                            code = code[:target.start()] + "{{\\prosedeflabel{{{}}}{{{{{}}}}}}}".format(
+                                m.group('context'), sym) + code[target.end():]
+                            found_list.append(sym)
+                            # print("code:{}".format(code))
+                            break
+                if modified:
+                    desc = desc.replace(math.group(), r"""${}$""".format(code))
+            # print("handle_span_code, desc:{}".format(desc))
+            found_list = list(set(found_list))
+            for sym in found_list:
+                cur_dict[sym] = m.group('code')
+            text = text.replace(m.group(), "<span sym='{}' context='{}'> {} </span>".format(
+                ';'.join(found_list).replace('\\', '\\\\'), m.group('context'), desc))
+            span_dict[m.group('context')] = cur_dict
+        # print("after, text:{}\n".format(text))
+        return text, span_dict
+
     def handle_prose_label(self, text, context):
         for m in self.PROSE_RE.finditer(text):
             # print("prose match: {}, def:{}, symbol:{}".format(m.group(), m.group('def'), m.group('symbol')))
@@ -231,6 +289,13 @@ class IheartlaBlockPreprocessor(Preprocessor):
             # print("simple_span_code: {}".format(m.group()))
             # print("new: {}".format('<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code'))))
             text = text.replace(m.group(), '<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code')))
+        return text
+
+    def handle_easy_span_code(self, text, context):
+        for m in self.EASY_SPAN_BLOCK_RE.finditer(text):
+            # print("simple_span_code: {}".format(m.group()))
+            # print("new: {}".format('<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code'))))
+            text = text.replace(m.group(), '<span class="def:{}"> {} </span>'.format(context, m.group('code')))
         return text
 
     def handle_span_code(self, text):
@@ -296,6 +361,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             text_list[index] = self.handle_raw_code(text_list[index], context_list[index])
             text_list[index] = self.handle_inline_raw_code(text_list[index], context_list[index])
             text_list[index] = self.handle_raw_span_code(text_list[index], context_list[index])
+            text_list[index] = self.handle_easy_span_code(text_list[index], context_list[index])
             full_text += text_list[index]
             # text_list[index] = self.handle_prose_label(text_list[index], context_list[index])
         return full_text, context_list
@@ -463,6 +529,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         text = self.handle_reference(text)
         text, equation_dict, replace_dict = self.handle_iheartla_code(text)
         text, span_dict = self.handle_span_code(text)
+        text, span_dict = self.handle_easy_span_context_math(text, equation_dict, span_dict)
         equation_dict = self.merge_desc(equation_dict, span_dict)
         self.process_metadata(equation_dict, context_list)
         text = self.handle_context_post(text, equation_dict)
