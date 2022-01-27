@@ -391,14 +391,15 @@ function updateGlossarySyms(cur_context){
     var cur_color = `highlight_${getSymColor(k)}`;
     diff_list = sym_data[k];
     ck = k.replaceAll("\\","\\\\");
+    var dollarSymK = getDollarSym(k);
     for (var j = 0; j < diff_list.length; j++) {
       if (diff_list[j].def_module == cur_context) {
         var cur_info = getSymTypeInfo(diff_list[j].type_info)
         if(diff_list[j].desc && diff_list[j].desc != 'None' ){
-          content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span class="${cur_color} paperSymbol">${k}</span> ${cur_info}: ${diff_list[j].desc} </span><br>`;
+          content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span class="${cur_color} paperSymbol">${dollarSymK}</span> ${cur_info}: ${diff_list[j].desc} </span><br>`;
         }
         else{
-          content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span class="${cur_color} paperSymbol">${k}</span> ${cur_info} </span><br>`;
+          content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span class="${cur_color} paperSymbol">${dollarSymK}</span> ${cur_info} </span><br>`;
         }
         break;
       }

@@ -62,6 +62,8 @@ class CodeGenLatex(CodeGen):
         if '`' not in name:
             return self.convert_special_marks(name)
             # return name
+        if '`$' not in name and '$`' not in name:
+            name = "`${}$`".format(name[1:-1])
         text = name.replace('`', '')
         pattern = re.compile("\$(?P<context>.*)\$")
         def convert(param):
