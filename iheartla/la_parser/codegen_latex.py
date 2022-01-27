@@ -660,7 +660,10 @@ class CodeGenLatex(CodeGen):
             self.visiting_lhs = True
             content += "{} = ".format(self.visit(assign_node.left, **kwargs))
             self.visiting_lhs = False
-        content += "{}_{{{} \\in {}}} \\quad & {} \\\\\n".format(category, self.visit(node.base, **kwargs), self.visit(node.base_type, **kwargs), self.visit(node.exp, **kwargs))
+        kwargs['is_sub'] = True
+        base_type_info = self.visit(node.base_type, **kwargs)
+        del kwargs['is_sub']
+        content += "{}_{{{} \\in {}}} \\quad & {} \\\\\n".format(category, self.visit(node.base, **kwargs), base_type_info, self.visit(node.exp, **kwargs))
         if len(node.cond_list) > 0:
             content += "\\textrm{s.t.} \\quad &"
             constraint_list = []
