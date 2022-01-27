@@ -657,7 +657,9 @@ class CodeGenLatex(CodeGen):
             category = '\\argmax'
         content = "\\begin{aligned} "
         if assign_node:
+            self.visiting_lhs = True
             content += "{} = ".format(self.visit(assign_node.left, **kwargs))
+            self.visiting_lhs = False
         content += "{}_{{{} \\in {}}} \\quad & {} \\\\\n".format(category, self.visit(node.base, **kwargs), self.visit(node.base_type, **kwargs), self.visit(node.exp, **kwargs))
         if len(node.cond_list) > 0:
             content += "\\textrm{s.t.} \\quad &"
