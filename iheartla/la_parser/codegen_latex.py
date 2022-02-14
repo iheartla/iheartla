@@ -243,9 +243,9 @@ class CodeGenLatex(CodeGen):
             type_str = '\\mathbb{Z}'
         content = "{}^{{ {} \\times {} }}".format(type_str, id1, id2)
         if node.la_type.sparse:
-            content += " \\mathit{ sparse}"
+            content += " ,\\text{ sparse}"
         if node.la_type.index_type:
-            content += " \\mathit{ index}"
+            content += " ,\\text{ index}"
         return content
 
     def visit_vector_type(self, node, **kwargs):
@@ -255,7 +255,7 @@ class CodeGenLatex(CodeGen):
             type_str = '\\mathbb{Z}'
         content = "{}^{{ {}}}".format(type_str, id1)
         if node.la_type.index_type:
-            content += " \\mathit{ index}"
+            content += " ,\\text{ index}"
         return content
 
     def visit_scalar_type(self, node, **kwargs):
@@ -263,7 +263,7 @@ class CodeGenLatex(CodeGen):
         if node.is_int:
             content = "\\mathbb{Z}"
         if node.la_type.index_type:
-            content += " \\mathit{ index}"
+            content += " ,\\text{ index}"
         return content
 
     def visit_set_type(self, node, **kwargs):
@@ -291,7 +291,7 @@ class CodeGenLatex(CodeGen):
                 content += '\\mathbb{{R}}^{{ {} }}'.format(cnt)
         content = '\\{' + content + '\\}'
         if node.la_type.index_type:
-            content += " \\mathit{{ index}}"
+            content += " ,\\text{ index}"
         return content
 
     def visit_function_type(self, node, **kwargs):
