@@ -257,7 +257,10 @@ class CodeGenEigen(CodeGen):
 
     def get_ret_display(self):
         # print return value in main function
-        main_content = ["    {} func_value({});".format(self.get_result_type(), ', '.join(self.parameters))]
+        if len(self.parameters) == 0:
+            main_content = ["    {} func_value;".format(self.get_result_type())]
+        else:
+            main_content = ["    {} func_value({});".format(self.get_result_type(), ', '.join(self.parameters))]
         if self.ret_symbol is not None:
             la_type = self.get_sym_type(self.ret_symbol)
             if la_type.is_matrix() or la_type.is_vector() or la_type.is_scalar():
