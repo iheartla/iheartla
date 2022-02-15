@@ -11,7 +11,7 @@ cppyy.add_include_path(eigen_path)
 class TestGallery(BasePythonTest):
     def test_gallery_0(self):
         # sequence
-        la_str = """from trigonometry: sin, cos
+        la_str = """sin, cos from trigonometry
         `x(θ, ϕ)` = [Rcos(θ)cos(ϕ)
                      Rsin(θ)cos(ϕ)
                      Rsin(ϕ)]
@@ -236,7 +236,7 @@ class TestGallery(BasePythonTest):
 
     def test_gallery_6(self):
         # sequence
-        la_str = """from linearalgebra: tr
+        la_str = """tr from linearalgebra
         `J₃` = [1_3,3]
         `k_angle(Dₘ)` = 3(sqrt(2)v)^(2/3)(7/4||`Dₘ`||_F^2-1/4tr(`J₃``Dₘ`ᵀ`Dₘ`))⁻¹
         where
@@ -327,7 +327,7 @@ class TestGallery(BasePythonTest):
 
     def test_gallery_9(self):
         # sequence
-        la_str = """from trigonometry: cos
+        la_str = """cos from trigonometry
         b = ∑_i cos(θ)²((p_i - q_i)⋅n_i +((p_i+q_i)×n_i)⋅ã+n_i⋅t̃)²
         where
         θ: ℝ: angle of rotation
@@ -902,7 +902,7 @@ class TestGallery(BasePythonTest):
 
     def test_laplacian(self):
         # sparse matrix
-        la_str = """from trigonometry: cot
+        la_str = """cot from trigonometry
         L_i,j = { cot(α_ij) + cot(β_ij) if j ∈ N(i)
         L_i,i = -sum_(k for k != i) L_i,k
         where
