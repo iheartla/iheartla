@@ -17,7 +17,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
 
     def convert_content(self, symbol):
         # avoid error in js
-        return symbol.replace('\\', "\\\\\\\\").replace('`', '')
+        return symbol.replace('\\', "\\\\\\\\").replace('`', '').replace('"', '\\\\"').replace("'", "\\\\'")
 
     def visit_assignment(self, node, **kwargs):
         sym_list = []
@@ -63,8 +63,8 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             sym_list.append("'{}'".format(self.convert_content(filter_subscript(sym))))
         sym_list = list(set(sym_list))
         sym_list.append("'{}'".format(self.convert_content(node.name.get_main_id())))
-        json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], true, '{}', [{}]);"}}""".format(self.func_name,
-                                                                                                   ', '.join(sym_list), self.local_func_name, ', '.join(local_param_list))
+        json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], true, '{}', [{}]);"}}""".format(
+            self.func_name, ', '.join(sym_list), self.local_func_name, ', '.join(local_param_list))
         saved_content = content + "\\\\" + "\\eqlabel{{ {} }}{{}}".format(json) + "\n"
         self.code_frame.expr += saved_content + '\n'
         self.code_frame.expr_dict[node.raw_text] = saved_content
