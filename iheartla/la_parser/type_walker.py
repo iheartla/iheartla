@@ -72,6 +72,7 @@ class EquationData(object):
 
     def trim(self, content):
         # print("before:{}, after:{}".format(content, content.replace('"', '\\"').replace("'", "\\'")))
+        content = content.replace('"', '\\"').replace("'", "\\'")
         return content
 
     def gen_json_content(self):
@@ -126,12 +127,10 @@ class EquationData(object):
         content = content.replace('\\', '\\\\\\\\')
         content = content.replace('\n', '\\\\n')
         content = content.replace('`', '')
-        content = content.replace('\\\\\\\\"', '\\\\"')
-        content = content.replace("\\\\\\\\'", "\\\\'")
-        content += ''', "source":"{}"'''.format(self.trim(self.la_content).replace('\\', '\\\\\\\\').replace('\n', '\\\\n'))
-        # content = content.replace('\\\\\\\\"', '\\"')
-        # content = content.replace("\\\\\\\\'", "\\'")
-        # print(content)
+        content = content.replace('\\\\\\\\"', '\\"')
+        content = content.replace("\\\\\\\\'", "\\'")
+        # print("content:{}".format(content))
+        # content += ''', "source":"{}"'''.format(self.trim(self.la_content).replace('\\', '\\\\\\\\').replace('\n', '\\\\n'))   # IHLA source code
         return content
 
 

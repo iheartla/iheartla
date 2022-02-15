@@ -111,6 +111,8 @@ function getProseArg(parser, name, type='def'){
     // let param = `$${raw}$`;
     // console.log(`param is ${param}, string is ${parser.string}, raw is ${raw}`);
     param = param.replaceAll("\\","\\\\");
+    param = param.replaceAll("'","\\'").replaceAll('"','\\"');
+    // console.log(`param is ${param}, string is ${parser.string}, raw is ${raw}`);
     NodeUtil.setAttribute(arg, "module", modulelabel);
     NodeUtil.setAttribute(arg, "sym", param);
     NodeUtil.setAttribute(arg, "type", type);

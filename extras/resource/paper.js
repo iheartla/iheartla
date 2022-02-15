@@ -231,7 +231,7 @@ function getGlossarySymId(symbol, context){
   content = ''
   data_list = sym_data[symbol];
   for (var i = 0; i < data_list.length; i++) {
-      var id_tag = symbol.replaceAll("\\","\\\\");
+      var id_tag = symbol.replaceAll("\\","\\\\").replaceAll("'","\\'").replaceAll('"','\\"');
       var data = data_list[i];
       if (data.def_module == context) {
         content = `${data.def_module}-${id_tag}`
@@ -269,7 +269,7 @@ function getGlossarySymInfo(symbol){
   var cur_color = `highlight_${getSymColor(symbol)}`;
   // console.log(`symbol is ${symbol}, cur_color is ${cur_color}, length is ${data_list.length}`)
   for (var i = 0; i < data_list.length; i++) {
-      var id_tag = symbol.replaceAll("\\","\\\\");
+      var id_tag = symbol.replaceAll("\\","\\\\").replaceAll("'","\\'").replaceAll('"','\\"');
       var data = data_list[i];
       content += `<div> In module ${data.def_module}<br>
       <a class='${cur_color}' href="#${data.def_module}-${id_tag}">${symbol}</a> is ${getSymTypeInfo(data.type_info)}`
@@ -392,6 +392,7 @@ function updateGlossarySyms(cur_context){
     diff_list = sym_data[k];
     ck = k.replaceAll("\\","\\\\");
     var dollarSymK = getDollarSym(k);
+    ck = ck.replaceAll("'","\\'").replaceAll('"','\\"');
     for (var j = 0; j < diff_list.length; j++) {
       if (diff_list[j].def_module == cur_context) {
         var cur_info = getSymTypeInfo(diff_list[j].type_info)
@@ -427,7 +428,7 @@ function getSymColor(symbol){
 }
 function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', color='red', attrs=''){
   var cur_color = getSymColor(symbol);
-  var symAttr = symbol.replaceAll("\\", "\\\\");
+  var symAttr = symbol.replaceAll("\\", "\\\\").replaceAll("'", "\\'").replaceAll('"','\\"');
   content = `<span class="highlight_${cur_color}" sym="${symAttr}" ${attrs}>`
   var dollarSym = getDollarSym(symbol);
   var otherSym = getOtherSym(symbol);
@@ -519,6 +520,7 @@ function getSymInfo(symbol, func_name, isLocalParam=false, localFuncName='', col
 function showSymArrow(tag, symbol, func_name, type='def', color='blue', 
   isEquation=false, startEq=false, endEq=false){ 
   symbol = symbol.replaceAll("\\","\\\\\\\\");
+  symbol = symbol.replaceAll("'","\\'").replaceAll('"','\\"');
   // console.log(`In showSymArrow, symbol:${symbol}`);
   showArrow(tag, symbol, func_name, type, color, isEquation, startEq, endEq);
   let asymbol = getOtherSym(symbol);
@@ -527,7 +529,7 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
 function showArrow(tag, symbol, func_name, type='def', color='blue', 
   isEquation=false, startEq=false, endEq=false){
   // tag.setAttribute('class', `highlight_${color}`);
-  // console.log(`In showArrow, sym:${symbol}, color:${color}`); 
+  console.log(`In showArrow, sym:${symbol}, color:${color}, type:${type}`); 
   if (type === 'def' ) {
     // Point to usage
     const matches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "'][type='use']");
@@ -622,6 +624,7 @@ function getDollarSym(symbol){
 }
 function highlightSym(symbol, func_name, isLocalParam=false, localFuncName='', color='red'){ 
   symbol = symbol.replaceAll("\\","\\\\\\\\"); 
+  symbol = symbol.replaceAll("'","\\'").replaceAll('"','\\"'); 
   // console.log(`In highlightSym, symbol: ${symbol}`)
   highlightSymInProseAndEquation(symbol, func_name, isLocalParam, localFuncName, color);
   let asymbol = getOtherSym(symbol); 
@@ -646,7 +649,7 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
   //   }
   //   return;
   // }
-  // console.log(`symbol is ${symbol}`);
+  console.log(`symbol is ${symbol}`);
   // syms in prose and derivations
   let matches = document.querySelectorAll("[sym='" + symbol + "'][module='" + func_name + "']");
   for (var i = matches.length - 1; i >= 0; i--) {
@@ -737,7 +740,7 @@ function onClickProse(tag, symbol, func_name, type='def') {
  * @return 
  */
 function onClickSymbol(tag, symbol, func_name, type='def', isLocalParam=false, localFuncName='', color='red') {
-  // console.log(`the type is ${type}, sym is ${symbol}, color is ${color}`,)
+  console.log(`the type is ${type}, sym is ${symbol}, color is ${color}`,)
   resetState();
   // closeOtherTips();
   var cur_color = getSymColor(symbol);
@@ -772,6 +775,7 @@ function getEquationContent(func_name, sym_list, isLocalFunc=false, localFunc=''
   for (var i = sym_list.length - 1; i >= 0; i--) {
     sym = sym_list[i];
     sym = sym.replaceAll("\\","\\\\\\\\"); 
+    sym = sym.replaceAll("'","\\'").replaceAll('"','\\"'); 
     var isLocalParam = false;
     if (localParams.includes(sym)) {
       isLocalParam = true;
@@ -793,6 +797,7 @@ function getEquationContent(func_name, sym_list, isLocalFunc=false, localFunc=''
  */
 function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', localParams=[]) { 
   // closeOtherTips();
+  console.log(`func_name:${func_name}, sym_list:${sym_list}, localParams:${localParams}`)
   resetState();
   content = getEquationContent(func_name, sym_list, isLocalFunc, localFunc, localParams);
   // Scale equation and append new div
@@ -811,6 +816,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
       highlightSym(sym, func_name, isLocalParam, localFunc, cur_color);
       // sym = sym.replace("\\","\\\\");
       sym = sym.replaceAll("\\","\\\\\\\\"); 
+      sym = sym.replaceAll("'","\\'").replaceAll('"','\\"'); 
       var symTag;
       if (div) {
         var parentTag = tag.closest("div");

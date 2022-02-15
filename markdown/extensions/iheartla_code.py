@@ -794,13 +794,13 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     used_list_str = '"' + '","'.join(sym_eq_data.used_list) + '"'
                 cur_desc = sym_eq_data.desc
                 if sym_eq_data.desc:
-                    cur_desc = cur_desc.replace('\\', '\\\\\\\\').replace('"', '\\\\"').replace("'", "\\\\'")
+                    cur_desc = cur_desc.replace('\\', '\\\\\\\\').replace('"', '\\"').replace("'", "\\'")
                 # print(" sym_eq_data.desc:{}".format( sym_eq_data.desc))
                 eq_data_list.append('''{{"desc":"{}", "type_info":{}, "def_module":"{}", "is_defined":{}, "used_equations":{}, "color":"{}"}}'''.format(
                     cur_desc, sym_eq_data.la_type.get_json_content(),
                     sym_eq_data.module_name, "true" if sym_eq_data.is_defined else "false", used_list_str,
                     sym_data.color))
-            sym_list.append('''"{}":[{}]'''.format(sym.replace('\\', '\\\\\\\\'), ",".join(eq_data_list)))
+            sym_list.append('''"{}":[{}]'''.format(sym.replace('\\', '\\\\\\\\').replace('"', '\\"').replace("'", "\\'"), ",".join(eq_data_list)))
         content = '''{{{}}}'''.format(','.join(sym_list))
         content = content.replace('`', '')
         return content
