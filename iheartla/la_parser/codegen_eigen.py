@@ -1334,7 +1334,7 @@ class CodeGenEigen(CodeGen):
                         if node.op == '=':
                             # declare
                             if sequence not in self.declared_symbols:
-                                content += "    Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".format(sequence,
+                                content += "    {} = Eigen::MatrixXd::Zero({}, {});\n".format(sequence,
                                                                                                               self.get_sym_type(
                                                                                                                   sequence).rows,
                                                                                                               self.get_sym_type(
