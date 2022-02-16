@@ -60,7 +60,7 @@ class TestMatrix(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
-    def test_transpose_0(self):
+    def test_transpose_1(self):
         # unicode t
         la_str = """B = Aᵀ
         where
@@ -336,7 +336,7 @@ class TestMatrix(BasePythonTest):
     def test_elementwise_matrix(self):
         # scalar value
         la_str = """B_i,j = A_j,i
-        where 
+        where
         A: ℝ^(2 × 3) """
         func_info = self.gen_func_info(la_str)
         A = np.array([[1, 3, 4], [2, 0, 1]])
@@ -612,7 +612,7 @@ class TestMatrix(BasePythonTest):
         # sparse matrix in block matrix
         la_str = """C = [ A   1   2  0  B]
         where
-        A: ℝ ^ (1 × 2) sparse 
+        A: ℝ ^ (1 × 2) sparse
         B: ℝ ^ (1 × 2) sparse  """
         func_info = self.gen_func_info(la_str)
         t = [(0, 0)]
@@ -649,7 +649,7 @@ class TestMatrix(BasePythonTest):
         # sparse matrix in block matrix
         la_str = """C = [ A   1   2  0  B]
         where
-        A: ℝ ^ (1 × 2)  
+        A: ℝ ^ (1 × 2)
         B: ℝ ^ (1 × 2) sparse  """
         func_info = self.gen_func_info(la_str)
         t = [(0, 0)]
