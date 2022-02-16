@@ -2343,7 +2343,7 @@ class TypeWalker(NodeWalker):
         if ASSIGN_OP in kwargs:
             op = kwargs[ASSIGN_OP]
         all_ids = self.get_all_ids(lhs)
-        if all_ids[0] in self.symtable and self.symtable[all_ids[0]].is_sparse_matrix():
+        if all_ids[0] in self.symtable and self.symtable[all_ids[0]].is_matrix():
             # sparse matrix
             ir_node = SparseMatrixNode(parse_info=node.parseinfo)
             # ifsNode
