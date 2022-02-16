@@ -481,7 +481,7 @@ class CodeGenNumpy(CodeGen):
                         self.visit(node.stmts[index], **kwargs)
                         continue
                     kwargs[LHS] = self.ret_symbol
-                    ret_str = "    " + self.ret_symbol + ' = '
+                    ret_str = "    self." + self.ret_symbol + ' = '
             else:
                 if type(node.stmts[index]).__name__ != 'AssignNode':
                     # meaningless
