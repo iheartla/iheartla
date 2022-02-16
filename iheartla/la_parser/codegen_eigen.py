@@ -565,7 +565,7 @@ class CodeGenEigen(CodeGen):
                         self.visit(node.stmts[index], **kwargs)
                         continue
                     kwargs[LHS] = self.ret_symbol
-                    ret_str = "    " + self.get_ctype(self.get_sym_type(self.ret_symbol)) + " " + self.ret_symbol + ' = '
+                    ret_str = "    " + self.ret_symbol + ' = '
                     need_semicolon = True
             else:
                 if type(node.stmts[index]).__name__ != 'AssignNode':
