@@ -21,13 +21,13 @@ class TestGallery(BasePythonTest):
         R: ℝ : the radius of the sphere"""
         func_info = self.gen_func_info(la_str)
         A = np.array([[0], [0], [3]])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(np.pi/2, np.pi/2, 3).x_left_parenthesis_θ_comma_ϕ_right_parenthesis, A)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(np.pi/2, np.pi/2, 3).xθ_comma_ϕ, A)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
                      "    Eigen::Matrix<double, 3, 1> A;",
                      "    A << 0, 0, 3;",
-                     "    Eigen::Matrix<double, 3, 1> B = {}(M_PI/2, M_PI/2, 3).x_left_parenthesis_θ_comma_ϕ_right_parenthesis;".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 3, 1> B = {}(M_PI/2, M_PI/2, 3).xθ_comma_ϕ;".format(func_info.eig_func_name),
                      "    return ((A - B).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -245,13 +245,13 @@ class TestGallery(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
         v = 10
-        self.assertTrue(np.isclose(func_info.numpy_func(A, v).k_angle_left_parenthesis_Dₘ_right_parenthesis, 0.06060140390))
+        self.assertTrue(np.isclose(func_info.numpy_func(A, v).k_angleDₘ, 0.06060140390))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
                      "    Eigen::Matrix<double, 3, 3> A;",
                      "    A << 1, 2, 3, 4, 5, 6, 7, 8, 9;",
-                     "    double C = {}(A, 10).k_angle_left_parenthesis_Dₘ_right_parenthesis;".format(func_info.eig_func_name),
+                     "    double C = {}(A, 10).k_angleDₘ;".format(func_info.eig_func_name),
                      "    return (abs(0.06060140390 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -268,7 +268,7 @@ class TestGallery(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         A = np.array([[1, 2, 3], [3, 8, 6], [7, 8, 7]])
         B = np.array([-0.38100038, 0.25400025, -0.88900089])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(A).n_left_parenthesis_T_right_parenthesis, B)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(A).nT, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -276,7 +276,7 @@ class TestGallery(BasePythonTest):
                      "    A << 1, 2, 3, 3, 8, 6, 7, 8, 7;",
                      "    Eigen::Matrix<double, 3, 1> B;",
                      "    B << -0.38100038, 0.25400025, -0.88900089;",
-                     "    Eigen::Matrix<double, 3, 1> C = {}(A).n_left_parenthesis_T_right_parenthesis;".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 3, 1> C = {}(A).nT;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -296,7 +296,7 @@ class TestGallery(BasePythonTest):
         N1 = [1, 2]
         n = lambda p: p[0]
         B = np.array([0.38601376, 0.79776177, 0.46321651])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(T, α, N1, n).n_left_parenthesis_v_right_parenthesis, B)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(T, α, N1, n).nv, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -319,7 +319,7 @@ class TestGallery(BasePythonTest):
                      "    };",
                      "    Eigen::Matrix<double, 3, 1> B;",
                      "    B << 0.38601376, 0.79776177, 0.46321651;",
-                     "    Eigen::Matrix<double, 3, 1> C = {}(T, α, N1, n).n_left_parenthesis_v_right_parenthesis;".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 3, 1> C = {}(T, α, N1, n).nv;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -438,7 +438,7 @@ class TestGallery(BasePythonTest):
             return np.array([p0, p1, p0 + p1])
         def δ(p0, p1):
             return p0 + p1
-        self.assertTrue(np.isclose(func_info.numpy_func(v̄, ō, ū, V̄, C_combining_macron_ₐ, θ, v, D_A, δ).y_left_parenthesis_θ_comma_v_right_parenthesis, -1.2989690721))
+        self.assertTrue(np.isclose(func_info.numpy_func(v̄, ō, ū, V̄, C_combining_macron_ₐ, θ, v, D_A, δ).yθ_comma_v, -1.2989690721))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -462,7 +462,7 @@ class TestGallery(BasePythonTest):
                      "    f2 = [](double p1, double p2)->double{",
                      "        return p1 + p2;"
                      "    };",
-                     "    double B = {}(v, o, u, V, C, 2, 3, f1, f2).y_left_parenthesis_θ_comma_v_right_parenthesis;".format(func_info.eig_func_name),
+                     "    double B = {}(v, o, u, V, C, 2, 3, f1, f2).yθ_comma_v;".format(func_info.eig_func_name),
                      "    return (abs(-1.2989690721 - B) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -522,7 +522,7 @@ class TestGallery(BasePythonTest):
         c = np.array([[1, 2], [3, 6]])
         w = np.array([[2, 2], [2, 4]])
         R̂ = np.array([2, 4])
-        self.assertTrue(np.isclose(func_info.numpy_func(c, w, R̂).C_left_parenthesis_x_comma_y_right_parenthesis, 4.125))
+        self.assertTrue(np.isclose(func_info.numpy_func(c, w, R̂).Cx_comma_y, 4.125))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -532,7 +532,7 @@ class TestGallery(BasePythonTest):
                      "    w << 2, 2, 2, 4;",
                      "    Eigen::Matrix<double, 2, 1> R;",
                      "    R << 2, 4;",
-                     "    double C = {}(c, w, R).C_left_parenthesis_x_comma_y_right_parenthesis;".format(func_info.eig_func_name),
+                     "    double C = {}(c, w, R).Cx_comma_y;".format(func_info.eig_func_name),
                      "    return (abs(4.125 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -590,7 +590,7 @@ class TestGallery(BasePythonTest):
         b = np.array([[10, 5, 2], [2, 4, 2], [3, 8, 5]])
         s = np.array([9, 9, 8])
         k = 4
-        self.assertTrue(np.isclose(func_info.numpy_func(l, dist, σ, b_i, b, s, k).G_σ_left_parenthesis_s_i_circumflex_accent_k_right_parenthesis, 26948.21883123))
+        self.assertTrue(np.isclose(func_info.numpy_func(l, dist, σ, b_i, b, s, k).G_σs_i_circumflex_accent_k, 26948.21883123))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -614,7 +614,7 @@ class TestGallery(BasePythonTest):
                      "    b.push_back(n2);",
                      "    b.push_back(n3);",
                      "    double k = 4;",
-                     "    double C = {}(l, dist, σ, b_i, b, s, k).G_σ_left_parenthesis_s_i_circumflex_accent_k_right_parenthesis;".format(func_info.eig_func_name),
+                     "    double C = {}(l, dist, σ, b_i, b, s, k).G_σs_i_circumflex_accent_k;".format(func_info.eig_func_name),
                      "    return (abs(26948.21883123 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -802,7 +802,7 @@ class TestGallery(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         x = np.array([1, 2, 3, 4])
         p = np.array([[1, 2, 3, 4], [3, 4, 5, 6], [5, 3, 5, 6], [9, 1, 3, 2]])
-        self.assertTrue(np.isclose(func_info.numpy_func(x, p).I_left_parenthesis_X_semicolon_Y_right_parenthesis, -509.52927877))
+        self.assertTrue(np.isclose(func_info.numpy_func(x, p).IX_semicolon_Y, -509.52927877))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -810,7 +810,7 @@ class TestGallery(BasePythonTest):
                      "    x << 1, 2, 3, 4;",
                      "    Eigen::MatrixXd p(4,4);",
                      "    p << 1, 2, 3, 4, 3, 4, 5, 6, 5, 3, 5, 6, 9, 1, 3, 2;",
-                     "    double C = {}(x, p).I_left_parenthesis_X_semicolon_Y_right_parenthesis;".format(func_info.eig_func_name),
+                     "    double C = {}(x, p).IX_semicolon_Y;".format(func_info.eig_func_name),
                      "    return (abs(-509.52927877 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -827,7 +827,7 @@ class TestGallery(BasePythonTest):
         x = np.array([3, 1, 4, 2])
         W = np.array([[1, 2, 3, 4], [3, 4, 5, 6], [5, 3, 5, 6], [9, 1, 3, 2]])
         v = np.array([2, 1, 5, 7])
-        self.assertTrue(np.isclose(func_info.numpy_func(x, W, v).L_left_parenthesis_x_comma_v_right_parenthesis, 520))
+        self.assertTrue(np.isclose(func_info.numpy_func(x, W, v).Lx_comma_v, 520))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -837,7 +837,7 @@ class TestGallery(BasePythonTest):
                      "    W << 1, 2, 3, 4, 3, 4, 5, 6, 5, 3, 5, 6, 9, 1, 3, 2;",
                      "    Eigen::VectorXd v(4);"
                      "    v << 2, 1, 5, 7;",
-                     "    double C = {}(x, W, v).L_left_parenthesis_x_comma_v_right_parenthesis;".format(func_info.eig_func_name),
+                     "    double C = {}(x, W, v).Lx_comma_v;".format(func_info.eig_func_name),
                      "    return (abs(520 - C) < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -1032,4 +1032,4 @@ class TestGallery(BasePythonTest):
         def kₙ(p0, p1):
             return p0 * p1[1]
         p = np.array([1, 2, 3])
-        self.assertTrue(np.isclose(func_info.numpy_func(p, kₙ).H_left_parenthesis_p_right_parenthesis, 6.28318530))
+        self.assertTrue(np.isclose(func_info.numpy_func(p, kₙ).Hp, 6.28318530))
