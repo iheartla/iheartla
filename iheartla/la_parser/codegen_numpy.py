@@ -576,9 +576,9 @@ class CodeGenNumpy(CodeGen):
         sym_info = node.sym_dict[target_var[0]]
         if self.get_sym_type(target_var[0]).is_matrix():
             if sub == sym_info[0]:
-                content.append("for {} in range(1, {}.shape[0]+1):\n".format(sub, target_var[0]))
+                content.append("for {} in range(1, {}.shape[0]+1):\n".format(sub, self.get_target_name(self.convert_bound_symbol(target_var[0]))))
             else:
-                content.append("for {} in range(1, {}.shape[1]+1):\n".format(sub, target_var[0]))
+                content.append("for {} in range(1, {}.shape[1]+1):\n".format(sub, self.get_target_name(self.convert_bound_symbol(target_var[0]))))
         elif self.get_sym_type(target_var[0]).is_sequence():
             sym_list = node.sym_dict[target_var[0]]
             sub_index = sym_list.index(sub)
