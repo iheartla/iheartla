@@ -1280,7 +1280,7 @@ class CodeGenEigen(CodeGen):
                         if self.get_sym_type(sequence).diagonal:
                             # add definition
                             if sequence not in self.declared_symbols:
-                                content += "    Eigen::SparseMatrix<double> {}({}, {});\n".format(sequence,
+                                content += "    {}.resize({}, {});\n".format(sequence,
                                                                                                  self.get_sym_type(sequence).rows,
                                                                                                  self.get_sym_type(sequence).cols)
                                 content += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(sequence)
@@ -1305,7 +1305,7 @@ class CodeGenEigen(CodeGen):
                         def_str = ""
                         if node.op != '+=':
                             if node.left.get_main_id() not in self.declared_symbols:
-                                def_str = "    Eigen::SparseMatrix<double> {}({}, {});\n".format(node.left.get_main_id(),
+                                def_str = "    {}.resize({}, {});\n".format(node.left.get_main_id(),
                                                                                                  self.get_sym_type(node.left.get_main_id()).rows,
                                                                                                  self.get_sym_type(node.left.get_main_id()).cols)
                                 def_str += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(

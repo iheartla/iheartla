@@ -791,7 +791,7 @@ class CodeGenNumpy(CodeGen):
             # left_ids = self.get_all_ids(lhs)
             # left_subs = left_ids[1]
             pre_list.append(
-                "    {} = scipy.sparse.coo_matrix(({}+{}.data.tolist(), np.hstack((np.asarray({}).T, np.asarray(({}.row, {}.col))))), shape=({}, {}))\n".format(cur_m_id, value_var, cur_m_id,
+                "    {} = scipy.sparse.coo_matrix(({}+self.{}.data.tolist(), np.hstack((np.asarray({}).T, np.asarray((self.{}.row, self.{}.col))))), shape=({}, {}))\n".format(cur_m_id, value_var, cur_m_id,
                                                                                                     index_var, cur_m_id, cur_m_id,
                                                                                                     self.get_sym_type(
                                                                                                         cur_m_id).rows,
@@ -1163,7 +1163,7 @@ class CodeGenNumpy(CodeGen):
                         if right_info.pre_list:
                             content += "".join(right_info.pre_list)
                         # sparse mat assign
-                        right_exp += '    ' + sequence + ' = ' + right_info.content
+                        right_exp += '    self.' + sequence + ' = ' + right_info.content
                         content += right_exp
                 elif left_subs[0] == left_subs[1]:
                     # L_ii
