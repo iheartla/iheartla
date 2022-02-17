@@ -773,7 +773,7 @@ class CodeGenNumpy(CodeGen):
         if node.other:
             other_info = self.visit(node.other, **kwargs)
             pre_list.append('    else:\n')
-            pre_list.append('        {} = {}\n'.format(name, other_info.content))
+            pre_list.append('        {}_ret = {}\n'.format(name, other_info.content))
         return CodeNodeInfo(cur_m_id, pre_list)
 
 
