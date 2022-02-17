@@ -139,6 +139,10 @@ class CodeGenNumpy(CodeGen):
         return CodeNodeInfo(content)
 
     def get_struct_definition(self, def_str, stat_str):
+        if stat_str == '':
+            stat_str = '        pass\n'
+        else:
+            stat_str = self.update_prelist_str([stat_str], '    ')
         assign_list = []
         for parameter in self.lhs_list:
             if parameter in self.symtable and self.get_sym_type(parameter) is not None:
@@ -159,6 +163,7 @@ class CodeGenNumpy(CodeGen):
                    "    def __init__(self,{}".format(def_str[3:]),
                    self.get_used_params_content(),
                    ]
+        content.remove('')
         end_str = self.local_func_def + def_struct
         if end_str != '':
             end_str = '\n' + end_str
@@ -496,7 +501,7 @@ class CodeGenNumpy(CodeGen):
         # content += stats_content
         # content += '    return ' + self.get_ret_struct()
         # content += '\n'
-        content = self.get_struct_definition(self.update_prelist_str([content], '    '), self.update_prelist_str([stats_content], '    '))
+        content = self.get_struct_definition(self.update_prelist_str([content], '    '), stats_content)
         # content = self.get_struct_definition(self.update_prelist_str([content], '    ')) + '\n'
         # test
         test_function += test_content
