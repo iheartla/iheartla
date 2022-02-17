@@ -163,7 +163,8 @@ class CodeGenNumpy(CodeGen):
                    "    def __init__(self,{}".format(def_str[3:]),
                    self.get_used_params_content(),
                    ]
-        content.remove('')
+        if '' in content:
+            content.remove('')
         end_str = self.local_func_def + def_struct
         if end_str != '':
             end_str = '\n' + end_str
