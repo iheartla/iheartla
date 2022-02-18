@@ -42,3 +42,17 @@ class TestLocalFunction(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_local_func_conditional(self):
+        la_str = """f(x) = {x if x > 0
+                           -x otherwise where x: ℝ """
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func().f(-2), 2)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    double B = {}().f(2);".format(func_info.eig_func_name),
+                     "    return ((B - 2) == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
