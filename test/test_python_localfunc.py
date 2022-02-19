@@ -56,3 +56,20 @@ class TestLocalFunction(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_local_func_seq_param(self):
+        la_str = """f(x) = x_1 where x_i: ℝ"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([1, 2])
+        self.assertEqual(func_info.numpy_func().f(A), 1)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::vector<double> A(2);"
+                     "    A[0] = 1;"
+                     "    A[1] = 2;"
+                     "    double B = {}().f(A);".format(func_info.eig_func_name),
+                     "    return ((B - 1) == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
