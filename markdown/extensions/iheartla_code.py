@@ -181,6 +181,13 @@ class IheartlaBlockPreprocessor(Preprocessor):
         return sym
 
     def handle_math(self, text, context, sym_list):
+        """
+        Based on the symbol list from iheartla code, search those symbols in math expression
+        :param text: raw text in current context
+        :param context: current context name
+        :param sym_list: symbol list
+        :return: replaced text
+        """
         for m in self.MATH_RE.finditer(text):
             content = m.group('code')
             # print("current equation:{}".format(m.group()))
@@ -214,6 +221,13 @@ class IheartlaBlockPreprocessor(Preprocessor):
         return text
 
     def handle_easy_span_context_math(self, text, equation_dict, span_dict):
+        """
+        Based on the symbol list from iheartla code, search those symbols from math block in current span
+        :param text: raw text
+        :param equation_dict: equation_data -> euqationData
+        :param span_dict: context -> dict (sym -> desc)
+        :return: replaced text
+        """
         for m in self.EASY_SPAN_CONTEXT_BLOCK_RE.finditer(text):
             sym_list = equation_dict[m.group('context')].gen_sym_list()
             found_list = []
@@ -285,6 +299,9 @@ class IheartlaBlockPreprocessor(Preprocessor):
         return text
 
     def handle_raw_span_code(self, text, context):
+        """
+        add context name to span tag -> def:context:symbol
+        """
         for m in self.SPAN_SIMPLE_RE.finditer(text):
             # print("simple_span_code: {}".format(m.group()))
             # print("new: {}".format('<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code'))))
@@ -292,6 +309,12 @@ class IheartlaBlockPreprocessor(Preprocessor):
         return text
 
     def handle_easy_span_code(self, text, context):
+        """
+        add context name to span tag -> def:context
+        :param text: raw text in current context
+        :param context: current context name
+        :return: replaced text
+        """
         for m in self.EASY_SPAN_BLOCK_RE.finditer(text):
             # print("simple_span_code: {}".format(m.group()))
             # print("new: {}".format('<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code'))))
@@ -299,6 +322,9 @@ class IheartlaBlockPreprocessor(Preprocessor):
         return text
 
     def handle_span_code(self, text):
+        """
+        Based on the symbol list in the span tag, search and replace the math block in the span
+        """
         span_dict = {}
         for m in self.SPAN_BLOCK_RE.finditer(text):
             cur_dict = {}
