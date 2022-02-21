@@ -469,15 +469,16 @@ class IheartlaBlockPreprocessor(Preprocessor):
         full_code_sequence = []
         for name, block_data in file_dict.items():
             code_list, equation_data = compile_la_content(block_data.get_content(),
-                                                          parser_type=self.md.parser_type | ParserTypeEnum.MACROMATHJAX,
+                                                          parser_type=self.md.parser_type | ParserTypeEnum.MATHJAX | ParserTypeEnum.MACROMATHJAX,
                                                           func_name=name, path=self.md.path, struct=True,
                                                           get_json=True)
             equation_data.name = name
             equation_dict[name] = equation_data
-            full_code_sequence.append(code_list[:-1])
+            full_code_sequence.append(code_list[:-2])
             # Find all expr for each original iheartla block
             index_dict = {}
             expr_dict = code_list[-1].expr_dict
+            expr_raw_dict = code_list[-2].expr_dict
             for raw_text, math_code in expr_dict.items():
                 for cur_index in range(len(block_data.code_list)):
                     if raw_text in block_data.code_list[cur_index]:
@@ -491,6 +492,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 if len(index_dict[cur_index]) == 1:
                     raw_str = index_dict[cur_index][0]
                     content = expr_dict[raw_str]
+                    raw_content = expr_raw_dict[raw_str]
                 else:
                     # more than one expr in a single block
                     order_list = []
@@ -498,10 +500,13 @@ class IheartlaBlockPreprocessor(Preprocessor):
                         order_list.append(text.index(raw_str))
                     sorted_index = sorted(range(len(order_list)), key=lambda k: order_list[k])
                     content = ''
+                    raw_content = ''
                     for cur in range(len(sorted_index)):
                         raw_str = index_dict[cur_index][sorted_index[cur]]
                         content += expr_dict[raw_str]
+                        raw_content += expr_raw_dict[raw_str]
                 if block_data.inline_list[cur_index]:
+                    raw_math = r"""$\begin{{align*}}{}\end{{align*}}$""".format(raw_content)
                     math_code = r"""${}{}{}$""".format(code_list[-1].pre_str, content, code_list[-1].post_str)
                     content = r"""<span class='equation' code_block="{}">{}</span>""".format(
                         block_data.module_name, math_code)
@@ -509,6 +514,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     tag_info = ''
                     if not block_data.number_list[cur_index]:
                         tag_info = r"""\notag"""
+                    raw_math = r"""$${}$$""".format(raw_content)
                     math_code = r"""$${}{}{}{}$$""".format(code_list[-1].pre_str, content, code_list[-1].post_str, tag_info)
                     content = r"""
         <div class='equation' code_block="{}">
@@ -517,7 +523,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 content = self.md.htmlStash.store(content)
                 # text = text.replace(block_data.block_list[cur_index], content)
                 replace_dict[block_data.block_list[cur_index]] = content
-                math_dict[block_data.block_list[cur_index]] = math_code
+                math_dict[block_data.block_list[cur_index]] = raw_math
         self.save_code(full_code_sequence)
         return text, equation_dict, replace_dict, math_dict
 
