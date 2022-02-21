@@ -430,6 +430,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         """
         file_dict = {}
         replace_dict = {}
+        math_dict = {}
         # Find all inline blocks
         for m in self.INLINE_RE.finditer(text):
             # print("Inline block: {}".format(m.group()))
@@ -501,21 +502,24 @@ class IheartlaBlockPreprocessor(Preprocessor):
                         raw_str = index_dict[cur_index][sorted_index[cur]]
                         content += expr_dict[raw_str]
                 if block_data.inline_list[cur_index]:
-                    content = r"""<span class='equation' code_block="{}">${}{}{}$</span>""".format(
-                        block_data.module_name, code_list[-1].pre_str, content, code_list[-1].post_str)
+                    math_code = r"""${}{}{}$""".format(code_list[-1].pre_str, content, code_list[-1].post_str)
+                    content = r"""<span class='equation' code_block="{}">{}</span>""".format(
+                        block_data.module_name, math_code)
                 else:
                     tag_info = ''
                     if not block_data.number_list[cur_index]:
                         tag_info = r"""\notag"""
+                    math_code = r"""$${}{}{}{}$$""".format(code_list[-1].pre_str, content, code_list[-1].post_str, tag_info)
                     content = r"""
         <div class='equation' code_block="{}">
-        $${}{}{}{}$$</div>
-        """.format(block_data.module_name, code_list[-1].pre_str, content, code_list[-1].post_str, tag_info)
+        {}</div>
+        """.format(block_data.module_name, math_code)
                 content = self.md.htmlStash.store(content)
                 # text = text.replace(block_data.block_list[cur_index], content)
                 replace_dict[block_data.block_list[cur_index]] = content
+                math_dict[block_data.block_list[cur_index]] = math_code
         self.save_code(full_code_sequence)
-        return text, equation_dict, replace_dict
+        return text, equation_dict, replace_dict, math_dict
 
 
     def handle_reference(self, text):
@@ -553,7 +557,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         #
         text, context_list = self.handle_context_pre(text)
         text = self.handle_reference(text)
-        text, equation_dict, replace_dict = self.handle_iheartla_code(text)
+        text, equation_dict, replace_dict, math_dict = self.handle_iheartla_code(text)
         text, span_dict = self.handle_span_code(text)
         text, span_dict = self.handle_easy_span_context_math(text, equation_dict, span_dict)
         equation_dict = self.merge_desc(equation_dict, span_dict)
