@@ -560,6 +560,13 @@ class IheartlaBlockPreprocessor(Preprocessor):
         text, equation_dict, replace_dict, math_dict = self.handle_iheartla_code(text)
         text, span_dict = self.handle_span_code(text)
         text, span_dict = self.handle_easy_span_context_math(text, equation_dict, span_dict)
+        # convert span dict
+        for context, new_dict in span_dict.items():
+            for sym in new_dict.keys():
+                for k in math_dict.keys():
+                    if k in new_dict[sym]:
+                        new_dict[sym] = new_dict[sym].replace(k, math_dict[k])
+                        print("sym:{}, k:{}".format(sym, k))
         equation_dict = self.merge_desc(equation_dict, span_dict)
         self.process_metadata(equation_dict, context_list)
         text = self.handle_context_post(text, equation_dict)
