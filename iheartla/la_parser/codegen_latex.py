@@ -316,6 +316,7 @@ class CodeGenLatex(CodeGen):
         else:
             content = self.visit(node.left, **kwargs) + " & = " + self.visit(node.right, **kwargs)
         self.code_frame.expr += content +'\n'
+        self.code_frame.expr_dict[node.raw_text] = content
         return content
 
     def visit_expression(self, node, **kwargs):
@@ -388,6 +389,7 @@ class CodeGenLatex(CodeGen):
             def_params = '\\left[ ' + params_str + ' \\right]'
         content = self.visit(node.name, **kwargs) + def_params + " & = " + self.visit(node.expr, **kwargs)
         self.code_frame.expr += content + '\n'
+        self.code_frame.expr_dict[node.raw_text] = content
         if len(node.defs) > 0:
             self.local_func_parsing = True
             par_list = []
