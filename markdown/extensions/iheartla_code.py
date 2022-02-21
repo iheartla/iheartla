@@ -236,7 +236,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             cur_dict = {}
             if m.group('context') in span_dict:
                 cur_dict = span_dict[m.group('context')]
-            # print("handle_span_code, matched:{}".format(m.group()))
+            print("easy_span_context, matched:{}".format(m.group()))
             # Multiple math blocks
             for math in self.MATH_RE.finditer(desc):
                 code = math.group("code")
@@ -316,7 +316,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         :return: replaced text
         """
         for m in self.EASY_SPAN_BLOCK_RE.finditer(text):
-            # print("simple_span_code: {}".format(m.group()))
+            print("easy_span_code: {}".format(m.group()))
             # print("new: {}".format('<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code'))))
             text = text.replace(m.group(), '<span class="def:{}"> {} </span>'.format(context, m.group('code')))
         return text
@@ -334,7 +334,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             sym_list = m.group('symbol').split(';')
             for sym in sym_list:
                 cur_dict[sym] = desc
-            # print("handle_span_code, matched:{}".format(m.group()))
+            print("handle_span_code, matched:{}".format(m.group()))
             # Multiple math blocks
             for math in self.MATH_RE.finditer(desc):
                 code = math.group("code")
@@ -512,7 +512,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         $${}{}{}{}$$</div>
         """.format(block_data.module_name, code_list[-1].pre_str, content, code_list[-1].post_str, tag_info)
                 content = self.md.htmlStash.store(content)
-                text = text.replace(block_data.block_list[cur_index], content)
+                # text = text.replace(block_data.block_list[cur_index], content)
                 replace_dict[block_data.block_list[cur_index]] = content
         self.save_code(full_code_sequence)
         return text, equation_dict, replace_dict
@@ -559,8 +559,9 @@ class IheartlaBlockPreprocessor(Preprocessor):
         equation_dict = self.merge_desc(equation_dict, span_dict)
         self.process_metadata(equation_dict, context_list)
         text = self.handle_context_post(text, equation_dict)
-        # for k, v in replace_dict.items():
-        #     text = text.replace(k, v)
+        for k, v in replace_dict.items():
+            text = text.replace(k, v)
+            print("k:{}, v:{}".format(k, v))
         return text.split("\n")
 
     def process_metadata(self, equation_dict, context_list):
