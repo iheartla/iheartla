@@ -434,7 +434,7 @@ def compile_la_content(la_content,
         model = parser.parse(la_content, parseinfo=True)
         ret = []
         json = ''
-        for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,  ParserTypeEnum.MATHML, ParserTypeEnum.MATLAB, ParserTypeEnum.MACROMATHJAX]:
+        for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.MATLAB, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,  ParserTypeEnum.MATHML, ParserTypeEnum.MACROMATHJAX]:
             if parser_type & cur_type:
                 type_walker, start_node = parse_ir_node(la_content, model, cur_type)
                 cur_content = walk_model(cur_type, type_walker, start_node, func_name, struct)
