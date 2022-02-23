@@ -196,10 +196,10 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     dedent(r'''(?<!(    # negative begins
                     (\\(proselabel|prosedeflabel)({{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\s]+)}})?{{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}_{{()\s]*)))
                     |
-                    ([^\s]+)
+                    ([a-zA-Z]+)
                     ) # negative ends
                     ({})
-                    (?![^\s]+)'''.format(self.escape_sym(sym))),
+                    (?![a-zA-Z]+)'''.format(self.escape_sym(sym))),
                     re.MULTILINE | re.DOTALL | re.VERBOSE
                 )
                 changed = True
@@ -246,10 +246,10 @@ class IheartlaBlockPreprocessor(Preprocessor):
                         dedent(r'''(?<!(    # negative begins
                                                     (\\(proselabel|prosedeflabel)({{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\s]+)}})?{{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}_{{()\s]*)))
                                                     |
-                                                    ([^\s]+)
+                                                    ([a-zA-Z]+)
                                                     ) # negative ends
                                                     ({})
-                                                    (?![^\s]+)'''.format(self.escape_sym(sym))),
+                                                    (?![a-zA-Z]+)'''.format(self.escape_sym(sym))),
                         re.MULTILINE | re.DOTALL | re.VERBOSE
                     )
                     changed = True
@@ -344,10 +344,10 @@ class IheartlaBlockPreprocessor(Preprocessor):
                         dedent(r'''(?<!(    # negative begins
                         (\\(proselabel|prosedeflabel)({{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\s]+)}})?{{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}_{{()\s]*)))
                         |
-                        ([^\s]+)
+                        ([a-zA-Z]+)
                         ) # negative ends
                         ({})
-                        (?![^\s]+)'''.format(self.escape_sym(sym))),
+                        (?![a-zA-Z]+)'''.format(self.escape_sym(sym))),
                         re.MULTILINE | re.DOTALL | re.VERBOSE
                     )
                     changed = True
