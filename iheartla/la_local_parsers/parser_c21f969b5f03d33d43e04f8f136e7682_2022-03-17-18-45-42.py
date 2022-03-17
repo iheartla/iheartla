@@ -25,7 +25,7 @@ from tatsu.util import re, generic_main  # noqa
 KEYWORDS = {}  # type: ignore
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
+class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
     def __init__(
         self,
         text,
@@ -37,7 +37,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
         namechars='',
         **kwargs
     ):
-        super(grammare37f0136aa3ffaf149b351f6a4c948e9Buffer, self).__init__(
+        super(grammarc21f969b5f03d33d43e04f8f136e7682Buffer, self).__init__(
             text,
             whitespace=whitespace,
             nameguard=nameguard,
@@ -49,7 +49,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
         )
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
+class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
     def __init__(
         self,
         whitespace=re.compile('(?!.*)'),
@@ -61,12 +61,12 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         parseinfo=True,
         keywords=None,
         namechars='',
-        buffer_class=grammare37f0136aa3ffaf149b351f6a4c948e9Buffer,
+        buffer_class=grammarc21f969b5f03d33d43e04f8f136e7682Buffer,
         **kwargs
     ):
         if keywords is None:
             keywords = KEYWORDS
-        super(grammare37f0136aa3ffaf149b351f6a4c948e9Parser, self).__init__(
+        super(grammarc21f969b5f03d33d43e04f8f136e7682Parser, self).__init__(
             whitespace=whitespace,
             nameguard=nameguard,
             comments_re=comments_re,
@@ -809,7 +809,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             self._hspace_()
         self._closure(block5)
         self._identifier_alone_()
-        self.name_last_node('id')
+        self.add_last_node_to_name('id')
 
         def block7():
             self._hspace_()
@@ -820,57 +820,82 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             self._hspace_()
         self._closure(block8)
         self._params_type_()
-        self.name_last_node('base_type')
+        self.add_last_node_to_name('base_type')
 
         def block10():
-            self._hspace_()
+
+            def block11():
+                self._hspace_()
+            self._closure(block11)
+            self._token(',')
+
+            def block12():
+                self._hspace_()
+            self._closure(block12)
+            self._identifier_alone_()
+            self.add_last_node_to_name('id')
+
+            def block14():
+                self._hspace_()
+            self._closure(block14)
+            self._IN_()
+
+            def block15():
+                self._hspace_()
+            self._closure(block15)
+            self._params_type_()
+            self.add_last_node_to_name('base_type')
         self._closure(block10)
+
+        def block17():
+            self._hspace_()
+        self._closure(block17)
         self._token(')')
 
-        def block11():
+        def block18():
             self._hspace_()
-        self._closure(block11)
+        self._closure(block18)
         self._expression_()
         self.name_last_node('exp')
 
-        def block13():
+        def block20():
 
-            def block14():
+            def block21():
 
-                def block15():
+                def block22():
                     self._hspace_()
-                self._closure(block15)
+                self._closure(block22)
 
-                def block16():
+                def block23():
                     self._separator_()
-                self._closure(block16)
+                self._closure(block23)
 
-                def block17():
+                def block24():
                     self._hspace_()
-                self._closure(block17)
-            self._closure(block14)
+                self._closure(block24)
+            self._closure(block21)
             self._SUBJECT_TO_()
 
-            def block18():
+            def block25():
 
-                def block19():
+                def block26():
                     self._hspace_()
-                self._closure(block19)
+                self._closure(block26)
 
-                def block20():
+                def block27():
                     self._separator_()
-                self._closure(block20)
+                self._closure(block27)
 
-                def block21():
+                def block28():
                     self._hspace_()
-                self._closure(block21)
-            self._closure(block18)
+                self._closure(block28)
+            self._closure(block25)
             self._multi_cond_()
             self.name_last_node('cond')
-        self._closure(block13)
+        self._closure(block20)
         self.ast._define(
-            ['amax', 'amin', 'base_type', 'cond', 'exp', 'id', 'max', 'min'],
-            []
+            ['amax', 'amin', 'cond', 'exp', 'max', 'min'],
+            ['base_type', 'id']
         )
 
     @tatsumasu('MultiCond')
@@ -4809,7 +4834,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
 
     @tatsumasu()
     def _func_id_(self):  # noqa
-        self._identifier_alone_()
+        self._token('!!!')
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
@@ -4818,7 +4843,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         with self._group():
             with self._choice():
                 with self._option():
-                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
+                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
                 with self._option():
                     self._token('`')
@@ -4832,7 +4857,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         )
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
+class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
     def start(self, ast):  # noqa
         return ast
 
@@ -5472,7 +5497,7 @@ def main(filename, start=None, **kwargs):
     else:
         with open(filename) as f:
             text = f.read()
-    parser = grammare37f0136aa3ffaf149b351f6a4c948e9Parser()
+    parser = grammarc21f969b5f03d33d43e04f8f136e7682Parser()
     return parser.parse(text, rule_name=start, filename=filename, **kwargs)
 
 
@@ -5480,7 +5505,7 @@ if __name__ == '__main__':
     import json
     from tatsu.util import asjson
 
-    ast = generic_main(main, grammare37f0136aa3ffaf149b351f6a4c948e9Parser, name='grammare37f0136aa3ffaf149b351f6a4c948e9')
+    ast = generic_main(main, grammarc21f969b5f03d33d43e04f8f136e7682Parser, name='grammarc21f969b5f03d33d43e04f8f136e7682')
     print('AST:')
     print(ast)
     print()
@@ -5509,13 +5534,13 @@ class ModelBase(Node):
     pass
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics(ModelBuilderSemantics):
+class grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics(ModelBuilderSemantics):
     def __init__(self, context=None, types=None):
         types = [
             t for t in globals().values()
             if type(t) is type and issubclass(t, ModelBase)
         ] + (types or [])
-        super(grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics, self).__init__(context=context, types=types)
+        super(grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics, self).__init__(context=context, types=types)
 
 
 class Start(ModelBase):

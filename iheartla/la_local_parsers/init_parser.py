@@ -809,7 +809,7 @@ class grammarinitParser(Parser):
             self._hspace_()
         self._closure(block5)
         self._identifier_alone_()
-        self.name_last_node('id')
+        self.add_last_node_to_name('id')
 
         def block7():
             self._hspace_()
@@ -820,57 +820,82 @@ class grammarinitParser(Parser):
             self._hspace_()
         self._closure(block8)
         self._params_type_()
-        self.name_last_node('base_type')
+        self.add_last_node_to_name('base_type')
 
         def block10():
-            self._hspace_()
+
+            def block11():
+                self._hspace_()
+            self._closure(block11)
+            self._token(',')
+
+            def block12():
+                self._hspace_()
+            self._closure(block12)
+            self._identifier_alone_()
+            self.add_last_node_to_name('id')
+
+            def block14():
+                self._hspace_()
+            self._closure(block14)
+            self._IN_()
+
+            def block15():
+                self._hspace_()
+            self._closure(block15)
+            self._params_type_()
+            self.add_last_node_to_name('base_type')
         self._closure(block10)
+
+        def block17():
+            self._hspace_()
+        self._closure(block17)
         self._token(')')
 
-        def block11():
+        def block18():
             self._hspace_()
-        self._closure(block11)
+        self._closure(block18)
         self._expression_()
         self.name_last_node('exp')
 
-        def block13():
+        def block20():
 
-            def block14():
+            def block21():
 
-                def block15():
+                def block22():
                     self._hspace_()
-                self._closure(block15)
+                self._closure(block22)
 
-                def block16():
+                def block23():
                     self._separator_()
-                self._closure(block16)
+                self._closure(block23)
 
-                def block17():
+                def block24():
                     self._hspace_()
-                self._closure(block17)
-            self._closure(block14)
+                self._closure(block24)
+            self._closure(block21)
             self._SUBJECT_TO_()
 
-            def block18():
+            def block25():
 
-                def block19():
+                def block26():
                     self._hspace_()
-                self._closure(block19)
+                self._closure(block26)
 
-                def block20():
+                def block27():
                     self._separator_()
-                self._closure(block20)
+                self._closure(block27)
 
-                def block21():
+                def block28():
                     self._hspace_()
-                self._closure(block21)
-            self._closure(block18)
+                self._closure(block28)
+            self._closure(block25)
             self._multi_cond_()
             self.name_last_node('cond')
-        self._closure(block13)
+        self._closure(block20)
         self.ast._define(
-            ['amax', 'amin', 'base_type', 'cond', 'exp', 'id', 'max', 'min'],
-            []
+            ['amax', 'amin', 'cond', 'exp', 'max', 'min'],
+            ['base_type', 'id']
         )
 
     @tatsumasu('MultiCond')
