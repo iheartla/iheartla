@@ -1462,8 +1462,8 @@ class TypeWalker(NodeWalker):
             opt_type = OptimizeType.OptimizeArgmin
         elif node.amax:
             opt_type = OptimizeType.OptimizeArgmax
-        base_type = self.walk(node.base_type, **kwargs)
-        base_node = self.walk(node.id, **kwargs).ir
+        base_type = self.walk(node.base_type[0], **kwargs)
+        base_node = self.walk(node.id[0], **kwargs).ir
         # temporary add to symbol table : opt scope
         base_id = base_node.get_main_id()
         self.symtable[base_id] = base_type.la_type
