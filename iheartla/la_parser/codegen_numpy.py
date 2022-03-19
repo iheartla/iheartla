@@ -1417,22 +1417,25 @@ class CodeGenNumpy(CodeGen):
         constraint_list = []
         for cond_node in node.cond_list:
             if cond_node.cond.node_type == IRNodeType.BinComp:
+                cur_f_name = self.generate_var_name('cons')
+                pre_list.append("    def {}({}):\n".format(cur_f_name, param_name))
+                pre_list.append("        {} = unpack({})\n".format(', '.join(id_list), param_name))
                 if cond_node.cond.comp_type == IRNodeType.Gt or cond_node.cond.comp_type == IRNodeType.Ge:
-                    constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: {}-{}}}".format(', '.join(id_list),
-                                                                                                self.visit(cond_node.cond.left, **kwargs).content,
-                                                                                                self.visit(cond_node.cond.right, **kwargs).content))
+                    pre_list.append("        return {} - {}\n".format(self.visit(cond_node.cond.left, **kwargs).content,
+                                                                    self.visit(cond_node.cond.right, **kwargs).content))
+                    constraint_list.append("{{'type': 'ineq', 'fun': {}}}".format(cur_f_name))
                 elif cond_node.cond.comp_type == IRNodeType.Lt or cond_node.cond.comp_type == IRNodeType.Le:
-                    constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: {}-{}}}".format(', '.join(id_list),
-                                                                                                self.visit(cond_node.cond.right, **kwargs).content,
-                                                                                                self.visit(cond_node.cond.left, **kwargs).content))
+                    pre_list.append("        return {} - {}\n".format(self.visit(cond_node.cond.left, **kwargs).content,
+                                                                    self.visit(cond_node.cond.right, **kwargs).content))
+                    constraint_list.append("{{'type': 'ineq', 'fun': {}}}".format(cur_f_name))
                 elif cond_node.cond.comp_type == IRNodeType.Eq:
-                    constraint_list.append("{{'type': 'eq', 'fun': lambda {}: {}-{}}}".format(', '.join(id_list),
-                                                                                              self.visit(cond_node.cond.left, **kwargs).content,
-                                                                                              self.visit(cond_node.cond.right, **kwargs).content))
+                    pre_list.append("        return {} - {}\n".format(self.visit(cond_node.cond.left, **kwargs).content,
+                                                                    self.visit(cond_node.cond.right, **kwargs).content))
+                    constraint_list.append("{{'type': 'eq', 'fun': {}}}".format(cur_f_name))
                 elif cond_node.cond.comp_type == IRNodeType.Ne:
-                    constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: np.power({}-{}, 2)}}".format(', '.join(id_list),
-                                                                                              self.visit(cond_node.cond.left, **kwargs).content,
-                                                                                              self.visit(cond_node.cond.right, **kwargs).content))
+                    pre_list.append("        return np.power({} - {}, 2)\n".format(self.visit(cond_node.cond.left, **kwargs).content,
+                                                                    self.visit(cond_node.cond.right, **kwargs).content))
+                    constraint_list.append("{{'type': 'ineq', 'fun': {}}}".format(cur_f_name))
             elif cond_node.cond.node_type == IRNodeType.In:
                 v_set = self.visit(cond_node.cond.set, **kwargs).content
                 opt_func = self.generate_var_name(category)
