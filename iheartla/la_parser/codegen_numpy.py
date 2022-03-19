@@ -1359,17 +1359,42 @@ class CodeGenNumpy(CodeGen):
         return CodeNodeInfo("")
 
     def visit_optimize(self, node, **kwargs):
-        for cur_index in range(len(node.base_type)):
+        cur_len = 0
+        param_name = self.generate_var_name('X')
+        id_list = []
+        init_list = []
+        pack_list = []
+        unpack_list = []
+        name_convention = {}
+        for cur_index in range(len(node.base_list)):
             cur_la_type = node.base_type_list[cur_index].la_type
             id_info = self.visit(node.base_list[cur_index], **kwargs)
+            id_list.append(id_info.content)
+            init_value = 0
+            pack_str = ''
+            unpack_str = ''
             if cur_la_type.is_scalar():
                 init_value = 0
+                pack_str = "[{}]".format(id_info.content)
+                unpack_str = "{}[{}:{}][0]".format(param_name, cur_len, cur_len+1)
+                cur_len += 1
             elif cur_la_type.is_vector():
                 init_value = "np.zeros({})".format(cur_la_type.rows)
+                pack_str = id_info.content
+                unpack_str = "{}[{}:{}]".format(param_name, cur_len, cur_len+cur_la_type.rows)
+                cur_len += cur_la_type.rows
             elif cur_la_type.is_matrix():
-                init_value = "np.zeros({}*{})".format(node.base_type_list[0].la_type.rows, node.base_type_list[0].la_type.cols)
-                name_convention = {id_info.content: "{}.reshape({}, {})".format(id_info.content, node.base_type_list[0].la_type.rows, node.base_type_list[0].la_type.cols)}
+                pack_str = "np.reshape({}, -1)".format(id_info.content)
+                init_value = "np.zeros({}*{})".format(cur_la_type.rows, cur_la_type.cols)
+                name_convention[id_info.content] = "{}.reshape({}, {})".format(id_info.content, cur_la_type.rows, cur_la_type.cols)
                 self.add_name_conventions(name_convention)
+                unpack_str = "{}[{}:{}].reshape({}, {})".format(param_name, cur_len, cur_len+cur_la_type.rows*cur_la_type.cols,
+                                                                cur_la_type.rows, cur_la_type.cols)
+                cur_len += cur_la_type.rows*cur_la_type.cols
+            init_list.append(init_value)
+            pack_list.append(pack_str)
+            unpack_list.append(unpack_str)
+        init_value = "np.zeros({})".format(cur_len)
         #
         exp_info = self.visit(node.exp, **kwargs)
         category = ''
@@ -1384,24 +1409,28 @@ class CodeGenNumpy(CodeGen):
         opt_param = self.generate_var_name('x')
         opt_ret = self.generate_var_name('ret')
         # Handle constraints
-        pre_list = []
+        pre_list = ["    def pack({}):\n".format(', '.join(id_list)),
+                    "        return np.concatenate([{}])\n".format(', '.join(pack_list)),
+                    "    def unpack({}):\n".format(param_name),
+                    "        return {}\n".format(', '.join(unpack_list)),
+                    ]
         constraint_list = []
         for cond_node in node.cond_list:
             if cond_node.cond.node_type == IRNodeType.BinComp:
                 if cond_node.cond.comp_type == IRNodeType.Gt or cond_node.cond.comp_type == IRNodeType.Ge:
-                    constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: {}-{}}}".format(id_info.content,
+                    constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: {}-{}}}".format(', '.join(id_list),
                                                                                                 self.visit(cond_node.cond.left, **kwargs).content,
                                                                                                 self.visit(cond_node.cond.right, **kwargs).content))
                 elif cond_node.cond.comp_type == IRNodeType.Lt or cond_node.cond.comp_type == IRNodeType.Le:
-                    constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: {}-{}}}".format(id_info.content,
+                    constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: {}-{}}}".format(', '.join(id_list),
                                                                                                 self.visit(cond_node.cond.right, **kwargs).content,
                                                                                                 self.visit(cond_node.cond.left, **kwargs).content))
                 elif cond_node.cond.comp_type == IRNodeType.Eq:
-                    constraint_list.append("{{'type': 'eq', 'fun': lambda {}: {}-{}}}".format(id_info.content,
+                    constraint_list.append("{{'type': 'eq', 'fun': lambda {}: {}-{}}}".format(', '.join(id_list),
                                                                                               self.visit(cond_node.cond.left, **kwargs).content,
                                                                                               self.visit(cond_node.cond.right, **kwargs).content))
                 elif cond_node.cond.comp_type == IRNodeType.Ne:
-                    constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: np.power({}-{}, 2)}}".format(id_info.content,
+                    constraint_list.append("{{'type': 'ineq', 'fun': lambda {}: np.power({}-{}, 2)}}".format(', '.join(id_list),
                                                                                               self.visit(cond_node.cond.left, **kwargs).content,
                                                                                               self.visit(cond_node.cond.right, **kwargs).content))
             elif cond_node.cond.node_type == IRNodeType.In:
@@ -1417,18 +1446,20 @@ class CodeGenNumpy(CodeGen):
         constraints_param = ""
         if len(constraint_list) > 0:
             cons = self.generate_var_name('cons')
-            pre_list.append("    {} = ({})\n".format(cons, ','.join(constraint_list)))
+            pre_list.append("    {} = ({})\n".format(cons, ', '.join(constraint_list)))
             constraints_param = ", constraints={}".format(cons)
         target_func = self.generate_var_name('target')
-        if node.base_type.la_type.is_scalar():
-            exp = exp_info.content.replace(id_info.content, "{}[0]".format(id_info.content))
-        else:
-            exp = exp_info.content
+        # if node.base_type.la_type.is_scalar():
+        #     exp = exp_info.content.replace(id_info.content, "{}[0]".format(id_info.content))
+        # else:
+        #     exp = exp_info.content
+        exp = exp_info.content
         # Handle optimization type
         if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
             exp = "-({})".format(exp)
         # target function
-        pre_list.append("    def {}({}):\n".format(target_func, id_info.content))
+        pre_list.append("    def {}({}):\n".format(target_func, param_name))
+        pre_list.append("        {} = unpack({})\n".format(', '.join(id_list), param_name))
         if len(exp_info.pre_list) > 0:
             for pre in exp_info.pre_list:
                 lines = pre.split('\n')
@@ -1442,18 +1473,8 @@ class CodeGenNumpy(CodeGen):
         elif node.opt_type == OptimizeType.OptimizeMax:
             content = "-minimize({}, {}{}).fun".format(target_func, init_value, constraints_param)
         elif node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
-            if node.base_type.la_type.is_scalar():
-                content = "minimize({}, {}{}).x[0]".format(target_func, init_value, constraints_param)
-            elif node.base_type.la_type.is_vector():
-                content = "minimize({}, {}{}).x".format(target_func, init_value, constraints_param)
-            elif node.base_type.la_type.is_matrix():
-                content = "minimize({}, {}{}).x.reshape({}, {})".format(target_func,
-                                                                                                init_value,
-                                                                                                constraints_param,
-                                                                                                node.base_type.la_type.rows,
-                                                                                                node.base_type.la_type.cols)
-        if node.base_type.la_type.is_matrix():
-            self.del_name_conventions(name_convention)
+            content = "unpack(minimize({}, {}{}).x)".format(target_func, init_value, constraints_param)
+        self.del_name_conventions(name_convention)
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_domain(self, node, **kwargs):
