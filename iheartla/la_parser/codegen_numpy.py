@@ -1425,8 +1425,8 @@ class CodeGenNumpy(CodeGen):
                                                                     self.visit(cond_node.cond.right, **kwargs).content))
                     constraint_list.append("{{'type': 'ineq', 'fun': {}}}".format(cur_f_name))
                 elif cond_node.cond.comp_type == IRNodeType.Lt or cond_node.cond.comp_type == IRNodeType.Le:
-                    pre_list.append("        return {} - {}\n".format(self.visit(cond_node.cond.left, **kwargs).content,
-                                                                    self.visit(cond_node.cond.right, **kwargs).content))
+                    pre_list.append("        return {} - {}\n".format(self.visit(cond_node.cond.right, **kwargs).content,
+                                                                    self.visit(cond_node.cond.left, **kwargs).content))
                     constraint_list.append("{{'type': 'ineq', 'fun': {}}}".format(cur_f_name))
                 elif cond_node.cond.comp_type == IRNodeType.Eq:
                     pre_list.append("        return {} - {}\n".format(self.visit(cond_node.cond.left, **kwargs).content,
@@ -1471,6 +1471,7 @@ class CodeGenNumpy(CodeGen):
                         pre_list.append("    {}\n".format(line))
         pre_list.append("        return {}\n".format(exp))
         #
+        content = ''
         if node.opt_type == OptimizeType.OptimizeMin:
             content = "minimize({}, {}{}).fun".format(target_func, init_value, constraints_param)
         elif node.opt_type == OptimizeType.OptimizeMax:
