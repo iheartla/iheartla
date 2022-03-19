@@ -1359,15 +1359,18 @@ class CodeGenNumpy(CodeGen):
         return CodeNodeInfo("")
 
     def visit_optimize(self, node, **kwargs):
-        id_info = self.visit(node.base, **kwargs)
-        if node.base_type.la_type.is_scalar():
-            init_value = 0
-        elif node.base_type.la_type.is_vector():
-            init_value = "np.zeros({})".format(node.base_type.la_type.rows)
-        elif node.base_type.la_type.is_matrix():
-            init_value = "np.zeros({}*{})".format(node.base_type.la_type.rows, node.base_type.la_type.cols)
-            name_convention = {id_info.content: "{}.reshape({}, {})".format(id_info.content, node.base_type.la_type.rows, node.base_type.la_type.cols)}
-            self.add_name_conventions(name_convention)
+        for cur_index in range(len(node.base_type)):
+            cur_la_type = node.base_type_list[cur_index].la_type
+            id_info = self.visit(node.base_list[cur_index], **kwargs)
+            if cur_la_type.is_scalar():
+                init_value = 0
+            elif cur_la_type.is_vector():
+                init_value = "np.zeros({})".format(cur_la_type.rows)
+            elif cur_la_type.is_matrix():
+                init_value = "np.zeros({}*{})".format(node.base_type_list[0].la_type.rows, node.base_type_list[0].la_type.cols)
+                name_convention = {id_info.content: "{}.reshape({}, {})".format(id_info.content, node.base_type_list[0].la_type.rows, node.base_type_list[0].la_type.cols)}
+                self.add_name_conventions(name_convention)
+        #
         exp_info = self.visit(node.exp, **kwargs)
         category = ''
         if node.opt_type == OptimizeType.OptimizeMin:
@@ -1410,7 +1413,6 @@ class CodeGenNumpy(CodeGen):
                 pre_list.append("            {} *= ({}[0] - i)\n".format(opt_ret, opt_param, v_set))
                 pre_list.append("        return {}\n".format(opt_ret))
                 constraint_list.append("{{'type': 'eq', 'fun': {}}}".format(opt_func))
-
         # constraint
         constraints_param = ""
         if len(constraint_list) > 0:
@@ -1425,18 +1427,15 @@ class CodeGenNumpy(CodeGen):
         # Handle optimization type
         if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
             exp = "-({})".format(exp)
-
+        # target function
+        pre_list.append("    def {}({}):\n".format(target_func, id_info.content))
         if len(exp_info.pre_list) > 0:
-            pre_list.append("    def {}({}):\n".format(target_func, id_info.content))
             for pre in exp_info.pre_list:
                 lines = pre.split('\n')
                 for line in lines:
                     if line != "":
                         pre_list.append("    {}\n".format(line))
-            pre_list.append("        return {}\n".format(exp))
-        else:
-            # simple expression
-            pre_list.append("    {} = lambda {}: {}\n".format(target_func, id_info.content, exp))
+        pre_list.append("        return {}\n".format(exp))
         #
         if node.opt_type == OptimizeType.OptimizeMin:
             content = "minimize({}, {}{}).fun".format(target_func, init_value, constraints_param)
