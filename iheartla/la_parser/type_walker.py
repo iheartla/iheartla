@@ -1462,21 +1462,29 @@ class TypeWalker(NodeWalker):
             opt_type = OptimizeType.OptimizeArgmin
         elif node.amax:
             opt_type = OptimizeType.OptimizeArgmax
-        base_type = self.walk(node.base_type[0], **kwargs)
-        base_node = self.walk(node.id[0], **kwargs).ir
-        # temporary add to symbol table : opt scope
-        base_id = base_node.get_main_id()
-        self.symtable[base_id] = base_type.la_type
-        self.tmp_symtable[base_id] = base_type.la_type
+        base_id_list = []
+        base_node_list = []
+        base_type_list = []
+        for cur_index in range(len(node.base_type)):
+            base_type = self.walk(node.base_type[cur_index], **kwargs)
+            base_node = self.walk(node.id[cur_index], **kwargs).ir
+            # temporary add to symbol table : opt scope
+            base_id = base_node.get_main_id()
+            self.symtable[base_id] = base_type.la_type
+            self.tmp_symtable[base_id] = base_type.la_type
+            base_id_list.append(base_id)
+            base_type_list.append(base_type)
+            base_node_list.append(base_node)
         exp_info = self.walk(node.exp, **kwargs)
         exp_node = exp_info.ir
         cond_list = []
         if node.cond:
             cond_list = self.walk(node.cond, **kwargs)
-        del self.symtable[base_id]
+        for cur_id in base_id_list:
+            del self.symtable[cur_id]
         #
         assert exp_node.la_type.is_scalar(), get_err_msg_info(exp_node.parse_info, "Objective function must return a scalar")
-        opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node, base_type, parse_info=node.parseinfo)
+        opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node_list, base_type_list, parse_info=node.parseinfo)
         opt_node.la_type = ScalarType()
         node_info = NodeInfo(opt_node.la_type, ir=opt_node, symbols=exp_info.symbols)
         return node_info
