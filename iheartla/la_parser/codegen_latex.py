@@ -665,9 +665,11 @@ class CodeGenLatex(CodeGen):
             content += "{} = ".format(self.visit(assign_node.left, **kwargs))
             self.visiting_lhs = False
         kwargs['is_sub'] = True
-        base_type_info = self.visit(node.base_type, **kwargs)
+        param_list = []
+        for cur_index in range(len(node.base_list)):
+            param_list.append("{} \\in {}".format(self.visit(node.base_list[cur_index], **kwargs), self.visit(node.base_type_list[cur_index], **kwargs)))
         del kwargs['is_sub']
-        content += "{}_{{{} \\in {}}} \\quad & {} \\\\\n".format(category, self.visit(node.base, **kwargs), base_type_info, self.visit(node.exp, **kwargs))
+        content += "{}_{{{}}} \\quad & {} \\\\\n".format(category, ", ".join(param_list), self.visit(node.exp, **kwargs))
         if len(node.cond_list) > 0:
             content += "\\textrm{s.t.} \\quad &"
             constraint_list = []
