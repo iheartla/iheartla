@@ -38,6 +38,7 @@ class IRVisitor(object):
         self.convert_matrix = False
         self.visiting_lhs = False
         self.visiting_func_name = False
+        self.enable_tmp_sym = False
         self.lhs_list = []
         self.module_list = []
         self.module_syms = {}
@@ -177,7 +178,12 @@ class IRVisitor(object):
             if self.local_func_name in self.func_data_dict:
                 if sym in self.func_data_dict[self.local_func_name].params_data.symtable:
                     return self.func_data_dict[self.local_func_name].params_data.symtable[sym]
-        return self.main_param.symtable[sym]
+        ty = None
+        if sym in self.main_param.symtable:
+            ty = self.main_param.symtable[sym]
+        elif self.enable_tmp_sym and sym in self.tmp_symtable:
+            ty = self.tmp_symtable[sym]
+        return ty
 
     def get_cur_param_data(self, func_name=''):
         # either main where/given block or local function block
