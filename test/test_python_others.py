@@ -88,6 +88,24 @@ class TestOthers(BasePythonTest):
             mat_func = getattr(mat_engine, func_info.mat_func_name, None)
             self.assertTrue(abs(np.array(mat_func(matlab.double([2]))['b']) - 9) < 0.00001)
 
+    def test_optimization_argmax_vec(self):
+        # vector variable
+        la_str = """b = argmax_(i ∈ ℝ^3) i⋅a
+        s.t.
+        i_1 > 4
+        i_1 < 9
+        i_2 > 4
+        i_2 < 9
+        i_3 > 4
+        i_3 < 9
+        where 
+        a: ℝ^3 """
+        func_info = self.gen_func_info(la_str)
+        b = func_info.numpy_func([1, -1, 1]).b
+        self.assertTrue(abs(b[0] - 9) < 0.00001)
+        self.assertTrue(abs(b[1] - 4) < 0.00001)
+        self.assertTrue(abs(b[2] - 9) < 0.00001)
+
     def test_optimization_max(self):
         # no return symbol
         la_str = """b = max_(i ∈ ℝ) 3i+a
