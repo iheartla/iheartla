@@ -171,7 +171,7 @@ class TypeWalker(NodeWalker):
     def __init__(self):
         super().__init__()
         self.symtable = {}
-        self.tmp_symtable = {}
+        self.tmp_symtable = {}  # temporary variables in integral or optimization
         self.parameters = []
         self.name_cnt_dict = {}
         self.def_use_mode = True

@@ -1359,6 +1359,7 @@ class CodeGenNumpy(CodeGen):
         return CodeNodeInfo("")
 
     def visit_optimize(self, node, **kwargs):
+        self.enable_tmp_sym = True
         cur_len = 0
         param_name = self.generate_var_name('X')
         id_list = []
@@ -1479,12 +1480,14 @@ class CodeGenNumpy(CodeGen):
         elif node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
             content = "unpack(minimize({}, {}{}).x)".format(target_func, init_value, constraints_param)
         self.del_name_conventions(name_convention)
+        self.enable_tmp_sym = False
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_domain(self, node, **kwargs):
         return CodeNodeInfo("")
 
     def visit_integral(self, node, **kwargs):
+        self.enable_tmp_sym = True
         pre_list = []
         lower_info = self.visit(node.domain.lower, **kwargs)
         pre_list += lower_info.pre_list
@@ -1495,6 +1498,7 @@ class CodeGenNumpy(CodeGen):
         base_info = self.visit(node.base, **kwargs)
         pre_list += exp_info.pre_list
         content = "quad({}, {}, {})[0]".format("lambda {}: {}".format(base_info.content, exp_info.content), lower_info.content, upper_info.content)
+        self.enable_tmp_sym = False
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_inner_product(self, node, **kwargs):
