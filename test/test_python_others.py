@@ -106,6 +106,26 @@ class TestOthers(BasePythonTest):
         self.assertTrue(abs(b[1] - 4) < 0.00001)
         self.assertTrue(abs(b[2] - 9) < 0.00001)
 
+    def test_optimization_argmax_matrix(self):
+        # vector variable
+        la_str = """b = argmax_(i ∈ ℝ^(2×2)) ||i||
+        s.t.
+        i_1,1 > 2
+        i_1,1 < 3
+        i_1,2 > 2
+        i_1,2 < 3
+        i_2,1 > 2
+        i_2,1 < 3
+        i_2,2 > 2
+        i_2,2 < 3
+        where 
+        a: ℝ^3
+        """
+        func_info = self.gen_func_info(la_str)
+        b = func_info.numpy_func([1, -1, 1]).b
+        a = np.array([[3, 3], [3, 3]])
+        self.assertDMatrixEqual(b, a)
+
     def test_optimization_max(self):
         # no return symbol
         la_str = """b = max_(i ∈ ℝ) 3i+a
