@@ -55,6 +55,30 @@ def mul_dims(lhs, rhs):
     return sympify(res)
 
 
+def mul_syms(lhs, rhs):
+    if not isinstance(lhs, str) and not isinstance(rhs, str):
+        res = lhs * rhs
+    else:
+        res = "{}*{}".format(lhs, rhs)
+    return sympify(res)
+
+
+def add_syms(lhs, rhs):
+    if not isinstance(lhs, str) and not isinstance(rhs, str):
+        res = lhs + rhs
+    else:
+        res = "{}+{}".format(lhs, rhs)
+    return sympify(res)
+
+
+def subtract_syms(lhs, rhs):
+    if not isinstance(lhs, str) and not isinstance(rhs, str):
+        res = lhs + rhs
+    else:
+        res = "{}-{}".format(lhs, rhs)
+    return sympify(res)
+
+
 def simpify_dims(dims):
     return sympify(dims)
 
