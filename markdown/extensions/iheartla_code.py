@@ -9,7 +9,7 @@ import copy
 from collections import OrderedDict
 import regex as re
 from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
-from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file
+from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning
 
 
 class BlockData(Extension):
@@ -839,6 +839,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 cur_desc = sym_eq_data.desc
                 if sym_eq_data.desc:
                     cur_desc = cur_desc.replace('\\', '\\\\\\\\').replace('"', '\\"').replace("'", "\\'")
+                if not cur_desc:
+                    la_warning("missing description for sym {}".format(sym))
                 # print(" sym_eq_data.desc:{}".format( sym_eq_data.desc))
                 eq_data_list.append('''{{"desc":"{}", "type_info":{}, "def_module":"{}", "is_defined":{}, "used_equations":{}, "color":"{}"}}'''.format(
                     cur_desc, sym_eq_data.la_type.get_json_content(),
