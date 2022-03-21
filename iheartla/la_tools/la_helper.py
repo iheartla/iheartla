@@ -5,6 +5,7 @@ from textwrap import dedent
 import keyword
 from sympy import *
 import regex as re
+from .la_logger import *
 
 
 DEBUG_MODE = True
@@ -134,3 +135,19 @@ def filter_subscript(symbol):
         if m:
             return m.group('main')
     return symbol
+
+
+def la_debug(msg):
+    LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT).debug(msg)
+
+
+def la_warning(msg):
+    LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT).warning(msg)
+
+
+def la_error(msg):
+    LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT).error(msg)
+
+
+def la_info(msg):
+    LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT).info(msg)
