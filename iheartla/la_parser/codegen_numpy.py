@@ -1366,7 +1366,6 @@ class CodeGenNumpy(CodeGen):
         init_list = []
         pack_list = []
         unpack_list = []
-        name_convention = {}
         for cur_index in range(len(node.base_list)):
             cur_la_type = node.base_type_list[cur_index].la_type
             id_info = self.visit(node.base_list[cur_index], **kwargs)
@@ -1387,8 +1386,6 @@ class CodeGenNumpy(CodeGen):
             elif cur_la_type.is_matrix():
                 pack_str = "np.reshape({}, -1)".format(id_info.content)
                 init_value = "np.zeros({}*{})".format(cur_la_type.rows, cur_la_type.cols)
-                name_convention[id_info.content] = "{}.reshape({}, {})".format(id_info.content, cur_la_type.rows, cur_la_type.cols)
-                self.add_name_conventions(name_convention)
                 unpack_str = "{}[{}:{}].reshape({}, {})".format(param_name, cur_len, cur_len+cur_la_type.rows*cur_la_type.cols,
                                                                 cur_la_type.rows, cur_la_type.cols)
                 cur_len += cur_la_type.rows*cur_la_type.cols
@@ -1479,7 +1476,6 @@ class CodeGenNumpy(CodeGen):
             content = "-minimize({}, {}{}).fun".format(target_func, init_value, constraints_param)
         elif node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
             content = "unpack(minimize({}, {}{}).x)".format(target_func, init_value, constraints_param)
-        self.del_name_conventions(name_convention)
         self.enable_tmp_sym = False
         return CodeNodeInfo(content, pre_list=pre_list)
 
