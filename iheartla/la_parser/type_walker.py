@@ -465,9 +465,9 @@ class TypeWalker(NodeWalker):
             if isinstance(vblock_info, list) and len(vblock_info) > 0:  # statement list with single statement
                 if type(vblock_info[0]).__name__ == 'Assignment':
                     if type(vblock_info[0].left).__name__ == 'IdentifierSubscript':
-                        lhs_sym = self.walk(vblock_info[0].left.left).ir.get_main_id()
+                        lhs_sym = self.walk(vblock_info[0].left[0].left).ir.get_main_id()
                     else:
-                        lhs_sym = self.walk(vblock_info[0].left).ir.get_main_id()
+                        lhs_sym = self.walk(vblock_info[0].left[0]).ir.get_main_id()
                     if lhs_sym not in self.lhs_list:
                         self.lhs_list.append(lhs_sym)
                     if len(lhs_sym) > 1:
@@ -507,7 +507,7 @@ class TypeWalker(NodeWalker):
                         # specific stat: lhs = id_subs
                         try:
                             assign_node = self.walk(stat_list[index], **kwargs).ir
-                            lhs_id_node = assign_node.left
+                            lhs_id_node = assign_node.left[0]
                             rhs_id_node = assign_node.right.value.id
                             if rhs_id_node.la_type.is_function():
                                 if lhs_id_node.contain_subscript():
@@ -1201,7 +1201,7 @@ class TypeWalker(NodeWalker):
 
     def walk_Assignment(self, node, **kwargs):
         self.visiting_lhs = True
-        id0_info = self.walk(node.left, **kwargs)
+        id0_info = self.walk(node.left[0], **kwargs)
         self.visiting_lhs = False
         id0 = id0_info.content
         if SET_RET_SYMBOL in kwargs:
@@ -1219,7 +1219,7 @@ class TypeWalker(NodeWalker):
                 if sub_sym in pre_subs:
                     continue
                 pre_subs.append(sub_sym)
-                assert sub_sym not in self.symtable, get_err_msg_info(node.left.right[sub_index].parseinfo, "Subscript has been defined")
+                assert sub_sym not in self.symtable, get_err_msg_info(node.left[0].right[sub_index].parseinfo, "Subscript has been defined")
                 self.symtable[sub_sym] = ScalarType(index_type=False, is_int=True)
                 self.lhs_sub_dict[sub_sym] = []  # init empty list
         right_info = self.walk(node.right, **kwargs)
@@ -1227,9 +1227,9 @@ class TypeWalker(NodeWalker):
             for cur_index in range(len(self.lhs_subs)):
                 cur_sym_dict = self.lhs_sym_list[cur_index]
                 if self.get_main_id(id0) not in self.symtable:
-                    assert len(cur_sym_dict) > 0, get_err_msg_info(node.left.right[cur_index].parseinfo, "Subscript hasn't been used on rhs")
+                    assert len(cur_sym_dict) > 0, get_err_msg_info(node.left[0].right[cur_index].parseinfo, "Subscript hasn't been used on rhs")
                 # self.check_sum_subs(self.lhs_subs[cur_index], cur_sym_dict)
-                assert self.check_sum_subs(self.lhs_subs[cur_index], cur_sym_dict), get_err_msg_info(node.left.right[cur_index].parseinfo,
+                assert self.check_sum_subs(self.lhs_subs[cur_index], cur_sym_dict), get_err_msg_info(node.left[0].right[cur_index].parseinfo,
                                                                                       "Subscript has inconsistent dimensions")
         self.lhs_sym_list.clear()
         self.lhs_subs.clear()
@@ -1322,20 +1322,20 @@ class TypeWalker(NodeWalker):
                 if sequence_type:
                     self.symtable[sequence] = SequenceType(size=dim, element_type=right_type)
                     seq_index_node = SequenceIndexNode()
-                    seq_index_node.main = self.walk(node.left.left, **kwargs).ir
-                    seq_index_node.main_index = self.walk(node.left.right[0], **kwargs).ir
+                    seq_index_node.main = self.walk(node.left.left[0], **kwargs).ir
+                    seq_index_node.main_index = self.walk(node.left[0].right[0], **kwargs).ir
                     seq_index_node.la_type = right_type
                     seq_index_node.set_parent(assign_node)
-                    assign_node.left = seq_index_node
+                    assign_node.left[0] = seq_index_node
                 else:
                     # vector
                     self.symtable[sequence] = VectorType(rows=dim)
                     vector_index_node = VectorIndexNode()
-                    vector_index_node.main = self.walk(node.left.left, **kwargs).ir
-                    vector_index_node.row_index = self.walk(node.left.right[0], **kwargs).ir
+                    vector_index_node.main = self.walk(node.left[0].left, **kwargs).ir
+                    vector_index_node.row_index = self.walk(node.left[0].right[0], **kwargs).ir
                     vector_index_node.set_parent(assign_node)
                     vector_index_node.la_type = right_type
-                    assign_node.left = vector_index_node
+                    assign_node.left[0] = vector_index_node
             # remove temporary subscripts(from LHS) in symtable
             for sub_sym in left_subs:
                 if sub_sym in self.symtable:
