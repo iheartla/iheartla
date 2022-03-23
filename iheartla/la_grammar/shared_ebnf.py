@@ -129,8 +129,8 @@ expression::Expression
 
 assignment::Assignment
     =
-    left:identifier {hspace} op:'=' {hspace} {separator_with_space} right:right_hand_side {hspace}
-    | left:identifier {hspace} op:'+=' {hspace} {separator_with_space} right:right_hand_side {hspace}
+    left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'=' {hspace} {separator_with_space} right:right_hand_side {hspace}
+    | left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'+=' {hspace} {separator_with_space} right:right_hand_side {hspace}
     ;
     
 #### name:(func_id | identifier)
