@@ -58,6 +58,13 @@ class CodeGenLatex(CodeGen):
                 return "\\textit{{{}}}".format(name)
         return "\\mathit{{{}}}".format(name)
 
+    def convert_special_syms(self, param):
+        special_list = ['_', '&', '^', '%', '$', '#', '{', '}']
+        text = param.replace('\\', '\\textbackslash{}')
+        for special in special_list:
+            text = text.replace(special, '\\{}'.format(special))
+        return text
+
     def convert_unicode(self, name):
         if '`' not in name:
             return self.convert_special_marks(name)
@@ -66,24 +73,18 @@ class CodeGenLatex(CodeGen):
             name = "`${}$`".format(name[1:-1])
         text = name.replace('`', '')
         pattern = re.compile("\$(?P<context>.*)\$")
-        def convert(param):
-            special_list = ['_', '&', '^', '%', '$', '#', '{', '}']
-            text = param.replace('\\', '\\textbackslash{}')
-            for special in special_list:
-                text = text.replace(special, '\\{}'.format(special))
-            return text
         res = ''
         first = True
         end = 0
         for m in pattern.finditer(name):
             if first:
-                tmp = convert(text[0:m.start()-1])
+                tmp = self.convert_special_syms(text[0:m.start()-1])
                 if len(tmp) > 0:
                     res += "\\textit{{{}}}".format(tmp)
                 first = False
             end = m.end()
             res += m.group('context')
-        tmp = convert(text[end-1:])
+        tmp = self.convert_special_syms(text[end-1:])
         if len(tmp) > 0:
             res += "\\textit{{{}}}".format(tmp)
         return res
@@ -232,7 +233,7 @@ class CodeGenLatex(CodeGen):
         else:
             content = "{} & \\in {}".format(','.join(id_list), type_content)
         if node.desc:
-            content += " \\text{{ {}}}".format(node.desc)
+            content += " \\text{{ {}}}".format(self.convert_special_syms(node.desc))
         return content
 
     def visit_matrix_type(self, node, **kwargs):
