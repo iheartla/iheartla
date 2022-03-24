@@ -68,8 +68,7 @@ sum_operator::Summation
     ;
 
 optimize_operator::Optimize
-    = (min:MIN|max:MAX|amin:ARGMIN|amax:ARGMAX) '_(' {hspace} id+:identifier_alone {hspace} IN {hspace} base_type+:params_type 
-    {{hspace} ',' {hspace} id+:identifier_alone {hspace} IN {hspace} base_type+:params_type} {hspace}
+    = (min:MIN|max:MAX|amin:ARGMIN|amax:ARGMAX) '_(' {hspace} defs+:where_condition_terse {{hspace} ',' {hspace} defs+:where_condition_terse} {hspace}
     ')' {hspace} exp:expression {
     {{hspace} {separator} {hspace}} SUBJECT_TO {{hspace} {separator} {hspace}} cond:multi_cond}
     ;

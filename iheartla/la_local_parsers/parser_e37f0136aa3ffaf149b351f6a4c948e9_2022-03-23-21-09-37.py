@@ -808,94 +808,72 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         def block5():
             self._hspace_()
         self._closure(block5)
-        self._identifier_alone_()
-        self.add_last_node_to_name('id')
+        self._where_condition_terse_()
+        self.add_last_node_to_name('defs')
 
         def block7():
-            self._hspace_()
-        self._closure(block7)
-        self._IN_()
 
-        def block8():
-            self._hspace_()
-        self._closure(block8)
-        self._params_type_()
-        self.add_last_node_to_name('base_type')
-
-        def block10():
-
-            def block11():
+            def block8():
                 self._hspace_()
-            self._closure(block11)
+            self._closure(block8)
             self._token(',')
 
-            def block12():
+            def block9():
                 self._hspace_()
-            self._closure(block12)
-            self._identifier_alone_()
-            self.add_last_node_to_name('id')
+            self._closure(block9)
+            self._where_condition_terse_()
+            self.add_last_node_to_name('defs')
+        self._closure(block7)
 
-            def block14():
-                self._hspace_()
-            self._closure(block14)
-            self._IN_()
-
-            def block15():
-                self._hspace_()
-            self._closure(block15)
-            self._params_type_()
-            self.add_last_node_to_name('base_type')
-        self._closure(block10)
-
-        def block17():
+        def block11():
             self._hspace_()
-        self._closure(block17)
+        self._closure(block11)
         self._token(')')
 
-        def block18():
+        def block12():
             self._hspace_()
-        self._closure(block18)
+        self._closure(block12)
         self._expression_()
         self.name_last_node('exp')
 
-        def block20():
+        def block14():
 
-            def block21():
+            def block15():
+
+                def block16():
+                    self._hspace_()
+                self._closure(block16)
+
+                def block17():
+                    self._separator_()
+                self._closure(block17)
+
+                def block18():
+                    self._hspace_()
+                self._closure(block18)
+            self._closure(block15)
+            self._SUBJECT_TO_()
+
+            def block19():
+
+                def block20():
+                    self._hspace_()
+                self._closure(block20)
+
+                def block21():
+                    self._separator_()
+                self._closure(block21)
 
                 def block22():
                     self._hspace_()
                 self._closure(block22)
-
-                def block23():
-                    self._separator_()
-                self._closure(block23)
-
-                def block24():
-                    self._hspace_()
-                self._closure(block24)
-            self._closure(block21)
-            self._SUBJECT_TO_()
-
-            def block25():
-
-                def block26():
-                    self._hspace_()
-                self._closure(block26)
-
-                def block27():
-                    self._separator_()
-                self._closure(block27)
-
-                def block28():
-                    self._hspace_()
-                self._closure(block28)
-            self._closure(block25)
+            self._closure(block19)
             self._multi_cond_()
             self.name_last_node('cond')
-        self._closure(block20)
+        self._closure(block14)
         self.ast._define(
             ['amax', 'amin', 'cond', 'exp', 'max', 'min'],
-            ['base_type', 'id']
+            ['defs']
         )
 
     @tatsumasu('MultiCond')
@@ -3527,6 +3505,55 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             ['id']
         )
 
+    @tatsumasu('WhereCondition')
+    def _where_condition_terse_(self):  # noqa
+        self._identifier_()
+        self.add_last_node_to_name('id')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._token(',')
+
+            def block3():
+                self._hspace_()
+            self._closure(block3)
+            self._identifier_()
+            self.add_last_node_to_name('id')
+        self._closure(block1)
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._token(':')
+                with self._option():
+                    self._IN_()
+                self._error('no available options')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
+        self._la_type_()
+        self.name_last_node('type')
+
+        def block9():
+
+            def block10():
+                self._hspace_()
+            self._closure(block10)
+            self._token('index')
+            self.name_last_node('index')
+        self._closure(block9)
+        self.ast._define(
+            ['index', 'type'],
+            ['id']
+        )
+
     @tatsumasu('MatrixType')
     def _matrix_type_(self):  # noqa
         with self._choice():
@@ -5375,6 +5402,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
     def where_condition(self, ast):  # noqa
         return ast
 
+    def where_condition_terse(self, ast):  # noqa
+        return ast
+
     def matrix_type(self, ast):  # noqa
         return ast
 
@@ -5653,10 +5683,9 @@ class Summation(ModelBase):
 class Optimize(ModelBase):
     amax = None
     amin = None
-    base_type = None
     cond = None
+    defs = None
     exp = None
-    id = None
     max = None
     min = None
 
