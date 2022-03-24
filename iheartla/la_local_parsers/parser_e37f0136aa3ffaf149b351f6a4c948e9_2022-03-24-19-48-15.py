@@ -3895,10 +3895,25 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             self._hspace_()
         self._closure(block11)
         self._params_type_()
-        self.name_last_node('ret')
+        self.add_last_node_to_name('ret')
+
+        def block13():
+
+            def block14():
+                self._hspace_()
+            self._closure(block14)
+            self._params_separator_()
+            self.add_last_node_to_name('ret_separators')
+
+            def block16():
+                self._hspace_()
+            self._closure(block16)
+            self._params_type_()
+            self.add_last_node_to_name('ret')
+        self._closure(block13)
         self.ast._define(
-            ['empty', 'ret'],
-            ['params', 'separators']
+            ['empty'],
+            ['params', 'ret', 'ret_separators', 'separators']
         )
 
     @tatsumasu('Integer')
@@ -6018,6 +6033,7 @@ class FunctionType(ModelBase):
     empty = None
     params = None
     ret = None
+    ret_separators = None
     separators = None
 
 

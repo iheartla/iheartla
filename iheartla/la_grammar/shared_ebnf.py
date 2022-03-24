@@ -70,7 +70,7 @@ params_type
     ;
 
 function_type::FunctionType
-    = ((params+:params_type {{hspace} separators+:params_separator {hspace} params+:params_type})|empty:'∅'|'{'{hspace}'}') {hspace} ('→'|'->') {hspace} ret:params_type
+    = ((params+:params_type {{hspace} separators+:params_separator {hspace} params+:params_type})|empty:'∅'|'{'{hspace}'}') {hspace} ('→'|'->') {hspace} ret+:params_type {{hspace} ret_separators+:params_separator {hspace} ret+:params_type}
     ;
 
 
