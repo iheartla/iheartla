@@ -210,6 +210,7 @@ class TypeWalker(NodeWalker):
         self.local_func_parsing = False
         self.local_func_name = ''  # function name when visiting expressions
         self.local_func_dict = {}  # local function name -> parameter dict
+        self.visiting_opt = False  # optimization
         self.func_data_dict = {}   # local function name -> LocalFuncData
         #
         self.desc_dict = {}        # comment for parameters
@@ -758,7 +759,7 @@ class TypeWalker(NodeWalker):
             if True:
                 self.handle_identifier(id0, id0_info.ir, type_node)
                 # self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
-                if not self.local_func_parsing:
+                if not self.local_func_parsing and not self.visiting_opt:
                     # main params: due to multiple blocks
                     self.update_parameters(id0, kwargs[PARAM_INDEX]+id_index)
                 if type_node.la_type.is_matrix():
@@ -1453,6 +1454,7 @@ class TypeWalker(NodeWalker):
         return valid
 
     def walk_Optimize(self, node, **kwargs):
+        self.visiting_opt = True
         opt_type = OptimizeType.OptimizeInvalid
         if node.min:
             opt_type = OptimizeType.OptimizeMin
@@ -1465,16 +1467,22 @@ class TypeWalker(NodeWalker):
         base_id_list = []
         base_node_list = []
         base_type_list = []
-        for cur_index in range(len(node.base_type)):
-            base_type = self.walk(node.base_type[cur_index], **kwargs)
-            base_node = self.walk(node.id[cur_index], **kwargs).ir
-            # temporary add to symbol table : opt scope
-            base_id = base_node.get_main_id()
-            self.symtable[base_id] = base_type.la_type
-            self.tmp_symtable[base_id] = base_type.la_type
-            base_id_list.append(base_id)
-            base_type_list.append(base_type)
-            base_node_list.append(base_node)
+
+        par_defs = []
+        par_dict = {}
+        if len(node.defs) > 0:
+            self.is_param_block = True
+            for par_def in node.defs:
+                par_type = self.walk(par_def, **kwargs)
+                par_defs.append(par_type)
+                for cur_index in range(len(par_type.id)):
+                    base_id_list.append(par_type.id[cur_index].get_name())
+                    base_type_list.append(par_type.type)
+                    base_node_list.append(par_type.id[cur_index])
+                    # temporary add to symbol table : opt scope
+                    self.symtable[par_type.id[cur_index].get_name()] = par_type.type.la_type
+                    self.tmp_symtable[par_type.id[cur_index].get_name()] = par_type.type.la_type
+            self.is_param_block = False
         exp_info = self.walk(node.exp, **kwargs)
         exp_node = exp_info.ir
         cond_list = []
@@ -1484,9 +1492,10 @@ class TypeWalker(NodeWalker):
             del self.symtable[cur_id]
         #
         assert exp_node.la_type.is_scalar(), get_err_msg_info(exp_node.parse_info, "Objective function must return a scalar")
-        opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node_list, base_type_list, parse_info=node.parseinfo)
+        opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node_list, base_type_list, parse_info=node.parseinfo, def_list=par_defs)
         opt_node.la_type = ScalarType()
         node_info = NodeInfo(opt_node.la_type, ir=opt_node, symbols=exp_info.symbols)
+        self.visiting_opt = False
         return node_info
 
     def walk_MultiCond(self, node, **kwargs):
