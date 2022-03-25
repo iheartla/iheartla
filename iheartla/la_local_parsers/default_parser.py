@@ -4188,13 +4188,27 @@ class grammardefaultParser(Parser):
                     self._hspace_()
                 self._closure(block13)
                 self._right_hand_side_()
-                self.name_last_node('expr')
+                self.add_last_node_to_name('expr')
 
                 def block15():
 
                     def block16():
                         self._hspace_()
                     self._closure(block16)
+                    self._token(',')
+
+                    def block17():
+                        self._hspace_()
+                    self._closure(block17)
+                    self._right_hand_side_()
+                    self.add_last_node_to_name('expr')
+                self._closure(block15)
+
+                def block19():
+
+                    def block20():
+                        self._hspace_()
+                    self._closure(block20)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -4203,77 +4217,91 @@ class grammardefaultParser(Parser):
                                 self._GIVEN_()
                             self._error('no available options')
 
-                    def block18():
+                    def block22():
                         self._hspace_()
-                    self._closure(block18)
+                    self._closure(block22)
                     self._where_condition_()
                     self.add_last_node_to_name('defs')
 
-                    def block20():
+                    def block24():
 
-                        def block21():
+                        def block25():
                             self._hspace_()
-                        self._closure(block21)
+                        self._closure(block25)
                         self._token(',')
 
-                        def block22():
+                        def block26():
                             self._hspace_()
-                        self._closure(block22)
+                        self._closure(block26)
                         self._where_condition_()
                         self.add_last_node_to_name('defs')
-                    self._closure(block20)
-                self._closure(block15)
+                    self._closure(block24)
+                self._closure(block19)
             with self._option():
                 self._identifier_()
                 self.name_last_node('name')
                 self._token('[')
 
-                def block25():
+                def block29():
 
-                    def block26():
+                    def block30():
                         self._hspace_()
-                    self._closure(block26)
+                    self._closure(block30)
                     self._identifier_alone_()
                     self.add_last_node_to_name('params')
 
-                    def block28():
+                    def block32():
 
-                        def block29():
+                        def block33():
                             self._hspace_()
-                        self._closure(block29)
+                        self._closure(block33)
                         self._params_separator_()
                         self.add_last_node_to_name('separators')
 
-                        def block31():
+                        def block35():
                             self._hspace_()
-                        self._closure(block31)
+                        self._closure(block35)
                         self._identifier_alone_()
                         self.add_last_node_to_name('params')
-                    self._closure(block28)
-                self._closure(block25)
+                    self._closure(block32)
+                self._closure(block29)
 
-                def block33():
+                def block37():
                     self._hspace_()
-                self._closure(block33)
+                self._closure(block37)
                 self._token(']')
 
-                def block34():
+                def block38():
                     self._hspace_()
-                self._closure(block34)
+                self._closure(block38)
                 self._token('=')
                 self.name_last_node('op')
 
-                def block36():
+                def block40():
                     self._hspace_()
-                self._closure(block36)
+                self._closure(block40)
                 self._right_hand_side_()
-                self.name_last_node('expr')
+                self.add_last_node_to_name('expr')
 
-                def block38():
+                def block42():
 
-                    def block39():
+                    def block43():
                         self._hspace_()
-                    self._closure(block39)
+                    self._closure(block43)
+                    self._token(',')
+
+                    def block44():
+                        self._hspace_()
+                    self._closure(block44)
+                    self._right_hand_side_()
+                    self.add_last_node_to_name('expr')
+                self._closure(block42)
+
+                def block46():
+
+                    def block47():
+                        self._hspace_()
+                    self._closure(block47)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -4282,30 +4310,30 @@ class grammardefaultParser(Parser):
                                 self._GIVEN_()
                             self._error('no available options')
 
-                    def block41():
+                    def block49():
                         self._hspace_()
-                    self._closure(block41)
+                    self._closure(block49)
                     self._where_condition_()
                     self.add_last_node_to_name('defs')
 
-                    def block43():
+                    def block51():
 
-                        def block44():
+                        def block52():
                             self._hspace_()
-                        self._closure(block44)
+                        self._closure(block52)
                         self._token(',')
 
-                        def block45():
+                        def block53():
                             self._hspace_()
-                        self._closure(block45)
+                        self._closure(block53)
                         self._where_condition_()
                         self.add_last_node_to_name('defs')
-                    self._closure(block43)
-                self._closure(block38)
+                    self._closure(block51)
+                self._closure(block46)
             self._error('no available options')
         self.ast._define(
-            ['def_p', 'expr', 'name', 'op'],
-            ['defs', 'params', 'separators']
+            ['def_p', 'name', 'op'],
+            ['defs', 'expr', 'params', 'separators']
         )
 
     @tatsumasu()
