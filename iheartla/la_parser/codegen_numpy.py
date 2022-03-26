@@ -1363,33 +1363,27 @@ class CodeGenNumpy(CodeGen):
         cur_len = 0
         param_name = self.generate_var_name('X')
         id_list = []
-        init_list = []
         pack_list = []
         unpack_list = []
         for cur_index in range(len(node.base_list)):
             cur_la_type = node.base_type_list[cur_index].la_type
             id_info = self.visit(node.base_list[cur_index], **kwargs)
             id_list.append(id_info.content)
-            init_value = 0
             pack_str = ''
             unpack_str = ''
             if cur_la_type.is_scalar():
-                init_value = 0
                 pack_str = "[{}]".format(id_info.content)
                 unpack_str = "{}[{}:{}][0]".format(param_name, cur_len, add_syms(cur_len, 1))
                 cur_len = add_syms(cur_len, 1)
             elif cur_la_type.is_vector():
-                init_value = "np.zeros({})".format(cur_la_type.rows)
                 pack_str = id_info.content
                 unpack_str = "{}[{}:{}]".format(param_name, cur_len, add_syms(cur_len, cur_la_type.rows))
                 cur_len = add_syms(cur_len, cur_la_type.rows)
             elif cur_la_type.is_matrix():
                 pack_str = "np.reshape({}, -1)".format(id_info.content)
-                init_value = "np.zeros({}*{})".format(cur_la_type.rows, cur_la_type.cols)
                 unpack_str = "{}[{}:{}].reshape({}, {})".format(param_name, cur_len, add_syms(cur_len, mul_syms(cur_la_type.rows, cur_la_type.cols)),
                                                                 cur_la_type.rows, cur_la_type.cols)
                 cur_len = add_syms(cur_len, mul_syms(cur_la_type.rows, cur_la_type.cols))
-            init_list.append(init_value)
             pack_list.append(pack_str)
             unpack_list.append(unpack_str)
         init_value = "np.zeros({})".format(cur_len)
