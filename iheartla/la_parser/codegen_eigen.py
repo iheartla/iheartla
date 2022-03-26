@@ -8,7 +8,7 @@ class CodeGenEigen(CodeGen):
 
     def init_type(self, type_walker, func_name):
         super().init_type(type_walker, func_name)
-        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n'''
+        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <LBFGS.h>\n'''
         self.post_str = ''''''
         self.ret = 'ret'
         if self.unofficial_method:
@@ -27,7 +27,8 @@ class CodeGenEigen(CodeGen):
     def get_arith_dim_check_str(self):
         check_list = []
         if len(self.get_cur_param_data().arith_dim_list) > 0:
-            check_list = ['    assert( fmod({}, 1) == 0.0 );'.format(dims) for dims in self.get_cur_param_data().arith_dim_list]
+            check_list = ['    assert( fmod({}, 1) == 0.0 );'.format(dims) for dims in
+                          self.get_cur_param_data().arith_dim_list]
         return check_list
 
     def get_set_item_str(self, set_type):
@@ -153,11 +154,12 @@ class CodeGenEigen(CodeGen):
                             '        long {} = {}{}.cols();'.format(ret_dim, self.param_name_test, param_i))
         test_content.append(
             '    {} = [&]({})->{}{{'.format(var_name, self.get_func_params_str(func_type, name_required),
-                                           self.get_ctype(func_type.ret)))
+                                            self.get_ctype(func_type.ret)))
         test_content += dim_definition
         if func_type.ret.is_set():
             test_content.append('        {} tmp;'.format(self.get_ctype(func_type.ret)))
-            test_content += self.get_set_test_list('tmp', self.generate_var_name("dim"), 'i', func_type.ret, rand_int_max, '        ')
+            test_content += self.get_set_test_list('tmp', self.generate_var_name("dim"), 'i', func_type.ret,
+                                                   rand_int_max, '        ')
             test_content.append('        return tmp;')
         else:
             test_content.append(
@@ -212,7 +214,7 @@ class CodeGenEigen(CodeGen):
         declare_modules = ''
         init_struct = ''
         init_var = ''
-        imported_function = ''   # import function from other modules
+        imported_function = ''  # import function from other modules
         if len(self.module_list) > 0:
             init_struct += '    :\n'
             init_struct_list = []
@@ -240,7 +242,8 @@ class CodeGenEigen(CodeGen):
                    # "    : {}".format(',\n    '.join(assign_list)),
                    # "    {}",
                    ]
-        return "\n".join(content) + def_struct + declare_modules + imported_function + pre_str + init_struct + '    {\n' + def_str + assign_content + init_var + stat_str + '    }\n' + "};\n"
+        return "\n".join(
+            content) + def_struct + declare_modules + imported_function + pre_str + init_struct + '    {\n' + def_str + assign_content + init_var + stat_str + '    }\n' + "};\n"
 
     def copy_func_impl(self, sym, module_name):
         """implement function from other modules"""
@@ -264,13 +267,16 @@ class CodeGenEigen(CodeGen):
         if self.ret_symbol is not None:
             la_type = self.get_sym_type(self.ret_symbol)
             if la_type.is_matrix() or la_type.is_vector() or la_type.is_scalar():
-                main_content.append('    std::cout<<"return value:\\n"<<func_value.{}<<std::endl;'.format(self.ret_symbol))
+                main_content.append(
+                    '    std::cout<<"return value:\\n"<<func_value.{}<<std::endl;'.format(self.ret_symbol))
             elif la_type.is_sequence():
                 # sequence
                 if la_type.element_type.is_matrix() or la_type.element_type.is_vector() or la_type.element_type.is_scalar():
                     main_content.append('    std::cout<<"vector return value:"<<std::endl;')
                     main_content.append('    for(int i=0; i<func_value.{}.size(); i++){{'.format(self.ret_symbol))
-                    main_content.append('        std::cout<<"i:"<<i<<", value:\\n"<<func_value.{}.at(i)<<std::endl;'.format(self.ret_symbol))
+                    main_content.append(
+                        '        std::cout<<"i:"<<i<<", value:\\n"<<func_value.{}.at(i)<<std::endl;'.format(
+                            self.ret_symbol))
                     main_content.append('    }')
         return main_content
 
@@ -328,7 +334,9 @@ class CodeGenEigen(CodeGen):
                         matrix_type_str = 'MatrixXi' if integer_type else 'MatrixXd'
                         row_str = ele_type.rows if not ele_type.is_dynamic_row() else 'rand()%{}'.format(rand_int_max)
                         col_str = ele_type.cols if not ele_type.is_dynamic_col() else 'rand()%{}'.format(rand_int_max)
-                        test_content.append('        {}[i] = Eigen::{}::Random({}, {}){};'.format(parameter, matrix_type_str, row_str, col_str, sparse_view))
+                        test_content.append(
+                            '        {}[i] = Eigen::{}::Random({}, {}){};'.format(parameter, matrix_type_str, row_str,
+                                                                                  col_str, sparse_view))
                 elif ele_type.is_vector():
                     if parameter not in test_generated_sym_set:
                         if not ele_type.is_dim_constant() and not ele_type.is_dynamic():
@@ -361,16 +369,22 @@ class CodeGenEigen(CodeGen):
                 if isinstance(element_type, LaVarType):
                     if element_type.is_scalar() and element_type.is_int:
                         test_content.append(
-                            '    {} = Eigen::MatrixXi::Random({}, {}){};'.format(parameter, self.get_sym_type(parameter).rows,
-                                                                               self.get_sym_type(parameter).cols, sparse_view))
+                            '    {} = Eigen::MatrixXi::Random({}, {}){};'.format(parameter,
+                                                                                 self.get_sym_type(parameter).rows,
+                                                                                 self.get_sym_type(parameter).cols,
+                                                                                 sparse_view))
                     else:
                         test_content.append(
-                            '    {} = Eigen::MatrixXd::Random({}, {}){};'.format(parameter, self.get_sym_type(parameter).rows,
-                                                                               self.get_sym_type(parameter).cols, sparse_view))
+                            '    {} = Eigen::MatrixXd::Random({}, {}){};'.format(parameter,
+                                                                                 self.get_sym_type(parameter).rows,
+                                                                                 self.get_sym_type(parameter).cols,
+                                                                                 sparse_view))
                 else:
                     test_content.append(
-                        '    {} = Eigen::MatrixXd::Random({}, {}){};'.format(parameter, self.get_sym_type(parameter).rows,
-                                                                           self.get_sym_type(parameter).cols,sparse_view))
+                        '    {} = Eigen::MatrixXd::Random({}, {}){};'.format(parameter,
+                                                                             self.get_sym_type(parameter).rows,
+                                                                             self.get_sym_type(parameter).cols,
+                                                                             sparse_view))
                 if not self.get_sym_type(parameter).is_dim_constant() or self.get_sym_type(parameter).sparse:
                     if not (parameter in dim_defined_dict and dim_defined_dict[parameter] == 0):
                         type_checks.append(
@@ -383,10 +397,12 @@ class CodeGenEigen(CodeGen):
                 if isinstance(element_type, LaVarType):
                     if element_type.is_scalar() and element_type.is_int:
                         test_content.append(
-                            '    {} = Eigen::VectorXi::Random({});'.format(parameter, self.get_sym_type(parameter).rows))
+                            '    {} = Eigen::VectorXi::Random({});'.format(parameter,
+                                                                           self.get_sym_type(parameter).rows))
                     else:
                         test_content.append(
-                            '    {} = Eigen::VectorXd::Random({});'.format(parameter, self.get_sym_type(parameter).rows))
+                            '    {} = Eigen::VectorXd::Random({});'.format(parameter,
+                                                                           self.get_sym_type(parameter).rows))
                 else:
                     test_content.append(
                         '    {} = Eigen::VectorXd::Random({});'.format(parameter, self.get_sym_type(parameter).rows))
@@ -397,8 +413,9 @@ class CodeGenEigen(CodeGen):
             elif self.get_sym_type(parameter).is_scalar():
                 test_function.append('    {} = rand() % {};'.format(parameter, rand_int_max))
             elif self.get_sym_type(parameter).is_set():
-                test_content += self.get_set_test_list(parameter, self.generate_var_name("dim"), 'i', self.get_sym_type(parameter),
-                                       rand_int_max, '    ')
+                test_content += self.get_set_test_list(parameter, self.generate_var_name("dim"), 'i',
+                                                       self.get_sym_type(parameter),
+                                                       rand_int_max, '    ')
             elif self.get_sym_type(parameter).is_function():
                 test_content += self.get_func_test_str(parameter, self.get_sym_type(parameter), rand_int_max)
         return type_checks, doc, test_content, test_function, par_des_list, test_par_list
@@ -473,11 +490,13 @@ class CodeGenEigen(CodeGen):
             self.logger.info("subs_list: {}".format(subs_list))
             new_seq_dim_dict = self.convert_seq_dim_dict()
             self.logger.info("new_seq_dim_dict: {}".format(new_seq_dim_dict))
+
             def get_keys_in_set(cur_set):
                 keys_list = []
                 for sym in cur_set:
                     keys_list += new_seq_dim_dict[sym].values()
                 return set(keys_list)
+
             for sym_set in subs_list:
                 visited_sym_set = visited_sym_set.union(sym_set)
                 cur_test_content = []
@@ -495,24 +514,31 @@ class CodeGenEigen(CodeGen):
                     dim_dict = new_seq_dim_dict[cur_sym]
                     defined_content.append('    {}.resize({});'.format(cur_sym, self.get_sym_type(cur_sym).size))
                     if self.get_sym_type(cur_sym).element_type.is_vector():
-                        vector_type_str = 'VectorXi' if self.get_sym_type(cur_sym).element_type.is_integer_element() else 'VectorXd'
+                        vector_type_str = 'VectorXi' if self.get_sym_type(
+                            cur_sym).element_type.is_integer_element() else 'VectorXd'
                         # determined
-                        cur_block_content.append('        {}[i] = Eigen::{}::Random({});'.format(cur_sym, vector_type_str, rand_name_dict[dim_dict[1]]))
+                        cur_block_content.append(
+                            '        {}[i] = Eigen::{}::Random({});'.format(cur_sym, vector_type_str,
+                                                                            rand_name_dict[dim_dict[1]]))
                     else:
                         # matrix
                         sparse_view = ''
                         if self.get_sym_type(cur_sym).element_type.sparse:
                             sparse_view = '.sparseView()'
-                        matrix_type_str = 'MatrixXi' if self.get_sym_type(cur_sym).element_type.is_integer_element() else 'MatrixXd'
-                        row_str = self.get_sym_type(cur_sym).element_type.rows if not self.get_sym_type(cur_sym).element_type.is_dynamic_row() else rand_name_dict[dim_dict[1]]
-                        col_str = self.get_sym_type(cur_sym).element_type.cols if not self.get_sym_type(cur_sym).element_type.is_dynamic_col() else rand_name_dict[dim_dict[2]]
-                        cur_block_content.append('        {}[i] = Eigen::{}::Random({}, {}){};'.format(cur_sym, matrix_type_str, row_str, col_str,
+                        matrix_type_str = 'MatrixXi' if self.get_sym_type(
+                            cur_sym).element_type.is_integer_element() else 'MatrixXd'
+                        row_str = self.get_sym_type(cur_sym).element_type.rows if not self.get_sym_type(
+                            cur_sym).element_type.is_dynamic_row() else rand_name_dict[dim_dict[1]]
+                        col_str = self.get_sym_type(cur_sym).element_type.cols if not self.get_sym_type(
+                            cur_sym).element_type.is_dynamic_col() else rand_name_dict[dim_dict[2]]
+                        cur_block_content.append(
+                            '        {}[i] = Eigen::{}::Random({}, {}){};'.format(cur_sym, matrix_type_str, row_str,
+                                                                                  col_str,
                                                                                   sparse_view))
                 cur_test_content = defined_content + cur_test_content + cur_block_content
                 cur_test_content.append('    }')
                 test_content += cur_test_content
         return visited_sym_set, test_content
-
 
     def visit_block(self, node, **kwargs):
         show_doc = False
@@ -583,7 +609,9 @@ class CodeGenEigen(CodeGen):
 
         # content += stats_content
         # content += '\n}\n'
-        content = self.get_struct_definition(self.update_prelist_str([pre_content], '    '), self.update_prelist_str([content], '    '), self.update_prelist_str([stats_content], '    '))
+        content = self.get_struct_definition(self.update_prelist_str([pre_content], '    '),
+                                             self.update_prelist_str([content], '    '),
+                                             self.update_prelist_str([stats_content], '    '))
         # return value
         # ret_value = self.get_ret_struct()
         # content += '    return ' + ret_value + ';'
@@ -636,10 +664,12 @@ class CodeGenEigen(CodeGen):
         assign_id_type = self.get_sym_type(assign_id)
         if assign_id_type.is_matrix():
             if assign_id_type.sparse:
-                content.append("{} {}({}, {});\n".format(self.get_ctype(assign_id_type), assign_id, assign_id_type.rows, assign_id_type.cols))
+                content.append("{} {}({}, {});\n".format(self.get_ctype(assign_id_type), assign_id, assign_id_type.rows,
+                                                         assign_id_type.cols))
             else:
-                content.append("Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".    format(assign_id, assign_id_type.rows,
-                                                                               assign_id_type.cols))
+                content.append(
+                    "Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".format(assign_id, assign_id_type.rows,
+                                                                                   assign_id_type.cols))
         elif assign_id_type.is_vector():
             content.append(
                 "Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, 1);\n".format(assign_id, assign_id_type.rows))
@@ -673,7 +703,9 @@ class CodeGenEigen(CodeGen):
                     size_str = "{}".format(self.get_sym_type(target_var[0]).element_type.cols)
             content.append("for(int {}=1; {}<={}; {}++){{\n".format(sub, sub, size_str, sub))
         else:
-            content.append("for(int {}=1; {}<={}.size(); {}++){{\n".format(sub, sub, self.convert_bound_symbol(target_var[0]), sub))
+            content.append(
+                "for(int {}=1; {}<={}.size(); {}++){{\n".format(sub, sub, self.convert_bound_symbol(target_var[0]),
+                                                                sub))
         exp_pre_list = []
         if exp_info.pre_list:  # catch pre_list
             list_content = "".join(exp_info.pre_list)
@@ -705,7 +737,9 @@ class CodeGenEigen(CodeGen):
         param_list = []
         for parameter in node.params:
             param_info = self.visit(parameter, **kwargs)
-            param_list.append("        const {} & {}".format(self.get_ctype(self.get_cur_param_data().symtable[param_info.content]), param_info.content))
+            param_list.append(
+                "        const {} & {}".format(self.get_ctype(self.get_cur_param_data().symtable[param_info.content]),
+                                               param_info.content))
         if len(param_list) == 0:
             content = "    {} {}()\n"
         else:
@@ -766,7 +800,8 @@ class CodeGenEigen(CodeGen):
                 sub_info = self.visit(node.sub, **kwargs)
                 pre_list += sub_info.pre_list
                 if node.sub.la_type.is_scalar():
-                    content = "pow(({}).cwiseAbs().array().pow({}).sum(), 1.0/{});".format(value, sub_info.content, sub_info.content)
+                    content = "pow(({}).cwiseAbs().array().pow({}).sum(), 1.0/{});".format(value, sub_info.content,
+                                                                                           sub_info.content)
                 else:
                     content = "sqrt(({}).transpose()*{}*({}))".format(value, sub_info.content, value)
         elif type_info.la_type.is_matrix():
@@ -777,7 +812,9 @@ class CodeGenEigen(CodeGen):
             elif node.norm_type == NormType.NormNuclear:
                 svd_name = self.generate_var_name("svd")
                 content = "{}.singularValues().sum()".format(svd_name)
-                pre_list.append("    Eigen::JacobiSVD<Eigen::MatrixXd> {}(T, Eigen::ComputeThinU | Eigen::ComputeThinV);\n".format(svd_name))
+                pre_list.append(
+                    "    Eigen::JacobiSVD<Eigen::MatrixXd> {}(T, Eigen::ComputeThinU | Eigen::ComputeThinV);\n".format(
+                        svd_name))
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_transpose(self, node, **kwargs):
@@ -802,9 +839,11 @@ class CodeGenEigen(CodeGen):
                 if node.base.la_type.is_matrix() and node.base.la_type.sparse:
                     solver_name = self.generate_var_name("solver")
                     identity_name = self.generate_var_name("I")
-                    pre_list.append("    Eigen::SparseQR <{}, Eigen::COLAMDOrdering<int> > {};\n".format(self.get_ctype(node.base.la_type), solver_name))
+                    pre_list.append("    Eigen::SparseQR <{}, Eigen::COLAMDOrdering<int> > {};\n".format(
+                        self.get_ctype(node.base.la_type), solver_name))
                     pre_list.append("    {}.compute({});\n".format(solver_name, base_info.content))
-                    pre_list.append("    {} {}({}, {});\n".format(self.get_ctype(node.base.la_type), identity_name, node.base.la_type.rows, node.base.la_type.cols))
+                    pre_list.append("    {} {}({}, {});\n".format(self.get_ctype(node.base.la_type), identity_name,
+                                                                  node.base.la_type.rows, node.base.la_type.cols))
                     pre_list.append("    {}.setIdentity();\n".format(identity_name))
                     base_info.content = "{}.solve({})".format(solver_name, identity_name)
                 else:
@@ -815,7 +854,9 @@ class CodeGenEigen(CodeGen):
                 base_info.content = "pow({}, {})".format(base_info.content, power_info.content)
             else:
                 name = self.generate_var_name('pow')
-                base_info.pre_list.append("    Eigen::MatrixPower<{}> {}({});\n".format(self.get_ctype(node.la_type), name, base_info.content))
+                base_info.pre_list.append(
+                    "    Eigen::MatrixPower<{}> {}({});\n".format(self.get_ctype(node.la_type), name,
+                                                                  base_info.content))
                 base_info.content = "{}({})".format(name, power_info.content)
         base_info.pre_list += pre_list
         return base_info
@@ -829,12 +870,13 @@ class CodeGenEigen(CodeGen):
             solver_name = self.generate_var_name("solver")
             pre_list.append(
                 "    Eigen::SparseQR <{}, Eigen::COLAMDOrdering<int> > {};\n".format(self.get_ctype(node.left.la_type),
-                    solver_name))
+                                                                                     solver_name))
             pre_list.append("    {}.compute({});\n".format(solver_name, left_info.content))
             left_info.content = "{}.solve({})".format(solver_name, right_info.content)
         else:
             if node.right.la_type.is_matrix() and node.right.la_type.sparse:
-                left_info.content = "{}.colPivHouseholderQr().solve(({}).toDense())".format(left_info.content, right_info.content)
+                left_info.content = "{}.colPivHouseholderQr().solve(({}).toDense())".format(left_info.content,
+                                                                                            right_info.content)
             else:
                 left_info.content = "{}.colPivHouseholderQr().solve({})".format(left_info.content, right_info.content)
         left_info.pre_list += pre_list
@@ -867,9 +909,10 @@ class CodeGenEigen(CodeGen):
         if_info = self.visit(node.ifs, **kwargs)
         pre_list += if_info.content
         pre_list.append(
-            '    {}.setFromTriplets(tripletList_{}.begin(), tripletList_{}.end());\n'.format(assign_node.left.get_main_id(),
-                                                                                             assign_node.left.get_main_id(),
-                                                                                             assign_node.left.get_main_id()))
+            '    {}.setFromTriplets(tripletList_{}.begin(), tripletList_{}.end());\n'.format(
+                assign_node.left.get_main_id(),
+                assign_node.left.get_main_id(),
+                assign_node.left.get_main_id()))
         return CodeNodeInfo(cur_m_id, pre_list)
 
     def visit_sparse_ifs(self, node, **kwargs):
@@ -892,8 +935,10 @@ class CodeGenEigen(CodeGen):
                 assign_node = node.get_ancestor(IRNodeType.Assignment)
                 sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
                 subs = assign_node.left.subs
-                ret = ["    for( int {}=1; {}<={}; {}++){{\n".format(subs[0], subs[0], sparse_node.la_type.rows, subs[0]),
-                       "        for( int {}=1; {}<={}; {}++){{\n".format(subs[1], subs[1], sparse_node.la_type.cols, subs[1])]
+                ret = [
+                    "    for( int {}=1; {}<={}; {}++){{\n".format(subs[0], subs[0], sparse_node.la_type.rows, subs[0]),
+                    "        for( int {}=1; {}<={}; {}++){{\n".format(subs[1], subs[1], sparse_node.la_type.cols,
+                                                                      subs[1])]
                 for cond in node.cond_list:
                     cond_info = self.visit(cond, **kwargs)
                     for index in range(len(cond_info.content)):
@@ -939,9 +984,10 @@ class CodeGenEigen(CodeGen):
                     assign_node.left.main.main_id, subs[0], subs[1], stat_content))
                 content.append('}\n')
             else:
-                content.append('{}({}){{\n'.format("if" if node.first_in_list else "else if",cond_info.content))
+                content.append('{}({}){{\n'.format("if" if node.first_in_list else "else if", cond_info.content))
                 content += stat_info.pre_list
-                content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(assign_node.left.main.main_id, subs[0], subs[1], stat_content))
+                content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(
+                    assign_node.left.main.main_id, subs[0], subs[1], stat_content))
                 content.append('}\n')
             self.convert_matrix = False
         else:
@@ -1014,26 +1060,28 @@ class CodeGenEigen(CodeGen):
                             ret[i][j] = '{}({}, {})'.format(func_name, dims[0], dims[1])
         # matrix
         if self.get_sym_type(cur_m_id).sparse and self.get_sym_type(cur_m_id).block:
-            row_index = 0       # start position for item
+            row_index = 0  # start position for item
             # convert to sparse matrix
             sparse_id = "{}".format(cur_m_id)
             sparse_triplet = "tripletList{}".format(cur_m_id)
             tmp_sparse_name = self.generate_var_name("tmp")
-            content += 'Eigen::SparseMatrix<double> {}({}, {});\n'.format(cur_m_id, self.get_sym_type(cur_m_id).rows, self.get_sym_type(cur_m_id).cols)
+            content += 'Eigen::SparseMatrix<double> {}({}, {});\n'.format(cur_m_id, self.get_sym_type(cur_m_id).rows,
+                                                                          self.get_sym_type(cur_m_id).cols)
             content += '    std::vector<Eigen::Triplet<double> > {};\n'.format(sparse_triplet)
             first_item = True
             for i in range(len(ret)):
                 col_index = 0
                 cur_row_size = 1
                 for j in range(len(ret[i])):
-                    cur_scalar = False   # 1x1
+                    cur_scalar = False  # 1x1
                     # get size for current item
                     cur_col_size = 1
                     if type_info.la_type.list_dim and (i, j) in type_info.la_type.list_dim:
                         cur_col_size = type_info.la_type.list_dim[(i, j)][1]
                         cur_row_size = type_info.la_type.list_dim[(i, j)][0]
                     else:
-                        if type_info.la_type.item_types[i][j].la_type.is_matrix() or type_info.la_type.item_types[i][j].la_type.is_vector():
+                        if type_info.la_type.item_types[i][j].la_type.is_matrix() or type_info.la_type.item_types[i][
+                            j].la_type.is_vector():
                             cur_col_size = type_info.la_type.item_types[i][j].la_type.cols
                             cur_row_size = type_info.la_type.item_types[i][j].la_type.rows
                     if 'Eigen::MatrixXd::Zero' in ret[i][j]:
@@ -1041,12 +1089,16 @@ class CodeGenEigen(CodeGen):
                         col_index += cur_col_size
                         continue
                     # get content for current item
-                    if type_info.la_type.item_types[i][j].la_type.is_matrix() and type_info.la_type.item_types[i][j].la_type.sparse:
+                    if type_info.la_type.item_types[i][j].la_type.is_matrix() and type_info.la_type.item_types[i][
+                        j].la_type.sparse:
                         item_content = ret[i][j]
                     else:
-                        if type_info.la_type.item_types[i][j].la_type.is_matrix() or type_info.la_type.item_types[i][j].la_type.is_vector()\
+                        if type_info.la_type.item_types[i][j].la_type.is_matrix() or type_info.la_type.item_types[i][
+                            j].la_type.is_vector() \
                                 or (type_info.la_type.list_dim and (i, j) in type_info.la_type.list_dim):
-                            if (type_info.la_type.list_dim and (i, j) in type_info.la_type.list_dim) and type_info.la_type.list_dim[(i, j)][0] == 1 and type_info.la_type.list_dim[(i, j)][1] == 1:
+                            if (type_info.la_type.list_dim and (i, j) in type_info.la_type.list_dim) and \
+                                    type_info.la_type.list_dim[(i, j)][0] == 1 and type_info.la_type.list_dim[(i, j)][
+                                1] == 1:
                                 # scalar
                                 item_content = ret[i][j]
                                 cur_scalar = True
@@ -1100,7 +1152,7 @@ class CodeGenEigen(CodeGen):
                                                                         self.get_sym_type(cur_m_id).cols, cur_m_id)
             else:
                 content += 'Eigen::MatrixXd {}({}, {});\n'.format(cur_m_id, self.get_sym_type(cur_m_id).rows,
-                                                                    self.get_sym_type(cur_m_id).cols)
+                                                                  self.get_sym_type(cur_m_id).cols)
             if type_info.la_type:
                 all_rows = []
                 m_content = ""
@@ -1212,7 +1264,8 @@ class CodeGenEigen(CodeGen):
                         col_content = col_info.content
                     else:
                         col_content = "{}-1".format(col_info.content)
-                    content = "{}.at({})({}, {})".format(main_info.content, main_index_content, row_content, col_content)
+                    content = "{}.at({})({}, {})".format(main_info.content, main_index_content, row_content,
+                                                         col_content)
                 else:
                     # use [] instead of (): vector-like data structure
                     content = "{}.at({})[{}]".format(main_info.content, main_index_content, row_content)
@@ -1281,8 +1334,8 @@ class CodeGenEigen(CodeGen):
                             # add definition
                             if sequence not in self.declared_symbols:
                                 content += "    {}.resize({}, {});\n".format(sequence,
-                                                                                                 self.get_sym_type(sequence).rows,
-                                                                                                 self.get_sym_type(sequence).cols)
+                                                                             self.get_sym_type(sequence).rows,
+                                                                             self.get_sym_type(sequence).cols)
                                 content += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(sequence)
                             else:
                                 content += '    tripletList_{}.clear();\n'.format(sequence)
@@ -1294,8 +1347,9 @@ class CodeGenEigen(CodeGen):
                         content += '        tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(
                             sequence, left_subs[0], left_subs[0], right_info.content)
                         content += "    }\n"
-                        content += '    {}.setFromTriplets(tripletList_{}.begin(), tripletList_{}.end());\n'.format(sequence, sequence,
-                                                                                            sequence)
+                        content += '    {}.setFromTriplets(tripletList_{}.begin(), tripletList_{}.end());\n'.format(
+                            sequence, sequence,
+                            sequence)
                     else:  # L_ij
                         if right_info.pre_list:
                             content = "".join(right_info.pre_list) + content
@@ -1306,10 +1360,12 @@ class CodeGenEigen(CodeGen):
                         if node.op != '+=':
                             if node.left.get_main_id() not in self.declared_symbols:
                                 def_str = "    {}.resize({}, {});\n".format(node.left.get_main_id(),
-                                                                                                 self.get_sym_type(node.left.get_main_id()).rows,
-                                                                                                 self.get_sym_type(node.left.get_main_id()).cols)
+                                                                            self.get_sym_type(
+                                                                                node.left.get_main_id()).rows,
+                                                                            self.get_sym_type(
+                                                                                node.left.get_main_id()).cols)
                                 def_str += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(
-                                node.left.get_main_id())
+                                    node.left.get_main_id())
                             else:
                                 content += '    tripletList_{}.clear();\n'.format(node.left.get_main_id())
                         content = def_str + content
@@ -1318,32 +1374,39 @@ class CodeGenEigen(CodeGen):
                     # L_ii
                     content = ""
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
-                                                                            self.get_sym_type(sequence).rows, left_subs[0])
+                                                                             self.get_sym_type(sequence).rows,
+                                                                             left_subs[0])
                     if right_info.pre_list:
                         content += self.update_prelist_str(right_info.pre_list, "    ")
-                    content += "        {}({}-1, {}-1) = {};\n".format(sequence, left_subs[0], left_subs[0], right_info.content)
+                    content += "        {}({}-1, {}-1) = {};\n".format(sequence, left_subs[0], left_subs[0],
+                                                                       right_info.content)
                     content += "    }"
                 else:
                     for right_var in type_info.symbols:
                         if sub_strs in right_var:
                             var_ids = self.get_all_ids(right_var)
-                            right_info.content = right_info.content.replace(right_var, "{}({}, {})".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
+                            right_info.content = right_info.content.replace(right_var, "{}({}, {})".format(var_ids[0],
+                                                                                                           var_ids[1][
+                                                                                                               0],
+                                                                                                           var_ids[1][
+                                                                                                               1]))
                     right_exp += "    {}({}-1, {}-1) = {}".format(node.left.get_main_id(), left_subs[0], left_subs[1],
-                                                               right_info.content)
+                                                                  right_info.content)
                     if self.get_sym_type(sequence).is_matrix():
                         if node.op == '=':
                             # declare
                             if sequence not in self.declared_symbols:
                                 content += "    {} = Eigen::MatrixXd::Zero({}, {});\n".format(sequence,
-                                                                                                              self.get_sym_type(
-                                                                                                                  sequence).rows,
-                                                                                                              self.get_sym_type(
-                                                                                                                  sequence).cols)
+                                                                                              self.get_sym_type(
+                                                                                                  sequence).rows,
+                                                                                              self.get_sym_type(
+                                                                                                  sequence).cols)
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
-                                                                            self.get_sym_type(sequence).rows, left_subs[0])
+                                                                             self.get_sym_type(sequence).rows,
+                                                                             left_subs[0])
                     content += "        for( int {}=1; {}<={}; {}++){{\n".format(left_subs[1], left_subs[1],
-                                                                                self.get_sym_type(sequence).cols,
-                                                                                left_subs[1])
+                                                                                 self.get_sym_type(sequence).cols,
+                                                                                 left_subs[1])
                     if right_info.pre_list:
                         content += self.update_prelist_str(right_info.pre_list, "        ")
                     content += "        " + right_exp + ";\n"
@@ -1365,13 +1428,15 @@ class CodeGenEigen(CodeGen):
                     right_exp += "    {} = {}".format(left_info.content, right_info.content)
                     content += "    {}.resize({});\n".format(sequence, self.get_sym_type(sequence).size)
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
-                                                                            self.get_sym_type(sequence).size, left_subs[0])
+                                                                             self.get_sym_type(sequence).size,
+                                                                             left_subs[0])
                 else:
                     # vector
                     right_exp += "    {} = {}".format(left_info.content, right_info.content)
                     content += "    {}.resize({});\n".format(sequence, self.get_sym_type(sequence).rows)
                     content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
-                                                                            self.get_sym_type(sequence).rows, left_subs[0])
+                                                                             self.get_sym_type(sequence).rows,
+                                                                             left_subs[0])
                 if right_info.pre_list:
                     content += self.update_prelist_str(right_info.pre_list, "    ")
                 if not node.right.is_node(IRNodeType.MultiConds):
@@ -1476,9 +1541,12 @@ class CodeGenEigen(CodeGen):
             if node.set.node_type != IRNodeType.Id:
                 set_name = self.generate_var_name('set')
                 pre_list.append('{} {} = {};\n'.format(self.get_ctype(node.set.la_type), set_name, right_info.content))
-                content = '{}.find({}({})) != {}.end()'.format(set_name, self.get_set_item_str(node.set.la_type), ', '.join(item_list), set_name)
+                content = '{}.find({}({})) != {}.end()'.format(set_name, self.get_set_item_str(node.set.la_type),
+                                                               ', '.join(item_list), set_name)
             else:
-                content = '{}.find({}({})) != {}.end()'.format(right_info.content, self.get_set_item_str(node.set.la_type), ', '.join(item_list),right_info.content)
+                content = '{}.find({}({})) != {}.end()'.format(right_info.content,
+                                                               self.get_set_item_str(node.set.la_type),
+                                                               ', '.join(item_list), right_info.content)
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_not_in(self, node, **kwargs):
@@ -1500,7 +1568,9 @@ class CodeGenEigen(CodeGen):
                 else:
                     item_content = "{}+1".format(item_info.content)
                 item_list.append(item_content)
-        content = '{}.find({}({})) == {}.end()'.format(right_info.content, self.get_set_item_str(self.get_sym_type(right_info.content)), ', '.join(item_list),right_info.content)
+        content = '{}.find({}({})) == {}.end()'.format(right_info.content,
+                                                       self.get_set_item_str(self.get_sym_type(right_info.content)),
+                                                       ', '.join(item_list), right_info.content)
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_bin_comp(self, node, **kwargs):
@@ -1527,7 +1597,108 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo("")
 
     def visit_optimize(self, node, **kwargs):
-        return CodeNodeInfo("")
+        self.enable_tmp_sym = True
+        cur_len = 0
+        param_name = self.generate_var_name('X')
+        pre_list = []
+        id_list = []
+        init_list = []
+        pack_list = []
+        unpack_list = []
+        param_list = []  # as function params
+        decl_list = []   # declared params
+        for cur_index in range(len(node.base_list)):
+            cur_la_type = node.base_type_list[cur_index].la_type
+            id_info = self.visit(node.base_list[cur_index], **kwargs)
+            id_list.append(id_info.content)
+            init_value = 0
+            pack_str = ''
+            unpack_str = ''
+            if cur_la_type.is_scalar():
+                init_value = 0
+                pack_str = "{}".format(id_info.content)
+                unpack_str = "        {} = {}.seqN({}, {})[0];\n".format(id_info.content, param_name, cur_len, 1)
+                cur_len = add_syms(cur_len, 1)
+            elif cur_la_type.is_vector():
+                init_value = "np.zeros({})".format(cur_la_type.rows)
+                pack_str = id_info.content
+                unpack_str = "        {} = {}(Eigen::seqN({}, {}));\n".format(id_info.content, param_name, cur_len, cur_la_type.rows)
+                cur_len = add_syms(cur_len, cur_la_type.rows)
+            elif cur_la_type.is_matrix():
+                pack_str = "Eigen::Map<Eigen::VectorXd>({}.data(), {}.cols()*{}.rows())".format(id_info.content, id_info.content, id_info.content)
+                init_value = "np.zeros({}*{})".format(cur_la_type.rows, cur_la_type.cols)
+                unpack_str = "        double* a = {}(Eigen::seqN({}, {})).data();\n".format(param_name, cur_len, mul_syms(cur_la_type.rows, cur_la_type.cols))
+                unpack_str += "        {} = Eigen::Map<{} >(a);\n".format(id_info.content, self.get_ctype(cur_la_type))
+                cur_len = add_syms(cur_len, mul_syms(cur_la_type.rows, cur_la_type.cols))
+            init_list.append(init_value)
+            pack_list.append(pack_str)
+            unpack_list.append(unpack_str)
+            param_list.append("const {}& {}".format(self.get_ctype(cur_la_type), id_info.content))
+            decl_list.append("{}& {}".format(self.get_ctype(cur_la_type), id_info.content))
+        init_var = self.generate_var_name("init")
+        #
+        exp_info = self.visit(node.exp, **kwargs)
+        category = ''
+        if node.opt_type == OptimizeType.OptimizeMin:
+            category = 'min'
+        elif node.opt_type == OptimizeType.OptimizeMax:
+            category = 'max'
+        elif node.opt_type == OptimizeType.OptimizeArgmin:
+            category = 'argmin'
+        elif node.opt_type == OptimizeType.OptimizeArgmax:
+            category = 'argmax'
+        opt_param = self.generate_var_name('x')
+        opt_ret = self.generate_var_name('ret')
+        unpack_param_name = self.generate_var_name('unpack')
+        bfgs_param_name = self.generate_var_name('param')
+        solver_name = self.generate_var_name('solver')
+        # Handle target
+        join_vec_name = self.generate_var_name('vec_joined')
+        pre_list += ["    auto pack = [&]({})\n".format(', '.join(decl_list)),
+                     "    {\n",
+                     "        Eigen::VectorXd {}({});\n".format(join_vec_name, cur_len),
+                     "        {} << {};\n".format(join_vec_name, ', '.join(pack_list)),
+                     "        return {};\n".format(join_vec_name),
+                     "    };\n",
+                     "    auto unpack = [&](Eigen::VectorXd & {}, {})\n".format(param_name, ', '.join(decl_list)),
+                     "    {\n",
+                     "{}\n".format(''.join(unpack_list)),
+                     "    };\n",
+                     "    LBFGSParam<double> {};\n".format(bfgs_param_name),
+                     "    {}.epsilon = 1e-6;\n".format(bfgs_param_name),
+                     "    {}.max_iterations = 100;\n".format(bfgs_param_name),
+                     "    LBFGSSolver<double> {}({}); \n".format(solver_name, bfgs_param_name),
+                     ]
+        target_func = self.generate_var_name('target')
+        exp = exp_info.content
+        # Handle optimization type
+        if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
+            exp = "-({})".format(exp)
+        # target function
+        pre_list.append("    auto {} = [&](Eigen::VectorXd & {}, Eigen::VectorXd& grad)\n".format(target_func, param_name))
+        pre_list.append("    {\n")
+        pre_list.append("        {};\n".format(';\n        '.join(decl_list)))
+        pre_list.append("        unpack({}, {});\n".format(param_name, ', '.join(id_list)))
+        if len(exp_info.pre_list) > 0:
+            for pre in exp_info.pre_list:
+                lines = pre.split('\n')
+                for line in lines:
+                    if line != "":
+                        pre_list.append("    {}\n".format(line))
+        pre_list.append("        return {};\n".format(exp))
+        pre_list.append("    };\n")
+        pre_list.append("    VectorXd {} = VectorXd::Zero({});\n".format(init_var, cur_len))
+        pre_list.append("    double fx;\n")
+        #
+        content = ''
+        if node.opt_type == OptimizeType.OptimizeMin:
+            content = "{}.minimize({}, {}, fx)".format(solver_name, target_func, init_var)
+        elif node.opt_type == OptimizeType.OptimizeMax:
+            content = "-minimize({}, {}).fun".format(target_func, init_var)
+        elif node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
+            content = "unpack(minimize({}, {}).x)".format(target_func, init_var)
+        self.enable_tmp_sym = False
+        return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_domain(self, node, **kwargs):
         return CodeNodeInfo("")
@@ -1542,22 +1713,25 @@ class CodeGenEigen(CodeGen):
         if node.sub:
             sub_info = self.visit(node.sub, **kwargs)
             content = "({}).transpose() * ({}) * ({})".format(right_info.content, sub_info.content, left_info.content)
-        return CodeNodeInfo(content, pre_list=left_info.pre_list+right_info.pre_list)
+        return CodeNodeInfo(content, pre_list=left_info.pre_list + right_info.pre_list)
 
     def visit_fro_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("({}).cwiseProduct({}).sum()".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
+        return CodeNodeInfo("({}).cwiseProduct({}).sum()".format(left_info.content, right_info.content),
+                            pre_list=left_info.pre_list + right_info.pre_list)
 
     def visit_hadamard_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("({}).cwiseProduct({})".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
+        return CodeNodeInfo("({}).cwiseProduct({})".format(left_info.content, right_info.content),
+                            pre_list=left_info.pre_list + right_info.pre_list)
 
     def visit_cross_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("({}).cross({})".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
+        return CodeNodeInfo("({}).cross({})".format(left_info.content, right_info.content),
+                            pre_list=left_info.pre_list + right_info.pre_list)
 
     def visit_kronecker_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
@@ -1571,17 +1745,22 @@ class CodeGenEigen(CodeGen):
         if node.la_type.is_dim_constant():
             pre_list.append("    {} {};\n".format(self.get_ctype(node.la_type), kronecker))
         else:
-            pre_list.append("    {} {}({}, {});\n".format(self.get_ctype(node.la_type), kronecker, node.la_type.rows, node.la_type.cols))
+            pre_list.append("    {} {}({}, {});\n".format(self.get_ctype(node.la_type), kronecker, node.la_type.rows,
+                                                          node.la_type.cols))
         node.la_type.sparse = sparse
         pre_list.append("    for( int {}=0; {}<{}; {}++){{\n".format(index_i, index_i, node.left.la_type.rows, index_i))
-        pre_list.append("        for( int {}=0; {}<{}; {}++){{\n".format(index_j, index_j, node.left.la_type.cols, index_j))
+        pre_list.append(
+            "        for( int {}=0; {}<{}; {}++){{\n".format(index_j, index_j, node.left.la_type.cols, index_j))
         if node.left.la_type.is_sparse_matrix():
             left_index_content = "({}).coeff({}, {})".format(left_info.content, index_i, index_j)
         else:
             left_index_content = "({})({}, {})".format(left_info.content, index_i, index_j)
-        pre_list.append("            {}.block({}*{},{}*{},{},{}) = {}*({});\n".format(kronecker, index_i, node.right.la_type.rows, index_j, node.right.la_type.cols,
-                                                                                           node.right.la_type.rows, node.right.la_type.cols,
-                                                                                         left_index_content, right_info.content))
+        pre_list.append(
+            "            {}.block({}*{},{}*{},{},{}) = {}*({});\n".format(kronecker, index_i, node.right.la_type.rows,
+                                                                          index_j, node.right.la_type.cols,
+                                                                          node.right.la_type.rows,
+                                                                          node.right.la_type.cols,
+                                                                          left_index_content, right_info.content))
         pre_list.append("        }\n")
         pre_list.append("    }\n")
         if node.la_type.is_sparse_matrix():
@@ -1591,7 +1770,8 @@ class CodeGenEigen(CodeGen):
     def visit_dot_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        return CodeNodeInfo("({}).dot({})".format(left_info.content, right_info.content), pre_list=left_info.pre_list+right_info.pre_list)
+        return CodeNodeInfo("({}).dot({})".format(left_info.content, right_info.content),
+                            pre_list=left_info.pre_list + right_info.pre_list)
 
     def visit_math_func(self, node, **kwargs):
         content = ''
@@ -1668,7 +1848,9 @@ class CodeGenEigen(CodeGen):
             elif node.func_type == MathFuncType.MathFuncVec:
                 vec_name = self.generate_var_name("vec")
                 content = '{}'.format(vec_name)
-                pre_list.append('    Eigen::VectorXd {}(Eigen::Map<Eigen::VectorXd>(((Eigen::MatrixXd)({})).data(), ({}).cols()*({}).rows()));;\n'.format(vec_name,params_content,params_content,params_content))
+                pre_list.append(
+                    '    Eigen::VectorXd {}(Eigen::Map<Eigen::VectorXd>(((Eigen::MatrixXd)({})).data(), ({}).cols()*({}).rows()));;\n'.format(
+                        vec_name, params_content, params_content, params_content))
             elif node.func_type == MathFuncType.MathFuncDet:
                 content = "({}).determinant()".format(params_content)
             elif node.func_type == MathFuncType.MathFuncRank:
