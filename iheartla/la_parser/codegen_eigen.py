@@ -1638,18 +1638,6 @@ class CodeGenEigen(CodeGen):
         init_var = self.generate_var_name("init")
         #
         exp_info = self.visit(node.exp, **kwargs)
-        category = ''
-        if node.opt_type == OptimizeType.OptimizeMin:
-            category = 'min'
-        elif node.opt_type == OptimizeType.OptimizeMax:
-            category = 'max'
-        elif node.opt_type == OptimizeType.OptimizeArgmin:
-            category = 'argmin'
-        elif node.opt_type == OptimizeType.OptimizeArgmax:
-            category = 'argmax'
-        opt_param = self.generate_var_name('x')
-        opt_ret = self.generate_var_name('ret')
-        unpack_param_name = self.generate_var_name('unpack')
         bfgs_param_name = self.generate_var_name('param')
         solver_name = self.generate_var_name('solver')
         # Handle target
@@ -1675,7 +1663,7 @@ class CodeGenEigen(CodeGen):
         if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
             exp = "-({})".format(exp)
         # target function
-        pre_list.append("    auto {} = [&](Eigen::VectorXd & {}, Eigen::VectorXd& grad)\n".format(target_func, param_name))
+        pre_list.append("    auto {} = [&](Eigen::VectorXd & {}, Eigen::VectorXd & grad)\n".format(target_func, param_name))
         pre_list.append("    {\n")
         pre_list.append("        {};\n".format(';\n        '.join(decl_list)))
         pre_list.append("        unpack({}, {});\n".format(param_name, ', '.join(id_list)))
@@ -1694,9 +1682,12 @@ class CodeGenEigen(CodeGen):
         if node.opt_type == OptimizeType.OptimizeMin:
             content = "{}.minimize({}, {}, fx)".format(solver_name, target_func, init_var)
         elif node.opt_type == OptimizeType.OptimizeMax:
-            content = "-minimize({}, {}).fun".format(target_func, init_var)
+            content = "{}.minimize({}, {}, fx)".format(solver_name, target_func, init_var)
         elif node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
-            content = "unpack(minimize({}, {}).x)".format(target_func, init_var)
+            pre_list.append("    {};\n".format(';\n    '.join(decl_list)))
+            pre_list.append("    {}.minimize({}, {}, fx);\n".format(solver_name, target_func, init_var))
+            pre_list.append("    unpack({}, {});\n".format(init_var, ', '.join(id_list)))
+            content = ', '.join(id_list)
         self.enable_tmp_sym = False
         return CodeNodeInfo(content, pre_list=pre_list)
 
