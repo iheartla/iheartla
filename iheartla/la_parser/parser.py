@@ -448,7 +448,7 @@ def compile_la_content(la_content,
             if parser_type & cur_type:
                 type_walker, start_node = parse_ir_node(la_content, model, cur_type)
                 if get_vars and var_data == '':
-                    var_data = VarData(type_walker.parameters, type_walker.ret_symbol, type_walker.lhs_list)
+                    var_data = VarData(type_walker.parameters, type_walker.lhs_list, type_walker.ret_symbol)
                 cur_content = walk_model(cur_type, type_walker, start_node, func_name, struct)
                 ret.append(cur_content)
                 if get_json and json == '':
