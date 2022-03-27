@@ -2,6 +2,7 @@ import iheartla.la_tools.la_helper as la_helper
 from iheartla.la_tools.la_helper import DEBUG_MODE
 from iheartla.la_tools.la_logger import LaLogger
 from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
+import inspect
 import logging
 import argparse
 
@@ -11,7 +12,16 @@ def IHLA(content, ret=None, scope={}):
     code_frame = code_list[0]
     param_list = []
     for param in var_data.params:
-        param_list.append(str(scope[param]))
+        if param in scope:
+            param_list.append(str(scope[param]))
+        else:
+            found = False
+            for f in inspect.stack():
+                if param in f[0].f_locals:
+                    param_list.append(str(f[0].f_locals[param]))
+                    found = True
+                    break
+            assert found, "Missing parameter {} for iheartla code".format(param)
     lib_content = code_frame.include + code_frame.struct + '\n' + 'instance = iheartla({})'.format(','.join(param_list))
     loc = {}
     exec(lib_content, globals(), loc)
