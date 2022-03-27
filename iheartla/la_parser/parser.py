@@ -57,6 +57,14 @@ _codegen_dict = {}
 _module_path = Path.home() / 'Downloads'
 
 
+class VarData(object):
+    def __init__(self, params=None, lhs=None, ret=None):
+        super().__init__()
+        self.params = params
+        self.lhs = lhs
+        self.ret = ret
+
+
 def get_codegen(parser_type):
     if parser_type not in _codegen_dict:
         if parser_type == ParserTypeEnum.LATEX:
@@ -425,7 +433,8 @@ def compile_la_content(la_content,
                        func_name=None,
                        path=None,
                        struct=False,
-                       get_json=False):
+                       get_json=False,
+                       get_vars=False):
     if path:
         global _module_path
         _module_path = Path(path)
@@ -434,9 +443,12 @@ def compile_la_content(la_content,
         model = parser.parse(la_content, parseinfo=True)
         ret = []
         json = ''
+        var_data = ''
         for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.MATLAB, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,  ParserTypeEnum.MATHML, ParserTypeEnum.MACROMATHJAX]:
             if parser_type & cur_type:
                 type_walker, start_node = parse_ir_node(la_content, model, cur_type)
+                if get_vars and var_data == '':
+                    var_data = VarData(type_walker.parameters, type_walker.ret_symbol, type_walker.lhs_list)
                 cur_content = walk_model(cur_type, type_walker, start_node, func_name, struct)
                 ret.append(cur_content)
                 if get_json and json == '':
@@ -453,8 +465,12 @@ def compile_la_content(la_content,
         ret = str(sys.exc_info()[0])
     finally:
         if get_json:
+            if get_vars:
+                return ret, json, var_data
             return ret, json
         else:
+            if get_vars:
+                return ret, var_data
             return ret
 
 
