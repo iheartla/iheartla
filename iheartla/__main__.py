@@ -1,9 +1,22 @@
 import iheartla.la_tools.la_helper as la_helper
 from iheartla.la_tools.la_helper import DEBUG_MODE
 from iheartla.la_tools.la_logger import LaLogger
+from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
 import logging
 import argparse
 
+
+def IHLA(content, ret=None, scope={}):
+    code_list, var_data = compile_la_content(content, parser_type=ParserTypeEnum.NUMPY, struct=True, get_vars=True)
+    code_frame = code_list[0]
+    param_list = []
+    for param in var_data.params:
+        param_list.append(str(scope[param]))
+    lib_content = code_frame.include + code_frame.struct + '\n' + 'instance = iheartla({})'.format(','.join(param_list))
+    loc = {}
+    exec(lib_content, globals(), loc)
+    result = ret if ret is not None else var_data.ret
+    return getattr(loc['instance'], result)
 
 if __name__ == '__main__':
     LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
