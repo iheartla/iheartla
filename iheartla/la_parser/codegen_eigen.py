@@ -1633,8 +1633,8 @@ class CodeGenEigen(CodeGen):
             init_list.append(init_value)
             pack_list.append(pack_str)
             unpack_list.append(unpack_str)
-            param_list.append("const {}& {}".format(self.get_ctype(cur_la_type), id_info.content))
-            decl_list.append("{}& {}".format(self.get_ctype(cur_la_type), id_info.content))
+            param_list.append("{}& {}".format(self.get_ctype(cur_la_type), id_info.content))
+            decl_list.append("{} {}".format(self.get_ctype(cur_la_type), id_info.content))
         init_var = self.generate_var_name("init")
         #
         exp_info = self.visit(node.exp, **kwargs)
@@ -1642,20 +1642,20 @@ class CodeGenEigen(CodeGen):
         solver_name = self.generate_var_name('solver')
         # Handle target
         join_vec_name = self.generate_var_name('vec_joined')
-        pre_list += ["    auto pack = [&]({})\n".format(', '.join(decl_list)),
+        pre_list += ["    auto pack = [&]({})\n".format(', '.join(param_list)),
                      "    {\n",
                      "        Eigen::VectorXd {}({});\n".format(join_vec_name, cur_len),
                      "        {} << {};\n".format(join_vec_name, ', '.join(pack_list)),
                      "        return {};\n".format(join_vec_name),
                      "    };\n",
-                     "    auto unpack = [&](Eigen::VectorXd & {}, {})\n".format(param_name, ', '.join(decl_list)),
+                     "    auto unpack = [&](Eigen::VectorXd & {}, {})\n".format(param_name, ', '.join(param_list)),
                      "    {\n",
                      "{}\n".format(''.join(unpack_list)),
                      "    };\n",
-                     "    LBFGSParam<double> {};\n".format(bfgs_param_name),
+                     "    LBFGSpp::LBFGSParam<double> {};\n".format(bfgs_param_name),
                      "    {}.epsilon = 1e-6;\n".format(bfgs_param_name),
                      "    {}.max_iterations = 100;\n".format(bfgs_param_name),
-                     "    LBFGSSolver<double> {}({}); \n".format(solver_name, bfgs_param_name),
+                     "    LBFGSpp::LBFGSSolver<double> {}({}); \n".format(solver_name, bfgs_param_name),
                      ]
         target_func = self.generate_var_name('target')
         exp = exp_info.content
@@ -1663,7 +1663,7 @@ class CodeGenEigen(CodeGen):
         if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
             exp = "-({})".format(exp)
         # target function
-        pre_list.append("    auto {} = [&](Eigen::VectorXd & {}, Eigen::VectorXd & grad)\n".format(target_func, param_name))
+        pre_list.append("    auto {} = [&](Eigen::VectorXd & {})\n".format(target_func, param_name))
         pre_list.append("    {\n")
         pre_list.append("        {};\n".format(';\n        '.join(decl_list)))
         pre_list.append("        unpack({}, {});\n".format(param_name, ', '.join(id_list)))
@@ -1675,17 +1675,34 @@ class CodeGenEigen(CodeGen):
                         pre_list.append("    {}\n".format(line))
         pre_list.append("        return {};\n".format(exp))
         pre_list.append("    };\n")
-        pre_list.append("    VectorXd {} = VectorXd::Zero({});\n".format(init_var, cur_len))
+        # gradient function for LBFGS
+        helper_func = self.generate_var_name("helper")
+        eps_name = self.generate_var_name("eps")
+        pre_list.append("    double {} = 1e-6;\n".format(eps_name))
+        pre_list.append("    auto {} = [&](Eigen::VectorXd & {}, Eigen::VectorXd & grad)\n".format(helper_func, param_name))
+        pre_list.append("    {\n")
+        pre_list.append("        double f_X = {}({});\n".format(target_func, param_name))
+        pre_list.append("        for(int i = 0; i < grad.size(); ++i )\n")
+        pre_list.append("        {\n")
+        pre_list.append("            const double {}_i = {}[i];\n".format(param_name, param_name))
+        pre_list.append("            {}[i] += {};\n".format(param_name, eps_name))
+        pre_list.append("            grad[i] = ({}({}) - f_X)/{};\n".format(target_func, param_name, eps_name))
+        pre_list.append("            {}[i] = {}_i;\n".format(param_name, param_name))
+        pre_list.append("        }\n")
+        pre_list.append("        return f_X;\n")
+        pre_list.append("    };\n")
+        #
+        pre_list.append("    Eigen::VectorXd {} = Eigen::VectorXd::Zero({});\n".format(init_var, cur_len))
         pre_list.append("    double fx;\n")
         #
         content = ''
         if node.opt_type == OptimizeType.OptimizeMin:
-            content = "{}.minimize({}, {}, fx)".format(solver_name, target_func, init_var)
+            content = "{}.minimize({}, {}, fx)".format(solver_name, helper_func, init_var)
         elif node.opt_type == OptimizeType.OptimizeMax:
-            content = "{}.minimize({}, {}, fx)".format(solver_name, target_func, init_var)
+            content = "{}.minimize({}, {}, fx)".format(solver_name, helper_func, init_var)
         elif node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
             pre_list.append("    {};\n".format(';\n    '.join(decl_list)))
-            pre_list.append("    {}.minimize({}, {}, fx);\n".format(solver_name, target_func, init_var))
+            pre_list.append("    {}.minimize({}, {}, fx);\n".format(solver_name, helper_func, init_var))
             pre_list.append("    unpack({}, {});\n".format(init_var, ', '.join(id_list)))
             content = ', '.join(id_list)
         self.enable_tmp_sym = False
