@@ -7,26 +7,34 @@ import logging
 import argparse
 
 
-def IHLA(content, ret=None, scope={}):
+def IHLA(content, ret=None, mapping={}):
+    """
+    interface for Python embeddability
+    :param content: iheartla source code
+    :param ret: symbol in iheartla code
+    :param mapping: variable mapping for parameters in iheartla code
+    :return: the value for symbol ret or the entire instance
+    """
     code_list, var_data = compile_la_content(content, parser_type=ParserTypeEnum.NUMPY, struct=True, get_vars=True)
     code_frame = code_list[0]
-    param_list = []
-    for param in var_data.params:
-        if param in scope:
-            param_list.append(str(scope[param]))
-        else:
-            found = False
-            for f in inspect.stack():
-                if param in f[0].f_locals:
-                    param_list.append(str(f[0].f_locals[param]))
-                    found = True
-                    break
-            assert found, "Missing parameter {} for iheartla code".format(param)
-    lib_content = code_frame.include + code_frame.struct + '\n' + 'instance = iheartla({})'.format(','.join(param_list))
     loc = {}
+    for param in var_data.params:
+        cur_param = param
+        if param in mapping:
+            cur_param = mapping[param]
+        found = False
+        for f in inspect.stack():
+            if cur_param in f[0].f_locals:
+                loc[param] = f[0].f_locals[cur_param]
+                found = True
+                break
+        assert found, "Missing parameter {} for iheartla code".format(param)
+    lib_content = code_frame.include + code_frame.struct + '\n' + 'instance = iheartla({})'.format(','.join(var_data.params))
     exec(lib_content, globals(), loc)
-    result = ret if ret is not None else var_data.ret
-    return getattr(loc['instance'], result)
+    if ret is not None and ret in var_data.lhs:
+        return getattr(loc['instance'], ret)
+    else:
+        return loc['instance']
 
 if __name__ == '__main__':
     LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
