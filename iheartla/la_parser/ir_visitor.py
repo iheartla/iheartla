@@ -203,7 +203,10 @@ class IRVisitor(object):
         valid = False
         ret = ""
         while not valid:
-            ret = "{}{}_{}".format(self.new_id_prefix, base, index)
+            if index == 0:
+                ret = "{}{}".format(self.new_id_prefix, base)
+            else:
+                ret = "{}{}_{}".format(self.new_id_prefix, base, index)
             if ret not in self.symtable:
                 valid = True
             index += 1
