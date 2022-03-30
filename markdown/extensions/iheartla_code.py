@@ -521,7 +521,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         {}</div>
         """.format(block_data.module_name, math_code)
                 content = self.md.htmlStash.store(content)
-                # text = text.replace(block_data.block_list[cur_index], content)
+                text = text.replace(block_data.block_list[cur_index], content)
                 replace_dict[block_data.block_list[cur_index]] = content
                 math_dict[block_data.block_list[cur_index]] = raw_math
         self.save_code(full_code_sequence)
@@ -576,9 +576,9 @@ class IheartlaBlockPreprocessor(Preprocessor):
         equation_dict = self.merge_desc(equation_dict, span_dict)
         self.process_metadata(equation_dict, context_list)
         text = self.handle_context_post(text, equation_dict)
-        for k, v in replace_dict.items():
-            text = text.replace(k, v)
-            print("k:{}, v:{}".format(k, v))
+        # for k, v in replace_dict.items():
+        #     text = text.replace(k, v)
+        #     print("k:{}, v:{}".format(k, v))
         return text.split("\n")
 
     def process_metadata(self, equation_dict, context_list):
