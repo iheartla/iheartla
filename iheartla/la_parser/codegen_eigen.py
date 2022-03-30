@@ -1633,7 +1633,7 @@ class CodeGenEigen(CodeGen):
             init_list.append(init_value)
             pack_list.append(pack_str)
             unpack_list.append(unpack_str)
-            param_list.append("{}& {}".format(self.get_ctype(cur_la_type), id_info.content))
+            param_list.append("{} & {}".format(self.get_ctype(cur_la_type), id_info.content))
             decl_list.append("{} {}".format(self.get_ctype(cur_la_type), id_info.content))
         init_var = self.generate_var_name("init")
         #
