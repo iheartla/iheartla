@@ -127,8 +127,8 @@ class EquationData(object):
         content = content.replace('\\', '\\\\\\\\')
         content = content.replace('\n', '\\\\n')
         content = content.replace('`', '')
-        content = content.replace('\\\\\\\\"', '\\"')
-        content = content.replace("\\\\\\\\'", "\\'")
+        content = content.replace('\\\\\\\\"', '\\\\"')
+        content = content.replace("\\\\\\\\'", "\\\\'")
         # print("content:{}".format(content))
         # content += ''', "source":"{}"'''.format(self.trim(self.la_content).replace('\\', '\\\\\\\\').replace('\n', '\\\\n'))   # IHLA source code
         return content
