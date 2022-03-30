@@ -508,7 +508,7 @@ class TypeWalker(NodeWalker):
                         # specific stat: lhs = id_subs
                         try:
                             assign_node = self.walk(stat_list[index], **kwargs).ir
-                            lhs_id_node = assign_node.left[0]
+                            lhs_id_node = assign_node.left
                             rhs_id_node = assign_node.right.value.id
                             if rhs_id_node.la_type.is_function():
                                 if lhs_id_node.contain_subscript():
@@ -987,7 +987,7 @@ class TypeWalker(NodeWalker):
                     if isinstance(param_node.la_type.cols, str) and param_node.la_type.cols not in self.symtable:
                         if param_node.la_type.cols not in template_symbols:
                             template_symbols[param_node.la_type.cols] = index
-        ret_node = self.walk(node.ret, **kwargs)
+        ret_node = self.walk(node.ret[0], **kwargs)
         ir_node.ret = ret_node
         ret = ret_node.la_type
         if ret.is_vector():
@@ -1323,11 +1323,11 @@ class TypeWalker(NodeWalker):
                 if sequence_type:
                     self.symtable[sequence] = SequenceType(size=dim, element_type=right_type)
                     seq_index_node = SequenceIndexNode()
-                    seq_index_node.main = self.walk(node.left.left[0], **kwargs).ir
+                    seq_index_node.main = self.walk(node.left[0].left, **kwargs).ir
                     seq_index_node.main_index = self.walk(node.left[0].right[0], **kwargs).ir
                     seq_index_node.la_type = right_type
                     seq_index_node.set_parent(assign_node)
-                    assign_node.left[0] = seq_index_node
+                    assign_node.left = seq_index_node
                 else:
                     # vector
                     self.symtable[sequence] = VectorType(rows=dim)
@@ -1336,7 +1336,7 @@ class TypeWalker(NodeWalker):
                     vector_index_node.row_index = self.walk(node.left[0].right[0], **kwargs).ir
                     vector_index_node.set_parent(assign_node)
                     vector_index_node.la_type = right_type
-                    assign_node.left[0] = vector_index_node
+                    assign_node.left = vector_index_node
             # remove temporary subscripts(from LHS) in symtable
             for sub_sym in left_subs:
                 if sub_sym in self.symtable:
