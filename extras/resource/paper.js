@@ -218,8 +218,11 @@ function getSymTypeInfo(type_info){
   else if(type_info.type == 'function'){
     content = `$\\in ${info}$`;
   }
-  else{
+  else if(type_info.type == 'set'){
     content = `set type`;
+  }
+  else{
+    content = ``;
   }
   // console.log("type_info.type: " + type_info.type);
 
