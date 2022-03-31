@@ -320,9 +320,11 @@ function adjsutGlossaryBtn(){
   var body = document.querySelector("body");
   var style = window.getComputedStyle(body);
   var curWidth = parseInt(style.width, 10)
+  var h = window.innerHeight;
   var curOffset = parseInt(style.marginLeft, 10)
   var glossaryBtn = document.querySelector(".glossary");
   glossaryBtn.style.left = `${curOffset + curWidth +  30}px`;
+  glossaryBtn.style.maxHeight = `${h - 30}px`;
 }
 function addObversers(){
   let options = {
