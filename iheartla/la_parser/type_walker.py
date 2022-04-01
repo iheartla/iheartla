@@ -127,8 +127,8 @@ class EquationData(object):
         content = content.replace('\\', '\\\\\\\\')
         content = content.replace('\n', '\\\\n')
         content = content.replace('`', '')
-        content = content.replace('\\\\\\\\"', '\\"')
-        content = content.replace("\\\\\\\\'", "\\'")
+        content = content.replace('\\\\\\\\"', '\\\\"')
+        content = content.replace("\\\\\\\\'", "\\\\'")
         # print("content:{}".format(content))
         # content += ''', "source":"{}"'''.format(self.trim(self.la_content).replace('\\', '\\\\\\\\').replace('\n', '\\\\n'))   # IHLA source code
         return content
@@ -2029,18 +2029,18 @@ class TypeWalker(NodeWalker):
         right = []
         left_info = self.walk(node.left, **kwargs)
         if not self.is_param_block:
-            if left_info.content == 'I' and 'I' not in self.get_cur_param_data().symtable:
+            if left_info.content == 'I' and not self.is_sym_existed('I'):
                 right_sym_list = get_right_list()
                 assert len(right_sym_list) == 1 and '*' not in right_sym_list, get_err_msg_info(left_info.ir.parse_info,
                                                                                         "Invalid identity matrix")
                 ir_node = NumMatrixNode(parse_info=node.parseinfo)
                 if isinstance(right_sym_list[0], str):
-                    assert right_sym_list[0] in self.get_cur_param_data().symtable, get_err_msg(line_info, line_info.text.index('_{}'.format(right_sym_list[0])) + 1,"{} unknown".format(right_sym_list[0]))
+                    assert self.is_sym_existed(right_sym_list[0]), get_err_msg(line_info, line_info.text.index('_{}'.format(right_sym_list[0])) + 1,"{} unknown".format(right_sym_list[0]))
                 ir_node.la_type = MatrixType(rows=right_sym_list[0], cols=right_sym_list[0])
                 ir_node.id = left_info.ir
                 ir_node.id1 = self.walk(node.right[0]).ir
                 return NodeInfo(ir_node.la_type, ir=ir_node)
-            elif left_info.content in self.get_cur_param_data().symtable:
+            elif self.is_sym_existed(left_info.content):
                 right_sym_list = get_right_list()
                 # update sym lists
                 self.update_sub_sym_lists(left_info.content, right_sym_list)
@@ -2051,9 +2051,9 @@ class TypeWalker(NodeWalker):
                 else:
                     split_res = content_symbol.split('_')
                 self.get_cur_param_data().ids_dict[content_symbol] = Identifier(split_res[0], split_res[1])
-                assert left_info.content in self.get_cur_param_data().symtable, get_err_msg_info(left_info.ir.parse_info,
+                assert self.is_sym_existed(left_info.content), get_err_msg_info(left_info.ir.parse_info,
                                                                                         "Element hasn't been defined")
-                if self.get_cur_param_data().symtable[left_info.content].is_sequence():
+                if self.get_sym_type(left_info.content).is_sequence():
                     if left_info.content in self.get_cur_param_data().dim_seq_set:
                         # index the sequence of dimension
                         ir_node = SeqDimIndexNode(parse_info=node.parseinfo)
@@ -2071,7 +2071,7 @@ class TypeWalker(NodeWalker):
                         return NodeInfo(la_type, content_symbol,
                                         {node.text},
                                         ir_node)
-                    la_type = self.get_cur_param_data().symtable[left_info.content].element_type
+                    la_type = self.get_sym_type(left_info.content).element_type
                     ir_node = SequenceIndexNode(parse_info=node.parseinfo)
                     ir_node.main = left_info.ir
                     main_index_info = self.walk(node.right[0])
@@ -2080,9 +2080,9 @@ class TypeWalker(NodeWalker):
                         assert node.right[0] != '*', get_err_msg(get_line_info(node.parseinfo),
                                                                   get_line_info(node.parseinfo).text.find('*'),
                                                                   "Can't use * as the index for a sequence")
-                        la_type = self.get_cur_param_data().symtable[left_info.content].element_type
+                        la_type = self.get_sym_type(left_info.content).element_type
                     elif len(node.right) == 2:
-                        assert self.get_cur_param_data().symtable[left_info.content].is_vector_seq(), get_err_msg_info(left_info.ir.parse_info,
+                        assert self.get_sym_type(left_info.content).is_vector_seq(), get_err_msg_info(left_info.ir.parse_info,
                                                                        "Two subscripts are used for sequence of vector")
                         assert '*' not in node.right, get_err_msg(get_line_info(node.parseinfo),
                                                                   get_line_info(node.parseinfo).text.find('*'),
@@ -2091,9 +2091,9 @@ class TypeWalker(NodeWalker):
                         row_index_info = self.walk(node.right[1])
                         ir_node.main_index = main_index_info.ir
                         ir_node.row_index = row_index_info.ir
-                        la_type = self.get_cur_param_data().symtable[left_info.content].element_type.element_type
+                        la_type = self.get_sym_type(left_info.content).element_type.element_type
                     elif len(node.right) == 3:
-                        assert self.get_cur_param_data().symtable[left_info.content].is_matrix_seq(), get_err_msg_info(left_info.ir.parse_info,
+                        assert self.get_sym_type(left_info.content).is_matrix_seq(), get_err_msg_info(left_info.ir.parse_info,
                                                                                         "Triple subscripts are only used for a sequence of matrix")
                         assert node.right[0] != '*', get_err_msg(get_line_info(node.parseinfo),
                                                                   get_line_info(node.parseinfo).text.find('*'),
@@ -2104,11 +2104,11 @@ class TypeWalker(NodeWalker):
                                 assert node.right[2] != '*', get_err_msg(get_line_info(node.parseinfo),
                                                                   get_line_info(node.parseinfo).text.find('*'),
                                                                   "Only one * is allowed as subscripts")
-                                la_type = VectorType(rows=self.get_cur_param_data().symtable[left_info.content].element_type.rows)
+                                la_type = VectorType(rows=self.get_sym_type(left_info.content).element_type.rows)
                                 col_index_info = self.walk(node.right[2])
                                 ir_node.col_index = col_index_info.ir
                             else:
-                                la_type = MatrixType(rows=1, cols=self.get_cur_param_data().symtable[left_info.content].element_type.cols)
+                                la_type = MatrixType(rows=1, cols=self.get_sym_type(left_info.content).element_type.cols)
                                 row_index_info = self.walk(node.right[1])
                                 ir_node.row_index = row_index_info.ir
                         else:
@@ -2117,29 +2117,29 @@ class TypeWalker(NodeWalker):
                             ir_node.main_index = main_index_info.ir
                             ir_node.row_index = row_index_info.ir
                             ir_node.col_index = col_index_info.ir
-                            la_type = self.get_cur_param_data().symtable[left_info.content].element_type.element_type
+                            la_type = self.get_sym_type(left_info.content).element_type.element_type
                     ir_node.la_type = la_type
                     ir_node.process_subs_dict(self.lhs_sub_dict)
                     return NodeInfo(la_type, content_symbol,
                                              {node.text},
                                              ir_node)
-                elif self.get_cur_param_data().symtable[left_info.content].is_matrix():
+                elif self.get_sym_type(left_info.content).is_matrix():
                     assert len(node.right) == 2, get_err_msg_info(left_info.ir.parse_info,
                                                                        "Two subscripts are required for matrix")
                     ir_node = MatrixIndexNode(parse_info=node.parseinfo)
                     ir_node.subs = right_sym_list
                     ir_node.main = left_info.ir
-                    la_type = self.get_cur_param_data().symtable[left_info.content].element_type
+                    la_type = self.get_sym_type(left_info.content).element_type
                     if '*' in node.right:
                         if node.right[0] == '*':
                             assert node.right[1] != '*', get_err_msg(get_line_info(node.parseinfo),
                                                                   get_line_info(node.parseinfo).text.find('*'),
                                                                   "Only one * is allowed as subscripts")
-                            la_type = VectorType(rows=self.get_cur_param_data().symtable[left_info.content].rows)
+                            la_type = VectorType(rows=self.get_sym_type(left_info.content).rows)
                             col_index_info = self.walk(node.right[1])
                             ir_node.col_index = col_index_info.ir
                         else:
-                            la_type = VectorType(rows=self.get_cur_param_data().symtable[left_info.content].cols)
+                            la_type = VectorType(rows=self.get_sym_type(left_info.content).cols)
                             row_index_info = self.walk(node.right[0])
                             ir_node.row_index = row_index_info.ir
                     else:
@@ -2152,7 +2152,7 @@ class TypeWalker(NodeWalker):
                     node_info = NodeInfo(la_type, content_symbol, {node.text},
                                          ir_node)
                     return node_info
-                elif self.get_cur_param_data().symtable[left_info.content].is_vector():
+                elif self.get_sym_type(left_info.content).is_vector():
                     assert len(node.right) == 1, get_err_msg_info(left_info.ir.parse_info,
                                                                                         "Only one subscript is allowed")
                     assert node.right[0] != '*', get_err_msg(get_line_info(node.parseinfo),
@@ -2164,9 +2164,9 @@ class TypeWalker(NodeWalker):
                     ir_node = VectorIndexNode(parse_info=node.parseinfo)
                     ir_node.main = left_info.ir
                     ir_node.row_index = index_info.ir
-                    ir_node.la_type = self.get_cur_param_data().symtable[left_info.content].element_type
+                    ir_node.la_type = self.get_sym_type(left_info.content).element_type
                     ir_node.process_subs_dict(self.lhs_sub_dict)
-                    node_info = NodeInfo(self.get_cur_param_data().symtable[left_info.content].element_type, content_symbol, {node.text}, ir_node)
+                    node_info = NodeInfo(self.get_sym_type(left_info.content).element_type, content_symbol, {node.text}, ir_node)
                     return node_info
         #
         for value in node.right:
