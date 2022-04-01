@@ -743,7 +743,7 @@ class CodeGenNumpy(CodeGen):
         else:
             power_info = self.visit(node.power, **kwargs)
             if node.base.la_type.is_scalar():
-                base_info.content = "np.power({}, {})".format(base_info.content, power_info.content)
+                base_info.content = "np.power(float({}), {})".format(base_info.content, power_info.content)
             else:
                 base_info.content = "np.linalg.matrix_power({}, {})".format(base_info.content, power_info.content)
         return base_info
