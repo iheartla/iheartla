@@ -4104,7 +4104,7 @@ class grammardefaultParser(Parser):
                     def block12():
                         self._hspace_()
                     self._closure(block12)
-                    self._right_hand_side_()
+                    self._expression_()
                     self.add_last_node_to_name('right')
                 self._closure(block10)
             with self._option():
@@ -4151,7 +4151,7 @@ class grammardefaultParser(Parser):
                     def block26():
                         self._hspace_()
                     self._closure(block26)
-                    self._right_hand_side_()
+                    self._expression_()
                     self.add_last_node_to_name('right')
                 self._closure(block24)
             self._error('no available options')
