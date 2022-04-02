@@ -473,7 +473,8 @@ class TypeWalker(NodeWalker):
                         self.lhs_list.append(lhs_sym)
                     if len(lhs_sym) > 1:
                         multi_lhs_list.append(lhs_sym)
-                    self.rhs_raw_str_list.append(vblock_info[0].right.text)
+                    for cur_expr in vblock_info[0].right:
+                        self.rhs_raw_str_list.append(cur_expr.text)
                 elif type(vblock_info[0]).__name__ == 'LocalFunc':
                     if isinstance(vblock_info[0].name, str):
                         func_sym = vblock_info[0].name
@@ -494,7 +495,8 @@ class TypeWalker(NodeWalker):
                             self.local_func_dict[func_sym].update(type_dict)
                         self.local_func_parsing = False
                         self.is_param_block = False
-                    self.rhs_raw_str_list.append(vblock_info[0].expr.text)
+                    for cur_expr in vblock_info[0].expr:
+                        self.rhs_raw_str_list.append(cur_expr.text)
                 else:
                     self.rhs_raw_str_list.append(vblock_info[0].text)
         ir_node.vblock = vblock_list
@@ -1176,7 +1178,7 @@ class TypeWalker(NodeWalker):
             self.is_param_block = False
             self.func_data_dict[local_func_name].symtable = par_dict
         assert local_func_name not in self.symtable, get_err_msg(get_line_info(node.parseinfo),0,"Symbol {} has been defined".format(local_func_name))
-        expr_info = self.walk(node.expr, **kwargs)
+        expr_info = self.walk(node.expr[0], **kwargs)
         ir_node = LocalFuncNode(name=IdNode(local_func_name, parse_info=node.parseinfo), expr=expr_info.ir,
                                 parse_info=node.parseinfo, raw_text=node.text, defs=par_defs,
                                 def_type=LocalFuncDefType.LocalFuncDefParenthesis if node.def_p else LocalFuncDefType.LocalFuncDefBracket)
@@ -1223,7 +1225,7 @@ class TypeWalker(NodeWalker):
                 assert sub_sym not in self.symtable, get_err_msg_info(node.left[0].right[sub_index].parseinfo, "Subscript has been defined")
                 self.symtable[sub_sym] = ScalarType(index_type=False, is_int=True)
                 self.lhs_sub_dict[sub_sym] = []  # init empty list
-        right_info = self.walk(node.right, **kwargs)
+        right_info = self.walk(node.right[0], **kwargs)
         if len(self.lhs_subs) > 0:
             for cur_index in range(len(self.lhs_subs)):
                 cur_sym_dict = self.lhs_sym_list[cur_index]
