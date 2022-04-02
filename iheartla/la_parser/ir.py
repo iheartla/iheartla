@@ -313,13 +313,14 @@ class LocalFuncNode(StmtNode):
 
 
 class AssignNode(StmtNode):
-    def __init__(self, left=None, right=None, parse_info=None, raw_text=None):
+    def __init__(self, left=None, right=None, op=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Assignment, parse_info=parse_info, raw_text=raw_text)
         self.left = left   # IdNode,MatrixIndexNode,VectorIndexNode,VectorIndexNode
         self.right = right
-        self.op = None
-        self.symbols = None
+        self.op = op
+        self.symbols = set()
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
+        self.optimize_param = False
 
 
 class IfNode(StmtNode):
