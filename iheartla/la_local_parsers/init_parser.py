@@ -4078,52 +4078,72 @@ class grammarinitParser(Parser):
                     self._separator_with_space_()
                 self._closure(block8)
                 self._right_hand_side_()
-                self.name_last_node('right')
+                self.add_last_node_to_name('right')
 
                 def block10():
-                    self._hspace_()
+
+                    def block11():
+                        self._hspace_()
+                    self._closure(block11)
+                    self._token(',')
+
+                    def block12():
+                        self._hspace_()
+                    self._closure(block12)
+                    self._right_hand_side_()
+                    self.add_last_node_to_name('right')
                 self._closure(block10)
             with self._option():
                 self._identifier_()
                 self.add_last_node_to_name('left')
 
-                def block12():
+                def block15():
 
-                    def block13():
+                    def block16():
                         self._hspace_()
-                    self._closure(block13)
+                    self._closure(block16)
                     self._token(',')
 
-                    def block14():
+                    def block17():
                         self._hspace_()
-                    self._closure(block14)
+                    self._closure(block17)
                     self._identifier_()
                     self.add_last_node_to_name('left')
-                self._closure(block12)
-
-                def block16():
-                    self._hspace_()
-                self._closure(block16)
-                self._token('+=')
-                self.name_last_node('op')
-
-                def block18():
-                    self._hspace_()
-                self._closure(block18)
+                self._closure(block15)
 
                 def block19():
-                    self._separator_with_space_()
+                    self._hspace_()
                 self._closure(block19)
-                self._right_hand_side_()
-                self.name_last_node('right')
+                self._token('+=')
+                self.name_last_node('op')
 
                 def block21():
                     self._hspace_()
                 self._closure(block21)
+
+                def block22():
+                    self._separator_with_space_()
+                self._closure(block22)
+                self._right_hand_side_()
+                self.add_last_node_to_name('right')
+
+                def block24():
+
+                    def block25():
+                        self._hspace_()
+                    self._closure(block25)
+                    self._token(',')
+
+                    def block26():
+                        self._hspace_()
+                    self._closure(block26)
+                    self._right_hand_side_()
+                    self.add_last_node_to_name('right')
+                self._closure(block24)
             self._error('no available options')
         self.ast._define(
-            ['op', 'right'],
-            ['left']
+            ['op'],
+            ['left', 'right']
         )
 
     @tatsumasu('LocalFunc')
