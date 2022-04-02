@@ -1129,116 +1129,120 @@ class CodeGenNumpy(CodeGen):
         placeholder = "{}_{}\n".format(self.comment_placeholder, node.parse_info.line)
         self.comment_dict[placeholder] = self.update_prelist_str([node.raw_text], '    # ')
         content = placeholder
-        left_info = self.visit(node.left, **kwargs)
-        left_id = left_info.content
-        kwargs[LHS] = left_id
-        kwargs[ASSIGN_TYPE] = node.op
-        # self left-hand-side symbol
-        right_info = self.visit(node.right, **kwargs)
-        right_exp = ""
-        # if right_info.pre_list:
-        #     content += "".join(right_info.pre_list)
-        # y_i = stat
-        if node.left.contain_subscript():
-            left_ids = node.left.get_all_ids()
-            left_subs = left_ids[1]
-            if len(left_subs) == 2: # matrix only
-                sequence = left_ids[0]  # y left_subs[0]
-                sub_strs = left_subs[0] + left_subs[1]
-                if self.get_sym_type(sequence).is_matrix() and self.get_sym_type(sequence).sparse:
-                    if left_subs[0] == left_subs[1]:  # L_ii
-                        content = ""
-                        if self.get_sym_type(sequence).diagonal:
-                            # add definition
-                            if sequence not in self.declared_symbols:
-                                content += "    {} = []\n".format(self.get_sym_type(sequence).index_var)
-                                content += "    {} = []\n".format(self.get_sym_type(sequence).value_var)
-                        content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
+        if node.optimize_param:
+            pass
+        else:
+            for cur_index in range(len(node.left)):
+                left_info = self.visit(node.left[cur_index], **kwargs)
+                left_id = left_info.content
+                kwargs[LHS] = left_id
+                kwargs[ASSIGN_TYPE] = node.op
+                # self left-hand-side symbol
+                right_info = self.visit(node.right[cur_index], **kwargs)
+                right_exp = ""
+                # if right_info.pre_list:
+                #     content += "".join(right_info.pre_list)
+                # y_i = stat
+                if node.left[cur_index].contain_subscript():
+                    left_ids = node.left[cur_index].get_all_ids()
+                    left_subs = left_ids[1]
+                    if len(left_subs) == 2: # matrix only
+                        sequence = left_ids[0]  # y left_subs[0]
+                        sub_strs = left_subs[0] + left_subs[1]
+                        if self.get_sym_type(sequence).is_matrix() and self.get_sym_type(sequence).sparse:
+                            if left_subs[0] == left_subs[1]:  # L_ii
+                                content = ""
+                                if self.get_sym_type(sequence).diagonal:
+                                    # add definition
+                                    if sequence not in self.declared_symbols:
+                                        content += "    {} = []\n".format(self.get_sym_type(sequence).index_var)
+                                        content += "    {} = []\n".format(self.get_sym_type(sequence).value_var)
+                                content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
+                                if right_info.pre_list:
+                                    content += self.update_prelist_str(right_info.pre_list, "    ")
+                                content += "        {}.append(({} - 1, {} - 1))\n".format(self.get_sym_type(sequence).index_var, left_subs[0], left_subs[0])
+                                content += "        {}.append({})\n".format(self.get_sym_type(sequence).value_var, right_info.content)
+                                content += "    self.{} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(sequence,
+                                                                                                                    self.get_sym_type(sequence).value_var,
+                                                                                                                    self.get_sym_type(sequence).index_var,
+                                                                                                                    self.get_sym_type(
+                                                                                                                        sequence).rows,
+                                                                                                                    self.get_sym_type(
+                                                                                                                        sequence).cols)
+                            else:  # L_ij
+                                if right_info.pre_list:
+                                    content += "".join(right_info.pre_list)
+                                # sparse mat assign
+                                right_exp += '    self.' + sequence + ' = ' + right_info.content
+                                content += right_exp
+                        elif left_subs[0] == left_subs[1]:
+                            # L_ii
+                            content = ""
+                            content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
+                            if right_info.pre_list:
+                                content += self.update_prelist_str(right_info.pre_list, "    ")
+                            content += "        self.{}[{}-1][{}-1] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
+                        else:
+                            for right_var in type_info.symbols:
+                                if sub_strs in right_var:
+                                    var_ids = self.get_all_ids(right_var)
+                                    right_info.content = right_info.content.replace(right_var, "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
+                            right_exp += "    self.{}[{}-1][{}-1] = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
+                            if self.get_sym_type(sequence).is_matrix():
+                                if node.op == '=':
+                                    # declare
+                                    if sequence not in self.declared_symbols:
+                                        content += "    self.{} = np.zeros(({}, {}))\n".format(sequence,
+                                                                                          self.get_sym_type(sequence).rows,
+                                                                                          self.get_sym_type(sequence).cols)
+                            content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
+                            content += "        for {} in range(1, {}+1):\n".format(left_subs[1], self.get_sym_type(sequence).cols)
+                            if right_info.pre_list:
+                                content += self.update_prelist_str(right_info.pre_list, "        ")
+                            content += "        " + right_exp
+                            # content += '\n'
+                    elif len(left_subs) == 1: # sequence only
+                        sequence = left_ids[0]  # y left_subs[0]
+                        # replace sequence
+                        for right_var in type_info.symbols:
+                            if self.contain_subscript(right_var):
+                                var_ids = self.get_all_ids(right_var)
+                                right_info.content = right_info.content.replace(right_var, "{}[{}]".format(var_ids[0], var_ids[1][0]))
+
+                        right_exp += "    {} = {}".format(left_info.content, right_info.content)
+
+                        ele_type = self.get_sym_type(sequence).element_type
+                        if self.get_sym_type(sequence).is_sequence():
+                            if ele_type.is_matrix():
+                                content += "    self.{} = np.zeros(({}, {}, {}))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows, ele_type.cols)
+                            elif ele_type.is_vector():
+                                content += "    self.{} = np.zeros(({}, {}, ))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows)
+                                # content += "    {} = np.zeros(({}, {}, 1))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows)
+                            elif ele_type.is_function():
+                                content += "    self.{} = np.zeros({}, dtype=object)\n".format(sequence, self.get_sym_type(sequence).size)
+                            else:
+                                content += "    self.{} = np.zeros({})\n".format(sequence, self.get_sym_type(sequence).size)
+                            content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).size)
+                        else:
+                            # vector
+                            content += "    self.{} = np.zeros({})\n".format(sequence, self.get_sym_type(sequence).rows)
+                            content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
                         if right_info.pre_list:
                             content += self.update_prelist_str(right_info.pre_list, "    ")
-                        content += "        {}.append(({} - 1, {} - 1))\n".format(self.get_sym_type(sequence).index_var, left_subs[0], left_subs[0])
-                        content += "        {}.append({})\n".format(self.get_sym_type(sequence).value_var, right_info.content)
-                        content += "    self.{} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(sequence,
-                                                                                                            self.get_sym_type(sequence).value_var,
-                                                                                                            self.get_sym_type(sequence).index_var,
-                                                                                                            self.get_sym_type(
-                                                                                                                sequence).rows,
-                                                                                                            self.get_sym_type(
-                                                                                                                sequence).cols)
-                    else:  # L_ij
-                        if right_info.pre_list:
-                            content += "".join(right_info.pre_list)
-                        # sparse mat assign
-                        right_exp += '    self.' + sequence + ' = ' + right_info.content
-                        content += right_exp
-                elif left_subs[0] == left_subs[1]:
-                    # L_ii
-                    content = ""
-                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
-                    if right_info.pre_list:
-                        content += self.update_prelist_str(right_info.pre_list, "    ")
-                    content += "        self.{}[{}-1][{}-1] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
+                        content += "    " + right_exp
+                #
                 else:
-                    for right_var in type_info.symbols:
-                        if sub_strs in right_var:
-                            var_ids = self.get_all_ids(right_var)
-                            right_info.content = right_info.content.replace(right_var, "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
-                    right_exp += "    self.{}[{}-1][{}-1] = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
-                    if self.get_sym_type(sequence).is_matrix():
-                        if node.op == '=':
-                            # declare
-                            if sequence not in self.declared_symbols:
-                                content += "    self.{} = np.zeros(({}, {}))\n".format(sequence,
-                                                                                  self.get_sym_type(sequence).rows,
-                                                                                  self.get_sym_type(sequence).cols)
-                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
-                    content += "        for {} in range(1, {}+1):\n".format(left_subs[1], self.get_sym_type(sequence).cols)
                     if right_info.pre_list:
-                        content += self.update_prelist_str(right_info.pre_list, "        ")
-                    content += "        " + right_exp
-                    # content += '\n'
-            elif len(left_subs) == 1: # sequence only
-                sequence = left_ids[0]  # y left_subs[0]
-                # replace sequence
-                for right_var in type_info.symbols:
-                    if self.contain_subscript(right_var):
-                        var_ids = self.get_all_ids(right_var)
-                        right_info.content = right_info.content.replace(right_var, "{}[{}]".format(var_ids[0], var_ids[1][0]))
-
-                right_exp += "    {} = {}".format(left_info.content, right_info.content)
-
-                ele_type = self.get_sym_type(sequence).element_type
-                if self.get_sym_type(sequence).is_sequence():
-                    if ele_type.is_matrix():
-                        content += "    self.{} = np.zeros(({}, {}, {}))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows, ele_type.cols)
-                    elif ele_type.is_vector():
-                        content += "    self.{} = np.zeros(({}, {}, ))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows)
-                        # content += "    {} = np.zeros(({}, {}, 1))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows)
-                    elif ele_type.is_function():
-                        content += "    self.{} = np.zeros({}, dtype=object)\n".format(sequence, self.get_sym_type(sequence).size)
-                    else:
-                        content += "    self.{} = np.zeros({})\n".format(sequence, self.get_sym_type(sequence).size)
-                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).size)
-                else:
-                    # vector
-                    content += "    self.{} = np.zeros({})\n".format(sequence, self.get_sym_type(sequence).rows)
-                    content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
-                if right_info.pre_list:
-                    content += self.update_prelist_str(right_info.pre_list, "    ")
-                content += "    " + right_exp
-        #
-        else:
-            if right_info.pre_list:
-                content += "".join(right_info.pre_list)
-            op = ' = '
-            if node.op == '+=':
-                op = ' += '
-            if not node.right.is_node(IRNodeType.MultiConds):
-                right_exp += '    ' + self.get_main_id(left_id) + op + right_info.content
-            content += right_exp
-        #content += '\n'
-        la_remove_key(LHS, **kwargs)
-        self.declared_symbols.add(node.left.get_main_id())
+                        content += "".join(right_info.pre_list)
+                    op = ' = '
+                    if node.op == '+=':
+                        op = ' += '
+                    if not node.right[cur_index].is_node(IRNodeType.MultiConds):
+                        right_exp += '    ' + self.get_main_id(left_id) + op + right_info.content
+                    content += right_exp
+                content += '\n'
+                la_remove_key(LHS, **kwargs)
+                self.declared_symbols.add(node.left[cur_index].get_main_id())
         return CodeNodeInfo(content)
 
     def visit_if(self, node, **kwargs):

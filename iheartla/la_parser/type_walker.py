@@ -1203,166 +1203,183 @@ class TypeWalker(NodeWalker):
         return NodeInfo(ir=ir_node)
 
     def walk_Assignment(self, node, **kwargs):
-        self.visiting_lhs = True
-        id0_info = self.walk(node.left[0], **kwargs)
-        self.visiting_lhs = False
-        id0 = id0_info.content
-        if SET_RET_SYMBOL in kwargs:
-            self.ret_symbol = self.get_main_id(id0)
-        kwargs[LHS] = id0
-        kwargs[ASSIGN_OP] = node.op
-        if id0_info.ir.contain_subscript():
-            left_ids = self.get_all_ids(id0)
-            left_subs = left_ids[1]
-            pre_subs = []
-            for sub_index in range(len(left_subs)):
-                sub_sym = left_subs[sub_index]
-                self.lhs_subs.append(sub_sym)
-                self.lhs_sym_list.append({})
-                if sub_sym in pre_subs:
-                    continue
-                pre_subs.append(sub_sym)
-                assert sub_sym not in self.symtable, get_err_msg_info(node.left[0].right[sub_index].parseinfo, "Subscript has been defined")
-                self.symtable[sub_sym] = ScalarType(index_type=False, is_int=True)
-                self.lhs_sub_dict[sub_sym] = []  # init empty list
-        right_info = self.walk(node.right[0], **kwargs)
-        if len(self.lhs_subs) > 0:
-            for cur_index in range(len(self.lhs_subs)):
-                cur_sym_dict = self.lhs_sym_list[cur_index]
-                if self.get_main_id(id0) not in self.symtable:
-                    assert len(cur_sym_dict) > 0, get_err_msg_info(node.left[0].right[cur_index].parseinfo, "Subscript hasn't been used on rhs")
-                # self.check_sum_subs(self.lhs_subs[cur_index], cur_sym_dict)
-                assert self.check_sum_subs(self.lhs_subs[cur_index], cur_sym_dict), get_err_msg_info(node.left[0].right[cur_index].parseinfo,
-                                                                                      "Subscript has inconsistent dimensions")
-        self.lhs_sym_list.clear()
-        self.lhs_subs.clear()
-        #
-        right_type = right_info.la_type
         # ir
-        assign_node = AssignNode(id0_info.ir, right_info.ir, parse_info=node.parseinfo, raw_text=node.text)
-        assign_node.op = node.op
-        right_info.ir.set_parent(assign_node)
-        id0_info.ir.set_parent(assign_node)
-        la_remove_key(LHS, **kwargs)
-        la_remove_key(ASSIGN_OP, **kwargs)
-        # y_i = stat
-        if self.contain_subscript(id0):
-            left_ids = self.get_all_ids(id0)
-            left_subs = left_ids[1]
-            sequence = left_ids[0]    #y
-            assert '*' not in left_subs, get_err_msg_info(node.parseinfo, "LHS can't have * as subscript")
-            if node.op != '=':
-                assert sequence in self.symtable, get_err_msg_info(id0_info.ir.parse_info,
-                                                                       "{} hasn't been defined".format(sequence))
-            else:
-                if sequence in self.symtable and len(left_subs) != 2:  # matrix items
-                    err_msg = "{} has been assigned before".format(id0)
-                    if sequence in self.parameters:
-                        err_msg = "{} is a parameter, can not be assigned".format(id0)
-                    # assert False, get_err_msg_info(id0_info.ir.parse_info, err_msg)
-            if len(left_subs) == 2:  # matrix
-                if right_info.ir.node_type != IRNodeType.SparseMatrix:
-                    assert sequence not in self.parameters, get_err_msg_info(id0_info.ir.parse_info, "{} is a parameter, can not be assigned".format(sequence))
-                if not (right_type.is_matrix() and right_type.sparse):
-                    assert right_type.is_scalar(), get_err_msg_info(right_info.ir.parse_info, "RHS has to be scalar")
-                if right_info.la_type is not None and right_info.la_type.is_matrix():
-                    # sparse mat assign
-                    if right_info.la_type.sparse:
-                        self.symtable[sequence] = right_type
-                if sequence not in self.symtable:
-                    sparse = False
-                    index_var = None
-                    value_var = None
-                    for symbol in right_info.symbols:
-                        if left_subs[0] == left_subs[1]:  # diagonal matrix
-                            sparse = True
-                            index_var = self.generate_var_name("{}{}{}".format(sequence, left_subs[0], left_subs[1]))
-                            value_var = self.generate_var_name("{}vals".format(sequence))
-                    # cal dim
-                    dim_list = []
-                    for cur_sub in left_subs:
-                        for cur_node in self.lhs_sub_dict[cur_sub]:  # all nodes containing the subscript
-                            if self.symtable[cur_node.get_main_id()].is_vector():
-                                dim = self.symtable[cur_node.get_main_id()].rows
-                            elif self.symtable[cur_node.get_main_id()].is_sequence():
-                                dim = self.symtable[cur_node.get_main_id()].size
+        assign_node = AssignNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
+        if type(node.right[0]).__name__ == 'MultiCondExpr':
+            assert len(node.right) == 1, get_err_msg_info(node.right[0].parseinfo, "Invalid multiple rhs")
+            assert len(node.left) == 1, get_err_msg_info(node.left[0].parseinfo, "Invalid multiple lhs")
+        elif type(node.right[0]).__name__ == 'Optimize':
+            pass
+        else:
+            assert len(node.left) == len(node.right), get_err_msg_info(node.left[0].parseinfo, "Invalid assignment: {} lhs and {} rhs".format(len(node.left), len(node.right)))
+        parse_remain_lhs_directly = False   #  multiple lhs for argmin, argmax
+        for cur_index in range(len(node.left)):
+            self.visiting_lhs = True
+            id0_info = self.walk(node.left[cur_index], **kwargs)
+            assign_node.left.append(id0_info.ir)
+            self.visiting_lhs = False
+            if parse_remain_lhs_directly:
+                break
+            id0 = id0_info.content
+            if SET_RET_SYMBOL in kwargs:
+                self.ret_symbol = self.get_main_id(id0)
+            kwargs[LHS] = id0
+            kwargs[ASSIGN_OP] = node.op
+            if id0_info.ir.contain_subscript():
+                left_ids = self.get_all_ids(id0)
+                left_subs = left_ids[1]
+                pre_subs = []
+                for sub_index in range(len(left_subs)):
+                    sub_sym = left_subs[sub_index]
+                    self.lhs_subs.append(sub_sym)
+                    self.lhs_sym_list.append({})
+                    if sub_sym in pre_subs:
+                        continue
+                    pre_subs.append(sub_sym)
+                    assert sub_sym not in self.symtable, get_err_msg_info(node.left[0].right[sub_index].parseinfo, "Subscript has been defined")
+                    self.symtable[sub_sym] = ScalarType(index_type=False, is_int=True)
+                    self.lhs_sub_dict[sub_sym] = []  # init empty list
+            right_info = self.walk(node.right[cur_index], **kwargs)
+            if right_info.ir.is_node(IRNodeType.Optimize):
+                parse_remain_lhs_directly = True   # no need to parse other rhs, only lhs
+                if right_info.ir.opt_type == OptimizeType.OptimizeArgmin or right_info.ir.opt_type == OptimizeType.OptimizeArgmax:
+                    assert len(node.left) == len(right_info.ir.base_list), get_err_msg_info(node.left[0].parseinfo, "Invalid multiple lhs")
+                    assign_node.optimize_param = True
+            if len(self.lhs_subs) > 0:
+                for cur_index in range(len(self.lhs_subs)):
+                    cur_sym_dict = self.lhs_sym_list[cur_index]
+                    if self.get_main_id(id0) not in self.symtable:
+                        assert len(cur_sym_dict) > 0, get_err_msg_info(node.left[0].right[cur_index].parseinfo, "Subscript hasn't been used on rhs")
+                    # self.check_sum_subs(self.lhs_subs[cur_index], cur_sym_dict)
+                    assert self.check_sum_subs(self.lhs_subs[cur_index], cur_sym_dict), get_err_msg_info(node.left[0].right[cur_index].parseinfo,
+                                                                                          "Subscript has inconsistent dimensions")
+            self.lhs_sym_list.clear()
+            self.lhs_subs.clear()
+            #
+            right_type = right_info.la_type
+            # ir
+            assign_node.right.append(right_info.ir)
+            right_info.ir.set_parent(assign_node)
+            id0_info.ir.set_parent(assign_node)
+            la_remove_key(LHS, **kwargs)
+            la_remove_key(ASSIGN_OP, **kwargs)
+            # y_i = stat
+            if self.contain_subscript(id0):
+                left_ids = self.get_all_ids(id0)
+                left_subs = left_ids[1]
+                sequence = left_ids[0]    #y
+                assert '*' not in left_subs, get_err_msg_info(node.parseinfo, "LHS can't have * as subscript")
+                if node.op != '=':
+                    assert sequence in self.symtable, get_err_msg_info(id0_info.ir.parse_info,
+                                                                           "{} hasn't been defined".format(sequence))
+                else:
+                    if sequence in self.symtable and len(left_subs) != 2:  # matrix items
+                        err_msg = "{} has been assigned before".format(id0)
+                        if sequence in self.parameters:
+                            err_msg = "{} is a parameter, can not be assigned".format(id0)
+                        # assert False, get_err_msg_info(id0_info.ir.parse_info, err_msg)
+                if len(left_subs) == 2:  # matrix
+                    if right_info.ir.node_type != IRNodeType.SparseMatrix:
+                        assert sequence not in self.parameters, get_err_msg_info(id0_info.ir.parse_info, "{} is a parameter, can not be assigned".format(sequence))
+                    if not (right_type.is_matrix() and right_type.sparse):
+                        assert right_type.is_scalar(), get_err_msg_info(right_info.ir.parse_info, "RHS has to be scalar")
+                    if right_info.la_type is not None and right_info.la_type.is_matrix():
+                        # sparse mat assign
+                        if right_info.la_type.sparse:
+                            self.symtable[sequence] = right_type
+                    if sequence not in self.symtable:
+                        sparse = False
+                        index_var = None
+                        value_var = None
+                        for symbol in right_info.symbols:
+                            if left_subs[0] == left_subs[1]:  # diagonal matrix
+                                sparse = True
+                                index_var = self.generate_var_name("{}{}{}".format(sequence, left_subs[0], left_subs[1]))
+                                value_var = self.generate_var_name("{}vals".format(sequence))
+                        # cal dim
+                        dim_list = []
+                        for cur_sub in left_subs:
+                            for cur_node in self.lhs_sub_dict[cur_sub]:  # all nodes containing the subscript
+                                if self.symtable[cur_node.get_main_id()].is_vector():
+                                    dim = self.symtable[cur_node.get_main_id()].rows
+                                elif self.symtable[cur_node.get_main_id()].is_sequence():
+                                    dim = self.symtable[cur_node.get_main_id()].size
+                                    if cur_node.same_as_row_sym(cur_sub):
+                                        dim = self.symtable[cur_node.get_main_id()].rows
+                                    elif cur_node.same_as_col_sym(cur_sub):
+                                        dim = self.symtable[cur_node.get_main_id()].cols
+                                elif self.symtable[cur_node.get_main_id()].is_matrix():
+                                    # matrix
+                                    dim = self.symtable[cur_node.get_main_id()].rows
+                                    if cur_node.same_as_col_sym(cur_sub):
+                                        dim = self.symtable[cur_node.get_main_id()].cols
+                                break
+                            dim_list.append(dim)
+                        self.symtable[sequence] = MatrixType(rows=dim_list[0], cols=dim_list[1], element_type=right_type, sparse=sparse, diagonal=sparse, index_var=index_var, value_var=value_var)
+                elif len(left_subs) == 1:  # sequence or vector
+                    cur_sub = left_subs[0]
+                    sequence_type = True   # default type: sequence
+                    for cur_node in self.lhs_sub_dict[cur_sub]:  # all nodes containing the subscript
+                        if self.symtable[cur_node.get_main_id()].is_vector():
+                            sequence_type = False
+                            dim = self.symtable[cur_node.get_main_id()].rows
+                            break
+                        elif self.symtable[cur_node.get_main_id()].is_sequence():
+                            dim = self.symtable[cur_node.get_main_id()].size
+                            if cur_node.is_node(IRNodeType.SequenceIndex):
                                 if cur_node.same_as_row_sym(cur_sub):
                                     dim = self.symtable[cur_node.get_main_id()].rows
                                 elif cur_node.same_as_col_sym(cur_sub):
                                     dim = self.symtable[cur_node.get_main_id()].cols
-                            elif self.symtable[cur_node.get_main_id()].is_matrix():
-                                # matrix
-                                dim = self.symtable[cur_node.get_main_id()].rows
-                                if cur_node.same_as_col_sym(cur_sub):
-                                    dim = self.symtable[cur_node.get_main_id()].cols
-                            break
-                        dim_list.append(dim)
-                    self.symtable[sequence] = MatrixType(rows=dim_list[0], cols=dim_list[1], element_type=right_type, sparse=sparse, diagonal=sparse, index_var=index_var, value_var=value_var)
-            elif len(left_subs) == 1:  # sequence or vector
-                cur_sub = left_subs[0]
-                sequence_type = True   # default type: sequence
-                for cur_node in self.lhs_sub_dict[cur_sub]:  # all nodes containing the subscript
-                    if self.symtable[cur_node.get_main_id()].is_vector():
-                        sequence_type = False
-                        dim = self.symtable[cur_node.get_main_id()].rows
-                        break
-                    elif self.symtable[cur_node.get_main_id()].is_sequence():
-                        dim = self.symtable[cur_node.get_main_id()].size
-                        if cur_node.is_node(IRNodeType.SequenceIndex):
-                            if cur_node.same_as_row_sym(cur_sub):
-                                dim = self.symtable[cur_node.get_main_id()].rows
-                            elif cur_node.same_as_col_sym(cur_sub):
+                        elif self.symtable[cur_node.get_main_id()].is_matrix():
+                            # matrix
+                            dim = self.symtable[cur_node.get_main_id()].rows
+                            if cur_node.same_as_col_sym(cur_sub):
                                 dim = self.symtable[cur_node.get_main_id()].cols
-                    elif self.symtable[cur_node.get_main_id()].is_matrix():
-                        # matrix
-                        dim = self.symtable[cur_node.get_main_id()].rows
-                        if cur_node.same_as_col_sym(cur_sub):
-                            dim = self.symtable[cur_node.get_main_id()].cols
-                if right_type.is_matrix():
-                    sequence_type = True
-                elif right_type.is_scalar():
-                    sequence_type = False
-                if sequence_type:
-                    self.symtable[sequence] = SequenceType(size=dim, element_type=right_type)
-                    seq_index_node = SequenceIndexNode()
-                    seq_index_node.main = self.walk(node.left[0].left, **kwargs).ir
-                    seq_index_node.main_index = self.walk(node.left[0].right[0], **kwargs).ir
-                    seq_index_node.la_type = right_type
-                    seq_index_node.set_parent(assign_node)
-                    assign_node.left = seq_index_node
+                    if right_type.is_matrix():
+                        sequence_type = True
+                    elif right_type.is_scalar():
+                        sequence_type = False
+                    if sequence_type:
+                        self.symtable[sequence] = SequenceType(size=dim, element_type=right_type)
+                        seq_index_node = SequenceIndexNode()
+                        seq_index_node.main = self.walk(node.left[0].left, **kwargs).ir
+                        seq_index_node.main_index = self.walk(node.left[0].right[0], **kwargs).ir
+                        seq_index_node.la_type = right_type
+                        seq_index_node.set_parent(assign_node)
+                        assign_node.left = seq_index_node
+                    else:
+                        # vector
+                        self.symtable[sequence] = VectorType(rows=dim)
+                        vector_index_node = VectorIndexNode()
+                        vector_index_node.main = self.walk(node.left[0].left, **kwargs).ir
+                        vector_index_node.row_index = self.walk(node.left[0].right[0], **kwargs).ir
+                        vector_index_node.set_parent(assign_node)
+                        vector_index_node.la_type = right_type
+                        assign_node.left = vector_index_node
+                # remove temporary subscripts(from LHS) in symtable
+                for sub_sym in left_subs:
+                    if sub_sym in self.symtable:
+                        # multiple same sub_sym
+                        del self.symtable[sub_sym]
+                if len(self.lhs_sub_dict) > 0:
+                    assign_node.lhs_sub_dict = self.lhs_sub_dict
+                    self.lhs_sub_dict = {}
                 else:
-                    # vector
-                    self.symtable[sequence] = VectorType(rows=dim)
-                    vector_index_node = VectorIndexNode()
-                    vector_index_node.main = self.walk(node.left[0].left, **kwargs).ir
-                    vector_index_node.row_index = self.walk(node.left[0].right[0], **kwargs).ir
-                    vector_index_node.set_parent(assign_node)
-                    vector_index_node.la_type = right_type
-                    assign_node.left = vector_index_node
-            # remove temporary subscripts(from LHS) in symtable
-            for sub_sym in left_subs:
-                if sub_sym in self.symtable:
-                    # multiple same sub_sym
-                    del self.symtable[sub_sym]
-            if len(self.lhs_sub_dict) > 0:
-                assign_node.lhs_sub_dict = self.lhs_sub_dict
-                self.lhs_sub_dict = {}
+                    self.lhs_sub_dict.clear()
             else:
-                self.lhs_sub_dict.clear()
-        else:
-            if node.op != '=':
-                assert id0 in self.symtable, get_err_msg_info(id0_info.ir.parse_info, "{} hasn't been defined".format(id0))
-            else:
-                if id0 in self.symtable:
-                    err_msg = "{} has been assigned before".format(id0)
-                    if id0 in self.parameters:
-                        err_msg = "{} is a parameter, can not be assigned".format(id0)
-                    assert False, get_err_msg_info(id0_info.ir.parse_info, err_msg)
-                self.symtable[id0] = right_type
-        assign_node.symbols = right_info.symbols
-        right_info.ir = assign_node
-        self.expr_dict[assign_node.left.get_main_id()] = list(right_info.symbols) + [assign_node.left.get_main_id()]
-        return right_info
+                if node.op != '=':
+                    assert id0 in self.symtable, get_err_msg_info(id0_info.ir.parse_info, "{} hasn't been defined".format(id0))
+                else:
+                    if id0 in self.symtable:
+                        err_msg = "{} has been assigned before".format(id0)
+                        if id0 in self.parameters:
+                            err_msg = "{} is a parameter, can not be assigned".format(id0)
+                        assert False, get_err_msg_info(id0_info.ir.parse_info, err_msg)
+                    self.symtable[id0] = right_type
+            assign_node.symbols = assign_node.symbols.union(right_info.symbols)
+            self.expr_dict[id0_info.ir.get_main_id()] = list(right_info.symbols) + [id0_info.ir.get_main_id()]
+        return NodeInfo(None, ir=assign_node, symbols=assign_node.symbols)
 
     def walk_Summation(self, node, **kwargs):
         self.logger.debug("cur sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
