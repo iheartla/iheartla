@@ -133,8 +133,8 @@ expression::Expression
 
 assignment::Assignment
     =
-    left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'=' {hspace} {separator_with_space} right:right_hand_side {hspace}
-    | left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'+=' {hspace} {separator_with_space} right:right_hand_side {hspace}
+    left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'=' {hspace} {separator_with_space} right+:right_hand_side {{hspace} ',' {hspace} right+:right_hand_side}
+    | left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'+=' {hspace} {separator_with_space} right+:right_hand_side {{hspace} ',' {hspace} right+:right_hand_side}
     ;
     
 #### name:(func_id | identifier)
