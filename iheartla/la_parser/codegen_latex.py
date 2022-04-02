@@ -312,10 +312,16 @@ class CodeGenLatex(CodeGen):
 
     def visit_assignment(self, node, **kwargs):
         content = ''
-        if node.right.node_type == IRNodeType.Optimize:
-            content = self.visit(node.right, **kwargs)
+        lhs_list = []
+        for cur_index in range(len(node.left)):
+            lhs_list.append(self.visit(node.left[cur_index], **kwargs))
+        if node.right[0].node_type == IRNodeType.Optimize:
+            content = self.visit(node.right[0], **kwargs)
         else:
-            content = self.visit(node.left, **kwargs) + " & = " + self.visit(node.right, **kwargs)
+            rhs_list = []
+            for cur_index in range(len(node.right)):
+                rhs_list.append(self.visit(node.right[cur_index], **kwargs))
+            content = ','.join(lhs_list) + " & = " + ','.join(rhs_list)
         self.code_frame.expr += content +'\n'
         self.code_frame.expr_dict[node.raw_text] = content
         return content
@@ -663,7 +669,10 @@ class CodeGenLatex(CodeGen):
         content = "\\begin{aligned} "
         if assign_node:
             self.visiting_lhs = True
-            content += "{} = ".format(self.visit(assign_node.left, **kwargs))
+            lhs_list = []
+            for cur_index in range(len(assign_node.left)):
+                lhs_list.append(self.visit(assign_node.left[cur_index], **kwargs))
+            content += "{} = ".format(', '.join(lhs_list))
             self.visiting_lhs = False
         kwargs['is_sub'] = True
         param_list = []
