@@ -1130,7 +1130,15 @@ class CodeGenNumpy(CodeGen):
         self.comment_dict[placeholder] = self.update_prelist_str([node.raw_text], '    # ')
         content = placeholder
         if node.optimize_param:
-            pass
+            content = ''
+            lhs_list = []
+            for cur_index in range(len(node.left)):
+                left_info = self.visit(node.left[cur_index], **kwargs)
+                lhs_list.append(left_info.content)
+            right_info = self.visit(node.right[0], **kwargs)
+            if right_info.pre_list:
+                content += "".join(right_info.pre_list)
+            content += "    {} = {}".format(','.join(lhs_list), right_info.content)
         else:
             for cur_index in range(len(node.left)):
                 left_info = self.visit(node.left[cur_index], **kwargs)
