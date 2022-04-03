@@ -1138,7 +1138,7 @@ class CodeGenNumpy(CodeGen):
             right_info = self.visit(node.right[0], **kwargs)
             if right_info.pre_list:
                 content += "".join(right_info.pre_list)
-            content += "    {} = {}".format(','.join(lhs_list), right_info.content)
+            content += "    {} = {}".format(', '.join(lhs_list), right_info.content)
         else:
             for cur_index in range(len(node.left)):
                 left_info = self.visit(node.left[cur_index], **kwargs)
