@@ -268,7 +268,9 @@ class FunctionType(LaVarType):
         signature = 'func,params:'
         for param in self.params:
             signature += param.get_signature() + ';'
-        signature += 'ret:'+self.ret.get_signature()
+        signature += 'ret:'
+        for cur_ret in self.ret:
+            signature += cur_ret.get_signature() + ';'
         return signature
 
     def ret_template(self):

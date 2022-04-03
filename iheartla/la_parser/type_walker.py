@@ -990,28 +990,31 @@ class TypeWalker(NodeWalker):
                     if isinstance(param_node.la_type.cols, str) and param_node.la_type.cols not in self.symtable:
                         if param_node.la_type.cols not in template_symbols:
                             template_symbols[param_node.la_type.cols] = index
-        ret_node = self.walk(node.ret[0], **kwargs)
-        ir_node.ret = ret_node
-        ret = ret_node.la_type
-        if ret.is_vector():
-            if isinstance(ret.rows, str):
-                assert ret.rows in self.symtable or ret.rows in template_symbols, get_err_msg_info(ret_node.parse_info, "Vector as return value of function must have concrete dimension")
+        ret_list = []
+        for cur_index in range(len(node.ret)):
+            ret_node = self.walk(node.ret[cur_index], **kwargs)
+            ir_node.ret = ret_node
+            ret = ret_node.la_type
+            ret_list.append(ret)
+            if ret.is_vector():
+                if isinstance(ret.rows, str):
+                    assert ret.rows in self.symtable or ret.rows in template_symbols, get_err_msg_info(ret_node.parse_info, "Vector as return value of function must have concrete dimension")
+                    if ret.rows in template_symbols:
+                        if ret.rows not in template_ret:
+                            template_ret.append(ret.rows)
+            elif ret.is_matrix():
+                if isinstance(ret.rows, str):
+                    assert ret.rows in self.symtable or ret.rows in template_symbols, get_err_msg_info(ret_node.parse_info, "Matrix as return value of function must have concrete dimension")
                 if ret.rows in template_symbols:
                     if ret.rows not in template_ret:
                         template_ret.append(ret.rows)
-        elif ret.is_matrix():
-            if isinstance(ret.rows, str):
-                assert ret.rows in self.symtable or ret.rows in template_symbols, get_err_msg_info(ret_node.parse_info, "Matrix as return value of function must have concrete dimension")
-            if ret.rows in template_symbols:
-                if ret.rows not in template_ret:
-                    template_ret.append(ret.rows)
-            if isinstance(ret.cols, str):
-                assert ret.cols in self.symtable or ret.cols in template_symbols, get_err_msg_info(ret_node.parse_info, "Matrix as return value of function must have concrete dimension")
-                if ret.cols in template_symbols:
-                    if ret.cols not in template_ret:
-                        template_ret.append(ret.cols)
+                if isinstance(ret.cols, str):
+                    assert ret.cols in self.symtable or ret.cols in template_symbols, get_err_msg_info(ret_node.parse_info, "Matrix as return value of function must have concrete dimension")
+                    if ret.cols in template_symbols:
+                        if ret.cols not in template_ret:
+                            template_ret.append(ret.cols)
         self.logger.debug("template_symbols:{}, template_ret:{}".format(template_symbols, template_ret))
-        la_type = FunctionType(params=params, ret=ret, template_symbols=template_symbols, ret_symbols=template_ret)
+        la_type = FunctionType(params=params, ret=ret_list, template_symbols=template_symbols, ret_symbols=template_ret)
         ir_node.la_type = la_type
         return ir_node
 
@@ -1211,7 +1214,7 @@ class TypeWalker(NodeWalker):
             assert len(node.left) == 1, get_err_msg_info(node.left[0].parseinfo, "Invalid multiple lhs")
         elif type(node.right[0]).__name__ == 'Optimize':
             pass
-        elif type(node.right[0]).__name__ == 'Function':
+        elif type(node.right[0].value).__name__ == 'Factor' and node.right[0].value.op and type(node.right[0].value.op).__name__ == 'Function':
             pass
         else:
             assert len(node.left) == len(node.right), get_err_msg_info(node.left[0].parseinfo, "Invalid assignment: {} lhs and {} rhs".format(len(node.left), len(node.right)))
@@ -1262,6 +1265,14 @@ class TypeWalker(NodeWalker):
                     la_list = right_info.la_type
                     parse_remain_lhs_directly = True   # no need to parse other rhs, only lhs
                     assert len(node.left) == len(right_info.ir.base_list), get_err_msg_info(node.left[0].parseinfo, "Invalid multiple lhs")
+                    assign_node.optimize_param = True
+                    right_type = right_info.la_type[0]
+            elif right_info.ir.value.op and right_info.ir.value.op.is_node(IRNodeType.Function):
+                if isinstance(right_info.la_type, list):
+                    # multiple ret value
+                    assert len(node.left) == len(right_info.la_type), get_err_msg_info(node.left[0].parseinfo, "Invalid assignment: {} lhs and {} ret value".format(len(node.left), len(right_info.la_type)))
+                    la_list = right_info.la_type
+                    parse_remain_lhs_directly = True
                     assign_node.optimize_param = True
                     right_type = right_info.la_type[0]
             # ir
@@ -1864,25 +1875,30 @@ class TypeWalker(NodeWalker):
             ir_node.params = param_list
             ir_node.separators = node.separators
             self.logger.debug("convertion_dict:{}".format(convertion_dict))
-            ret_type = name_type.ret
-            if name_type.ret.is_scalar():
-                pass
-            elif name_type.ret.is_vector():
-                if name_type.ret.rows in name_type.template_symbols:
-                    ret_type = VectorType()
-                    ret_type.rows = convertion_dict[name_type.ret.rows]
-            elif name_type.ret.is_matrix():
-                ret_type = MatrixType()
-                if name_type.ret.rows in name_type.template_symbols:
-                    ret_type.rows = convertion_dict[name_type.ret.rows]
-                else:
-                    ret_type.rows = name_type.ret.rows
-                if name_type.ret.cols in name_type.template_symbols:
-                    ret_type.cols = convertion_dict[name_type.ret.cols]
-                else:
-                    ret_type.cols = name_type.ret.cols
-            elif name_type.ret.is_set():
-                ret_type = SetType(size=name_type.ret.size, int_list=name_type.ret.int_list)
+            ret_list = []
+            for cur_index in range(len(name_type.ret)):
+                ret_type = name_type.ret[cur_index]
+                cur_type = name_type.ret[cur_index]
+                if cur_type.is_scalar():
+                    pass
+                elif cur_type.is_vector():
+                    if cur_type.rows in name_type.template_symbols:
+                        ret_type = VectorType()
+                        ret_type.rows = convertion_dict[cur_type.rows]
+                elif cur_type.is_matrix():
+                    ret_type = MatrixType()
+                    if cur_type.rows in name_type.template_symbols:
+                        ret_type.rows = convertion_dict[cur_type.rows]
+                    else:
+                        ret_type.rows = cur_type.rows
+                    if cur_type.cols in name_type.template_symbols:
+                        ret_type.cols = convertion_dict[cur_type.cols]
+                    else:
+                        ret_type.cols = cur_type.cols
+                elif name_type.ret.is_set():
+                    ret_type = SetType(size=name_type.ret.size, int_list=name_type.ret.int_list)
+                ret_list.append(ret_type)
+            ret_type = ret_list[0] if len(ret_list)==1 else ret_list # single ret type or list
             symbols.add(ir_node.name.get_name())
             node_info = NodeInfo(ret_type, symbols=symbols)
             ir_node.la_type = ret_type

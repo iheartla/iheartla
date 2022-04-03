@@ -74,12 +74,15 @@ class CodeGenNumpy(CodeGen):
             param_list.append('{}{}'.format(self.param_name_test, index))
         test_content.append("    def {}({}):".format(var_name, ', '.join(param_list)))
         test_content += dim_definition
-        if func_type.ret.is_set():
-            test_content += self.get_set_test_list('tmp', self.generate_var_name("dim"), 'i', func_type.ret, rand_int_max, '        ')
-            test_content.append('        return tmp')
-        else:
-            test_content.append(
-                "        return {}".format(self.get_rand_test_str(func_type.ret, rand_int_max)))
+        ret_list = []  # name list
+        for cur_index in range(len(func_type.ret)):
+            if func_type.ret[cur_index].is_set():
+                ret_name = self.generate_var_name('tmp')
+                test_content += self.get_set_test_list(ret_name, self.generate_var_name("dim"), 'i', func_type.ret[cur_index], rand_int_max, '        ')
+                ret_list.append(ret_name)
+            else:
+                ret_list.append(self.get_rand_test_str(func_type.ret[cur_index], rand_int_max))
+        test_content.append('        return {}'.format(', '.join(ret_list)))
         return test_content
 
     def get_set_test_list(self, parameter, dim_name, ind_name, la_type, rand_int_max, pre='    '):
