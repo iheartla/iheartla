@@ -465,16 +465,17 @@ class TypeWalker(NodeWalker):
             vblock_list.append(vblock_info)
             if isinstance(vblock_info, list) and len(vblock_info) > 0:  # statement list with single statement
                 if type(vblock_info[0]).__name__ == 'Assignment':
-                    if type(vblock_info[0].left).__name__ == 'IdentifierSubscript':
-                        lhs_sym = self.walk(vblock_info[0].left[0].left).ir.get_main_id()
-                    else:
-                        lhs_sym = self.walk(vblock_info[0].left[0]).ir.get_main_id()
-                    if lhs_sym not in self.lhs_list:
-                        self.lhs_list.append(lhs_sym)
-                    if len(lhs_sym) > 1:
-                        multi_lhs_list.append(lhs_sym)
-                    for cur_expr in vblock_info[0].right:
-                        self.rhs_raw_str_list.append(cur_expr.text)
+                    for cur_index in range(len(vblock_info[0].left)):
+                        if type(vblock_info[0].left[cur_index]).__name__ == 'IdentifierSubscript':
+                            lhs_sym = self.walk(vblock_info[0].left[cur_index].left).ir.get_main_id()
+                        else:
+                            lhs_sym = self.walk(vblock_info[0].left[cur_index]).ir.get_main_id()
+                        if lhs_sym not in self.lhs_list:
+                            self.lhs_list.append(lhs_sym)
+                        if len(lhs_sym) > 1:
+                            multi_lhs_list.append(lhs_sym)
+                        for cur_expr in vblock_info[0].right:
+                            self.rhs_raw_str_list.append(cur_expr.text)
                 elif type(vblock_info[0]).__name__ == 'LocalFunc':
                     if isinstance(vblock_info[0].name, str):
                         func_sym = vblock_info[0].name
@@ -1218,8 +1219,6 @@ class TypeWalker(NodeWalker):
             id0_info = self.walk(node.left[cur_index], **kwargs)
             assign_node.left.append(id0_info.ir)
             self.visiting_lhs = False
-            if parse_remain_lhs_directly:
-                break
             id0 = id0_info.content
             if SET_RET_SYMBOL in kwargs:
                 self.ret_symbol = self.get_main_id(id0)
@@ -1239,12 +1238,6 @@ class TypeWalker(NodeWalker):
                     assert sub_sym not in self.symtable, get_err_msg_info(node.left[0].right[sub_index].parseinfo, "Subscript has been defined")
                     self.symtable[sub_sym] = ScalarType(index_type=False, is_int=True)
                     self.lhs_sub_dict[sub_sym] = []  # init empty list
-            right_info = self.walk(node.right[cur_index], **kwargs)
-            if right_info.ir.is_node(IRNodeType.Optimize):
-                parse_remain_lhs_directly = True   # no need to parse other rhs, only lhs
-                if right_info.ir.opt_type == OptimizeType.OptimizeArgmin or right_info.ir.opt_type == OptimizeType.OptimizeArgmax:
-                    assert len(node.left) == len(right_info.ir.base_list), get_err_msg_info(node.left[0].parseinfo, "Invalid multiple lhs")
-                    assign_node.optimize_param = True
             if len(self.lhs_subs) > 0:
                 for cur_index in range(len(self.lhs_subs)):
                     cur_sym_dict = self.lhs_sym_list[cur_index]
@@ -1256,6 +1249,14 @@ class TypeWalker(NodeWalker):
             self.lhs_sym_list.clear()
             self.lhs_subs.clear()
             #
+            if parse_remain_lhs_directly:
+                break
+            right_info = self.walk(node.right[cur_index], **kwargs)
+            if right_info.ir.is_node(IRNodeType.Optimize):
+                parse_remain_lhs_directly = True   # no need to parse other rhs, only lhs
+                if right_info.ir.opt_type == OptimizeType.OptimizeArgmin or right_info.ir.opt_type == OptimizeType.OptimizeArgmax:
+                    assert len(node.left) == len(right_info.ir.base_list), get_err_msg_info(node.left[0].parseinfo, "Invalid multiple lhs")
+                    assign_node.optimize_param = True
             right_type = right_info.la_type
             # ir
             assign_node.right.append(right_info.ir)
