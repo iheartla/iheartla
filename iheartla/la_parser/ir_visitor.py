@@ -230,7 +230,10 @@ class IRVisitor(object):
                 par_list = []
                 for par in v.params:
                     par_list.append(get_type_desc(par))
-                extra = ": " + '; '.join(par_list) + ' -> ' + get_type_desc(v.ret)
+                ret_list = []
+                for cur_ret in v.ret:
+                    ret_list.append(get_type_desc(cur_ret))
+                extra = ": " + '; '.join(par_list) + ' -> ' + '; '.join(ret_list)
             return str(v.var_type) + extra
         for (k, v) in self.symtable.items():
             if v is not None:
