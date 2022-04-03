@@ -1211,9 +1211,12 @@ class TypeWalker(NodeWalker):
             assert len(node.left) == 1, get_err_msg_info(node.left[0].parseinfo, "Invalid multiple lhs")
         elif type(node.right[0]).__name__ == 'Optimize':
             pass
+        elif type(node.right[0]).__name__ == 'Function':
+            pass
         else:
             assert len(node.left) == len(node.right), get_err_msg_info(node.left[0].parseinfo, "Invalid assignment: {} lhs and {} rhs".format(len(node.left), len(node.right)))
         parse_remain_lhs_directly = False   #  multiple lhs for argmin, argmax
+        la_list = []
         for cur_index in range(len(node.left)):
             self.visiting_lhs = True
             id0_info = self.walk(node.left[cur_index], **kwargs)
@@ -1250,14 +1253,17 @@ class TypeWalker(NodeWalker):
             self.lhs_subs.clear()
             #
             if parse_remain_lhs_directly:
+                self.symtable[self.get_main_id(id0)] = la_list[cur_index]
                 break
             right_info = self.walk(node.right[cur_index], **kwargs)
+            right_type = right_info.la_type
             if right_info.ir.is_node(IRNodeType.Optimize):
-                parse_remain_lhs_directly = True   # no need to parse other rhs, only lhs
                 if right_info.ir.opt_type == OptimizeType.OptimizeArgmin or right_info.ir.opt_type == OptimizeType.OptimizeArgmax:
+                    la_list = right_info.la_type
+                    parse_remain_lhs_directly = True   # no need to parse other rhs, only lhs
                     assert len(node.left) == len(right_info.ir.base_list), get_err_msg_info(node.left[0].parseinfo, "Invalid multiple lhs")
                     assign_node.optimize_param = True
-            right_type = right_info.la_type
+                    right_type = right_info.la_type[0]
             # ir
             assign_node.right.append(right_info.ir)
             right_info.ir.set_parent(assign_node)
@@ -1475,19 +1481,10 @@ class TypeWalker(NodeWalker):
 
     def walk_Optimize(self, node, **kwargs):
         self.visiting_opt = True
-        opt_type = OptimizeType.OptimizeInvalid
-        if node.min:
-            opt_type = OptimizeType.OptimizeMin
-        elif node.max:
-            opt_type = OptimizeType.OptimizeMax
-        elif node.amin:
-            opt_type = OptimizeType.OptimizeArgmin
-        elif node.amax:
-            opt_type = OptimizeType.OptimizeArgmax
         base_id_list = []
         base_node_list = []
         base_type_list = []
-
+        la_type_list = []
         par_defs = []
         par_dict = {}
         if len(node.defs) > 0:
@@ -1499,10 +1496,23 @@ class TypeWalker(NodeWalker):
                     base_id_list.append(par_type.id[cur_index].get_name())
                     base_type_list.append(par_type.type)
                     base_node_list.append(par_type.id[cur_index])
+                    la_type_list.append(par_type.type.la_type)
                     # temporary add to symbol table : opt scope
                     self.symtable[par_type.id[cur_index].get_name()] = par_type.type.la_type
                     self.tmp_symtable[par_type.id[cur_index].get_name()] = par_type.type.la_type
             self.is_param_block = False
+        opt_type = OptimizeType.OptimizeInvalid
+        ret_type = ScalarType()
+        if node.min:
+            opt_type = OptimizeType.OptimizeMin
+        elif node.max:
+            opt_type = OptimizeType.OptimizeMax
+        elif node.amin:
+            opt_type = OptimizeType.OptimizeArgmin
+            ret_type = la_type_list
+        elif node.amax:
+            opt_type = OptimizeType.OptimizeArgmax
+            ret_type = la_type_list
         exp_info = self.walk(node.exp, **kwargs)
         exp_node = exp_info.ir
         cond_list = []
@@ -1513,7 +1523,7 @@ class TypeWalker(NodeWalker):
         #
         assert exp_node.la_type.is_scalar(), get_err_msg_info(exp_node.parse_info, "Objective function must return a scalar")
         opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node_list, base_type_list, parse_info=node.parseinfo, def_list=par_defs)
-        opt_node.la_type = ScalarType()
+        opt_node.la_type = ret_type
         node_info = NodeInfo(opt_node.la_type, ir=opt_node, symbols=exp_info.symbols)
         self.visiting_opt = False
         return node_info
