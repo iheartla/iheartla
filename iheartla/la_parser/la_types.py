@@ -281,7 +281,10 @@ class FunctionType(LaVarType):
         param_list = []
         for param in self.params:
             param_list.append(param.get_json_content())
-        return """{{"type": "function", "params":[{}], "ret":{}}}""".format(','.join(param_list), self.ret.get_json_content())
+        ret_list = []
+        for cur_ret in self.ret:
+            ret_list.append(cur_ret.get_json_content())
+        return """{{"type": "function", "params":[{}], "ret":[{}]}}""".format(','.join(param_list), ','.join(ret_list))
 
 
 class SummationAttrs(object):
