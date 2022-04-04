@@ -743,7 +743,7 @@ class CodeGenEigen(CodeGen):
         if len(param_list) == 0:
             content = "    {} {}()\n"
         else:
-            content = "    {} {}(\n".format(self.get_ctype(node.expr.la_type), name_info.content)
+            content = "    {} {}(\n".format(self.get_ctype(node.expr[0].la_type), name_info.content)
             content += ",\n".join(param_list) + ')\n'
         content += '    {\n'
         # get dimension content
@@ -763,9 +763,9 @@ class CodeGenEigen(CodeGen):
         if len(type_checks) > 0:
             type_checks = self.update_prelist_str(type_checks, '    ')
             content += type_checks + '\n'
-        expr_info = self.visit(node.expr, **kwargs)
-        if node.expr.is_node(IRNodeType.MultiConds):
-            content += '        {} {}_ret;\n'.format(self.get_ctype(node.expr.la_type), name_info.content)
+        expr_info = self.visit(node.expr[0], **kwargs)
+        if node.expr[0].is_node(IRNodeType.MultiConds):
+            content += '        {} {}_ret;\n'.format(self.get_ctype(node.expr[0].la_type), name_info.content)
             if len(expr_info.pre_list) > 0:
                 content += self.update_prelist_str(expr_info.pre_list, "    ")
             content += '        return {}_ret;'.format(name_info.content)

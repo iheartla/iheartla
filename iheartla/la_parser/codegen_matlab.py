@@ -469,13 +469,20 @@ class CodeGenMatlab(CodeGen):
                     param_list.append('{}{}'.format(self.param_name_test, index))
                 test_content.append(test_indent+"    {} = @{};".format(parameter,parameter+"Func"))
                 test_content.append(test_indent+"    rseed = randi(2^32);")
-                test_content.append(test_indent+"    function tmp =  {}({})".format(parameter+"Func", ', '.join(param_list)))
+                ret_list = []
+                content_list = []
+                for cur_index in range(len(self.get_sym_type(parameter).ret)):
+                    cur_name = self.generate_var_name('ret')
+                    ret_list.append(cur_name)
+                    if self.get_sym_type(parameter).ret[cur_index].is_set():
+                       content_list += self.get_set_test_list(cur_name, self.generate_var_name("dim"), 'i', self.get_sym_type(parameter).ret[cur_index], rand_int_max, '            ')
+                    else:
+                       content_list.append(test_indent+"        {} = {};".format(cur_name, self.get_rand_test_str(self.get_sym_type(parameter).ret[cur_index], rand_int_max)))
+
+                test_content.append(test_indent+"    function {} =  {}({})".format(', '.join(ret_list), parameter+"Func", ', '.join(param_list)))
                 test_content.append(test_indent+"        rng(rseed);")
                 test_content += dim_definition
-                if self.get_sym_type(parameter).ret.is_set():
-                   test_content += self.get_set_test_list('tmp', self.generate_var_name("dim"), 'i', self.get_sym_type(parameter).ret, rand_int_max, '            ')
-                else:
-                   test_content.append(test_indent+"        tmp = {};".format(self.get_rand_test_str(self.get_sym_type(parameter).ret, rand_int_max)))
+                test_content += content_list
                 test_content.append(test_indent+"    end\n")
                 # test_content.append(test_indent+'    {} = lambda {}: {}'.format(parameter, ', '.join(param_list), self.get_rand_test_str(self.get_sym_type(parameter).ret, rand_int_max)))
         return type_checks, doc, test_content, test_function
@@ -675,11 +682,14 @@ class CodeGenMatlab(CodeGen):
         if len(type_checks) > 0:
             type_checks = self.update_prelist_str(type_checks, '    ')
             content += type_checks + '\n'
-        expr_info = self.visit(node.expr, **kwargs)
-        if len(expr_info.pre_list) > 0:
-            content += self.update_prelist_str(expr_info.pre_list, "    ")
-        if not node.expr.is_node(IRNodeType.MultiConds):
-            content += '        ret = {};\n'.format(expr_info.content)
+        ret_list = []
+        for cur_index in range(len(node.expr)):
+            expr_info = self.visit(node.expr[cur_index], **kwargs)
+            if len(expr_info.pre_list) > 0:
+                content += self.update_prelist_str(expr_info.pre_list, "    ")
+            if not node.expr[0].is_node(IRNodeType.MultiConds):
+                ret_list.append(expr_info.content)
+        content += '        ret = {};\n'.format(', '.join(ret_list))
         content += '    end\n\n'
         self.local_func_def += content
         self.local_func_parsing = False
