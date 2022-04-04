@@ -1189,7 +1189,7 @@ class TypeWalker(NodeWalker):
         expr_list = []
         cur_symbols = set()
         for cur_index in range(len(node.expr)):
-            expr_info = self.walk(node.expr[0], **kwargs)
+            expr_info = self.walk(node.expr[cur_index], **kwargs)
             expr_info.ir.set_parent(ir_node)
             expr_list.append(expr_info.ir)
             ret_list.append(expr_info.ir.la_type)

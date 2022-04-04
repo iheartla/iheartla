@@ -394,7 +394,10 @@ class CodeGenLatex(CodeGen):
             def_params = '\\left( ' + params_str + ' \\right)'
         else:
             def_params = '\\left[ ' + params_str + ' \\right]'
-        content = self.visit(node.name, **kwargs) + def_params + " & = " + self.visit(node.expr, **kwargs)
+        expr_list = []
+        for cur_index in range(len(node.expr)):
+            expr_list.append(self.visit(node.expr[cur_index], **kwargs))
+        content = self.visit(node.name, **kwargs) + def_params + " & = " + ', '.join(expr_list)
         self.code_frame.expr += content + '\n'
         self.code_frame.expr_dict[node.raw_text] = content
         if len(node.defs) > 0:

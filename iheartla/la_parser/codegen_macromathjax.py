@@ -57,7 +57,10 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             def_params = '\\left( ' + params_str + ' \\right)'
         else:
             def_params = '\\left[ ' + params_str + ' \\right]'
-        content = func_name + def_params + " & = " + self.visit(node.expr, **kwargs)
+        expr_list = []
+        for cur_index in range(len(node.expr)):
+            expr_list.append(self.visit(node.expr[cur_index], **kwargs))
+        content = func_name + def_params + " & = " + ', '.join(expr_list)
         sym_list = []
         for sym in node.symbols:
             sym_list.append("'{}'".format(self.convert_content(filter_subscript(sym))))
