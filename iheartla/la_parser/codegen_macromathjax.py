@@ -24,14 +24,19 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         for sym in node.symbols:
             sym_list.append("'{}'".format(self.convert_content(filter_subscript(sym))))
         sym_list = list(set(sym_list))
-        sym_list.append("'{}'".format(self.convert_content(node.left.get_main_id())))
-        if node.right.node_type == IRNodeType.Optimize:
-            content = self.visit(node.right, **kwargs)
+        sym_list.append("'{}'".format(self.convert_content(node.left[0].get_main_id())))
+        if node.right[0].node_type == IRNodeType.Optimize:
+            content = self.visit(node.right[0], **kwargs)
         else:
             self.visiting_lhs = True
-            left_content = self.visit(node.left, **kwargs)
+            lhs_list = []
+            for cur_index in range(len(node.left)):
+                lhs_list.append(self.visit(node.left[cur_index], **kwargs))
             self.visiting_lhs = False
-            content = left_content + " & = " + self.visit(node.right, **kwargs)
+            rhs_list = []
+            for cur_index in range(len(node.right)):
+                rhs_list.append(self.visit(node.right[cur_index], **kwargs))
+            content = ','.join(lhs_list) + " & = " + ','.join(rhs_list)
         json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], false, []);"}}""".format(self.func_name, ', '.join(sym_list))
         content = content + "\\\\" + "\\eqlabel{{ {} }}{{}}".format(json) + "\n"
         self.code_frame.expr += content
