@@ -9,7 +9,7 @@ import copy
 from collections import OrderedDict
 import regex as re
 from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
-from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning
+from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug
 
 
 class BlockData(Extension):
@@ -334,7 +334,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             sym_list = m.group('symbol').split(';')
             for sym in sym_list:
                 cur_dict[sym] = desc
-            print("handle_span_code, matched:{}".format(m.group()))
+            la_debug("handle_span_code, matched:{}".format(m.group()))
             # Multiple math blocks
             for math in self.MATH_RE.finditer(desc):
                 code = math.group("code")
@@ -415,7 +415,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             if cur_context in equation_dict:
                 equation_data = equation_dict[cur_context]
                 sym_list = equation_data.gen_sym_list()
-                print("cur_context:{}, sym_list:{}".format(cur_context, sym_list))
+                la_debug("cur_context:{}, sym_list:{}".format(cur_context, sym_list))
             # text_list[index] = self.handle_raw_code(text_list[index], context_list[index])
             # text_list[index] = self.handle_inline_raw_code(text_list[index], context_list[index])
             text_list[index] = self.handle_prose_label(text_list[index], cur_context)

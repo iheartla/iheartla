@@ -132,7 +132,8 @@ def handle_context_block(text):
     return ''.join(text_list)
 
 if __name__ == '__main__':
-    LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
+    # LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
+    LaLogger.getInstance().set_level(logging.WARNING)
     arg_parser = argparse.ArgumentParser(description='I Heart LA paper compiler')
     arg_parser.add_argument('--regenerate-grammar', action='store_true', help='Regenerate grammar files')
     arg_parser.add_argument('--resource_dir', help='resource path')
