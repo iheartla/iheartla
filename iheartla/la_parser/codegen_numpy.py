@@ -671,13 +671,16 @@ class CodeGenNumpy(CodeGen):
         if len(type_checks) > 0:
             type_checks = self.update_prelist_str(type_checks, '    ')
             content += type_checks + '\n'
-        expr_info = self.visit(node.expr, **kwargs)
-        if len(expr_info.pre_list) > 0:
-            content += self.update_prelist_str(expr_info.pre_list, "    ")
-        if node.expr.is_node(IRNodeType.MultiConds):
-            content += '        return {}_ret\n'.format(name_info.content)
-        else:
-            content += '        return {}\n'.format(expr_info.content)
+        ret_list = []
+        for cur_index in range(len(node.expr)):
+            expr_info = self.visit(node.expr[cur_index], **kwargs)
+            if len(expr_info.pre_list) > 0:
+                content += self.update_prelist_str(expr_info.pre_list, "    ")
+            if node.expr[cur_index].is_node(IRNodeType.MultiConds):
+                ret_list.append('{}_ret'.format(name_info.content))
+            else:
+                ret_list.append(expr_info.content)
+        content += '        return {}\n'.format(', '.join(ret_list))
         if self.local_func_def != '':
             self.local_func_def += '\n'
         self.local_func_def += content

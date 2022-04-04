@@ -1182,11 +1182,19 @@ class TypeWalker(NodeWalker):
             self.is_param_block = False
             self.func_data_dict[local_func_name].symtable = par_dict
         assert local_func_name not in self.symtable, get_err_msg(get_line_info(node.parseinfo),0,"Symbol {} has been defined".format(local_func_name))
-        expr_info = self.walk(node.expr[0], **kwargs)
-        ir_node = LocalFuncNode(name=IdNode(local_func_name, parse_info=node.parseinfo), expr=expr_info.ir,
+        ir_node = LocalFuncNode(name=IdNode(local_func_name, parse_info=node.parseinfo), expr=[],
                                 parse_info=node.parseinfo, raw_text=node.text, defs=par_defs,
                                 def_type=LocalFuncDefType.LocalFuncDefParenthesis if node.def_p else LocalFuncDefType.LocalFuncDefBracket)
-        ir_node.expr.set_parent(ir_node)
+        ret_list = []
+        expr_list = []
+        cur_symbols = set()
+        for cur_index in range(len(node.expr)):
+            expr_info = self.walk(node.expr[0], **kwargs)
+            expr_info.ir.set_parent(ir_node)
+            expr_list.append(expr_info.ir)
+            ret_list.append(expr_info.ir.la_type)
+            cur_symbols = cur_symbols.union(expr_info.symbols)
+        ir_node.expr = expr_list
         param_tps = []
         par_names = []
         for index in range(len(node.params)):
@@ -1199,8 +1207,8 @@ class TypeWalker(NodeWalker):
             par_names.append(param_node.get_name())
         self.func_data_dict[local_func_name].params_data.parameters = par_names
         ir_node.separators = node.separators
-        ir_node.la_type = FunctionType(params=param_tps, ret=expr_info.ir.la_type)
-        ir_node.symbols = expr_info.symbols.union(set(par_names))
+        ir_node.la_type = FunctionType(params=param_tps, ret=ret_list)
+        ir_node.symbols = cur_symbols.union(set(par_names))
         self.symtable[local_func_name] = ir_node.la_type
         self.local_func_parsing = False
         self.expr_dict[local_func_name] = list(ir_node.symbols) + [local_func_name]
