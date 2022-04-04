@@ -8,4 +8,5 @@ dependencies:
   - regex
   - sympy
   - appdirs
+  - pybtex
 prefix: /Users/anonymous/opt/miniconda3/envs/iheartla-cli

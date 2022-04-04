@@ -14,6 +14,7 @@ dependencies:
   - pyinstaller
   - sympy
   - pip
+  - pybtex
   - pip:
     - PyMuPDF
 prefix: /Users/anonymous/opt/miniconda3/envs/iheartla-dev
