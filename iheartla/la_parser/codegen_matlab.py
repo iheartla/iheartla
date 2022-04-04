@@ -479,7 +479,7 @@ class CodeGenMatlab(CodeGen):
                     else:
                        content_list.append(test_indent+"        {} = {};".format(cur_name, self.get_rand_test_str(self.get_sym_type(parameter).ret[cur_index], rand_int_max)))
 
-                test_content.append(test_indent+"    function {} =  {}({})".format(', '.join(ret_list), parameter+"Func", ', '.join(param_list)))
+                test_content.append(test_indent+"    function [{}] =  {}({})".format(', '.join(ret_list), parameter+"Func", ', '.join(param_list)))
                 test_content.append(test_indent+"        rng(rseed);")
                 test_content += dim_definition
                 test_content += content_list
@@ -659,7 +659,7 @@ class CodeGenMatlab(CodeGen):
         for parameter in node.params:
             param_info = self.visit(parameter, **kwargs)
             param_list.append(param_info.content)
-        content = "    function ret = {}({})\n".format(name_info.content, ", ".join(param_list))
+        content = ""
         type_declare = []
         rand_func_name = "generateRandomData"
         test_indent = "    "
@@ -682,16 +682,17 @@ class CodeGenMatlab(CodeGen):
         if len(type_checks) > 0:
             type_checks = self.update_prelist_str(type_checks, '    ')
             content += type_checks + '\n'
-        ret_list = []
+        name_list = []
         for cur_index in range(len(node.expr)):
+            cur_ret_name = self.generate_var_name('ret')
+            name_list.append(cur_ret_name)
             expr_info = self.visit(node.expr[cur_index], **kwargs)
             if len(expr_info.pre_list) > 0:
                 content += self.update_prelist_str(expr_info.pre_list, "    ")
             if not node.expr[0].is_node(IRNodeType.MultiConds):
-                ret_list.append(expr_info.content)
-        content += '        ret = {};\n'.format(', '.join(ret_list))
+                content += '        {} = {};\n'.format(cur_ret_name, expr_info.content)
         content += '    end\n\n'
-        self.local_func_def += content
+        self.local_func_def += "    function [{}] = {}({})\n".format(', '.join(name_list), name_info.content, ", ".join(param_list)) + content
         self.local_func_parsing = False
         return CodeNodeInfo()
 
@@ -1161,7 +1162,18 @@ class CodeGenMatlab(CodeGen):
         self.comment_dict[placeholder] = self.update_prelist_str([node.raw_text], '    % ')
         content = placeholder
         if node.optimize_param:
-            pass
+            content = ''
+            lhs_list = []
+            for cur_index in range(len(node.left)):
+                left_info = self.visit(node.left[cur_index], **kwargs)
+                lhs_list.append(left_info.content)
+            right_info = self.visit(node.right[0], **kwargs)
+            if right_info.pre_list:
+                content += "".join(right_info.pre_list)
+            lhs_content = ', '.join(lhs_list)
+            if len(lhs_list) > 1:
+                lhs_content = "[{}]".format(lhs_content)
+            content += "    {} = {};\n".format(lhs_content, right_info.content)
         else:
             for cur_index in range(len(node.left)):
                 left_info = self.visit(node.left[cur_index], **kwargs)
