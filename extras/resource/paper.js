@@ -192,8 +192,11 @@ function getTypeInfo(type_info){
     for (var i = 0; i <= type_info.params.length - 1; i++) {
       param_list.push(getTypeInfo(type_info.params[i])); 
     }
-    var ret = getTypeInfo(type_info.ret)
-    content = `${param_list.join()} \\rightarrow ${ret}`;
+    var ret_list = [];
+    for (var i = 0; i <= type_info.ret.length - 1; i++) {
+      ret_list.push(getTypeInfo(type_info.ret[i])); 
+    }
+    content = `${param_list.join()} \\rightarrow ${ret_list.join()}`;
   }
   else{
     content = "special type";
