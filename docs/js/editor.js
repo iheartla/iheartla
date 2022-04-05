@@ -125,12 +125,15 @@ function isChrome(){
     await loadPyodide({
           indexURL : self.location.origin + "/js/pyodide/"
         });
-    let wheel = "./iheartla-0.0.1-py3-none-any.whl";
+    let wheel = "./linear_algebra-0.0.1-py3-none-any.whl";
+    let tatsu = "./TatSu-4.4.0-py2.py3-none-any.whl";
     pythonCode = `
     import micropip
     micropip.install('appdirs')
-    micropip.install('tatsu')
+    micropip.install('regex')
     micropip.install('sympy')
+    micropip.install('pybtex')
+    micropip.install('${tatsu}')
     micropip.install('${wheel}')
     `
     await pyodide.loadPackage(['micropip']);
@@ -204,9 +207,9 @@ function compileFunction(){
     var source = iheartla.getValue();
     console.log(source)
     pythonCode = `
-import iheartla.la_parser.parser
+import linear_algebra.iheartla.la_parser.parser
 source_code = r"""${source}"""
-code = iheartla.la_parser.parser.compile_la_content(source_code)
+code = linear_algebra.iheartla.la_parser.parser.compile_la_content(source_code)
 `
     setTimeout(function(){
         try {

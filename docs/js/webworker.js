@@ -7,7 +7,7 @@ self.onmessage = async(event) => {
         await loadPyodide({
           indexURL : self.location.origin + "/js/pyodide/"
         });
-        let wheel = self.location.origin + `/iheartla-0.0.1-py3-none-any.whl`
+        let wheel = self.location.origin + `/linear_algebra-0.0.1-py3-none-any.whl`
         pythonCode = `
 import micropip
 micropip.install('appdirs')
