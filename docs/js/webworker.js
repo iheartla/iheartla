@@ -1,11 +1,11 @@
-importScripts(self.location.origin + "/iheartla/js/pyodide/pyodide.js");
+importScripts(self.location.origin + "/js/pyodide/pyodide.js");
 
 self.onmessage = async(event) => {
     let pythonCode = event.data
     if (pythonCode === ''){
         // Initialize pyodide
         await loadPyodide({
-          indexURL : self.location.origin + "/iheartla/js/pyodide/"
+          indexURL : self.location.origin + "/js/pyodide/"
         });
         let wheel = self.location.origin + `/iheartla-0.0.1-py3-none-any.whl`
         pythonCode = `
