@@ -1,5 +1,5 @@
 from textwrap import dedent
-from . import Extension
+from . import Extension, WHEEL_MODE
 from ..preprocessors import Preprocessor
 from ..postprocessors import Postprocessor
 from .codehilite import CodeHilite, CodeHiliteExtension, parse_hl_lines
@@ -8,8 +8,12 @@ from ..util import parseBoolValue
 import copy
 from collections import OrderedDict
 import regex as re
-from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
-from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug
+if WHEEL_MODE:
+    from linear_algebra.iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
+    from linear_algebra.iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug
+else:
+    from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
+    from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug
 
 
 class BlockData(Extension):

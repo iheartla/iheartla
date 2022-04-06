@@ -29,6 +29,7 @@ from itertools import count
 
 from .pep562 import Pep562
 
+WHEEL_MODE = False
 try:
     from importlib import metadata
 except ImportError:

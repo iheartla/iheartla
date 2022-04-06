@@ -32,8 +32,13 @@ years. This extension can be used to continue to render those documents correctl
 """
 
 import re
-from markdown.treeprocessors import Treeprocessor, isString
-from markdown.extensions import Extension
+from . import Extension, WHEEL_MODE
+if WHEEL_MODE:
+    from linear_algebra.markdown.treeprocessors import Treeprocessor, isString
+    from linear_algebra.markdown.extensions import Extension
+else:
+    from markdown.treeprocessors import Treeprocessor, isString
+    from markdown.extensions import Extension
 
 
 ATTR_RE = re.compile(r'\{@([^\}]*)=([^\}]*)}')  # {@id=123}

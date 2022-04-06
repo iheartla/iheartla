@@ -20,8 +20,7 @@ License: BSD (see LICENSE.md for details).
 """
 
 import warnings
-from ..util import parseBoolValue
-
+from ..util import parseBoolValue, WHEEL_MODE
 
 class Extension:
     """ Base class for extensions to subclass. """

@@ -1,10 +1,20 @@
-import iheartla.la_tools.la_helper as la_helper
-from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file
-from iheartla.la_tools.la_logger import LaLogger
-from iheartla.la_parser.parser import ParserTypeEnum
+WHEEL_MODE = False
+if WHEEL_MODE:
+    from linear_algebra.iheartla.la_tools.la_helper import DEBUG_MODE, DEBUG_PARSER, read_from_file, save_to_file
+    from linear_algebra.iheartla.la_tools.la_logger import LaLogger
+    from linear_algebra.iheartla.la_parser.parser import ParserTypeEnum
+    import linear_algebra.markdown
+    from linear_algebra.markdown.core import *
+    import linear_algebra.markdown.extensions
+else:
+    from iheartla.la_tools.la_helper import DEBUG_MODE, DEBUG_PARSER, read_from_file, save_to_file
+    from iheartla.la_tools.la_logger import LaLogger
+    from iheartla.la_parser.parser import ParserTypeEnum
+    import markdown
+    from markdown.core import *
+    import markdown.extensions
 import logging
 import argparse
-import markdown
 import os.path
 from pathlib import Path
 import shutil
@@ -132,35 +142,39 @@ def handle_context_block(text):
     return ''.join(text_list)
 
 
-def process_input(content, input_dir='.', resource_dir='.', file_name='result'):
+def process_input(content, input_dir='.', resource_dir='.', file_name='result', parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.MATLAB):
     """
     Given the source string, generate the html result
     :param content: Markdown source
     :param input_dir: Path to Markdown file
     :param resource_dir: Path to resource
     :param file_name: Markdown file without extension
+    :param parser_type: Output code
     :return: html content
     """
-    md = markdown.Markdown(extensions=['markdown.extensions.mdx_bib', \
-                                       'markdown.extensions.iheartla_code', \
-                                       'markdown.extensions.mdx_math', \
-                                       'markdown.extensions.attr_list', \
-                                       'markdown.extensions.fenced_code', \
-                                       'markdown.extensions.abbr', \
-                                       'markdown.extensions.def_list', \
-                                       'markdown.extensions.footnotes', \
-                                       'markdown.extensions.md_in_html', \
-                                       'markdown.extensions.tables', \
-                                       'markdown.extensions.admonition', \
-                                       # 'markdown.extensions.codehilite', \
-                                       'markdown.extensions.legacy_attrs', \
-                                       'markdown.extensions.legacy_em', \
-                                       'markdown.extensions.meta', \
-                                       'markdown.extensions.nl2br', \
-                                       'markdown.extensions.sane_lists', \
-                                       'markdown.extensions.smarty', \
-                                       'markdown.extensions.toc', \
-                                       'markdown.extensions.wikilinks'],
+    extension_list = ['markdown.extensions.mdx_bib', \
+                       'markdown.extensions.iheartla_code', \
+                       'markdown.extensions.mdx_math', \
+                       'markdown.extensions.attr_list', \
+                       'markdown.extensions.fenced_code', \
+                       'markdown.extensions.abbr', \
+                       'markdown.extensions.def_list', \
+                       'markdown.extensions.footnotes', \
+                       'markdown.extensions.md_in_html', \
+                       'markdown.extensions.tables', \
+                       'markdown.extensions.admonition', \
+                       # 'markdown.extensions.codehilite', \
+                       'markdown.extensions.legacy_attrs', \
+                       'markdown.extensions.legacy_em', \
+                       'markdown.extensions.meta', \
+                       'markdown.extensions.nl2br', \
+                       'markdown.extensions.sane_lists', \
+                       'markdown.extensions.smarty', \
+                       'markdown.extensions.toc', \
+                       'markdown.extensions.wikilinks']
+    if WHEEL_MODE:
+        extension_list = ["linear_algebra.{}".format(ex) for ex in extension_list]
+    md = Markdown(extensions=extension_list,
                            path=input_dir,
                            parser_type=parser_type,
                            bibtex_file='{}/{}.bib'.format(input_dir, file_name[0]))
@@ -261,7 +275,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result'):
 
 if __name__ == '__main__':
     # LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
-    LaLogger.getInstance().set_level(logging.WARNING)
+    LaLogger.getInstance().set_level(logging.INFO)
     arg_parser = argparse.ArgumentParser(description='I Heart LA paper compiler')
     arg_parser.add_argument('--regenerate-grammar', action='store_true', help='Regenerate grammar files')
     arg_parser.add_argument('--resource_dir', help='resource path')
@@ -271,7 +285,7 @@ if __name__ == '__main__':
     resource_dir = args.resource_dir if args.resource_dir else '.'
     # print("args.paper is {}, resource_dir is {}".format(args.paper, resource_dir))
     if args.regenerate_grammar:
-        la_helper.DEBUG_PARSER = True
+        DEBUG_PARSER = True
         import iheartla.la_tools.parser_manager
         iheartla.la_tools.parser_manager.recreate_local_parser_cache()
     else:
@@ -290,6 +304,6 @@ if __name__ == '__main__':
         for paper_file in args.paper:
             content = read_from_file(paper_file)
             base_name = os.path.basename(Path(paper_file))
-            html = process_input(content, os.path.dirname(Path(paper_file)), resource_dir, os.path.splitext(base_name)[0])
+            html = process_input(content, os.path.dirname(Path(paper_file)), resource_dir, os.path.splitext(base_name)[0], parser_type)
             save_to_file(html, "{}/{}.html".format(os.path.dirname(Path(paper_file)), os.path.splitext(base_name)[0]))
             # print(html)

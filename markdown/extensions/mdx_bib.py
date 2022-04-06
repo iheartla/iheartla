@@ -1,9 +1,18 @@
-from markdown.extensions import Extension
-from markdown.preprocessors import Preprocessor
-from markdown.treeprocessors import Treeprocessor
-from markdown.postprocessors import Postprocessor
-from markdown.inlinepatterns import Pattern
-from markdown.util import etree
+from . import Extension, WHEEL_MODE
+if WHEEL_MODE:
+    from linear_algebra.markdown.extensions import Extension
+    from linear_algebra.markdown.preprocessors import Preprocessor
+    from linear_algebra.markdown.treeprocessors import Treeprocessor
+    from linear_algebra.markdown.postprocessors import Postprocessor
+    from linear_algebra.markdown.inlinepatterns import Pattern
+    from linear_algebra.markdown.util import etree
+else:
+    from markdown.extensions import Extension
+    from markdown.preprocessors import Preprocessor
+    from markdown.treeprocessors import Treeprocessor
+    from markdown.postprocessors import Postprocessor
+    from markdown.inlinepatterns import Pattern
+    from markdown.util import etree
 
 from pybtex.database.input import bibtex
 

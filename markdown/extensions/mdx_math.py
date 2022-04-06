@@ -11,10 +11,17 @@ Author: 2015-2020, Dmitry Shachnev <mitya57@gmail.com>.
 '''
 
 from xml.etree.ElementTree import Element
-from markdown.inlinepatterns import InlineProcessor, Pattern
-from markdown.extensions import Extension
-from markdown.preprocessors import Preprocessor
-from markdown.util import AtomicString
+from . import Extension, WHEEL_MODE
+if WHEEL_MODE:
+    from linear_algebra.markdown.inlinepatterns import InlineProcessor, Pattern
+    from linear_algebra.markdown.extensions import Extension
+    from linear_algebra.markdown.preprocessors import Preprocessor
+    from linear_algebra.markdown.util import AtomicString
+else:
+    from markdown.inlinepatterns import InlineProcessor, Pattern
+    from markdown.extensions import Extension
+    from markdown.preprocessors import Preprocessor
+    from markdown.util import AtomicString
 import cgi
 
 
