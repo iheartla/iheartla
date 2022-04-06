@@ -173,8 +173,16 @@ async function background(source){
 
 function convert(input) {
     output = document.getElementById('output');
-    // console.log(input);
-    output.innerHTML = `<iframe srcdoc=`${input}`></iframe>`;
+    while (output.firstChild) {
+        output.removeChild(output.firstChild);
+    }
+    var iframe = document.createElement('iframe');
+    output.appendChild(iframe);
+    iframe.contentWindow.document.open();
+    iframe.contentWindow.document.write(input);
+    iframe.contentWindow.document.close();
+    console.log(input);
+    // output.innerHTM = `<iframe srcdoc=`${input}`></iframe>`;
     // MathJax.texReset();
     // var options = MathJax.getMetricsFor(output);
     // options.display = 1;

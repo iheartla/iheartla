@@ -45,7 +45,12 @@ div#msg .alert{
   font-family: Consolas,monospace;
   font-size: 0.8em;
 }
-
+iframe{
+    height: 100%;
+    width: 100%;
+    margin-left: 50px;
+    margin-right: 270px;
+}
 h1
 {
   font-size: 1.5em;
