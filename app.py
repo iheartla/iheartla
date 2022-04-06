@@ -184,9 +184,9 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result', 
     body = abstract + body
     body = handle_title(body, md.Meta)
     body = handle_context_block(body)
-    equation_json = read_from_file("{}/data.json".format(input_dir))
+    equation_json = md.json_data
     # equation_data = get_sym_data(json.loads(equation_json))
-    sym_json = read_from_file("{}/sym_data.json".format(input_dir))
+    sym_json = md.json_sym
     dst = "{}/resource".format(input_dir)
     # if os.path.exists(dst):
     #     shutil.rmtree(dst)

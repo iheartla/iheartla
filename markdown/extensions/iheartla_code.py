@@ -467,7 +467,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         for name, block_data in file_dict.items():
             source = '\n'.join(block_data.code_list)
             file_name = "{}/{}.ihla".format(self.md.path, name)
-            save_to_file(source, file_name)
+            # save_to_file(source, file_name)
         # compile
         equation_dict = {}
         full_code_sequence = []
@@ -589,7 +589,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
         # Save sym data to file
         sym_dict = self.get_sym_dict(equation_dict.values())
         sym_json = self.get_sym_json(sym_dict)
-        save_to_file(sym_json, "{}/sym_data.json".format(self.md.path))
+        # save_to_file(sym_json, "{}/sym_data.json".format(self.md.path))
+        self.md.json_sym = sym_json
         #
         json_list = []
         for name, equation_data in equation_dict.items():
@@ -600,7 +601,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 context_json_list.append('"{}"'.format(context))
         json_content = '''{{"equations":[{}], "context":[{}] }}'''.format(','.join(json_list), ','.join(context_json_list))
         if json_content is not None:
-            save_to_file(json_content, "{}/data.json".format(self.md.path))
+            # save_to_file(json_content, "{}/data.json".format(self.md.path))
+            self.md.json_data = json_content
         #
 
     def merge_desc(self, equation_dict, span_dict):
@@ -652,7 +654,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 lib_header = code_frame.include
             lib_content += code_frame.struct + '\n'
         if lib_header is not None:
-            save_to_file("#pragma once\n" + lib_header + lib_content, "{}/lib.h".format(self.md.path))
+            self.md.lib_cpp = "#pragma once\n" + lib_header + lib_content
+            # save_to_file("#pragma once\n" + lib_header + lib_content, "{}/lib.h".format(self.md.path))
 
     def save_python(self, code_frame_list):
         lib_header = None
@@ -662,14 +665,16 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 lib_header = code_frame.include
             lib_content += code_frame.struct + '\n'
         if lib_header is not None:
-            save_to_file(lib_header + lib_content, "{}/lib.py".format(self.md.path))
+            self.md.lib_py = lib_header + lib_content
+            # save_to_file(lib_header + lib_content, "{}/lib.py".format(self.md.path))
 
     def save_matlab(self, code_frame_list):
         lib_content = ''
         for code_frame in code_frame_list:
             lib_content += code_frame.struct + '\n'
         if lib_content != '':
-            save_to_file(lib_content, "{}/lib.m".format(self.md.path))
+            self.md.lib_matlab = lib_content
+            # save_to_file(lib_content, "{}/lib.m".format(self.md.path))
 
 
 
