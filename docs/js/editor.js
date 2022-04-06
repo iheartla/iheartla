@@ -127,12 +127,17 @@ function isChrome(){
         });
     let wheel = "./linear_algebra-0.0.1-py3-none-any.whl";
     let tatsu = "./TatSu-4.4.0-py2.py3-none-any.whl";
+    let pybtex = "./pybtex-0.24.0-py2.py3-none-any.whl";
+    let PyYAML = "./PyYAML-6.0-cp38-cp38-macosx_10_9_x86_64.whl";
     pythonCode = `
     import micropip
     micropip.install('appdirs')
     micropip.install('regex')
     micropip.install('sympy')
-    micropip.install('pybtex')
+    micropip.install('six')
+    micropip.install('setuptools')
+    micropip.install('${PyYAML}')
+    micropip.install('${pybtex}')
     micropip.install('${tatsu}')
     micropip.install('${wheel}')
     `
@@ -168,18 +173,19 @@ async function background(source){
 
 function convert(input) {
     output = document.getElementById('output');
-    output.innerHTML = '';
-    MathJax.texReset();
-    var options = MathJax.getMetricsFor(output);
-    options.display = 1;
-    MathJax.tex2chtmlPromise(input, options).then(function (node) {
-        output.appendChild(node);
-        MathJax.startup.document.clear();
-        MathJax.startup.document.updateDocument();
-    }).catch(function (err) {
-        output.appendChild(document.createElement('pre')).appendChild(document.createTextNode(err.message));
-    }).then(function () {
-    });
+    // console.log(input);
+    output.innerHTML = `<iframe srcdoc=`${input}`></iframe>`;
+    // MathJax.texReset();
+    // var options = MathJax.getMetricsFor(output);
+    // options.display = 1;
+    // MathJax.tex2chtmlPromise(input, options).then(function (node) {
+    //     output.appendChild(node);
+    //     MathJax.startup.document.clear();
+    //     MathJax.startup.document.updateDocument();
+    // }).catch(function (err) {
+    //     output.appendChild(document.createElement('pre')).appendChild(document.createTextNode(err.message));
+    // }).then(function () {
+    // });
 }
 
 function updateEditor(code) {
@@ -208,19 +214,24 @@ function compileFunction(){
     console.log(source)
     pythonCode = `
 import linear_algebra.iheartla.la_parser.parser
+from linear_algebra.app import process_input
 source_code = r"""${source}"""
-code = linear_algebra.iheartla.la_parser.parser.compile_la_content(source_code)
+#code = process_input
+#code = linear_algebra.iheartla.la_parser.parser.compile_la_content(source_code)
+code = process_input(source_code)
+#print(code)
 `
     setTimeout(function(){
         try {
             pyodide.runPython(pythonCode);
             let code = pyodide.globals.get('code');
-            if (typeof code === 'string'){
-                updateError(code);
-            }
-            else{
-                updateEditor(code.toJs());
-            }
+            convert(code);
+            // if (typeof code === 'string'){
+            //     updateError(code);
+            // }
+            // else{
+            //     updateEditor(code.toJs());
+            // }
         }
         catch (error){
             console.log('Compile error!');
