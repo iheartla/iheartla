@@ -136,6 +136,8 @@ function isChrome(){
     micropip.install('sympy')
     micropip.install('six')
     micropip.install('setuptools')
+    micropip.install('scipy')
+    micropip.install('numpy')
     micropip.install('${PyYAML}')
     micropip.install('${pybtex}')
     micropip.install('${tatsu}')
@@ -221,11 +223,13 @@ function updateRunError(err) {
 function runFunction(){
     var libCode = ace.edit("python").getValue();
     var test = ace.edit("test").getValue();
-    console.log(libCode+test);
-    pythonCode = test
+    pythonCode = libCode + test;
     setTimeout(function(){
         try {
             pyodide.runPython(pythonCode);
+            showMsg('Run succeeded');
+            // reset UI
+            activateRunBtnStatus();
         }
         catch (error){
             console.log('Run error!');
@@ -283,8 +287,8 @@ function clickCompile(){
 function clickRun(){
     hideMsg();
     try {
-        document.getElementById("compile").disabled = true;
-        document.getElementById("compile").innerHTML = `<i id="run_icon" class="fa fa-refresh fa-spin"></i> Running`;
+        document.getElementById("run").disabled = true;
+        document.getElementById("run").innerHTML = `<i id="run_icon" class="fa fa-refresh fa-spin"></i> Running`;
         runFunction();
     } catch (error) {
         console.error(error);
@@ -339,6 +343,10 @@ function setBtnTitle(text){
     document.getElementById("compile").innerHTML = `<i id="submit_icon" class="fa fa-refresh"></i> ` + text;
 }
 
+function setRunBtnTitle(text){
+    document.getElementById("run").innerHTML = `<i id="run_icon" class="fa fa-refresh"></i> ` + text;
+}
+
 function initBtnStatus(){
     document.getElementById("compile").disabled = true;
     document.getElementById("compile").innerHTML = `Initializing...`;
@@ -351,7 +359,7 @@ function activateBtnStatus(){
 
 function activateRunBtnStatus(){
     document.getElementById("run").disabled = false;
-    setBtnTitle("Run");
+    setRunBtnTitle("Run");
 }
 
 function onEditIhla(e){
