@@ -1275,7 +1275,7 @@ class TypeWalker(NodeWalker):
                     assert len(node.left) == len(right_info.ir.base_list), get_err_msg_info(node.left[0].parseinfo, "Invalid multiple lhs")
                     assign_node.optimize_param = True
                     right_type = right_info.la_type[0]
-            elif right_info.ir.value.op and right_info.ir.value.op.is_node(IRNodeType.Function):
+            elif right_info.ir.value.is_node(IRNodeType.Factor) and right_info.ir.value.op and right_info.ir.value.op.is_node(IRNodeType.Function):
                 if isinstance(right_info.la_type, list):
                     # multiple ret value
                     assert len(node.left) == len(right_info.la_type), get_err_msg_info(node.left[0].parseinfo, "Invalid assignment: {} lhs and {} ret value".format(len(node.left), len(right_info.la_type)))
