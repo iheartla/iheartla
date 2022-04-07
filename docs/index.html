@@ -156,10 +156,11 @@ ssssssssssssssssssssssss
     editor.setTheme("ace/theme/chalkboard");
     editor.session.setMode("ace/mode/iheartla");
     editor.session.on('change', onEditIhla);
+    editor.getSession().setUseWrapMode(true);
     editor.setOptions({
         enableBasicAutocompletion: true,
         enableLiveAutocompletion: true,
-        maxLines: Infinity,
+        maxLines: 90,
         minLines: 20
     });
 
