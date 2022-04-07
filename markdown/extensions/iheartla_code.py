@@ -464,10 +464,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 else:
                     file_dict[module_name].add(m, code, m.group(0), False, numbered)
         # Save to file
-        for name, block_data in file_dict.items():
-            source = '\n'.join(block_data.code_list)
-            file_name = "{}/{}.ihla".format(self.md.path, name)
-            # save_to_file(source, file_name)
+        if not WHEEL_MODE:
+            for name, block_data in file_dict.items():
+                source = '\n'.join(block_data.code_list)
+                file_name = "{}/{}.ihla".format(self.md.path, name)
+                save_to_file(source, file_name)
         # compile
         equation_dict = {}
         full_code_sequence = []
