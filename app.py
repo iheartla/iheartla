@@ -20,6 +20,7 @@ from pathlib import Path
 import shutil
 import regex as re
 from textwrap import dedent
+import sys
 
 
 def handle_title(text, dict):
@@ -142,6 +143,16 @@ def handle_context_block(text):
     return ''.join(text_list)
 
 
+def save_output_code(md, path):
+    if not WHEEL_MODE:
+        if md.lib_py != '':
+            save_to_file(md.lib_py, "{}/lib.py".format(path))
+        if md.lib_cpp != '':
+            save_to_file(md.lib_cpp, "{}/lib.h".format(path))
+        if md.lib_matlab != '':
+            save_to_file(md.lib_matlab, "{}/lib.m".format(path))
+
+
 def process_input(content, input_dir='.', resource_dir='.', file_name='result', parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.MATLAB):
     """
     Given the source string, generate the html result
@@ -152,125 +163,131 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result', 
     :param parser_type: Output code
     :return: html content
     """
-    extension_list = ['markdown.extensions.mdx_bib', \
-                       'markdown.extensions.iheartla_code', \
-                       'markdown.extensions.mdx_math', \
-                       'markdown.extensions.attr_list', \
-                       'markdown.extensions.fenced_code', \
-                       'markdown.extensions.abbr', \
-                       'markdown.extensions.def_list', \
-                       'markdown.extensions.footnotes', \
-                       'markdown.extensions.md_in_html', \
-                       'markdown.extensions.tables', \
-                       'markdown.extensions.admonition', \
-                       # 'markdown.extensions.codehilite', \
-                       'markdown.extensions.legacy_attrs', \
-                       'markdown.extensions.legacy_em', \
-                       'markdown.extensions.meta', \
-                       'markdown.extensions.nl2br', \
-                       'markdown.extensions.sane_lists', \
-                       'markdown.extensions.smarty', \
-                       'markdown.extensions.toc', \
-                       'markdown.extensions.wikilinks']
-    if WHEEL_MODE:
-        extension_list = ["linear_algebra.{}".format(ex) for ex in extension_list]
-    md = Markdown(extensions=extension_list,
-                           path=input_dir,
-                           parser_type=parser_type,
-                           bibtex_file='{}/{}.bib'.format(input_dir, file_name[0]))
-    body = md.convert(content)
-    body, abstract = handle_abstract(body, md.Meta)
-    body = handle_sections(body, md.Meta)
-    body = abstract + body
-    body = handle_title(body, md.Meta)
-    body = handle_context_block(body)
-    equation_json = md.json_data
-    # equation_data = get_sym_data(json.loads(equation_json))
-    sym_json = md.json_sym
-    dst = "{}/resource".format(input_dir)
-    # if os.path.exists(dst):
-    #     shutil.rmtree(dst)
-    # shutil.copytree("/Users/pressure/Downloads/linear_algebra/extras/resource", dst)
-    script = r"""window.onload = onLoad;
-    function reportWindowSize() {
-      var arrows = document.querySelectorAll(".arrow");
-      if (arrows) {
-        for (var i = arrows.length - 1; i >= 0; i--) {
-          var arrow = arrows[i];
-          var body = document.querySelector("body");
-          var style = window.getComputedStyle(body);
-          var curOffset = parseInt(style.marginLeft, 10)
-          var oldOffset = arrow.getAttribute('offset');
-          arrow.setAttribute('offset', curOffset);
-          // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
-          var arrowStyle = window.getComputedStyle(arrow); 
-          var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
-          arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
-          var newWidth = parseInt(style.width, 10) + parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
-          arrow.style.width = `${newWidth}px`;
-          arrow.style.height = style.height; 
-          // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
+    try:
+        extension_list = ['markdown.extensions.mdx_bib', \
+                           'markdown.extensions.iheartla_code', \
+                           'markdown.extensions.mdx_math', \
+                           'markdown.extensions.attr_list', \
+                           'markdown.extensions.fenced_code', \
+                           'markdown.extensions.abbr', \
+                           'markdown.extensions.def_list', \
+                           'markdown.extensions.footnotes', \
+                           'markdown.extensions.md_in_html', \
+                           'markdown.extensions.tables', \
+                           'markdown.extensions.admonition', \
+                           # 'markdown.extensions.codehilite', \
+                           'markdown.extensions.legacy_attrs', \
+                           'markdown.extensions.legacy_em', \
+                           'markdown.extensions.meta', \
+                           'markdown.extensions.nl2br', \
+                           'markdown.extensions.sane_lists', \
+                           'markdown.extensions.smarty', \
+                           'markdown.extensions.toc', \
+                           'markdown.extensions.wikilinks']
+        if WHEEL_MODE:
+            extension_list = ["linear_algebra.{}".format(ex) for ex in extension_list]
+        md = Markdown(extensions=extension_list,
+                               path=input_dir,
+                               parser_type=parser_type,
+                               bibtex_file='{}/{}.bib'.format(input_dir, file_name[0]))
+        body = md.convert(content)
+        body, abstract = handle_abstract(body, md.Meta)
+        body = handle_sections(body, md.Meta)
+        body = abstract + body
+        body = handle_title(body, md.Meta)
+        body = handle_context_block(body)
+        save_output_code(md, input_dir)
+        equation_json = md.json_data
+        # equation_data = get_sym_data(json.loads(equation_json))
+        sym_json = md.json_sym
+        dst = "{}/resource".format(input_dir)
+        # if os.path.exists(dst):
+        #     shutil.rmtree(dst)
+        # shutil.copytree("/Users/pressure/Downloads/linear_algebra/extras/resource", dst)
+        script = r"""window.onload = onLoad;
+        function reportWindowSize() {
+          var arrows = document.querySelectorAll(".arrow");
+          if (arrows) {
+            for (var i = arrows.length - 1; i >= 0; i--) {
+              var arrow = arrows[i];
+              var body = document.querySelector("body");
+              var style = window.getComputedStyle(body);
+              var curOffset = parseInt(style.marginLeft, 10)
+              var oldOffset = arrow.getAttribute('offset');
+              arrow.setAttribute('offset', curOffset);
+              // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
+              var arrowStyle = window.getComputedStyle(arrow); 
+              var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
+              arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
+              var newWidth = parseInt(style.width, 10) + parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+              arrow.style.width = `${newWidth}px`;
+              arrow.style.height = style.height; 
+              // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
+            }
+          }
+          adjsutGlossaryBtn();
         }
-      }
-      adjsutGlossaryBtn();
-    }
-    window.onresize = reportWindowSize;
-    document.addEventListener("click", function(evt){
-        resetState();
-    });
-    """
-    mathjax = r'''<script>
-    MathJax = {
-      loader: {
-        load: ["[attrLabel]/attr-label.js"],
-        paths: { attrLabel: "''' + resource_dir + '''/resource" },
-      },
-      tex: { packages: { "[+]": ["attr-label"] },
-       inlineMath: [['$', '$']]
-       },
-       options: {
-        enableAssistiveMml: false
-      },
-    };
-        </script>'''
-    html = r"""<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
-        {mathjax}
-        <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-        <script src="https://unpkg.com/@popperjs/core@2"></script>
-        <script src="https://unpkg.com/tippy.js@6"></script>
-        <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/svg-arrow.css"/>
-        <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/border.css" />
-        <script src="{resource_dir}/resource/d3.min.js"></script>
-        <script src="{resource_dir}/resource/svg.min.js"></script>
-        <script type="text/javascript" src='{resource_dir}/resource/paper.js'></script>
-        <link rel="stylesheet" href="{resource_dir}/resource/paper.css">
-    </head>
-    <script>
-    const iheartla_data = JSON.parse('{equation_json}');
-    const sym_data = JSON.parse('{sym_json}');
-    {script}
-    </script>
-    <body>
-    <div id="glossary" class="glossary"></div><br>
-    {body}
-    </body>
-    </html>""".format(mathjax=mathjax, equation_json=equation_json, sym_json=sym_json, script=script, body=body,
-                      resource_dir=resource_dir)
-    # numbering
-    EQ_BLOCK_RE = re.compile(
-        dedent(r'''(?<!\\)((?<!\$)\${2}(?!\$))((?P<code>.*?))(?<!\\)(?<!\$)\1(?!\$)'''),
-        re.MULTILINE | re.DOTALL | re.VERBOSE
-    )
-    num = md.Meta.get('eqBase', 1)
-    for m in EQ_BLOCK_RE.finditer(html):
-        equation = m.group('code')
-        if '\\notag' not in equation:
-            html = html.replace(m.group(), "$${}\\tag{{{}}}\\label{{{}}}$$".format(equation, num, num))
-            num += 1
-    return html
+        window.onresize = reportWindowSize;
+        document.addEventListener("click", function(evt){
+            resetState();
+        });
+        """
+        mathjax = r'''<script>
+        MathJax = {
+          loader: {
+            load: ["[attrLabel]/attr-label.js"],
+            paths: { attrLabel: "''' + resource_dir + '''/resource" },
+          },
+          tex: { packages: { "[+]": ["attr-label"] },
+           inlineMath: [['$', '$']]
+           },
+           options: {
+            enableAssistiveMml: false
+          },
+        };
+            </script>'''
+        html = r"""<html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+            {mathjax}
+            <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+            <script src="https://unpkg.com/@popperjs/core@2"></script>
+            <script src="https://unpkg.com/tippy.js@6"></script>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/svg-arrow.css"/>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/border.css" />
+            <script src="{resource_dir}/resource/d3.min.js"></script>
+            <script src="{resource_dir}/resource/svg.min.js"></script>
+            <script type="text/javascript" src='{resource_dir}/resource/paper.js'></script>
+            <link rel="stylesheet" href="{resource_dir}/resource/paper.css">
+        </head>
+        <script>
+        const iheartla_data = JSON.parse('{equation_json}');
+        const sym_data = JSON.parse('{sym_json}');
+        {script}
+        </script>
+        <body>
+        <div id="glossary" class="glossary"></div><br>
+        {body}
+        </body>
+        </html>""".format(mathjax=mathjax, equation_json=equation_json, sym_json=sym_json, script=script, body=body,
+                          resource_dir=resource_dir)
+        # numbering
+        EQ_BLOCK_RE = re.compile(
+            dedent(r'''(?<!\\)((?<!\$)\${2}(?!\$))((?P<code>.*?))(?<!\\)(?<!\$)\1(?!\$)'''),
+            re.MULTILINE | re.DOTALL | re.VERBOSE
+        )
+        num = md.Meta.get('eqBase', 1)
+        for m in EQ_BLOCK_RE.finditer(html):
+            equation = m.group('code')
+            if '\\notag' not in equation:
+                html = html.replace(m.group(), "$${}\\tag{{{}}}\\label{{{}}}$$".format(equation, num, num))
+                num += 1
+        ret = [html, md.lib_py, md.lib_cpp, md.lib_matlab]
+    except:
+        ret = str(sys.exc_info()[0])
+    finally:
+        return ret
 
 
 if __name__ == '__main__':
@@ -304,6 +321,7 @@ if __name__ == '__main__':
         for paper_file in args.paper:
             content = read_from_file(paper_file)
             base_name = os.path.basename(Path(paper_file))
-            html = process_input(content, os.path.dirname(Path(paper_file)), resource_dir, os.path.splitext(base_name)[0], parser_type)
+            ret = process_input(content, os.path.dirname(Path(paper_file)), resource_dir, os.path.splitext(base_name)[0], parser_type)
+            html = ret[0]
             save_to_file(html, "{}/{}.html".format(os.path.dirname(Path(paper_file)), os.path.splitext(base_name)[0]))
             # print(html)
