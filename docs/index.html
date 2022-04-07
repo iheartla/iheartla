@@ -18,30 +18,42 @@
 <body>
 
 <div class="container">
-  <h1>I❤️LA In-Browser Compiler 
+  <h1>H❤️rtDown In-Browser Compiler
     | <a href="https://github.com/iheartla/iheartla/wiki">Help</a>
     | <a href="https://github.com/iheartla/iheartla">Source Code</a>
   </h1>
     <div class="row">
     
     <!-- A column for the code editor and buttons -->
-    <div class="col-lg">
+    <div class="col-lg-4">
     
     <div class="row">
         <div class="col-sm">
-            <pre id="editor">[ t^3 t^2 t 1 ] [ -1  3 -3  1
-                   3 -6  3  0
-                  -3  3  0  0
-                   1  0  0  0 ] P
-where
-t ∈ ℝ
-P ∈ ℝ^(4 × d)</pre>
+            <pre id="editor">---
+full_paper: False
+---
+
+# H1
+## H2
+### H3
+❤: first
+``` iheartla
+aa = 2
+`Saa` = 3
+```
+$aa+1$ is another  $Saa()aa +3$
+$Saa()$ hell
+ <span class="def">$aa$ is the internal energy of the rods, </span> ❤ bb = 2❤
+ssssssssssssssssssssssss
+
+ssssssssssssssssssssssss
+            </pre>
         </div>
     </div>
     
     <!-- The message row -->
     <div class="row">
-    <div class="col-sm">
+    <div class="col-sm-6">
         <pre><div id="msg" class="alert alert-primary" role="alert"></div></pre>
     </div>
     </div>
@@ -89,8 +101,18 @@ P ∈ ℝ^(4 × d)</pre>
     </div>
     </div>
 
+    <div class="row widgets">
+    <div class="col-sm">
+        <button id="run" class="btn btn-success" onclick="clickRun()">
+            <i id="run_icon" class="fa fa-refresh"></i> Run
+        <!--  <i id="submit_icon" class="fa fa-refresh fa-spin"></i> Compile-->
+        </button>
+    </div>
+    </div>
     <!-- Close the code editor and widgets column -->
     </div>
+
+
     
     <!-- The MathJax output column -->
     <div class="col-lg">
@@ -100,18 +122,21 @@ P ∈ ℝ^(4 × d)</pre>
     <!-- Close the row containing the code editor and MathJax output -->
     </div>
 
+
+    <div class="row">
+        <div class="col-lg">
+            <pre id="python"># Python with NumPy and SciPy</pre>
+        </div>
+        <div class="col-lg">
+            <pre id="test"># Python test</pre>
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg">
             <pre id="cpp">/* C++ with Eigen */</pre>
         </div>
         <div class="col-lg">
-            <pre id="python"># Python with NumPy and SciPy</pre>
-        </div>
-        <div class="col-lg">
             <pre id="matlab">% MATLAB</pre>
-        </div>
-        <div class="col-lg">
-            <pre id="latex">% LaTeX</pre>
         </div>
     </div>
 </div>
@@ -154,11 +179,11 @@ P ∈ ℝ^(4 × d)</pre>
         readOnly: true,
     });
 
-    let latex = ace.edit("latex");
-    latex.setTheme(theme);
-    latex.session.setMode("ace/mode/latex");
-    latex.setOptions({
-        readOnly: true,
+    let test = ace.edit("test");
+    test.setTheme(theme);
+    test.session.setMode("ace/mode/python");
+    test.setOptions({
+        readOnly: false,
     });
 
     let matlab = ace.edit("matlab");

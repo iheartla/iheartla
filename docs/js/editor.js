@@ -201,8 +201,6 @@ function updateEditor(code) {
     cpp.session.setValue(code[2]);
     var python = ace.edit("python");
     python.session.setValue(code[1]);
-    // var latex = ace.edit("latex");
-    // latex.session.setValue(code[0]);
     convert(code[0]);
     var matlab = ace.edit("matlab");
     matlab.session.setValue(code[3]);
@@ -213,6 +211,27 @@ function updateEditor(code) {
 function updateError(err) {
     showMsg(err, true);
     activateBtnStatus();
+}
+
+function updateRunError(err) {
+    showMsg(err, true);
+    activateRunBtnStatus();
+}
+
+function runFunction(){
+    var libCode = ace.edit("python").getValue();
+    var test = ace.edit("test").getValue();
+    console.log(libCode+test);
+    pythonCode = test
+    setTimeout(function(){
+        try {
+            pyodide.runPython(pythonCode);
+        }
+        catch (error){
+            console.log('Run error!');
+            updateRunError('Run error!');
+        }
+        }, 1000);
 }
 
 function compileFunction(){
@@ -256,6 +275,20 @@ function clickCompile(){
     } catch (error) {
         console.error(error);
         activateBtnStatus();
+    }
+    finally {
+    }
+}
+
+function clickRun(){
+    hideMsg();
+    try {
+        document.getElementById("compile").disabled = true;
+        document.getElementById("compile").innerHTML = `<i id="run_icon" class="fa fa-refresh fa-spin"></i> Running`;
+        runFunction();
+    } catch (error) {
+        console.error(error);
+        activateRunBtnStatus();
     }
     finally {
     }
@@ -314,6 +347,11 @@ function initBtnStatus(){
 function activateBtnStatus(){
     document.getElementById("compile").disabled = false;
     setBtnTitle("Compile");
+}
+
+function activateRunBtnStatus(){
+    document.getElementById("run").disabled = false;
+    setBtnTitle("Run");
 }
 
 function onEditIhla(e){
