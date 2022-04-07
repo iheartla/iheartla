@@ -94,12 +94,44 @@ class CodeGenMatlab(CodeGen):
             param_list.append('{}{}'.format(self.param_name_test, index))
         anon_str = "   {} = @({}) ".format(var_name, ', '.join(param_list))
         # Multi-line anonymous functions are not possible in Matlab.
-        if func_type.ret.is_set():
-            test_content += self.get_set_test_list('tmp', self.generate_var_name("dim"), 'i', func_type.ret, rand_int_max, '        ')
-            #test_content.append('        return tmp')
-        else:
-            anon_str += self.get_rand_test_str(func_type.ret, rand_int_max)+";"
-        test_content.append(anon_str)
+        test_indent = ''
+        test_content.append(test_indent + "    {} = @{}Func;".format(var_name, var_name + ""))
+        test_content.append(test_indent + "    rseed = randi(2^32);")
+        ret_list = []
+        content_list = []
+        for cur_index in range(len(func_type.ret)):
+            cur_name = self.generate_var_name('ret')
+            ret_list.append(cur_name)
+            if func_type.ret[cur_index].is_set():
+                content_list += self.get_set_test_list(cur_name, self.generate_var_name("dim"), 'i',
+                                                       func_type.ret[cur_index], rand_int_max,
+                                                       '            ')
+            else:
+                content_list.append(test_indent + "        {} = {};".format(cur_name, self.get_rand_test_str(
+                    func_type.ret[cur_index], rand_int_max)))
+
+        test_content.append(test_indent + "    function [{}] =  {}({})".format(', '.join(ret_list), var_name + "Func",
+                                                                               ', '.join(param_list)))
+        test_content.append(test_indent + "        rng(rseed);")
+        test_content += dim_definition
+        test_content += content_list
+        test_content.append(test_indent + "    end")
+        # ret_list = []
+        # content_list = []
+        # for cur_index in range(len(func_type.ret)):
+        #     cur_name = self.generate_var_name('ret')
+        #     ret_list.append(cur_name)
+        #     if func_type.ret[cur_index].is_set():
+        #         test_content += self.get_set_test_list(cur_name, self.generate_var_name("dim"), 'i', func_type.ret, rand_int_max, '        ')
+        #     else:
+        #         test_content.append(self.get_rand_test_str(func_type.ret[cur_index], rand_int_max)+";")
+        #
+        # # if func_type.ret.is_set():
+        # #     test_content += self.get_set_test_list('tmp', self.generate_var_name("dim"), 'i', func_type.ret, rand_int_max, '        ')
+        # #     #test_content.append('        return tmp')
+        # # else:
+        # #     anon_str += self.get_rand_test_str(func_type.ret, rand_int_max)+";"
+        # test_content.append(anon_str)
         return test_content
 
     def get_set_test_list(self, parameter, dim_name, ind_name, la_type, rand_int_max, test_indent='    '):
@@ -377,10 +409,10 @@ class CodeGenMatlab(CodeGen):
                     else:
                         if ele_type.is_function():
                             test_content.append('        {} = {{}};'.format(parameter))
-                            test_content.append('        for i = 1:{}'.format(self.get_sym_type(parameter).size))
                             func_content = self.get_func_test_str("{}_f".format(parameter), ele_type, rand_int_max)
-                            func_content = ["         {}".format(line) for line in func_content]
+                            func_content = ["    {}".format(line) for line in func_content]
                             test_content += func_content
+                            test_content.append('        for i = 1:{}'.format(self.get_sym_type(parameter).size))
                             test_content.append('            {}{{end+1,1}} = {};'.format(parameter, "{}_f".format(parameter)))
                             test_content.append('        end')
                             #test_content.append('    {} = np.asarray({})'.format(parameter, parameter))
