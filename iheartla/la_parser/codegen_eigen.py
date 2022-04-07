@@ -107,7 +107,7 @@ class CodeGenEigen(CodeGen):
         elif la_type.is_set():
             type_str = "std::set<{} >".format(self.get_set_item_str(la_type))
         elif la_type.is_function():
-            type_str = "std::function<{}({})>".format(self.get_ctype(la_type.ret), self.get_func_params_str(la_type))
+            type_str = "std::function<{}({})>".format(self.get_ctype(la_type.ret[0]), self.get_func_params_str(la_type))
         return type_str
 
     def get_rand_test_str(self, la_type, rand_int_max):
@@ -154,16 +154,16 @@ class CodeGenEigen(CodeGen):
                             '        long {} = {}{}.cols();'.format(ret_dim, self.param_name_test, param_i))
         test_content.append(
             '    {} = [&]({})->{}{{'.format(var_name, self.get_func_params_str(func_type, name_required),
-                                            self.get_ctype(func_type.ret)))
+                                            self.get_ctype(func_type.ret[0])))
         test_content += dim_definition
-        if func_type.ret.is_set():
+        if func_type.ret[0].is_set():
             test_content.append('        {} tmp;'.format(self.get_ctype(func_type.ret)))
             test_content += self.get_set_test_list('tmp', self.generate_var_name("dim"), 'i', func_type.ret,
                                                    rand_int_max, '        ')
             test_content.append('        return tmp;')
         else:
             test_content.append(
-                '        return {}'.format(self.get_rand_test_str(func_type.ret, rand_int_max)))
+                '        return {}'.format(self.get_rand_test_str(func_type.ret[0], rand_int_max)))
         test_content.append('    };')
         return test_content
 
