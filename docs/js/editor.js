@@ -181,7 +181,6 @@ function convert(input) {
     iframe.contentWindow.document.open();
     iframe.contentWindow.document.write(input);
     iframe.contentWindow.document.close();
-    console.log(input);
     // output.innerHTM = `<iframe srcdoc=`${input}`></iframe>`;
     // MathJax.texReset();
     // var options = MathJax.getMetricsFor(output);
@@ -199,14 +198,14 @@ function convert(input) {
 function updateEditor(code) {
     showMsg('Compile succeeded');
     var cpp = ace.edit("cpp");
-    cpp.session.setValue(code[1]);
+    cpp.session.setValue(code[2]);
     var python = ace.edit("python");
-    python.session.setValue(code[0]);
-    var latex = ace.edit("latex");
-    latex.session.setValue(code[2]);
-    convert(code[3]);
+    python.session.setValue(code[1]);
+    // var latex = ace.edit("latex");
+    // latex.session.setValue(code[0]);
+    convert(code[0]);
     var matlab = ace.edit("matlab");
-    matlab.session.setValue(code[4]);
+    matlab.session.setValue(code[3]);
     // reset UI
     activateBtnStatus();
 }
@@ -219,7 +218,7 @@ function updateError(err) {
 function compileFunction(){
     var iheartla = ace.edit("editor");
     var source = iheartla.getValue();
-    console.log(source)
+    // console.log(source)
     pythonCode = `
 import linear_algebra.iheartla.la_parser.parser
 from linear_algebra.app import process_input
@@ -233,13 +232,13 @@ code = process_input(source_code)
         try {
             pyodide.runPython(pythonCode);
             let code = pyodide.globals.get('code');
-            convert(code);
-            // if (typeof code === 'string'){
-            //     updateError(code);
-            // }
-            // else{
-            //     updateEditor(code.toJs());
-            // }
+            // convert(code);
+            if (typeof code === 'string'){
+                updateError(code);
+            }
+            else{
+                updateEditor(code.toJs());
+            }
         }
         catch (error){
             console.log('Compile error!');
