@@ -1252,6 +1252,14 @@ class TypeWalker(NodeWalker):
                     assert sub_sym not in self.symtable, get_err_msg_info(node.left[0].right[sub_index].parseinfo, "Subscript has been defined")
                     self.symtable[sub_sym] = ScalarType(index_type=False, is_int=True)
                     self.lhs_sub_dict[sub_sym] = []  # init empty list
+            la_remove_key(LHS, **kwargs)
+            la_remove_key(ASSIGN_OP, **kwargs)
+            #
+            if parse_remain_lhs_directly:
+                self.symtable[self.get_main_id(id0)] = la_list[cur_index]
+                break
+            right_info = self.walk(node.right[cur_index], **kwargs)
+            right_type = right_info.la_type
             if len(self.lhs_subs) > 0:
                 for cur_index in range(len(self.lhs_subs)):
                     cur_sym_dict = self.lhs_sym_list[cur_index]
@@ -1262,12 +1270,6 @@ class TypeWalker(NodeWalker):
                                                                                           "Subscript has inconsistent dimensions")
             self.lhs_sym_list.clear()
             self.lhs_subs.clear()
-            #
-            if parse_remain_lhs_directly:
-                self.symtable[self.get_main_id(id0)] = la_list[cur_index]
-                break
-            right_info = self.walk(node.right[cur_index], **kwargs)
-            right_type = right_info.la_type
             if right_info.ir.is_node(IRNodeType.Optimize):
                 if right_info.ir.opt_type == OptimizeType.OptimizeArgmin or right_info.ir.opt_type == OptimizeType.OptimizeArgmax:
                     la_list = right_info.la_type
@@ -1287,8 +1289,6 @@ class TypeWalker(NodeWalker):
             assign_node.right.append(right_info.ir)
             right_info.ir.set_parent(assign_node)
             id0_info.ir.set_parent(assign_node)
-            la_remove_key(LHS, **kwargs)
-            la_remove_key(ASSIGN_OP, **kwargs)
             # y_i = stat
             if self.contain_subscript(id0):
                 left_ids = self.get_all_ids(id0)
@@ -1373,7 +1373,7 @@ class TypeWalker(NodeWalker):
                         seq_index_node.main_index = self.walk(node.left[0].right[0], **kwargs).ir
                         seq_index_node.la_type = right_type
                         seq_index_node.set_parent(assign_node)
-                        assign_node.left = seq_index_node
+                        assign_node.left[cur_index] = seq_index_node
                     else:
                         # vector
                         self.symtable[sequence] = VectorType(rows=dim)
@@ -1382,7 +1382,7 @@ class TypeWalker(NodeWalker):
                         vector_index_node.row_index = self.walk(node.left[0].right[0], **kwargs).ir
                         vector_index_node.set_parent(assign_node)
                         vector_index_node.la_type = right_type
-                        assign_node.left = vector_index_node
+                        assign_node.left[cur_index] = vector_index_node
                 # remove temporary subscripts(from LHS) in symtable
                 for sub_sym in left_subs:
                     if sub_sym in self.symtable:

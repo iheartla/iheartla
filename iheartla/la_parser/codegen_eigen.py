@@ -1327,7 +1327,7 @@ class CodeGenEigen(CodeGen):
                 right_exp = ""
                 # y_i = stat
                 if node.left[cur_index].contain_subscript():
-                    left_ids = node.left.get_all_ids()
+                    left_ids = node.left[cur_index].get_all_ids()
                     left_subs = left_ids[1]
                     if len(left_subs) == 2:  # matrix only
                         sequence = left_ids[0]  # y left_subs[0]
@@ -1443,7 +1443,7 @@ class CodeGenEigen(CodeGen):
                                                                                      left_subs[0])
                         if right_info.pre_list:
                             content += self.update_prelist_str(right_info.pre_list, "    ")
-                        if not node.right.is_node(IRNodeType.MultiConds):
+                        if not node.right[cur_index].is_node(IRNodeType.MultiConds):
                             content += "    " + right_exp + ";\n"
                         content += '    }\n'
                 #
