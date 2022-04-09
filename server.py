@@ -11,7 +11,7 @@ class MainHandler(tornado.web.RequestHandler):
 
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
-        print("Received request: {}".format(data['input']))
+        # print("Received request: {}".format(data['input']))
         res = process_input(data['input'])
         self.set_header("Content-Type", "application/json")
         self.write(json.JSONEncoder().encode({"res": res}))

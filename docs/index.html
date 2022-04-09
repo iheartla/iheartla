@@ -32,21 +32,39 @@
             <pre id="editor">---
 full_paper: False
 ---
+❤: context
 
-# H1
-## H2
-### H3
-❤: first
+# Section 1
+
+
+Definition of symbol $a$ in prose: <span class="def"> $a$ is the slope </span>.
+
+If the symbol also shows up in an equation which is not written by iheartla, it will also be highlighted.
+$$a + b = 0$$
+
+
+The following block shows how to write an iheartla equation
 ``` iheartla
-aa = 2
-`Saa` = 3
+d = a - c
+where
+a ∈ ℝ
+b ∈ ℝ
 ```
-$aa+1$ is another  $Saa()aa +3$
-$Saa()$ hell
- <span class="def">$aa$ is the internal energy of the rods, </span> ❤ bb = 2❤
-ssssssssssssssssssssssss
 
-ssssssssssssssssssssssss
+Symbols can be defined by inline iheartla block as ❤ c = ab  ❤ .
+
+
+
+❤: other
+
+# Section 2
+You can define the same symbol in different context: <span class="def"> $a$ is a matrix now </span>.
+
+``` iheartla
+d = a
+where
+a ∈ ℝ^(4 × 4)
+```
             </pre>
         </div>
     </div>
@@ -54,7 +72,7 @@ ssssssssssssssssssssssss
     <!-- The message row -->
     <div class="row">
     <div class="col-sm-6">
-        <pre><div id="msg" class="alert alert-primary" role="alert"></div></pre>
+        <pre><div id="msg" class="alert alert-primary" role="alert" hidden></div></pre>
     </div>
     </div>
     
@@ -123,22 +141,22 @@ ssssssssssssssssssssssss
     </div>
 
 
-    <div class="row">
-        <div class="col-lg">
-            <pre id="python"># Python with NumPy and SciPy</pre>
-        </div>
-        <div class="col-lg">
-            <pre id="test"># Python test</pre>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-lg">
-            <pre id="cpp">/* C++ with Eigen */</pre>
-        </div>
-        <div class="col-lg">
-            <pre id="matlab">% MATLAB</pre>
-        </div>
-    </div>
+<!--    <div class="row">-->
+<!--        <div class="col-lg">-->
+<!--            <pre id="python"># Python with NumPy and SciPy</pre>-->
+<!--        </div>-->
+<!--        <div class="col-lg">-->
+<!--            <pre id="test"># Python test</pre>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="row">-->
+<!--        <div class="col-lg">-->
+<!--            <pre id="cpp">/* C++ with Eigen */</pre>-->
+<!--        </div>-->
+<!--        <div class="col-lg">-->
+<!--            <pre id="matlab">% MATLAB</pre>-->
+<!--        </div>-->
+<!--    </div>-->
 </div>
 
 </body>
@@ -148,8 +166,8 @@ ssssssssssssssssssssssss
     loadCodeFromURLParameter();
     
     // initPyodide()
-    const [ validBrowser, validBrowserMessage ] = checkBrowserVer();
-    showMsg( validBrowserMessage, !validBrowser );
+    // const [ validBrowser, validBrowserMessage ] = checkBrowserVer();
+    // showMsg( validBrowserMessage, !validBrowser );
     // initBtnStatus();
     //
     let editor = ace.edit("editor");
@@ -165,34 +183,34 @@ ssssssssssssssssssssssss
     });
 
     // comments are easier to read in tomorrow_night than twilight
-    let theme = "ace/theme/tomorrow_night";
-    let cpp = ace.edit("cpp");
-    cpp.setTheme(theme);
-    cpp.session.setMode("ace/mode/c_cpp");
-    cpp.setOptions({
-        readOnly: true,
-    });
-
-    let python = ace.edit("python");
-    python.setTheme(theme);
-    python.session.setMode("ace/mode/python");
-    python.setOptions({
-        readOnly: true,
-    });
-
-    let test = ace.edit("test");
-    test.setTheme(theme);
-    test.session.setMode("ace/mode/python");
-    test.setOptions({
-        readOnly: false,
-    });
-
-    let matlab = ace.edit("matlab");
-    matlab.setTheme(theme);
-    matlab.session.setMode("ace/mode/matlab");
-    matlab.setOptions({
-        readOnly: true,
-    });
+    // let theme = "ace/theme/tomorrow_night";
+    // let cpp = ace.edit("cpp");
+    // cpp.setTheme(theme);
+    // cpp.session.setMode("ace/mode/c_cpp");
+    // cpp.setOptions({
+    //     readOnly: true,
+    // });
+    //
+    // let python = ace.edit("python");
+    // python.setTheme(theme);
+    // python.session.setMode("ace/mode/python");
+    // python.setOptions({
+    //     readOnly: true,
+    // });
+    //
+    // let test = ace.edit("test");
+    // test.setTheme(theme);
+    // test.session.setMode("ace/mode/python");
+    // test.setOptions({
+    //     readOnly: false,
+    // });
+    //
+    // let matlab = ace.edit("matlab");
+    // matlab.setTheme(theme);
+    // matlab.session.setMode("ace/mode/matlab");
+    // matlab.setOptions({
+    //     readOnly: true,
+    // });
 
     $('#keybinding input').click(function() {
         if (this.id == 'ace'){
@@ -205,5 +223,6 @@ ssssssssssssssssssssssss
     
     captureHotKeys();
 </script>
+
 
 </html>

@@ -199,13 +199,13 @@ function convert(input) {
 
 function updateEditor(code) {
     showMsg('Compile succeeded');
-    var cpp = ace.edit("cpp");
-    cpp.session.setValue(code[2]);
-    var python = ace.edit("python");
-    python.session.setValue(code[1]);
+    // var cpp = ace.edit("cpp");
+    // cpp.session.setValue(code[2]);
+    // var python = ace.edit("python");
+    // python.session.setValue(code[1]);
     convert(code[0]);
-    var matlab = ace.edit("matlab");
-    matlab.session.setValue(code[3]);
+    // var matlab = ace.edit("matlab");
+    // matlab.session.setValue(code[3]);
     // reset UI
     activateBtnStatus();
 }
@@ -264,7 +264,8 @@ code = process_input(source_code)
             // }
             postData(window.location.href + 'handler', { input:  source})
               .then(data => {
-                console.log(`data is ${data.foo}`); // JSON data parsed by `data.json()` call
+                  // console.log(`data is ${data.res}`); // JSON data parsed by `data.json()` call
+                  updateEditor(data.res);
              });
         }
         catch (error){
@@ -294,6 +295,7 @@ async function postData(url = '', data = {}) {
 
 function onEditEquation(raw_text){
     console.log(`Received: ${raw_text}`);
+
 }
 
 function clickCompile(){
