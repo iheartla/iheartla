@@ -794,6 +794,16 @@ function getEquationContent(func_name, sym_list, isLocalFunc=false, localFunc=''
 }
 
 /**
+ * Double Click an equation
+ *
+ * @param {object} tag The current xml tag
+ * @param {string} func_name The current module name 
+ * @return 
+ */
+function onDblClickEq(tag, raw_text) { 
+  console.log(`current raw_text is ${raw_text}`);
+}
+/**
  * Click an equation
  *
  * @param {object} tag The current xml tag
@@ -803,7 +813,7 @@ function getEquationContent(func_name, sym_list, isLocalFunc=false, localFunc=''
  * @param {string} localParams the parameters
  * @return 
  */
-function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', localParams=[]) { 
+function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', localParams=[], raw_text='') { 
   // closeOtherTips();
   console.log(`func_name:${func_name}, sym_list:${sym_list}, localParams:${localParams}`)
   resetState();
@@ -867,8 +877,9 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
     // content = `<div class='euqation_highlight'> ${content} </div>`
     div.appendChild(symDiv);
     var topLine = document.createElement("HR");
-    div.prepend(topLine)
+    div.prepend(topLine);
     topLine.className = "eqInfo";
+    // line
     var bottomLine = document.createElement("HR");
     bottomLine.className = "eqInfo";
     div.appendChild(bottomLine)
