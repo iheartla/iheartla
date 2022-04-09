@@ -31,7 +31,7 @@ body {
     font-size: 16px /* Set a font size */
 }
 #output {
-    border: 0px solid grey;
+    border: 10px solid grey;
     width: 100%;
     box-sizing: border-box;
 }
@@ -48,8 +48,8 @@ div#msg .alert{
 iframe{
     height: 100%;
     width: 100%;
-    margin-left: 50px;
-    margin-right: 270px;
+    margin-left: 0px;
+    margin-right: 0px;
 }
 h1
 {
