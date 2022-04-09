@@ -147,10 +147,10 @@ ssssssssssssssssssssssss
     // We have to do this before creating the ace editor, or else call an ace function.
     loadCodeFromURLParameter();
     
-    initPyodide()
+    // initPyodide()
     const [ validBrowser, validBrowserMessage ] = checkBrowserVer();
     showMsg( validBrowserMessage, !validBrowser );
-    initBtnStatus();
+    // initBtnStatus();
     //
     let editor = ace.edit("editor");
     editor.setTheme("ace/theme/chaos");

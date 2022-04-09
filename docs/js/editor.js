@@ -253,15 +253,19 @@ code = process_input(source_code)
 `
     setTimeout(function(){
         try {
-            pyodide.runPython(pythonCode);
-            let code = pyodide.globals.get('code');
-            // convert(code);
-            if (typeof code === 'string'){
-                updateError(code);
-            }
-            else{
-                updateEditor(code.toJs());
-            }
+            // pyodide.runPython(pythonCode);
+            // let code = pyodide.globals.get('code');
+            // // convert(code);
+            // if (typeof code === 'string'){
+            //     updateError(code);
+            // }
+            // else{
+            //     updateEditor(code.toJs());
+            // }
+            postData(window.location.href + 'handler', { input:  source})
+              .then(data => {
+                console.log(`data is ${data.foo}`); // JSON data parsed by `data.json()` call
+             });
         }
         catch (error){
             console.log('Compile error!');
@@ -269,6 +273,24 @@ code = process_input(source_code)
         }
         }, 1000);
 }
+
+async function postData(url = '', data = {}) {
+  const response = await fetch(url, {
+    method: 'POST',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+    body: JSON.stringify(data)
+  });
+  return response.json();
+}
+
 
 function onEditEquation(raw_text){
     console.log(`Received: ${raw_text}`);
