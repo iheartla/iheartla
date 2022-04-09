@@ -270,6 +270,10 @@ code = process_input(source_code)
         }, 1000);
 }
 
+function onEditEquation(raw_text){
+    console.log(`Received: ${raw_text}`);
+}
+
 function clickCompile(){
     hideMsg();
     try {

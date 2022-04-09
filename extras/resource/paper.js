@@ -879,6 +879,21 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
     var topLine = document.createElement("HR");
     div.prepend(topLine);
     topLine.className = "eqInfo";
+    // button
+    var editBtn = document.createElement("button");
+    editBtn.className = "eqInfo";
+    editBtn.type  = 'button';
+    editBtn.innerHTML = "Edit equation"; 
+    editBtn.addEventListener('click', function() {
+        if (typeof parent.onEditEquation == 'function') { 
+          console.log(`raw_text is: ${raw_text}`)
+          parent.onEditEquation(raw_text);
+        }
+        else{
+          console.log('No such func');
+        }
+    }, false);
+    div.appendChild(editBtn);
     // line
     var bottomLine = document.createElement("HR");
     bottomLine.className = "eqInfo";
