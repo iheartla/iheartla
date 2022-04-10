@@ -101,6 +101,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
         dedent(r'''<figure>(?P<figure>.*?)</figure>'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
+    # Match string: <img src='' ***>
+    IMAGE_BLOCK_RE = re.compile(
+        dedent(r'''<img\ (?P<before>[^\n>]*)src=(?P<quote>"|')(?P<src>[^\n'">]*)(?P=quote)(?P<after>[^\n>]*)>'''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
     # Match string: <span class="def">***</span>
     EASY_SPAN_BLOCK_RE = re.compile(
         dedent(r'''<span\ class=(?P<quote>"|')def(?P=quote)>(?P<code>.*?)</span>'''),
@@ -453,6 +458,9 @@ class IheartlaBlockPreprocessor(Preprocessor):
             for c in self.FIGURE_CODE_RE.finditer(figure):
                 code = c.group('code')
                 print("code: {}".format(code))
+            for img in self.IMAGE_BLOCK_RE.finditer(figure):
+                src = img.group('src')
+                print("img: {}".format(src))
         return text
 
     def handle_iheartla_code(self, text):
