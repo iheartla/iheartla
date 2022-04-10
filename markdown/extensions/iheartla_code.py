@@ -85,6 +85,22 @@ class IheartlaBlockPreprocessor(Preprocessor):
         '''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
+    # ``` python
+    FIGURE_CODE_RE = re.compile(
+        dedent(r'''
+                (?P<fence>^(?:~{3,}|`{3,}))[ ]*                          # opening fence
+                python\s* 
+                \n                                                       # newline (end of opening fence)
+                (?P<code>.*?)(?<=\n)                                     # the code block
+                (?P=fence)[ ]*$                                          # closing fence
+            '''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
+    # Match string: <figure>***</figure>
+    FIGURE_BLOCK_RE = re.compile(
+        dedent(r'''<figure>(?P<figure>.*?)</figure>'''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
     # Match string: <span class="def">***</span>
     EASY_SPAN_BLOCK_RE = re.compile(
         dedent(r'''<span\ class=(?P<quote>"|')def(?P=quote)>(?P<code>.*?)</span>'''),
@@ -424,9 +440,20 @@ class IheartlaBlockPreprocessor(Preprocessor):
             # text_list[index] = self.handle_inline_raw_code(text_list[index], context_list[index])
             text_list[index] = self.handle_prose_label(text_list[index], cur_context)
             text_list[index] = self.handle_math(text_list[index], cur_context, sym_list)
+            text_list[index] = self.handle_figure(text_list[index])
             if context_list[index] != '':
                 text_list[index] = "<div>❤:{}</div>".format(context_list[index]) + text_list[index]
         return ''.join(text_list)
+
+    def handle_figure(self, text):
+        # Find all images
+        for m in self.FIGURE_BLOCK_RE.finditer(text):
+            figure = m.group('figure')
+            # print("figure: {}".format(figure))
+            for c in self.FIGURE_CODE_RE.finditer(figure):
+                code = c.group('code')
+                print("code: {}".format(code))
+        return text
 
     def handle_iheartla_code(self, text):
         """
