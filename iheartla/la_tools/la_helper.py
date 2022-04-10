@@ -96,6 +96,11 @@ def save_to_file(content, file_name):
         print("IO Error!:{}".format(e))
 
 
+def get_file_base(name):
+    sec = name.split('/')
+    return '/'.join(sec[:-1]), sec[-1].split('.')[0]
+
+
 def read_from_file(file_name):
     try:
         file = open(file_name, 'r')

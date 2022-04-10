@@ -10,10 +10,10 @@ from collections import OrderedDict
 import regex as re
 if WHEEL_MODE:
     from linear_algebra.iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
-    from linear_algebra.iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug
+    from linear_algebra.iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug, get_file_base
 else:
     from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
-    from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug
+    from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug, get_file_base
 
 
 class BlockData(Extension):
@@ -455,12 +455,18 @@ class IheartlaBlockPreprocessor(Preprocessor):
         for m in self.FIGURE_BLOCK_RE.finditer(text):
             figure = m.group('figure')
             # print("figure: {}".format(figure))
-            for c in self.FIGURE_CODE_RE.finditer(figure):
-                code = c.group('code')
-                print("code: {}".format(code))
             for img in self.IMAGE_BLOCK_RE.finditer(figure):
                 src = img.group('src')
-                print("img: {}".format(src))
+                path, name = get_file_base(src)
+                # print("img: {}, name:{}".format(path, name))
+                for c in self.FIGURE_CODE_RE.finditer(figure):
+                    code = c.group('code')
+                    save_to_file(code, "./extras/{}/{}.py".format(path, name))
+                    # import os
+                    # save_to_file(code, "{}/extras/resource/img/fig3.py".format(os.getcwd()))
+                    text = text.replace(c.group(), '')
+                    break
+                break
         return text
 
     def handle_iheartla_code(self, text):
