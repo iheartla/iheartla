@@ -295,8 +295,11 @@ async function postData(url = '', data = {}) {
 
 function onEditEquation(raw_text){
     console.log(`Received: ${raw_text}`);
-    document.getElementById("equation").innerHTML = raw_text;
+    // document.getElementById("equation").innerHTML = raw_text;
+    let equation = ace.edit("equation");
+    equation.setValue(raw_text);
     $('#eqEditor').modal('show');
+    equation.session.on('change', onEditIhla);
 }
 
 function clickCompile(){
@@ -394,6 +397,12 @@ function activateRunBtnStatus(){
 function onEditIhla(e){
     hideMsg();
     let editor = ace.edit("editor");
+    substitute(editor);
+    let equation = ace.edit("equation");
+    substitute(equation);
+}
+
+function substitute(editor){
     for (let key in unicode_dict) {
         let old_str = '\\' + key + ' ';
         let result = editor.find(old_str);
