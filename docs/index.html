@@ -183,6 +183,27 @@ a ∈ ℝ^(4 × 4)
   </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="testEditor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel1">Update figure code</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <pre id="python">
+
+        </pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary">Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 
 <script>
@@ -219,7 +240,7 @@ a ∈ ℝ^(4 × 4)
     });
 
     // comments are easier to read in tomorrow_night than twilight
-    // let theme = "ace/theme/tomorrow_night";
+    let theme = "ace/theme/tomorrow_night";
     // let cpp = ace.edit("cpp");
     // cpp.setTheme(theme);
     // cpp.session.setMode("ace/mode/c_cpp");
@@ -227,12 +248,15 @@ a ∈ ℝ^(4 × 4)
     //     readOnly: true,
     // });
     //
-    // let python = ace.edit("python");
-    // python.setTheme(theme);
-    // python.session.setMode("ace/mode/python");
-    // python.setOptions({
-    //     readOnly: true,
-    // });
+    let python = ace.edit("python");
+    python.setTheme(theme);
+    python.session.setMode("ace/mode/python");
+    python.setOptions({
+        enableBasicAutocompletion: true,
+        enableLiveAutocompletion: true,
+        maxLines: 20,
+        minLines: 20
+    });
     //
     // let test = ace.edit("test");
     // test.setTheme(theme);
@@ -252,10 +276,12 @@ a ∈ ℝ^(4 × 4)
         if (this.id == 'ace'){
             editor.setKeyboardHandler("ace/keyboard/keybinding");
             equation.setKeyboardHandler("ace/keyboard/keybinding");
+            python.setKeyboardHandler("ace/keyboard/keybinding");
         }
         else{
             editor.setKeyboardHandler("ace/keyboard/"+this.id);
             equation.setKeyboardHandler("ace/keyboard/"+this.id);
+            python.setKeyboardHandler("ace/keyboard/"+this.id);
         }
     });
     captureHotKeys();

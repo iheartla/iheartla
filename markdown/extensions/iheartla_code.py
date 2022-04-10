@@ -466,6 +466,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     # import os
                     # save_to_file(code, "{}/extras/resource/img/fig3.py".format(os.getcwd()))
                     text = text.replace(c.group(), '')
+                    text = text.replace("<figure>", """<figure onclick="clickFigure(this, '{}')" name="{}">""".format(name, name))
                     break
                 break
         return text

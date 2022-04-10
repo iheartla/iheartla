@@ -330,6 +330,13 @@ function clickRun(){
     }
 }
 
+function clickFigure(ele, name){
+    console.log(`you clicked ${name}`);
+    let python = ace.edit("python");
+    python.setValue(name);
+    $('#testEditor').modal('show');
+}
+
 function clickCopy() {
     // Base the URL off the current one.
     const url = new URL(window.location.href);

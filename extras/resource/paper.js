@@ -930,6 +930,11 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
     }
   }
 };
+function clickFigure(ele, name){
+  if (typeof parent.clickFigure == 'function') { 
+      parent.clickFigure(ele, name);
+  }
+}
 function resetState(){
   centerXDict = {};
   centerYDict = {};

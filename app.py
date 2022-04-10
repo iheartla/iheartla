@@ -27,7 +27,7 @@ import sys
 
 # Match string: <figure>***</figure>
 FIGURE_BLOCK_RE = re.compile(
-    dedent(r'''<figure>(?P<figure>.*?)</figure>'''),
+    dedent(r'''<figure(?P<property>[^\n>]*)>(?P<figure>.*?)</figure>'''),
     re.MULTILINE | re.DOTALL | re.VERBOSE
 )
 # Match string: <img src='' ***>
