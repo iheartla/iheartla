@@ -295,7 +295,8 @@ async function postData(url = '', data = {}) {
 
 function onEditEquation(raw_text){
     console.log(`Received: ${raw_text}`);
-
+    document.getElementById("equation").innerHTML = raw_text;
+    $('#eqEditor').modal('show');
 }
 
 function clickCompile(){
