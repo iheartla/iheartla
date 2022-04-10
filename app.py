@@ -1,13 +1,13 @@
 WHEEL_MODE = False
 if WHEEL_MODE:
-    from linear_algebra.iheartla.la_tools.la_helper import DEBUG_MODE, DEBUG_PARSER, read_from_file, save_to_file
+    from linear_algebra.iheartla.la_tools.la_helper import DEBUG_MODE, DEBUG_PARSER, read_from_file, save_to_file, get_file_base
     from linear_algebra.iheartla.la_tools.la_logger import LaLogger
     from linear_algebra.iheartla.la_parser.parser import ParserTypeEnum
     import linear_algebra.markdown
     from linear_algebra.markdown.core import *
     import linear_algebra.markdown.extensions
 else:
-    from iheartla.la_tools.la_helper import DEBUG_MODE, DEBUG_PARSER, read_from_file, save_to_file
+    from iheartla.la_tools.la_helper import DEBUG_MODE, DEBUG_PARSER, read_from_file, save_to_file, get_file_base
     from iheartla.la_tools.la_logger import LaLogger
     from iheartla.la_parser.parser import ParserTypeEnum
     import markdown
@@ -20,9 +20,21 @@ from pathlib import Path
 import shutil
 import regex as re
 from textwrap import dedent
+import subprocess
 import sys
 
 
+
+# Match string: <figure>***</figure>
+FIGURE_BLOCK_RE = re.compile(
+    dedent(r'''<figure>(?P<figure>.*?)</figure>'''),
+    re.MULTILINE | re.DOTALL | re.VERBOSE
+)
+# Match string: <img src='' ***>
+IMAGE_BLOCK_RE = re.compile(
+    dedent(r'''<img\ (?P<before>[^\n>]*)src=(?P<quote>"|')(?P<src>[^\n'">]*)(?P=quote)(?P<after>[^\n>]*)>'''),
+    re.MULTILINE | re.DOTALL | re.VERBOSE
+)
 def handle_title(text, dict):
     content = ''
     if "title" in dict:
@@ -143,8 +155,25 @@ def handle_context_block(text):
     return ''.join(text_list)
 
 
+def handle_figure(text):
+    for m in FIGURE_BLOCK_RE.finditer(text):
+        figure = m.group('figure')
+        # print("figure: {}".format(figure))
+        for img in IMAGE_BLOCK_RE.finditer(figure):
+            src = img.group('src')
+            path, name = get_file_base(src)
+            print("img: {}, name:{}".format(path, name))
+            ret = subprocess.run(["python", "./extras/{}/{}.py".format(path, name)])
+            if ret.returncode == 0:
+                # figure generated
+                text = text.replace(img.group(), """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name))
+            break
+    return text
+
+
 def save_output_code(md, path):
-    if not WHEEL_MODE:
+    # if not WHEEL_MODE:
+    if True:
         if md.lib_py != '':
             save_to_file(md.lib_py, "{}/lib.py".format(path))
         if md.lib_cpp != '':
@@ -163,7 +192,8 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result', 
     :param parser_type: Output code
     :return: html content
     """
-    try:
+    if True:
+    # try:
         extension_list = ['markdown.extensions.mdx_bib', \
                            'markdown.extensions.iheartla_code', \
                            'markdown.extensions.mdx_math', \
@@ -196,7 +226,9 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result', 
         body = abstract + body
         body = handle_title(body, md.Meta)
         body = handle_context_block(body)
-        save_output_code(md, input_dir)
+        body = handle_figure(body)
+        # save_output_code(md, input_dir)
+        save_output_code(md, './extras/resource/img')
         equation_json = md.json_data
         # equation_data = get_sym_data(json.loads(equation_json))
         sym_json = md.json_sym
@@ -284,15 +316,15 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result', 
                 html = html.replace(m.group(), "$${}\\tag{{{}}}\\label{{{}}}$$".format(equation, num, num))
                 num += 1
         ret = [html, md.lib_py, md.lib_cpp, md.lib_matlab]
-    except:
-        ret = str(sys.exc_info()[0])
-    finally:
+    # except:
+    #     ret = str(sys.exc_info()[0])
+    # finally:
         return ret
 
 
 if __name__ == '__main__':
     # LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
-    LaLogger.getInstance().set_level(logging.INFO)
+    LaLogger.getInstance().set_level(logging.ERROR)
     arg_parser = argparse.ArgumentParser(description='I Heart LA paper compiler')
     arg_parser.add_argument('--regenerate-grammar', action='store_true', help='Regenerate grammar files')
     arg_parser.add_argument('--resource_dir', help='resource path')
