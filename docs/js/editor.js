@@ -18,7 +18,8 @@ let unicode_dict = {'R': 'ℝ', 'Z': 'ℤ', 'x': '×', 'times': '×', 'inf': '�
                              'le':'≤', 'ge':'≥', 'ne': '≠', 'notin':'∉', 'div':'÷', 'nplus': '±',
                              'linner': '⟨', 'rinner':'⟩', 'num1': '𝟙',
                              'hat': '\u0302', 'bar': '\u0304'
-                             }
+                             };
+let preEqCode = '';
 function checkBrowserVer(){
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
@@ -294,6 +295,7 @@ async function postData(url = '', data = {}) {
 
 
 function onEditEquation(raw_text){
+    preEqCode = raw_text;
     console.log(`Received: ${raw_text}`);
     // document.getElementById("equation").innerHTML = raw_text;
     let equation = ace.edit("equation");
@@ -328,6 +330,35 @@ function clickRun(){
     }
     finally {
     }
+}
+
+function onCancelUpdateEq() {
+    clearEq();
+}
+
+function clearEq() {
+    let equation = ace.edit("equation");
+    $('#eqEditor').modal('hide');
+    equation.setValue('');
+}
+
+function onUpdateEq() {
+     let equation = ace.edit("equation");
+     content = equation.getValue();
+     let editor = ace.edit("editor");
+     let source = editor.getValue();
+     source = source.replace(preEqCode, content);
+     // console.log(`source is ${source}`);
+     $('#eqEditor').modal('hide');
+     clearEq();
+     editor.setValue(source);
+     // same as manually clicking
+     clickCompile();
+}
+
+function onUpdatePython() {
+    let python = ace.edit("python");
+
 }
 
 function clickFigure(ele, name){
