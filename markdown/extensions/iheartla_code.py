@@ -553,6 +553,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                         raw_str = index_dict[cur_index][sorted_index[cur]]
                         content += expr_dict[raw_str]
                         raw_content += expr_raw_dict[raw_str]
+                original_block = block_data.block_list[cur_index]
                 if block_data.inline_list[cur_index]:
                     raw_math = r"""$\begin{{align*}}{}\end{{align*}}$""".format(raw_content)
                     math_code = r"""${}{}{}$""".format(code_list[-1].pre_str, content, code_list[-1].post_str)
@@ -565,9 +566,9 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     raw_math = r"""$${}$$""".format(raw_content)
                     math_code = r"""$${}{}{}{}$$""".format(code_list[-1].pre_str, content, code_list[-1].post_str, tag_info)
                     content = r"""
-        <div class='equation' code_block="{}">
+        <div class='equation' code_block="{}" code="{}">
         {}</div>
-        """.format(block_data.module_name, math_code)
+        """.format(block_data.module_name, "\n".join(original_block.split("\n")[1:-1]), math_code)
                 content = self.md.htmlStash.store(content)
                 text = text.replace(block_data.block_list[cur_index], content)
                 replace_dict[block_data.block_list[cur_index]] = content

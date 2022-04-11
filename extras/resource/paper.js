@@ -887,7 +887,9 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
     editBtn.addEventListener('click', function() {
         if (typeof parent.onEditEquation == 'function') { 
           console.log(`raw_text is: ${raw_text}`)
-          parent.onEditEquation(raw_text);
+          var parentTag = tag.closest("div");
+          var code = parentTag.getAttribute('code');
+          parent.onEditEquation(code);
         }
         else{
           console.log('No such func');
