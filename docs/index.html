@@ -189,7 +189,7 @@ a ∈ ℝ^(4 × 4)
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="staticBackdropLabel1">Update figure code</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="onCancelUpdatePython()"></button>
       </div>
       <div class="modal-body">
         <pre id="python">
@@ -197,8 +197,8 @@ a ∈ ℝ^(4 × 4)
         </pre>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary">Update</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="onCancelUpdatePython()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="onUpdatePython()">Update</button>
       </div>
     </div>
   </div>

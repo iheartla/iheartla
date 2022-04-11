@@ -20,6 +20,7 @@ let unicode_dict = {'R': 'ℝ', 'Z': 'ℤ', 'x': '×', 'times': '×', 'inf': '�
                              'hat': '\u0302', 'bar': '\u0304'
                              };
 let preEqCode = '';
+let preTestCode = '';
 function checkBrowserVer(){
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
@@ -358,14 +359,37 @@ function onUpdateEq() {
 
 function onUpdatePython() {
     let python = ace.edit("python");
+    content = python.getValue();
+    let editor = ace.edit("editor");
+    let source = editor.getValue();
+    source = source.replace(preTestCode, content);
+    $('#testEditor').modal('hide');
+    clearTest();
+    editor.setValue(source);
+    // same as manually clicking
+    clickCompile();
+}
 
+function onCancelUpdatePython() {
+    clearTest();
+}
+
+function clearTest() {
+    let python = ace.edit("python");
+    $('#testEditor').modal('hide');
+    python.setValue('');
 }
 
 function clickFigure(ele, name){
     console.log(`you clicked ${name}`);
-    let python = ace.edit("python");
-    python.setValue(name);
-    $('#testEditor').modal('show');
+    postData(window.location.href + 'file', { src:  name})
+      .then(data => {
+          console.log(`data is ${data.res}`);
+        let python = ace.edit("python");
+        preTestCode = data.res;
+        python.setValue(data.res);
+        $('#testEditor').modal('show');
+     });
 }
 
 function clickCopy() {
