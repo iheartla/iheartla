@@ -461,7 +461,6 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 # print("img: {}, name:{}".format(path, name))
                 for c in self.FIGURE_CODE_RE.finditer(figure):
                     code = c.group('code')
-                    code += "\nfig.write_html('./extras/{}/{}.html')\n".format(path, name)
                     save_to_file(code, "./extras/{}/{}.py".format(path, name))
                     # import os
                     # save_to_file(code, "{}/extras/resource/img/fig3.py".format(os.getcwd()))

@@ -26,7 +26,6 @@ class FileHandler(tornado.web.RequestHandler):
         # print("Received request: {}".format(data['input']))
         src = data['src']
         res = read_from_file("./extras/resource/img/{}.py".format(src))
-        res = "\n".join(res.split("\n")[:-2])
         self.set_header("Content-Type", "application/json")
         self.write(json.JSONEncoder().encode({"res": res}))
 
