@@ -268,11 +268,13 @@ code = process_input(source_code)
               .then(data => {
                   // console.log(`data is ${data.res}`); // JSON data parsed by `data.json()` call
                   updateEditor(data.res);
+                  $('#loading').modal('hide');
              });
         }
         catch (error){
             console.log('Compile error!');
             updateError('Compile error!');
+            $('#loading').modal('hide');
         }
         }, 1000);
 }
@@ -307,6 +309,7 @@ function onEditEquation(raw_text){
 
 function clickCompile(){
     hideMsg();
+    $('#loading').modal('show');
     try {
         document.getElementById("compile").disabled = true;
         document.getElementById("compile").innerHTML = `<i id="submit_icon" class="fa fa-refresh fa-spin"></i> Compiling`;
@@ -316,6 +319,7 @@ function clickCompile(){
         activateBtnStatus();
     }
     finally {
+        $('#loading').modal('hide');
     }
 }
 
