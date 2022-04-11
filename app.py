@@ -156,18 +156,32 @@ def handle_context_block(text):
 
 
 def handle_figure(text):
+    start_index = 0
+    text_list = []
     for m in FIGURE_BLOCK_RE.finditer(text):
         figure = m.group('figure')
         # print("figure: {}".format(figure))
+        new_figure = None
         for img in IMAGE_BLOCK_RE.finditer(figure):
             src = img.group('src')
             path, name = get_file_base(src)
             print("img: {}, name:{}".format(path, name))
-            ret = subprocess.run(["python", "./extras/{}/{}.py".format(path, name)])
+            source = "./extras/{}/{}.py".format(path, name)
+            ret = subprocess.run(["python", source])
             if ret.returncode == 0:
                 # figure generated
-                text = text.replace(img.group(), """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name))
+                new_figure = figure[:img.start()] + """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name) + figure[img.end():]
+            else:
+                print("failed, {}".format(source))
             break
+        text_list.append(text[start_index: m.start()])
+        start_index = m.end()
+        if new_figure:
+            text_list.append(new_figure)
+        else:
+            text_list.append(figure)
+    if len(text_list) > 0:
+        return ''.join(text_list)
     return text
 
 
