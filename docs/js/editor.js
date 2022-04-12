@@ -298,11 +298,11 @@ async function postData(url = '', data = {}) {
 
 
 function onEditEquation(raw_text){
-    preEqCode = raw_text;
+    preEqCode = decodeURIComponent(escape(window.atob(raw_text)));
     console.log(`Received: ${raw_text}`);
     // document.getElementById("equation").innerHTML = raw_text;
     let equation = ace.edit("equation");
-    equation.setValue(raw_text);
+    equation.setValue(preEqCode);
     $('#eqEditor').modal('show');
     equation.session.on('change', onEditIhla);
 }

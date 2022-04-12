@@ -8,6 +8,7 @@ from ..util import parseBoolValue
 import copy
 from collections import OrderedDict
 import regex as re
+import base64
 if WHEEL_MODE:
     from linear_algebra.iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
     from linear_algebra.iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug, get_file_base
@@ -568,7 +569,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     content = r"""
         <div class='equation' code_block="{}" code="{}">
         {}</div>
-        """.format(block_data.module_name, "\n".join(original_block.split("\n")[1:-1]), math_code)
+        """.format(block_data.module_name, base64.urlsafe_b64encode("\n".join(original_block.split("\n")[1:-1]).encode("utf-8")).decode("utf-8"), math_code)
                 content = self.md.htmlStash.store(content)
                 text = text.replace(block_data.block_list[cur_index], content)
                 replace_dict[block_data.block_list[cur_index]] = content
