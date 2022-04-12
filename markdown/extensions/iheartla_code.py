@@ -462,6 +462,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 for c in self.FIGURE_CODE_RE.finditer(figure):
                     code = c.group('code')
                     save_to_file(code, "./extras/{}/{}.py".format(path, name))
+                    self.md.figure_list.append(name)
                     # import os
                     # save_to_file(code, "{}/extras/resource/img/fig3.py".format(os.getcwd()))
                     text = text.replace(c.group(), '')

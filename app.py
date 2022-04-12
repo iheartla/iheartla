@@ -168,7 +168,7 @@ def gen_figure(source, name):
 
 start_time = 1
 
-def handle_figure(text):
+def handle_figure(text, name_list):
     global start_time
     start_time = time.time()
     start_index = 0
@@ -182,9 +182,10 @@ def handle_figure(text):
             src = img.group('src')
             path, name = get_file_base(src)
             print("img: {}, name:{}".format(path, name))
-            source = "./extras/{}/{}.py".format(path, name)
-            threads_list.append(threading.Thread(target=gen_figure, args=(source, name)))
-            new_figure = figure[:img.start()] + """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name) + figure[img.end():]
+            if name in name_list:
+                source = "./extras/{}/{}.py".format(path, name)
+                threads_list.append(threading.Thread(target=gen_figure, args=(source, name)))
+                new_figure = figure[:img.start()] + """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name) + figure[img.end():]
             break
         text_list.append(text[start_index: m.start()])
         start_index = m.end()
@@ -257,7 +258,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result', 
         body = handle_context_block(body)
         # save_output_code(md, input_dir)
         save_output_code(md, './extras/resource/img')
-        body = handle_figure(body)
+        body = handle_figure(body, md.figure_list)
         equation_json = md.json_data
         # equation_data = get_sym_data(json.loads(equation_json))
         sym_json = md.json_sym
