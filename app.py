@@ -1,3 +1,6 @@
+import threading
+import time
+
 WHEEL_MODE = False
 if WHEEL_MODE:
     from linear_algebra.iheartla.la_tools.la_helper import DEBUG_MODE, DEBUG_PARSER, read_from_file, save_to_file, get_file_base
@@ -155,9 +158,22 @@ def handle_context_block(text):
     return ''.join(text_list)
 
 
+def gen_figure(source, name):
+    ret = subprocess.run(["python", source])
+    print("figure------------ %.2f seconds ------------" % (time.time() - start_time))
+    if ret.returncode == 0:
+        pass
+    else:
+        print("failed, {}".format(source))
+
+start_time = 1
+
 def handle_figure(text):
+    global start_time
+    start_time = time.time()
     start_index = 0
     text_list = []
+    threads_list = []
     for m in FIGURE_BLOCK_RE.finditer(text):
         figure = m.group('figure')
         # print("figure: {}".format(figure))
@@ -167,12 +183,8 @@ def handle_figure(text):
             path, name = get_file_base(src)
             print("img: {}, name:{}".format(path, name))
             source = "./extras/{}/{}.py".format(path, name)
-            ret = subprocess.run(["python", source])
-            if ret.returncode == 0:
-                # figure generated
-                new_figure = figure[:img.start()] + """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name) + figure[img.end():]
-            else:
-                print("failed, {}".format(source))
+            threads_list.append(threading.Thread(target=gen_figure, args=(source, name)))
+            new_figure = figure[:img.start()] + """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name) + figure[img.end():]
             break
         text_list.append(text[start_index: m.start()])
         start_index = m.end()
@@ -181,6 +193,9 @@ def handle_figure(text):
         else:
             text_list.append(figure)
     if len(text_list) > 0:
+        [t.start() for t in threads_list]
+        [t.join() for t in threads_list]
+        print("finish------------ %.2f seconds ------------" % (time.time() - start_time))
         return ''.join(text_list)
     return text
 
