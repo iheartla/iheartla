@@ -51,7 +51,7 @@ class Bibliography(object):
                 parser = bibtex.Parser()
                 self.bibsource = parser.parse_file(bibtex_file).entries
             except:
-                print("Error loading bibtex file")
+                print("Error loading bibtex file: {}".format(bibtex_file))
                 self.bibsource = dict()
         else:
             self.bibsource = dict()

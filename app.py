@@ -249,7 +249,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result', 
         md = Markdown(extensions=extension_list,
                                path=input_dir,
                                parser_type=parser_type,
-                               bibtex_file='{}/{}.bib'.format(input_dir, file_name[0]))
+                               bibtex_file='{}/{}.bib'.format(input_dir, file_name))
         body = md.convert(content)
         body, abstract = handle_abstract(body, md.Meta)
         body = handle_sections(body, md.Meta)
