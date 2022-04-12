@@ -176,7 +176,6 @@ def handle_figure(text, name_list):
     threads_list = []
     for m in FIGURE_BLOCK_RE.finditer(text):
         figure = m.group('figure')
-        # print("figure: {}".format(figure))
         new_figure = None
         for img in IMAGE_BLOCK_RE.finditer(figure):
             src = img.group('src')
@@ -185,7 +184,8 @@ def handle_figure(text, name_list):
             if name in name_list:
                 source = "./extras/{}/{}.py".format(path, name)
                 threads_list.append(threading.Thread(target=gen_figure, args=(source, name)))
-                new_figure = figure[:img.start()] + """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name) + figure[img.end():]
+                new_figure = "<figure{}>".format(m.group('property')) + figure[:img.start()] + """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name) + figure[img.end():]
+                new_figure += "</figure>"
             break
         text_list.append(text[start_index: m.start()])
         start_index = m.end()
