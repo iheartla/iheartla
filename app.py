@@ -169,8 +169,6 @@ def gen_figure(source, name):
 start_time = 1
 
 def handle_figure(text, name_list):
-    global start_time
-    start_time = time.time()
     start_index = 0
     text_list = []
     threads_list = []
@@ -180,7 +178,7 @@ def handle_figure(text, name_list):
         for img in IMAGE_BLOCK_RE.finditer(figure):
             src = img.group('src')
             path, name = get_file_base(src)
-            print("img: {}, name:{}".format(path, name))
+            print("handle_figure, img: {}, name:{}".format(path, name))
             if name in name_list:
                 source = "./extras/{}/{}.py".format(path, name)
                 threads_list.append(threading.Thread(target=gen_figure, args=(source, name)))
@@ -194,8 +192,10 @@ def handle_figure(text, name_list):
         else:
             text_list.append(figure)
     if len(text_list) > 0:
-        [t.start() for t in threads_list]
-        [t.join() for t in threads_list]
+        if len(threads_list) > 0:
+            print("generating figures ...")
+            [t.start() for t in threads_list]
+            [t.join() for t in threads_list]
         print("finish------------ %.2f seconds ------------" % (time.time() - start_time))
         return ''.join(text_list)
     return text
@@ -258,7 +258,8 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result', 
         body = handle_context_block(body)
         # save_output_code(md, input_dir)
         save_output_code(md, './extras/resource/img')
-        body = handle_figure(body, md.figure_list)
+        if md.need_gen_figure:
+            body = handle_figure(body, md.figure_list)
         equation_json = md.json_data
         # equation_data = get_sym_data(json.loads(equation_json))
         sym_json = md.json_sym
@@ -353,6 +354,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result', 
 
 
 if __name__ == '__main__':
+    start_time = time.time()
     # LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
     LaLogger.getInstance().set_level(logging.ERROR)
     arg_parser = argparse.ArgumentParser(description='I Heart LA paper compiler')

@@ -459,8 +459,9 @@ class IheartlaBlockPreprocessor(Preprocessor):
             for img in self.IMAGE_BLOCK_RE.finditer(figure):
                 src = img.group('src')
                 path, name = get_file_base(src)
-                # print("img: {}, name:{}".format(path, name))
                 for c in self.FIGURE_CODE_RE.finditer(figure):
+                    # print("img: {}, name:{}".format(path, name))
+                    self.md.need_gen_figure = True
                     code = c.group('code')
                     save_to_file(code, "./extras/{}/{}.py".format(path, name))
                     self.md.figure_list.append(name)

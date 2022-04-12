@@ -76,6 +76,7 @@ class Markdown:
         self.json_data = ''
         self.json_sym = ''
         self.figure_list = []
+        self.need_gen_figure = False
         self.parser_type = kwargs.get('parser_type', 4)
         self.bibtex_file = kwargs.get('bibtex_file', '')
         self.order = kwargs.get('order', 'unsorted')
