@@ -4,6 +4,7 @@ from .type_walker import *
 from ..la_tools.la_helper import filter_subscript
 import regex as re
 from textwrap import dedent
+import base64
 
 
 class CodeGenMacroMathjax(CodeGenMathjax):
@@ -37,7 +38,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             for cur_index in range(len(node.right)):
                 rhs_list.append(self.visit(node.right[cur_index], **kwargs))
             content = ','.join(lhs_list) + " & = " + ','.join(rhs_list)
-        json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], false, [], [], '{}');"}}""".format(self.func_name, ', '.join(sym_list), node.raw_text)
+        json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], false, [], [], '{}');"}}""".format(self.func_name, ', '.join(sym_list), base64.urlsafe_b64encode(node.raw_text.encode("utf-8")).decode("utf-8"))
         content = content + "\\\\" + "\\eqlabel{{ {} }}{{}}".format(json) + "\n"
         self.code_frame.expr += content
         self.code_frame.expr_dict[node.raw_text] = content
@@ -72,7 +73,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         sym_list = list(set(sym_list))
         sym_list.append("'{}'".format(self.convert_content(node.name.get_main_id())))
         json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], true, '{}', [{}], '{}');"}}""".format(
-            self.func_name, ', '.join(sym_list), self.local_func_name, ', '.join(local_param_list), node.raw_text)
+            self.func_name, ', '.join(sym_list), self.local_func_name, ', '.join(local_param_list), base64.urlsafe_b64encode(node.raw_text.encode("utf-8")).decode("utf-8"))
         saved_content = content + "\\\\" + "\\eqlabel{{ {} }}{{}}".format(json) + "\n"
         self.code_frame.expr += saved_content + '\n'
         self.code_frame.expr_dict[node.raw_text] = saved_content
