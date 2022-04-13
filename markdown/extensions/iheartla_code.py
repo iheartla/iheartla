@@ -559,8 +559,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 if block_data.inline_list[cur_index]:
                     raw_math = r"""$\begin{{align*}}{}\end{{align*}}$""".format(raw_content)
                     math_code = r"""${}{}{}$""".format(code_list[-1].pre_str, content, code_list[-1].post_str)
-                    content = r"""<span class='equation' code_block="{}">{}</span>""".format(
-                        block_data.module_name, math_code)
+                    content = r"""<span class='equation' code_block="{}" code="{}">{}</span>""".format(
+                        block_data.module_name, base64.urlsafe_b64encode(original_block.encode("utf-8")).decode("utf-8"), math_code)
                 else:
                     tag_info = ''
                     if not block_data.number_list[cur_index]:
