@@ -908,14 +908,19 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
   else{
     showAllArrows();
     if (typeof tag._tippy === 'undefined'){
+      var parentTag = tag.closest("span");
+      var code = parentTag.getAttribute('code');
+      // console.log(`code is ${code}`)
       tippy(tag, {
-          content: content,
+          content: content + `<br><button class="highlight_no" type="button" onclick="clickEquation('${code}')">Edit equation</button>`,
+          // content: content,
           placement: 'bottom',
           animation: 'fade',
           trigger: 'click', 
           theme: 'light',
           showOnCreate: true,
           allowHTML: true,
+          interactive: true,
           arrow: tippy.roundArrow.repeat(2),
           // interactive: true,
           onShow(instance) { 
@@ -932,6 +937,17 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
     }
   }
 };
+function clickEquation(inlineRawCode){
+  closeOtherTips();
+  // console.log(`clickEquation ${inlineRawCode}`);
+  if (typeof parent.onEditEquation == 'function') { 
+        // console.log(`code is: ${inlineRawCode}`)
+        parent.onEditEquation(inlineRawCode);
+  }
+  else{
+    console.log('No such func');
+  }
+}
 function clickFigure(ele, name){
   if (typeof parent.clickFigure == 'function') { 
       parent.clickFigure(ele, name);
@@ -996,6 +1012,7 @@ function removeSymHighlight(){
 }
 function closeOtherTips(){
   const matches = document.querySelectorAll("[class*=highlight]");
+  // console.log(`length is ${matches.length}`)
   for (var i = matches.length - 1; i >= 0; i--) {
     if (typeof matches[i]._tippy !== 'undefined'){
       matches[i]._tippy.hide();
