@@ -21,7 +21,8 @@ let unicode_dict = {'R': 'ℝ', 'Z': 'ℤ', 'x': '×', 'times': '×', 'inf': '�
                              };
 let preEqCode = '';
 let preTestCode = '';
-let cur_figure = '';
+let curFigure = '';
+let curHtml = ''
 function checkBrowserVer(){
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
@@ -177,16 +178,7 @@ async function background(source){
 
 
 function convert(input) {
-    output = document.getElementById('output');
-    while (output.firstChild) {
-        output.removeChild(output.firstChild);
-    }
-    var iframe = document.createElement('iframe');
-    iframe.setAttribute("id", "res");
-    output.appendChild(iframe);
-    iframe.contentWindow.document.open();
-    iframe.contentWindow.document.write(input);
-    iframe.contentWindow.document.close();
+    showIframe();
     // output.innerHTM = `<iframe srcdoc=`${input}`></iframe>`;
     // MathJax.texReset();
     // var options = MathJax.getMetricsFor(output);
@@ -201,12 +193,26 @@ function convert(input) {
     // });
 }
 
+function showIframe(){
+    output = document.getElementById('output');
+    while (output.firstChild) {
+        output.removeChild(output.firstChild);
+    }
+    var iframe = document.createElement('iframe');
+    iframe.setAttribute("id", "res");
+    output.appendChild(iframe);
+    iframe.contentWindow.document.open();
+    iframe.contentWindow.document.write(curHtml);
+    iframe.contentWindow.document.close();
+}
+
 function updateEditor(code) {
     showMsg('Compile succeeded');
     // var cpp = ace.edit("cpp");
     // cpp.session.setValue(code[2]);
     // var python = ace.edit("python");
     // python.session.setValue(code[1]);
+    curHtml = code[0];
     convert(code[0]);
     // var matlab = ace.edit("matlab");
     // matlab.session.setValue(code[3]);
@@ -375,14 +381,14 @@ function onUpdatePython() {
     editor.setValue(source);
     // same as manually clicking
     // clickCompile();
-    postData(window.location.href + 'file', { src:  cur_figure, type:"run"})
+    postData(window.location.href + 'file', { src:  curFigure, type:"run"})
       .then(data => {
           $('#loading').modal('hide');
-          console.log(`data.ret:${data.ret}`)
+          console.log(`data.ret:${data.ret}`);
           if (data.ret === 0){
               // refresh iframe
-              console.log("success")
-              document.getElementById('res').contentWindow.location.reload();
+              console.log("success");
+              showIframe();
           }
      });
 }
@@ -399,7 +405,7 @@ function clearTest() {
 
 function clickFigure(ele, name){
     console.log(`you clicked ${name}`);
-    cur_figure = name;
+    curFigure = name;
     postData(window.location.href + 'file', { src:  name, type: "get"})
       .then(data => {
           console.log(`data is ${data.res}`);
