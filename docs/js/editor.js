@@ -381,7 +381,7 @@ function onUpdatePython() {
     editor.setValue(source);
     // same as manually clicking
     // clickCompile();
-    postData(window.location.href + 'file', { src:  curFigure, type:"run"})
+    postData(window.location.href + 'file', { src:  curFigure, type:"run", source: content})
       .then(data => {
           $('#loading').modal('hide');
           console.log(`data.ret:${data.ret}`);

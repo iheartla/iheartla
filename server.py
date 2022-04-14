@@ -3,7 +3,7 @@ import tornado.web
 import json
 import os
 import subprocess
-from app import process_input, read_from_file
+from app import process_input, read_from_file, save_to_file
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -30,7 +30,9 @@ class FileHandler(tornado.web.RequestHandler):
             res = read_from_file("./extras/resource/img/{}.py".format(src))
             self.set_header("Content-Type", "application/json")
             self.write(json.JSONEncoder().encode({"res": res}))
-        else:
+        elif data['type'] == "run":
+            print("updated source: {}".format(data['source']))
+            save_to_file(data['source'], "./extras/resource/img/{}.py".format(src))
             ret = subprocess.run(["python", "./extras/resource/img/{}.py".format(src)])
             if ret.returncode == 0:
                 pass
