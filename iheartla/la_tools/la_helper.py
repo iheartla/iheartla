@@ -1,3 +1,4 @@
+import time
 from enum import Enum, IntFlag
 from tatsu._version import __version__
 import sys
@@ -11,6 +12,7 @@ from .la_logger import *
 DEBUG_MODE = True
 DEBUG_PARSER = False  # used for new grammer files
 TEST_MATLAB = False   # used for running tests for MATLAB
+start_time = None
 class ParserTypeEnum(IntFlag):
     INVALID = 0
     DEFAULT = 15
@@ -99,6 +101,14 @@ def save_to_file(content, file_name):
 def get_file_base(name):
     sec = name.split('/')
     return '/'.join(sec[:-1]), sec[-1].split('.')[0]
+
+
+def record(msg=''):
+    global start_time
+    if start_time is None:
+        start_time = time.time()
+    else:
+        print(msg + " ------------ %.2f seconds ------------" % (time.time() - start_time))
 
 
 def read_from_file(file_name):
