@@ -11,10 +11,10 @@ import regex as re
 import base64
 if WHEEL_MODE:
     from linear_algebra.iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
-    from linear_algebra.iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug, get_file_base
+    from linear_algebra.iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug, get_file_base, record
 else:
     from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
-    from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug, get_file_base
+    from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug, get_file_base, record
 
 
 class BlockData(Extension):
@@ -526,6 +526,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         # compile
         equation_dict = {}
         full_code_sequence = []
+        record("Before compiling iheartla code")
         for name, block_data in file_dict.items():
             code_list, equation_data = compile_la_content(block_data.get_content(),
                                                           parser_type=self.md.parser_type | ParserTypeEnum.MATHJAX | ParserTypeEnum.MACROMATHJAX,
@@ -584,6 +585,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 text = text.replace(block_data.block_list[cur_index], content)
                 replace_dict[block_data.block_list[cur_index]] = content
                 math_dict[block_data.block_list[cur_index]] = raw_math
+        record("After compiling iheartla code")
         self.save_code(full_code_sequence)
         return text, equation_dict, replace_dict, math_dict
 

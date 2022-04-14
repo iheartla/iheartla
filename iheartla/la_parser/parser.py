@@ -221,6 +221,7 @@ def generate_latex_code(type_walker, node_info, frame):
 
 
 def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN):
+    record("parse_ir_node")
     global _grammar_content
     current_content = _grammar_content
     # type walker
@@ -267,6 +268,7 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN):
     # deal with function
     func_dict = type_walker.get_func_symbols()
     if len(dependent_modules) > 0:
+        record("dependent_modules")
         for module in dependent_modules:
             try:
                 parse_info = module.module.parse_info
@@ -353,6 +355,7 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN):
     # get new parser
     parser = get_compiled_parser(current_content, parse_key, extra_dict)
     model = parser.parse(content, parseinfo=True)
+    record("Second parsing")
     # second parsing
     type_walker.reset_state(content)  # reset
     type_walker.symtable.update(existed_syms_dict)
@@ -378,7 +381,7 @@ def clean_parsers():
 
 
 def parse_and_translate(content, frame, parser_type=None, func_name=None):
-    start_time = time.time()
+    record("parse_and_translate")
     def get_parse_result(parser_type):
         parser = get_default_parser()
         model = parser.parse(content, parseinfo=True)
@@ -395,7 +398,6 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
     if DEBUG_MODE:
         result = get_parse_result(parser_type)
         wx.CallAfter(frame.UpdateMidPanel, result)
-        print("------------ %.2f seconds ------------" % (time.time() - start_time))
     else:
         try:
             result = get_parse_result(parser_type)
@@ -417,7 +419,6 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
             result = (tex, 1)
         finally:
             wx.CallAfter(frame.UpdateMidPanel, result)
-            print("------------ %.2f seconds ------------" % (time.time() - start_time))
             if result[1] != 0:
                 print(result[0])
     return result

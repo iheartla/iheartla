@@ -3,14 +3,14 @@ import time
 
 WHEEL_MODE = False
 if WHEEL_MODE:
-    from linear_algebra.iheartla.la_tools.la_helper import DEBUG_MODE, DEBUG_PARSER, read_from_file, save_to_file, get_file_base
+    from linear_algebra.iheartla.la_tools.la_helper import DEBUG_MODE, DEBUG_PARSER, read_from_file, save_to_file, get_file_base, record
     from linear_algebra.iheartla.la_tools.la_logger import LaLogger
     from linear_algebra.iheartla.la_parser.parser import ParserTypeEnum
     import linear_algebra.markdown
     from linear_algebra.markdown.core import *
     import linear_algebra.markdown.extensions
 else:
-    from iheartla.la_tools.la_helper import DEBUG_MODE, DEBUG_PARSER, read_from_file, save_to_file, get_file_base
+    from iheartla.la_tools.la_helper import DEBUG_MODE, DEBUG_PARSER, read_from_file, save_to_file, get_file_base, record
     from iheartla.la_tools.la_logger import LaLogger
     from iheartla.la_parser.parser import ParserTypeEnum
     import markdown
@@ -25,7 +25,6 @@ import regex as re
 from textwrap import dedent
 import subprocess
 import sys
-
 
 
 # Match string: <figure>***</figure>
@@ -160,13 +159,12 @@ def handle_context_block(text):
 
 def gen_figure(source, name):
     ret = subprocess.run(["python", source])
-    print("figure------------ %.2f seconds ------------" % (time.time() - start_time))
+    record("figure")
     if ret.returncode == 0:
         pass
     else:
         print("failed, {}".format(source))
 
-start_time = 1
 
 def handle_figure(text, name_list):
     start_index = 0
@@ -196,7 +194,7 @@ def handle_figure(text, name_list):
             print("generating figures ...")
             [t.start() for t in threads_list]
             [t.join() for t in threads_list]
-        print("finish------------ %.2f seconds ------------" % (time.time() - start_time))
+        record("handle_figure")
         return ''.join(text_list)
     return text
 
@@ -222,6 +220,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result', 
     :param parser_type: Output code
     :return: html content
     """
+    record()
     if True:
     # try:
         extension_list = ['markdown.extensions.mdx_bib', \
@@ -354,7 +353,6 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result', 
 
 
 if __name__ == '__main__':
-    start_time = time.time()
     # LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
     LaLogger.getInstance().set_level(logging.ERROR)
     arg_parser = argparse.ArgumentParser(description='I Heart LA paper compiler')
@@ -389,3 +387,4 @@ if __name__ == '__main__':
             html = ret[0]
             save_to_file(html, "{}/{}.html".format(os.path.dirname(Path(paper_file)), os.path.splitext(base_name)[0]))
             # print(html)
+    record("End")
