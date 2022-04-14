@@ -452,26 +452,35 @@ class IheartlaBlockPreprocessor(Preprocessor):
         return ''.join(text_list)
 
     def handle_figure(self, text):
+        start_index = 0
+        text_list = []
         # Find all images
         for m in self.FIGURE_BLOCK_RE.finditer(text):
+            text_list.append(text[start_index: m.start()])
+            start_index = m.end()
             figure = m.group('figure')
             # print("figure: {}".format(figure))
+            new_figure = None
             for img in self.IMAGE_BLOCK_RE.finditer(figure):
                 src = img.group('src')
                 path, name = get_file_base(src)
                 for c in self.FIGURE_CODE_RE.finditer(figure):
-                    # print("img: {}, name:{}".format(path, name))
+                    print("img: {}, name:{}".format(path, name))
                     self.md.need_gen_figure = True
                     code = c.group('code')
                     save_to_file(code, "./extras/{}/{}.py".format(path, name))
                     self.md.figure_list.append(name)
                     # import os
                     # save_to_file(code, "{}/extras/resource/img/fig3.py".format(os.getcwd()))
-                    text = text.replace(c.group(), '')
-                    text = text.replace("<figure>", """<figure onclick="clickFigure(this, '{}')" name="{}">""".format(name, name))
+                    new_figure = m.group().replace(c.group(), '')
+                    new_figure = new_figure.replace("<figure>", """<figure onclick="clickFigure(this, '{}')" name="{}">""".format(name, name))
                     break
                 break
-        return text
+            if new_figure:
+                text_list.append(new_figure)
+            else:
+                text_list.append(m.group())
+        return ''.join(text_list)
 
     def handle_iheartla_code(self, text):
         """
