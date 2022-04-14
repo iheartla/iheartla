@@ -912,7 +912,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
       var code = parentTag.getAttribute('code');
       // console.log(`code is ${code}`)
       tippy(tag, {
-          content: content + `<br><button class="highlight_no" type="button" onclick="clickEquation('${code}')">Edit equation</button>`,
+          content: content + `<button class="highlight_no" type="button" onclick="clickEquation('${code}')">Edit equation</button>`,
           // content: content,
           placement: 'bottom',
           animation: 'fade',
@@ -920,9 +920,10 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
           theme: 'light',
           showOnCreate: true,
           allowHTML: true,
-          interactive: true,
-          arrow: tippy.roundArrow.repeat(2),
           // interactive: true,
+          arrow: tippy.roundArrow.repeat(2),
+          interactive: true,
+          appendTo: document.body,
           onShow(instance) { 
             tag.setAttribute('class', 'highlight_fake');
             // console.log('onShow');
