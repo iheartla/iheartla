@@ -2,6 +2,7 @@ import tornado.ioloop
 import tornado.web
 import json
 import os
+import subprocess
 from app import process_input, read_from_file
 
 
@@ -23,11 +24,20 @@ class FileHandler(tornado.web.RequestHandler):
 
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
-        # print("Received request: {}".format(data['input']))
         src = data['src']
-        res = read_from_file("./extras/resource/img/{}.py".format(src))
-        self.set_header("Content-Type", "application/json")
-        self.write(json.JSONEncoder().encode({"res": res}))
+        if data['type'] == "get":
+        # print("Received request: {}".format(data['input']))
+            res = read_from_file("./extras/resource/img/{}.py".format(src))
+            self.set_header("Content-Type", "application/json")
+            self.write(json.JSONEncoder().encode({"res": res}))
+        else:
+            ret = subprocess.run(["python", "./extras/resource/img/{}.py".format(src)])
+            if ret.returncode == 0:
+                pass
+                print("server succeed, {}".format(src))
+            else:
+                print("server failed, {}".format(src))
+            self.write(json.JSONEncoder().encode({"ret": ret.returncode}))
 
 
 def make_app():

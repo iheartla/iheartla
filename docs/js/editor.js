@@ -21,6 +21,7 @@ let unicode_dict = {'R': 'ℝ', 'Z': 'ℤ', 'x': '×', 'times': '×', 'inf': '�
                              };
 let preEqCode = '';
 let preTestCode = '';
+let cur_figure = '';
 function checkBrowserVer(){
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
@@ -181,6 +182,7 @@ function convert(input) {
         output.removeChild(output.firstChild);
     }
     var iframe = document.createElement('iframe');
+    iframe.setAttribute("id", "res");
     output.appendChild(iframe);
     iframe.contentWindow.document.open();
     iframe.contentWindow.document.write(input);
@@ -362,6 +364,7 @@ function onUpdateEq() {
 }
 
 function onUpdatePython() {
+    $('#loading').modal('show');
     let python = ace.edit("python");
     content = python.getValue();
     let editor = ace.edit("editor");
@@ -371,7 +374,17 @@ function onUpdatePython() {
     clearTest();
     editor.setValue(source);
     // same as manually clicking
-    clickCompile();
+    // clickCompile();
+    postData(window.location.href + 'file', { src:  cur_figure, type:"run"})
+      .then(data => {
+          $('#loading').modal('hide');
+          console.log(`data.ret:${data.ret}`)
+          if (data.ret === 0){
+              // refresh iframe
+              console.log("success")
+              document.getElementById('res').contentWindow.location.reload();
+          }
+     });
 }
 
 function onCancelUpdatePython() {
@@ -386,7 +399,8 @@ function clearTest() {
 
 function clickFigure(ele, name){
     console.log(`you clicked ${name}`);
-    postData(window.location.href + 'file', { src:  name})
+    cur_figure = name;
+    postData(window.location.href + 'file', { src:  name, type: "get"})
       .then(data => {
           console.log(`data is ${data.res}`);
         let python = ace.edit("python");
