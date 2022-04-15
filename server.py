@@ -3,6 +3,8 @@ import tornado.web
 import json
 import os
 import subprocess
+import threading
+from datetime import datetime
 from app import process_input, read_from_file, save_to_file
 
 
@@ -16,6 +18,9 @@ class MainHandler(tornado.web.RequestHandler):
         res = process_input(data['input'])
         self.set_header("Content-Type", "application/json")
         self.write(json.JSONEncoder().encode({"res": res}))
+        # save updated markdown source to files
+        s = threading.Thread(target=save_to_file, args=(data['input'], "./extras/resource/img/input-{}.md".format(datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))))
+        s.start()
 
 
 class FileHandler(tornado.web.RequestHandler):
