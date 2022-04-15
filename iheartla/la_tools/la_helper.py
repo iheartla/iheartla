@@ -108,7 +108,7 @@ def record(msg=''):
     if start_time is None:
         start_time = time.time()
     else:
-        print(msg + " ------------ %.2f seconds ------------" % (time.time() - start_time))
+        print("%.2f seconds: " % (time.time() - start_time) + msg)
 
 
 def read_from_file(file_name):
