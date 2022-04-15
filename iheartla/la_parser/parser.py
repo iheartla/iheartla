@@ -474,6 +474,7 @@ def compile_la_content(la_content,
                 if get_vars and var_data == '':
                     var_data = VarData(type_walker.parameters, type_walker.lhs_list, type_walker.ret_symbol)
                 cur_content = walk_model(cur_type, type_walker, start_node, func_name, struct)
+                record("compile {}".format(str(cur_type)))
                 ret.append(cur_content)
                 if get_json and json == '':
                     json = type_walker.gen_json_content()

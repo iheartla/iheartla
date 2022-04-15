@@ -105,8 +105,9 @@ def get_file_base(name):
 
 def record(msg=''):
     global start_time
-    if start_time is None:
+    if start_time is None or msg == '':
         start_time = time.time()
+        print("%.2f seconds: " % (0) + "start")
     else:
         print("%.2f seconds: " % (time.time() - start_time) + msg)
 
