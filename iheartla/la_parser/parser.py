@@ -362,13 +362,16 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
             current_content = current_content.replace("func_id='!!!';", "func_id={};".format(func_rule))
         parse_key += "func symbol:{}, func sig:{}".format(','.join(func_dict.keys()), ";".join(func_dict.values()))
     # get new parser
+    record("Get new parser")
     parser = get_compiled_parser(current_content, parse_key, extra_dict)
+    record("Second Parsing, before")
     model = parser.parse(content, parseinfo=True)
-    record("Second parsing")
+    record("Second type walker, before")
     # second parsing
     type_walker.reset_state(content)  # reset
     type_walker.symtable.update(existed_syms_dict)
     start_node = type_walker.walk(model)
+    record("Second type walker, after")
     start_node.module_list = module_list
     start_node.module_syms = existed_syms_dict
     if len(dependent_modules) > 0:
@@ -448,13 +451,16 @@ def compile_la_content(la_content,
         global _module_path
         _module_path = Path(path)
     parser = get_default_parser()
+    record("First parsing, before")
     # try:
     model = parser.parse(la_content, parseinfo=True)
     ret = []
     json = ''
     var_data = ''
     #
+    record("First type walker, before")
     type_walker, start_node = get_start_node(model)
+    record("First type walker, after")
     if len(start_node.directives) > 0 and len(start_node.get_module_directives()) > 0:
         # dependent modules
         for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.MATLAB, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,  ParserTypeEnum.MATHML, ParserTypeEnum.MACROMATHJAX]:
