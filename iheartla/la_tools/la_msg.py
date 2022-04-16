@@ -129,8 +129,11 @@ class LaMsg(object):
                 "orth_func": "orthogonal space function",
                 "inv_func": "inverse function",
             }
+            self.cur_name = ''
             self.cur_line = 0
             self.cur_col = 0
+            self.cur_msg = ''
+            self.cur_code = ''
             LaMsg.__instance = self
 
     def get_line_desc(self, line_info):
@@ -156,8 +159,10 @@ class LaMsg(object):
             if rule in self.rule_convention_dict:
                 converted_name = self.rule_convention_dict[rule]
                 break
-        content = "{}. Failed to parse {}: {}\n".format(self.get_line_desc(line_info), converted_name, err.message)
+        self.cur_msg = "Failed to parse {}".format(converted_name)
+        content = "{}. {}: {}\n".format(self.get_line_desc(line_info), self.cur_msg, err.message)
         content += line_info.text
+        self.cur_code = line_info.text
         content += self.get_pos_marker(line_info.col)
         # from TatSu/tatsu/exceptions.py 
         # info = err.tokenizer.line_info(err.pos)
@@ -184,6 +189,8 @@ def get_err_msg(line_info, col, error_msg):
     raw_text = line_info.text
     if raw_text[-1] != '\n':
         raw_text += '\n'
+    LaMsg.getInstance().cur_msg = error_msg
+    LaMsg.getInstance().cur_code = line_info.text
     return "{}. {}.\n{}{}".format(line_msg, error_msg, raw_text, LaMsg.getInstance().get_pos_marker(col))
 
 
@@ -195,3 +202,7 @@ def get_parse_info_buffer(parse_info):
     if is_new_tatsu_version():
         return parse_info.tokenizer
     return parse_info.buffer
+
+
+def set_source_name(name):
+    LaMsg.getInstance().cur_name = name
