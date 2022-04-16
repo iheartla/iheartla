@@ -480,7 +480,10 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 text_list.append(new_figure)
             else:
                 text_list.append(m.group())
-        return ''.join(text_list)
+        if len(text_list) > 0:
+            return ''.join(text_list)
+        else:
+            return text
 
     def handle_iheartla_code(self, text):
         """
