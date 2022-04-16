@@ -3,14 +3,14 @@ import time
 
 WHEEL_MODE = False
 if WHEEL_MODE:
-    from linear_algebra.iheartla.la_tools.la_helper import DEBUG_MODE, DEBUG_PARSER, read_from_file, save_to_file, get_file_base, record
+    from linear_algebra.iheartla.la_tools.la_helper import *
     from linear_algebra.iheartla.la_tools.la_logger import LaLogger
     from linear_algebra.iheartla.la_parser.parser import ParserTypeEnum
     import linear_algebra.markdown
     from linear_algebra.markdown.core import *
     import linear_algebra.markdown.extensions
 else:
-    from iheartla.la_tools.la_helper import DEBUG_MODE, DEBUG_PARSER, read_from_file, save_to_file, get_file_base, record
+    from iheartla.la_tools.la_helper import *
     from iheartla.la_tools.la_logger import LaLogger
     from iheartla.la_parser.parser import ParserTypeEnum
     import markdown

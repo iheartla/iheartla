@@ -103,6 +103,10 @@ def get_file_base(name):
     return '/'.join(sec[:-1]), sec[-1].split('.')[0]
 
 
+def get_resource_dir():
+    return "./extras/resource/img"
+
+
 def record(msg=''):
     global start_time
     if start_time is None or msg == '':

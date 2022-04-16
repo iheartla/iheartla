@@ -5,7 +5,7 @@ import os
 import subprocess
 import threading
 from datetime import datetime
-from app import process_input, read_from_file, save_to_file
+from app import process_input, read_from_file, save_to_file, get_resource_dir
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -19,7 +19,7 @@ class MainHandler(tornado.web.RequestHandler):
         self.set_header("Content-Type", "application/json")
         self.write(json.JSONEncoder().encode({"res": res}))
         # save updated markdown source to files
-        s = threading.Thread(target=save_to_file, args=(data['input'], "./extras/resource/img/input-{}.md".format(datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))))
+        s = threading.Thread(target=save_to_file, args=(data['input'], "{}/input-{}.md".format(get_resource_dir(), datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))))
         s.start()
 
 
@@ -32,13 +32,13 @@ class FileHandler(tornado.web.RequestHandler):
         src = data['src']
         if data['type'] == "get":
         # print("Received request: {}".format(data['input']))
-            res = read_from_file("./extras/resource/img/{}.py".format(src))
+            res = read_from_file("{}/{}.py".format(get_resource_dir(), src))
             self.set_header("Content-Type", "application/json")
             self.write(json.JSONEncoder().encode({"res": res}))
         elif data['type'] == "run":
             print("updated source: {}".format(data['source']))
-            save_to_file(data['source'], "./extras/resource/img/{}.py".format(src))
-            ret = subprocess.run(["python", "./extras/resource/img/{}.py".format(src)])
+            save_to_file(data['source'], "{}/{}.py".format(get_resource_dir(), src))
+            ret = subprocess.run(["python", "{}/{}.py".format(get_resource_dir(), src)])
             if ret.returncode == 0:
                 pass
                 print("server succeed, {}".format(src))
