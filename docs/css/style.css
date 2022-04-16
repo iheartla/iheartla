@@ -41,6 +41,11 @@ body {
     margin-bottom: 1em;
 }
 
+.error {
+    position: absolute;
+    border-bottom: 2px dashed red;
+}
+
 div#msg .alert{
   font-family: Consolas,monospace;
   font-size: 0.8em;

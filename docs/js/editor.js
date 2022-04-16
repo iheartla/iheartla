@@ -332,21 +332,56 @@ function clickCompile(){
 }
 
 function clickRun(){
-    hideMsg();
-    try {
-        document.getElementById("run").disabled = true;
-        document.getElementById("run").innerHTML = `<i id="run_icon" class="fa fa-refresh fa-spin"></i> Running`;
-        runFunction();
-    } catch (error) {
-        console.error(error);
-        activateRunBtnStatus();
-    }
-    finally {
-    }
+    scrollToText('d = a - c');
+    // hideMsg();
+    // try {
+    //     document.getElementById("run").disabled = true;
+    //     document.getElementById("run").innerHTML = `<i id="run_icon" class="fa fa-refresh fa-spin"></i> Running`;
+    //     runFunction();
+    // } catch (error) {
+    //     console.error(error);
+    //     activateRunBtnStatus();
+    // }
+    // finally {
+    // }
 }
 
 function onCancelUpdateEq() {
     clearEq();
+}
+
+
+function findLineNumber(editor, text) {
+    let lines = editor.session.doc.getAllLines();
+    let textLineNumber = [];
+    for (let i = 0, l = lines.length; i < l; i++) {
+        if (lines[i].indexOf(text) !== -1){
+            textLineNumber.push(i);
+        }
+    }
+    return textLineNumber
+}
+
+function scrollToText(text, msg) {
+    showMsg(msg);
+    var Range = ace.require("ace/range").Range;
+    let editor = ace.edit("editor");
+    let line = findLineNumber(editor, text);
+    editor.scrollToLine(line, true, true, null);
+    var range = new Range(line[0], 0, line[0]+1, 0);
+    console.log(`click line: ${line[0]}, `);
+    editor.session.addMarker(range, "error", "text");
+}
+
+function removeMarkers() {
+    let editor = ace.edit("editor");
+    const prevMarkers = editor.session.getMarkers();
+    if (prevMarkers) {
+      const prevMarkersArr = Object.keys(prevMarkers);
+      for (let item of prevMarkersArr) {
+        editor.session.removeMarker(prevMarkers[item].id);
+      }
+    }
 }
 
 function clearEq() {
@@ -482,6 +517,7 @@ function activateRunBtnStatus(){
 
 function onEditIhla(e){
     hideMsg();
+    removeMarkers();
     let editor = ace.edit("editor");
     substitute(editor);
     let equation = ace.edit("equation");
