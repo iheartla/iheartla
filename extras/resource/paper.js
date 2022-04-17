@@ -1030,11 +1030,29 @@ function checkDesc(){
       func = matches[i].getAttribute("module");
     }
     // console.log(`func:${func}, sym:${sym}`);
-    var cur = matches[i].getAttribute('class');
-    const classArray = cur.split(' ');
-    let new_classes = `blink ${cur}`;
-    matches[i].setAttribute('class', new_classes);
+    if (isUndescribed(func, sym)) {
+      var cur = matches[i].getAttribute('class');
+      const classArray = cur.split(' ');
+      let new_classes = `blink ${cur}`;
+      matches[i].setAttribute('class', new_classes);
+      // setTimeout(removeBlinkClass, 5000);
+    }
   }
+}
+function isUndescribed(context, sym){
+  for(var eq in iheartla_data.equations){
+    if(iheartla_data.equations[eq].name == context){
+      // console.log(`context:${context}, sym:${sym}`);
+      // console.log(`undesc_list:${iheartla_data.equations[eq].undesc_list}`);
+      for (var index in iheartla_data.equations[eq].undesc_list) {
+        if (iheartla_data.equations[eq].undesc_list[index] == sym) {
+          // console.log(`found:${context}, sym:${sym}`);
+          return true;
+        }
+      } 
+    }
+  }
+  return false;
 }
 function onClickGlossary(){
   alert('You clicked the glossary');
