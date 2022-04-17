@@ -14,7 +14,8 @@ if WHEEL_MODE:
     from linear_algebra.iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug, get_file_base, record
 else:
     from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
-    from iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug, get_file_base, record
+    from iheartla.la_tools.la_helper import *
+    from iheartla.la_tools.la_msg import *
 
 
 class BlockData(Extension):
@@ -532,9 +533,9 @@ class IheartlaBlockPreprocessor(Preprocessor):
         record("Before compiling iheartla code")
         for name, block_data in file_dict.items():
             code_list, equation_data = compile_la_content(block_data.get_content(),
-                                                          parser_type=self.md.parser_type | ParserTypeEnum.MATHJAX | ParserTypeEnum.MACROMATHJAX,
-                                                          func_name=name, path=self.md.path, struct=True,
-                                                          get_json=True)
+                                                              parser_type=self.md.parser_type | ParserTypeEnum.MATHJAX | ParserTypeEnum.MACROMATHJAX,
+                                                              func_name=name, path=self.md.path, struct=True,
+                                                              get_json=True)
             equation_data.name = name
             equation_dict[name] = equation_data
             full_code_sequence.append(code_list[:-2])

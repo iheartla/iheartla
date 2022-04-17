@@ -2,10 +2,12 @@ import tornado.ioloop
 import tornado.web
 import json
 import os
+import sys
 import subprocess
 import threading
 from datetime import datetime
 from app import process_input, read_from_file, save_to_file, get_resource_dir
+from iheartla.la_tools.la_msg import LaMsg
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -15,9 +17,24 @@ class MainHandler(tornado.web.RequestHandler):
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
         # print("Received request: {}".format(data['input']))
-        res = process_input(data['input'])
+        ret = 1
+        extra_dict = {}
+        try:
+            res = process_input(data['input'])
+            ret = 0
+            extra_dict["res"] = res
+        except AssertionError as e:
+            err_msg = LaMsg.getInstance()
+            extra_dict["expr"] = err_msg.cur_code
+            extra_dict["msg"] = err_msg.cur_msg
+        except Exception as e:
+            extra_dict["msg"] = str(e)
+        except:
+            extra_dict["msg"] = str(sys.exc_info()[0])
+        finally:
+            extra_dict["ret"] = ret
         self.set_header("Content-Type", "application/json")
-        self.write(json.JSONEncoder().encode({"res": res}))
+        self.write(json.JSONEncoder().encode(extra_dict))
         # save updated markdown source to files
         s = threading.Thread(target=save_to_file, args=(data['input'], "{}/input-{}.md".format(get_resource_dir(), datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))))
         s.start()
