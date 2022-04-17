@@ -380,6 +380,7 @@ function addObversers(){
 function onLoad(){
   adjsutGlossaryBtn();
   addObversers();
+  checkDesc();
 }
 function updateGlossarySyms(cur_context){
   // console.log(`Current visible context: ${cur_context}`);
@@ -405,10 +406,10 @@ function updateGlossarySyms(cur_context){
       if (diff_list[j].def_module == cur_context) {
         var cur_info = getSymTypeInfo(diff_list[j].type_info)
         if(diff_list[j].desc && diff_list[j].desc != 'None' ){
-          content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span class="${cur_color} paperSymbol">${dollarSymK}</span> ${cur_info}: ${diff_list[j].desc} </span><br>`;
+          content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span class="${cur_color}">${dollarSymK}</span> ${cur_info}: ${diff_list[j].desc} </span><br>`;
         }
         else{
-          content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span class="${cur_color} paperSymbol">${dollarSymK}</span> ${cur_info} </span><br>`;
+          content = `<span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span class="${cur_color}">${dollarSymK}</span> ${cur_info} </span><br>`;
         }
         break;
       }
@@ -1020,6 +1021,21 @@ function closeOtherTips(){
     }
   }
 };
+function checkDesc(){
+  const matches = document.querySelectorAll("[class*=paperSymbol]");
+  for (var i = matches.length - 1; i >= 0; i--) {
+    var sym = matches[i].getAttribute("sym");
+    var func = matches[i].getAttribute("func");
+    if (func === null){
+      func = matches[i].getAttribute("module");
+    }
+    // console.log(`func:${func}, sym:${sym}`);
+    var cur = matches[i].getAttribute('class');
+    const classArray = cur.split(' ');
+    let new_classes = `blink ${cur}`;
+    matches[i].setAttribute('class', new_classes);
+  }
+}
 function onClickGlossary(){
   alert('You clicked the glossary');
 };

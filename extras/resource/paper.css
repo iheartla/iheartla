@@ -17,6 +17,23 @@ body
   hyphens: auto;
   text-align: justify;
 }
+.blink {
+  color: pink;
+  animation: blink-animation 0.5s steps(2, start) 3;
+  -webkit-animation: blink-animation 0.5s steps(2, start) 3;
+/*  animation-duration: 3s;*/
+}
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+
 .title{
     margin: 13.4px 0 13.4px;
     padding: 15px 0 3px;
