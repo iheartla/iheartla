@@ -43,6 +43,7 @@ class DependenceData(object):
 class EquationData(object):
     def __init__(self, name='', parameters=[], definition=[], dependence=[], symtable={}, desc_dict={}, la_content='', func_data_dict={}, expr_dict={}):
         self.name = name
+        self.undescribed_list = []
         self.parameters = parameters  # parameters for source file
         self.definition = definition  # lhs symbols
         self.dependence = dependence
@@ -77,6 +78,7 @@ class EquationData(object):
 
     def gen_json_content(self):
         content = ''
+        undesc_list = ['''"{}"'''.format(self.trim(sym)) for sym in self.undescribed_list]
         param_list = []
         for param in self.parameters:
             if param in self.desc_dict:
@@ -123,7 +125,7 @@ class EquationData(object):
                     local_param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(local_param), v.params_data.symtable[local_param].get_json_content()))
             func_list.append('''{{"name":"{}", "parameters":[{}]}}'''.format(self.trim(k), ','.join(local_param_list)))
         # self.la_content = self.la_content.replace('\n', '\\\\n')
-        content = '''"parameters":[{}], "definition":[{}], "local_func":[{}], "dependence":[{}]'''.format(','.join(param_list), ','.join(def_list), ','.join(func_list), ','.join(dependence_list))
+        content = '''"parameters":[{}], "definition":[{}], "local_func":[{}], "dependence":[{}], "undesc_list":[{}]'''.format(','.join(param_list), ','.join(def_list), ','.join(func_list), ','.join(dependence_list), ','.join(undesc_list))
         content = content.replace('\\', '\\\\\\\\')
         content = content.replace('\n', '\\\\n')
         content = content.replace('`', '')

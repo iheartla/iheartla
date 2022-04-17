@@ -752,6 +752,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         sym_dict = {}
         node_dict = {}
         for equation in equation_list:
+            undescribed_list = []
             # parameters
             for param in equation.parameters:
                 sym_eq_data = SymEquationData(la_type=equation.symtable[param], desc=equation.desc_dict.get(param), module_name=equation.name, is_defined=False)
@@ -762,6 +763,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 else:
                     sym_data = sym_dict[param]
                     sym_data.sym_equation_list.append(sym_eq_data)
+                if sym_eq_data.desc is None or sym_eq_data.desc == '':
+                    undescribed_list.append(param)
             # new symbols
             for definition in equation.definition:
                 sym_eq_data = SymEquationData(la_type=equation.symtable[definition], desc=equation.desc_dict.get(definition), module_name=equation.name, is_defined=True)
@@ -772,6 +775,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 else:
                     sym_data = sym_dict[definition]
                     sym_data.sym_equation_list.append(sym_eq_data)
+                if sym_eq_data.desc is None or sym_eq_data.desc == '':
+                    undescribed_list.append(definition)
             # local functions
             for func_name, func_params in equation.func_data_dict.items():
                 sym_eq_data = SymEquationData(la_type=equation.symtable[func_name], desc=equation.desc_dict.get(func_name), module_name=equation.name, is_defined=True)
@@ -782,6 +787,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 else:
                     sym_data = sym_dict[func_name]
                     sym_data.sym_equation_list.append(sym_eq_data)
+                if sym_eq_data.desc is None or sym_eq_data.desc == '':
+                    undescribed_list.append(func_name)
                 for local_param in func_params.params_data.parameters:
                     param_eq_data = SymEquationData(la_type=func_params.params_data.symtable[local_param],
                                                     desc=equation.desc_dict.get(local_param), module_name=equation.name,
@@ -826,6 +833,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     node_dict[sym].add_neighbors(sym_list)
                 # for k, v in node_dict.items():
                 #     print("k:{}, v.name:{}, v.neighbors:{}".format(k, v.name, v.neighbors))
+            equation.undescribed_list = list(set(undescribed_list))
         # sec loop
         for equation in equation_list:
             # dependence
