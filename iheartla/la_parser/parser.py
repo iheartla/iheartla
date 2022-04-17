@@ -453,7 +453,8 @@ def compile_la_content(la_content,
         _module_path = Path(path)
     parser = get_default_parser()
     record("First parsing, before")
-    try:
+    if True:
+    # try:
         model = parser.parse(la_content, parseinfo=True)
         ret = []
         json = ''
@@ -486,8 +487,8 @@ def compile_la_content(la_content,
                     ret.append(cur_content)
                     if get_json and json == '':
                         json = type_walker.gen_json_content()
-    except FailedParse as e:
-        ret = LaMsg.getInstance().get_parse_error(e)
+    # except FailedParse as e:
+    #     ret = LaMsg.getInstance().get_parse_error(e)
     # except FailedCut as e:
     #     ret = "FailedCut: {}".format(str(e))
     # except AssertionError as e:
@@ -496,15 +497,15 @@ def compile_la_content(la_content,
     #     ret = "Exception: {}".format(str(e))
     # except:
     #     ret = str(sys.exc_info()[0])
-    finally:
-        if get_json:
-            if get_vars:
-                return ret, json, var_data
-            return ret, json
-        else:
-            if get_vars:
-                return ret, var_data
-            return ret
+    # finally:
+    if get_json:
+        if get_vars:
+            return ret, json, var_data
+        return ret, json
+    else:
+        if get_vars:
+            return ret, var_data
+        return ret
 
 
 def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX):
