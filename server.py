@@ -25,7 +25,7 @@ class MainHandler(tornado.web.RequestHandler):
             extra_dict["res"] = res
         except AssertionError as e:
             err_msg = LaMsg.getInstance()
-            extra_dict["expr"] = err_msg.cur_code
+            extra_dict["expr"] = err_msg.cur_code.replace('\n', '')
             extra_dict["msg"] = err_msg.cur_msg
         except Exception as e:
             extra_dict["msg"] = str(e)
