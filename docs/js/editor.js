@@ -252,15 +252,15 @@ function compileFunction(){
     var iheartla = ace.edit("editor");
     var source = iheartla.getValue();
     // console.log(source)
-    pythonCode = `
-import linear_algebra.iheartla.la_parser.parser
-from linear_algebra.app import process_input
-source_code = r"""${source}"""
-#code = process_input
-#code = linear_algebra.iheartla.la_parser.parser.compile_la_content(source_code)
-code = process_input(source_code)
-#print(code)
-`
+//     pythonCode = `
+// import linear_algebra.iheartla.la_parser.parser
+// from linear_algebra.app import process_input
+// source_code = r"""${source}"""
+// #code = process_input
+// #code = linear_algebra.iheartla.la_parser.parser.compile_la_content(source_code)
+// code = process_input(source_code)
+// #print(code)
+// `
     setTimeout(function(){
         try {
             // pyodide.runPython(pythonCode);
@@ -274,8 +274,16 @@ code = process_input(source_code)
             // }
             postData(window.location.href + 'handler', { input:  source})
               .then(data => {
-                  // console.log(`data is ${data.res}`); // JSON data parsed by `data.json()` call
-                  updateEditor(data.res);
+                  if (data.ret === 0){
+                      updateEditor(data.res);
+                  }
+                  else{
+                      console.log(`data.expr is ${data.expr}`);
+                      console.log(`data.msg is ${data.msg}`);
+                      scrollToText(data.expr);
+                      showMsg(data.msg);
+                      activateBtnStatus();
+                  }
                   $('#loading').modal('hide');
              });
         }
@@ -362,8 +370,7 @@ function findLineNumber(editor, text) {
     return textLineNumber
 }
 
-function scrollToText(text, msg) {
-    showMsg(msg);
+function scrollToText(text) {
     var Range = ace.require("ace/range").Range;
     let editor = ace.edit("editor");
     let line = findLineNumber(editor, text);
