@@ -1040,6 +1040,16 @@ function checkDesc(){
     }
   }
   if (showBlick) {
+    if (typeof parent.showMsg == 'function') { 
+      msg = `Missing descriptions for symbols: <br>`
+      for(var eq in iheartla_data.equations){
+        if (iheartla_data.equations[eq].undesc_list.length > 0) {
+          msg += `${iheartla_data.equations[eq].name}: ${iheartla_data.equations[eq].undesc_list.join(', ')}<br>`
+        }
+      }
+      console.log(`show msg: ${msg}`)
+      parent.showMsg(msg);
+    }
     setTimeout(removeBlinkClass, 3000);
   }
 }
