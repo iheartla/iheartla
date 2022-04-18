@@ -1022,6 +1022,7 @@ function closeOtherTips(){
   }
 };
 function checkDesc(){
+  var showBlick = false;
   const matches = document.querySelectorAll("[class*=paperSymbol]");
   for (var i = matches.length - 1; i >= 0; i--) {
     var sym = matches[i].getAttribute("sym");
@@ -1034,9 +1035,12 @@ function checkDesc(){
       var cur = matches[i].getAttribute('class');
       const classArray = cur.split(' ');
       let new_classes = `blink ${cur}`;
-      matches[i].setAttribute('class', new_classes);
-      // setTimeout(removeBlinkClass, 5000);
+      matches[i].setAttribute('class', new_classes); 
+      showBlick = true;
     }
+  }
+  if (showBlick) {
+    setTimeout(removeBlinkClass, 3000);
   }
 }
 function isUndescribed(context, sym){
@@ -1053,6 +1057,20 @@ function isUndescribed(context, sym){
     }
   }
   return false;
+}
+function removeBlinkClass(){
+  const matches = document.querySelectorAll("[class*=blink]");
+  for (var i = matches.length - 1; i >= 0; i--) {
+    var cur = matches[i].getAttribute('class');
+    const classArray = cur.split(' '); 
+    let new_classes = [];
+    for (var j = classArray.length - 1; j >= 0; j--) {
+      if (classArray[j] !== ' ' && ! classArray[j].includes('blink')) {
+        new_classes.push(classArray[j]);
+      }
+    }
+    matches[i].setAttribute('class', new_classes.join(' '));
+  }
 }
 function onClickGlossary(){
   alert('You clicked the glossary');
