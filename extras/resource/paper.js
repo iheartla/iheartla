@@ -882,7 +882,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
     topLine.className = "eqInfo";
     // button
     var editBtn = document.createElement("button");
-    editBtn.className = "eqInfo";
+    editBtn.className = "eqInfo editBtn";
     editBtn.type  = 'button';
     editBtn.innerHTML = "Edit equation"; 
     editBtn.addEventListener('click', function() {
@@ -913,7 +913,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
       var code = parentTag.getAttribute('code');
       // console.log(`code is ${code}`)
       tippy(tag, {
-          content: content + `<button class="highlight_no" type="button" onclick="clickEquation('${code}')">Edit equation</button>`,
+          content: content + `<button class="editBtn" type="button" onclick="clickEquation('${code}')">Edit equation</button>`,
           // content: content,
           placement: 'bottom',
           animation: 'fade',

@@ -192,6 +192,10 @@ a.detail{
   margin-right: auto;
   width: 50%;
 }
+.editBtn{
+  border: none;
+  background-color: rgba(0, 0, 0, .2);  
+}
 .paperSymbol{
   /*color: red; */
   border-bottom: 1px dotted #000;
@@ -200,98 +204,98 @@ a.detail{
 /*https://htmlcolorcodes.com/color-names/*/
 .highlight_prose {
  /*color: #5A97D4; */
-  background-color: rgba(90, 151, 212, .3);  
-  outline: 2px solid rgba(90, 151, 212, .3);  
+  background-color: rgba(90, 151, 212, .5);  
+  outline: 2px solid rgba(90, 151, 212, .5);  
   border-radius: 2px;
 }
 .highlight_red {
  /*color: red; */
-  background-color: rgba(255, 0, 0, .3);  
-  outline: 2px solid rgba(255, 0, 0, .3);
+  background-color: rgba(255, 0, 0, .5);  
+  outline: 2px solid rgba(255, 0, 0, .5); 
   border-radius: 2px;
 }
 .highlight_grey {
  color: #666666; 
-/*  background-color: rgba(102, 102, 102, .3);  
-  outline: 2px solid rgba(102, 102, 102, .3); 
+/*  background-color: rgba(102, 102, 102, .5);  
+  outline: 2px solid rgba(102, 102, 102, .5); 
   border-radius: 2px;*/
 }
 .highlight_DarkRed {
  /*color: #8B0000; */
-  background-color: rgba(139, 0, 0, .3);  
-  outline: 2px solid rgba(139, 0, 0, .3);  
+  background-color: rgba(139, 0, 0, .5);  
+  outline: 2px solid rgba(139, 0, 0, .5);  
   border-radius: 2px;
 }
 .highlight_LightCoral {
  /*color: #F08080; */
-  background-color: rgba(240, 128, 128, .3);  
-  outline: 2px solid rgba(240, 128, 128, .3);
+  background-color: rgba(240, 128, 128, .5);  
+  outline: 2px solid rgba(240, 128, 128, .5);
   border-radius: 2px;
 }
 .highlight {
   /*color: red; */
-  background-color: rgba(255, 0, 0, .3);  
-  outline: 2px solid rgba(255, 0, 0, .3);
+  background-color: rgba(255, 0, 0, .5);  
+  outline: 2px solid rgba(255, 0, 0, .5); 
   border-radius: 2px;
 }
 .highlight_blue {
  /*color: blue; */
-  background-color: rgba(0, 0, 255, .3);  
-  outline: 2px solid rgba(0, 0, 255, .3);
+  background-color: rgba(0, 0, 255, .5);  
+  outline: 2px solid rgba(0, 0, 255, .5);
   border-radius: 2px;
 }
 .highlight_DeepSkyBlue {
  /*color: #00BFFF; */
-  background-color: rgba(0, 191, 255, .3);  
-  outline: 2px solid rgba(0, 191, 255, .3);  
+  background-color: rgba(0, 191, 255, .5);  
+  outline: 2px solid rgba(0, 191, 255, .5);  
   border-radius: 2px;
 }
 .highlight_green {
  /*color: green; */
-  background-color: rgba(0, 255, 0, .3);  
-  outline: 2px solid rgba(0, 255, 0, .3);  
+  background-color: rgba(0, 255, 0, .5);  
+  outline: 2px solid rgba(0, 255, 0, .5);  
   border-radius: 2px;
 }
 .highlight_YellowGreen {
  /*color: #9ACD32; */
-  background-color: rgba(154, 205, 50, .3);  
-  outline: 2px solid rgba(154, 205, 50, .3);  
+  background-color: rgba(154, 205, 50, .5);  
+  outline: 2px solid rgba(154, 205, 50, .5);  
   border-radius: 2px;
 }
 .highlight_yellow {
  /*color: yellow; */
-  background-color: rgba(255, 255, 0, .3);  
-  outline: 2px solid rgba(255, 255, 0, .3);  
+  background-color: rgba(255, 255, 0, .5);  
+  outline: 2px solid rgba(255, 255, 0, .5);  
   border-radius: 2px;
 }
 .highlight_Khaki {
  /*color: #F0E68C; */
-  background-color: rgba(240, 230, 140, .3);  
-  outline: 2px solid rgba(240, 230, 140, .3);    
+  background-color: rgba(240, 230, 140, .5);  
+  outline: 2px solid rgba(240, 230, 140, .5);    
   border-radius: 2px;
 }
 .highlight_HotPink {
  /*color: #FF69B4; */
-  background-color: rgba(255, 105, 180, .3);  
-  outline: 2px solid rgba(255, 105, 180, .3);     
+  background-color: rgba(255, 105, 180, .5);  
+  outline: 2px solid rgba(255, 105, 180, .5);     
   border-radius: 2px;
 }
 .highlight_Tomato {
  /*color: #FF6347; */
-  background-color: rgba(255, 99, 71, .3);  
-  outline: 2px solid rgba(255, 99, 71, .3);     
+  background-color: rgba(255, 99, 71, .5);  
+  outline: 2px solid rgba(255, 99, 71, .5);     
   border-radius: 2px;
 }
 .highlight_Orange {
  /*color: #FFA500; */
-  background-color: rgba(255, 165, 0, .3);  
-  outline: 2px solid rgba(255, 165, 0, .3);     
+  background-color: rgba(255, 165, 0, .5);  
+  outline: 2px solid rgba(255, 165, 0, .5);     
   border-radius: 2px;
 }
 .highlight_Gold {
  /*color: #FFD700; */
-  background-color: rgba(255, 215, 0, .3);  
-  outline: 2px solid rgba(255, 215, 0, .3);     
+  background-color: rgba(255, 215, 0, .5);  
+  outline: 2px solid rgba(255, 215, 0, .5);     
   border-radius: 2px;
 }
 .normal {
@@ -299,8 +303,8 @@ a.detail{
 }
 .clickable_sym{
  /*color: red; */
-  background-color: rgba(255, 0, 0, .3);  
-  outline: 2px solid rgba(255, 0, 0, .3);
+  background-color: rgba(255, 0, 0, .5);  
+  outline: 2px solid rgba(255, 0, 0, .5);
   border-radius: 2px;
 }
 .arrow{
