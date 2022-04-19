@@ -9,6 +9,7 @@ import copy
 from collections import OrderedDict
 import regex as re
 import base64
+import hashlib
 if WHEEL_MODE:
     from linear_algebra.iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
     from linear_algebra.iheartla.la_tools.la_helper import DEBUG_MODE, read_from_file, save_to_file, la_warning, la_debug, get_file_base, record
@@ -16,6 +17,8 @@ else:
     from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
     from iheartla.la_tools.la_helper import *
     from iheartla.la_tools.la_msg import *
+
+cached_data = {}
 
 
 class BlockData(Extension):
@@ -532,10 +535,15 @@ class IheartlaBlockPreprocessor(Preprocessor):
         full_code_sequence = []
         record("Before compiling iheartla code")
         for name, block_data in file_dict.items():
-            code_list, equation_data = compile_la_content(block_data.get_content(),
-                                                              parser_type=self.md.parser_type | ParserTypeEnum.MATHJAX | ParserTypeEnum.MACROMATHJAX,
-                                                              func_name=name, path=self.md.path, struct=True,
-                                                              get_json=True)
+            cur_hash = hashlib.md5("{}:{}".format(name, block_data.get_content()).encode()).hexdigest()
+            if cur_hash in cached_data:
+                code_list, equation_data = cached_data[cur_hash]
+            else:
+                code_list, equation_data = compile_la_content(block_data.get_content(),
+                                                                  parser_type=self.md.parser_type | ParserTypeEnum.MATHJAX | ParserTypeEnum.MACROMATHJAX,
+                                                                  func_name=name, path=self.md.path, struct=True,
+                                                                  get_json=True)
+                cached_data[cur_hash] = [code_list, equation_data]
             equation_data.name = name
             equation_dict[name] = equation_data
             full_code_sequence.append(code_list[:-2])
