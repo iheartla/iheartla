@@ -281,7 +281,7 @@ function compileFunction(){
                       console.log(`data.expr is ${data.expr}`);
                       console.log(`data.msg is ${data.msg}`);
                       scrollToText(data.expr);
-                      showMsg(data.msg);
+                      showMsg(data.msg, true);
                       activateBtnStatus();
                   }
                   $('#loading').modal('hide');

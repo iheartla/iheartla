@@ -1048,7 +1048,7 @@ function checkDesc(){
         }
       }
       console.log(`show msg: ${msg}`)
-      parent.showMsg(msg);
+      parent.showMsg(msg, true);
     }
     setTimeout(removeBlinkClass, 3000);
   }
