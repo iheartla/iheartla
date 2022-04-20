@@ -534,6 +534,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
         equation_dict = {}
         full_code_sequence = []
         record("Before compiling iheartla code")
+        new_cached_data = {}
+        global cached_data
         for name, block_data in file_dict.items():
             cur_hash = hashlib.md5("{}:{}".format(name, block_data.get_content()).encode()).hexdigest()
             if cur_hash in cached_data:
@@ -543,7 +545,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                                                                   parser_type=self.md.parser_type | ParserTypeEnum.MATHJAX | ParserTypeEnum.MACROMATHJAX,
                                                                   func_name=name, path=self.md.path, struct=True,
                                                                   get_json=True)
-                cached_data[cur_hash] = [code_list, equation_data]
+            new_cached_data[cur_hash] = [code_list, equation_data]
             equation_data.name = name
             equation_dict[name] = equation_data
             full_code_sequence.append(code_list[:-2])
@@ -597,6 +599,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 text = text.replace(block_data.block_list[cur_index], content)
                 replace_dict[block_data.block_list[cur_index]] = content
                 math_dict[block_data.block_list[cur_index]] = raw_math
+        cached_data = new_cached_data
         record("After compiling iheartla code")
         self.save_code(full_code_sequence)
         return text, equation_dict, replace_dict, math_dict
