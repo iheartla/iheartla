@@ -1044,7 +1044,11 @@ function checkDesc(){
       msg = `Missing descriptions for symbols: <br>`
       for(var eq in iheartla_data.equations){
         if (iheartla_data.equations[eq].undesc_list.length > 0) {
-          msg += `${iheartla_data.equations[eq].name}: ${iheartla_data.equations[eq].undesc_list.join(', ')}<br>`
+          let cur_undesc = [];
+          for (var index in iheartla_data.equations[eq].undesc_list) {
+            cur_undesc.push(`$${iheartla_data.equations[eq].undesc_list[index]}$`);
+          }
+          msg += `${iheartla_data.equations[eq].name}: ${cur_undesc.join(', ')}<br>`
         }
       }
       console.log(`show msg: ${msg}`)
