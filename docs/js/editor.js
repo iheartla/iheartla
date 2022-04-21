@@ -497,6 +497,9 @@ function showMsg(msg, error=false){
         el.classList.add('alert-primary');
         msgTimeout = setTimeout(hideMsg, 2000);
     }
+    MathJax.typesetPromise([el]).then(() => {
+      // the new content is has been typeset
+    });
 }
 
 function hideMsg(){
