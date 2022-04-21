@@ -22,7 +22,8 @@ let unicode_dict = {'R': 'ℝ', 'Z': 'ℤ', 'x': '×', 'times': '×', 'inf': '�
 let preEqCode = '';
 let preTestCode = '';
 let curFigure = '';
-let curHtml = ''
+let curHtml = '';
+let msgTimeout = null;
 function checkBrowserVer(){
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
@@ -477,6 +478,9 @@ function clickCopy() {
 }
 
 function showMsg(msg, error=false){
+    if (msgTimeout){
+        clearTimeout(msgTimeout);
+    }
     msg = msg.replaceAll('\n', '<br>')
     let el = document.getElementById("msg");
     el.hidden = false;
@@ -491,7 +495,7 @@ function showMsg(msg, error=false){
     } else {
         // notice, auto hide
         el.classList.add('alert-primary');
-        setTimeout(hideMsg, 2000);
+        msgTimeout = setTimeout(hideMsg, 2000);
     }
 }
 
