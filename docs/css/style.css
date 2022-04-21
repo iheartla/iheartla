@@ -28,7 +28,15 @@ body {
 #clipboard {
 }
 #msg {
-    font-size: 16px /* Set a font size */
+    font-size: 16px; /* Set a font size */
+    /*-webkit-hyphens: auto;*/
+    /*-ms-hyphens: auto;*/
+    /*hyphens: auto;*/
+    /*background-color: blue;*/
+    /*overflow-wrap: break-word;*/
+    /*word-break: break-word;*/
+    overflow : hidden;
+    white-space: initial;
 }
 #output {
     border: 10px solid grey;
