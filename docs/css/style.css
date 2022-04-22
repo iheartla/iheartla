@@ -3,7 +3,11 @@ body {
     padding-top: 10px;
 }
 .container{
-    max-width: 1420px;
+    max-width: 1570px;
+    /*margin-right: 0px;*/
+    /*margin-left: 20px;*/
+    /*padding-right: 0px;*/
+    /*border-right: 0px;*/
 }
 .col-lg-5{
     padding-right: 0px;
@@ -74,6 +78,12 @@ iframe{
     width: 100%;
     margin-left: 0px;
     margin-right: 0px;
+    -webkit-transform: translate(-20px, 0px) scale(0.95);
+    -moz-transform-origin: top left;
+    -webkit-transform-origin: top left;
+    -o-transform-origin: top left;
+    -ms-transform-origin: top left;
+    transform-origin: top left;
 }
 h1
 {
