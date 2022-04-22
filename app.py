@@ -202,15 +202,21 @@ def handle_figure(text, name_list):
 def save_output_code(md, path):
     # if not WHEEL_MODE:
     if True:
+        dst = "{}/output_code".format(path)
+        if os.path.exists(dst):
+            shutil.rmtree(dst)
+        os.mkdir(dst)
         if md.lib_py != '':
-            save_to_file(md.lib_py, "{}/lib.py".format(path))
+            save_to_file(md.lib_py, "{}/output_code/lib.py".format(path))
         if md.lib_cpp != '':
-            save_to_file(md.lib_cpp, "{}/lib.h".format(path))
+            save_to_file(md.lib_cpp, "{}/output_code/lib.h".format(path))
         if md.lib_matlab != '':
-            save_to_file(md.lib_matlab, "{}/lib.m".format(path))
+            save_to_file(md.lib_matlab, "{}/output_code/lib.m".format(path))
 
 
-def process_input(content, input_dir='.', resource_dir='.', file_name='result', parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.MATLAB):
+def process_input(content, input_dir='.', resource_dir='.', file_name='result',
+                  parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.MATLAB,
+                  server_mode=False):
     """
     Given the source string, generate the html result
     :param content: Markdown source
@@ -255,17 +261,19 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result', 
         body = abstract + body
         body = handle_title(body, md.Meta)
         body = handle_context_block(body)
-        # save_output_code(md, input_dir)
-        save_output_code(md, './extras/resource/img')
+        if server_mode:
+            save_output_code(md, './extras/resource/img')
+        else:
+            save_output_code(md, input_dir)
         if md.need_gen_figure:
             body = handle_figure(body, md.figure_list)
         equation_json = md.json_data
         # equation_data = get_sym_data(json.loads(equation_json))
         sym_json = md.json_sym
         dst = "{}/resource".format(input_dir)
-        # if os.path.exists(dst):
-        #     shutil.rmtree(dst)
-        # shutil.copytree("/Users/pressure/Downloads/linear_algebra/extras/resource", dst)
+        if os.path.exists(dst):
+            shutil.rmtree(dst)
+        shutil.copytree("./extras/resource", dst)
         script = r"""window.onload = onLoad;
         function reportWindowSize() {
           var arrows = document.querySelectorAll(".arrow");
@@ -354,7 +362,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result', 
 
 if __name__ == '__main__':
     # LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
-    LaLogger.getInstance().set_level(logging.ERROR)
+    LaLogger.getInstance().set_level(logging.WARNING)
     arg_parser = argparse.ArgumentParser(description='I Heart LA paper compiler')
     arg_parser.add_argument('--regenerate-grammar', action='store_true', help='Regenerate grammar files')
     arg_parser.add_argument('--resource_dir', help='resource path')
