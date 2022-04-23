@@ -563,6 +563,11 @@ class IheartlaBlockPreprocessor(Preprocessor):
                         break
             # Replace math code
             for cur_index in range(len(block_data.code_list)):
+                if cur_index not in index_dict.keys():
+                    text = text.replace(block_data.block_list[cur_index], '')
+                    replace_dict[block_data.block_list[cur_index]] = ''
+                    math_dict[block_data.block_list[cur_index]] = ''
+                    continue
                 if len(index_dict[cur_index]) == 1:
                     raw_str = index_dict[cur_index][0]
                     content = expr_dict[raw_str]
