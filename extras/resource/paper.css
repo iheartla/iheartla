@@ -18,9 +18,9 @@ body
   text-align: justify;
 }
 .blink {
-  color: pink;
-  animation: blink-animation 0.5s steps(2, start) 3;
-  -webkit-animation: blink-animation 0.5s steps(2, start) 3;
+  color: #8B0000;
+/*  animation: blink-animation 0.5s steps(2, start) 3;
+  -webkit-animation: blink-animation 0.5s steps(2, start) 3;*/
 /*  animation-duration: 3s;*/
 }
 @keyframes blink-animation {

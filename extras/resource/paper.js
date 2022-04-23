@@ -956,6 +956,7 @@ function clickFigure(ele, name){
   }
 }
 function resetState(){
+  removeBlinkClass();
   centerXDict = {};
   centerYDict = {};
   offsetEndXDict = {};
@@ -1054,7 +1055,7 @@ function checkDesc(){
       console.log(`show msg: ${msg}`)
       parent.showMsg(msg, true);
     }
-    setTimeout(removeBlinkClass, 3000);
+    // setTimeout(removeBlinkClass, 3000);
   }
 }
 function isUndescribed(context, sym){
