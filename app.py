@@ -270,10 +270,11 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
         equation_json = md.json_data
         # equation_data = get_sym_data(json.loads(equation_json))
         sym_json = md.json_sym
-        dst = "{}/resource".format(input_dir)
-        if os.path.exists(dst):
-            shutil.rmtree(dst)
-        shutil.copytree("./extras/resource", dst)
+        if not server_mode:
+            dst = "{}/resource".format(input_dir)
+            if os.path.exists(dst):
+                shutil.rmtree(dst)
+            shutil.copytree("./extras/resource", dst)
         script = r"""window.onload = onLoad;
         function reportWindowSize() {
           var arrows = document.querySelectorAll(".arrow");
