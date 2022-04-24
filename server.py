@@ -1,3 +1,5 @@
+import argparse
+
 import tornado.ioloop
 import tornado.web
 import json
@@ -10,6 +12,7 @@ from app import process_input, read_from_file, save_to_file, get_resource_dir
 from iheartla.la_tools.la_msg import LaMsg
 
 
+default_input = ''
 def save_markdown(content):
     dst = "{}/input-history".format(get_resource_dir())
     if not os.path.exists(dst):
@@ -53,13 +56,14 @@ class FileHandler(tornado.web.RequestHandler):
 
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
-        src = data['src']
         if data['type'] == "get":
-        # print("Received request: {}".format(data['input']))
+            src = data['src']
+            # print("Received request: {}".format(data['input']))
             res = read_from_file("{}/{}.py".format(get_resource_dir(), src))
             self.set_header("Content-Type", "application/json")
             self.write(json.JSONEncoder().encode({"res": res}))
         elif data['type'] == "run":
+            src = data['src']
             print("updated source: {}".format(data['source']))
             save_to_file(data['source'], "{}/{}.py".format(get_resource_dir(), src))
             ret = subprocess.run(["python", "{}/{}.py".format(get_resource_dir(), src)])
@@ -69,6 +73,13 @@ class FileHandler(tornado.web.RequestHandler):
             else:
                 print("server failed, {}".format(src))
             self.write(json.JSONEncoder().encode({"ret": ret.returncode}))
+        elif data['type'] == "init":
+            # initial input
+            if default_input == '':
+                ret = 1
+            else:
+                ret = 0
+            self.write(json.JSONEncoder().encode({"ret": ret, "content": default_input}))
 
 
 def make_app():
@@ -82,6 +93,11 @@ def make_app():
 
 
 if __name__ == "__main__":
+    arg_parser = argparse.ArgumentParser(description='HeartDown local server')
+    arg_parser.add_argument('--paper', help='paper source')
+    args = arg_parser.parse_args()
+    if args.paper:
+        default_input = read_from_file(args.paper)
     app = make_app()
     app.listen(8000)
     tornado.ioloop.IOLoop.current().start()

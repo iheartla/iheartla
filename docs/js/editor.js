@@ -177,6 +177,15 @@ async function background(source){
     }
 }
 
+function onLoad(){
+    postData(window.location.href + 'file', { type: "init"})
+      .then(data => {
+          if (data.ret === 0){
+            let editor = ace.edit("editor");
+            editor.setValue(data.content);
+          }
+     });
+}
 
 function convert(input) {
     showIframe();
