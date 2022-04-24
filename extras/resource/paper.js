@@ -398,6 +398,9 @@ function updateGlossarySyms(cur_context){
   for (i = 0; i < keys.length; i++) {
     k = keys[i];
     var cur_color = `highlight_${getSymColor(k)}`;
+    if (isUndescribed(cur_context, k)) {
+      cur_color = `highlight_DarkRedOriginal`;
+    }
     diff_list = sym_data[k];
     ck = k.replaceAll("\\","\\\\");
     var dollarSymK = getDollarSym(k);

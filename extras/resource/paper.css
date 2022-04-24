@@ -226,6 +226,12 @@ a.detail{
   /*border: 2px solid rgba(139, 0, 0, .5);  */
   border-radius: 4px;
 }
+.highlight_DarkRedOriginal {
+ /*color: #8B0000; */
+  background-color: rgba(139, 0, 0);  
+  /*border: 2px solid rgba(139, 0, 0, .5);  */
+  border-radius: 4px;
+}
 .highlight_LightCoral {
  /*color: #F08080; */
   background-color: rgba(240, 128, 128, .5);  
