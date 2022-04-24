@@ -10,6 +10,13 @@ from app import process_input, read_from_file, save_to_file, get_resource_dir
 from iheartla.la_tools.la_msg import LaMsg
 
 
+def save_markdown(content):
+    dst = "{}/input-history".format(get_resource_dir())
+    if not os.path.exists(dst):
+        os.mkdir(dst)
+    save_to_file(content, "{}/input-history/input-{}.md".format(get_resource_dir(), datetime.now().strftime("%Y-%m-%d-%H-%M-%S")))
+
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.write("Hello, world")
@@ -36,7 +43,7 @@ class MainHandler(tornado.web.RequestHandler):
         self.set_header("Content-Type", "application/json")
         self.write(json.JSONEncoder().encode(extra_dict))
         # save updated markdown source to files
-        s = threading.Thread(target=save_to_file, args=(data['input'], "{}/input-{}.md".format(get_resource_dir(), datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))))
+        s = threading.Thread(target=save_markdown, args=(data['input'],))
         s.start()
 
 

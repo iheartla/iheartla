@@ -18,7 +18,10 @@ body
   text-align: justify;
 }
 .blink {
-  color: #8B0000;
+  /*color: #8B0000;*/
+  background-color: rgba(139, 0, 0, 0.8);  
+  /*border: 2px solid rgba(139, 0, 0, .5);  */
+  border-radius: 4px;
 /*  animation: blink-animation 0.5s steps(2, start) 3;
   -webkit-animation: blink-animation 0.5s steps(2, start) 3;*/
 /*  animation-duration: 3s;*/
@@ -228,7 +231,7 @@ a.detail{
 }
 .highlight_DarkRedOriginal {
  /*color: #8B0000; */
-  background-color: rgba(139, 0, 0);  
+  background-color: rgba(139, 0, 0, .8);  
   /*border: 2px solid rgba(139, 0, 0, .5);  */
   border-radius: 4px;
 }
