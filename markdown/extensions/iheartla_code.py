@@ -218,9 +218,13 @@ class IheartlaBlockPreprocessor(Preprocessor):
         :param sym_list: symbol list
         :return: replaced text
         """
+        record("Begin handle_math")
+        text_list = []
+        start_index = 0
         for m in self.MATH_RE.finditer(text):
             content = m.group('code')
             # print("current equation:{}".format(m.group()))
+            updated = False
             for sym in sym_list:
                 PROSE_RE = re.compile(
                     dedent(r'''(?<!(    # negative begins
@@ -237,18 +241,24 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     changed = False
                     for target in PROSE_RE.finditer(content):
                         changed = True
+                        updated = True
                         content = content[:target.start()] + "{{\\proselabel{{{}}}{{{{{}}}}}}}".format(context,
                                                                                                sym) + content[
                                                                                                       target.end():]
                         break
-            if content != m.group('code'):
+            if updated:
+                text_list.append(text[start_index: m.start()])
+                start_index = m.end()
                 # print("text is{}".format(text))
                 # print("handle_math, content:{}, group:{}, full:{}".format(content, m.group(), m.group()))
-                text = text.replace(m.group(), "{}{}{}".format(m.group(1), content, m.group(1)))
+                # text = text.replace(m.group(), "{}{}{}".format(m.group(1), content, m.group(1)))
                 # print("handle_math, m.group():{}, replaced:{}".format(m.group(), "{}{}{}".format(m.group(1), content, m.group(1))))
+                text_list.append("{}{}{}".format(m.group(1), content, m.group(1)))
                 # print("handle_math, after:{}".format(text))
         # print("after, text:{}\n".format(text))
-        return text
+        text_list.append(text[start_index:len(text)])
+        record("End handle_math")
+        return ''.join(text_list)
 
     def handle_easy_span_context_math(self, text, equation_dict, span_dict):
         """
