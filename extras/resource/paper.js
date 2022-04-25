@@ -884,22 +884,24 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
     div.prepend(topLine);
     topLine.className = "eqInfo";
     // button
-    var editBtn = document.createElement("button");
-    editBtn.className = "eqInfo editBtn";
-    editBtn.type  = 'button';
-    editBtn.innerHTML = "Edit equation"; 
-    editBtn.addEventListener('click', function() {
-        if (typeof parent.onEditEquation == 'function') { 
-          console.log(`raw_text is: ${raw_text}`)
-          var parentTag = tag.closest("div");
-          var code = parentTag.getAttribute('code');
-          parent.onEditEquation(code);
-        }
-        else{
-          console.log('No such func');
-        }
-    }, false);
-    div.appendChild(editBtn);
+    if (typeof parent.onEditEquation == 'function') { 
+      var editBtn = document.createElement("button");
+      editBtn.className = "eqInfo editBtn";
+      editBtn.type  = 'button';
+      editBtn.innerHTML = "Edit equation"; 
+      editBtn.addEventListener('click', function() {
+          if (typeof parent.onEditEquation == 'function') { 
+            console.log(`raw_text is: ${raw_text}`)
+            var parentTag = tag.closest("div");
+            var code = parentTag.getAttribute('code');
+            parent.onEditEquation(code);
+          }
+          else{
+            console.log('No such func');
+          }
+      }, false);
+      div.appendChild(editBtn);
+    }
     // line
     var bottomLine = document.createElement("HR");
     bottomLine.className = "eqInfo";
@@ -915,9 +917,11 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
       var parentTag = tag.closest("span");
       var code = parentTag.getAttribute('code');
       // console.log(`code is ${code}`)
+      if (typeof parent.onEditEquation == 'function') {
+        content += `<button class="editBtn" type="button" onclick="clickEquation('${code}')">Edit equation</button>`;    
+      }
       tippy(tag, {
-          content: content + `<button class="editBtn" type="button" onclick="clickEquation('${code}')">Edit equation</button>`,
-          // content: content,
+          content: content, // content: content,
           placement: 'bottom',
           animation: 'fade',
           trigger: 'click', 
