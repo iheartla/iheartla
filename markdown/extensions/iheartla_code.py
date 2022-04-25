@@ -316,37 +316,68 @@ class IheartlaBlockPreprocessor(Preprocessor):
         return text, span_dict
 
     def handle_prose_label(self, text, context):
+        start_index = 0
+        text_list = []
         for m in self.PROSE_RE.finditer(text):
             # print("prose match: {}, def:{}, symbol:{}".format(m.group(), m.group('def'), m.group('symbol')))
-            text = text.replace(m.group(), "{{\\prose{}label{{{}}}{{{{{}}}}}}}".format(m.group('def'), context, m.group('symbol')))
-        return text
+            # text = text.replace(m.group(), "{{\\prose{}label{{{}}}{{{{{}}}}}}}".format(m.group('def'), context, m.group('symbol')))
+            text_list.append(text[start_index: m.start()])
+            text_list.append("{{\\prose{}label{{{}}}{{{{{}}}}}}}".format(m.group('def'), context, m.group('symbol')))
+            start_index = m.end()
+        text_list.append(text[start_index:len(text)])
+        return ''.join(text_list)
 
     def handle_raw_code(self, text, context):
+        start_index = 0
+        text_list = []
         for m in self.RAW_CODE_BLOCK_RE.finditer(text):
             # print(m.group())
-            text = text.replace(m.group(), "{}iheartla({})\n".format(m.group('fence'), context))
+            # text = text.replace(m.group(), "{}iheartla({})\n".format(m.group('fence'), context))
+            text_list.append(text[start_index: m.start()])
+            text_list.append("{}iheartla({})\n".format(m.group('fence'), context))
+            start_index = m.end()
+        text_list.append(text[start_index:len(text)])
+        text = ''.join(text_list)
+        start_index = 0
+        text_list.clear()
         for m in self.RAW_NUM_CODE_BLOCK_RE.finditer(text):
             # print(m.group())
-            text = text.replace(m.group(), "{}iheartla({}, unnumbered)\n".format(m.group('fence'), context))
-        return text
+            # text = text.replace(m.group(), "{}iheartla({}, unnumbered)\n".format(m.group('fence'), context))
+            text_list.append(text[start_index: m.start()])
+            text_list.append("{}iheartla({}, unnumbered)\n".format(m.group('fence'), context))
+            start_index = m.end()
+        text_list.append(text[start_index:len(text)])
+        return ''.join(text_list)
 
     def handle_inline_raw_code(self, text, context):
+        start_index = 0
+        text_list = []
         for m in self.RAW_CODE_INLINE_RE.finditer(text):
             # print("inline_raw_code: {}".format(m.group()))
             if not self.INLINE_RE.fullmatch(m.group()):
                 # print("new: {}".format("❤ {}:{}❤".format(context, m.group('code'))))
-                text = text.replace(m.group(), "❤ {}:{}❤".format(context, m.group('code')))
-        return text
+                # text = text.replace(m.group(), "❤ {}:{}❤".format(context, m.group('code')))
+                text_list.append(text[start_index: m.start()])
+                text_list.append("❤ {}:{}❤".format(context, m.group('code')))
+                start_index = m.end()
+        text_list.append(text[start_index:len(text)])
+        return ''.join(text_list)
 
     def handle_raw_span_code(self, text, context):
         """
         add context name to span tag -> def:context:symbol
         """
+        start_index = 0
+        text_list = []
         for m in self.SPAN_SIMPLE_RE.finditer(text):
             # print("simple_span_code: {}".format(m.group()))
             # print("new: {}".format('<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code'))))
-            text = text.replace(m.group(), '<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code')))
-        return text
+            # text = text.replace(m.group(), '<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code')))
+            text_list.append(text[start_index: m.start()])
+            text_list.append('<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code')))
+            start_index = m.end()
+        text_list.append(text[start_index:len(text)])
+        return ''.join(text_list)
 
     def handle_easy_span_code(self, text, context):
         """
@@ -355,11 +386,17 @@ class IheartlaBlockPreprocessor(Preprocessor):
         :param context: current context name
         :return: replaced text
         """
+        start_index = 0
+        text_list = []
         for m in self.EASY_SPAN_BLOCK_RE.finditer(text):
             print("easy_span_code: {}".format(m.group()))
             # print("new: {}".format('<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code'))))
-            text = text.replace(m.group(), '<span class="def:{}"> {} </span>'.format(context, m.group('code')))
-        return text
+            # text = text.replace(m.group(), '<span class="def:{}"> {} </span>'.format(context, m.group('code')))
+            text_list.append(text[start_index: m.start()])
+            text_list.append('<span class="def:{}"> {} </span>'.format(context, m.group('code')))
+            start_index = m.end()
+        text_list.append(text[start_index:len(text)])
+        return ''.join(text_list)
 
     def handle_span_code(self, text):
         """
@@ -410,6 +447,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         """
         Process context and fill missing context in various blocks (iheartla code, span code)
         """
+        record("Start handle_context_pre")
         start_index = 0
         text_list = []
         context_list = ['']
@@ -430,6 +468,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             text_list[index] = self.handle_easy_span_code(text_list[index], context_list[index])
             full_text += text_list[index]
             # text_list[index] = self.handle_prose_label(text_list[index], context_list[index])
+        record("End handle_context_pre")
         return full_text, context_list
 
     def handle_context_post(self, text, equation_dict):
