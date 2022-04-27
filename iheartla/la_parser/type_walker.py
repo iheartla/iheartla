@@ -228,6 +228,7 @@ class TypeWalker(NodeWalker):
                 return self.func_data_dict[self.local_func_name].params_data
             else:
                 assert True, "error"
+        self.main_param.symtable = self.symtable
         return self.main_param
 
     def filter_symbol(self, symbol):
