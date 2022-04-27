@@ -123,11 +123,14 @@ class LaVarType(object):
     def is_function(self):
         return self.var_type == VarTypeEnum.FUNCTION
 
-    def is_same_type(self, other):
+    def is_same_type(self, other, omit_size=False):
         same = False
         if self.var_type == other.var_type:
             if self.var_type == VarTypeEnum.SEQUENCE:
-                same = self.size == other.size and self.element_type.is_same_type(other.element_type)
+                if omit_size:
+                    same = self.element_type.is_same_type(other.element_type)
+                else:
+                    same = self.size == other.size and self.element_type.is_same_type(other.element_type)
             elif self.var_type == VarTypeEnum.MATRIX:
                 same = self.rows == other.rows and self.cols == other.cols
             elif self.var_type == VarTypeEnum.VECTOR:
