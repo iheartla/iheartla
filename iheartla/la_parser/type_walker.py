@@ -1179,10 +1179,12 @@ class TypeWalker(NodeWalker):
             for par_def in node.defs:
                 par_type = self.walk(par_def, **kwargs)
                 par_defs.append(par_type)
-                par_dict.update(par_type.get_type_dict())
-            self.local_func_dict[local_func_name] = par_dict
+                # par_dict.update(par_type.get_type_dict())
+            # self.local_func_dict[local_func_name] = par_dict
             self.is_param_block = False
-            self.func_data_dict[local_func_name].symtable = par_dict
+            # self.func_data_dict[local_func_name].symtable = par_dict
+            self.local_func_dict[local_func_name] = self.func_data_dict[local_func_name].params_data.symtable
+            par_dict = self.local_func_dict[local_func_name]
         assert local_func_name not in self.symtable, get_err_msg(get_line_info(node.parseinfo),0,"Symbol {} has been defined".format(local_func_name))
         ir_node = LocalFuncNode(name=IdNode(local_func_name, parse_info=node.parseinfo), expr=[],
                                 parse_info=node.parseinfo, raw_text=node.text, defs=par_defs,
