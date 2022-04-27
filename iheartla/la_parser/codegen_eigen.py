@@ -1602,6 +1602,7 @@ class CodeGenEigen(CodeGen):
 
     def visit_optimize(self, node, **kwargs):
         self.enable_tmp_sym = True
+        self.opt_key = node.key
         cur_len = 0
         param_name = self.generate_var_name('X')
         pre_list = []

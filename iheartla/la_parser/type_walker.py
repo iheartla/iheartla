@@ -213,6 +213,8 @@ class TypeWalker(NodeWalker):
         self.local_func_name = ''  # function name when visiting expressions
         self.local_func_dict = {}  # local function name -> parameter dict
         self.visiting_opt = False  # optimization
+        self.opt_key = ''
+        self.opt_dict = {}
         self.func_data_dict = {}   # local function name -> LocalFuncData
         #
         self.desc_dict = {}        # comment for parameters
@@ -226,6 +228,11 @@ class TypeWalker(NodeWalker):
         if self.local_func_parsing:
             if self.local_func_name in self.func_data_dict:
                 return self.func_data_dict[self.local_func_name].params_data
+            else:
+                assert True, "error"
+        elif self.visiting_opt:
+            if self.opt_key in self.opt_dict:
+                return self.opt_dict[self.opt_key]
             else:
                 assert True, "error"
         self.main_param.symtable = self.symtable
@@ -276,6 +283,7 @@ class TypeWalker(NodeWalker):
         self.local_func_parsing = False
         self.local_func_name = ''
         self.local_func_dict.clear()
+        self.opt_dict.clear()
         self.func_data_dict.clear()
         self.desc_dict.clear()
         self.import_module_list.clear()
@@ -425,6 +433,9 @@ class TypeWalker(NodeWalker):
         if self.local_func_parsing:
             if self.local_func_name in self.local_func_dict and sym in self.local_func_dict[self.local_func_name]:
                 resolved = True
+        elif self.visiting_opt:
+            if self.opt_key in self.opt_dict and sym in self.opt_dict[self.opt_key].symtable:
+                resolved = True
         if not resolved:
             assert self.symtable.get(sym) is not None, msg
 
@@ -548,6 +559,7 @@ class TypeWalker(NodeWalker):
         self.saved_func_data_dict = copy.deepcopy(self.func_data_dict)
         self.saved_local_func_dict = copy.deepcopy(self.local_func_dict)
         self.saved_used_params = copy.deepcopy(self.used_params)
+        self.saved_opt_dict = copy.deepcopy(self.opt_dict)
 
     def pop_environment(self):
         self.symtable = self.saved_symtable
@@ -558,6 +570,7 @@ class TypeWalker(NodeWalker):
         self.lhs_sub_dict = self.saved_lhs_sub_dict
         self.local_func_dict = self.saved_local_func_dict
         self.func_data_dict = self.saved_func_data_dict
+        self.opt_dict = self.saved_opt_dict
         self.used_params = self.saved_used_params
         self.local_func_parsing = False
         self.is_param_block = False
@@ -1505,6 +1518,8 @@ class TypeWalker(NodeWalker):
 
     def walk_Optimize(self, node, **kwargs):
         self.visiting_opt = True
+        self.opt_key = self.generate_var_name('opt_key')
+        self.opt_dict[self.opt_key] = ParamsData()
         base_id_list = []
         base_node_list = []
         base_type_list = []
@@ -1523,8 +1538,9 @@ class TypeWalker(NodeWalker):
                     la_type_list.append(par_type.type.la_type)
                     # temporary add to symbol table : opt scope
                     # self.symtable[par_type.id[cur_index].get_name()] = par_type.type.la_type
-                    self.tmp_symtable[par_type.id[cur_index].get_main_id()] = self.symtable[par_type.id[cur_index].get_main_id()]
+                    self.tmp_symtable[par_type.id[cur_index].get_main_id()] = self.get_cur_param_data().symtable[par_type.id[cur_index].get_main_id()]
             self.is_param_block = False
+            self.symtable.update(self.get_cur_param_data().symtable)
         opt_type = OptimizeType.OptimizeInvalid
         ret_type = ScalarType()
         if node.min:
@@ -1546,7 +1562,7 @@ class TypeWalker(NodeWalker):
             del self.symtable[cur_id]
         #
         assert exp_node.la_type.is_scalar(), get_err_msg_info(exp_node.parse_info, "Objective function must return a scalar")
-        opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node_list, base_type_list, parse_info=node.parseinfo, def_list=par_defs)
+        opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node_list, base_type_list, parse_info=node.parseinfo, key=self.opt_key, def_list=par_defs)
         opt_node.la_type = ret_type
         node_info = NodeInfo(opt_node.la_type, ir=opt_node, symbols=exp_info.symbols)
         self.visiting_opt = False
