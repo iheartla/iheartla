@@ -1517,13 +1517,13 @@ class TypeWalker(NodeWalker):
                 par_type = self.walk(par_def, **kwargs)
                 par_defs.append(par_type)
                 for cur_index in range(len(par_type.id)):
-                    base_id_list.append(par_type.id[cur_index].get_name())
+                    base_id_list.append(par_type.id[cur_index].get_main_id())
                     base_type_list.append(par_type.type)
                     base_node_list.append(par_type.id[cur_index])
                     la_type_list.append(par_type.type.la_type)
                     # temporary add to symbol table : opt scope
-                    self.symtable[par_type.id[cur_index].get_name()] = par_type.type.la_type
-                    self.tmp_symtable[par_type.id[cur_index].get_name()] = par_type.type.la_type
+                    # self.symtable[par_type.id[cur_index].get_name()] = par_type.type.la_type
+                    self.tmp_symtable[par_type.id[cur_index].get_main_id()] = self.symtable[par_type.id[cur_index].get_main_id()]
             self.is_param_block = False
         opt_type = OptimizeType.OptimizeInvalid
         ret_type = ScalarType()
