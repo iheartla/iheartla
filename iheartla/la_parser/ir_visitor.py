@@ -30,6 +30,9 @@ class IRVisitor(object):
         self.local_func_def = ''
         self.local_func_syms = []
         self.local_func_dict = {}
+        self.visiting_opt = False  # optimization
+        self.opt_key = ''
+        self.opt_dict = {}
         self.parse_type = parse_type
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
         self.name_convention_dict = {}  # eg:i -> i[0]
@@ -271,6 +274,7 @@ class IRVisitor(object):
         self.la_content = type_walker.la_content
         self.local_func_syms = type_walker.local_func_syms
         self.local_func_dict = type_walker.local_func_dict
+        self.opt_dict = type_walker.opt_dict
         self.used_params = type_walker.used_params
         if func_name is not None:
             self.func_name = func_name

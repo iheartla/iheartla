@@ -1429,6 +1429,7 @@ class CodeGenMatlab(CodeGen):
         return CodeNodeInfo("")
 
     def visit_optimize(self, node, **kwargs):
+        self.opt_key = node.key
         id_info = self.visit(node.base, **kwargs)
         if node.base_type.la_type.is_scalar():
             init_value = 0
