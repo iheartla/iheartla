@@ -290,6 +290,9 @@ class TypeWalker(NodeWalker):
         self.main_param.reset()
         self.used_params.clear()
         self.expr_dict.clear()
+        self.visiting_opt = False
+        self.visiting_lhs = False
+        self.opt_key = ''
 
     def get_func_symbols(self):
         ret = {}
