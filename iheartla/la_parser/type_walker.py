@@ -759,7 +759,8 @@ class TypeWalker(NodeWalker):
         ir_node = WhereConditionNode(parse_info=node.parseinfo)
         ret = node.text.split(':')
         desc = ':'.join(ret[1:len(ret)])
-        ir_node.desc = node.desc
+        if hasattr(node, 'desc'):
+            ir_node.desc = node.desc
         type_node = self.walk(node.type, **kwargs)
         if node.index:
             # check index type condition
@@ -773,7 +774,7 @@ class TypeWalker(NodeWalker):
             id0_info = self.walk(node.id[id_index], **kwargs)
             ir_node.id.append(id0_info.ir)
             id0 = id0_info.content
-            if node.desc is not None:
+            if hasattr(node, 'desc') and node.desc is not None:
                 self.desc_dict[id0_info.ir.get_main_id()] = node.desc
             if True:
                 self.handle_identifier(id0, id0_info.ir, type_node)
