@@ -871,9 +871,50 @@ class grammarinitParser(Parser):
             self._multi_cond_()
             self.name_last_node('cond')
         self._closure(block14)
+
+        def block24():
+
+            def block25():
+                self._hspace_()
+            self._closure(block25)
+
+            def block26():
+                self._separator_()
+            self._positive_closure(block26)
+
+            def block27():
+                self._hspace_()
+            self._closure(block27)
+            self._token('with')
+
+            def block28():
+                self._hspace_()
+            self._closure(block28)
+            self._token('initial')
+
+            def block29():
+                self._hspace_()
+            self._closure(block29)
+            self._statement_()
+            self.add_last_node_to_name('init')
+
+            def block31():
+
+                def block32():
+                    self._hspace_()
+                self._closure(block32)
+                self._token(';')
+
+                def block33():
+                    self._hspace_()
+                self._closure(block33)
+                self._statement_()
+                self.add_last_node_to_name('init')
+            self._closure(block31)
+        self._closure(block24)
         self.ast._define(
             ['amax', 'amin', 'cond', 'exp', 'max', 'min'],
-            ['defs']
+            ['defs', 'init']
         )
 
     @tatsumasu('MultiCond')
@@ -5749,6 +5790,7 @@ class Optimize(ModelBase):
     cond = None
     defs = None
     exp = None
+    init = None
     max = None
     min = None
 
