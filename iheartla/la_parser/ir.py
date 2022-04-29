@@ -614,7 +614,7 @@ class OptimizeType(Enum):
 
 
 class OptimizeNode(ExprNode):
-    def __init__(self, opt_type=OptimizeType.OptimizeInvalid, cond_list=None, exp=None, base_list=None, base_type_list=None, parse_info=None, key='', init_list=None, raw_text=None, def_list=None):
+    def __init__(self, opt_type=OptimizeType.OptimizeInvalid, cond_list=None, exp=None, base_list=None, base_type_list=None, parse_info=None, key='', init_list=None, init_syms=None, raw_text=None, def_list=None):
         super().__init__(IRNodeType.Optimize, parse_info=parse_info, raw_text=raw_text)
         self.opt_type = opt_type
         self.cond_list = cond_list
@@ -624,6 +624,7 @@ class OptimizeNode(ExprNode):
         self.def_list = def_list   # ir node list
         self.key = key
         self.init_list = init_list
+        self.init_syms = init_syms
 
 
 class DomainNode(ExprNode):
