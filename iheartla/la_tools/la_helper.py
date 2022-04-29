@@ -158,8 +158,13 @@ def split_sub_string(identifier):
     return identifier.split('_')
 
 
+# BLOCK_RE = re.compile(
+#         dedent(r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(\_)(?P<sub>((`[^`]*`)|([A-Za-z0-9\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)+)'''),
+#         re.MULTILINE | re.DOTALL | re.VERBOSE
+#     )
 BLOCK_RE = re.compile(
-        dedent(r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(\_)(?P<sub>((`[^`]*`)|([A-Za-z0-9\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)+)'''),
+        dedent(
+            r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(\_)(?P<sub>((`[^`]*`)|([A-Za-z0-9\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)|(,)|(\*)?)+)'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
 UNICODE_RE = re.compile(
