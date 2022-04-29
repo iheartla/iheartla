@@ -1530,6 +1530,11 @@ class TypeWalker(NodeWalker):
         la_type_list = []
         par_defs = []
         par_dict = {}
+        init_list = []
+        if len(node.init) > 0:
+            for cur_init in node.init:
+                cur_info = self.walk(cur_init, **kwargs)
+                init_list.append(cur_info.ir)
         if len(node.defs) > 0:
             self.is_param_block = True
             for par_def in node.defs:
@@ -1566,7 +1571,7 @@ class TypeWalker(NodeWalker):
             del self.symtable[cur_id]
         #
         assert exp_node.la_type.is_scalar(), get_err_msg_info(exp_node.parse_info, "Objective function must return a scalar")
-        opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node_list, base_type_list, parse_info=node.parseinfo, key=self.opt_key, def_list=par_defs)
+        opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node_list, base_type_list, parse_info=node.parseinfo, key=self.opt_key, init_list=init_list, def_list=par_defs)
         opt_node.la_type = ret_type
         node_info = NodeInfo(opt_node.la_type, ir=opt_node, symbols=exp_info.symbols)
         self.visiting_opt = False

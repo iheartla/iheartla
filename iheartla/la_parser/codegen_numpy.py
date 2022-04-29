@@ -1481,6 +1481,11 @@ class CodeGenNumpy(CodeGen):
                     if line != "":
                         pre_list.append("    {}\n".format(line))
         pre_list.append("        return {}\n".format(exp))
+        # init list
+        for cur_index in range(len(node.init_list)):
+            init_info = self.visit(node.init_list[cur_index], **kwargs)
+            pre_list += init_info.pre_list
+            pre_list.append(init_info.content)
         #
         content = ''
         if node.opt_type == OptimizeType.OptimizeMin:
