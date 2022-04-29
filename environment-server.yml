@@ -1,4 +1,4 @@
-name: iheartla-cli
+name: iheartla-server
 channels:
   - conda-forge
   - defaults
@@ -9,4 +9,5 @@ dependencies:
   - sympy
   - appdirs
   - pybtex
-prefix: /Users/anonymous/opt/miniconda3/envs/iheartla-cli
+  - tornado
+prefix: /Users/anonymous/opt/miniconda3/envs/iheartla-server
