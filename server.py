@@ -8,16 +8,18 @@ import sys
 import subprocess
 import threading
 from datetime import datetime
-from app import process_input, read_from_file, save_to_file, get_resource_dir
+from app import process_input, read_from_file, save_to_file, ParserTypeEnum
 from iheartla.la_tools.la_msg import LaMsg
+from pathlib import Path
 
 
 default_input = ''
+default_path = '.'
 def save_markdown(content):
-    dst = "{}/input-history".format(get_resource_dir())
+    dst = "{}/input-history".format(default_path)
     if not os.path.exists(dst):
         os.mkdir(dst)
-    save_to_file(content, "{}/input-history/input-{}.md".format(get_resource_dir(), datetime.now().strftime("%Y-%m-%d-%H-%M-%S")))
+    save_to_file(content, "{}/input-history/input-{}.md".format(default_path, datetime.now().strftime("%Y-%m-%d-%H-%M-%S")))
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -30,7 +32,7 @@ class MainHandler(tornado.web.RequestHandler):
         ret = 1
         extra_dict = {}
         try:
-            res = process_input(data['input'], server_mode=True)
+            res = process_input(data['input'], default_path, server_mode=True, parser_type=ParserTypeEnum.NUMPY)
             ret = 0
             extra_dict["res"] = res
         except AssertionError as e:
@@ -59,14 +61,14 @@ class FileHandler(tornado.web.RequestHandler):
         if data['type'] == "get":
             src = data['src']
             # print("Received request: {}".format(data['input']))
-            res = read_from_file("{}/{}.py".format(get_resource_dir(), src))
+            res = read_from_file("{}/{}.py".format(default_path, src))
             self.set_header("Content-Type", "application/json")
             self.write(json.JSONEncoder().encode({"res": res}))
         elif data['type'] == "run":
             src = data['src']
             print("updated source: {}".format(data['source']))
-            save_to_file(data['source'], "{}/{}.py".format(get_resource_dir(), src))
-            ret = subprocess.run(["python", "{}/{}.py".format(get_resource_dir(), src)])
+            save_to_file(data['source'], "{}/{}.py".format(default_path, src))
+            ret = subprocess.run(["python", "{}/{}.py".format(default_path, src)])
             if ret.returncode == 0:
                 pass
                 print("server succeed, {}".format(src))
@@ -86,6 +88,8 @@ def make_app():
     application = tornado.web.Application([
         (r"/handler", MainHandler),
         (r"/file", FileHandler),
+        (r"/heartdown-resource/(.*)", tornado.web.StaticFileHandler, {"path": "./extras/heartdown-resource",
+                                                   "default_filename": "index.html"}),
         (r"/(.*)", tornado.web.StaticFileHandler, {"path": "./docs",
                                                    "default_filename": "index.html"})
     ], debug=True, autoreload=True)
@@ -94,10 +98,11 @@ def make_app():
 
 if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser(description='HeartDown local server')
-    arg_parser.add_argument('--paper', help='paper source')
+    arg_parser.add_argument('paper', nargs='+', help='The paper source file to compile')
     args = arg_parser.parse_args()
     if args.paper:
-        default_input = read_from_file(args.paper)
+        default_path = os.path.dirname(Path(args.paper[0]))
+        default_input = read_from_file(args.paper[0])
     app = make_app()
     app.listen(8000)
     print('Listening at http://localhost:8000/')

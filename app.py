@@ -255,26 +255,22 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
                                path=input_dir,
                                parser_type=parser_type,
                                bibtex_file='{}/{}.bib'.format(input_dir, file_name))
+        record("Call Markdown")
         body = md.convert(content)
         body, abstract = handle_abstract(body, md.Meta)
         body = handle_sections(body, md.Meta)
         body = abstract + body
         body = handle_title(body, md.Meta)
         body = handle_context_block(body)
-        if server_mode:
-            save_output_code(md, './extras/resource/img')
-        else:
-            save_output_code(md, input_dir)
+        save_output_code(md, input_dir)
         if md.need_gen_figure:
             body = handle_figure(body, md.figure_list)
         equation_json = md.json_data
         # equation_data = get_sym_data(json.loads(equation_json))
         sym_json = md.json_sym
-        if not server_mode:
-            dst = "{}/resource".format(input_dir)
-            if os.path.exists(dst):
-                shutil.rmtree(dst)
-            shutil.copytree("./extras/resource", dst)
+        dst = "{}/heartdown-resource".format(input_dir)
+        if not os.path.exists(dst):
+            shutil.copytree("./extras/heartdown-resource", dst)
         script = r"""window.onload = onLoad;
         function reportWindowSize() {
           var arrows = document.querySelectorAll(".arrow");
@@ -307,7 +303,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
         MathJax = {
           loader: {
             load: ["[attrLabel]/attr-label.js"],
-            paths: { attrLabel: "''' + resource_dir + '''/resource" },
+            paths: { attrLabel: "''' + resource_dir + '''/heartdown-resource" },
           },
           tex: { packages: { "[+]": ["attr-label"] },
            inlineMath: [['$', '$']]
@@ -327,10 +323,10 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
             <script src="https://unpkg.com/tippy.js@6"></script>
             <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/svg-arrow.css"/>
             <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/border.css" />
-            <script src="{resource_dir}/resource/d3.min.js"></script>
-            <script src="{resource_dir}/resource/svg.min.js"></script>
-            <script type="text/javascript" src='{resource_dir}/resource/paper.js'></script>
-            <link rel="stylesheet" href="{resource_dir}/resource/paper.css">
+            <script src="{resource_dir}/heartdown-resource/d3.min.js"></script>
+            <script src="{resource_dir}/heartdown-resource/svg.min.js"></script>
+            <script type="text/javascript" src='{resource_dir}/heartdown-resource/paper.js'></script>
+            <link rel="stylesheet" href="{resource_dir}/heartdown-resource/paper.css">
         </head>
         <script>
         const iheartla_data = JSON.parse('{equation_json}');
@@ -364,7 +360,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
 if __name__ == '__main__':
     # LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
     LaLogger.getInstance().set_level(logging.WARNING)
-    arg_parser = argparse.ArgumentParser(description='I Heart LA paper compiler')
+    arg_parser = argparse.ArgumentParser(description='HeartDown paper compiler')
     arg_parser.add_argument('--regenerate-grammar', action='store_true', help='Regenerate grammar files')
     arg_parser.add_argument('--resource_dir', help='resource path')
     arg_parser.add_argument('-o', '--output', help='The output language', choices=['numpy', 'eigen', 'latex','matlab'])
