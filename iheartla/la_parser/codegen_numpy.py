@@ -1384,28 +1384,33 @@ class CodeGenNumpy(CodeGen):
         id_list = []
         pack_list = []
         unpack_list = []
+        init_str_list = []
         for cur_index in range(len(node.base_list)):
             cur_la_type = node.base_type_list[cur_index].la_type
             id_info = self.visit(node.base_list[cur_index], **kwargs)
             id_list.append(id_info.content)
             pack_str = ''
             unpack_str = ''
+            init_str = ''
             if cur_la_type.is_scalar():
                 pack_str = "[{}]".format(id_info.content)
                 unpack_str = "{}[{}:{}][0]".format(param_name, cur_len, add_syms(cur_len, 1))
+                init_str = '0'
                 cur_len = add_syms(cur_len, 1)
             elif cur_la_type.is_vector():
                 pack_str = id_info.content
                 unpack_str = "{}[{}:{}]".format(param_name, cur_len, add_syms(cur_len, cur_la_type.rows))
                 cur_len = add_syms(cur_len, cur_la_type.rows)
+                init_str = 'np.zeros({})'.format(cur_la_type.rows)
             elif cur_la_type.is_matrix():
                 pack_str = "np.reshape({}, -1)".format(id_info.content)
                 unpack_str = "{}[{}:{}].reshape({}, {})".format(param_name, cur_len, add_syms(cur_len, mul_syms(cur_la_type.rows, cur_la_type.cols)),
                                                                 cur_la_type.rows, cur_la_type.cols)
                 cur_len = add_syms(cur_len, mul_syms(cur_la_type.rows, cur_la_type.cols))
+                init_str = 'np.zeros(({}, {}))'.format(cur_la_type.rows, cur_la_type.cols)
             pack_list.append(pack_str)
             unpack_list.append(unpack_str)
-        init_value = "np.zeros({})".format(cur_len)
+            init_str_list.append(init_str)
         #
         exp_info = self.visit(node.exp, **kwargs)
         category = ''
@@ -1481,11 +1486,14 @@ class CodeGenNumpy(CodeGen):
                     if line != "":
                         pre_list.append("    {}\n".format(line))
         pre_list.append("        return {}\n".format(exp))
+        init_value = "np.zeros({})".format(cur_len)
         # init list
-        for cur_index in range(len(node.init_list)):
-            init_info = self.visit(node.init_list[cur_index], **kwargs)
-            pre_list += init_info.pre_list
-            pre_list.append(init_info.content)
+        if len(node.init_list) > 0:
+            for cur_index in range(len(node.init_list)):
+                init_info = self.visit(node.init_list[cur_index], **kwargs)
+                pre_list += init_info.pre_list
+                pre_list.append(init_info.content)
+            init_value = "pack({})".format(','.join(init_str_list))
         #
         content = ''
         if node.opt_type == OptimizeType.OptimizeMin:
