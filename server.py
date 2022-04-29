@@ -100,5 +100,6 @@ if __name__ == "__main__":
         default_input = read_from_file(args.paper)
     app = make_app()
     app.listen(8000)
+    print('Listening at http://localhost:8000/')
     tornado.ioloop.IOLoop.current().start()
 
