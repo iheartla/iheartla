@@ -1,8 +1,8 @@
 body {
     /* overflow: hidden; */
-    padding-top: 10px;
+    padding: 10px;
 }
-.container{
+.container {
     max-width: 1570px;
     /*margin-right: 0px;*/
     /*margin-left: 20px;*/
@@ -18,24 +18,31 @@ body {
     padding-left: 0px;
 }
 #editor {
-    width: 100%;
     height: 90%;
+    border-radius: 3px;
+    box-sizing: border-box;
+    margin-left: 3px;
+    margin-right: 3px;
 }
 #cpp {
     width: 100%;
     height: 500px;
+    border-radius: 3px;
 }
 #python {
     width: 100%;
     height: 500px;
+    border-radius: 3px;
 }
 #test {
     width: 100%;
     height: 500px;
+    border-radius: 3px;
 }
 #matlab {
     width: 100%;
     height: 500px;
+    border-radius: 3px;
 }
 #compile {
     background-color: #4CAF50; /* Green background */
@@ -54,9 +61,13 @@ body {
     white-space: initial;
 }
 #output {
-    /*border: 10px solid grey;*/
+    border: 1px solid grey;
+    border-radius: 3px;
     width: 100%;
+    height: 100%;
     box-sizing: border-box;
+    margin-left: 3px;
+    margin-right: 3px;
 }
 #keybinding {
 }
@@ -91,6 +102,10 @@ h1
   text-align: center;
 }
 
+h1 > small {
+    font-size: 70%;
+}
+
 .bd-example-modal-lg .modal-dialog{
     display: table;
     position: relative;
@@ -101,4 +116,9 @@ h1
 .bd-example-modal-lg .modal-dialog .modal-content{
 background-color: transparent;
 border: none;
+}
+
+a, a:hover, a:visited, a:active, a:link {
+  color: inherit;
+  text-decoration: underline solid grey;
 }
