@@ -1852,6 +1852,8 @@ class TypeWalker(NodeWalker):
         if isinstance(node.name, str):
             if self.local_func_parsing and node.name in self.parameters and node.name not in self.used_params:
                 self.used_params.append(node.name)
+            if self.visiting_opt and node.name in self.parameters and node.name not in self.used_params:
+                self.used_params.append(node.name)
             if contains_sub_symbol(node.name):
                 split_res = split_sub_string(node.name)
                 name = self.filter_symbol(split_res[0])
@@ -2287,6 +2289,8 @@ class TypeWalker(NodeWalker):
         #
         ir_node = IdNode(value, parse_info=node.parseinfo)
         if self.local_func_parsing and value in self.parameters and value not in self.used_params:
+            self.used_params.append(value)
+        if self.visiting_opt and value in self.parameters and value not in self.used_params:
             self.used_params.append(value)
         node_type = self.get_sym_type(value)
         # if value in self.symtable:
