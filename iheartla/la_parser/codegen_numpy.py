@@ -1408,6 +1408,8 @@ class CodeGenNumpy(CodeGen):
                                                                 cur_la_type.rows, cur_la_type.cols)
                 cur_len = add_syms(cur_len, mul_syms(cur_la_type.rows, cur_la_type.cols))
                 init_str = 'np.zeros(({}, {}))'.format(cur_la_type.rows, cur_la_type.cols)
+            if id_info.content in node.init_syms:
+                init_str = id_info.content
             pack_list.append(pack_str)
             unpack_list.append(unpack_str)
             init_str_list.append(init_str)
