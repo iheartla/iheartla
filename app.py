@@ -161,7 +161,7 @@ def gen_figure(source, name, input_dir):
     src = "{}/output_code/lib.py".format(input_dir)
     if os.path.exists(src):
         shutil.copyfile(src, "{}/img_code/lib.py".format(input_dir))
-    ret = subprocess.run(["python", source])
+    ret = subprocess.run(["python", source], cwd="{}/img_code".format(input_dir))
     record("figure")
     if ret.returncode == 0:
         pass

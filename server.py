@@ -68,7 +68,7 @@ class FileHandler(tornado.web.RequestHandler):
             src = data['src']
             print("updated source: {}".format(data['source']))
             save_to_file(data['source'], "{}/{}.py".format(default_path, src))
-            ret = subprocess.run(["python", "{}/img_code/{}.py".format(default_path, src)])
+            ret = subprocess.run(["python", "{}/img_code/{}.py".format(default_path, src)], cwd="{}/img_code".format(default_path))
             if ret.returncode == 0:
                 pass
                 print("server succeed, {}".format(src))
