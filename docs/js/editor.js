@@ -182,7 +182,7 @@ function onLoad(){
       .then(data => {
           if (data.ret === 0){
             let editor = ace.edit("editor");
-            editor.setValue(data.content);
+            editor.setValue(data.content, 1);
           }
      });
 }
@@ -328,7 +328,7 @@ function onEditEquation(raw_text){
     console.log(`Received: ${raw_text}`);
     // document.getElementById("equation").innerHTML = raw_text;
     let equation = ace.edit("equation");
-    equation.setValue(preEqCode);
+    equation.setValue(preEqCode, 1);
     $('#eqEditor').modal('show');
     equation.session.on('change', onEditIhla);
 }
@@ -404,7 +404,7 @@ function removeMarkers() {
 function clearEq() {
     let equation = ace.edit("equation");
     $('#eqEditor').modal('hide');
-    equation.setValue('');
+    equation.setValue('', 1);
 }
 
 function onUpdateEq() {
@@ -416,7 +416,7 @@ function onUpdateEq() {
      // console.log(`source is ${source}`);
      $('#eqEditor').modal('hide');
      clearEq();
-     editor.setValue(source);
+     editor.setValue(source, 1);
      // same as manually clicking
      clickCompile();
 }
@@ -430,7 +430,7 @@ function onUpdatePython() {
     source = source.replace(preTestCode, content);
     $('#testEditor').modal('hide');
     clearTest();
-    editor.setValue(source);
+    editor.setValue(source, 1);
     // same as manually clicking
     // clickCompile();
     postData(window.location.href + 'file', { src:  curFigure, type:"run", source: content})
@@ -452,7 +452,7 @@ function onCancelUpdatePython() {
 function clearTest() {
     let python = ace.edit("python");
     $('#testEditor').modal('hide');
-    python.setValue('');
+    python.setValue('', 1);
 }
 
 function clickFigure(ele, name){
@@ -463,7 +463,7 @@ function clickFigure(ele, name){
           console.log(`data is ${data.res}`);
         let python = ace.edit("python");
         preTestCode = data.res;
-        python.setValue(data.res);
+        python.setValue(data.res, 1);
         $('#testEditor').modal('show');
      });
 }
