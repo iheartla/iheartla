@@ -2659,12 +2659,12 @@ var MarkdownHighlightRules = function() {
                     '((?:[^\\)\\s\\\\]|\\\\.|\\s(?=[^"]))*)' +        // href or image
                     '(\\s*"' +  escaped('"') + '"\\s*)?' +            // "title"
                     "(\\))"                                           // )
-        }, { // strong ** __
+        }, { // strong ** $$ (__ deleted)
             token : "string.strong",
-            regex : "([*]{2}|[_]{2}(?=\\S))(.*?\\S[*_]*)(\\1)"
-        }, { // emphasis * _
+            regex : "([*]{2}|[$]{2}(?=\\S))(.*?\\S[*$]*)(\\1)"
+        }, { // emphasis * $ (_ deleted)
             token : "string.emphasis",
-            regex : "([*]|[_](?=\\S))(.*?\\S[*_]*)(\\1)"
+            regex : "([*]|[$](?=\\S))(.*?\\S[*$]*)(\\1)"
         }, { //
             token : ["text", "url", "text"],
             regex : "(<)("+
