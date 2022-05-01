@@ -17,25 +17,6 @@ body
   hyphens: auto;
   text-align: justify;
 }
-.blink {
-  /*color: #8B0000;*/
-  background-color: rgba(139, 0, 0, 0.8);  
-  /*border: 2px solid rgba(139, 0, 0, .5);  */
-  border-radius: 4px;
-/*  animation: blink-animation 0.5s steps(2, start) 3;
-  -webkit-animation: blink-animation 0.5s steps(2, start) 3;*/
-/*  animation-duration: 3s;*/
-}
-@keyframes blink-animation {
-  to {
-    visibility: hidden;
-  }
-}
-@-webkit-keyframes blink-animation {
-  to {
-    visibility: hidden;
-  }
-}
 
 .title{
     margin: 13.4px 0 13.4px;
@@ -204,6 +185,17 @@ a.detail{
   border-bottom: 1px dotted #000;
   text-decoration: none;
 }
+.blink {
+  /*color: #8B0000;*/
+  /*background-color: rgba(139, 0, 0, 0.8);  */
+  /*border: 2px solid rgba(139, 0, 0, .5);  */
+  border-bottom: 2px solid red;
+  /*text-decoration: 2px solid red;*/
+  /*border-radius: 4px;*/
+/*  animation: blink-animation 0.5s steps(2, start) 3;
+  -webkit-animation: blink-animation 0.5s steps(2, start) 3;*/
+/*  animation-duration: 3s;*/
+} 
 /*https://htmlcolorcodes.com/color-names/*/
 .highlight_prose {
  /*color: #5A97D4; */
