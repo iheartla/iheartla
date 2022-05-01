@@ -166,10 +166,13 @@ def gen_figure(source, name):
         print("failed, {}".format(source))
 
 
-def handle_figure(text, name_list):
+def handle_figure(text, name_list, input_dir):
     start_index = 0
     text_list = []
     threads_list = []
+    folder = "{}/img_code".format(input_dir)
+    if not os.path.exists(folder):
+        os.mkdir(folder)
     for m in FIGURE_BLOCK_RE.finditer(text):
         figure = m.group('figure')
         new_figure = None
@@ -178,7 +181,7 @@ def handle_figure(text, name_list):
             path, name = get_file_base(src)
             print("handle_figure, img: {}, name:{}".format(path, name))
             if name in name_list:
-                source = "./extras/{}/{}.py".format(path, name)
+                source = "{}/{}.py".format(folder, name)
                 threads_list.append(threading.Thread(target=gen_figure, args=(source, name)))
                 new_figure = "<figure{}>".format(m.group('property')) + figure[:img.start()] + """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name) + figure[img.end():]
                 new_figure += "</figure>"
@@ -264,7 +267,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
         body = handle_context_block(body)
         save_output_code(md, input_dir)
         if md.need_gen_figure:
-            body = handle_figure(body, md.figure_list)
+            body = handle_figure(body, md.figure_list, input_dir)
         equation_json = md.json_data
         # equation_data = get_sym_data(json.loads(equation_json))
         sym_json = md.json_sym

@@ -1,3 +1,4 @@
+import os
 from textwrap import dedent
 from . import Extension, WHEEL_MODE
 from ..preprocessors import Preprocessor
@@ -521,7 +522,10 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     print("img: {}, name:{}".format(path, name))
                     self.md.need_gen_figure = True
                     code = c.group('code')
-                    save_to_file(code, "./extras/{}/{}.py".format(path, name))
+                    folder = "{}/img_code".format(self.md.path)
+                    if not os.path.exists(folder):
+                        os.mkdir(folder)
+                    save_to_file(code, "{}/{}.py".format(folder, name))
                     self.md.figure_list.append(name)
                     # import os
                     # save_to_file(code, "{}/extras/resource/img/fig3.py".format(os.getcwd()))
