@@ -157,7 +157,10 @@ def handle_context_block(text):
     return ''.join(text_list)
 
 
-def gen_figure(source, name):
+def gen_figure(source, name, input_dir):
+    src = "{}/output_code/lib.py".format(input_dir)
+    if os.path.exists(src):
+        shutil.copyfile(src, "{}/img_code/lib.py".format(input_dir))
     ret = subprocess.run(["python", source])
     record("figure")
     if ret.returncode == 0:
@@ -182,7 +185,7 @@ def handle_figure(text, name_list, input_dir):
             print("handle_figure, img: {}, name:{}".format(path, name))
             if name in name_list:
                 source = "{}/{}.py".format(folder, name)
-                threads_list.append(threading.Thread(target=gen_figure, args=(source, name)))
+                threads_list.append(threading.Thread(target=gen_figure, args=(source, name, input_dir)))
                 new_figure = "<figure{}>".format(m.group('property')) + figure[:img.start()] + """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name) + figure[img.end():]
                 new_figure += "</figure>"
             break
