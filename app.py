@@ -302,7 +302,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
         }
         window.onresize = reportWindowSize;
         document.addEventListener("click", function(evt){
-            resetState();
+            onClickPage();
         });
         """
         mathjax = r'''<script>

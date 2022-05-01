@@ -975,6 +975,10 @@ function resetState(){
   resetEqScale();
   closeOtherTips();
 }
+function onClickPage(){
+  resetState();
+  checkDesc();
+}
 function resetEqScale(argument) {
   const matches = document.querySelectorAll(".eqHighlight");
   for (var i = matches.length - 1; i >= 0; i--) {
