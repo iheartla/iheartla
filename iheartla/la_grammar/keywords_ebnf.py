@@ -23,6 +23,8 @@ BUILTIN_KEYWORDS
     | '|'
     | /ℝ/|/ℤ/ | /ᵀ/
     #| SIN | COS | ASIN | ARCSIN | ACOS | ARCCOS | TAN | ATAN | ARCTAN | ATAN2
+    | WITH
+    | INITIAL
     ;
 
 TRACE = /trace/;
@@ -77,4 +79,6 @@ SQRT = /sqrt/;
 SUBJECT_TO = /s.t./|/subject to/;
 FROM = /from/;
 PI = /π/;
+WITH = /with/;
+INITIAL = /initial/;
 """

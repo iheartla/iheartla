@@ -25,7 +25,7 @@ from tatsu.util import re, generic_main  # noqa
 KEYWORDS = {}  # type: ignore
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
+class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
     def __init__(
         self,
         text,
@@ -37,7 +37,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
         namechars='',
         **kwargs
     ):
-        super(grammare37f0136aa3ffaf149b351f6a4c948e9Buffer, self).__init__(
+        super(grammarc21f969b5f03d33d43e04f8f136e7682Buffer, self).__init__(
             text,
             whitespace=whitespace,
             nameguard=nameguard,
@@ -49,7 +49,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
         )
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
+class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
     def __init__(
         self,
         whitespace=re.compile('(?!.*)'),
@@ -61,12 +61,12 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         parseinfo=True,
         keywords=None,
         namechars='',
-        buffer_class=grammare37f0136aa3ffaf149b351f6a4c948e9Buffer,
+        buffer_class=grammarc21f969b5f03d33d43e04f8f136e7682Buffer,
         **kwargs
     ):
         if keywords is None:
             keywords = KEYWORDS
-        super(grammare37f0136aa3ffaf149b351f6a4c948e9Parser, self).__init__(
+        super(grammarc21f969b5f03d33d43e04f8f136e7682Parser, self).__init__(
             whitespace=whitespace,
             nameguard=nameguard,
             comments_re=comments_re,
@@ -159,6 +159,10 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 self._pattern('ℤ')
             with self._option():
                 self._pattern('ᵀ')
+            with self._option():
+                self._WITH_()
+            with self._option():
+                self._INITIAL_()
             self._error('no available options')
 
     @tatsumasu()
@@ -378,6 +382,14 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     @tatsumasu()
     def _PI_(self):  # noqa
         self._pattern('π')
+
+    @tatsumasu()
+    def _WITH_(self):  # noqa
+        self._pattern('with')
+
+    @tatsumasu()
+    def _INITIAL_(self):  # noqa
+        self._pattern('initial')
 
     @tatsumasu('Exponent')
     def _exponent_(self):  # noqa
@@ -788,6 +800,40 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
 
     @tatsumasu('Optimize')
     def _optimize_operator_(self):  # noqa
+
+        def block0():
+            self._token('with')
+
+            def block1():
+                self._hspace_()
+            self._closure(block1)
+            self._token('initial')
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._statement_()
+            self.add_last_node_to_name('init')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._token(';')
+
+                def block6():
+                    self._hspace_()
+                self._closure(block6)
+                self._statement_()
+                self.add_last_node_to_name('init')
+            self._closure(block4)
+
+            def block8():
+                self._hspace_()
+            self._closure(block8)
+            self._token('\n')
+        self._closure(block0)
         with self._group():
             with self._choice():
                 with self._option():
@@ -805,113 +851,72 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 self._error('no available options')
         self._token('_(')
 
-        def block5():
+        def block14():
             self._hspace_()
-        self._closure(block5)
+        self._closure(block14)
         self._where_condition_terse_()
         self.add_last_node_to_name('defs')
 
-        def block7():
+        def block16():
 
-            def block8():
+            def block17():
                 self._hspace_()
-            self._closure(block8)
+            self._closure(block17)
             self._token(',')
 
-            def block9():
+            def block18():
                 self._hspace_()
-            self._closure(block9)
+            self._closure(block18)
             self._where_condition_terse_()
             self.add_last_node_to_name('defs')
-        self._closure(block7)
+        self._closure(block16)
 
-        def block11():
+        def block20():
             self._hspace_()
-        self._closure(block11)
+        self._closure(block20)
         self._token(')')
 
-        def block12():
+        def block21():
             self._hspace_()
-        self._closure(block12)
+        self._closure(block21)
         self._expression_()
         self.name_last_node('exp')
 
-        def block14():
+        def block23():
 
-            def block15():
+            def block24():
 
-                def block16():
+                def block25():
                     self._hspace_()
-                self._closure(block16)
+                self._closure(block25)
 
-                def block17():
+                def block26():
                     self._separator_()
-                self._closure(block17)
+                self._closure(block26)
 
-                def block18():
+                def block27():
                     self._hspace_()
-                self._closure(block18)
-            self._closure(block15)
+                self._closure(block27)
+            self._closure(block24)
             self._SUBJECT_TO_()
 
-            def block19():
+            def block28():
 
-                def block20():
+                def block29():
                     self._hspace_()
-                self._closure(block20)
+                self._closure(block29)
 
-                def block21():
+                def block30():
                     self._separator_()
-                self._closure(block21)
+                self._closure(block30)
 
-                def block22():
+                def block31():
                     self._hspace_()
-                self._closure(block22)
-            self._closure(block19)
+                self._closure(block31)
+            self._closure(block28)
             self._multi_cond_()
             self.name_last_node('cond')
-        self._closure(block14)
-
-        def block24():
-
-            def block25():
-                self._hspace_()
-            self._closure(block25)
-
-            def block26():
-                self._separator_()
-            self._positive_closure(block26)
-
-            def block27():
-                self._hspace_()
-            self._closure(block27)
-            self._token('with')
-
-            def block28():
-                self._hspace_()
-            self._closure(block28)
-            self._token('initial')
-
-            def block29():
-                self._hspace_()
-            self._closure(block29)
-            self._statement_()
-            self.add_last_node_to_name('init')
-
-            def block31():
-
-                def block32():
-                    self._hspace_()
-                self._closure(block32)
-                self._token(';')
-
-                def block33():
-                    self._hspace_()
-                self._closure(block33)
-                self._statement_()
-                self.add_last_node_to_name('init')
-            self._closure(block31)
-        self._closure(block24)
+        self._closure(block23)
         self.ast._define(
             ['amax', 'amin', 'cond', 'exp', 'max', 'min'],
             ['defs', 'init']
@@ -4993,7 +4998,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
 
     @tatsumasu()
     def _func_id_(self):  # noqa
-        self._identifier_alone_()
+        self._token('!!!')
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
@@ -5002,7 +5007,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         with self._group():
             with self._choice():
                 with self._option():
-                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
+                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
                 with self._option():
                     self._token('`')
@@ -5016,7 +5021,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         )
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
+class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
     def start(self, ast):  # noqa
         return ast
 
@@ -5177,6 +5182,12 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
         return ast
 
     def PI(self, ast):  # noqa
+        return ast
+
+    def WITH(self, ast):  # noqa
+        return ast
+
+    def INITIAL(self, ast):  # noqa
         return ast
 
     def exponent(self, ast):  # noqa
@@ -5659,7 +5670,7 @@ def main(filename, start=None, **kwargs):
     else:
         with open(filename) as f:
             text = f.read()
-    parser = grammare37f0136aa3ffaf149b351f6a4c948e9Parser()
+    parser = grammarc21f969b5f03d33d43e04f8f136e7682Parser()
     return parser.parse(text, rule_name=start, filename=filename, **kwargs)
 
 
@@ -5667,7 +5678,7 @@ if __name__ == '__main__':
     import json
     from tatsu.util import asjson
 
-    ast = generic_main(main, grammare37f0136aa3ffaf149b351f6a4c948e9Parser, name='grammare37f0136aa3ffaf149b351f6a4c948e9')
+    ast = generic_main(main, grammarc21f969b5f03d33d43e04f8f136e7682Parser, name='grammarc21f969b5f03d33d43e04f8f136e7682')
     print('AST:')
     print(ast)
     print()
@@ -5696,13 +5707,13 @@ class ModelBase(Node):
     pass
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics(ModelBuilderSemantics):
+class grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics(ModelBuilderSemantics):
     def __init__(self, context=None, types=None):
         types = [
             t for t in globals().values()
             if type(t) is type and issubclass(t, ModelBase)
         ] + (types or [])
-        super(grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics, self).__init__(context=context, types=types)
+        super(grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics, self).__init__(context=context, types=types)
 
 
 class Start(ModelBase):
