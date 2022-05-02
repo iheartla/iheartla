@@ -178,7 +178,7 @@ async function background(source){
 }
 
 function onLoad(){
-    postData(window.location.href + 'file', { type: "init"})
+    postData(`http://${window.location.hostname}:${window.location.port}/file`, { type: "init"})
       .then(data => {
           if (data.ret === 0){
             let editor = ace.edit("editor");
@@ -282,7 +282,7 @@ function compileFunction(){
             // else{
             //     updateEditor(code.toJs());
             // }
-            postData(window.location.href + 'handler', { input:  source})
+            postData(`http://${window.location.hostname}:${window.location.port}/handler`, { input:  source})
               .then(data => {
                   if (data.ret === 0){
                       updateEditor(data.res);
@@ -433,7 +433,7 @@ function onUpdatePython() {
     editor.setValue(source, 1);
     // same as manually clicking
     // clickCompile();
-    postData(window.location.href + 'file', { src:  curFigure, type:"run", source: content})
+    postData(`http://${window.location.hostname}:${window.location.port}/file`, { src:  curFigure, type:"run", source: content})
       .then(data => {
           $('#loading').modal('hide');
           console.log(`data.ret:${data.ret}`);
@@ -458,7 +458,7 @@ function clearTest() {
 function clickFigure(ele, name){
     console.log(`you clicked ${name}`);
     curFigure = name;
-    postData(window.location.href + 'file', { src:  name, type: "get"})
+    postData(`http://${window.location.hostname}:${window.location.port}/file`, { src:  name, type: "get"})
       .then(data => {
           console.log(`data is ${data.res}`);
         let python = ace.edit("python");
