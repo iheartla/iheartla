@@ -10,6 +10,7 @@ import threading
 from datetime import datetime
 from app import process_input, read_from_file, save_to_file, ParserTypeEnum
 from iheartla.la_tools.la_msg import LaMsg
+from iheartla.la_tools.la_helper import *
 from pathlib import Path
 
 
@@ -17,10 +18,10 @@ default_input = ''
 default_base = 'result'
 default_path = '.'
 def save_markdown(content):
-    dst = "{}/input-history".format(default_path)
+    dst = "{}/{}".format(default_path, INPUT_HISTORY)
     if not os.path.exists(dst):
         os.mkdir(dst)
-    save_to_file(content, "{}/input-history/input-{}.md".format(default_path, datetime.now().strftime("%Y-%m-%d-%H-%M-%S")))
+    save_to_file(content, "{}/{}/input-{}.md".format(default_path, INPUT_HISTORY, datetime.now().strftime("%Y-%m-%d-%H-%M-%S")))
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -62,14 +63,14 @@ class FileHandler(tornado.web.RequestHandler):
         if data['type'] == "get":
             src = data['src']
             # print("Received request: {}".format(data['input']))
-            res = read_from_file("{}/{}.py".format(default_path, src))
+            res = read_from_file("{}/{}/{}.py".format(default_path, IMG_CODE, src))
             self.set_header("Content-Type", "application/json")
             self.write(json.JSONEncoder().encode({"res": res}))
         elif data['type'] == "run":
             src = data['src']
             print("updated source: {}".format(data['source']))
             save_to_file(data['source'], "{}/{}.py".format(default_path, src))
-            ret = subprocess.run(["python", "{}/img_code/{}.py".format(default_path, src)], cwd="{}/img_code".format(default_path))
+            ret = subprocess.run(["python", "{}/{}/{}.py".format(default_path, IMG_CODE, src)], cwd="{}/{}".format(default_path, IMG_CODE))
             if ret.returncode == 0:
                 pass
                 print("server succeed, {}".format(src))

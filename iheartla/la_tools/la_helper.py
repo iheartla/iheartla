@@ -13,6 +13,10 @@ DEBUG_MODE = True
 DEBUG_PARSER = False  # used for new grammer files
 TEST_MATLAB = False   # used for running tests for MATLAB
 start_time = None
+# constants used as folder name
+INPUT_HISTORY = "input_history"
+OUTPUT_CODE = "output_code"
+IMG_CODE = "img_code"
 class ParserTypeEnum(IntFlag):
     INVALID = 0
     DEFAULT = 15

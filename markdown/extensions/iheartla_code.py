@@ -522,7 +522,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     print("img: {}, name:{}".format(path, name))
                     self.md.need_gen_figure = True
                     code = c.group('code')
-                    folder = "{}/img_code".format(self.md.path)
+                    folder = "{}/{}".format(self.md.path, IMG_CODE)
                     if not os.path.exists(folder):
                         os.mkdir(folder)
                     save_to_file(code, "{}/{}.py".format(folder, name))

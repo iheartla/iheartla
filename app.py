@@ -158,10 +158,10 @@ def handle_context_block(text):
 
 
 def gen_figure(source, name, input_dir):
-    src = "{}/output_code/lib.py".format(input_dir)
+    src = "{}/{}/lib.py".format(input_dir, OUTPUT_CODE)
     if os.path.exists(src):
-        shutil.copyfile(src, "{}/img_code/lib.py".format(input_dir))
-    ret = subprocess.run(["python", source], cwd="{}/img_code".format(input_dir))
+        shutil.copyfile(src, "{}/{}/lib.py".format(input_dir, IMG_CODE))
+    ret = subprocess.run(["python", source], cwd="{}/{}".format(input_dir, IMG_CODE))
     record("figure")
     if ret.returncode == 0:
         pass
@@ -173,7 +173,7 @@ def handle_figure(text, name_list, input_dir):
     start_index = 0
     text_list = []
     threads_list = []
-    folder = "{}/img_code".format(input_dir)
+    folder = "{}/{}".format(input_dir, IMG_CODE)
     if not os.path.exists(folder):
         os.mkdir(folder)
     for m in FIGURE_BLOCK_RE.finditer(text):
@@ -208,16 +208,16 @@ def handle_figure(text, name_list, input_dir):
 def save_output_code(md, path):
     # if not WHEEL_MODE:
     if True:
-        dst = "{}/output_code".format(path)
+        dst = "{}/{}".format(path, OUTPUT_CODE)
         if os.path.exists(dst):
             shutil.rmtree(dst)
         os.mkdir(dst)
         if md.lib_py != '':
-            save_to_file(md.lib_py, "{}/output_code/lib.py".format(path))
+            save_to_file(md.lib_py, "{}/{}/lib.py".format(path, OUTPUT_CODE))
         if md.lib_cpp != '':
-            save_to_file(md.lib_cpp, "{}/output_code/lib.h".format(path))
+            save_to_file(md.lib_cpp, "{}/{}/lib.h".format(path, OUTPUT_CODE))
         if md.lib_matlab != '':
-            save_to_file(md.lib_matlab, "{}/output_code/lib.m".format(path))
+            save_to_file(md.lib_matlab, "{}/{}/lib.m".format(path, OUTPUT_CODE))
 
 
 def process_input(content, input_dir='.', resource_dir='.', file_name='result',
