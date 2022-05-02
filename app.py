@@ -357,6 +357,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
                 html = html.replace(m.group(), "$${}\\tag{{{}}}\\label{{{}}}$$".format(equation, num, num))
                 num += 1
         ret = [html, md.lib_py, md.lib_cpp, md.lib_matlab]
+        save_to_file(html, "{}/{}.html".format(input_dir, file_name))
     # except:
     #     ret = str(sys.exc_info()[0])
     # finally:
@@ -395,7 +396,5 @@ if __name__ == '__main__':
             content = read_from_file(paper_file)
             base_name = os.path.basename(Path(paper_file))
             ret = process_input(content, os.path.dirname(Path(paper_file)), resource_dir, os.path.splitext(base_name)[0], parser_type)
-            html = ret[0]
-            save_to_file(html, "{}/{}.html".format(os.path.dirname(Path(paper_file)), os.path.splitext(base_name)[0]))
             # print(html)
     record("End")

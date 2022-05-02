@@ -14,6 +14,7 @@ from pathlib import Path
 
 
 default_input = ''
+default_base = 'result'
 default_path = '.'
 def save_markdown(content):
     dst = "{}/input-history".format(default_path)
@@ -32,7 +33,7 @@ class MainHandler(tornado.web.RequestHandler):
         ret = 1
         extra_dict = {}
         try:
-            res = process_input(data['input'], default_path, server_mode=True, parser_type=ParserTypeEnum.NUMPY)
+            res = process_input(data['input'], default_path, file_name=default_base, server_mode=True, parser_type=ParserTypeEnum.NUMPY)
             ret = 0
             extra_dict["res"] = res
         except AssertionError as e:
@@ -102,6 +103,7 @@ if __name__ == "__main__":
     args = arg_parser.parse_args()
     if args.paper:
         default_path = os.path.dirname(Path(args.paper[0]))
+        default_base = os.path.splitext(os.path.basename(Path(args.paper[0])))[0]
         default_input = read_from_file(args.paper[0])
     app = make_app()
     app.listen(8000)
