@@ -85,14 +85,20 @@ class FileHandler(tornado.web.RequestHandler):
             self.write(json.JSONEncoder().encode({"ret": ret, "content": default_input}))
 
 
-def make_app():
+def make_app(custom_path):
     application = tornado.web.Application([
         (r"/handler", MainHandler),
         (r"/file", FileHandler),
-        (r"/heartdown-resource/(.*)", tornado.web.StaticFileHandler, {"path": "./extras/heartdown-resource",
-                                                   "default_filename": "index.html"}),
-        (r"/(.*)", tornado.web.StaticFileHandler, {"path": "./docs",
-                                                   "default_filename": "index.html"})
+        (r"/heartdown-resource/(.*)", tornado.web.StaticFileHandler, {"path": "./extras/heartdown-resource"}),
+        (r"/css/(.*)", tornado.web.StaticFileHandler, {"path": "./docs/css"}),
+        (r"/js/(.*)", tornado.web.StaticFileHandler, {"path": "./docs/js"}),
+        (r"/icon/(.*)", tornado.web.StaticFileHandler, {"path": "./docs/icon"}),
+        (r"/fonts/(.*)", tornado.web.StaticFileHandler, {"path": "./docs/fonts"}),
+        (r"/(.*\.whl)", tornado.web.StaticFileHandler, {"path": "./docs"}),
+        (r"/(index\.html)", tornado.web.StaticFileHandler, {"path": "./docs"}),
+        (r"/()", tornado.web.StaticFileHandler, {"path": "./docs/index.html",
+                                                 "default_filename": "index.html"}),
+        (r"/(.*)", tornado.web.StaticFileHandler, {"path": "{}".format(custom_path)})
     ], debug=True, autoreload=True)
     return application
 
@@ -105,7 +111,7 @@ if __name__ == "__main__":
         default_path = os.path.dirname(Path(args.paper[0]))
         default_base = os.path.splitext(os.path.basename(Path(args.paper[0])))[0]
         default_input = read_from_file(args.paper[0])
-    app = make_app()
+    app = make_app(default_path)
     app.listen(8000)
     print('Listening at http://localhost:8000/')
     tornado.ioloop.IOLoop.current().start()
