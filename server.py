@@ -86,17 +86,18 @@ class FileHandler(tornado.web.RequestHandler):
 
 
 def make_app(custom_path):
+    cur_path = os.path.dirname(os.path.abspath(__file__))
     application = tornado.web.Application([
         (r"/handler", MainHandler),
         (r"/file", FileHandler),
-        (r"/heartdown-resource/(.*)", tornado.web.StaticFileHandler, {"path": "./extras/heartdown-resource"}),
-        (r"/css/(.*)", tornado.web.StaticFileHandler, {"path": "./docs/css"}),
-        (r"/js/(.*)", tornado.web.StaticFileHandler, {"path": "./docs/js"}),
-        (r"/icon/(.*)", tornado.web.StaticFileHandler, {"path": "./docs/icon"}),
-        (r"/fonts/(.*)", tornado.web.StaticFileHandler, {"path": "./docs/fonts"}),
-        (r"/(.*\.whl)", tornado.web.StaticFileHandler, {"path": "./docs"}),
-        (r"/(index\.html)", tornado.web.StaticFileHandler, {"path": "./docs"}),
-        (r"/()", tornado.web.StaticFileHandler, {"path": "./docs/index.html",
+        (r"/heartdown-resource/(.*)", tornado.web.StaticFileHandler, {"path": "{}/extras/heartdown-resource".format(cur_path)}),
+        (r"/css/(.*)", tornado.web.StaticFileHandler, {"path": "{}/docs/css".format(cur_path)}),
+        (r"/js/(.*)", tornado.web.StaticFileHandler, {"path": "{}/docs/js".format(cur_path)}),
+        (r"/icon/(.*)", tornado.web.StaticFileHandler, {"path": "{}/docs/icon".format(cur_path)}),
+        (r"/fonts/(.*)", tornado.web.StaticFileHandler, {"path": "{}/docs/fonts".format(cur_path)}),
+        (r"/(.*\.whl)", tornado.web.StaticFileHandler, {"path": "{}/docs".format(cur_path)}),
+        (r"/(index\.html)", tornado.web.StaticFileHandler, {"path": "{}/docs".format(cur_path)}),
+        (r"/()", tornado.web.StaticFileHandler, {"path": "{}/docs/index.html".format(cur_path),
                                                  "default_filename": "index.html"}),
         (r"/(.*)", tornado.web.StaticFileHandler, {"path": "{}".format(custom_path)})
     ], debug=True, autoreload=True)
