@@ -1430,18 +1430,27 @@ class CodeGenMatlab(CodeGen):
 
     def visit_optimize(self, node, **kwargs):
         self.opt_key = node.key
-        id_info = self.visit(node.base, **kwargs)
-        if node.base_type.la_type.is_scalar():
-            init_value = 0
-            base_str = "{} = optimvar('{}');".format(id_info.content, id_info.content)
-        elif node.base_type.la_type.is_vector():
-            init_value = "zeros({},1)".format(node.base_type.la_type.rows)
-            base_str = "{} = optimvar('{}', {});".format(id_info.content, id_info.content, node.base_type.la_type.rows)
-        elif node.base_type.la_type.is_matrix():
-            init_value = "zeros({}*{},1)".format(node.base_type.la_type.rows, node.base_type.la_type.cols)
-            base_str = "{} = optimvar('{}', {}, {});".format(id_info.content, id_info.content, node.base_type.la_type.rows, node.base_type.la_type.cols)
-            name_convention = {id_info.content: "reshape({}, [{}, {}])".format(id_info.content, node.base_type.la_type.rows, node.base_type.la_type.cols)}
-            self.add_name_conventions(name_convention)
+        id_list = []
+        pack_list = []
+        unpack_list = []
+        init_str_list = []
+        base_str_list = []
+        for cur_index in range(len(node.base_list)):
+            cur_la_type = node.base_type_list[cur_index].la_type
+            id_info = self.visit(node.base_list[cur_index], **kwargs)
+            id_list.append(id_info.content)
+            if cur_la_type.is_scalar():
+                init_value = 0
+                base_str = "    {} = optimvar('{}');\n".format(id_info.content, id_info.content)
+            elif cur_la_type.is_vector():
+                init_value = "zeros({},1)".format(cur_la_type.rows)
+                base_str = "    {} = optimvar('{}', {});\n".format(id_info.content, id_info.content, cur_la_type.rows)
+            elif cur_la_type.is_matrix():
+                init_value = "zeros({}*{},1)".format(cur_la_type.rows, cur_la_type.cols)
+                base_str = "    {} = optimvar('{}', {}, {});\n".format(id_info.content, id_info.content, cur_la_type.rows, cur_la_type.cols)
+                name_convention = {id_info.content: "reshape({}, [{}, {}])".format(id_info.content, cur_la_type.rows, cur_la_type.cols)}
+                self.add_name_conventions(name_convention)
+            base_str_list.append(base_str)
         exp_info = self.visit(node.exp, **kwargs)
         category = ''
         if node.opt_type == OptimizeType.OptimizeMin:
@@ -1458,8 +1467,8 @@ class CodeGenMatlab(CodeGen):
         pre_list = []
         constraint_list = []
         prob_name = self.generate_var_name('prob')
+        pre_list += base_str_list
         constraint_list.append("{} = optimproblem;".format(prob_name))
-        constraint_list.append(base_str)
         for cond_index in range(len(node.cond_list)):
             cond_node = node.cond_list[cond_index]
             if cond_node.cond.node_type == IRNodeType.BinComp:
@@ -1536,7 +1545,7 @@ class CodeGenMatlab(CodeGen):
             pre_list.append("    [{}, ~] = {};\n".format(opt_name, opt_exp))
         else:
             pre_list.append("    [~, {}] = {};\n".format(opt_name, opt_exp))
-        if node.base_type.la_type.is_matrix():
+        if cur_la_type.is_matrix():
             self.del_name_conventions(name_convention)
         return CodeNodeInfo(content, pre_list=pre_list)
 
