@@ -34,7 +34,7 @@ class MainHandler(tornado.web.RequestHandler):
         ret = 1
         extra_dict = {}
         try:
-            res = process_input(data['input'], default_path, file_name=default_base, server_mode=True, parser_type=ParserTypeEnum.NUMPY)
+            res = process_input(data['input'], default_path, file_name=default_base, server_mode=True)
             ret = 0
             extra_dict["res"] = res
         except AssertionError as e:
