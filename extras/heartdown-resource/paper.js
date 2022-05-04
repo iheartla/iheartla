@@ -1034,6 +1034,9 @@ function closeOtherTips(){
   }
 };
 function checkDesc(){
+  if (typeof parent.onEditEquation !== 'function') { 
+    return;
+  }
   var showBlick = false;
   const matches = document.querySelectorAll("[class*=paperSymbol]");
   for (var i = matches.length - 1; i >= 0; i--) {
