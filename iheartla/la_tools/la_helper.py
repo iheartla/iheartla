@@ -16,7 +16,7 @@ start_time = None
 # constants used as folder name
 INPUT_HISTORY = "input_history"
 OUTPUT_CODE = "output_code"
-IMG_CODE = "img_code"
+IMG_CODE = "."
 class ParserTypeEnum(IntFlag):
     INVALID = 0
     DEFAULT = 15
