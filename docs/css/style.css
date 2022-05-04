@@ -1,6 +1,8 @@
 body {
     /* overflow: hidden; */
     padding: 10px;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 .container {
     max-width: 1570px;
@@ -86,10 +88,10 @@ div#msg .alert{
 }
 iframe{
     height: 100%;
-    width: 100%;
+    width: 110%;
     margin-left: 0px;
     margin-right: 0px;
-    -webkit-transform: translate(-20px, 0px) scale(0.95);
+    -webkit-transform: translate(-5%, 0px) scale(0.95);
     -moz-transform-origin: top left;
     -webkit-transform-origin: top left;
     -o-transform-origin: top left;
