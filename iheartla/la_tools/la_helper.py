@@ -95,7 +95,7 @@ def is_new_tatsu_version():
 
 def save_to_file(content, file_name):
     try:
-        file = open(file_name, 'w')
+        file = open(file_name, 'w', encoding='utf-8')
         file.write(content)
         file.close()
     except IOError as e:
@@ -122,7 +122,7 @@ def record(msg=''):
 
 def read_from_file(file_name):
     try:
-        file = open(file_name, 'r')
+        file = open(file_name, 'r', encoding='utf-8')
         content = file.read()
         file.close()
     except IOError as e:
