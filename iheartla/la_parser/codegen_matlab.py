@@ -306,7 +306,7 @@ class CodeGenMatlab(CodeGen):
         """Copy Parameters that are used in local functions as struct members"""
         assign_list = []
         for param in self.used_params:
-            assign_list.append("{}.{} = {};".format(self.get_result_name(), param, param))
+            assign_list.append("    {}.{} = {};".format(self.get_result_name(), param, param))
         if len(assign_list) > 0:
             return '\n' + '    \n'.join(assign_list)
         else:
@@ -815,7 +815,7 @@ class CodeGenMatlab(CodeGen):
         if node.other:
             other_info = self.visit(node.other, **kwargs)
             pre_list.append('    else\n')
-            pre_list.append('        {} = {};\n'.format(self.visit(assign_node.left, **kwargs).content, other_info.content))
+            pre_list.append('        {} = {};\n'.format('ret', other_info.content))
         pre_list.append('    end\n')
         return CodeNodeInfo(cur_m_id, pre_list)
 

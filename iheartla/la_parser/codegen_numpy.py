@@ -767,7 +767,7 @@ class CodeGenNumpy(CodeGen):
     def visit_multi_conditionals(self, node, **kwargs):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         if assign_node is not None:
-            name = self.visit(assign_node.left, **kwargs).content
+            name = self.visit(assign_node.left[0], **kwargs).content
         else:
             func_node = node.get_ancestor(IRNodeType.LocalFunc)
             name = self.visit(func_node.name, **kwargs).content
