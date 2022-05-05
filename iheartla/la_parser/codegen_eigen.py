@@ -1362,16 +1362,16 @@ class CodeGenEigen(CodeGen):
                                 # content += right_info.content
                                 def_str = ""
                                 if node.op != '+=':
-                                    if node.left.get_main_id() not in self.declared_symbols:
-                                        def_str = "    {}.resize({}, {});\n".format(node.left.get_main_id(),
+                                    if node.left[cur_index].get_main_id() not in self.declared_symbols:
+                                        def_str = "    {}.resize({}, {});\n".format(node.left[cur_index].get_main_id(),
                                                                                     self.get_sym_type(
-                                                                                        node.left.get_main_id()).rows,
+                                                                                        node.left[cur_index].get_main_id()).rows,
                                                                                     self.get_sym_type(
-                                                                                        node.left.get_main_id()).cols)
+                                                                                        node.left[cur_index].get_main_id()).cols)
                                         def_str += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(
-                                            node.left.get_main_id())
+                                            node.left[cur_index].get_main_id())
                                     else:
-                                        content += '    tripletList_{}.clear();\n'.format(node.left.get_main_id())
+                                        content += '    tripletList_{}.clear();\n'.format(node.left[cur_index].get_main_id())
                                 content = def_str + content
                                 pass
                         elif left_subs[0] == left_subs[1]:
@@ -1394,7 +1394,7 @@ class CodeGenEigen(CodeGen):
                                                                                                                        0],
                                                                                                                    var_ids[1][
                                                                                                                        1]))
-                            right_exp += "    {}({}-1, {}-1) = {}".format(node.left.get_main_id(), left_subs[0], left_subs[1],
+                            right_exp += "    {}({}-1, {}-1) = {}".format(node.left[cur_index].get_main_id(), left_subs[0], left_subs[1],
                                                                           right_info.content)
                             if self.get_sym_type(sequence).is_matrix():
                                 if node.op == '=':
