@@ -815,7 +815,7 @@ class CodeGenNumpy(CodeGen):
     def visit_sparse_ifs(self, node, **kwargs):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         if assign_node is None:
-            right_node = node.get_ancestor(IRNodeType.LocalFunc).expr
+            right_node = node.get_ancestor(IRNodeType.LocalFunc).expr[0]
         else:
             right_node = assign_node.right
         if right_node.is_node(IRNodeType.SparseMatrix):
@@ -855,7 +855,7 @@ class CodeGenNumpy(CodeGen):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         if assign_node is None:
             func_node = node.get_ancestor(IRNodeType.LocalFunc)
-            right_node = func_node.expr
+            right_node = func_node.expr[0]
             left_node = func_node.name
         else:
             right_node = assign_node.right
