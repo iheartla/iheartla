@@ -20,7 +20,7 @@ default_path = '.'
 def save_markdown(content):
     dst = "{}/{}".format(default_path, INPUT_HISTORY)
     if not os.path.exists(dst):
-        os.mkdir(dst)
+        os.makedirs(dst)
     save_to_file(content, "{}/{}/input-{}.md".format(default_path, INPUT_HISTORY, datetime.now().strftime("%Y-%m-%d-%H-%M-%S")))
 
 
