@@ -5,17 +5,37 @@ body
   left: 0;
   font-size: 12pt;
   font-family: "Linux Libertine", serif;
-  padding-left:  10px;
-  padding-right: 10px;
-  width: 585px;
-  min-height: none;
-  min-height: 0%;
-  border-radius: 8px;
-  margin: auto;
   -webkit-hyphens: auto;
   -ms-hyphens: auto;
   hyphens: auto;
   text-align: justify;
+  border-radius: 8px;
+  margin: auto;
+}
+#flexer
+{
+  display: flex;
+  flex-flow: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+#arrows
+{
+  flex: 1;
+  min-width: 50px;
+}
+#main
+{
+  padding-left:  10px;
+  padding-right: 10px;
+  flex: 5;
+  min-height: none;
+  min-height: 0%;
+  max-width: 585px;
+}
+.flex-space
+{
+  flex-basis: .5;
 }
 
 .title{
@@ -36,7 +56,7 @@ body
     text-align: center;
 }
 .glossary{
-  position: fixed;
+  /* position: fixed; */
   top: 10;
   border: 1px solid #666666;
   margin-left: 5px;
@@ -47,7 +67,7 @@ body
   background-color: white;
   overflow: scroll;
   z-index: 10;
-  /*max-height: 0;*/
+  flex-basis: content;
 }
 .glosary_title{
   margin-left: 10px;

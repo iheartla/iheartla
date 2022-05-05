@@ -339,11 +339,16 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
         const sym_data = JSON.parse('{sym_json}');
         {script}
         </script>
-        <body>
-        <div id="glossary" class="glossary"></div><br>
+<body>
+    <div id="flexer">
+        <div id="arrows"></div>
+        <div id="main">
         {body}
-        </body>
-        </html>""".format(mathjax=mathjax, equation_json=equation_json, sym_json=sym_json, script=script, body=body,
+        </div>
+        <div id="glossary" class="glossary"></div>
+    </div>
+</body>
+</html>""".format(mathjax=mathjax, equation_json=equation_json, sym_json=sym_json, script=script, body=body,
                           resource_dir=resource_dir)
         # numbering
         EQ_BLOCK_RE = re.compile(
