@@ -37,7 +37,6 @@ body
 {
   flex-basis: .5;
 }
-
 .title{
     margin: 13.4px 0 13.4px;
     padding: 15px 0 3px;
@@ -57,7 +56,7 @@ body
 }
 .glossary{
   /* position: fixed; */
-  top: 10;
+  top: 10px;
   border: 1px solid #666666;
   margin-left: 5px;
   margin-right: 5px;
