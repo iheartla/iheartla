@@ -880,6 +880,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
                                     # print("Update param desc, name:{}, desc:{}".format(local_param, param_eq_data.desc))
                         if not existed:
                             sym_data.sym_equation_list.append(param_eq_data)
+                    if param_eq_data.desc is None or param_eq_data.desc == '':
+                        undescribed_list.append(local_param)
             for dep_data in equation.dependence:
                 for dep_sym in dep_data.name_list:
                     sym_eq_data = SymEquationData(la_type=equation.symtable[dep_sym],
