@@ -285,8 +285,11 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
               var arrow = arrows[i];
               var body = document.querySelector("body");
               var style = window.getComputedStyle(body);
+              var arrowPanel = document.querySelector("#arrows");
+              var arrowRect = arrowPanel.getBoundingClientRect();
               var curOffset = parseInt(style.marginLeft, 10)
               var oldOffset = arrow.getAttribute('offset');
+              curOffset += arrowRect.width;
               arrow.setAttribute('offset', curOffset);
               // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
               var arrowStyle = window.getComputedStyle(arrow); 
