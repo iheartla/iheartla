@@ -118,6 +118,8 @@ function drawArrow(startElement, endElement, style='', color='blue',
     // Get the position of the start and end elements in absolute coordinates
     // console.log(startElement);
     // console.log(endElement);
+    var arrowPanel = document.querySelector("#arrows");
+    var arrowRect = arrowPanel.getBoundingClientRect();
     var bodyRect = body.getBoundingClientRect();
     var startRect = startElement.getBoundingClientRect();
     var startCenterX = startRect.x + startRect.width/2;
@@ -132,7 +134,7 @@ function drawArrow(startElement, endElement, style='', color='blue',
 
     var offsetEndX = getOffsetEndX(endCenterY); 
 
-    var marginLeft = parseInt(style.marginLeft, 10)
+    var marginLeft = parseInt(style.marginLeft, 10) + arrowRect.width;
     var bodyWidth = parseInt(style.width, 10)
     var marginTop = parseInt(style.marginTop, 10)
     // console.log(style); 
@@ -170,7 +172,7 @@ function drawArrow(startElement, endElement, style='', color='blue',
       L ${endPointX} ${endPointY+offsetEndY} 
       L ${endPointX-arrowSize} ${endPointY+arrowSize+offsetEndY} 
       `).attr({fill: 'white', 'fill-opacity': 0, stroke: color, 'stroke-width': 2, 'stroke-opacity': .5, 'stroke-linejoin': 'bevel', 'stroke-linecap': 'square'})
-    svg.attr('offset', parseInt(style.marginLeft, 10))
+    svg.attr('offset', marginLeft)
     document.querySelector(".arrow").style.marginLeft = "0px"
 }
 
