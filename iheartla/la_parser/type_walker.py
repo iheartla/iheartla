@@ -178,6 +178,7 @@ class TypeWalker(NodeWalker):
         self.name_cnt_dict = {}
         self.def_use_mode = True
         self.unofficial_method = False
+        self.has_opt = False
         self.is_param_block = False  # where or given block
         self.visualizer = LaVisualizer()
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
@@ -266,6 +267,7 @@ class TypeWalker(NodeWalker):
         self.name_cnt_dict.clear()
         self.ret_symbol = None
         self.unofficial_method = False
+        self.has_opt = False
         self.sum_subs.clear()
         self.sum_sym_list.clear()
         self.lhs_subs.clear()
@@ -1521,6 +1523,7 @@ class TypeWalker(NodeWalker):
         return valid
 
     def walk_Optimize(self, node, **kwargs):
+        self.has_opt = True
         self.visiting_opt = True
         self.opt_key = self.generate_var_name('opt_key')
         self.opt_dict[self.opt_key] = ParamsData()

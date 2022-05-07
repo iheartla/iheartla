@@ -8,11 +8,13 @@ class CodeGenEigen(CodeGen):
 
     def init_type(self, type_walker, func_name):
         super().init_type(type_walker, func_name)
-        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <LBFGS.h>\n'''
+        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n'''
         self.post_str = ''''''
         self.ret = 'ret'
         if self.unofficial_method:
             self.pre_str += '#include <unsupported/Eigen/MatrixFunctions>\n'
+        if self.has_opt:
+            self.pre_str += '#include <LBFGS.h>\n'
         self.pre_str += '\n'
         self.code_frame.desc = '/*\n{}\n*/\n'''.format(self.la_content)
         self.code_frame.include = self.pre_str

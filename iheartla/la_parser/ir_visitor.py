@@ -26,6 +26,7 @@ class IRVisitor(object):
         # self.dim_seq_set = set()  # sequence of dimension for ragged list
         self.ret_symbol = None
         self.unofficial_method = False  # matrix pow only(eigen)
+        self.has_opt = False  # whether opt expr exists
         self.content = ''
         self.local_func_def = ''
         self.local_func_syms = []
@@ -270,6 +271,7 @@ class IRVisitor(object):
         self.name_cnt_dict = type_walker.name_cnt_dict
         self.ret_symbol = type_walker.ret_symbol
         self.unofficial_method = type_walker.unofficial_method
+        self.has_opt = type_walker.has_opt
         self.lhs_list = type_walker.lhs_list
         self.la_content = type_walker.la_content
         self.local_func_syms = type_walker.local_func_syms
