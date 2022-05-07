@@ -630,7 +630,8 @@ class CodeGenLatex(CodeGen):
                 if node.norm_type == NormType.NormDet:
                     content = "\\left|{}\\right|".format(value_content)
                 elif node.norm_type == NormType.NormInteger:
-                    content += "_{}".format(node.sub)
+                    if node.sub is not None:
+                        content += "_{}".format(node.sub)
                 elif node.norm_type == NormType.NormMax:
                     content += "_\\infty"
                 elif node.norm_type == NormType.NormIdentifier:
@@ -640,7 +641,8 @@ class CodeGenLatex(CodeGen):
                 if node.norm_type == NormType.NormDet:
                     content = "\\left|{}\\right|".format(value_content)
                 elif node.norm_type == NormType.NormFrobenius:
-                    content += "_F"
+                    if node.sub is not None:
+                        content += "_F"
                 elif node.norm_type == NormType.NormNuclear:
                     content += "_*"
         return content
