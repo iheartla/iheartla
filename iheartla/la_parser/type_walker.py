@@ -1628,6 +1628,7 @@ class TypeWalker(NodeWalker):
                 else:
                     if sub_type.ir.get_name() == 'F':
                         ir_node.norm_type = NormType.NormFrobenius
+                        ir_node.sub = 'F'
                     else:
                         # identifier
                         ir_node.norm_type = NormType.NormIdentifier
@@ -1638,7 +1639,7 @@ class TypeWalker(NodeWalker):
                 ir_node.norm_type = NormType.NormFrobenius
             else:
                 ir_node.norm_type = NormType.NormInteger
-            ir_node.sub = 2
+            # ir_node.sub = 2
         #
         if ir_node.value.la_type.is_scalar():
             assert node.single is not None, get_err_msg_info(node.parseinfo, "Norm error. Scalar type has to use | rather than ||")
