@@ -182,12 +182,15 @@ def handle_figure(text, name_list, input_dir):
         for img in IMAGE_BLOCK_RE.finditer(figure):
             src = img.group('src')
             path, name = get_file_base(src)
+            suffix = get_file_suffix(src)
             print("handle_figure, img: {}, name:{}".format(path, name))
             if name in name_list:
                 source = "{}/{}.py".format(folder, name)
                 threads_list.append(threading.Thread(target=gen_figure, args=(source, name, input_dir)))
-                new_figure = "<figure{}>".format(m.group('property')) + figure[:img.start()] + """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name) + figure[img.end():]
-                new_figure += "</figure>"
+                if suffix == 'html':
+                    new_c = """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name)
+                    new_figure = "<figure{}>".format(m.group('property')) + figure[:img.start()] + new_c + figure[img.end():]
+                    new_figure += "</figure>"
             break
         text_list.append(text[start_index: m.start()])
         start_index = m.end()
