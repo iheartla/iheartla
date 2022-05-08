@@ -107,6 +107,10 @@ def get_file_base(name):
     return '/'.join(sec[:-1]), sec[-1].split('.')[0]
 
 
+def get_file_suffix(name):
+    return name.split('/')[-1].split('.')[-1]
+
+
 def get_resource_dir():
     return "./extras/resource/img"
 
