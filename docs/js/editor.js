@@ -455,7 +455,7 @@ function clearTest() {
     python.setValue('', 1);
 }
 
-function clickFigure(ele, name){
+function onClickFigure(ele, name){
     console.log(`you clicked ${name}`);
     curFigure = name;
     postData(`http://${window.location.hostname}:${window.location.port}/file`, { src:  name, type: "get"})

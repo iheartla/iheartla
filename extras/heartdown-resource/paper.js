@@ -960,8 +960,8 @@ function clickEquation(inlineRawCode){
   }
 }
 function clickFigure(ele, name){
-  if (typeof parent.clickFigure == 'function') { 
-      parent.clickFigure(ele, name);
+  if (typeof parent.onClickFigure == 'function') { 
+      parent.onClickFigure(ele, name);
   }
 }
 function resetState(){
