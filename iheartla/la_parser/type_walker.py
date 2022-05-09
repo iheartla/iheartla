@@ -3194,7 +3194,8 @@ class TypeWalker(NodeWalker):
         left_line = get_parse_info_buffer(left_info.ir.parse_info).line_info(left_info.ir.parse_info.pos)
         right_line = get_parse_info_buffer(right_info.ir.parse_info).line_info(right_info.ir.parse_info.pos)
         def get_err_msg(extra_msg=''):
-            error_msg = '{}. Dimension mismatch. Can\'t {} {} {} and {} {}. {}\n'.format(self.la_msg.get_line_desc(left_line),
+            line_msg = '{}. '.format(self.la_msg.get_line_desc(left_line))
+            error_msg = 'Dimension mismatch. Can\'t {} {} {} and {} {}. {}\n'.format(
                                                                                 self.get_op_desc(op),
                                                                                 self.get_type_desc(left_type),
                                                                                 get_parse_info_buffer(left_info.ir.parse_info).text[left_info.ir.parse_info.pos:left_info.ir.parse_info.endpos],
@@ -3206,6 +3207,9 @@ class TypeWalker(NodeWalker):
                 raw_text += '\n'
             error_msg += raw_text
             error_msg += self.la_msg.get_pos_marker(left_line.col)
+            self.la_msg.cur_msg = error_msg
+            self.la_msg.cur_code = raw_text
+            error_msg = line_msg + error_msg
             return error_msg
         ret_type = None
         if op == TypeInferenceEnum.INF_ADD or op == TypeInferenceEnum.INF_SUB:
