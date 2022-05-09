@@ -525,10 +525,10 @@ class CodeGenNumpy(CodeGen):
         """check whether there's a need to prepend `self.`"""
         content = c_var
         if self.local_func_parsing:
-            if c_var not in self.func_data_dict[self.local_func_name].params_data.parameters:
+            if c_var not in self.func_data_dict[self.local_func_name].params_data.parameters and not c_var.startswith("self."):
                 content = "self.{}".format(c_var)
         else:
-            if c_var not in self.main_param.parameters:
+            if c_var not in self.main_param.parameters and not c_var.startswith("self."):
                 content = "self.{}".format(c_var)
         return content
 
@@ -635,7 +635,7 @@ class CodeGenNumpy(CodeGen):
                 param_info = self.visit(param, **kwargs)
                 params.append(param_info.content)
                 pre_list += param_info.pre_list
-        if name_info.content in self.local_func_def:
+        if name_info.content in self.local_func_def and not name_info.content.startswith("self."):
             func_name = 'self.' + name_info.content
         else:
             func_name = name_info.content
