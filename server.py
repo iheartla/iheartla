@@ -33,20 +33,26 @@ class MainHandler(tornado.web.RequestHandler):
         # print("Received request: {}".format(data['input']))
         ret = 1
         extra_dict = {}
-        try:
+        if DEBUG_MODE:
             res = process_input(data['input'], default_path, file_name=default_base, server_mode=True)
             ret = 0
             extra_dict["res"] = res
-        except AssertionError as e:
-            err_msg = LaMsg.getInstance()
-            extra_dict["expr"] = err_msg.cur_code.replace('\n', '')
-            extra_dict["msg"] = err_msg.cur_msg
-        except Exception as e:
-            extra_dict["msg"] = str(e)
-        except:
-            extra_dict["msg"] = str(sys.exc_info()[0])
-        finally:
             extra_dict["ret"] = ret
+        else:
+            try:
+                res = process_input(data['input'], default_path, file_name=default_base, server_mode=True)
+                ret = 0
+                extra_dict["res"] = res
+            except AssertionError as e:
+                err_msg = LaMsg.getInstance()
+                extra_dict["expr"] = err_msg.cur_code.replace('\n', '')
+                extra_dict["msg"] = err_msg.cur_msg
+            except Exception as e:
+                extra_dict["msg"] = str(e)
+            except:
+                extra_dict["msg"] = str(sys.exc_info()[0])
+            finally:
+                extra_dict["ret"] = ret
         self.set_header("Content-Type", "application/json")
         self.write(json.JSONEncoder().encode(extra_dict))
         # save updated markdown source to files
