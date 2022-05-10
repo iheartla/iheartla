@@ -401,7 +401,7 @@ function updateGlossarySyms(cur_context){
     k = keys[i];
     var cur_color = `highlight_${getSymColor(k)}`;
     if (isUndescribed(cur_context, k)) {
-      cur_color = `highlight_DarkRedOriginal`;
+      cur_color = `${cur_color} highlight_DarkRedOriginal`;
     }
     diff_list = sym_data[k];
     ck = k.replaceAll("\\","\\\\");

@@ -22,7 +22,7 @@ body
 #arrows
 {
   flex: 1;
-  min-width: 50px;
+  min-width: 70px;
 }
 #main
 {
@@ -55,7 +55,7 @@ body
     text-align: center;
 }
 .glossary{
-  /* position: fixed; */
+  position: sticky; 
   top: 10px;
   border: 1px solid #666666;
   margin-left: 5px;
@@ -66,7 +66,8 @@ body
   background-color: white;
   overflow: scroll;
   z-index: 10;
-  flex-basis: content;
+  /*flex-basis: content;*/
+  box-shadow: 0px 0px 2px 2px lightblue;
 }
 .glosary_title{
   margin-left: 10px;
@@ -242,9 +243,10 @@ a.detail{
 }
 .highlight_DarkRedOriginal {
  /*color: #8B0000; */
-  background-color: rgba(139, 0, 0, .8);  
+  /*background-color: rgba(139, 0, 0, .8);  */
   /*border: 2px solid rgba(139, 0, 0, .5);  */
-  border-radius: 4px;
+  /*border-radius: 4px;*/
+  border-bottom: 2px solid red;
 }
 .highlight_LightCoral {
  /*color: #F08080; */
