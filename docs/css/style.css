@@ -54,6 +54,19 @@ body {
 }
 #clipboard {
 }
+.compileCol{
+    width: 50%;
+    text-align: right;
+    padding-right: 0px;
+    padding-top: 10px;
+}
+.msgCol{
+    width: 50%;
+    padding-left: 3px;
+    padding-right: 0px;
+    padding-top: 10px;
+    max-resolution: 0px;
+}
 #msg {
     font-size: 16px; /* Set a font size */
     /*-webkit-hyphens: auto;*/

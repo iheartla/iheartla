@@ -34,7 +34,7 @@
 <div class="container-fluid">
   <h1>H❤️rtDown Editor
   </h1>
-    <div class="row">
+    <div class="row" style="height: 80%">
     
         <!-- A column for the code editor and buttons -->
         <div class="col-lg">
@@ -57,16 +57,16 @@
 
     <!-- The buttons row -->
     <div class="row widgets">
-        <div class="col-sm-2">
+        <div class="compileCol">
             <button id="compile" class="btn btn-success" onclick="clickCompile()">
                 <i id="submit_icon" class="fa fa-refresh"></i> Compile
             <!--  <i id="submit_icon" class="fa fa-refresh fa-spin"></i> Compile-->
             </button>
         </div>
-        <div class="col-sm">
-            <pre>
+        <div class="msgCol">
+<!--            <pre>-->
                 <div id="msg" class="alert alert-primary" role="alert" hidden></div>
-            </pre>
+<!--            </pre>-->
         </div>
     </div>
 
@@ -145,8 +145,8 @@
     editor.setOptions({
         enableBasicAutocompletion: true,
         enableLiveAutocompletion: true,
-        maxLines: 30,
-        minLines: 20
+        // maxLines: 100,
+        // minLines: 20
     });
     editor.setShowPrintMargin(false);
 
