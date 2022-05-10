@@ -138,7 +138,8 @@
     // initBtnStatus();
     //
     let editor = ace.edit("editor");
-    editor.setTheme("ace/theme/chaos");
+    // editor.setTheme("ace/theme/chaos");
+    editor.setTheme("ace/theme/chalkboard");
     editor.session.setMode("ace/mode/markdown");
     editor.session.on('change', onEditIhla);
     editor.getSession().setUseWrapMode(true);
