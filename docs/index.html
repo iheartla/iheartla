@@ -36,145 +36,41 @@
   </h1>
     <div class="row">
     
-    <!-- A column for the code editor and buttons -->
-    <div class="col-lg">
-    
-    <div class="row">
-        <div class="col-sm">
-            <pre id="editor">---
-full_paper: False
----
-❤: context
-
-# Section 1
-
-
-Definition of symbol $a$ in prose: <span class="def"> $a$ is a parameter </span>.
-
-If the symbol also shows up in an equation which is not written by iheartla, it will be highlighted as well.
-$$a + b = 0$$
-
-
-The following block shows how to write an iheartla equation
-``` iheartla
-d = a - c
-where
-a ∈ ℝ
-b ∈ ℝ
-```
-
-Symbols can be defined by inline iheartla block as ❤ c = ab  ❤ .
-
-
-
-❤: other
-
-# Section 2
-You can define the same symbol in different context: <span class="def"> $a$ is a matrix now </span>.
-
-``` iheartla
-d = a
-where
-a ∈ ℝ^(4 × 4)
-```
-            </pre>
+        <!-- A column for the code editor and buttons -->
+        <div class="col-lg">
+            <div class="row">
+                <div class="col-sm">
+                    <pre id="editor">
+                    </pre>
+                </div>
+            </div>
+        <!-- Close the code editor and widgets column -->
         </div>
-    </div>
-    
-    <!-- The message row -->
-    <div class="row">
-    <div class="col-sm">
-        <pre><div id="msg" class="alert alert-primary" role="alert" hidden></div></pre>
-    </div>
-    </div>
-    
-    <!-- The buttons row -->
-    <div class="row widgets">
-    <div class="col-sm">
-        <button id="compile" class="btn btn-success" onclick="clickCompile()">
-            <i id="submit_icon" class="fa fa-refresh"></i> Compile
-        <!--  <i id="submit_icon" class="fa fa-refresh fa-spin"></i> Compile-->
-        </button>
-        <!--
-        <button id="clipboard" class="btn btn-primary" onclick="clickCopy()">
-            <!~~ <i class="bi bi-clipboard"></i> ~~>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
-              <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-              <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-            </svg>
-            Copy as URL
-        </button>
-        -->
-    </div>
-    </div>
-    
-    <!-- The keybindings row -->
-    <div class="row widgets">
-    <div class="col-sm" id="keybinding">
-        <a>Keybindings:</a>
-        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-          <input type="radio" class="btn-check" name="btnradio" id="ace" autocomplete="off" checked />
-          <label class="btn btn-outline-primary" for="ace">Ace</label>
-
-          <input type="radio" class="btn-check" name="btnradio" id="vim" autocomplete="off" />
-          <label class="btn btn-outline-primary" for="vim">Vim</label>
-
-          <input type="radio" class="btn-check" name="btnradio" id="emacs" autocomplete="off" />
-          <label class="btn btn-outline-primary" for="emacs">Emacs</label>
-
-          <input type="radio" class="btn-check" name="btnradio" id="sublime" autocomplete="off" />
-          <label class="btn btn-outline-primary" for="sublime">Sublime</label>
-
-          <input type="radio" class="btn-check" name="btnradio" id="vscode" autocomplete="off" />
-          <label class="btn btn-outline-primary" for="vscode">VSCode</label>
-        </div>
-        <div>
-            <a target="_blank" href="https://github.com/iheartla/iheartla/wiki">Help</a>,
-            <a target="_blank" href=https://github.com/iheartla/iheartla/wiki/Keywords-And-Special-Symbols#special-symbols>Special Symbol Shortcuts</a>,
-            <a target="_blank" href=https://github.com/iheartla/iheartla/wiki/Operators>Operators</a>,
-            <a target="_blank" href="https://github.com/iheartla/iheartla">Source Code</a>
-         </div>
-    </div>
-    </div>
-
-<!--    <div class="row widgets">-->
-<!--    <div class="col-sm">-->
-<!--        <button id="run" class="btn btn-success" onclick="clickRun()">-->
-<!--            <i id="run_icon" class="fa fa-refresh"></i> Run-->
-<!--        &lt;!&ndash;  <i id="submit_icon" class="fa fa-refresh fa-spin"></i> Compile&ndash;&gt;-->
-<!--        </button>-->
-<!--    </div>-->
-<!--    </div>-->
-    <!-- Close the code editor and widgets column -->
-    </div>
-
-
     
     <!-- The MathJax output column -->
-    <div class="col-lg">
-        <div id="output"></div>
-    </div>
-    
+        <div class="col-lg">
+            <div id="output"></div>
+        </div>
     <!-- Close the row containing the code editor and MathJax output -->
     </div>
 
 
-<!--    <div class="row">-->
-<!--        <div class="col-lg">-->
-<!--            <pre id="python"># Python with NumPy and SciPy</pre>-->
-<!--        </div>-->
-<!--        <div class="col-lg">-->
-<!--            <pre id="test"># Python test</pre>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="row">-->
-<!--        <div class="col-lg">-->
-<!--            <pre id="cpp">/* C++ with Eigen */</pre>-->
-<!--        </div>-->
-<!--        <div class="col-lg">-->
-<!--            <pre id="matlab">% MATLAB</pre>-->
-<!--        </div>-->
-<!--    </div>-->
+    <!-- The buttons row -->
+    <div class="row widgets">
+        <div class="col-sm-2">
+            <button id="compile" class="btn btn-success" onclick="clickCompile()">
+                <i id="submit_icon" class="fa fa-refresh"></i> Compile
+            <!--  <i id="submit_icon" class="fa fa-refresh fa-spin"></i> Compile-->
+            </button>
+        </div>
+        <div class="col-sm">
+            <pre>
+                <div id="msg" class="alert alert-primary" role="alert" hidden></div>
+            </pre>
+        </div>
+    </div>
+
+
 </div>
 <!--<button type="button"  data-bs-toggle="modal" data-bs-target="#eqEditor">-->
 <!--</button>-->
