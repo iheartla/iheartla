@@ -23,6 +23,7 @@ let preEqCode = '';
 let preTestCode = '';
 let curFigure = '';
 let curHtml = '';
+let curFileName = '';
 let msgTimeout = null;
 function checkBrowserVer(){
     var nVer = navigator.appVersion;
@@ -210,10 +211,16 @@ function showIframe(){
     }
     var iframe = document.createElement('iframe');
     iframe.setAttribute("id", "res");
+    iframe.src = encodeURI(`./${curFileName}.html`);
     output.appendChild(iframe);
-    iframe.contentWindow.document.open();
-    iframe.contentWindow.document.write(curHtml);
-    iframe.contentWindow.document.close();
+    // iframe.contentWindow.document.open();
+    // iframe.contentWindow.document.write(curHtml);
+    // iframe.contentWindow.document.close();
+}
+
+function reloadIframe(){
+    cur_if = document.getElementById('res');
+    cur_if.contentWindow.location.reload();
 }
 
 function updateEditor(code) {
@@ -285,6 +292,7 @@ function compileFunction(){
             postData(`http://${window.location.hostname}:${window.location.port}/handler`, { input:  source})
               .then(data => {
                   if (data.ret === 0){
+                      curFileName = data.name;
                       updateEditor(data.res);
                   }
                   else{
@@ -440,7 +448,7 @@ function onUpdatePython() {
           if (data.ret === 0){
               // refresh iframe
               console.log("success");
-              showIframe();
+              reloadIframe();
           }
      });
 }

@@ -43,6 +43,7 @@ class MainHandler(tornado.web.RequestHandler):
                 res = process_input(data['input'], default_path, file_name=default_base, server_mode=True)
                 ret = 0
                 extra_dict["res"] = res
+                extra_dict["name"] = default_base
             except AssertionError as e:
                 err_msg = LaMsg.getInstance()
                 extra_dict["expr"] = err_msg.cur_code.replace('\n', '')
