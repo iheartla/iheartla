@@ -218,6 +218,11 @@ function showIframe(){
     // iframe.contentWindow.document.close();
 }
 
+function reloadIframe(){
+    cur_if = document.getElementById('res');
+    cur_if.contentWindow.location.reload();
+}
+
 function updateEditor(code) {
     showMsg('Compile succeeded');
     // var cpp = ace.edit("cpp");
@@ -443,7 +448,7 @@ function onUpdatePython() {
           if (data.ret === 0){
               // refresh iframe
               console.log("success");
-              showIframe();
+              reloadIframe();
           }
      });
 }
