@@ -122,5 +122,7 @@ if __name__ == "__main__":
     app = make_app(default_path)
     app.listen(8000)
     print('Listening at http://localhost:8000/')
+    import webbrowser
+    webbrowser.open('http://localhost:8000/')
     tornado.ioloop.IOLoop.current().start()
 
