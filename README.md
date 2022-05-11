@@ -73,11 +73,11 @@ or via [Anaconda](https://www.anaconda.com/products/individual) or [Miniconda](h
 Miniconda is faster to install. (On Windows, choose the 64-bit Python 3.x version. Launch the Anaconda shell from the Start menu and navigate to this directory.)
 Then:
 
-    conda env create -f environment-{cli,server,gui,dev}.yml
-    conda activate iheartla-{cli,server,gui,dev}
+    conda env create -f environment-{cli,gui,dev}.yml
+    conda activate iheartla-{cli,gui,dev}
 
-Choose `environment-{cli,server,gui,dev}.yml` according to whether you only want the command line (`cli`), also the server (`server`), also the GUI (`gui`), or also the development test suite (`dev`).
-To update an already created environment if the `environment.yml` file changes or to change environments, activate and then run `conda env update --file environment-{cli,gui,dev,server}.yml --prune`.
+Choose `environment-{cli,gui,dev}.yml` according to whether you only want the command line (`cli`), also the GUI (`gui`), or also the development test suite (`dev`).
+To update an already created environment if the `environment.yml` file changes or to change environments, activate and then run `conda env update --file environment-{cli,gui,dev}.yml --prune`.
 
 If you are developing I❤️LA, the test suite needs a working C++ compiler and, optionally, the Graphviz graph visualization software (`brew install graphviz` if you're not using conda).
 

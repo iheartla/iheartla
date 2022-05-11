@@ -1,4 +1,4 @@
-name: iheartla-server
+name: heartdown
 channels:
   - conda-forge
   - defaults
@@ -10,4 +10,4 @@ dependencies:
   - appdirs
   - pybtex
   - tornado
-prefix: /Users/anonymous/opt/miniconda3/envs/iheartla-server
+prefix: /Users/anonymous/opt/miniconda3/envs/heartdown
