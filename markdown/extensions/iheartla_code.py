@@ -643,7 +643,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     raw_math = r"""$\begin{{align*}}{}\end{{align*}}$""".format(raw_content)
                     math_code = r"""${}{}{}$""".format(code_list[-1].pre_str, content, code_list[-1].post_str)
                     content = r"""<span class='equation' code_block="{}" code="{}">{}</span>""".format(
-                        block_data.module_name, base64.urlsafe_b64encode(block_data.code_list[cur_index].encode("utf-8")).decode("utf-8"), math_code)
+                        block_data.module_name, base64.b64encode(block_data.code_list[cur_index].encode("utf-8")).decode("utf-8"), math_code)
                 else:
                     tag_info = ''
                     if not block_data.number_list[cur_index]:
@@ -653,7 +653,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     content = r"""
         <div class='equation' code_block="{}" code="{}">
         {}</div>
-        """.format(block_data.module_name, base64.urlsafe_b64encode("\n".join(original_block.split("\n")[1:-1]).encode("utf-8")).decode("utf-8"), math_code)
+        """.format(block_data.module_name, base64.b64encode("\n".join(original_block.split("\n")[1:-1]).encode("utf-8")).decode("utf-8"), math_code)
                 content = self.md.htmlStash.store(content)
                 text = text.replace(block_data.block_list[cur_index], content)
                 replace_dict[block_data.block_list[cur_index]] = content
