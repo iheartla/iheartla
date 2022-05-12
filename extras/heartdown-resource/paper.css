@@ -21,14 +21,13 @@ body
 }
 #arrows
 {
-  flex: 1;
   min-width: 70px;
 }
 #main
 {
   padding-left:  10px;
   padding-right: 10px;
-  flex: 5;
+  flex: 1;
   min-height: none;
   min-height: 0%;
   max-width: 585px;
@@ -54,6 +53,7 @@ body
     line-height: 120%;
     text-align: center;
 }
+.glossary_holder {}
 .glossary{
   position: sticky; 
   top: 10px;

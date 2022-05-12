@@ -380,7 +380,7 @@ function addObversers(){
   } 
 }
 function onLoad(){
-  adjsutGlossaryBtn();
+  // adjsutGlossaryBtn();
   addObversers();
   checkDesc();
 }

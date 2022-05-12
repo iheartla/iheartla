@@ -304,7 +304,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
               // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
             }
           }
-          adjsutGlossaryBtn();
+          // adjsutGlossaryBtn();
         }
         window.onresize = reportWindowSize;
         document.addEventListener("click", function(evt){
@@ -351,7 +351,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
         <div id="main">
         {body}
         </div>
-        <div id="glossary" class="glossary"></div>
+        <div id="glossary_holder"><div id="glossary" class="glossary"></div></div>
     </div>
 </body>
 </html>""".format(mathjax=mathjax, equation_json=equation_json, sym_json=sym_json, script=script, body=body,
