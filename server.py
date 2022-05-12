@@ -38,6 +38,7 @@ class MainHandler(tornado.web.RequestHandler):
             ret = 0
             extra_dict["res"] = res
             extra_dict["ret"] = ret
+            extra_dict["name"] = default_base
         else:
             try:
                 res = process_input(data['input'], default_path, file_name=default_base, server_mode=True)
