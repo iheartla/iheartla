@@ -267,7 +267,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
         record("Call Markdown")
         body = md.convert(content)
         body, abstract = handle_abstract(body, md.Meta)
-        body = handle_sections(body, md.Meta)
+        # body = handle_sections(body, md.Meta)
         body = abstract + body
         body = handle_title(body, md.Meta)
         body = handle_context_block(body)

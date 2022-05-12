@@ -666,7 +666,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
 
     def handle_reference(self, text):
         res_list = self.REFERENCE_RE.findall(text)
-        if len(res_list) == 0 and self.md.Meta.get("full_paper", True):
+        if len(res_list) == 0 and self.md.Meta.get("full_paper", False):
             text += "\n# REFERENCE\n"
         # ref_list = []
         # for m in self.REFERENCE_RE.finditer(text):
