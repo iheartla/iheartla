@@ -411,10 +411,10 @@ function updateGlossarySyms(cur_context){
       if (diff_list[j].def_module == cur_context) {
         var cur_info = getSymTypeInfo(diff_list[j].type_info)
         if(diff_list[j].desc && diff_list[j].desc != 'None' ){
-          content = `<span class='glosary_line ${cur_color}' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span >${dollarSymK}</span> ${cur_info}: ${diff_list[j].desc} </span><br>`;
+          content = `<div class='div_line ${cur_color}'><span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span >${dollarSymK}</span> ${cur_info}: ${diff_list[j].desc} </span></div>`;
         }
         else{
-          content = `<span class='glosary_line ${cur_color}' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span >${dollarSymK}</span> ${cur_info} </span><br>`;
+          content = `<div class='div_line ${cur_color}'><span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span >${dollarSymK}</span> ${cur_info} </span></div>`;
         }
         break;
       }

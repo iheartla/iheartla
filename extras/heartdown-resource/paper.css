@@ -80,6 +80,10 @@ body
   /*margin-left: 10px;*/
   /*margin-right: 10px;*/
   /*margin-bottom: 10px;*/
+  /*line-height: 1.6;*/
+}
+.div_line{
+  margin-bottom: 2px;
 }
 @keyframes eqShowup {
   from {
