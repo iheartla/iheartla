@@ -30,11 +30,13 @@
 </head>
 
 <body>
-
-<div class="container-fluid">
-  <h1>H❤️rtDown Editor
-  </h1>
-    <div class="row" style="height: 80%">
+<div class="container-fluid vh-100 d-flex flex-column">
+    <div class="row">
+        <div class="col">
+            <h1 style="margin-top: 1ex;">H❤️rtDown Editor</h1>
+        </div>
+    </div>
+    <div class="row flex-grow-1" style="margin: 0 0 1.5em 0;">
     
         <!-- A column for the code editor and buttons -->
         <div class="col-lg">
@@ -55,23 +57,25 @@
     </div>
 
 
+</div>
+
     <!-- The buttons row -->
-    <div class="row widgets">
-        <div class="compileCol">
-            <button id="compile" class="btn btn-success" onclick="clickCompile()">
+<nav class="navbar fixed-bottom navbar-light widgets">
+  <div class="container flex-column-reverse justify-content-center">
+    <div class="compileCol">
+            <button id="compile" class="btn btn-success shadow" onclick="clickCompile()">
                 <i id="submit_icon" class="fa fa-refresh"></i> Compile
             <!--  <i id="submit_icon" class="fa fa-refresh fa-spin"></i> Compile-->
             </button>
         </div>
         <div class="msgCol">
 <!--            <pre>-->
-                <div id="msg" class="alert alert-primary" role="alert" hidden></div>
+                <div id="msg" class="alert alert-primary shadow" role="alert" hidden></div>
 <!--            </pre>-->
-        </div>
     </div>
+  </div>
+</nav>
 
-
-</div>
 <!--<button type="button"  data-bs-toggle="modal" data-bs-target="#eqEditor">-->
 <!--</button>-->
 
