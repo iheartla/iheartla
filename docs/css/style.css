@@ -51,6 +51,7 @@ body {
 }
 #compile {
     background-color: #4CAF50; /* Green background */
+    pointer-events: auto;
 }
 .shadow
 {
@@ -69,8 +70,7 @@ body {
     background: white;
     */
     /* background-color: rgba(255,255,255,.5); */
-    left: 50%;
-    transform: translateX(-50%);
+    pointer-events: none;
 }
 .compileCol{
     text-align: center;
@@ -88,6 +88,7 @@ body {
     /*word-break: break-word;*/
     overflow : hidden;
     white-space: initial;
+    pointer-events: auto;
 }
 #output {
     border: 1px solid grey;
