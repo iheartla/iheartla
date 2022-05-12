@@ -53,7 +53,9 @@ body
     line-height: 120%;
     text-align: center;
 }
-.glossary_holder {}
+#glossary_holder {
+  flex: 0.5;
+}
 .glossary{
   position: sticky; 
   top: 10px;
@@ -84,6 +86,8 @@ body
 }
 .div_line{
   margin-bottom: 2px;
+  padding-left: 2ex;
+  text-indent: -2ex;
 }
 @keyframes eqShowup {
   from {
