@@ -400,8 +400,9 @@ function updateGlossarySyms(cur_context){
   for (i = 0; i < keys.length; i++) {
     k = keys[i];
     var cur_color = `highlight_${getSymColor(k)}`;
+    var span_class = `glosary_line`
     if (isUndescribed(cur_context, k)) {
-      cur_color = `${cur_color} highlight_DarkRedOriginal`;
+      span_class = `${span_class} highlight_DarkRedOriginal`;
     }
     diff_list = sym_data[k];
     ck = k.replaceAll("\\","\\\\");
@@ -411,10 +412,10 @@ function updateGlossarySyms(cur_context){
       if (diff_list[j].def_module == cur_context) {
         var cur_info = getSymTypeInfo(diff_list[j].type_info)
         if(diff_list[j].desc && diff_list[j].desc != 'None' ){
-          content = `<div class='div_line ${cur_color}'><span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span >${dollarSymK}</span> ${cur_info}: ${diff_list[j].desc} </span></div>`;
+          content = `<div class='div_line ${cur_color}'><span class='${span_class}' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span >${dollarSymK}</span> ${cur_info}: ${diff_list[j].desc} </span></div>`;
         }
         else{
-          content = `<div class='div_line ${cur_color}'><span class='glosary_line' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span >${dollarSymK}</span> ${cur_info} </span></div>`;
+          content = `<div class='div_line ${cur_color}'><span class='${span_class}' onclick="parseSym(this, '${ck}', '${diff_list[j].def_module}');"><span >${dollarSymK}</span> ${cur_info} </span></div>`;
         }
         break;
       }
