@@ -1036,8 +1036,14 @@ function closeOtherTips(){
     }
   }
 };
-function checkDesc(){
+function isIndependentMode(){
   if (typeof parent.onEditEquation !== 'function') { 
+    return true;
+  }
+  return false;
+}
+function checkDesc(){
+  if (isIndependentMode()) { 
     return;
   }
   var showBlick = false;
@@ -1076,6 +1082,9 @@ function checkDesc(){
   }
 }
 function isUndescribed(context, sym){
+  if (isIndependentMode()) { 
+    return false;
+  }
   for(var eq in iheartla_data.equations){
     if(iheartla_data.equations[eq].name == context){
       // console.log(`context:${context}, sym:${sym}`);
