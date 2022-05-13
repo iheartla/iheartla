@@ -750,8 +750,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
                             if cur_sym in cur_key:
                                 cur_sym = cur_key
                                 # print("converted, before:{}, after:{}".format(sym, cur_sym))
-                    if cur_sym not in equation_dict[context].desc_dict:
-                        equation_dict[context].desc_dict[cur_sym] = desc
+                    # if cur_sym not in equation_dict[context].desc_dict:
+                    equation_dict[context].desc_dict[cur_sym] = desc
                         # print("assign:{}, desc:{}".format(cur_sym, desc))
             # for k, v in equation_dict[context].desc_dict.items():
             #     print("k:{}, v:{}".format(k, v))
