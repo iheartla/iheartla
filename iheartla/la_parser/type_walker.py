@@ -233,11 +233,16 @@ class TypeWalker(NodeWalker):
                 assert True, "error"
         elif self.visiting_opt:
             if self.opt_key in self.opt_dict:
+                self.copy_data_to_opt()
                 return self.opt_dict[self.opt_key]
             else:
                 assert True, "error"
         self.main_param.symtable = self.symtable
         return self.main_param
+
+    def copy_data_to_opt(self):
+        for key, paramData in self.opt_dict.items():
+            paramData.symtable.update(self.main_param.symtable)
 
     def filter_symbol(self, symbol):
         if '`' in symbol:
