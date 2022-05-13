@@ -12,7 +12,7 @@ if WHEEL_MODE:
 else:
     from iheartla.la_tools.la_helper import *
     from iheartla.la_tools.la_logger import LaLogger
-    from iheartla.la_parser.parser import ParserTypeEnum
+    from iheartla.la_parser.parser import ParserTypeEnum, LaMsg
     import markdown
     from markdown.core import *
     import markdown.extensions
@@ -406,6 +406,21 @@ if __name__ == '__main__':
         for paper_file in args.paper:
             content = read_from_file(paper_file)
             base_name = os.path.basename(Path(paper_file))
-            ret = process_input(content, os.path.dirname(Path(paper_file)), resource_dir, os.path.splitext(base_name)[0], parser_type)
+            if DEBUG_MODE:
+                ret = process_input(content, os.path.dirname(Path(paper_file)), resource_dir, os.path.splitext(base_name)[0], parser_type)
+            else:
+                try:
+                    ret = process_input(content, os.path.dirname(Path(paper_file)), resource_dir, os.path.splitext(base_name)[0], parser_type)
+                    msg = ''
+                except AssertionError as e:
+                    err_msg = LaMsg.getInstance()
+                    msg = err_msg.cur_msg
+                    print("expr: {}".format(err_msg.cur_code.replace('\n', '')))
+                except Exception as e:
+                    msg = str(e)
+                except:
+                    msg = str(sys.exc_info()[0])
+                finally:
+                    print("msg: {}".format(msg))
             # print(html)
     record("End")
