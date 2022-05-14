@@ -36,6 +36,7 @@ body
 /*  min-height: none;
   min-height: 0%;*/
   max-width: 585px;
+  min-width: 485px;
 }
 #glossary_holder {
   min-width: 200px;
@@ -57,6 +58,7 @@ body
   /* box-shadow: 0 3px 10px rgb(0 0 0 / 0.2); */
   box-shadow: 0 0 50px #ccc;
   max-height: 90%;
+  max-width: 400px;
 }
 .glosary_title{
   margin-left: 10px;
