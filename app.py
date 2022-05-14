@@ -198,6 +198,7 @@ def handle_figure(text, name_list, input_dir):
             text_list.append(new_figure)
         else:
             text_list.append(m.group())
+    text_list.append(text[start_index:len(text)])
     if len(text_list) > 0:
         if len(threads_list) > 0:
             print("generating figures ...")
