@@ -50,7 +50,7 @@ class MainHandler(tornado.web.RequestHandler):
                 extra_dict["expr"] = err_msg.cur_code.replace('\n', '')
                 extra_dict["msg"] = err_msg.cur_msg
             except Exception as e:
-                extra_dict["msg"] = str(e)
+                extra_dict["msg"] = "{}: {}".format(type(e).__name__, str(e))
             except:
                 extra_dict["msg"] = str(sys.exc_info()[0])
             finally:

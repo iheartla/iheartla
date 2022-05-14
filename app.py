@@ -417,7 +417,7 @@ if __name__ == '__main__':
                     msg = err_msg.cur_msg
                     print("expr: {}".format(err_msg.cur_code.replace('\n', '')))
                 except Exception as e:
-                    msg = str(e)
+                    msg = "{}: {}".format(type(e).__name__, str(e))
                 except:
                     msg = str(sys.exc_info()[0])
                 finally:
