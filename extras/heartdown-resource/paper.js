@@ -321,15 +321,23 @@ function parseSym(tag, symbol, module){
   //   MathJax.typeset();
   // }
 }
-function adjsutGlossaryBtn(){
-  var body = document.querySelector("body");
-  var style = window.getComputedStyle(body);
-  var curWidth = parseInt(style.width, 10)
-  var h = window.innerHeight;
-  var curOffset = parseInt(style.marginLeft, 10)
+function adjustGlossaryBtn(){
+  // var body = document.querySelector("body");
+  // var style = window.getComputedStyle(body);
+  // var curWidth = parseInt(style.width, 10)
+  // var h = window.innerHeight;
+  // var curOffset = parseInt(style.marginLeft, 10)
   var glossaryBtn = document.querySelector(".glossary");
+  var glossaryHolder = document.querySelector("#glossary_holder");
   // glossaryBtn.style.left = `${curOffset + curWidth +  10}px`;
-  glossaryBtn.style.maxHeight = `${h - 30}px`;
+  // glossaryBtn.style.maxHeight = `${h - 30}px`;
+  glossaryBtn.style.width = glossaryHolder.style.width;
+  //
+  // var arrows = document.querySelector("#arrows");
+  // var main = document.querySelector("#main");
+  // console.log(`arrows width: ${arrows.style.width}, height: ${arrows.style.height}`);
+  // console.log(`main width: ${main.style.width}, height: ${main.style.height}`);
+  // console.log(`glossaryHolder width: ${glossaryHolder.style.width}, height: ${glossaryHolder.style.height}`);
 }
 function addObversers(){
   let options = {
@@ -380,7 +388,7 @@ function addObversers(){
   } 
 }
 function onLoad(){
-  // adjsutGlossaryBtn();
+  adjustGlossaryBtn();
   addObversers();
   checkDesc();
 }
