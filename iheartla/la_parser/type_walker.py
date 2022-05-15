@@ -214,6 +214,7 @@ class TypeWalker(NodeWalker):
         self.local_func_name = ''  # function name when visiting expressions
         self.local_func_dict = {}  # local function name -> parameter dict
         self.visiting_opt = False  # optimization
+        self.opt_cur_init_list = [] # initialized vars
         self.opt_key = ''
         self.opt_dict = {}
         self.func_data_dict = {}   # local function name -> LocalFuncData
@@ -438,16 +439,41 @@ class TypeWalker(NodeWalker):
                 existed = True
         return existed
 
-    def check_sym_existence(self, sym, msg):
+    def check_sym_existence(self, sym, msg, existed=True):
+        """
+        :param sym: symbol name
+        :param msg: error message
+        :param existed: the symbol should exist or not
+        :return:
+        """
         resolved = False
-        if self.local_func_parsing:
-            if self.local_func_name in self.local_func_dict and sym in self.local_func_dict[self.local_func_name]:
-                resolved = True
-        elif self.visiting_opt:
-            if self.opt_key in self.opt_dict and sym in self.opt_dict[self.opt_key].symtable:
-                resolved = True
-        if not resolved:
-            assert self.symtable.get(sym) is not None, msg
+        if existed:
+            # should exist
+            if self.local_func_parsing:
+                if self.local_func_name in self.local_func_dict and sym in self.local_func_dict[self.local_func_name]:
+                    resolved = True
+            if self.visiting_opt:
+                if self.opt_key in self.opt_dict and sym in self.opt_dict[self.opt_key].symtable:
+                    resolved = True
+            if not resolved:
+                assert self.symtable.get(sym) is not None, msg
+        else:
+            # shouldn't exist
+            if self.local_func_parsing:
+                # only need to check local parameters
+                if self.local_func_name in self.local_func_dict and sym in self.local_func_dict[self.local_func_name]:
+                    resolved = True
+                assert not resolved, msg
+                return
+            if self.visiting_opt:
+                if self.opt_key in self.opt_dict and sym in self.opt_dict[self.opt_key].symtable:
+                    resolved = True
+            if not resolved:
+                assert self.symtable.get(sym) is None, msg
+            else:
+                if self.visiting_opt and sym in self.opt_cur_init_list:
+                    return
+                assert False, msg
 
     def walk_Node(self, node):
         print('Reached Node: ', node)
@@ -1545,6 +1571,7 @@ class TypeWalker(NodeWalker):
                 cur_info = self.walk(cur_init, **kwargs)
                 init_list.append(cur_info.ir)
                 init_syms.append(cur_info.ir.left[0].get_main_id())
+        self.opt_cur_init_list = copy.deepcopy(init_syms)
         if len(node.defs) > 0:
             self.is_param_block = True
             for par_def in node.defs:
@@ -3436,5 +3463,5 @@ class TypeWalker(NodeWalker):
             self.get_cur_param_data().symtable[arr[0]] = SequenceType(size=new_var_name, element_type=id_type, desc=id_type.desc, symbol=arr[0])
         else:
             id_type.symbol = identifier
-            assert identifier not in self.get_cur_param_data().symtable, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier))
+            self.check_sym_existence(identifier, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier)), False)
             self.get_cur_param_data().symtable[identifier] = id_type
