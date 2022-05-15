@@ -184,14 +184,18 @@ function drawArrow(startElement, endElement, style='', color='blue',
 }
 
 function getTypeInfo(type_info){
+  cur_type = 'R';
+  if (type_info.is_int == 'True') {
+    cur_type = 'Z';
+  }
   if(type_info.type == 'matrix'){
-    content = `\\mathbb{R}^{${type_info.rows}×${type_info.cols}}`;
+    content = `\\mathbb{${cur_type}}^{${type_info.rows}×${type_info.cols}}`;
   }
   else if(type_info.type == 'vector'){
-    content = `\\mathbb{R}^{${type_info.rows}}`;  
+    content = `\\mathbb{${cur_type}}^{${type_info.rows}}`;  
   }
   else if(type_info.type == 'scalar'){
-    content = "\\mathbb{R}";
+    content = `\\mathbb{${cur_type}}`;
   }
   else if(type_info.type == 'sequence'){
     content = getTypeInfo(type_info.element);

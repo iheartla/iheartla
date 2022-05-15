@@ -161,7 +161,7 @@ class ScalarType(LaVarType):
         return self.is_int
 
     def get_json_content(self):
-        return """{"type": "scalar"}"""
+        return """{{"type": "scalar", "is_int":"{}"}}""".format(self.is_integer_element())
 
 
 class SequenceType(LaVarType):
@@ -179,7 +179,7 @@ class SequenceType(LaVarType):
         return self.element_type.is_dynamic()
 
     def get_json_content(self):
-        return """{{"type": "sequence", "element":{}, "size":"{}"}}""".format(self.element_type.get_json_content(), self.size)
+        return """{{"type": "sequence", "is_int":"{}", "element":{}, "size":"{}"}}""".format(self.is_integer_element(), self.element_type.get_json_content(), self.size)
 
 
 class MatrixType(LaVarType):
@@ -212,7 +212,7 @@ class MatrixType(LaVarType):
         return self.element_type.is_integer_element()
 
     def get_json_content(self):
-        return """{{"type": "matrix", "element":{}, "rows":"{}", "cols":"{}"}}""".format(self.element_type.get_json_content(), self.rows, self.cols)
+        return """{{"type": "matrix", "is_int":"{}", "element":{}, "rows":"{}", "cols":"{}"}}""".format(self.is_integer_element(), self.element_type.get_json_content(), self.rows, self.cols)
 
 
 class VectorType(LaVarType):
@@ -232,7 +232,7 @@ class VectorType(LaVarType):
         return self.element_type.is_integer_element()
 
     def get_json_content(self):
-        return """{{"type": "vector", "element":{}, "rows":"{}"}}""".format(self.element_type.get_json_content(), self.rows)
+        return """{{"type": "vector", "is_int":"{}", "element":{}, "rows":"{}"}}""".format(self.is_integer_element(), self.element_type.get_json_content(), self.rows)
 
 
 class SetType(LaVarType):
@@ -251,7 +251,7 @@ class SetType(LaVarType):
         return True
 
     def get_json_content(self):
-        return """{{"type": "set", "element":[{}], "size":{}}}""".format(','.join(self.int_list), self.size)
+        return """{{"type": "set", "is_int":"{}", "element":[{}], "size":{}}}""".format(self.is_integer_element(), ','.join(self.int_list), self.size)
 
 
 class IndexType(LaVarType):
