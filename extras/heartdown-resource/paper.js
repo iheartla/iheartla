@@ -1,5 +1,5 @@
-var colors =['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink', 
-             'Tomato', 'Orange', 'DarkRed', 'LightCoral', 'Khaki'];
+var colors =['color1', 'color2', 'color3', 'color4', 'color5',
+             'color6', 'color7', 'color8', 'color9', 'color10'];
 
 var centerXDict = {};
 var centerYDict = {};
@@ -410,7 +410,7 @@ function updateGlossarySyms(cur_context){
     var cur_color = `highlight_${getSymColor(k)}`;
     var span_class = `glosary_line`
     if (isUndescribed(cur_context, k)) {
-      span_class = `${span_class} highlight_DarkRedOriginal`;
+      span_class = `${span_class} highlight_error`;
     }
     diff_list = sym_data[k];
     ck = k.replaceAll("\\","\\\\");

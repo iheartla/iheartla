@@ -946,8 +946,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
         pallette = []
         color_dict = {}
         def get_color_list():
-            return ['red', 'YellowGreen', 'DeepSkyBlue', 'Gold', 'HotPink',
-                    'Tomato', 'Orange', 'DarkRed', 'LightCoral', 'Khaki']
+            return ['color1', 'color2', 'color3', 'color4', 'color5',
+                    'color6', 'color7', 'color8', 'color9', 'color10']
         all_colors = get_color_list()
         def get_new_color(all_colors):
             if len(all_colors) == 0:
