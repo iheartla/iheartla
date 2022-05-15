@@ -91,6 +91,7 @@ class IRVisitor(object):
             }
         self.declared_symbols = set()
         self.used_params = []
+        self.opt_syms = []
 
     def add_name_conventions(self, con_dict):
         for key, value in con_dict.items():
@@ -259,6 +260,7 @@ class IRVisitor(object):
             self.logger.info("same_dim_list: {}".format(param_data.same_dim_list, hex(id(param_data.same_dim_list))))
             self.logger.info("sub_name_dict: {}\n".format(param_data.sub_name_dict, hex(id(param_data.sub_name_dict))))
         self.logger.info("used params:{}".format(self.used_params))
+        self.logger.info("optimized variables:{}".format(self.opt_syms))
 
     def init_type(self, type_walker, func_name):
         # self.symtable = type_walker.symtable
@@ -278,6 +280,7 @@ class IRVisitor(object):
         self.local_func_dict = type_walker.local_func_dict
         self.opt_dict = type_walker.opt_dict
         self.used_params = type_walker.used_params
+        self.opt_syms = type_walker.opt_syms
         if func_name is not None:
             self.func_name = func_name
         else:
