@@ -1604,8 +1604,8 @@ class TypeWalker(NodeWalker):
         cond_list = []
         if node.cond:
             cond_list = self.walk(node.cond, **kwargs)
-        for cur_id in base_id_list:
-            del self.symtable[cur_id]
+        # for cur_id in base_id_list:
+        #     del self.symtable[cur_id]
         #
         assert exp_node.la_type.is_scalar(), get_err_msg_info(exp_node.parse_info, "Objective function must return a scalar")
         opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node_list, base_type_list, parse_info=node.parseinfo, key=self.opt_key, init_list=init_list, init_syms=init_syms, def_list=par_defs)
