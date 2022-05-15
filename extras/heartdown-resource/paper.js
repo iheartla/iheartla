@@ -1,6 +1,13 @@
-var colors =['color1', 'color2', 'color3', 'color4', 'color5',
-             'color6', 'color7', 'color8', 'color9', 'color10'];
-
+var colorsDict = {'color1': '#8dd3c7', 
+                  'color2': '#ffffb3', 
+                  'color3': '#bebada', 
+                  'color4': '#d9d9d9', 
+                  'color5': '#80b1d3', 
+                  'color6': '#fdb462', 
+                  'color7': '#b3de69', 
+                  'color8': '#fccde5', 
+                  'color9': '#bc80bd', 
+                  'color10': '#ccebc5'}; // used by arrows
 var centerXDict = {};
 var centerYDict = {};
 var offsetEndXDict = {};
@@ -171,7 +178,7 @@ function drawArrow(startElement, endElement, style='', color='blue',
       L ${endPointX-arrowSize} ${endPointY-arrowSize+offsetEndY} 
       L ${endPointX} ${endPointY+offsetEndY} 
       L ${endPointX-arrowSize} ${endPointY+arrowSize+offsetEndY} 
-      `).attr({fill: 'white', 'fill-opacity': 0, stroke: color, 'stroke-width': 2, 'stroke-opacity': .5, 'stroke-linejoin': 'bevel', 'stroke-linecap': 'square'})
+      `).attr({fill: 'white', 'fill-opacity': 0, stroke: colorsDict[color], 'stroke-width': 2, 'stroke-opacity': .5, 'stroke-linejoin': 'bevel', 'stroke-linecap': 'square'})
     svg.attr('offset', marginLeft)
     document.querySelector(".arrow").style.marginLeft = "0px"
 }
@@ -803,7 +810,7 @@ function getEquationContent(func_name, sym_list, isLocalFunc=false, localFunc=''
     if (localParams.includes(sym)) {
       isLocalParam = true;
     }
-    content += getSymInfo(sym_list[i], func_name, isLocalParam, localFunc, colors[i], `case='equationInfo'`) + '<br>';
+    content += getSymInfo(sym_list[i], func_name, isLocalParam, localFunc, '', `case='equationInfo'`) + '<br>';
   }
   return content;
 }
