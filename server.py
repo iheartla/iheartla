@@ -119,6 +119,7 @@ if __name__ == "__main__":
     args = arg_parser.parse_args()
     if args.paper:
         default_path = os.path.dirname(Path(args.paper[0]))
+        default_path = os.path.abspath(default_path)
         default_base = os.path.splitext(os.path.basename(Path(args.paper[0])))[0]
         default_input = read_from_file(args.paper[0])
     app = make_app(default_path)
