@@ -1497,13 +1497,16 @@ class CodeGenNumpy(CodeGen):
                 pre_list.append(init_info.content)
             init_value = "pack({})".format(','.join(init_str_list))
         #
+        opt_name = self.generate_var_name("opt")
+        pre_list.append("    {} = minimize({}, {}{})\n".format(opt_name, target_func, init_value, constraints_param))
+        pre_list.append("    {} = unpack({}.x)\n".format(', '.join(id_list), opt_name))
         content = ''
         if node.opt_type == OptimizeType.OptimizeMin:
-            content = "minimize({}, {}{}).fun".format(target_func, init_value, constraints_param)
+            content = "{}.fun".format(opt_name)
         elif node.opt_type == OptimizeType.OptimizeMax:
-            content = "-minimize({}, {}{}).fun".format(target_func, init_value, constraints_param)
+            content = "-{}.fun".format(opt_name)
         elif node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
-            content = "unpack(minimize({}, {}{}).x)".format(target_func, init_value, constraints_param)
+            content = "unpack({}.x)".format(opt_name)
         self.enable_tmp_sym = False
         return CodeNodeInfo(content, pre_list=pre_list)
 
