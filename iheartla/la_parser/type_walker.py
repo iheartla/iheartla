@@ -223,6 +223,7 @@ class TypeWalker(NodeWalker):
         self.import_module_list = []
         self.main_param = ParamsData()
         self.used_params = []
+        self.opt_syms = []
         self.expr_dict = {}        # lhs id -> symbols in current expr
 
     def get_cur_param_data(self):
@@ -297,6 +298,7 @@ class TypeWalker(NodeWalker):
         self.import_module_list.clear()
         self.main_param.reset()
         self.used_params.clear()
+        self.opt_syms.clear()
         self.expr_dict.clear()
         self.visiting_opt = False
         self.visiting_lhs = False
@@ -595,6 +597,7 @@ class TypeWalker(NodeWalker):
         self.saved_func_data_dict = copy.deepcopy(self.func_data_dict)
         self.saved_local_func_dict = copy.deepcopy(self.local_func_dict)
         self.saved_used_params = copy.deepcopy(self.used_params)
+        self.saved_opt_syms = copy.deepcopy(self.opt_syms)
         self.saved_opt_dict = copy.deepcopy(self.opt_dict)
 
     def pop_environment(self):
@@ -608,6 +611,7 @@ class TypeWalker(NodeWalker):
         self.func_data_dict = self.saved_func_data_dict
         self.opt_dict = self.saved_opt_dict
         self.used_params = self.saved_used_params
+        self.opt_syms = self.saved_opt_syms
         self.local_func_parsing = False
         self.is_param_block = False
 
@@ -1585,6 +1589,8 @@ class TypeWalker(NodeWalker):
                     # temporary add to symbol table : opt scope
                     # self.symtable[par_type.id[cur_index].get_name()] = par_type.type.la_type
                     self.tmp_symtable[par_type.id[cur_index].get_main_id()] = self.get_cur_param_data().symtable[par_type.id[cur_index].get_main_id()]
+                    if par_type.id[cur_index].get_main_id() not in self.opt_syms:
+                        self.opt_syms.append(par_type.id[cur_index].get_main_id())
             self.is_param_block = False
             self.symtable.update(self.get_cur_param_data().symtable)
         opt_type = OptimizeType.OptimizeInvalid

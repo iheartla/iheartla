@@ -171,7 +171,7 @@ class CodeGenNumpy(CodeGen):
         end_str = self.local_func_def + def_struct
         if end_str != '':
             end_str = '\n' + end_str
-        return "\n".join(content) + init_struct + init_var + stat_str + end_str
+        return "\n".join(content) + init_struct + init_var + stat_str + end_str + self.get_opt_syms_content()
 
     def get_ret_struct(self):
         return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list))
@@ -232,6 +232,12 @@ class CodeGenNumpy(CodeGen):
         """Copy Parameters that are used in local functions as struct members"""
         assign_list = []
         for param in self.used_params:
+            assign_list.append("        self.{} = {}\n".format(param, param))
+        return ''.join(assign_list)
+
+    def get_opt_syms_content(self):
+        assign_list = []
+        for param in self.opt_syms:
             assign_list.append("        self.{} = {}\n".format(param, param))
         return ''.join(assign_list)
 
