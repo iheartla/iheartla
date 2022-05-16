@@ -984,6 +984,29 @@ function clickFigure(ele, name){
       parent.onClickFigure(ele, name);
   }
 }
+function updateFigure(name, msg='', showErr=false){
+  console.log(`name:${name}, msg:${msg}, showErr:${showErr}`);
+  // show error msg or display img
+  const fig = document.querySelector("figure[name='" + name + "']");
+  if (fig) {
+    var img = fig.querySelector('img');
+    var pre = fig.querySelector('pre');
+    if (img == null ) {
+      img = fig.querySelector('iframe');
+    }
+    console.log(`img:${img}, pre:${pre}`);
+    if (showErr) {
+      pre.innerHTML = msg;
+      pre.hidden = false;
+      img.style.display = 'none';
+    }
+    else{
+      // show fig
+      img.style.display = 'block';
+      pre.hidden = true;
+    }
+  }
+}
 function resetState(){
   removeBlinkClass();
   centerXDict = {};

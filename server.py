@@ -81,13 +81,15 @@ class FileHandler(tornado.web.RequestHandler):
             src = data['src']
             print("updated source: {}".format(data['source']))
             save_to_file(data['source'], "{}/{}.py".format(default_path, src))
-            ret = subprocess.run(["python", "{}/{}/{}.py".format(default_path, IMG_CODE, src)], cwd="{}/{}".format(default_path, IMG_CODE))
+            ret = subprocess.run(["python", "{}/{}/{}.py".format(default_path, IMG_CODE, src)],
+                                 cwd="{}/{}".format(default_path, IMG_CODE),
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             if ret.returncode == 0:
                 pass
                 print("server succeed, {}".format(src))
             else:
                 print("server failed, {}".format(src))
-            self.write(json.JSONEncoder().encode({"ret": ret.returncode}))
+            self.write(json.JSONEncoder().encode({"ret": ret.returncode, "msg": ret.stderr.decode('UTF-8')}))
         elif data['type'] == "init":
             # initial input
             if default_input == '':

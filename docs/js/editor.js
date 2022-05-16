@@ -451,6 +451,12 @@ function onUpdatePython() {
               console.log("success");
               reloadIframe();
           }
+          else{
+              // error
+              console.log(`error is ${data.msg}`);
+              $('#loading').modal('hide');
+              document.getElementById("res").contentWindow.updateFigure(curFigure, data.msg, true);
+          }
      });
 }
 

@@ -161,11 +161,12 @@ def gen_figure(source, name, input_dir):
     src = "{}/{}/lib.py".format(input_dir, OUTPUT_CODE)
     if os.path.exists(src):
         shutil.copyfile(src, "{}/{}/lib.py".format(input_dir, IMG_CODE))
-    ret = subprocess.run(["python", source], cwd="{}/{}".format(input_dir, IMG_CODE))
+    ret = subprocess.run(["python", source], cwd="{}/{}".format(input_dir, IMG_CODE), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     record("figure")
     if ret.returncode == 0:
         pass
     else:
+        # print(ret.stderr.decode('UTF-8'))
         print("failed, {}".format(source))
 
 
@@ -187,9 +188,15 @@ def handle_figure(text, name_list, input_dir):
             if name in name_list:
                 source = "{}/{}.py".format(folder, name)
                 threads_list.append(threading.Thread(target=gen_figure, args=(source, name, input_dir)))
+                pre_tag = """<pre class="errorMsg" hidden></pre>"""
                 if suffix == 'html':
                     new_c = """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name)
-                    new_figure = "<figure{}>".format(m.group('property')) + figure[:img.start()] + new_c + figure[img.end():]
+                    new_figure = "<figure{}>".format(m.group('property'))
+                    new_figure += pre_tag + figure[:img.start()] + new_c + figure[img.end():]
+                    new_figure += "</figure>"
+                else:
+                    new_figure = "<figure{}>".format(m.group('property'))
+                    new_figure += pre_tag + figure
                     new_figure += "</figure>"
             break
         text_list.append(text[start_index: m.start()])
