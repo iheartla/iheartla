@@ -252,7 +252,7 @@ class SetType(LaVarType):
         return True
 
     def get_json_content(self):
-        return """{{"type": "set", "is_int":"{}", "element":[{}], "size":{}}}""".format(self.is_integer_element(), ','.join(self.int_list), self.size)
+        return """{{"type": "set", "is_int":"{}", "element":[{}], "size":"{}"}}""".format(self.is_integer_element(), ','.join(['"{}"'.format(1 if i else 0) for i in self.int_list]), self.size)
 
 
 class IndexType(LaVarType):
