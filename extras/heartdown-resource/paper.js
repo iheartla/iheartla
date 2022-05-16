@@ -1,5 +1,5 @@
 var colorsDict = {'color1': '#8dd3c7', 
-                  'color2': '#ffffb3', 
+                  'color2': '#ffed6f', 
                   'color3': '#bebada', 
                   'color4': '#d9d9d9', 
                   'color5': '#80b1d3', 
@@ -178,7 +178,7 @@ function drawArrow(startElement, endElement, style='', color='blue',
       L ${endPointX-arrowSize} ${endPointY-arrowSize+offsetEndY} 
       L ${endPointX} ${endPointY+offsetEndY} 
       L ${endPointX-arrowSize} ${endPointY+arrowSize+offsetEndY} 
-      `).attr({fill: 'white', 'fill-opacity': 0, stroke: colorsDict[color], 'stroke-width': 2, 'stroke-opacity': .5, 'stroke-linejoin': 'bevel', 'stroke-linecap': 'square'})
+      `).attr({fill: 'white', 'fill-opacity': 0, stroke: colorsDict[color], 'stroke-width': 2, 'stroke-opacity': 1.0, 'stroke-linejoin': 'bevel', 'stroke-linecap': 'square'})
     svg.attr('offset', marginLeft)
     document.querySelector(".arrow").style.marginLeft = "0px"
 }
