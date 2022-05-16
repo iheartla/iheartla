@@ -1361,8 +1361,8 @@ class TypeWalker(NodeWalker):
                     if sequence in self.symtable and len(left_subs) != 2:  # matrix items
                         err_msg = "{} has been assigned before".format(id0)
                         if sequence in self.parameters:
-                            err_msg = "{} is a parameter, can not be assigned".format(id0)
-                        # assert False, get_err_msg_info(id0_info.ir.parse_info, err_msg)
+                            err_msg = "{} is a parameter, can not be assigned".format(sequence)
+                        assert False, get_err_msg_info(id0_info.ir.parse_info, err_msg)
                 if len(left_subs) == 2:  # matrix
                     if right_info.ir.node_type != IRNodeType.SparseMatrix:
                         assert sequence not in self.parameters, get_err_msg_info(id0_info.ir.parse_info, "{} is a parameter, can not be assigned".format(sequence))
