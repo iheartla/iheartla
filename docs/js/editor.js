@@ -25,6 +25,7 @@ let curFigure = '';
 let curHtml = '';
 let curFileName = '';
 let msgTimeout = null;
+let latestSource = '';
 function checkBrowserVer(){
     var nVer = navigator.appVersion;
     var nAgt = navigator.userAgent;
@@ -184,6 +185,7 @@ function onLoad(){
           if (data.ret === 0){
             let editor = ace.edit("editor");
             editor.setValue(data.content, 1);
+            latestSource = data.content;
           }
      });
 }
@@ -268,6 +270,7 @@ function runFunction(){
 function compileFunction(){
     var iheartla = ace.edit("editor");
     var source = iheartla.getValue();
+    latestSource = source;
     // console.log(source)
 //     pythonCode = `
 // import linear_algebra.iheartla.la_parser.parser
@@ -419,12 +422,11 @@ function onUpdateEq() {
      let equation = ace.edit("equation");
      content = equation.getValue();
      let editor = ace.edit("editor");
-     let source = editor.getValue();
-     source = source.replace(preEqCode, content);
+     latestSource = latestSource.replace(preEqCode, content);
      // console.log(`source is ${source}`);
      $('#eqEditor').modal('hide');
      clearEq();
-     editor.setValue(source, 1);
+     editor.setValue(latestSource, 1);
      // same as manually clicking
      clickCompile();
 }
@@ -434,11 +436,10 @@ function onUpdatePython() {
     let python = ace.edit("python");
     content = python.getValue();
     let editor = ace.edit("editor");
-    let source = editor.getValue();
-    source = source.replace(preTestCode, content);
+    latestSource = latestSource.replace(preTestCode, content);
     $('#testEditor').modal('hide');
     clearTest();
-    editor.setValue(source, 1);
+    editor.setValue(latestSource, 1);
     // same as manually clicking
     // clickCompile();
     postData(`http://${window.location.hostname}:${window.location.port}/file`, { src:  curFigure, type:"run", source: content})
