@@ -795,7 +795,10 @@ class CodeGenEigen(CodeGen):
                 if node.sub == 0:
                     content = "({}).array().count()".format(value)
                 else:
-                    content = "({}).lpNorm<{}>()".format(value, node.sub)
+                    if node.sub is None:
+                        content = "({}).lpNorm<{}>()".format(value, 2)
+                    else:
+                        content = "({}).lpNorm<{}>()".format(value, node.sub)
             elif node.norm_type == NormType.NormMax:
                 content = "({}).lpNorm<Eigen::Infinity>()".format(value)
             elif node.norm_type == NormType.NormIdentifier:
