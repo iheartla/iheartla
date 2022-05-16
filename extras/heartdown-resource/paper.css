@@ -358,6 +358,11 @@ span
 {
   width: 100%;
 }
+figure
+{
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+}
 
 @font-face {
     font-family: 'Linux Libertine'; /* normal */
