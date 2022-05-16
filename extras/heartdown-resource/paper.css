@@ -338,6 +338,13 @@ figure
 {
   margin-inline-start: 0;
   margin-inline-end: 0;
+  
+  width: 100%;
+  text-align: center;
+}
+figcaption
+{
+  text-align: center;
 }
 
 @font-face {
