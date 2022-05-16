@@ -823,11 +823,11 @@ class CodeGenNumpy(CodeGen):
         if assign_node is None:
             right_node = node.get_ancestor(IRNodeType.LocalFunc).expr[0]
         else:
-            right_node = assign_node.right
+            right_node = assign_node.right[0]
         if right_node.is_node(IRNodeType.SparseMatrix):
             assign_node = node.get_ancestor(IRNodeType.Assignment)
             sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
-            subs = assign_node.left.subs
+            subs = assign_node.left[0].subs
             ret = ["    for {} in range(1, {}+1):\n".format(subs[0], sparse_node.la_type.rows),
                    "        for {} in range(1, {}+1):\n".format(subs[1], sparse_node.la_type.cols)]
             pre_list = []
@@ -864,12 +864,12 @@ class CodeGenNumpy(CodeGen):
             right_node = func_node.expr[0]
             left_node = func_node.name
         else:
-            right_node = assign_node.right
-            left_node = assign_node.left
+            right_node = assign_node.right[0]
+            left_node = assign_node.left[0]
         if right_node.is_node(IRNodeType.SparseMatrix):
             self.convert_matrix = True
             sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
-            subs = assign_node.left.subs
+            subs = assign_node.left[0].subs
             cond_info = self.visit(node.cond, **kwargs)
             stat_info = self.visit(node.stat, **kwargs)
             content = []
@@ -896,7 +896,7 @@ class CodeGenNumpy(CodeGen):
             if assign_node is None:
                 content.append("    {}_ret = {}\n".format(self.visit(left_node, **kwargs).content, stat_content))
             else:
-                content.append("    {} = {}\n".format(self.visit(assign_node.left, **kwargs).content, stat_content))
+                content.append("    {} = {}\n".format(self.visit(assign_node.left[0], **kwargs).content, stat_content))
         return CodeNodeInfo(content)
 
     def visit_sparse_other(self, node, **kwargs):

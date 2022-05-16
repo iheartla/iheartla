@@ -912,9 +912,9 @@ class CodeGenEigen(CodeGen):
         pre_list += if_info.content
         pre_list.append(
             '    {}.setFromTriplets(tripletList_{}.begin(), tripletList_{}.end());\n'.format(
-                assign_node.left.get_main_id(),
-                assign_node.left.get_main_id(),
-                assign_node.left.get_main_id()))
+                assign_node.left[0].get_main_id(),
+                assign_node.left[0].get_main_id(),
+                assign_node.left[0].get_main_id()))
         return CodeNodeInfo(cur_m_id, pre_list)
 
     def visit_sparse_ifs(self, node, **kwargs):
@@ -922,7 +922,7 @@ class CodeGenEigen(CodeGen):
         if assign_node is None:
             right_node = node.get_ancestor(IRNodeType.LocalFunc).expr[0]
         else:
-            right_node = assign_node.right
+            right_node = assign_node.right[0]
         if right_node.is_node(IRNodeType.SparseMatrix):
             pre_list = []
             if node.in_cond_only:
@@ -936,7 +936,7 @@ class CodeGenEigen(CodeGen):
             else:
                 assign_node = node.get_ancestor(IRNodeType.Assignment)
                 sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
-                subs = assign_node.left.subs
+                subs = assign_node.left[0].subs
                 ret = [
                     "    for( int {}=1; {}<={}; {}++){{\n".format(subs[0], subs[0], sparse_node.la_type.rows, subs[0]),
                     "        for( int {}=1; {}<={}; {}++){{\n".format(subs[1], subs[1], sparse_node.la_type.cols,
@@ -967,12 +967,12 @@ class CodeGenEigen(CodeGen):
             right_node = func_node.expr[0]
             left_node = func_node.name
         else:
-            right_node = assign_node.right
-            left_node = assign_node.left
+            right_node = assign_node.right[0]
+            left_node = assign_node.left[0]
         if right_node.is_node(IRNodeType.SparseMatrix):
             self.convert_matrix = True
             assign_node = node.get_ancestor(IRNodeType.Assignment)
-            subs = assign_node.left.subs
+            subs = assign_node.left[0].subs
             cond_info = self.visit(node.cond, **kwargs)
             stat_info = self.visit(node.stat, **kwargs)
             content = cond_info.pre_list
@@ -983,13 +983,13 @@ class CodeGenEigen(CodeGen):
                 content += stat_info.pre_list
                 content.append(cond_info.content)
                 content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(
-                    assign_node.left.main.main_id, subs[0], subs[1], stat_content))
+                    assign_node.left[0].main.main_id, subs[0], subs[1], stat_content))
                 content.append('}\n')
             else:
                 content.append('{}({}){{\n'.format("if" if node.first_in_list else "else if", cond_info.content))
                 content += stat_info.pre_list
                 content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(
-                    assign_node.left.main.main_id, subs[0], subs[1], stat_content))
+                    assign_node.left[0].main.main_id, subs[0], subs[1], stat_content))
                 content.append('}\n')
             self.convert_matrix = False
         else:
@@ -1002,7 +1002,7 @@ class CodeGenEigen(CodeGen):
             if assign_node is None:
                 content.append("    {}_ret = {};\n".format(self.visit(left_node, **kwargs).content, stat_content))
             else:
-                content.append("    {} = {};\n".format(self.visit(assign_node.left, **kwargs).content, stat_content))
+                content.append("    {} = {};\n".format(self.visit(assign_node.left[0], **kwargs).content, stat_content))
             content.append('}\n')
         return CodeNodeInfo(content)
 
