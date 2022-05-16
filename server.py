@@ -21,7 +21,10 @@ def save_markdown(content):
     dst = "{}/{}".format(default_path, INPUT_HISTORY)
     if not os.path.exists(dst):
         os.makedirs(dst)
-    save_to_file(content, "{}/{}/input-{}.md".format(default_path, INPUT_HISTORY, datetime.now().strftime("%Y-%m-%d-%H-%M-%S")))
+    # Overwrite the input file
+    save_to_file(content, "{}/{}.md".format(default_path, default_base))
+    # Save a backup
+    save_to_file(content, "{}/{}/{}-{}.md".format(default_path, INPUT_HISTORY, default_base, datetime.now().strftime("%Y-%m-%d-%H-%M-%S")))
 
 
 class MainHandler(tornado.web.RequestHandler):
@@ -120,8 +123,13 @@ if __name__ == "__main__":
     if args.paper:
         default_path = os.path.dirname(Path(args.paper[0]))
         default_path = os.path.abspath(default_path)
+        # The following is equivalent to: default_base = Path(args.paper[0]).stem
         default_base = os.path.splitext(os.path.basename(Path(args.paper[0])))[0]
         default_input = read_from_file(args.paper[0])
+    
+    # save the contents into the backup folder
+    save_markdown(default_input)
+    
     app = make_app(default_path)
     app.listen(8000)
     print('Listening at http://localhost:8000/')
