@@ -9,7 +9,6 @@ from ..util import parseBoolValue
 import copy
 from collections import OrderedDict
 import regex as re
-import base64
 import hashlib
 if WHEEL_MODE:
     from linear_algebra.iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
@@ -643,7 +642,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     raw_math = r"""$\begin{{align*}}{}\end{{align*}}$""".format(raw_content)
                     math_code = r"""${}{}{}$""".format(code_list[-1].pre_str, content, code_list[-1].post_str)
                     content = r"""<span class='equation' code_block="{}" code="{}">{}</span>""".format(
-                        block_data.module_name, base64.b64encode(block_data.code_list[cur_index].encode("utf-8")).decode("utf-8"), math_code)
+                        block_data.module_name, base64_encode(block_data.code_list[cur_index]), math_code)
                 else:
                     tag_info = ''
                     if not block_data.number_list[cur_index]:
@@ -653,7 +652,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     content = r"""
         <div class='equation' code_block="{}" code="{}">
         {}</div>
-        """.format(block_data.module_name, base64.b64encode("\n".join(original_block.split("\n")[1:-1]).encode("utf-8")).decode("utf-8"), math_code)
+        """.format(block_data.module_name, base64_encode("\n".join(original_block.split("\n")[1:-1])), math_code)
                 content = self.md.htmlStash.store(content)
                 text = text.replace(block_data.block_list[cur_index], content)
                 replace_dict[block_data.block_list[cur_index]] = content
@@ -988,11 +987,12 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 if len(sym_eq_data.used_list) > 0:
                     used_list_str = '"' + '","'.join(sym_eq_data.used_list) + '"'
                 cur_desc = sym_eq_data.desc
-                if sym_eq_data.desc:
-                    cur_desc = cur_desc.replace('\\', '\\\\\\\\').replace('"', '\\\\"').replace("'", "\\\\'")
+                # if sym_eq_data.desc:
+                #     cur_desc = cur_desc.replace('\\', '\\\\\\\\').replace('"', '\\\\"').replace("'", "\\\\'")
                 if not cur_desc:
                     la_warning("missing description for sym {}".format(sym))
-                # print(" sym_eq_data.desc:{}".format( sym_eq_data.desc))
+                print(" sym_eq_data.desc:{}".format( sym_eq_data.desc))
+                cur_desc = base64_encode(cur_desc)
                 eq_data_list.append('''{{"desc":"{}", "type_info":{}, "def_module":"{}", "is_defined":{}, "used_equations":{}, "color":"{}"}}'''.format(
                     cur_desc, sym_eq_data.la_type.get_json_content(),
                     sym_eq_data.module_name, "true" if sym_eq_data.is_defined else "false", used_list_str,

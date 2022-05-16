@@ -82,13 +82,13 @@ class EquationData(object):
         param_list = []
         for param in self.parameters:
             if param in self.desc_dict:
-                param_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(param), self.symtable[param].get_json_content(), self.desc_dict[param].replace('"', '\\"').replace("'", "\\'")))
+                param_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(param), self.symtable[param].get_json_content(), base64_encode(self.desc_dict[param])))
             else:
                 param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(param), self.symtable[param].get_json_content()))
         def_list = []
         for lhs in self.definition:
             if lhs in self.desc_dict:
-                def_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(lhs), self.symtable[lhs].get_json_content(), self.desc_dict[lhs].replace('"', '\\"').replace("'", "\\'")))
+                def_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(lhs), self.symtable[lhs].get_json_content(), base64_encode(self.desc_dict[lhs])))
             else:
                 def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(lhs), self.symtable[lhs].get_json_content()))
         # module dependence, get the sym info
@@ -103,9 +103,7 @@ class EquationData(object):
                     sym_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(sym),
                                                                                              self.symtable[
                                                                                                  sym].get_json_content(),
-                                                                                             self.desc_dict[
-                                                                                                 sym].replace('"',
-                                                                                                              '\\"').replace("'", "\\'")))
+                                                                                             base64_encode(self.desc_dict[sym])))
                 else:
                     sym_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(sym),
                                                                                 self.symtable[sym].get_json_content()))
@@ -114,13 +112,13 @@ class EquationData(object):
         func_list = []
         for k, v in self.func_data_dict.items():
             if k in self.desc_dict:
-                def_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(k), self.symtable[k].get_json_content(), self.desc_dict[k].replace('"', '\\"').replace("'", "\\'")))
+                def_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(k), self.symtable[k].get_json_content(), base64_encode(self.desc_dict[k])))
             else:
                 def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(k), self.symtable[k].get_json_content()))
             local_param_list = []
             for local_param in v.params_data.parameters:
                 if local_param in self.desc_dict:
-                    local_param_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(local_param), v.params_data.symtable[local_param].get_json_content(), self.desc_dict[local_param].replace('"', '\\"').replace("'", "\\'")))
+                    local_param_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(local_param), v.params_data.symtable[local_param].get_json_content(), base64_encode(self.desc_dict[local_param])))
                 else:
                     local_param_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(local_param), v.params_data.symtable[local_param].get_json_content()))
             func_list.append('''{{"name":"{}", "parameters":[{}]}}'''.format(self.trim(k), ','.join(local_param_list)))

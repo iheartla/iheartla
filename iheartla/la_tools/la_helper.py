@@ -1,3 +1,4 @@
+import base64
 import time
 from enum import Enum, IntFlag
 from tatsu._version import __version__
@@ -91,6 +92,12 @@ def simpify_dims(dims):
 
 def is_new_tatsu_version():
     return __version__ >= '5.0.0'
+
+
+def base64_encode(content):
+    if content is None:
+        return content
+    return base64.b64encode(content.encode("utf-8")).decode("utf-8")
 
 
 def save_to_file(content, file_name):
