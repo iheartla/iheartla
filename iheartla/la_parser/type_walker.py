@@ -73,7 +73,8 @@ class EquationData(object):
 
     def trim(self, content):
         # print("before:{}, after:{}".format(content, content.replace('"', '\\"').replace("'", "\\'")))
-        content = content.replace('"', '\\"').replace("'", "\\'")
+        # content = content.replace('"', '\\"').replace("'", "\\'")
+        content = content.replace('\\', '\\\\\\\\').replace('"', '\\"').replace("'", "\\'")
         return content
 
     def gen_json_content(self):
@@ -124,11 +125,12 @@ class EquationData(object):
             func_list.append('''{{"name":"{}", "parameters":[{}]}}'''.format(self.trim(k), ','.join(local_param_list)))
         # self.la_content = self.la_content.replace('\n', '\\\\n')
         content = '''"parameters":[{}], "definition":[{}], "local_func":[{}], "dependence":[{}], "undesc_list":[{}]'''.format(','.join(param_list), ','.join(def_list), ','.join(func_list), ','.join(dependence_list), ','.join(undesc_list))
-        content = content.replace('\\', '\\\\\\\\')
+        # content = content.replace('\\', '\\\\\\\\')
         content = content.replace('\n', '\\\\n')
         content = content.replace('`', '')
-        content = content.replace('\\\\\\\\"', '\\\\"')
-        content = content.replace("\\\\\\\\'", "\\\\'")
+        # content = content.replace('\\\\\\\\"', '\\\\"')
+        # content = content.replace("\\\\\\\\'", "\\\\'")
+        # content = content.replace('"', '\\"').replace("'", "\\'")
         # print("content:{}".format(content))
         # content += ''', "source":"{}"'''.format(self.trim(self.la_content).replace('\\', '\\\\\\\\').replace('\n', '\\\\n'))   # IHLA source code
         return content
