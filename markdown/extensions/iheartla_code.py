@@ -309,8 +309,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
             found_list = list(set(found_list))
             for sym in found_list:
                 cur_dict[sym] = m.group('code')
-            text = text.replace(m.group(), "<span sym='{}' context='{}'> {} </span>".format(
-                ';'.join(found_list).replace('\\', '\\\\'), m.group('context'), desc))
+            text = text.replace(m.group(), """<span sym="{}" context="{}"> {} </span>""".format(
+                ';'.join(found_list).replace('\\','\\\\\\\\').replace('"', '\\"').replace("'", "\\'"), m.group('context'), desc))
             span_dict[m.group('context')] = cur_dict
         # print("after, text:{}\n".format(text))
         return text, span_dict
@@ -438,8 +438,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
                             break
                 if modified:
                     desc = desc.replace(math.group(), r"""${}$""".format(code))
-            # print("handle_span_code, desc:{}".format(desc))
-            text = text.replace(m.group(), "<span sym='{}' context='{}'> {} </span>".format(m.group('symbol').replace('\\','\\\\'), m.group('context'), desc))
+            print("handle_span_code, desc:{}".format(desc))
+            text = text.replace(m.group(), """<span sym="{}" context="{}"> {} </span>""".format(m.group('symbol').replace('\\','\\\\\\\\').replace('"', '\\"').replace("'", "\\'"), m.group('context'), desc))
             span_dict[m.group('context')] = cur_dict
         return text, span_dict
 
@@ -755,6 +755,9 @@ class IheartlaBlockPreprocessor(Preprocessor):
             # for k, v in equation_dict[context].desc_dict.items():
             #     print("k:{}, v:{}".format(k, v))
         return equation_dict
+
+    def handle_undescribed_syms(self,  equation_dict):
+        pass
 
     def save_code(self, full_code_sequence):
         def get_frame_list(index):
