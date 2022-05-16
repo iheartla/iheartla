@@ -22,7 +22,8 @@ def save_markdown(content):
     if not os.path.exists(dst):
         os.makedirs(dst)
     # Overwrite the input file
-    save_to_file(content, "{}/{}.md".format(default_path, default_base))
+    if not DEBUG_MODE:
+        save_to_file(content, "{}/{}.md".format(default_path, default_base))
     # Save a backup
     save_to_file(content, "{}/{}/{}-{}.md".format(default_path, INPUT_HISTORY, default_base, datetime.now().strftime("%Y-%m-%d-%H-%M-%S")))
 
@@ -36,15 +37,19 @@ class MainHandler(tornado.web.RequestHandler):
         # print("Received request: {}".format(data['input']))
         ret = 1
         extra_dict = {}
+        figure_dict = {}
         if DEBUG_MODE:
-            res = process_input(data['input'], default_path, file_name=default_base, server_mode=True)
+            res, figure_dict = process_input(data['input'], default_path, file_name=default_base, server_mode=True)
             ret = 0
             extra_dict["res"] = res
             extra_dict["ret"] = ret
             extra_dict["name"] = default_base
+            print(figure_dict)
+            if len(figure_dict) > 0:
+                extra_dict["fig"] = figure_dict
         else:
             try:
-                res = process_input(data['input'], default_path, file_name=default_base, server_mode=True)
+                res, figure_dict = process_input(data['input'], default_path, file_name=default_base, server_mode=True)
                 ret = 0
                 extra_dict["res"] = res
                 extra_dict["name"] = default_base
@@ -58,6 +63,8 @@ class MainHandler(tornado.web.RequestHandler):
                 extra_dict["msg"] = str(sys.exc_info()[0])
             finally:
                 extra_dict["ret"] = ret
+                if len(figure_dict) > 0:
+                    extra_dict["fig"] = figure_dict
         self.set_header("Content-Type", "application/json")
         self.write(json.JSONEncoder().encode(extra_dict))
         # save updated markdown source to files
@@ -135,7 +142,8 @@ if __name__ == "__main__":
     app = make_app(default_path)
     app.listen(8000)
     print('Listening at http://localhost:8000/')
-    import webbrowser
-    webbrowser.open('http://localhost:8000/')
+    if not DEBUG_MODE:
+        import webbrowser
+        webbrowser.open('http://localhost:8000/')
     tornado.ioloop.IOLoop.current().start()
 

@@ -157,7 +157,7 @@ def handle_context_block(text):
     return ''.join(text_list)
 
 
-def gen_figure(source, name, input_dir):
+def gen_figure(source, name, input_dir, figure_dict):
     src = "{}/{}/lib.py".format(input_dir, OUTPUT_CODE)
     if os.path.exists(src):
         shutil.copyfile(src, "{}/{}/lib.py".format(input_dir, IMG_CODE))
@@ -167,6 +167,7 @@ def gen_figure(source, name, input_dir):
         pass
     else:
         # print(ret.stderr.decode('UTF-8'))
+        figure_dict[name] = ret.stderr.decode('UTF-8')
         print("failed, {}".format(source))
 
 
@@ -175,6 +176,7 @@ def handle_figure(text, name_list, input_dir):
     text_list = []
     threads_list = []
     folder = "{}/{}".format(input_dir, IMG_CODE)
+    figure_dict = {}  # figure name : err msg
     if not os.path.exists(folder):
         os.mkdir(folder)
     for m in FIGURE_BLOCK_RE.finditer(text):
@@ -187,7 +189,7 @@ def handle_figure(text, name_list, input_dir):
             print("handle_figure, img: {}, name:{}".format(path, name))
             if name in name_list:
                 source = "{}/{}.py".format(folder, name)
-                threads_list.append(threading.Thread(target=gen_figure, args=(source, name, input_dir)))
+                threads_list.append(threading.Thread(target=gen_figure, args=(source, name, input_dir, figure_dict)))
                 pre_tag = """<pre class="errorMsg" hidden></pre>"""
                 if suffix == 'html':
                     new_c = """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name)
@@ -212,8 +214,8 @@ def handle_figure(text, name_list, input_dir):
             [t.start() for t in threads_list]
             [t.join() for t in threads_list]
         record("handle_figure")
-        return ''.join(text_list)
-    return text
+        return ''.join(text_list), figure_dict
+    return text, figure_dict
 
 
 def save_output_code(md, path):
@@ -280,8 +282,9 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
         body = handle_title(body, md.Meta)
         body = handle_context_block(body)
         save_output_code(md, input_dir)
+        figure_dict = {}
         if md.need_gen_figure:
-            body = handle_figure(body, md.figure_list, input_dir)
+            body, figure_dict = handle_figure(body, md.figure_list, input_dir)
         equation_json = md.json_data
         # equation_data = get_sym_data(json.loads(equation_json))
         sym_json = md.json_sym
@@ -380,7 +383,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
     # except:
     #     ret = str(sys.exc_info()[0])
     # finally:
-        return ret
+        return ret, figure_dict
 
 
 if __name__ == '__main__':
@@ -415,10 +418,10 @@ if __name__ == '__main__':
             content = read_from_file(paper_file)
             base_name = os.path.basename(Path(paper_file))
             if DEBUG_MODE:
-                ret = process_input(content, os.path.dirname(Path(paper_file)), resource_dir, os.path.splitext(base_name)[0], parser_type)
+                ret, figure_dict = process_input(content, os.path.dirname(Path(paper_file)), resource_dir, os.path.splitext(base_name)[0], parser_type)
             else:
                 try:
-                    ret = process_input(content, os.path.dirname(Path(paper_file)), resource_dir, os.path.splitext(base_name)[0], parser_type)
+                    ret, figure_dict = process_input(content, os.path.dirname(Path(paper_file)), resource_dir, os.path.splitext(base_name)[0], parser_type)
                     msg = ''
                 except AssertionError as e:
                     err_msg = LaMsg.getInstance()

@@ -984,6 +984,12 @@ function clickFigure(ele, name){
       parent.onClickFigure(ele, name);
   }
 }
+function handleFigure(figDict){
+  for(var name in figDict){
+      // console.log(`name: ${name}, figDict: ${figDict[name]}`);
+      updateFigure(name, figDict[name], true);
+  }
+}
 function updateFigure(name, msg='', showErr=false){
   console.log(`name:${name}, msg:${msg}, showErr:${showErr}`);
   // show error msg or display img

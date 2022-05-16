@@ -305,6 +305,10 @@ function compileFunction(){
                       showMsg(data.msg, true);
                       activateBtnStatus();
                   }
+                  // It has to wait for iframe loading, any better way?
+                  setTimeout(function(){
+                    document.getElementById("res").contentWindow.handleFigure(data.fig);
+                  }, 1000);
                   $('#loading').modal('hide');
              });
         }
