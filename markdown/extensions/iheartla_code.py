@@ -187,6 +187,14 @@ class IheartlaBlockPreprocessor(Preprocessor):
         dedent(r'''[\n\s]*'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
+    #
+    SYMBOL_FORMAT = r'''(?<!(    # negative begins
+                                                    (\\(proselabel|prosedeflabel)({{([a-z0-9\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\s]+)}})?{{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}_{{()\\\s]*)))
+                                                    |
+                                                    ([a-zA-Z]+)
+                                                    ) # negative ends
+                                                    ({})
+                                                    (?![a-zA-Z]+)'''
     def __init__(self, md, config):
         super().__init__(md)
         self.config = config
@@ -269,7 +277,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
         :return: replaced text
         """
         for m in self.EASY_SPAN_CONTEXT_BLOCK_RE.finditer(text):
-            sym_list = equation_dict[m.group('context')].gen_sym_list()
+            sym_list = equation_dict[m.group('context')].generated_list
+            # subset_dict = equation_dict[m.group('context')].subset_dict
             found_list = []
             desc = m.group('code')
             # sym_list = m.group('symbol').split(';')
@@ -283,19 +292,34 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 modified = False
                 for sym in sym_list:
                     PROSE_RE = re.compile(
-                        dedent(r'''(?<!(    # negative begins
-                                                    (\\(proselabel|prosedeflabel)({{([a-z0-9\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\s]+)}})?{{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}_{{()\s]*)))
-                                                    |
-                                                    ([a-zA-Z]+)
-                                                    ) # negative ends
-                                                    ({})
-                                                    (?![a-zA-Z]+)'''.format(self.escape_sym(sym))),
+                        dedent(self.SYMBOL_FORMAT.format(self.escape_sym(sym))),
                         re.MULTILINE | re.DOTALL | re.VERBOSE
                     )
                     changed = True
                     while changed:
                         changed = False
                         for target in PROSE_RE.finditer(code):
+                            # When a symbol is found, need to check whether it's the substring of other symbols: d_1 in \bar{d_1}
+                            # if sym in subset_dict:
+                            #     accept = True
+                            #     print("cur sym:{}, subset: {}".format(sym, subset_dict[sym]))
+                            #     for parent in subset_dict[sym]:
+                            #         PR_RE = re.compile(
+                            #             dedent(self.SYMBOL_FORMAT.format(self.escape_sym(parent))),
+                            #             re.MULTILINE | re.DOTALL | re.VERBOSE
+                            #         )
+                            #         print("cur parent:{}, code:{}".format(parent, code))
+                            #         for p_target in PR_RE.finditer(code):
+                            #             print("p_target found:{}".format(p_target.group()))
+                            #             if p_target.start() >= target.start() and target.end() <= p_target.end():
+                            #                 accept = False
+                            #                 print("subset string found:{}, {}".format(target.group(), p_target.group()))
+                            #                 break
+                            #         if not accept:
+                            #             break
+                            #     if not accept:
+                            #         continue
+                            # Accept the symbol
                             modified = True
                             changed = True
                             code = code[:target.start()] + "{{\\prosedeflabel{{{}}}{{{{{}}}}}}}".format(
@@ -314,6 +338,9 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 ';'.join(found_list).replace('\\','\\\\\\\\').replace('"', '\\"').replace("'", "\\'"), m.group('context'), desc))
             span_dict[m.group('context')] = cur_dict
         # print("after, text:{}\n".format(text))
+        # print("\nafter, cur_dict:")
+        # for key, value in cur_dict.items():
+        #     print("{} : {}".format(key, value))
         return text, span_dict
 
     def handle_prose_label(self, text, context):
@@ -419,13 +446,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 modified = False
                 for sym in sym_list:
                     PROSE_RE = re.compile(
-                        dedent(r'''(?<!(    # negative begins
-                        (\\(proselabel|prosedeflabel)({{([a-z0-9\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\s]+)}})?{{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}_{{()\s]*)))
-                        |
-                        ([a-zA-Z]+)
-                        ) # negative ends
-                        ({})
-                        (?![a-zA-Z]+)'''.format(self.escape_sym(sym))),
+                        dedent(self.SYMBOL_FORMAT.format(self.escape_sym(sym))),
                         re.MULTILINE | re.DOTALL | re.VERBOSE
                     )
                     changed = True
@@ -494,7 +515,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             cur_context = context_list[index]
             if cur_context in equation_dict:
                 equation_data = equation_dict[cur_context]
-                sym_list = equation_data.gen_sym_list()
+                sym_list = equation_data.generated_list
                 la_debug("cur_context:{}, sym_list:{}".format(cur_context, sym_list))
             # text_list[index] = self.handle_raw_code(text_list[index], context_list[index])
             # text_list[index] = self.handle_inline_raw_code(text_list[index], context_list[index])
@@ -996,6 +1017,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 #     cur_desc = cur_desc.replace('\\', '\\\\\\\\').replace('"', '\\\\"').replace("'", "\\\\'")
                 if not cur_desc:
                     la_warning("missing description for sym {}".format(sym))
+                    # print("missing description for sym {}".format(sym))
                 # print("sym:{}, sym_eq_data.desc:{}".format(sym, sym_eq_data.desc))
                 cur_desc = base64_encode(cur_desc)
                 eq_data_list.append('''{{"desc":"{}", "type_info":{}, "def_module":"{}", "is_defined":{}, "used_equations":{}, "color":"{}"}}'''.format(
