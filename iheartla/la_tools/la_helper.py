@@ -111,7 +111,8 @@ def save_to_file(content, file_name):
 
 def get_file_base(name):
     sec = name.split('/')
-    return '/'.join(sec[:-1]), sec[-1].split('.')[0]
+    path = '/'.join(sec[:-1])
+    return path if path != '' else '.', sec[-1].split('.')[0]
 
 
 def get_file_suffix(name):
