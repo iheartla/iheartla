@@ -693,8 +693,9 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
   //   return;
   // }
   console.log(`symbol is ${symbol}`);
+  searchSym = symbol.replaceAll("'","\\\\'").replaceAll('"','\\\\"'); 
   // syms in prose and derivations
-  let matches = document.querySelectorAll("[sym='" + symbol + "'][module='" + func_name + "']");
+  let matches = document.querySelectorAll("[sym='" + searchSym + "'][module='" + func_name + "']");
   for (var i = matches.length - 1; i >= 0; i--) {
     var curClass = matches[i].getAttribute('class');
     if (curClass !== '') {
@@ -707,7 +708,7 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
   }
   // span prose 
   let new_sym = symbol.replaceAll("\\\\\\\\", "\\\\"); 
-  let spanMatches = document.querySelectorAll("span[sym*='" + symbol + "'][context='" + func_name + "']"); 
+  let spanMatches = document.querySelectorAll(`span[sym*="` + searchSym + `"][context='` + func_name + `']`); 
   for (var i = spanMatches.length - 1; i >= 0; i--) {
     var curClass = spanMatches[i].getAttribute('class');
     var curSym = spanMatches[i].getAttribute('sym');
@@ -727,7 +728,7 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
     }
   }
   // syms in equation
-  let eqMatches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "']");
+  let eqMatches = document.querySelectorAll("[case='equation'][sym='" + searchSym + "'][func='"+ func_name + "']");
   for (var i = eqMatches.length - 1; i >= 0; i--) {
     var curClass = eqMatches[i].getAttribute('class');
     if (curClass !== '') {
