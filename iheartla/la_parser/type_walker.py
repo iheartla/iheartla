@@ -71,25 +71,25 @@ class EquationData(object):
         #
         self.generated_list = list(set(self.generated_list))
         self.subset_dict = {}
-        for i in range(len(self.generated_list)):
-            for j in range(len(self.generated_list)):
-                if i != j and self.generated_list[i] in self.generated_list[j]:
-                    PROSE_RE = re.compile(
-                        dedent(r'''(?<!(    # negative begins
-                                                    (\\(proselabel|prosedeflabel)({{([a-z0-9\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\s]+)}})?{{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}_{{()\s]*)))
-                                                    |
-                                                    ([a-zA-Z]+)
-                                                    ) # negative ends
-                                                    ({})
-                                                    (?![a-zA-Z]+)'''.format(self.escape_sym(self.generated_list[i]))),
-                        re.MULTILINE | re.DOTALL | re.VERBOSE
-                    )
-                    for target in PROSE_RE.finditer(self.generated_list[j]):
-                        if self.generated_list[i] not in self.subset_dict:
-                            self.subset_dict[self.generated_list[i]] = [self.generated_list[j]]
-                        else:
-                            self.subset_dict[self.generated_list[i]].append(self.generated_list[j])
-                        break
+        # for i in range(len(self.generated_list)):
+        #     for j in range(len(self.generated_list)):
+        #         if i != j and self.generated_list[i] in self.generated_list[j]:
+        #             PROSE_RE = re.compile(
+        #                 dedent(r'''(?<!(    # negative begins
+        #                                             (\\(proselabel|prosedeflabel)({{([a-z0-9\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}\s]+)}})?{{([a-z\p{{Ll}}\p{{Lu}}\p{{Lo}}\p{{M}}_{{()\s]*)))
+        #                                             |
+        #                                             ([a-zA-Z]+)
+        #                                             ) # negative ends
+        #                                             ({})
+        #                                             (?![a-zA-Z]+)'''.format(self.escape_sym(self.generated_list[i]))),
+        #                 re.MULTILINE | re.DOTALL | re.VERBOSE
+        #             )
+        #             for target in PROSE_RE.finditer(self.generated_list[j]):
+        #                 if self.generated_list[i] not in self.subset_dict:
+        #                     self.subset_dict[self.generated_list[i]] = [self.generated_list[j]]
+        #                 else:
+        #                     self.subset_dict[self.generated_list[i]].append(self.generated_list[j])
+        #                 break
         self.generated_list = sorted(self.generated_list, key=len, reverse=True)
         # print("subset_dict:")
         # for key, value in self.subset_dict.items():
