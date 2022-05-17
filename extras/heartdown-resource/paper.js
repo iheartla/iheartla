@@ -1143,11 +1143,15 @@ function isUndescribed(context, sym){
   if (isIndependentMode()) { 
     return false;
   }
+  // console.log(`isUndescribed, sym: ${sym}`);
+  sym = sym.replaceAll("\\'", "'").replaceAll('\\"', '"').replaceAll("\\\\", "\\")
+  // sym = sym.replaceAll("\\\\", "\\").replaceAll("'","\\'").replaceAll('"','\\"')
   for(var eq in iheartla_data.equations){
     if(iheartla_data.equations[eq].name == context){
       // console.log(`context:${context}, sym:${sym}`);
       // console.log(`undesc_list:${iheartla_data.equations[eq].undesc_list}`);
       for (var index in iheartla_data.equations[eq].undesc_list) {
+        // console.log(`iheartla_data: ${iheartla_data.equations[eq].undesc_list[index]}, sym:${sym}`);
         if (iheartla_data.equations[eq].undesc_list[index] == sym) {
           // console.log(`found:${context}, sym:${sym}`);
           return true;
