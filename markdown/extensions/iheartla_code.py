@@ -276,7 +276,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             cur_dict = {}
             if m.group('context') in span_dict:
                 cur_dict = span_dict[m.group('context')]
-            print("easy_span_context, matched:{}".format(m.group()))
+            # print("easy_span_context, matched:{}".format(m.group()))
             # Multiple math blocks
             for math in self.MATH_RE.finditer(desc):
                 code = math.group("code")
@@ -389,7 +389,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         start_index = 0
         text_list = []
         for m in self.EASY_SPAN_BLOCK_RE.finditer(text):
-            print("easy_span_code: {}".format(m.group()))
+            # print("easy_span_code: {}".format(m.group()))
             # print("new: {}".format('<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code'))))
             # text = text.replace(m.group(), '<span class="def:{}"> {} </span>'.format(context, m.group('code')))
             text_list.append(text[start_index: m.start()])
@@ -994,7 +994,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 #     cur_desc = cur_desc.replace('\\', '\\\\\\\\').replace('"', '\\\\"').replace("'", "\\\\'")
                 if not cur_desc:
                     la_warning("missing description for sym {}".format(sym))
-                print(" sym_eq_data.desc:{}".format( sym_eq_data.desc))
+                # print(" sym_eq_data.desc:{}".format( sym_eq_data.desc))
                 cur_desc = base64_encode(cur_desc)
                 eq_data_list.append('''{{"desc":"{}", "type_info":{}, "def_module":"{}", "is_defined":{}, "used_equations":{}, "color":"{}"}}'''.format(
                     cur_desc, sym_eq_data.la_type.get_json_content(),

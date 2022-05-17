@@ -123,12 +123,13 @@ def get_resource_dir():
 
 
 def record(msg=''):
-    global start_time
-    if start_time is None or msg == '':
-        start_time = time.time()
-        print("%.2f seconds: " % (0) + "start")
-    else:
-        print("%.2f seconds: " % (time.time() - start_time) + msg)
+    if DEBUG_MODE:
+        global start_time
+        if start_time is None or msg == '':
+            start_time = time.time()
+            print("%.2f seconds: " % (0) + "start")
+        else:
+            print("%.2f seconds: " % (time.time() - start_time) + msg)
 
 
 def read_from_file(file_name):

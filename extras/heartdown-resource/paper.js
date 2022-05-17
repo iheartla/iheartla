@@ -572,7 +572,7 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
 function showArrow(tag, symbol, func_name, type='def', color='blue', 
   isEquation=false, startEq=false, endEq=false){
   // tag.setAttribute('class', `highlight_${color}`);
-  console.log(`In showArrow, sym:${symbol}, color:${color}, type:${type}`); 
+  // console.log(`In showArrow, sym:${symbol}, color:${color}, type:${type}`); 
   if (type === 'def' ) {
     // Point to usage
     const matches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "'][type='use']");
@@ -692,7 +692,7 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
   //   }
   //   return;
   // }
-  console.log(`symbol is ${symbol}`);
+  // console.log(`symbol is ${symbol}`);
   searchSym = symbol.replaceAll("'","\\\\'").replaceAll('"','\\\\"'); 
   // syms in prose and derivations
   let matches = document.querySelectorAll("[sym='" + searchSym + "'][module='" + func_name + "']");
@@ -784,7 +784,7 @@ function onClickProse(tag, symbol, func_name, type='def') {
  * @return 
  */
 function onClickSymbol(tag, symbol, func_name, type='def', isLocalParam=false, localFuncName='', color='red') {
-  console.log(`the type is ${type}, sym is ${symbol}, color is ${color}`,)
+  // console.log(`the type is ${type}, sym is ${symbol}, color is ${color}`,)
   resetState();
   // closeOtherTips();
   var cur_color = getSymColor(symbol);
@@ -851,7 +851,7 @@ function onDblClickEq(tag, raw_text) {
  */
 function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', localParams=[], raw_text='') { 
   // closeOtherTips();
-  console.log(`func_name:${func_name}, sym_list:${sym_list}, localParams:${localParams}`)
+  // console.log(`func_name:${func_name}, sym_list:${sym_list}, localParams:${localParams}`)
   resetState();
   content = getEquationContent(func_name, sym_list, isLocalFunc, localFunc, localParams);
   // Scale equation and append new div
@@ -923,7 +923,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
       editBtn.innerHTML = "Edit equation"; 
       editBtn.addEventListener('click', function() {
           if (typeof parent.onEditEquation == 'function') { 
-            console.log(`raw_text is: ${raw_text}`)
+            // console.log(`raw_text is: ${raw_text}`)
             var parentTag = tag.closest("div");
             var code = parentTag.getAttribute('code');
             parent.onEditEquation(code);
@@ -1001,7 +1001,7 @@ function handleFigure(figDict){
   }
 }
 function updateFigure(name, msg='', showErr=false){
-  console.log(`name:${name}, msg:${msg}, showErr:${showErr}`);
+  // console.log(`name:${name}, msg:${msg}, showErr:${showErr}`);
   // show error msg or display img
   const fig = document.querySelector("figure[name='" + name + "']");
   if (fig) {
@@ -1010,7 +1010,7 @@ function updateFigure(name, msg='', showErr=false){
     if (img == null ) {
       img = fig.querySelector('iframe');
     }
-    console.log(`img:${img}, pre:${pre}`);
+    // console.log(`img:${img}, pre:${pre}`);
     if (showErr) {
       pre.innerHTML = msg;
       pre.hidden = false;
@@ -1133,7 +1133,7 @@ function checkDesc(){
           msg += `${iheartla_data.equations[eq].name}: ${cur_undesc.join(', ')}<br>`
         }
       }
-      console.log(`show msg: ${msg}`)
+      // console.log(`show msg: ${msg}`)
       parent.showMsg(msg, true);
     }
     // setTimeout(removeBlinkClass, 3000);
