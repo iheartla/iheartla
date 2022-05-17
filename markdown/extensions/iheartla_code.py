@@ -409,7 +409,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             if m.group('context') in span_dict:
                 cur_dict = span_dict[m.group('context')]
             desc = m.group('code')
-            sym_list = m.group('symbol').split(';')
+            sym_list = [sym.strip() for sym in m.group('symbol').split(';')]
             for sym in sym_list:
                 cur_dict[sym] = desc
             la_debug("handle_span_code, matched:{}".format(m.group()))
