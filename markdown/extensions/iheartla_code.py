@@ -306,6 +306,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 if modified:
                     desc = desc.replace(math.group(), r"""${}$""".format(code))
             # print("handle_span_code, desc:{}".format(desc))
+            # print("found_list:{}".format(found_list))
             found_list = list(set(found_list))
             for sym in found_list:
                 cur_dict[sym] = m.group('code')
@@ -746,9 +747,10 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     if cur_sym not in equation_dict[context].sym_list:
                         # need to convert sym to the right symbol in symtable, e.g. \command -> `$\command$`
                         for cur_key in equation_dict[context].sym_list:
-                            if cur_sym in cur_key:
+                            if cur_sym == cur_key or cur_key == "`{}`".format(cur_sym) or cur_key == "`${}$`".format(cur_sym):
                                 cur_sym = cur_key
                                 # print("converted, before:{}, after:{}".format(sym, cur_sym))
+                                continue
                     # if cur_sym not in equation_dict[context].desc_dict:
                     equation_dict[context].desc_dict[cur_sym] = desc
                         # print("assign:{}, desc:{}".format(cur_sym, desc))
@@ -994,7 +996,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 #     cur_desc = cur_desc.replace('\\', '\\\\\\\\').replace('"', '\\\\"').replace("'", "\\\\'")
                 if not cur_desc:
                     la_warning("missing description for sym {}".format(sym))
-                # print(" sym_eq_data.desc:{}".format( sym_eq_data.desc))
+                # print("sym:{}, sym_eq_data.desc:{}".format(sym, sym_eq_data.desc))
                 cur_desc = base64_encode(cur_desc)
                 eq_data_list.append('''{{"desc":"{}", "type_info":{}, "def_module":"{}", "is_defined":{}, "used_equations":{}, "color":"{}"}}'''.format(
                     cur_desc, sym_eq_data.la_type.get_json_content(),
