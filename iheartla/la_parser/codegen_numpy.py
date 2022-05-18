@@ -171,7 +171,7 @@ class CodeGenNumpy(CodeGen):
         end_str = self.local_func_def + def_struct
         if end_str != '':
             end_str = '\n' + end_str
-        return "\n".join(content) + init_struct + init_var + stat_str + end_str + self.get_opt_syms_content()
+        return "\n".join(content) + init_struct + init_var + stat_str + self.get_opt_syms_content() + end_str
 
     def get_ret_struct(self):
         return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list))
