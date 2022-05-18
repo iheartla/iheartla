@@ -693,6 +693,9 @@ class CodeGenLatex(CodeGen):
             content += "\\\\\n & ".join(constraint_list)
             content += "\n"
         content += "\\end{aligned}"
+        if not assign_node:
+            self.code_frame.expr += content +'\n'
+            self.code_frame.expr_dict[node.raw_text] = content
         return content
 
     def visit_domain(self, node, **kwargs):
