@@ -122,6 +122,11 @@ class CodeGenNumpy(CodeGen):
                         break
             if not is_param and content in self.used_params:
                 prefix = True
+            if not is_param:
+                if len(self.module_list) > 0:
+                    for module in self.module_list:
+                        if len(module.syms) > 0 and content in module.syms:
+                            prefix = True
         else:
             if len(self.module_list) > 0:
                 for module in self.module_list:
