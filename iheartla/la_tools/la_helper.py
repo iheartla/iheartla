@@ -111,7 +111,8 @@ def save_to_file(content, file_name):
 
 def get_file_base(name):
     sec = name.split('/')
-    return '/'.join(sec[:-1]), sec[-1].split('.')[0]
+    path = '/'.join(sec[:-1])
+    return path if path != '' else '.', sec[-1].split('.')[0]
 
 
 def get_file_suffix(name):
@@ -123,12 +124,13 @@ def get_resource_dir():
 
 
 def record(msg=''):
-    global start_time
-    if start_time is None or msg == '':
-        start_time = time.time()
-        print("%.2f seconds: " % (0) + "start")
-    else:
-        print("%.2f seconds: " % (time.time() - start_time) + msg)
+    if DEBUG_MODE:
+        global start_time
+        if start_time is None or msg == '':
+            start_time = time.time()
+            print("%.2f seconds: " % (0) + "start")
+        else:
+            print("%.2f seconds: " % (time.time() - start_time) + msg)
 
 
 def read_from_file(file_name):

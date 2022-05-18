@@ -4269,40 +4269,43 @@ class grammardefaultParser(Parser):
                     self._right_hand_side_()
                     self.add_last_node_to_name('expr')
                 self._closure(block15)
+                with self._optional():
 
-                def block19():
-
-                    def block20():
+                    def block19():
                         self._hspace_()
-                    self._closure(block20)
-                    with self._group():
-                        with self._choice():
-                            with self._option():
-                                self._WHERE_()
-                            with self._option():
-                                self._GIVEN_()
-                            self._error('no available options')
+                    self._closure(block19)
+                    self._line_()
 
-                    def block22():
+                def block20():
+                    self._hspace_()
+                self._closure(block20)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._WHERE_()
+                        with self._option():
+                            self._GIVEN_()
+                        self._error('no available options')
+
+                def block22():
+                    self._hspace_()
+                self._closure(block22)
+                self._where_condition_()
+                self.add_last_node_to_name('defs')
+
+                def block24():
+
+                    def block25():
                         self._hspace_()
-                    self._closure(block22)
+                    self._closure(block25)
+                    self._token(',')
+
+                    def block26():
+                        self._hspace_()
+                    self._closure(block26)
                     self._where_condition_()
                     self.add_last_node_to_name('defs')
-
-                    def block24():
-
-                        def block25():
-                            self._hspace_()
-                        self._closure(block25)
-                        self._token(',')
-
-                        def block26():
-                            self._hspace_()
-                        self._closure(block26)
-                        self._where_condition_()
-                        self.add_last_node_to_name('defs')
-                    self._closure(block24)
-                self._closure(block19)
+                self._closure(block24)
             with self._option():
                 self._identifier_()
                 self.name_last_node('name')
@@ -4362,40 +4365,43 @@ class grammardefaultParser(Parser):
                     self._right_hand_side_()
                     self.add_last_node_to_name('expr')
                 self._closure(block42)
+                with self._optional():
 
-                def block46():
-
-                    def block47():
+                    def block46():
                         self._hspace_()
-                    self._closure(block47)
-                    with self._group():
-                        with self._choice():
-                            with self._option():
-                                self._WHERE_()
-                            with self._option():
-                                self._GIVEN_()
-                            self._error('no available options')
+                    self._closure(block46)
+                    self._line_()
 
-                    def block49():
+                def block47():
+                    self._hspace_()
+                self._closure(block47)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._WHERE_()
+                        with self._option():
+                            self._GIVEN_()
+                        self._error('no available options')
+
+                def block49():
+                    self._hspace_()
+                self._closure(block49)
+                self._where_condition_()
+                self.add_last_node_to_name('defs')
+
+                def block51():
+
+                    def block52():
                         self._hspace_()
-                    self._closure(block49)
+                    self._closure(block52)
+                    self._token(',')
+
+                    def block53():
+                        self._hspace_()
+                    self._closure(block53)
                     self._where_condition_()
                     self.add_last_node_to_name('defs')
-
-                    def block51():
-
-                        def block52():
-                            self._hspace_()
-                        self._closure(block52)
-                        self._token(',')
-
-                        def block53():
-                            self._hspace_()
-                        self._closure(block53)
-                        self._where_condition_()
-                        self.add_last_node_to_name('defs')
-                    self._closure(block51)
-                self._closure(block46)
+                self._closure(block51)
             self._error('no available options')
         self.ast._define(
             ['def_p', 'name', 'op'],

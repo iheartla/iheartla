@@ -572,7 +572,7 @@ function showSymArrow(tag, symbol, func_name, type='def', color='blue',
 function showArrow(tag, symbol, func_name, type='def', color='blue', 
   isEquation=false, startEq=false, endEq=false){
   // tag.setAttribute('class', `highlight_${color}`);
-  console.log(`In showArrow, sym:${symbol}, color:${color}, type:${type}`); 
+  // console.log(`In showArrow, sym:${symbol}, color:${color}, type:${type}`); 
   if (type === 'def' ) {
     // Point to usage
     const matches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "'][type='use']");
@@ -692,9 +692,10 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
   //   }
   //   return;
   // }
-  console.log(`symbol is ${symbol}`);
+  // console.log(`symbol is ${symbol}`);
+  searchSym = symbol.replaceAll("'","\\\\'").replaceAll('"','\\\\"'); 
   // syms in prose and derivations
-  let matches = document.querySelectorAll("[sym='" + symbol + "'][module='" + func_name + "']");
+  let matches = document.querySelectorAll("[sym='" + searchSym + "'][module='" + func_name + "']");
   for (var i = matches.length - 1; i >= 0; i--) {
     var curClass = matches[i].getAttribute('class');
     if (curClass !== '') {
@@ -707,7 +708,7 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
   }
   // span prose 
   let new_sym = symbol.replaceAll("\\\\\\\\", "\\\\"); 
-  let spanMatches = document.querySelectorAll("span[sym*='" + symbol + "'][context='" + func_name + "']"); 
+  let spanMatches = document.querySelectorAll(`span[sym*="` + searchSym + `"][context='` + func_name + `']`); 
   for (var i = spanMatches.length - 1; i >= 0; i--) {
     var curClass = spanMatches[i].getAttribute('class');
     var curSym = spanMatches[i].getAttribute('sym');
@@ -727,7 +728,7 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
     }
   }
   // syms in equation
-  let eqMatches = document.querySelectorAll("[case='equation'][sym='" + symbol + "'][func='"+ func_name + "']");
+  let eqMatches = document.querySelectorAll("[case='equation'][sym='" + searchSym + "'][func='"+ func_name + "']");
   for (var i = eqMatches.length - 1; i >= 0; i--) {
     var curClass = eqMatches[i].getAttribute('class');
     if (curClass !== '') {
@@ -783,7 +784,7 @@ function onClickProse(tag, symbol, func_name, type='def') {
  * @return 
  */
 function onClickSymbol(tag, symbol, func_name, type='def', isLocalParam=false, localFuncName='', color='red') {
-  console.log(`the type is ${type}, sym is ${symbol}, color is ${color}`,)
+  // console.log(`the type is ${type}, sym is ${symbol}, color is ${color}`,)
   resetState();
   // closeOtherTips();
   var cur_color = getSymColor(symbol);
@@ -850,7 +851,7 @@ function onDblClickEq(tag, raw_text) {
  */
 function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', localParams=[], raw_text='') { 
   // closeOtherTips();
-  console.log(`func_name:${func_name}, sym_list:${sym_list}, localParams:${localParams}`)
+  // console.log(`func_name:${func_name}, sym_list:${sym_list}, localParams:${localParams}`)
   resetState();
   content = getEquationContent(func_name, sym_list, isLocalFunc, localFunc, localParams);
   // Scale equation and append new div
@@ -922,7 +923,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
       editBtn.innerHTML = "Edit Equation";
       editBtn.addEventListener('click', function() {
           if (typeof parent.onEditEquation == 'function') { 
-            console.log(`raw_text is: ${raw_text}`)
+            // console.log(`raw_text is: ${raw_text}`)
             var parentTag = tag.closest("div");
             var code = parentTag.getAttribute('code');
             parent.onEditEquation(code);
@@ -1000,7 +1001,7 @@ function handleFigure(figDict){
   }
 }
 function updateFigure(name, msg='', showErr=false){
-  console.log(`name:${name}, msg:${msg}, showErr:${showErr}`);
+  // console.log(`name:${name}, msg:${msg}, showErr:${showErr}`);
   // show error msg or display img
   const fig = document.querySelector("figure[name='" + name + "']");
   if (fig) {
@@ -1009,9 +1010,9 @@ function updateFigure(name, msg='', showErr=false){
     if (img == null ) {
       img = fig.querySelector('iframe');
     }
-    console.log(`img:${img}, pre:${pre}`);
+    // console.log(`img:${img}, pre:${pre}`);
     if (showErr) {
-      pre.innerHTML = msg;
+      pre.innerHTML = msg.replaceAll(`&`, `&amp;`).replaceAll(`<`, `&lt;`).replaceAll(`>`, `&gt;`);
       pre.hidden = false;
       img.style.display = 'none';
     }
@@ -1132,7 +1133,7 @@ function checkDesc(){
           msg += `${iheartla_data.equations[eq].name}: ${cur_undesc.join(', ')}<br>`
         }
       }
-      console.log(`show msg: ${msg}`)
+      // console.log(`show msg: ${msg}`)
       parent.showMsg(msg, true);
     }
     // setTimeout(removeBlinkClass, 3000);
@@ -1142,11 +1143,15 @@ function isUndescribed(context, sym){
   if (isIndependentMode()) { 
     return false;
   }
+  // console.log(`isUndescribed, sym: ${sym}`);
+  sym = sym.replaceAll("\\'", "'").replaceAll('\\"', '"').replaceAll("\\\\", "\\")
+  // sym = sym.replaceAll("\\\\", "\\").replaceAll("'","\\'").replaceAll('"','\\"')
   for(var eq in iheartla_data.equations){
     if(iheartla_data.equations[eq].name == context){
       // console.log(`context:${context}, sym:${sym}`);
       // console.log(`undesc_list:${iheartla_data.equations[eq].undesc_list}`);
       for (var index in iheartla_data.equations[eq].undesc_list) {
+        // console.log(`iheartla_data: ${iheartla_data.equations[eq].undesc_list[index]}, sym:${sym}`);
         if (iheartla_data.equations[eq].undesc_list[index] == sym) {
           // console.log(`found:${context}, sym:${sym}`);
           return true;

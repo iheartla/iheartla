@@ -186,7 +186,7 @@ def handle_figure(text, name_list, input_dir):
             src = img.group('src')
             path, name = get_file_base(src)
             suffix = get_file_suffix(src)
-            print("handle_figure, img: {}, name:{}".format(path, name))
+            # print("handle_figure, img: {}, name:{}".format(path, name))
             if name in name_list:
                 source = "{}/{}.py".format(folder, name)
                 threads_list.append(threading.Thread(target=gen_figure, args=(source, name, input_dir, figure_dict)))
@@ -210,7 +210,7 @@ def handle_figure(text, name_list, input_dir):
     text_list.append(text[start_index:len(text)])
     if len(text_list) > 0:
         if len(threads_list) > 0:
-            print("generating figures ...")
+            # print("generating figures ...")
             [t.start() for t in threads_list]
             [t.join() for t in threads_list]
         record("handle_figure")

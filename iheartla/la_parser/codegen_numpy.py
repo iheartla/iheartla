@@ -757,7 +757,10 @@ class CodeGenNumpy(CodeGen):
             if node.base.la_type.is_scalar():
                 base_info.content = "np.power(float({}), {})".format(base_info.content, power_info.content)
             else:
-                base_info.content = "np.linalg.matrix_power({}, {})".format(base_info.content, power_info.content)
+                if node.base.la_type.sparse:
+                    base_info.content = "({})**({})".format(base_info.content, power_info.content)
+                else:
+                    base_info.content = "np.linalg.matrix_power({}, {})".format(base_info.content, power_info.content)
         return base_info
 
     def visit_solver(self, node, **kwargs):
