@@ -1012,7 +1012,7 @@ function updateFigure(name, msg='', showErr=false){
     }
     // console.log(`img:${img}, pre:${pre}`);
     if (showErr) {
-      pre.innerHTML = msg;
+      pre.innerHTML = msg.replaceAll(`&`, `&amp;`).replaceAll(`<`, `&lt;`).replaceAll(`>`, `&gt;`);
       pre.hidden = false;
       img.style.display = 'none';
     }
