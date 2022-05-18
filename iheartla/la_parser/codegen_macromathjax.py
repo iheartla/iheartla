@@ -44,6 +44,22 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         self.code_frame.expr_dict[node.raw_text] = content
         return content
 
+    def visit_optimize(self, node, **kwargs):
+        assign_node = node.get_ancestor(IRNodeType.Assignment)
+        content = super(CodeGenMacroMathjax, self).visit_optimize(node, **kwargs)
+        if not assign_node:
+            sym_list = []
+            for sym in node.symbols:
+                sym_list.append("'{}'".format(self.convert_content(filter_subscript(sym))))
+            sym_list = list(set(sym_list))
+            json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], false, [], [], '{}');"}}""".format(
+                self.func_name, ', '.join(sym_list),
+                base64.urlsafe_b64encode(node.raw_text.encode("utf-8")).decode("utf-8"))
+            content = content + "\\\\" + "\\eqlabel{{ {} }}{{}}".format(json) + "\n"
+            self.code_frame.expr += content
+            self.code_frame.expr_dict[node.raw_text] = content
+        return content
+
     def visit_local_func(self, node, **kwargs):
         self.local_func_parsing = True
         self.visiting_func_name = True
