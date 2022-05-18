@@ -686,6 +686,7 @@ class TypeWalker(NodeWalker):
                             self.logger.debug("expr index:{}, stat:{}".format(cnt, cur_stat.text))
                             break
                         except AssertionError as e:
+                            self.logger.debug("failed stat:{}".format(cur_stat.text))
                             retries += 1
                             visited_list[cur_index] = True
                             if retries > len(stat_list):
@@ -1647,7 +1648,7 @@ class TypeWalker(NodeWalker):
         #     del self.symtable[cur_id]
         #
         assert exp_node.la_type.is_scalar(), get_err_msg_info(exp_node.parse_info, "Objective function must return a scalar")
-        opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node_list, base_type_list, parse_info=node.parseinfo, key=self.opt_key, init_list=init_list, init_syms=init_syms, def_list=par_defs)
+        opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node_list, base_type_list, parse_info=node.parseinfo, key=self.opt_key, init_list=init_list, init_syms=init_syms, def_list=par_defs, raw_text=node.text)
         opt_node.la_type = ret_type
         node_info = NodeInfo(opt_node.la_type, ir=opt_node, symbols=exp_info.symbols)
         self.visiting_opt = False
