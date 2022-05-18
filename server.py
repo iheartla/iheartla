@@ -44,7 +44,7 @@ class MainHandler(tornado.web.RequestHandler):
             extra_dict["res"] = res
             extra_dict["ret"] = ret
             extra_dict["name"] = default_base
-            print(figure_dict)
+            # print(figure_dict)
             if len(figure_dict) > 0:
                 extra_dict["fig"] = figure_dict
         else:
@@ -86,7 +86,7 @@ class FileHandler(tornado.web.RequestHandler):
             self.write(json.JSONEncoder().encode({"res": res}))
         elif data['type'] == "run":
             src = data['src']
-            print("updated source: {}".format(data['source']))
+            # print("updated source: {}".format(data['source']))
             save_to_file(data['source'], "{}/{}.py".format(default_path, src))
             ret = subprocess.run(["python", "{}/{}/{}.py".format(default_path, IMG_CODE, src)],
                                  cwd="{}/{}".format(default_path, IMG_CODE),

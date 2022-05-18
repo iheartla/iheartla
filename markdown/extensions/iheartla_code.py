@@ -460,7 +460,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                             break
                 if modified:
                     desc = desc.replace(math.group(), r"""${}$""".format(code))
-            print("handle_span_code, desc:{}".format(desc))
+            # print("handle_span_code, desc:{}".format(desc))
             text = text.replace(m.group(), """<span sym="{}" context="{}"> {} </span>""".format(m.group('symbol').replace('\\','\\\\\\\\').replace('"', '\\"').replace("'", "\\'"), m.group('context'), desc))
             span_dict[m.group('context')] = cur_dict
         return text, span_dict
@@ -732,13 +732,13 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 for k in math_dict.keys():
                     if k in new_dict[sym]:
                         new_dict[sym] = new_dict[sym].replace(k, math_dict[k])
-                        print("sym:{}, k:{}".format(sym, k))
+                        # print("sym:{}, k:{}".format(sym, k))
         equation_dict = self.merge_desc(equation_dict, span_dict)
         self.process_metadata(equation_dict, context_list)
         text = self.handle_context_post(text, equation_dict)
         for k, v in replace_dict.items():
             text = text.replace(k, v)
-            print("k:{}, v:{}".format(k, v))
+            # print("k:{}, v:{}".format(k, v))
         return text.split("\n")
 
     def process_metadata(self, equation_dict, context_list):
