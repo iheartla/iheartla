@@ -625,6 +625,7 @@ class OptimizeNode(ExprNode):
         self.key = key
         self.init_list = init_list
         self.init_syms = init_syms
+        self.symbols = set()
 
 
 class DomainNode(ExprNode):
