@@ -35,6 +35,11 @@ class MainHandler(tornado.web.RequestHandler):
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
         # print("Received request: {}".format(data['input']))
+        
+        # save updated markdown source to files
+        s = threading.Thread(target=save_markdown, args=(data['input'],))
+        s.start()
+        
         ret = 1
         extra_dict = {}
         figure_dict = {}
@@ -67,9 +72,6 @@ class MainHandler(tornado.web.RequestHandler):
                     extra_dict["fig"] = figure_dict
         self.set_header("Content-Type", "application/json")
         self.write(json.JSONEncoder().encode(extra_dict))
-        # save updated markdown source to files
-        s = threading.Thread(target=save_markdown, args=(data['input'],))
-        s.start()
 
 
 class FileHandler(tornado.web.RequestHandler):

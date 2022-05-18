@@ -814,7 +814,7 @@ function onClickSymbol(tag, symbol, func_name, type='def', isLocalParam=false, l
   // console.log("clicked: " + symbol + " in " + func_name); 
 };
 function getEquationContent(func_name, sym_list, isLocalFunc=false, localFunc='', localParams=[]){
-  content = `<span class="highlight_grey">This equation has ${sym_list.length} symbols:</span><br>`;
+  content = `<span class="highlight_grey">This equation has ${sym_list.length} symbol${sym_list.length==1?'':'s'}:</span><br>`;
   for (var i = sym_list.length - 1; i >= 0; i--) {
     sym = sym_list[i];
     sym = sym.replaceAll("\\","\\\\\\\\"); 
@@ -919,7 +919,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
       var editBtn = document.createElement("button");
       editBtn.className = "eqInfo editBtn";
       editBtn.type  = 'button';
-      editBtn.innerHTML = "Edit equation"; 
+      editBtn.innerHTML = "Edit Equation";
       editBtn.addEventListener('click', function() {
           if (typeof parent.onEditEquation == 'function') { 
             console.log(`raw_text is: ${raw_text}`)

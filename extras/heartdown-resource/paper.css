@@ -309,8 +309,12 @@ a.detail{
   color: red;
 }
 .editBtn{
+/*
   border: none;
-  background-color: rgba(0, 0, 0, .2);  
+  background-color: rgba(0, 0, 0, .2);
+*/
+  margin-left: 20px;
+  margin-top: 1ex;
 }
 .highlight {
   /*color: red; */
