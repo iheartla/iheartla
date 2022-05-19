@@ -1667,6 +1667,8 @@ class TypeWalker(NodeWalker):
         opt_node.symbols = exp_info.symbols
         node_info = NodeInfo(opt_node.la_type, ir=opt_node, symbols=exp_info.symbols)
         self.visiting_opt = False
+        for var_node in base_node_list:
+            self.expr_dict[var_node.get_main_id()] = list(opt_node.symbols)
         return node_info
 
     def walk_MultiCond(self, node, **kwargs):
