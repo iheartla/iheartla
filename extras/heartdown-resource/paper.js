@@ -352,6 +352,9 @@ function adjustGlossaryBtn(){
   // glossaryBtn.style.left = `${curOffset + curWidth +  10}px`;
   // glossaryBtn.style.maxHeight = `${h - 30}px`;
   glossaryBtn.style.width = glossaryHolder.style.width;
+  if (isIndependentMode()) { 
+    glossaryBtn.style.marginLeft = `25px`;
+  }
   //
   // var arrows = document.querySelector("#arrows");
   // var main = document.querySelector("#main");
