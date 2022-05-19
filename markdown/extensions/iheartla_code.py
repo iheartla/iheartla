@@ -875,6 +875,19 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     sym_data.sym_equation_list.append(sym_eq_data)
                 if sym_eq_data.desc is None or sym_eq_data.desc == '':
                     undescribed_list.append(definition)
+            # optimized symbols
+            for opt_var in equation.opt_syms:
+                if opt_var not in equation.parameters and opt_var not in equation.definition:
+                    sym_eq_data = SymEquationData(la_type=equation.symtable[opt_var], desc=equation.desc_dict.get(opt_var), module_name=equation.name, is_defined=True)
+                    if opt_var not in sym_dict:
+                        sym_data = SymData(opt_var, sym_equation_list=[sym_eq_data])
+                        node_dict[opt_var] = SymNode(opt_var)
+                        sym_dict[opt_var] = sym_data
+                    else:
+                        sym_data = sym_dict[opt_var]
+                        sym_data.sym_equation_list.append(sym_eq_data)
+                    if sym_eq_data.desc is None or sym_eq_data.desc == '':
+                        undescribed_list.append(opt_var)
             # local functions
             for func_name, func_params in equation.func_data_dict.items():
                 sym_eq_data = SymEquationData(la_type=equation.symtable[func_name], desc=equation.desc_dict.get(func_name), module_name=equation.name, is_defined=True)
