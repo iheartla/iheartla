@@ -282,7 +282,7 @@ class IRVisitor(object):
         self.used_params = type_walker.used_params
         self.opt_syms = type_walker.opt_syms
         if func_name is not None:
-            self.func_name = func_name
+            self.func_name = func_name.replace(' ','')
         else:
             self.func_name = 'iheartla'
         # self.print_symbols()
