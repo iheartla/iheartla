@@ -1578,7 +1578,7 @@ class TypeWalker(NodeWalker):
         seq_cnt = 0  #
         valid = True
         for k, v in sym_dict.items():
-            cur_type = self.get_cur_param_data().symtable[k]
+            cur_type = self.get_sym_type(k)
             for cur_index in range(len(v)):
                 if v[cur_index] == subs:
                     cur_dim = cur_type.get_dim_size(cur_index)
