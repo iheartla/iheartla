@@ -123,7 +123,7 @@ def handle_sections(text, dict):
     res_list, res_tag = get_section_list(text, 1, pre_str='', cur_base_list=section_base_list)
     # print("res_list:{}, map_dict:{}".format(res_list, map_dict))
     # print("res_tag:{}".format(res_tag))
-    text = "{}\n{}".format(res_tag, text)
+    # text = "{}\n{}".format(res_tag, text)
     for k, v in order_dict.items():
         text = text.replace(k, v)
     return text
@@ -277,7 +277,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
         record("Call Markdown")
         body = md.convert(content)
         body, abstract = handle_abstract(body, md.Meta)
-        # body = handle_sections(body, md.Meta)
+        body = handle_sections(body, md.Meta)
         body = abstract + body
         body = handle_title(body, md.Meta)
         body = handle_context_block(body)
@@ -432,6 +432,7 @@ if __name__ == '__main__':
                 except:
                     msg = str(sys.exc_info()[0])
                 finally:
+                    pass
                     print("msg: {}".format(msg))
             # print(html)
     record("End")
