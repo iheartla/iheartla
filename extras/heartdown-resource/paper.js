@@ -849,7 +849,7 @@ function onDblClickEq(tag, raw_text) {
  * @param {string} localParams the parameters
  * @return 
  */
-function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', localParams=[], raw_text='') { 
+function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', localParams=[], raw_text='', isStatement=true) { 
   // closeOtherTips();
   // console.log(`func_name:${func_name}, sym_list:${sym_list}, localParams:${localParams}`)
   resetState();
@@ -887,7 +887,7 @@ function onClickEq(tag, func_name, sym_list, isLocalFunc=false, localFunc='', lo
         var t = 'use';
         var startEq = false;
         var endEq = false;
-        if (i === sym_list.length - 1) {
+        if (i === sym_list.length - 1 && isStatement) {
           t = 'def';
           startEq = true;
         }
