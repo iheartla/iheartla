@@ -570,6 +570,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         file_dict = {}
         replace_dict = {}
         math_dict = {}
+        stashed_dict = {}  #
         # Find all inline blocks
         for m in self.INLINE_RE.finditer(text):
             # print("Inline block: {}".format(m.group()))
@@ -677,7 +678,9 @@ class IheartlaBlockPreprocessor(Preprocessor):
         <div class='equation' code_block="{}" code="{}">
         {}</div>
         """.format(block_data.module_name, base64_encode("\n".join(original_block.split("\n")[1:-1])), math_code)
-                content = self.md.htmlStash.store(content)
+                stashed = self.md.htmlStash.store(content)
+                stashed_dict[stashed] = raw_math
+                content = stashed
                 text = text.replace(block_data.block_list[cur_index], content)
                 # text = text.replace(block_data.block_list[cur_index], content)
                 # replace_dict[block_data.block_list[cur_index]] = content
@@ -685,7 +688,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
         cached_data = new_cached_data
         record("After compiling iheartla code")
         self.save_code(full_code_sequence)
-        return text, equation_dict, replace_dict, math_dict
+        return text, equation_dict, replace_dict, math_dict, stashed_dict
 
 
     def handle_reference(self, text):
@@ -723,16 +726,16 @@ class IheartlaBlockPreprocessor(Preprocessor):
         #
         text, context_list = self.handle_context_pre(text)
         text = self.handle_reference(text)
-        text, equation_dict, replace_dict, math_dict = self.handle_iheartla_code(text)
+        text, equation_dict, replace_dict, math_dict, stashed_dict = self.handle_iheartla_code(text)
         text, span_dict = self.handle_span_code(text)
         text, span_dict = self.handle_easy_span_context_math(text, equation_dict, span_dict)
         # convert span dict
         for context, new_dict in span_dict.items():
             for sym in new_dict.keys():
-                for k in math_dict.keys():
+                for k in stashed_dict.keys():
                     if k in new_dict[sym]:
-                        new_dict[sym] = new_dict[sym].replace(k, math_dict[k])
-                        # print("sym:{}, k:{}".format(sym, k))
+                        new_dict[sym] = new_dict[sym].replace(k, stashed_dict[k])
+                        print("sym:{}, k:{}".format(sym, k))
         equation_dict = self.merge_desc(equation_dict, span_dict)
         self.process_metadata(equation_dict, context_list)
         text = self.handle_context_post(text, equation_dict)
