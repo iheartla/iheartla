@@ -41,7 +41,7 @@ class DependenceData(object):
 
 
 class EquationData(object):
-    def __init__(self, name='', parameters=[], definition=[], dependence=[], symtable={}, desc_dict={}, la_content='', func_data_dict={}, expr_dict={}):
+    def __init__(self, name='', parameters=[], definition=[], dependence=[], symtable={}, desc_dict={}, la_content='', func_data_dict={}, expr_dict={}, opt_syms=[]):
         self.name = name
         self.undescribed_list = []
         self.parameters = parameters  # parameters for source file
@@ -51,6 +51,7 @@ class EquationData(object):
         self.desc_dict = desc_dict
         self.la_content = la_content
         self.func_data_dict = func_data_dict
+        self.opt_syms = opt_syms
         self.expr_dict = {}
         # for key in self.desc_dict.keys():
         #     self.desc_dict[key] = self.desc_dict[key].replace('"', '\"')
@@ -58,7 +59,7 @@ class EquationData(object):
         for key, value in expr_dict.items():
             self.expr_dict[key] = [filter_subscript(val) for val in value]
         # gather all symbols: params, definitions, local func names, local params
-        self.sym_list = list(self.parameters) + list(self.definition)
+        self.sym_list = list(self.parameters) + list(self.definition) + list(self.opt_syms)
         for key, value in self.func_data_dict.items():
             self.sym_list.append(key)
             self.sym_list += list(value.params_data.symtable.keys())
@@ -125,6 +126,17 @@ class EquationData(object):
                 def_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(lhs), self.symtable[lhs].get_json_content(), base64_encode(self.desc_dict[lhs])))
             else:
                 def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(lhs), self.symtable[lhs].get_json_content()))
+        for opt_var in self.opt_syms:
+            if opt_var not in self.parameters and opt_var not in self.definition:
+                if opt_var in self.desc_dict:
+                    def_list.append('''{{"sym":"{}", "type_info":{}, "desc":"{}"}}'''.format(self.trim(opt_var),
+                                                                                             self.symtable[
+                                                                                                 opt_var].get_json_content(),
+                                                                                             base64_encode(
+                                                                                                 self.desc_dict[opt_var])))
+                else:
+                    def_list.append('''{{"sym":"{}", "type_info":{}}}'''.format(self.trim(opt_var),
+                                                                                self.symtable[opt_var].get_json_content()))
         # module dependence, get the sym info
         dependence_list = []
         for dep_data in self.dependence:
@@ -292,7 +304,9 @@ class TypeWalker(NodeWalker):
         return EquationData('', copy.deepcopy(self.parameters), copy.deepcopy(self.lhs_list),
                             copy.deepcopy(self.import_module_list),  copy.deepcopy(self.symtable),
                             copy.deepcopy(self.desc_dict), self.la_content,
-                            copy.deepcopy(self.func_data_dict), copy.deepcopy(self.expr_dict))
+                            copy.deepcopy(self.func_data_dict),
+                            copy.deepcopy(self.expr_dict),
+                            copy.deepcopy(self.opt_syms))
 
     def is_inside_sum(self):
         return len(self.sum_subs) > 0
