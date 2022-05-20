@@ -388,7 +388,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
 
 if __name__ == '__main__':
     # LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
-    LaLogger.getInstance().set_level(logging.WARNING)
+    LaLogger.getInstance().set_level(logging.ERROR)
     arg_parser = argparse.ArgumentParser(description='HeartDown paper compiler')
     arg_parser.add_argument('--regenerate-grammar', action='store_true', help='Regenerate grammar files')
     arg_parser.add_argument('--resource_dir', help='resource path')
@@ -433,6 +433,6 @@ if __name__ == '__main__':
                     msg = str(sys.exc_info()[0])
                 finally:
                     pass
-                    print("msg: {}".format(msg))
+                    # print("msg: {}".format(msg))
             # print(html)
     record("End")
