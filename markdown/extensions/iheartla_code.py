@@ -334,7 +334,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             found_list = list(set(found_list))
             for sym in found_list:
                 cur_dict[sym] = m.group('code')
-            text = text.replace(m.group(), """<span sym="{}" context="{}"> {} </span>""".format(
+            text = text.replace(m.group(), """<span sym="{}" context="{}">{}</span>""".format(
                 ';'.join(found_list).replace('\\','\\\\').replace('"', '\\"').replace("'", "\\'"), m.group('context'), desc))
             span_dict[m.group('context')] = cur_dict
         # print("after, text:{}\n".format(text))
@@ -402,7 +402,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             # print("new: {}".format('<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code'))))
             # text = text.replace(m.group(), '<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code')))
             text_list.append(text[start_index: m.start()])
-            text_list.append('<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code')))
+            text_list.append('<span class="def:{}:{}">{}</span>'.format(context, m.group('symbol'), m.group('code')))
             start_index = m.end()
         text_list.append(text[start_index:len(text)])
         return ''.join(text_list)
@@ -421,7 +421,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             # print("new: {}".format('<span class="def:{}:{}"> {} </span>'.format(context, m.group('symbol'), m.group('code'))))
             # text = text.replace(m.group(), '<span class="def:{}"> {} </span>'.format(context, m.group('code')))
             text_list.append(text[start_index: m.start()])
-            text_list.append('<span class="def:{}"> {} </span>'.format(context, m.group('code')))
+            text_list.append('<span class="def:{}">{}</span>'.format(context, m.group('code')))
             start_index = m.end()
         text_list.append(text[start_index:len(text)])
         return ''.join(text_list)
@@ -461,7 +461,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 if modified:
                     desc = desc.replace(math.group(), r"""${}$""".format(code))
             # print("handle_span_code, desc:{}".format(desc))
-            text = text.replace(m.group(), """<span sym="{}" context="{}"> {} </span>""".format(m.group('symbol').replace('\\','\\\\').replace('"', '\\"').replace("'", "\\'"), m.group('context'), desc))
+            text = text.replace(m.group(), """<span sym="{}" context="{}">{}</span>""".format(m.group('symbol').replace('\\','\\\\').replace('"', '\\"').replace("'", "\\'"), m.group('context'), desc))
             span_dict[m.group('context')] = cur_dict
         return text, span_dict
 
