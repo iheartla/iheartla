@@ -745,6 +745,10 @@ function highlightSymInProseAndEquation(symbol, func_name, isLocalParam=false, l
 }
 function onClickProse(tag, symbol, func_name, type='def') {
   resetState();
+  const [cur_type, cur_desc] = getGlossarySymType(symbol, func_name);
+  if(!(cur_desc && cur_desc != 'None')){
+    return;
+  }
   // console.log(`onClickProse, ${tag}, symbol is ${symbol}, ${func_name}`);
   var cur_color = getSymColor(symbol);
   highlightSym(symbol, func_name, isLocalParam=false, localFuncName='', color=cur_color);
