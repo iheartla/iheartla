@@ -710,7 +710,10 @@ class CodeGenNumpy(CodeGen):
             if node.norm_type == NormType.NormDet:
                 content = "scipy.linalg.det({})".format(value)
             elif node.norm_type == NormType.NormInteger:
-                content = "np.linalg.norm({}, {})".format(value, node.sub)
+                if node.sub is None:
+                    content = "np.linalg.norm({}, {})".format(value, 2)
+                else:
+                    content = "np.linalg.norm({}, {})".format(value, node.sub)
             elif node.norm_type == NormType.NormMax:
                 content = "np.linalg.norm({}, np.inf)".format(value)
             elif node.norm_type == NormType.NormIdentifier:

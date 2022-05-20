@@ -740,7 +740,10 @@ class CodeGenMatlab(CodeGen):
             if node.norm_type == NormType.NormDet:
                 content = "det({})".format(value)
             elif node.norm_type == NormType.NormInteger:
-                content = "norm({}, {})".format(value, node.sub)
+                if node.sub is None:
+                    content = "norm({}, {})".format(value, 2)
+                else:
+                    content = "norm({}, {})".format(value, node.sub)
             elif node.norm_type == NormType.NormMax:
                 content = "norm({}, inf)".format(value)
             elif node.norm_type == NormType.NormIdentifier:
