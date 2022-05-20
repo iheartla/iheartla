@@ -540,7 +540,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 src = img.group('src')
                 path, name = get_file_base(src)
                 for c in self.FIGURE_CODE_RE.finditer(figure):
-                    print("img: {}, name:{}".format(path, name))
+                    # print("img: {}, name:{}".format(path, name))
                     self.md.need_gen_figure = True
                     code = c.group('code')
                     folder = "{}/{}".format(self.md.path, IMG_CODE)
@@ -736,7 +736,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 for k in stashed_dict.keys():
                     if k in new_dict[sym]:
                         new_dict[sym] = new_dict[sym].replace(k, stashed_dict[k])
-                        print("sym:{}, k:{}".format(sym, k))
+                        # print("sym:{}, k:{}".format(sym, k))
         equation_dict = self.merge_desc(equation_dict, span_dict)
         self.process_metadata(equation_dict, context_list)
         text = self.handle_context_post(text, equation_dict)
@@ -767,6 +767,9 @@ class IheartlaBlockPreprocessor(Preprocessor):
         #
 
     def merge_desc(self, equation_dict, span_dict):
+        # reset desc dict to original
+        for context in equation_dict.keys():
+            equation_dict[context].reset_desc_dict()
         # merge description from span tags
         for context, cur_dict in span_dict.items():
             if context in equation_dict:
