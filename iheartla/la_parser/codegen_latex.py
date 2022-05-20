@@ -792,17 +792,17 @@ class CodeGenLatex(CodeGen):
         elif node.func_type == MathFuncType.MathFuncTrace:
             content = node.func_name
         elif node.func_type == MathFuncType.MathFuncDiag:
-            content = 'diag'
+            content = ' \mathop{\\text{diag}}'
         elif node.func_type == MathFuncType.MathFuncVec:
-            content = 'vec'
+            content = ' \mathop{\\text{vec}}'
         elif node.func_type == MathFuncType.MathFuncDet:
-            content = 'det'
+            content = ' \mathop{\\text{det}}'
         elif node.func_type == MathFuncType.MathFuncRank:
-            content = 'rank'
+            content = ' \mathop{\\text{rank}}'
         elif node.func_type == MathFuncType.MathFuncNull:
-            content = 'null'
+            content = ' \mathop{\\text{null}}'
         elif node.func_type == MathFuncType.MathFuncOrth:
-            content = 'orth'
+            content = ' \mathop{\\text{orth}}'
         elif node.func_type == MathFuncType.MathFuncInv:
-            content = 'inv'
+            content = ' \mathop{\\text{inv}}'
         return "{}\\left( {} \\right)".format(content, param_info)
