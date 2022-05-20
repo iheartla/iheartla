@@ -584,7 +584,8 @@ function showArrow(tag, symbol, func_name, type='def', color='blue',
     for (var i = matches.length - 1; i >= 0; i--) {
       // matches[i].setAttribute('class', `highlight_${color}`);
       // console.log(`${i} is ${matches[i].innerHTML}`)
-      if (matches[i] !== tag && matches[i].tagName.startsWith("MJX")) {
+      var assistive = matches[i].closest("mjx-assistive-mml");
+      if (matches[i] !== tag && matches[i].tagName.startsWith("MJX") && !assistive) {
         var curRect = matches[i].getBoundingClientRect();
         var curCenterY = curRect.y + curRect.height/2;
         if (!(cur_list.includes(curCenterY))) {
@@ -614,7 +615,8 @@ function showArrow(tag, symbol, func_name, type='def', color='blue',
       for (var i = matches.length - 1; i >= 0; i--) {
         // console.log(`${i} is ${matches[i].innerHTML}, tag is ${matches[i].tagName}`)
         // matches[i].setAttribute('class', `highlight_${color}`);
-        if (matches[i] !== tag && matches[i].tagName.startsWith("MJX")) {
+        var assistive = matches[i].closest("mjx-assistive-mml");
+        if (matches[i] !== tag && matches[i].tagName.startsWith("MJX") && !assistive) {
           var curRect = matches[i].getBoundingClientRect();
           var curCenterY = curRect.y + curRect.height/2; 
           if (!(cur_list.includes(curCenterY))) {
@@ -636,8 +638,9 @@ function showArrow(tag, symbol, func_name, type='def', color='blue',
       if (prose !== 'undefined') {
         var cur_list = [];
         for (var i = prose.length - 1; i >= 0; i--) {
+          var assistive = prose[i].closest("mjx-assistive-mml");
           // console.log(`${i} is ${prose[i].innerHTML}, tag is ${prose[i].tagName}, parentElement:${prose[i].parentElement.innerHTML}`)
-          if (prose[i] !== tag ) {
+          if (prose[i] !== tag && !assistive) {
             // prose[i].setAttribute('class', `highlight_${color}`);
             var curRect = prose[i].getBoundingClientRect();
             var curCenterY = curRect.y + curRect.height/2; 
