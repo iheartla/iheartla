@@ -49,6 +49,7 @@ class EquationData(object):
         self.dependence = dependence
         self.symtable = symtable
         self.desc_dict = desc_dict
+        self.original_desc_dict = copy.deepcopy(desc_dict)
         self.la_content = la_content
         self.func_data_dict = func_data_dict
         self.opt_syms = opt_syms
@@ -95,6 +96,9 @@ class EquationData(object):
         # print("subset_dict:")
         # for key, value in self.subset_dict.items():
         #     print("{} : {}".format(key, value))
+
+    def reset_desc_dict(self):
+        self.desc_dict = copy.deepcopy(self.original_desc_dict)
 
     def escape_sym(self, sym):
         """
