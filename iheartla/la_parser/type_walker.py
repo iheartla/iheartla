@@ -229,6 +229,7 @@ class TypeWalker(NodeWalker):
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
         self.la_msg = LaMsg.getInstance()
         self.ret_symbol = None
+        self.is_generate_ret = False
         self.packages = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', 'arccos', 'tan', 'atan', 'arctan', 'atan2',
                                           'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh', 'cot',
                                           'sec', 'csc', 'e'],
@@ -301,7 +302,11 @@ class TypeWalker(NodeWalker):
         return new_symbol
 
     def gen_json_content(self):
-        return EquationData('', copy.deepcopy(self.parameters), copy.deepcopy(self.lhs_list),
+        new_lhs_list = copy.deepcopy(self.lhs_list)
+        # generated ret sym is not supposed to be used in glossary
+        if self.is_generate_ret and self.ret_symbol in new_lhs_list:
+            new_lhs_list.remove(self.ret_symbol)
+        return EquationData('', copy.deepcopy(self.parameters), new_lhs_list,
                             copy.deepcopy(self.import_module_list),  copy.deepcopy(self.symtable),
                             copy.deepcopy(self.desc_dict), self.la_content,
                             copy.deepcopy(self.func_data_dict),
@@ -320,6 +325,7 @@ class TypeWalker(NodeWalker):
         self.parameters.clear()
         self.name_cnt_dict.clear()
         self.ret_symbol = None
+        self.is_generate_ret = False
         self.unofficial_method = False
         self.has_opt = False
         self.sum_subs.clear()
@@ -687,6 +693,7 @@ class TypeWalker(NodeWalker):
                                     # new symbol for return value
                                     self.ret_symbol = "ret"
                                     update_ret_type = True
+                                    self.is_generate_ret = True
                                     kwargs[LHS] = self.ret_symbol
                                     self.lhs_list.append(self.ret_symbol)
                             type_info = self.walk(cur_stat, **kwargs)
