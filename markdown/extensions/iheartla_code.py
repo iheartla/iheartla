@@ -558,6 +558,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 text_list.append(new_figure)
             else:
                 text_list.append(m.group())
+        text_list.append(text[start_index:len(text)])
         if len(text_list) > 0:
             return ''.join(text_list)
         else:
