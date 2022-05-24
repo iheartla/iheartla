@@ -159,8 +159,8 @@ class CodeGenEigen(CodeGen):
                                             self.get_ctype(func_type.ret[0])))
         test_content += dim_definition
         if func_type.ret[0].is_set():
-            test_content.append('        {} tmp;'.format(self.get_ctype(func_type.ret)))
-            test_content += self.get_set_test_list('tmp', self.generate_var_name("dim"), 'i', func_type.ret,
+            test_content.append('        {} tmp;'.format(self.get_ctype(func_type.ret[0])))
+            test_content += self.get_set_test_list('tmp', self.generate_var_name("dim"), 'i', func_type.ret[0],
                                                    rand_int_max, '        ')
             test_content.append('        return tmp;')
         else:
