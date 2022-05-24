@@ -796,9 +796,29 @@ class grammardefaultParser(Parser):
                 self._positive_closure(block12)
                 self._term_()
                 self.name_last_node('exp')
+            with self._option():
+                self._SUM_()
+                self._token('_(')
+
+                def block14():
+                    self._hspace_()
+                self._closure(block14)
+                self._in_()
+                self.name_last_node('in_')
+
+                def block16():
+                    self._hspace_()
+                self._closure(block16)
+                self._token(')')
+
+                def block17():
+                    self._hspace_()
+                self._positive_closure(block17)
+                self._term_()
+                self.name_last_node('exp')
             self._error('no available options')
         self.ast._define(
-            ['cond', 'exp', 'id', 'sub'],
+            ['cond', 'exp', 'id', 'in_', 'sub'],
             []
         )
 
@@ -5874,6 +5894,7 @@ class Summation(ModelBase):
     cond = None
     exp = None
     id = None
+    in_ = None
     sub = None
 
 
