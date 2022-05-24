@@ -616,12 +616,12 @@ class TypeWalker(NodeWalker):
             for index in range(len(stat_list)):
                 if type(stat_list[index]).__name__ == 'Assignment':
                     # check whether rhs is function type
-                    if type(stat_list[index].right).__name__ == 'Expression' and type(stat_list[index].right.value).__name__ == 'Factor' and stat_list[index].right.value.id0:
+                    if type(stat_list[index].right[0]).__name__ == 'Expression' and type(stat_list[index].right[0].value).__name__ == 'Factor' and stat_list[index].right[0].value.id0:
                         # specific stat: lhs = id_subs
                         try:
                             assign_node = self.walk(stat_list[index], **kwargs).ir
-                            lhs_id_node = assign_node.left
-                            rhs_id_node = assign_node.right.value.id
+                            lhs_id_node = assign_node.left[0]
+                            rhs_id_node = assign_node.right[0].value.id
                             if rhs_id_node.la_type.is_function():
                                 if lhs_id_node.contain_subscript():
                                     assert lhs_id_node.node_type == IRNodeType.SequenceIndex, get_err_msg_info(lhs_id_node.parseinfo, "Invalid assignment for function")
