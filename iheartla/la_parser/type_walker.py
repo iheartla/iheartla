@@ -2041,8 +2041,8 @@ class TypeWalker(NodeWalker):
                         ret_type.cols = convertion_dict[cur_type.cols]
                     else:
                         ret_type.cols = cur_type.cols
-                elif name_type.ret.is_set():
-                    ret_type = SetType(size=name_type.ret.size, int_list=name_type.ret.int_list)
+                elif cur_type.is_set():
+                    ret_type = SetType(size=ret_type.size, int_list=ret_type.int_list)
                 ret_list.append(ret_type)
             ret_type = ret_list[0] if len(ret_list)==1 else ret_list # single ret type or list
             symbols.add(ir_node.name.get_name())
