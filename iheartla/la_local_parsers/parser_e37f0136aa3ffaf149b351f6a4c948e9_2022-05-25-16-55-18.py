@@ -799,23 +799,54 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 def block14():
                     self._hspace_()
                 self._closure(block14)
-                self._in_()
-                self.name_last_node('enum')
+                self._identifier_alone_()
+                self.add_last_node_to_name('enum')
 
                 def block16():
-                    self._hspace_()
+
+                    def block17():
+                        self._hspace_()
+                    self._closure(block17)
+                    self._token(',')
+
+                    def block18():
+                        self._hspace_()
+                    self._closure(block18)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('enum')
                 self._closure(block16)
+
+                def block20():
+                    self._hspace_()
+                self._closure(block20)
+                self._IN_()
+
+                def block21():
+                    self._hspace_()
+                self._closure(block21)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._function_operator_()
+                        with self._option():
+                            self._identifier_alone_()
+                        self._error('no available options')
+                self.name_last_node('range')
+
+                def block24():
+                    self._hspace_()
+                self._closure(block24)
                 self._token(')')
 
-                def block17():
+                def block25():
                     self._hspace_()
-                self._positive_closure(block17)
+                self._positive_closure(block25)
                 self._term_()
                 self.name_last_node('exp')
             self._error('no available options')
         self.ast._define(
-            ['cond', 'enum', 'exp', 'id', 'sub'],
-            []
+            ['cond', 'exp', 'id', 'range', 'sub'],
+            ['enum']
         )
 
     @tatsumasu('Optimize')
@@ -5819,6 +5850,7 @@ class Summation(ModelBase):
     enum = None
     exp = None
     id = None
+    range = None
     sub = None
 
 
