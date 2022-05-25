@@ -603,6 +603,8 @@ class SummationNode(ExprNode):
         self.symbol = None
         self.content = None
         self.sym_dict = None  # identifiers containing sub, used for type checking only
+        self.enum_list = None
+        self.range = None
 
 
 class OptimizeType(Enum):

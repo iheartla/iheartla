@@ -1528,10 +1528,11 @@ class TypeWalker(NodeWalker):
     def walk_Summation(self, node, **kwargs):
         self.logger.debug("cur sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         kwargs[INSIDE_SUMMATION] = True
+        subs_list = []
         #
         ir_node = SummationNode(parse_info=node.parseinfo)
-        self.sum_sym_list.append({})
         if node.cond:
+            self.sum_sym_list.append({})
             id_info = self.walk(node.id, **kwargs)
             self.sum_subs.append(id_info.content)
             self.sum_conds.append(True)
@@ -1545,18 +1546,34 @@ class TypeWalker(NodeWalker):
             sub_parse_info = node.id.parseinfo
             assert subs not in self.symtable, get_err_msg_info(sub_parse_info, "Subscript has been defined")
             self.symtable[subs] = ScalarType(index_type=False, is_int=True)  # add subscript to symbol table temporarily
+            subs_list.append(subs)
             ir_node.cond = self.walk(node.cond, **kwargs).ir
         else:
-            sub_info = self.walk(node.sub)
-            self.sum_subs.append(sub_info.content)
-            self.sum_conds.append(False)
-            ir_node.sub = sub_info.ir
-            ir_node.id = sub_info.ir
-            sub_info.ir.set_parent(ir_node)
-            subs = sub_info.content
-            sub_parse_info = node.sub.parseinfo
-            assert subs not in self.symtable, get_err_msg_info(sub_parse_info, "Subscript has been defined")
-            self.symtable[subs] = ScalarType(index_type=False, is_int=True)  # add subscript to symbol table temporarily
+            if node.enum:
+                for cur_id_raw in node.enum:
+                    self.sum_sym_list.append({})
+                    enum = self.walk(cur_id_raw)
+                    subs_list.append(enum.content)
+                    assert enum.content not in self.symtable, get_err_msg_info(cur_id_raw.parseinfo, "Subscript has been defined")
+                    self.symtable[enum.content] = ScalarType(index_type=False, is_int=True)  # add subscript to symbol table temporarily
+                    self.sum_subs.append(enum.content)
+                self.sum_conds.append(False)
+                range_info = self.walk(node.range, **kwargs)
+                ir_node.enum_list = subs_list
+                ir_node.range = range_info.ir
+            else:
+                self.sum_sym_list.append({})
+                sub_info = self.walk(node.sub)
+                self.sum_subs.append(sub_info.content)
+                self.sum_conds.append(False)
+                ir_node.sub = sub_info.ir
+                ir_node.id = sub_info.ir
+                sub_info.ir.set_parent(ir_node)
+                subs = sub_info.content
+                sub_parse_info = node.sub.parseinfo
+                assert subs not in self.symtable, get_err_msg_info(sub_parse_info, "Subscript has been defined")
+                self.symtable[subs] = ScalarType(index_type=False, is_int=True)  # add subscript to symbol table temporarily
+                subs_list.append(subs)
         self.logger.debug("new sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         new_id = self.generate_var_name("sum")
         ret_info = self.walk(node.exp, **kwargs)
@@ -1565,20 +1582,22 @@ class TypeWalker(NodeWalker):
         ret_type = ret_info.la_type
         self.symtable[new_id] = ret_type
         ret_info.symbol = new_id
-        ret_info.content = subs
+        # ret_info.content = subs
         ir_node.la_type = ret_info.la_type
         ir_node.symbols = ret_info.symbols
         ir_node.symbol = ret_info.symbol
         ir_node.content = ret_info.content
-        self.sum_subs.pop()
+        for i in range(len(subs_list)):
+            self.sum_subs.pop()
+            cur_sym_dict = self.sum_sym_list.pop()
+            assert len(cur_sym_dict) > 0, get_err_msg_info(sub_parse_info, "Subscript hasn't been used in summation")
+            # self.check_sum_subs(subs, cur_sym_dict)
+            ir_node.sym_dict = cur_sym_dict
         self.sum_conds.pop()
-        cur_sym_dict = self.sum_sym_list.pop()
-        assert len(cur_sym_dict) > 0, get_err_msg_info(sub_parse_info, "Subscript hasn't been used in summation")
-        # self.check_sum_subs(subs, cur_sym_dict)
-        assert self.check_sum_subs(subs, cur_sym_dict), get_err_msg_info(sub_parse_info, "Subscript has inconsistent dimensions")
-        ir_node.sym_dict = cur_sym_dict
         ret_info.ir = ir_node
-        del self.symtable[subs]   # remove subscript from symbol table
+        for subs in subs_list:
+            assert self.check_sum_subs(subs, cur_sym_dict), get_err_msg_info(sub_parse_info, "Subscript has inconsistent dimensions")
+            del self.symtable[subs]   # remove subscript from symbol table
         self.logger.debug("cur_sym_dict: {}".format(cur_sym_dict))
         self.logger.debug("summation, symbols: {}".format(ir_node.symbols))
         return ret_info

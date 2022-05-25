@@ -365,9 +365,16 @@ class CodeGenLatex(CodeGen):
         if node.cond:
             sub = '{' + self.visit(node.cond, **kwargs) + '}'
         else:
-            kwargs['is_sub'] = True
-            sub = self.visit(node.id, **kwargs)
-            del kwargs['is_sub']
+            if node.enum_list:
+                kwargs['is_sub'] = True
+                sub = ','.join(node.enum_list)
+                del kwargs['is_sub']
+                range = self.visit(node.range, **kwargs)
+                sub += "\in " + range
+            else:
+                kwargs['is_sub'] = True
+                sub = self.visit(node.id, **kwargs)
+                del kwargs['is_sub']
         return "\\sum_{" + sub + "} " + self.visit(node.exp, **kwargs)
 
     def visit_function(self, node, **kwargs):
