@@ -10,8 +10,9 @@ import regex as re
 from .la_logger import *
 
 
-DEBUG_MODE = False
+DEBUG_MODE = True
 DEBUG_PARSER = False  # used for new grammer files
+DEBUG_TIME = False    # used for time recoding (to optimize)
 TEST_MATLAB = False   # used for running tests for MATLAB
 start_time = None
 # constants used as folder name
@@ -124,7 +125,7 @@ def get_resource_dir():
 
 
 def record(msg=''):
-    if DEBUG_MODE:
+    if DEBUG_TIME:
         global start_time
         if start_time is None or msg == '':
             start_time = time.time()
