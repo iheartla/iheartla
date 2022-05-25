@@ -800,7 +800,7 @@ class grammarinitParser(Parser):
                     self._hspace_()
                 self._closure(block14)
                 self._in_()
-                self.name_last_node('in_')
+                self.name_last_node('enum')
 
                 def block16():
                     self._hspace_()
@@ -814,7 +814,7 @@ class grammarinitParser(Parser):
                 self.name_last_node('exp')
             self._error('no available options')
         self.ast._define(
-            ['cond', 'exp', 'id', 'in_', 'sub'],
+            ['cond', 'enum', 'exp', 'id', 'sub'],
             []
         )
 
@@ -5816,9 +5816,9 @@ class Solver(ModelBase):
 
 class Summation(ModelBase):
     cond = None
+    enum = None
     exp = None
     id = None
-    in_ = None
     sub = None
 
 
