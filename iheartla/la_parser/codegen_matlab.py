@@ -666,7 +666,7 @@ class CodeGenMatlab(CodeGen):
                     if index != len(list_content) - 1:
                         exp_pre_list.append(list_content[index] + '\n')
             content += exp_pre_list
-            content.append(str("    " + assign_id + " += " + exp_str + '\n'))
+            content.append(str("    " + assign_id + " += " + exp_str + ';\n'))
             content[0] = "    " + content[0]
             self.del_name_conventions(name_convention)
             return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
