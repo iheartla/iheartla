@@ -608,7 +608,10 @@ class CodeGenNumpy(CodeGen):
             content.append('for {} in {}:\n'.format(index_name, range_info.content))
             extra_content = ''
             for i in range(len(node.enum_list)):
-                content.append('    {} = {}[{}]{}\n'.format(node.enum_list[i], index_name, i, extra_content))
+                if node.range.la_type.index_type:
+                    content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+                else:
+                    content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
             exp_pre_list = []
             if exp_info.pre_list:  # catch pre_list
                 list_content = "".join(exp_info.pre_list)

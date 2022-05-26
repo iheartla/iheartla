@@ -695,7 +695,10 @@ class CodeGenEigen(CodeGen):
             content.append('for({} tuple : {}){{\n'.format(self.get_set_item_str(node.range.la_type), range_info.content))
             extra_content = ''
             for i in range(len(node.enum_list)):
-                content.append('    int {} = std::get<{}>(tuple){};\n'.format(node.enum_list[i], i, extra_content))
+                if node.range.la_type.index_type:
+                    content.append('    int {} = std::get<{}>(tuple){} + 1;\n'.format(node.enum_list[i], i, extra_content))
+                else:
+                    content.append('    int {} = std::get<{}>(tuple){};\n'.format(node.enum_list[i], i, extra_content))
             exp_pre_list = []
             if exp_info.pre_list:  # catch pre_list
                 list_content = "".join(exp_info.pre_list)
