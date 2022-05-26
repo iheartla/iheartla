@@ -545,20 +545,30 @@ class CodeGenNumpy(CodeGen):
 
     def visit_summation(self, node, **kwargs):
         target_var = []
-        sub = self.visit(node.id).content
-        # name convention
-        name_convention = {}
-        for var in node.symbols:
-            if self.contain_subscript(var):
-                var_ids = self.get_all_ids(var)
-                var_subs = var_ids[1]
-                for var_sub in var_subs:
-                    if sub == var_sub:
-                        target_var.append(var_ids[0])
-                if len(var_ids[1]) > 1:  # matrix
-                    name_convention[var] = "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1])
-                else:
-                    name_convention[var] = "{}[{}]".format(var_ids[0], var_ids[1][0])
+        # sub = self.visit(node.id).content
+        def set_name_conventions(sub):
+            # name convention
+            name_convention = {}
+            for var in node.symbols:
+                if self.contain_subscript(var):
+                    var_ids = self.get_all_ids(var)
+                    var_subs = var_ids[1]
+                    for var_sub in var_subs:
+                        if sub == var_sub:
+                            target_var.append(var_ids[0])
+                    if len(var_ids[1]) > 1:  # matrix
+                        name_convention[var] = "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1])
+                    else:
+                        name_convention[var] = "{}[{}]".format(var_ids[0], var_ids[1][0])
+            self.add_name_conventions(name_convention)
+            return name_convention
+        if node.enum_list:
+            name_convention = {}
+            for sub in node.enum_list:
+                name_convention.update(set_name_conventions(sub))
+        else:
+            sub = self.visit(node.id).content
+            name_convention = set_name_conventions(sub)
         for sym, subs in node.sym_dict.items():
             target_var.append(sym)
         # try to first use dim of parameters
@@ -571,7 +581,6 @@ class CodeGenNumpy(CodeGen):
             else:
                 remain_l.append(cur_v)
         target_var = param_l + remain_l
-        self.add_name_conventions(name_convention)
         #
         assign_id = node.symbol
         cond_content = ""
@@ -593,6 +602,26 @@ class CodeGenNumpy(CodeGen):
             content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, assign_id_type.size, ele_type.rows, ele_type.cols))
         else:
             content.append("{} = 0\n".format(assign_id))
+        if node.enum_list:
+            range_info = self.visit(node.range, **kwargs)
+            index_name = self.generate_var_name('tuple')
+            content.append('for {} in {}:\n'.format(index_name, range_info.content))
+            extra_content = ''
+            for i in range(len(node.enum_list)):
+                content.append('    {} = {}[{}]{}\n'.format(node.enum_list[i], index_name, i, extra_content))
+            exp_pre_list = []
+            if exp_info.pre_list:  # catch pre_list
+                list_content = "".join(exp_info.pre_list)
+                # content += exp_info.pre_list
+                list_content = list_content.split('\n')
+                for index in range(len(list_content)):
+                    if index != len(list_content) - 1:
+                        exp_pre_list.append(list_content[index] + '\n')
+            content += exp_pre_list
+            content.append(str("    " + assign_id + " += " + exp_str + '\n'))
+            content[0] = "    " + content[0]
+            self.del_name_conventions(name_convention)
+            return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
         sym_info = node.sym_dict[target_var[0]]
         if self.get_sym_type(target_var[0]).is_matrix():
             if sub == sym_info[0]:
