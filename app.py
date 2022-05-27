@@ -1,3 +1,5 @@
+import copy
+import hashlib
 import threading
 import time
 
@@ -37,6 +39,8 @@ IMAGE_BLOCK_RE = re.compile(
     dedent(r'''<img\ (?P<before>[^\n>]*)src=(?P<quote>"|')(?P<src>[^\n'">]*)(?P=quote)(?P<after>[^\n>]*)>'''),
     re.MULTILINE | re.DOTALL | re.VERBOSE
 )
+cached_figure_dict = {}
+cached_figure_code = {}
 def handle_title(text, dict):
     content = ''
     if "title" in dict:
@@ -157,26 +161,42 @@ def handle_context_block(text):
     return ''.join(text_list)
 
 
-def gen_figure(source, name, input_dir, figure_dict):
+def gen_figure(source, name, input_dir, figure_dict, figure_code, lib_changed):
     src = "{}/{}/lib.py".format(input_dir, OUTPUT_CODE)
     if os.path.exists(src):
         shutil.copyfile(src, "{}/{}/lib.py".format(input_dir, IMG_CODE))
+    content = read_from_file(source)
+    cur_hash = hashlib.md5("{}:{}".format(name, content).encode()).hexdigest()
+    if not lib_changed:
+        if cur_hash in cached_figure_code:
+            figure_code[cur_hash] = cached_figure_code[cur_hash]
+            if name in cached_figure_dict:
+                figure_dict[name] = cached_figure_dict[name]
+            return
     ret = subprocess.run(["python", source], cwd="{}/{}".format(input_dir, IMG_CODE), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     record("figure")
     if ret.returncode == 0:
+        figure_code[cur_hash] = True
         pass
     else:
+        figure_code[cur_hash] = False
         # print(ret.stderr.decode('UTF-8'))
         figure_dict[name] = ret.stderr.decode('UTF-8')
         print("failed, {}".format(source))
 
 
-def handle_figure(text, name_list, input_dir):
+def handle_figure(text, name_list, input_dir, md):
+    lib_changed = False
+    for context, changed in md.changed_dict.items():
+        if changed:
+            lib_changed = True
+            break
     start_index = 0
     text_list = []
     threads_list = []
     folder = "{}/{}".format(input_dir, IMG_CODE)
     figure_dict = {}  # figure name : err msg
+    figure_code = {}  # figure name+content : True/False
     if not os.path.exists(folder):
         os.mkdir(folder)
     for m in FIGURE_BLOCK_RE.finditer(text):
@@ -189,7 +209,7 @@ def handle_figure(text, name_list, input_dir):
             # print("handle_figure, img: {}, name:{}".format(path, name))
             if name in name_list:
                 source = "{}/{}.py".format(folder, name)
-                threads_list.append(threading.Thread(target=gen_figure, args=(source, name, input_dir, figure_dict)))
+                threads_list.append(threading.Thread(target=gen_figure, args=(source, name, input_dir, figure_dict, figure_code, lib_changed)))
                 pre_tag = """<pre class="errorMsg" hidden></pre>"""
                 if suffix == 'html':
                     new_c = """<iframe id="{}" scrolling="no" style="border:none;" seamless="seamless" src="{}/{}.html" height="525" width="100%"></iframe>""".format(name, path, name)
@@ -214,6 +234,9 @@ def handle_figure(text, name_list, input_dir):
             [t.start() for t in threads_list]
             [t.join() for t in threads_list]
         record("handle_figure")
+        global cached_figure_dict, cached_figure_code
+        cached_figure_dict = copy.deepcopy(figure_dict)
+        cached_figure_code = copy.deepcopy(figure_code)
         return ''.join(text_list), figure_dict
     return text, figure_dict
 
@@ -284,7 +307,7 @@ def process_input(content, input_dir='.', resource_dir='.', file_name='result',
         save_output_code(md, input_dir)
         figure_dict = {}
         if md.need_gen_figure:
-            body, figure_dict = handle_figure(body, md.figure_list, input_dir)
+            body, figure_dict = handle_figure(body, md.figure_list, input_dir, md)
         equation_json = md.json_data
         # equation_data = get_sym_data(json.loads(equation_json))
         sym_json = md.json_sym
