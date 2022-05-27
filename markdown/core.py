@@ -75,6 +75,7 @@ class Markdown:
         self.lib_matlab = ''
         self.json_data = ''
         self.json_sym = ''
+        self.changed_dict = {}  # whether the code block in certain context has been changed
         self.figure_list = []
         self.need_gen_figure = False
         self.parser_type = kwargs.get('parser_type', 4)

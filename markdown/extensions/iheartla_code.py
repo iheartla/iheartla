@@ -612,15 +612,18 @@ class IheartlaBlockPreprocessor(Preprocessor):
         record("Before compiling iheartla code")
         new_cached_data = {}
         global cached_data
+        self.md.changed_dict.clear()
         for name, block_data in file_dict.items():
             cur_hash = hashlib.md5("{}:{}".format(name, block_data.get_content()).encode()).hexdigest()
             if cur_hash in cached_data:
                 code_list, equation_data = cached_data[cur_hash]
+                self.md.changed_dict[name] = False
             else:
                 code_list, equation_data = compile_la_content(block_data.get_content(),
                                                                   parser_type=self.md.parser_type | ParserTypeEnum.MATHJAX | ParserTypeEnum.MACROMATHJAX,
                                                                   func_name=name, path=self.md.path, struct=True,
                                                                   get_json=True)
+                self.md.changed_dict[name] = True
             new_cached_data[cur_hash] = [code_list, equation_data]
             equation_data.name = name
             equation_dict[name] = equation_data
