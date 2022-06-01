@@ -167,6 +167,10 @@ class grammardefaultParser(Parser):
                 self._WITH_()
             with self._option():
                 self._INITIAL_()
+            with self._option():
+                self._AND_()
+            with self._option():
+                self._OR_()
             self._error('no available options')
 
     @tatsumasu()
@@ -394,6 +398,14 @@ class grammardefaultParser(Parser):
     @tatsumasu()
     def _INITIAL_(self):  # noqa
         self._pattern('initial')
+
+    @tatsumasu()
+    def _AND_(self):  # noqa
+        self._pattern('and')
+
+    @tatsumasu()
+    def _OR_(self):  # noqa
+        self._pattern('or')
 
     @tatsumasu('Exponent')
     def _exponent_(self):  # noqa
@@ -4574,8 +4586,75 @@ class grammardefaultParser(Parser):
         )
 
     @tatsumasu('IfCondition')
+    @leftrec
     def _if_condition_(self):  # noqa
         with self._choice():
+            with self._option():
+                self._if_condition_()
+                self.name_last_node('se')
+
+                def block1():
+                    self._hspace_()
+                self._closure(block1)
+                self._OR_()
+
+                def block2():
+                    self._hspace_()
+                self._closure(block2)
+                self._and_condition_()
+                self.name_last_node('other')
+            with self._option():
+                self._and_condition_()
+                self.name_last_node('single')
+            self._error('no available options')
+        self.ast._define(
+            ['other', 'se', 'single'],
+            []
+        )
+
+    @tatsumasu('AndCondition')
+    @leftrec
+    def _and_condition_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._and_condition_()
+                self.name_last_node('se')
+
+                def block1():
+                    self._hspace_()
+                self._closure(block1)
+                self._AND_()
+
+                def block2():
+                    self._hspace_()
+                self._closure(block2)
+                self._atom_condition_()
+                self.name_last_node('other')
+            with self._option():
+                self._atom_condition_()
+                self.name_last_node('atom')
+            self._error('no available options')
+        self.ast._define(
+            ['atom', 'other', 'se'],
+            []
+        )
+
+    @tatsumasu('AtomCondition')
+    def _atom_condition_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._token('(')
+
+                def block0():
+                    self._hspace_()
+                self._closure(block0)
+                self._if_condition_()
+                self.name_last_node('p')
+
+                def block2():
+                    self._hspace_()
+                self._closure(block2)
+                self._token(')')
             with self._option():
                 self._not_equal_()
                 self.name_last_node('cond')
@@ -4602,7 +4681,7 @@ class grammardefaultParser(Parser):
                 self.name_last_node('cond')
             self._error('no available options')
         self.ast._define(
-            ['cond'],
+            ['cond', 'p'],
             []
         )
 
@@ -5323,6 +5402,12 @@ class grammardefaultSemantics(object):
     def INITIAL(self, ast):  # noqa
         return ast
 
+    def AND(self, ast):  # noqa
+        return ast
+
+    def OR(self, ast):  # noqa
+        return ast
+
     def exponent(self, ast):  # noqa
         return ast
 
@@ -5738,6 +5823,12 @@ class grammardefaultSemantics(object):
         return ast
 
     def if_condition(self, ast):  # noqa
+        return ast
+
+    def and_condition(self, ast):  # noqa
+        return ast
+
+    def atom_condition(self, ast):  # noqa
         return ast
 
     def in_(self, ast):  # noqa
@@ -6321,7 +6412,20 @@ class Subexpression(ModelBase):
 
 
 class IfCondition(ModelBase):
+    other = None
+    se = None
+    single = None
+
+
+class AndCondition(ModelBase):
+    atom = None
+    other = None
+    se = None
+
+
+class AtomCondition(ModelBase):
     cond = None
+    p = None
 
 
 class InCondition(ModelBase):

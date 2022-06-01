@@ -25,6 +25,8 @@ BUILTIN_KEYWORDS
     #| SIN | COS | ASIN | ARCSIN | ACOS | ARCCOS | TAN | ATAN | ARCTAN | ATAN2
     | WITH
     | INITIAL
+    | AND
+    | OR
     ;
 
 TRACE = /trace/;
@@ -81,4 +83,6 @@ FROM = /from/;
 PI = /π/;
 WITH = /with/;
 INITIAL = /initial/;
+AND = /and/;
+OR = /or/;
 """
