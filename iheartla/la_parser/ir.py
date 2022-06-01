@@ -353,6 +353,29 @@ class ConditionNode(StmtNode):
         self.cond_list = []
         self.cond_type = cond_type
         self.tex_node = None
+        self.loop = False
+
+    def get_single_in_node(self):
+        # whether it only has in conditional
+        if len(self.cond_list) == 1:
+            if self.cond_list[0].is_node(IRNodeType.Condition):
+                return self.cond_list[0].get_single_in_node()
+            else:
+                if self.cond_list[0].cond.is_node(IRNodeType.In):
+                    return self.cond_list[0].cond
+        return None
+
+    def same_subs(self, subs):
+        # check whether there's only in conditional with the same subs  
+        node = self.get_single_in_node()
+        if node is not None and node.same_subs(subs):
+            return True
+        return False
+
+    def set_loop(self, loop):
+        self.loop = loop
+        for cond in self.cond_list:
+            cond.set_loop(loop)
 
 
 class InNode(StmtNode):

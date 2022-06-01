@@ -2642,7 +2642,8 @@ class TypeWalker(NodeWalker):
                 first = False
                 ifs_node.cond_list.append(ir)
                 ir.set_parent(ifs_node)
-                if not (ir.cond.cond.node_type == IRNodeType.In and ir.cond.cond.same_subs(all_ids[1])):
+                # if not (ir.cond.cond.node_type == IRNodeType.In and ir.cond.cond.same_subs(all_ids[1])):
+                if not ir.cond.same_subs(all_ids[1]):
                     in_cond_only = False
             ifs_node.set_in_cond_only(in_cond_only)
             ifs_node.set_parent(ir_node)
