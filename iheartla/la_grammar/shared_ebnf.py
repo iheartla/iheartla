@@ -194,9 +194,19 @@ subexpression::Subexpression
     ;
     
 #######################################################################################################################
-
 if_condition::IfCondition
+    = se:if_condition {hspace} OR {hspace} other:and_condition
+    | single:and_condition
+    ;
+
+and_condition::AndCondition
+    = se:and_condition {hspace} AND {hspace} other:atom_condition
+    | atom:atom_condition
+    ;
+
+atom_condition::AtomCondition
     =
+    | '(' {hspace} p:if_condition {hspace} ')'
     | cond:not_equal
     | cond:equal
     | cond:in
