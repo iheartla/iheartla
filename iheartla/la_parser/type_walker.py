@@ -2075,28 +2075,84 @@ class TypeWalker(NodeWalker):
             # return self.make_mul_info(name_info, self.walk(node.params[0], **kwargs))
 
     def walk_IfCondition(self, node, **kwargs):
-        ir_node = IfNode(parse_info=node.parseinfo)
-        kwargs[IF_COND] = True
-        node_info = self.walk(node.cond, **kwargs)
-        ir_node.cond = node_info.ir
-        ir_node.la_type = node_info.la_type
-        # check special nodes
-        add_sub_node = ir_node.get_child(IRNodeType.AddSub)
-        if add_sub_node is not None:
-            copy_node = copy.deepcopy(node_info.ir)
-            assert add_sub_node.get_child(IRNodeType.AddSub) is None, get_err_msg_info(add_sub_node.parse_info, "Multiple +- symbols in a single expression")
-            new_nodes = add_sub_node.split_node()
-            add_sub_node.parent().value = new_nodes[0]
-            #
-            sec_node = copy.deepcopy(node_info.ir)
-            add_node = sec_node.get_child(IRNodeType.Add)
-            add_node.parent().value = new_nodes[1]
-            #
-            condition_node = ConditionNode(cond_type=ConditionType.ConditionOr)
+        condition_node = ConditionNode(cond_type=ConditionType.ConditionOr, raw_text=node.text, parse_info=node.parseinfo)
+        if node.single:
+            condition_node.cond_type = ConditionType.ConditionAnd
+            node_info = self.walk(node.single, **kwargs)
             condition_node.cond_list.append(node_info.ir)
-            condition_node.cond_list.append(sec_node)
-            condition_node.tex_node = copy_node
-            ir_node.cond = condition_node
+        else:
+            se_node_info = self.walk(node.se, **kwargs)
+            other_node_info = self.walk(node.other, **kwargs)
+            condition_node.cond_list.append(se_node_info.ir)
+            condition_node.cond_list.append(other_node_info.ir)
+        #
+        # ir_node = IfNode(parse_info=node.parseinfo)
+        # kwargs[IF_COND] = True
+        # node_info = self.walk(node.cond, **kwargs)
+        # ir_node.cond = node_info.ir
+        # ir_node.la_type = node_info.la_type
+        # # check special nodes
+        # add_sub_node = ir_node.get_child(IRNodeType.AddSub)
+        # if add_sub_node is not None:
+        #     copy_node = copy.deepcopy(node_info.ir)
+        #     assert add_sub_node.get_child(IRNodeType.AddSub) is None, get_err_msg_info(add_sub_node.parse_info, "Multiple +- symbols in a single expression")
+        #     new_nodes = add_sub_node.split_node()
+        #     add_sub_node.parent().value = new_nodes[0]
+        #     #
+        #     sec_node = copy.deepcopy(node_info.ir)
+        #     add_node = sec_node.get_child(IRNodeType.Add)
+        #     add_node.parent().value = new_nodes[1]
+        #     #
+        #     condition_node = ConditionNode(cond_type=ConditionType.ConditionOr)
+        #     condition_node.cond_list.append(node_info.ir)
+        #     condition_node.cond_list.append(sec_node)
+        #     condition_node.tex_node = copy_node
+        #     ir_node.cond = condition_node
+        # node_info.ir = ir_node
+        return NodeInfo(ir=condition_node)
+
+    def walk_AndCondition(self, node, **kwargs):
+        condition_node = ConditionNode(cond_type=ConditionType.ConditionAnd, raw_text=node.text,
+                                       parse_info=node.parseinfo)
+        if node.atom:
+            node_info = self.walk(node.atom, **kwargs)
+            condition_node.cond_list.append(node_info.ir)
+        else:
+            se_node_info = self.walk(node.se, **kwargs)
+            other_node_info = self.walk(node.other, **kwargs)
+            condition_node.cond_list.append(se_node_info.ir)
+            condition_node.cond_list.append(other_node_info.ir)
+        return NodeInfo(ir=condition_node)
+
+    def walk_AtomCondition(self, node, **kwargs):
+        ir_node = IfNode(raw_text=node.text, parse_info=node.parseinfo)
+        kwargs[IF_COND] = True
+        if node.p:
+            node_info = self.walk(node.p, **kwargs)
+            ir_node.cond = node_info.ir
+        else:
+            node_info = self.walk(node.cond, **kwargs)
+            ir_node.cond = node_info.ir
+            # check special nodes
+            add_sub_node = node_info.ir.get_child(IRNodeType.AddSub)
+            if add_sub_node is not None:
+                copy_node = copy.deepcopy(node_info.ir)
+                assert add_sub_node.get_child(IRNodeType.AddSub) is None, get_err_msg_info(add_sub_node.parse_info,
+                                                                                           "Multiple +- symbols in a single expression")
+                new_nodes = add_sub_node.split_node()
+                add_sub_node.parent().value = new_nodes[0]
+                #
+                sec_node = copy.deepcopy(node_info.ir)
+                add_node = sec_node.get_child(IRNodeType.Add)
+                add_node.parent().value = new_nodes[1]
+                #
+                condition_node = ConditionNode(cond_type=ConditionType.ConditionOr)
+                condition_node.cond_list.append(node_info.ir)
+                condition_node.cond_list.append(sec_node)
+                condition_node.tex_node = copy_node
+                ir_node.cond = condition_node
+                ir_node.tex_node = copy_node
+        ir_node.la_type = node_info.la_type
         node_info.ir = ir_node
         return node_info
 
