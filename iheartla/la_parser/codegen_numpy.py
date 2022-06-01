@@ -1326,7 +1326,7 @@ class CodeGenNumpy(CodeGen):
             else:
                 content = ' or '.join(content_list)
             return CodeNodeInfo(content=content, pre_list=pre_list)
-        return self.visit(node.cond)
+        return self.visit(node.cond_list[0])
 
     def visit_in(self, node, **kwargs):
         item_list = []
