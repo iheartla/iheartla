@@ -423,7 +423,19 @@ class CodeGenLatex(CodeGen):
         return ret_info
 
     def visit_condition(self, node, **kwargs):
-        return self.visit(node.tex_node, **kwargs)
+        if len(node.cond_list) > 1:
+            content_list = []
+            for condition in node.cond_list:
+                info = self.visit(condition)
+                content_list.append(info)
+            if node.cond_type == ConditionType.ConditionAnd:
+                content = ' \\text{{ and }}'.join(content_list)
+            else:
+                content = ' \\text{{ or }}'.join(content_list)
+            return content
+        if node.tex_node:
+            return self.visit(node.tex_node, **kwargs)
+        return self.visit(node.cond_list[0])
 
     def visit_in(self, node, **kwargs):
         item_list = []
