@@ -77,8 +77,8 @@ optimize_operator::Optimize
     ;
 
 multi_cond::MultiCond
-    = {hspace} m_cond:multi_cond separator_with_space cond:if_condition {hspace}
-    | {hspace} cond:if_condition {hspace}
+    = {hspace} m_cond:multi_cond separator_with_space cond:atom_condition {hspace}
+    | {hspace} cond:atom_condition {hspace}
     ;
 
 integral_operator::Integral

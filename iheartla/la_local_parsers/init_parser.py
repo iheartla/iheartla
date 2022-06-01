@@ -997,7 +997,7 @@ class grammarinitParser(Parser):
                 self._multi_cond_()
                 self.name_last_node('m_cond')
                 self._separator_with_space_()
-                self._if_condition_()
+                self._atom_condition_()
                 self.name_last_node('cond')
 
                 def block3():
@@ -1008,7 +1008,7 @@ class grammarinitParser(Parser):
                 def block4():
                     self._hspace_()
                 self._closure(block4)
-                self._if_condition_()
+                self._atom_condition_()
                 self.name_last_node('cond')
 
                 def block6():
@@ -1702,6 +1702,7 @@ class grammarinitParser(Parser):
         )
 
     @tatsumasu('SingleIf')
+    @nomemo
     def _single_if_condition_(self):  # noqa
         with self._choice():
             with self._option():
