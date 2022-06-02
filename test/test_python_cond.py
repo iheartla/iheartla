@@ -165,3 +165,113 @@ class TestConditions(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_and_cond(self):
+        la_str = """A = sum_(j for j > 2 and j < 5 ) Q_j
+                where
+                Q: ℝ ^ 5"""
+        func_info = self.gen_func_info(la_str)
+        Q = np.array([1, 2, 3, 4, 5])
+        self.assertEqual(func_info.numpy_func(Q).A, 7)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(mat_func(matlab.double(Q.tolist()))['A'], 7)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 5, 1> Q;",
+                     "    Q << 1, 2, 3, 4, 5;",
+                     "    double C = {}(Q).A;".format(func_info.eig_func_name),
+                     "    return ((C - 7) == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_or_cond(self):
+        la_str = """A = sum_(j for j < 2 or j > 3 ) Q_j
+                where
+                Q: ℝ ^ 5"""
+        func_info = self.gen_func_info(la_str)
+        Q = np.array([1, 2, 3, 4, 5])
+        self.assertEqual(func_info.numpy_func(Q).A, 10)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(mat_func(matlab.double(Q.tolist()))['A'], 10)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 5, 1> Q;",
+                     "    Q << 1, 2, 3, 4, 5;",
+                     "    double C = {}(Q).A;".format(func_info.eig_func_name),
+                     "    return ((C - 10) == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_combined_priority_cond(self):
+        la_str = """A = sum_(j for j > 2 and j < 4 or j > 4 ) Q_j
+                where
+                Q: ℝ ^ 5"""
+        func_info = self.gen_func_info(la_str)
+        Q = np.array([1, 2, 3, 4, 5])
+        self.assertEqual(func_info.numpy_func(Q).A, 8)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(mat_func(matlab.double(Q.tolist()))['A'], 8)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 5, 1> Q;",
+                     "    Q << 1, 2, 3, 4, 5;",
+                     "    double C = {}(Q).A;".format(func_info.eig_func_name),
+                     "    return ((C - 8) == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_combined_priority_cond2(self):
+        la_str = """A = sum_(j for j > 2 or j < 4 and j > 4 ) Q_j
+                where
+                Q: ℝ ^ 5"""
+        func_info = self.gen_func_info(la_str)
+        Q = np.array([1, 2, 3, 4, 5])
+        self.assertEqual(func_info.numpy_func(Q).A, 12)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(mat_func(matlab.double(Q.tolist()))['A'], 12)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 5, 1> Q;",
+                     "    Q << 1, 2, 3, 4, 5;",
+                     "    double C = {}(Q).A;".format(func_info.eig_func_name),
+                     "    return ((C - 12) == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_combined_priority_cond3(self):
+        la_str = """A = sum_(j for (j > 2 or j > 3) and j > 4 ) Q_j
+                where
+                Q: ℝ ^ 5"""
+        func_info = self.gen_func_info(la_str)
+        Q = np.array([1, 2, 3, 4, 5])
+        self.assertEqual(func_info.numpy_func(Q).A, 5)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(mat_func(matlab.double(Q.tolist()))['A'], 5)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 5, 1> Q;",
+                     "    Q << 1, 2, 3, 4, 5;",
+                     "    double C = {}(Q).A;".format(func_info.eig_func_name),
+                     "    return ((C - 5) == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
