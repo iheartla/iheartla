@@ -322,6 +322,9 @@ a.detail{
   margin-left: 20px;
   margin-top: 1ex;
 }
+.tippy-content > .editBtn {
+  margin-left: 0;
+}
 .highlight {
   /*color: red; */
   background-color: rgba(255, 0, 0, .5);  
