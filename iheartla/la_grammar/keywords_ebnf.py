@@ -1,7 +1,6 @@
 KEYWORDS = r"""
 BUILTIN_KEYWORDS
     =
-    | DERIVATIVE
     | WHERE
     | GIVEN
     | SUM
@@ -27,7 +26,7 @@ BUILTIN_KEYWORDS
     | INITIAL
     | AND
     | OR
-    | DELTA | NABLA
+    | DELTA | NABLA | DERIVATIVE | PARTIAL
     ;
 
 TRACE = /trace/;
@@ -40,7 +39,8 @@ RANK = /rank/;
 NULL = /null/;
 ORTH = /orth/;
 QR = /qr/;
-DERIVATIVE = /∂/;
+DERIVATIVE = /𝕕/;
+PARTIAL = /∂/;
 WHERE = /where/;
 GIVEN = /given/;
 SUM = /sum/ | /∑/;

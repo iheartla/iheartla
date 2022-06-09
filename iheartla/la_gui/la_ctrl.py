@@ -42,7 +42,7 @@ class LaTextControl(bc.BaseTextControl):
                              '2/3': '⅔', '2/5': '⅖', '3/4': '¾', '3/5': '⅗', '3/8': '⅜', '4/5': '⅘', '5/6': '⅚', '5/8': '⅝', '7/8': '⅞',
                              'heart': '❤️', 'iheartla': 'I❤️LA',
                              'le':'≤', 'ge':'≥', 'ne': '≠', 'notin':'∉', 'div':'÷', 'nplus': '±',
-                             'linner': '⟨', 'rinner':'⟩', 'num1': '𝟙',
+                             'linner': '⟨', 'rinner':'⟩', 'num1': '𝟙', 'd':'𝕕',
                              'hat': '\u0302', 'bar': '\u0304'
                              }
         self.StyleSetSpec(self.STC_STYLE_LA_DEFAULT, "fore:#A9B7C6,back:{}".format(bc.BACKGROUND_COLOR))

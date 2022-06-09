@@ -1006,10 +1006,21 @@ class ConstantNode(ExprNode):
         self.c_type = c_type
 
 
+class DerivativeType(IntEnum):
+    DerivativeInvalid = -1
+    DerivativeFraction = 0  # dy/dt
+    DerivativeSFraction = 1  # d/dt y
+    DerivativePrime = 2     # y'
+    DerivativeDot = 3       # ä
+
+
 class DerivativeNode(ExprNode):
-    def __init__(self, parse_info=None, raw_text=None):
+    def __init__(self, parse_info=None, raw_text=None, upper=None, lower=None, order=None, d_type=DerivativeType.DerivativeFraction):
         super().__init__(IRNodeType.Derivative, parse_info=parse_info, raw_text=raw_text)
-        self.value = None
+        self.d_type = d_type
+        self.upper = upper
+        self.lower = lower
+        self.order = order
 
 
 class MathFuncType(IntEnum):

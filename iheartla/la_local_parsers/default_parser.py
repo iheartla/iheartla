@@ -118,8 +118,6 @@ class grammardefaultParser(Parser):
     def _BUILTIN_KEYWORDS_(self):  # noqa
         with self._choice():
             with self._option():
-                self._DERIVATIVE_()
-            with self._option():
                 self._WHERE_()
             with self._option():
                 self._GIVEN_()
@@ -175,6 +173,10 @@ class grammardefaultParser(Parser):
                 self._DELTA_()
             with self._option():
                 self._NABLA_()
+            with self._option():
+                self._DERIVATIVE_()
+            with self._option():
+                self._PARTIAL_()
             self._error('no available options')
 
     @tatsumasu()
@@ -219,6 +221,10 @@ class grammardefaultParser(Parser):
 
     @tatsumasu()
     def _DERIVATIVE_(self):  # noqa
+        self._pattern('𝕕')
+
+    @tatsumasu()
+    def _PARTIAL_(self):  # noqa
         self._pattern('∂')
 
     @tatsumasu()
@@ -517,6 +523,8 @@ class grammardefaultParser(Parser):
     def _operations_(self):  # noqa
         with self._choice():
             with self._option():
+                self._derivative_()
+            with self._option():
                 self._divergence_()
             with self._option():
                 self._gradient_()
@@ -683,6 +691,101 @@ class grammardefaultParser(Parser):
         self.name_last_node('right')
         self.ast._define(
             ['left', 'op', 'right'],
+            []
+        )
+
+    @tatsumasu('Derivative')
+    def _derivative_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._DERIVATIVE_()
+                with self._optional():
+                    with self._choice():
+                        with self._option():
+                            self._sup_integer_()
+                            self.name_last_node('uorder')
+                        with self._option():
+                            self._token('^')
+                            with self._group():
+                                with self._choice():
+                                    with self._option():
+                                        self._identifier_()
+                                    with self._option():
+                                        self._number_()
+                                    self._error('no available options')
+                            self.name_last_node('uorder')
+                        self._error('no available options')
+                self._factor_()
+                self.name_last_node('upper')
+                self._token('/')
+                self.name_last_node('f')
+                self._DERIVATIVE_()
+                self._identifier_()
+                self.name_last_node('lower')
+                with self._optional():
+                    with self._choice():
+                        with self._option():
+                            self._sup_integer_()
+                            self.name_last_node('lorder')
+                        with self._option():
+                            self._token('^')
+                            with self._group():
+                                with self._choice():
+                                    with self._option():
+                                        self._identifier_()
+                                    with self._option():
+                                        self._number_()
+                                    self._error('no available options')
+                            self.name_last_node('lorder')
+                        self._error('no available options')
+            with self._option():
+                self._DERIVATIVE_()
+                with self._optional():
+                    with self._choice():
+                        with self._option():
+                            self._sup_integer_()
+                            self.name_last_node('uorder')
+                        with self._option():
+                            self._token('^')
+                            with self._group():
+                                with self._choice():
+                                    with self._option():
+                                        self._identifier_()
+                                    with self._option():
+                                        self._number_()
+                                    self._error('no available options')
+                            self.name_last_node('uorder')
+                        self._error('no available options')
+                self._token('/')
+                self.name_last_node('s')
+                self._DERIVATIVE_()
+                self._identifier_()
+                self.name_last_node('lower')
+                with self._optional():
+                    with self._choice():
+                        with self._option():
+                            self._sup_integer_()
+                            self.name_last_node('lorder')
+                        with self._option():
+                            self._token('^')
+                            with self._group():
+                                with self._choice():
+                                    with self._option():
+                                        self._identifier_()
+                                    with self._option():
+                                        self._number_()
+                                    self._error('no available options')
+                            self.name_last_node('lorder')
+                        self._error('no available options')
+
+                def block21():
+                    self._hspace_()
+                self._positive_closure(block21)
+                self._factor_()
+                self.name_last_node('upper')
+            self._error('no available options')
+        self.ast._define(
+            ['f', 'lorder', 'lower', 's', 'uorder', 'upper'],
             []
         )
 
@@ -1130,7 +1233,7 @@ class grammardefaultParser(Parser):
         def block9():
             self._hspace_()
         self._closure(block9)
-        self._token('∂')
+        self._PARTIAL_()
         self._identifier_alone_()
         self.name_last_node('id')
         self.ast._define(
@@ -5339,6 +5442,9 @@ class grammardefaultSemantics(object):
     def DERIVATIVE(self, ast):  # noqa
         return ast
 
+    def PARTIAL(self, ast):  # noqa
+        return ast
+
     def WHERE(self, ast):  # noqa
         return ast
 
@@ -5514,6 +5620,9 @@ class grammardefaultSemantics(object):
         return ast
 
     def division(self, ast):  # noqa
+        return ast
+
+    def derivative(self, ast):  # noqa
         return ast
 
     def divergence(self, ast):  # noqa
@@ -6078,6 +6187,15 @@ class Divide(ModelBase):
     left = None
     op = None
     right = None
+
+
+class Derivative(ModelBase):
+    f = None
+    lorder = None
+    lower = None
+    s = None
+    uorder = None
+    upper = None
 
 
 class Divergence(ModelBase):

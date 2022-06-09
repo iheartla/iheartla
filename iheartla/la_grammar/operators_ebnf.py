@@ -2,6 +2,7 @@ OPERATORS = r"""
 # operators
 operations
     =
+    | derivative
     | divergence
     | gradient
     | laplacian
@@ -51,6 +52,10 @@ division::Divide
     left:term {hspace} op:('/'|'÷') {hspace} right:factor
     ;
 
+derivative::Derivative
+    = DERIVATIVE [uorder:sup_integer | '^' uorder:(identifier|number)] upper:factor f:'/' DERIVATIVE lower:identifier [lorder:sup_integer | '^' lorder:(identifier|number)]
+    | DERIVATIVE [uorder:sup_integer | '^' uorder:(identifier|number)] s:'/' DERIVATIVE lower:identifier [lorder:sup_integer | '^' lorder:(identifier|number)] {hspace}+ upper:factor 
+    ;
 
 divergence::Divergence
     = NABLA {hspace} '⋅' {hspace} value:factor;
@@ -94,7 +99,7 @@ multi_cond::MultiCond
     ;
 
 integral_operator::Integral
-    = (INT|'∫') '_' (d:domain | (lower:sub_factor {hspace} '^' {hspace} upper:sub_factor )) {hspace} exp:expression {hspace} '∂' id:identifier_alone
+    = (INT|'∫') '_' (d:domain | (lower:sub_factor {hspace} '^' {hspace} upper:sub_factor )) {hspace} exp:expression {hspace} PARTIAL id:identifier_alone
     ;
 
 domain::Domain
