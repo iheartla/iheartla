@@ -677,7 +677,23 @@ class CodeGenLatex(CodeGen):
         return "\sqrt{{{}}}".format(content)
 
     def visit_derivative(self, node, **kwargs):
-        return "\\partial" + self.visit(node.value, **kwargs)
+        upper = self.visit(node.upper, **kwargs)
+        lower = self.visit(node.lower, **kwargs)
+        content = ''
+        order = None
+        if node.order:
+            order = self.visit(node.order, **kwargs)
+        if node.d_type == DerivativeType.DerivativeFraction:
+            if order:
+                content = "\\frac{\\mathbb{d}^" + order + upper + "}{\\mathbb{d}" + "{{{}}}^{}".format(lower, order) + "}"
+            else:
+                content = "\\frac{\\mathbb{d}" + upper + "}{\\mathbb{d}" + lower + "}"
+        elif node.d_type == DerivativeType.DerivativeSFraction:
+            if order:
+                content = "\\frac{\\mathbb{d}^" + order + "}{\\mathbb{d}" + "{{{}}}^{}".format(lower, order) + "}" + upper
+            else:
+                content = "\\frac{\\mathbb{d}" + "}{\\mathbb{d}" + lower + "}" + upper
+        return content
 
     def visit_divergence(self, node, **kwargs):
         return "\\nabla \\cdot" + self.visit(node.value, **kwargs)

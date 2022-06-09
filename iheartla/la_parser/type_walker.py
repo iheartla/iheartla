@@ -1883,6 +1883,21 @@ class TypeWalker(NodeWalker):
             power_node.la_type = base.la_type
         return power_node
 
+    def walk_Derivative(self, node, **kwargs):
+        upper_info = self.walk(node.upper, **kwargs)
+        lower_info = self.walk(node.lower, **kwargs)
+        ir_node = DerivativeNode(parse_info=node.parseinfo, raw_text=node.text, upper=upper_info.ir, lower=lower_info.ir)
+        if node.f:
+            ir_node.d_type = DerivativeType.DerivativeFraction
+        else:
+            ir_node.d_type = DerivativeType.DerivativeSFraction
+        if node.lorder:
+            lorder_info = self.walk(node.lorder, **kwargs)
+            uorder_info = self.walk(node.uorder, **kwargs)
+            ir_node.order = lorder_info.ir
+        ir_node.la_type = ScalarType()
+        return NodeInfo(ir_node.la_type, ir=ir_node)
+
     def walk_Divergence(self, node, **kwargs):
         value_info = self.walk(node.value, **kwargs)
         ir_node = DivergenceNode(parse_info=node.parseinfo, value=value_info.ir)
