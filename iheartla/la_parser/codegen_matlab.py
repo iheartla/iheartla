@@ -1461,6 +1461,15 @@ class CodeGenMatlab(CodeGen):
     def visit_derivative(self, node, **kwargs):
         return CodeNodeInfo("")
 
+    def visit_divergence(self, node, **kwargs):
+        return CodeNodeInfo("")
+
+    def visit_gradient(self, node, **kwargs):
+        return CodeNodeInfo("")
+
+    def visit_laplace(self, node, **kwargs):
+        return CodeNodeInfo("")
+
     def visit_optimize(self, node, **kwargs):
         self.opt_key = node.key
         id_list = []

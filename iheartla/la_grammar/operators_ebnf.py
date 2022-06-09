@@ -2,6 +2,9 @@ OPERATORS = r"""
 # operators
 operations
     =
+    | divergence
+    | gradient
+    | laplacian
     | solver_operator
     | norm_operator
     | power_operator
@@ -48,6 +51,15 @@ division::Divide
     left:term {hspace} op:('/'|'÷') {hspace} right:factor
     ;
 
+
+divergence::Divergence
+    = NABLA {hspace} '⋅' {hspace} value:factor;
+
+gradient::Gradient
+    = NABLA {hspace} value:factor;
+    
+laplacian::Laplace
+    = DELTA {hspace} value:factor;
 
 power_operator::Power
     = base:factor t:'^T'
