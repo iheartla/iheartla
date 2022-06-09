@@ -171,6 +171,10 @@ class grammardefaultParser(Parser):
                 self._AND_()
             with self._option():
                 self._OR_()
+            with self._option():
+                self._DELTA_()
+            with self._option():
+                self._NABLA_()
             self._error('no available options')
 
     @tatsumasu()
@@ -407,6 +411,14 @@ class grammardefaultParser(Parser):
     def _OR_(self):  # noqa
         self._pattern('or')
 
+    @tatsumasu()
+    def _DELTA_(self):  # noqa
+        self._pattern('[Δδ𝛿]')
+
+    @tatsumasu()
+    def _NABLA_(self):  # noqa
+        self._pattern('∇')
+
     @tatsumasu('Exponent')
     def _exponent_(self):  # noqa
         self._pattern('[E][+-]?')
@@ -504,6 +516,12 @@ class grammardefaultParser(Parser):
     @nomemo
     def _operations_(self):  # noqa
         with self._choice():
+            with self._option():
+                self._divergence_()
+            with self._option():
+                self._gradient_()
+            with self._option():
+                self._laplacian_()
             with self._option():
                 self._solver_operator_()
             with self._option():
@@ -665,6 +683,53 @@ class grammardefaultParser(Parser):
         self.name_last_node('right')
         self.ast._define(
             ['left', 'op', 'right'],
+            []
+        )
+
+    @tatsumasu('Divergence')
+    def _divergence_(self):  # noqa
+        self._NABLA_()
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._token('⋅')
+
+        def block1():
+            self._hspace_()
+        self._closure(block1)
+        self._factor_()
+        self.name_last_node('value')
+        self.ast._define(
+            ['value'],
+            []
+        )
+
+    @tatsumasu('Gradient')
+    def _gradient_(self):  # noqa
+        self._NABLA_()
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._factor_()
+        self.name_last_node('value')
+        self.ast._define(
+            ['value'],
+            []
+        )
+
+    @tatsumasu('Laplace')
+    def _laplacian_(self):  # noqa
+        self._DELTA_()
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._factor_()
+        self.name_last_node('value')
+        self.ast._define(
+            ['value'],
             []
         )
 
@@ -5409,6 +5474,12 @@ class grammardefaultSemantics(object):
     def OR(self, ast):  # noqa
         return ast
 
+    def DELTA(self, ast):  # noqa
+        return ast
+
+    def NABLA(self, ast):  # noqa
+        return ast
+
     def exponent(self, ast):  # noqa
         return ast
 
@@ -5443,6 +5514,15 @@ class grammardefaultSemantics(object):
         return ast
 
     def division(self, ast):  # noqa
+        return ast
+
+    def divergence(self, ast):  # noqa
+        return ast
+
+    def gradient(self, ast):  # noqa
+        return ast
+
+    def laplacian(self, ast):  # noqa
         return ast
 
     def power_operator(self, ast):  # noqa
@@ -5998,6 +6078,18 @@ class Divide(ModelBase):
     left = None
     op = None
     right = None
+
+
+class Divergence(ModelBase):
+    value = None
+
+
+class Gradient(ModelBase):
+    value = None
+
+
+class Laplace(ModelBase):
+    value = None
 
 
 class Power(ModelBase):

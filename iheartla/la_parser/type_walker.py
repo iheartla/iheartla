@@ -1883,6 +1883,24 @@ class TypeWalker(NodeWalker):
             power_node.la_type = base.la_type
         return power_node
 
+    def walk_Divergence(self, node, **kwargs):
+        value_info = self.walk(node.value, **kwargs)
+        ir_node = DivergenceNode(parse_info=node.parseinfo, value=value_info.ir)
+        ir_node.la_type = ScalarType()
+        return NodeInfo(ir_node.la_type, ir=ir_node, symbols=value_info.symbols)
+
+    def walk_Gradient(self, node, **kwargs):
+        value_info = self.walk(node.value, **kwargs)
+        ir_node = GradientNode(parse_info=node.parseinfo, value=value_info.ir)
+        ir_node.la_type = ScalarType()
+        return NodeInfo(ir_node.la_type, ir=ir_node, symbols=value_info.symbols)
+
+    def walk_Laplace(self, node, **kwargs):
+        value_info = self.walk(node.value, **kwargs)
+        ir_node = LaplaceNode(parse_info=node.parseinfo, value=value_info.ir)
+        ir_node.la_type = ScalarType()
+        return NodeInfo(ir_node.la_type, ir=ir_node, symbols=value_info.symbols)
+
     def walk_Power(self, node, **kwargs):
         ir_node = PowerNode(parse_info=node.parseinfo)
         base_info = self.walk(node.base, **kwargs)

@@ -27,6 +27,7 @@ BUILTIN_KEYWORDS
     | INITIAL
     | AND
     | OR
+    | DELTA | NABLA
     ;
 
 TRACE = /trace/;
@@ -85,4 +86,6 @@ WITH = /with/;
 INITIAL = /initial/;
 AND = /and/;
 OR = /or/;
+DELTA = /[Δδ𝛿]/;
+NABLA = /∇/;
 """

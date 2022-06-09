@@ -55,6 +55,9 @@ class IRNodeType(Enum):
     KroneckerProduct = 219
     DotProduct = 220
     Squareroot = 221
+    Divergence = 222
+    Gradient = 223
+    Laplace = 224
     # matrix
     Matrix = 300
     MatrixRows = 301
@@ -739,6 +742,24 @@ class SquarerootNode(ExprNode):
     def __init__(self, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Squareroot, parse_info=parse_info, raw_text=raw_text)
         self.value = None
+
+
+class DivergenceNode(ExprNode):
+    def __init__(self, parse_info=None, raw_text=None, value=None):
+        super().__init__(IRNodeType.Divergence, parse_info=parse_info, raw_text=raw_text)
+        self.value = value
+
+
+class GradientNode(ExprNode):
+    def __init__(self, parse_info=None, raw_text=None, value=None):
+        super().__init__(IRNodeType.Gradient, parse_info=parse_info, raw_text=raw_text)
+        self.value = value
+
+
+class LaplaceNode(ExprNode):
+    def __init__(self, parse_info=None, raw_text=None, value=None):
+        super().__init__(IRNodeType.Laplace, parse_info=parse_info, raw_text=raw_text)
+        self.value = value
 
 
 class PowerNode(ExprNode):

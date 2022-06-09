@@ -340,6 +340,10 @@ class IRVisitor(object):
             IRNodeType.CrossProduct: "visit_cross_product",
             IRNodeType.KroneckerProduct: "visit_kronecker_product",
             IRNodeType.DotProduct: "visit_dot_product",
+            #
+            IRNodeType.Divergence: "visit_divergence",
+            IRNodeType.Gradient: "visit_gradient",
+            IRNodeType.Laplace: "visit_laplace",
             # matrix
             IRNodeType.Matrix: "visit_matrix",
             IRNodeType.MatrixRows: "visit_matrix_rows",
@@ -470,6 +474,15 @@ class IRVisitor(object):
         pass
 
     def visit_power(self, node, **kwargs):
+        pass
+
+    def visit_divergence(self, node, **kwargs):
+        pass
+
+    def visit_gradient(self, node, **kwargs):
+        pass
+
+    def visit_laplace(self, node, **kwargs):
         pass
 
     def visit_solver(self, node, **kwargs):

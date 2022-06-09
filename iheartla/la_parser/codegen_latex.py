@@ -679,6 +679,15 @@ class CodeGenLatex(CodeGen):
     def visit_derivative(self, node, **kwargs):
         return "\\partial" + self.visit(node.value, **kwargs)
 
+    def visit_divergence(self, node, **kwargs):
+        return "\\nabla \\cdot" + self.visit(node.value, **kwargs)
+
+    def visit_gradient(self, node, **kwargs):
+        return "\\nabla" + self.visit(node.value, **kwargs)
+
+    def visit_laplace(self, node, **kwargs):
+        return "\\delta" + self.visit(node.value, **kwargs)
+
     def visit_optimize(self, node, **kwargs):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         category = ''
