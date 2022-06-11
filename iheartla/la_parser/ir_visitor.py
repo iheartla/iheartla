@@ -344,6 +344,7 @@ class IRVisitor(object):
             IRNodeType.Divergence: "visit_divergence",
             IRNodeType.Gradient: "visit_gradient",
             IRNodeType.Laplace: "visit_laplace",
+            IRNodeType.Partial: "visit_partial",
             # matrix
             IRNodeType.Matrix: "visit_matrix",
             IRNodeType.MatrixRows: "visit_matrix_rows",
@@ -573,6 +574,9 @@ class IRVisitor(object):
         pass
 
     def visit_derivative(self, node, **kwargs):
+        pass
+
+    def visit_partial(self, node, **kwargs):
         pass
 
     def visit_factor(self, node, **kwargs):

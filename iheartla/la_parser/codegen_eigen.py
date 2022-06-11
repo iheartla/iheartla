@@ -1645,6 +1645,9 @@ class CodeGenEigen(CodeGen):
     def visit_laplace(self, node, **kwargs):
         return CodeNodeInfo("")
 
+    def visit_partial(self, node, **kwargs):
+        return CodeNodeInfo("")
+
     def visit_optimize(self, node, **kwargs):
         self.enable_tmp_sym = True
         self.opt_key = node.key

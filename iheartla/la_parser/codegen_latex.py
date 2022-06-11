@@ -695,6 +695,9 @@ class CodeGenLatex(CodeGen):
                 content = "\\frac{\\mathbb{d}" + "}{\\mathbb{d}" + lower + "}" + upper
         return content
 
+    def visit_partial(self, node, **kwargs):
+        return ''
+
     def visit_divergence(self, node, **kwargs):
         return "\\nabla \\cdot" + self.visit(node.value, **kwargs)
 

@@ -1470,6 +1470,9 @@ class CodeGenMatlab(CodeGen):
     def visit_laplace(self, node, **kwargs):
         return CodeNodeInfo("")
 
+    def visit_partial(self, node, **kwargs):
+        return CodeNodeInfo("")
+
     def visit_optimize(self, node, **kwargs):
         self.opt_key = node.key
         id_list = []
