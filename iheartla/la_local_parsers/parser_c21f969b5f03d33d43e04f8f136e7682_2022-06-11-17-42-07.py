@@ -4427,6 +4427,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         )
 
     @tatsumasu('Assignment')
+    @nomemo
     def _assignment_(self):  # noqa
         with self._choice():
             with self._option():
@@ -4523,9 +4524,24 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     self._expression_()
                     self.add_last_node_to_name('right')
                 self._closure(block24)
+            with self._option():
+                self._expression_()
+                self.name_last_node('lexpr')
+
+                def block29():
+                    self._hspace_()
+                self._closure(block29)
+                self._token('=')
+                self.name_last_node('op')
+
+                def block31():
+                    self._hspace_()
+                self._closure(block31)
+                self._expression_()
+                self.name_last_node('rexpr')
             self._error('no available options')
         self.ast._define(
-            ['op'],
+            ['lexpr', 'op', 'rexpr'],
             ['left', 'right']
         )
 
@@ -4732,7 +4748,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         )
 
     @tatsumasu()
-    @nomemo
     def _right_hand_side_(self):  # noqa
         with self._choice():
             with self._option():
@@ -6645,7 +6660,9 @@ class Expression(ModelBase):
 
 class Assignment(ModelBase):
     left = None
+    lexpr = None
     op = None
+    rexpr = None
     right = None
 
 
