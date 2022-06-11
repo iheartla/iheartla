@@ -3,6 +3,7 @@ OPERATORS = r"""
 operations
     =
     | derivative
+    | partial
     | divergence
     | gradient
     | laplacian
@@ -55,6 +56,11 @@ division::Divide
 derivative::Derivative
     = DERIVATIVE [uorder:sup_integer | '^' uorder:(identifier|number)] upper:factor f:'/' DERIVATIVE lower:identifier [lorder:sup_integer | '^' lorder:(identifier|number)]
     | DERIVATIVE [uorder:sup_integer | '^' uorder:(identifier|number)] s:'/' DERIVATIVE lower:identifier [lorder:sup_integer | '^' lorder:(identifier|number)] {hspace}+ upper:factor 
+    ;
+    
+partial::Partial
+    = PARTIAL [uorder:sup_integer | '^' uorder:(identifier|number)] upper:factor f:'/' l:{PARTIAL lower+:identifier [lorder+:sup_integer | '^' lorder+:(identifier|number)]}+
+    | PARTIAL [uorder:sup_integer | '^' uorder:(identifier|number)] s:'/' l:{PARTIAL lower+:identifier [lorder+:sup_integer | '^' lorder+:(identifier|number)]}+ {hspace}+ upper:factor 
     ;
 
 divergence::Divergence

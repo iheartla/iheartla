@@ -58,6 +58,7 @@ class IRNodeType(Enum):
     Divergence = 222
     Gradient = 223
     Laplace = 224
+    Partial = 225
     # matrix
     Matrix = 300
     MatrixRows = 301
@@ -1020,6 +1021,16 @@ class DerivativeNode(ExprNode):
         self.d_type = d_type
         self.upper = upper
         self.lower = lower
+        self.order = order
+
+
+class PartialNode(ExprNode):
+    def __init__(self, parse_info=None, raw_text=None, upper=None, lower_list=[], order=None, lorder_list=[], d_type=DerivativeType.DerivativeFraction):
+        super().__init__(IRNodeType.Partial, parse_info=parse_info, raw_text=raw_text)
+        self.d_type = d_type
+        self.upper = upper
+        self.lower_list = lower_list
+        self.lorder_list = lorder_list
         self.order = order
 
 

@@ -1898,6 +1898,30 @@ class TypeWalker(NodeWalker):
         ir_node.la_type = ScalarType()
         return NodeInfo(ir_node.la_type, ir=ir_node)
 
+    def walk_Partial(self, node, **kwargs):
+        upper_info = self.walk(node.upper, **kwargs)
+        lower_list = []
+        lorder_list = []
+        for l in node.l:
+            lower_info = self.walk(l[1], **kwargs)
+            lower_list.append(lower_info.ir)
+            if len(l) > 2:
+                lorder_info = self.walk(l[-1], **kwargs)
+                lorder_list.append(lorder_info.ir)
+            else:
+                int_node = IntegerNode(value=1)
+                int_node.la_type = ScalarType(is_int=True)
+                lorder_list.append(int_node)
+        ir_node = PartialNode(parse_info=node.parseinfo, raw_text=node.text, upper=upper_info.ir, lower_list=lower_list, lorder_list=lorder_list)
+        if node.uorder:
+            ir_node.order = self.walk(node.uorder, **kwargs).ir
+        if node.f:
+            ir_node.d_type = DerivativeType.DerivativeFraction
+        else:
+            ir_node.d_type = DerivativeType.DerivativeSFraction
+        ir_node.la_type = ScalarType()
+        return NodeInfo(ir_node.la_type, ir=ir_node)
+
     def walk_Divergence(self, node, **kwargs):
         value_info = self.walk(node.value, **kwargs)
         ir_node = DivergenceNode(parse_info=node.parseinfo, value=value_info.ir)

@@ -525,6 +525,8 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._derivative_()
             with self._option():
+                self._partial_()
+            with self._option():
                 self._divergence_()
             with self._option():
                 self._gradient_()
@@ -787,6 +789,109 @@ class grammardefaultParser(Parser):
         self.ast._define(
             ['f', 'lorder', 'lower', 's', 'uorder', 'upper'],
             []
+        )
+
+    @tatsumasu('Partial')
+    def _partial_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._PARTIAL_()
+                with self._optional():
+                    with self._choice():
+                        with self._option():
+                            self._sup_integer_()
+                            self.name_last_node('uorder')
+                        with self._option():
+                            self._token('^')
+                            with self._group():
+                                with self._choice():
+                                    with self._option():
+                                        self._identifier_()
+                                    with self._option():
+                                        self._number_()
+                                    self._error('no available options')
+                            self.name_last_node('uorder')
+                        self._error('no available options')
+                self._factor_()
+                self.name_last_node('upper')
+                self._token('/')
+                self.name_last_node('f')
+
+                def block7():
+                    self._PARTIAL_()
+                    self._identifier_()
+                    self.add_last_node_to_name('lower')
+                    with self._optional():
+                        with self._choice():
+                            with self._option():
+                                self._sup_integer_()
+                                self.add_last_node_to_name('lorder')
+                            with self._option():
+                                self._token('^')
+                                with self._group():
+                                    with self._choice():
+                                        with self._option():
+                                            self._identifier_()
+                                        with self._option():
+                                            self._number_()
+                                        self._error('no available options')
+                                self.add_last_node_to_name('lorder')
+                            self._error('no available options')
+                self._positive_closure(block7)
+                self.name_last_node('l')
+            with self._option():
+                self._PARTIAL_()
+                with self._optional():
+                    with self._choice():
+                        with self._option():
+                            self._sup_integer_()
+                            self.name_last_node('uorder')
+                        with self._option():
+                            self._token('^')
+                            with self._group():
+                                with self._choice():
+                                    with self._option():
+                                        self._identifier_()
+                                    with self._option():
+                                        self._number_()
+                                    self._error('no available options')
+                            self.name_last_node('uorder')
+                        self._error('no available options')
+                self._token('/')
+                self.name_last_node('s')
+
+                def block19():
+                    self._PARTIAL_()
+                    self._identifier_()
+                    self.add_last_node_to_name('lower')
+                    with self._optional():
+                        with self._choice():
+                            with self._option():
+                                self._sup_integer_()
+                                self.add_last_node_to_name('lorder')
+                            with self._option():
+                                self._token('^')
+                                with self._group():
+                                    with self._choice():
+                                        with self._option():
+                                            self._identifier_()
+                                        with self._option():
+                                            self._number_()
+                                        self._error('no available options')
+                                self.add_last_node_to_name('lorder')
+                            self._error('no available options')
+                self._positive_closure(block19)
+                self.name_last_node('l')
+
+                def block25():
+                    self._hspace_()
+                self._positive_closure(block25)
+                self._factor_()
+                self.name_last_node('upper')
+            self._error('no available options')
+        self.ast._define(
+            ['f', 'l', 's', 'uorder', 'upper'],
+            ['lorder', 'lower']
         )
 
     @tatsumasu('Divergence')
@@ -5625,6 +5730,9 @@ class grammardefaultSemantics(object):
     def derivative(self, ast):  # noqa
         return ast
 
+    def partial(self, ast):  # noqa
+        return ast
+
     def divergence(self, ast):  # noqa
         return ast
 
@@ -6191,6 +6299,16 @@ class Divide(ModelBase):
 
 class Derivative(ModelBase):
     f = None
+    lorder = None
+    lower = None
+    s = None
+    uorder = None
+    upper = None
+
+
+class Partial(ModelBase):
+    f = None
+    l = None
     lorder = None
     lower = None
     s = None
