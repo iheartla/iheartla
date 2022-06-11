@@ -696,7 +696,30 @@ class CodeGenLatex(CodeGen):
         return content
 
     def visit_partial(self, node, **kwargs):
-        return ''
+        upper = self.visit(node.upper, **kwargs)
+        content = ''
+        lower_content = ''
+        for cur_index in range(len(node.lower_list)):
+            cur_lower = self.visit(node.lower_list[cur_index], **kwargs)
+            cur_lorder = self.visit(node.lorder_list[cur_index], **kwargs)
+            if cur_lorder != '1':
+                lower_content += "\\partial" + "{{{}}}^{}".format(cur_lower, cur_lorder)
+            else:
+                lower_content += "\\partial" + cur_lower
+        order = None
+        if node.order:
+            order = self.visit(node.order, **kwargs)
+        if node.d_type == DerivativeType.DerivativeFraction:
+            if order:
+                content = "\\frac{\\partial^" + order + upper + "}{" + lower_content + "}"
+            else:
+                content = "\\frac{\\partial" + upper + "}{" + lower_content + "}"
+        elif node.d_type == DerivativeType.DerivativeSFraction:
+            if order:
+                content = "\\frac{\\partial^" + order + "}{" + lower_content + "}" + upper
+            else:
+                content = "\\frac{\\partial}" + "}{" + lower_content + "}" + upper
+        return content
 
     def visit_divergence(self, node, **kwargs):
         return "\\nabla \\cdot" + self.visit(node.value, **kwargs)
