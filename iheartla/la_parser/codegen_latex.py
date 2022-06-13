@@ -311,6 +311,10 @@ class CodeGenLatex(CodeGen):
         return params_str + '\\rightarrow ' + ret
 
     def visit_assignment(self, node, **kwargs):
+        if node.cur_type == AssignType.AssignTypeSolver:
+            lhs = self.visit(node.left, **kwargs)
+            rhs = self.visit(node.right, **kwargs)
+            return lhs + " & = " + rhs
         content = ''
         lhs_list = []
         for cur_index in range(len(node.left)):

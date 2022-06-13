@@ -316,8 +316,14 @@ class LocalFuncNode(StmtNode):
         self.defs = defs
 
 
+class AssignType(IntEnum):
+    AssignTypeInvalid = -1
+    AssignTypeNormal = 0
+    AssignTypeSolver = 1
+
+
 class AssignNode(StmtNode):
-    def __init__(self, left=None, right=None, op=None, parse_info=None, raw_text=None):
+    def __init__(self, left=None, right=None, op=None, parse_info=None, raw_text=None, cur_type=AssignType.AssignTypeNormal):
         super().__init__(IRNodeType.Assignment, parse_info=parse_info, raw_text=raw_text)
         self.left = left   # IdNode,MatrixIndexNode,VectorIndexNode,VectorIndexNode
         self.right = right
@@ -325,6 +331,7 @@ class AssignNode(StmtNode):
         self.symbols = set()
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
         self.optimize_param = False
+        self.cur_type = cur_type
 
 
 class IfNode(StmtNode):
