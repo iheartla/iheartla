@@ -615,19 +615,20 @@ class TypeWalker(NodeWalker):
         if self.pre_walk:
             for index in range(len(stat_list)):
                 if type(stat_list[index]).__name__ == 'Assignment':
-                    # check whether rhs is function type
-                    if type(stat_list[index].right[0]).__name__ == 'Expression' and type(stat_list[index].right[0].value).__name__ == 'Factor' and stat_list[index].right[0].value.id0:
-                        # specific stat: lhs = id_subs
-                        try:
-                            assign_node = self.walk(stat_list[index], **kwargs).ir
-                            lhs_id_node = assign_node.left[0]
-                            rhs_id_node = assign_node.right[0].value.id
-                            if rhs_id_node.la_type.is_function():
-                                if lhs_id_node.contain_subscript():
-                                    assert lhs_id_node.node_type == IRNodeType.SequenceIndex, get_err_msg_info(lhs_id_node.parseinfo, "Invalid assignment for function")
-                        except AssertionError as e:
-                            # lhs = symbol
-                            continue
+                    if stat_list[index].right:
+                        # check whether rhs is function type
+                        if type(stat_list[index].right[0]).__name__ == 'Expression' and type(stat_list[index].right[0].value).__name__ == 'Factor' and stat_list[index].right[0].value.id0:
+                            # specific stat: lhs = id_subs
+                            try:
+                                assign_node = self.walk(stat_list[index], **kwargs).ir
+                                lhs_id_node = assign_node.left[0]
+                                rhs_id_node = assign_node.right[0].value.id
+                                if rhs_id_node.la_type.is_function():
+                                    if lhs_id_node.contain_subscript():
+                                        assert lhs_id_node.node_type == IRNodeType.SequenceIndex, get_err_msg_info(lhs_id_node.parseinfo, "Invalid assignment for function")
+                            except AssertionError as e:
+                                # lhs = symbol
+                                continue
                 elif type(stat_list[index]).__name__ == 'LocalFunc':
                     # local function defition
                     pass
@@ -1335,6 +1336,13 @@ class TypeWalker(NodeWalker):
     def walk_Assignment(self, node, **kwargs):
         # ir
         assign_node = AssignNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
+        if node.lexpr:
+            lexpr_info = self.walk(node.lexpr, **kwargs)
+            rexpr_info = self.walk(node.rexpr, **kwargs)
+            assign_node.left = lexpr_info.ir
+            assign_node.right = rexpr_info.ir
+            assign_node.cur_type = AssignType.AssignTypeSolver
+            return NodeInfo(None, ir=assign_node, symbols=assign_node.symbols)
         if type(node.right[0]).__name__ == 'MultiCondExpr':
             assert len(node.right) == 1, get_err_msg_info(node.right[0].parseinfo, "Invalid multiple rhs")
             assert len(node.left) == 1, get_err_msg_info(node.left[0].parseinfo, "Invalid multiple lhs")

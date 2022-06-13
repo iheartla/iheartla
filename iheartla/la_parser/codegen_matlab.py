@@ -1221,6 +1221,8 @@ class CodeGenMatlab(CodeGen):
         return value_info
 
     def visit_assignment(self, node, **kwargs):
+        if node.cur_type == AssignType.AssignTypeSolver:
+            return CodeNodeInfo("")
         type_info = node
         # visit matrix first
         placeholder = "{}_{}\n".format(self.comment_placeholder, node.parse_info.line)
