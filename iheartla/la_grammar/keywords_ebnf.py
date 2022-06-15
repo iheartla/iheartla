@@ -88,4 +88,5 @@ AND = /and/;
 OR = /or/;
 DELTA = /[Δδ𝛿]/;
 NABLA = /∇/;
+PRIME = /'/;
 """
