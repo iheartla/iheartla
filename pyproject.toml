@@ -16,7 +16,7 @@ sympy = "^1.8"
 
 [tool.poetry.dev-dependencies]
 cppyy = "^1.7.1"
-numpy = "^1.19.2"
+numpy = "^1.21.0"
 scipy = "^1.5.2"
 pyinstaller = "^4.0"
 
