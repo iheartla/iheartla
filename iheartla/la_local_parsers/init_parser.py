@@ -1702,75 +1702,77 @@ class grammarinitParser(Parser):
 
                 def block3():
                     self._token('(')
+                    self.name_last_node('p')
 
-                    def block4():
+                    def block5():
 
-                        def block5():
+                        def block6():
                             self._hspace_()
-                        self._closure(block5)
+                        self._closure(block6)
                         self._expression_()
                         self.add_last_node_to_name('params')
 
-                        def block7():
+                        def block8():
 
-                            def block8():
+                            def block9():
                                 self._hspace_()
-                            self._closure(block8)
+                            self._closure(block9)
                             self._params_separator_()
                             self.add_last_node_to_name('separators')
 
-                            def block10():
+                            def block11():
                                 self._hspace_()
-                            self._closure(block10)
+                            self._closure(block11)
                             self._expression_()
                             self.add_last_node_to_name('params')
-                        self._closure(block7)
-                    self._closure(block4)
+                        self._closure(block8)
+                    self._closure(block5)
 
-                    def block12():
+                    def block13():
                         self._hspace_()
-                    self._closure(block12)
+                    self._closure(block13)
                     self._token(')')
                 self._closure(block3)
             with self._option():
                 self._func_id_()
                 self.name_last_node('name')
 
-                def block14():
+                def block15():
                     self._token('(')
+                    self.name_last_node('p')
 
-                    def block15():
+                    def block17():
 
-                        def block16():
+                        def block18():
                             self._hspace_()
-                        self._closure(block16)
+                        self._closure(block18)
                         self._expression_()
                         self.add_last_node_to_name('params')
 
-                        def block18():
-
-                            def block19():
-                                self._hspace_()
-                            self._closure(block19)
-                            self._params_separator_()
-                            self.add_last_node_to_name('separators')
+                        def block20():
 
                             def block21():
                                 self._hspace_()
                             self._closure(block21)
+                            self._params_separator_()
+                            self.add_last_node_to_name('separators')
+
+                            def block23():
+                                self._hspace_()
+                            self._closure(block23)
                             self._expression_()
                             self.add_last_node_to_name('params')
-                        self._closure(block18)
-                    self._closure(block15)
+                        self._closure(block20)
+                    self._closure(block17)
 
-                    def block23():
+                    def block25():
                         self._hspace_()
-                    self._closure(block23)
+                    self._closure(block25)
                     self._token(')')
-                self._closure(block14)
+                self._closure(block15)
             self._error('no available options')
         self.ast._define(
-            ['name'],
+            ['name', 'p'],
             ['order', 'params', 'separators']
         )
 
@@ -6417,6 +6419,7 @@ class Squareroot(ModelBase):
 class Function(ModelBase):
     name = None
     order = None
+    p = None
     params = None
     separators = None
 

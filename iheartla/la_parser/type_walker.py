@@ -2068,13 +2068,13 @@ class TypeWalker(NodeWalker):
             name_info = self.walk(node.name, **kwargs)
         name_type = name_info.ir.la_type
         if name_type.is_function():
-            ir_node = FunctionNode(parse_info=node.parseinfo)
+            ir_node = FunctionNode(parse_info=node.parseinfo, mode=FuncType.FuncNormal if node.p else FuncType.FuncShort)
             ir_node.name = name_info.ir
             if node.order:
                 ir_node.order = len(node.order)
             convertion_dict = {}   # template -> instance
             param_list = []
-            assert len(node.params) == len(name_type.params), get_err_msg_info(node.parseinfo, "Function error. Parameters count mismatch")
+            assert len(node.params) == len(name_type.params) or len(node.params) == 0, get_err_msg_info(node.parseinfo, "Function error. Parameters count mismatch")
             symbols = set()
             for index in range(len(node.params)):
                 param_info = self.walk(node.params[index], **kwargs)

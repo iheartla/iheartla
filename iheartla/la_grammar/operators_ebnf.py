@@ -153,8 +153,8 @@ sqrt_operator::Squareroot
     = /√/ f:factor;
 
 function_operator::Function
-    = name:identifier {order+:PRIME}+ {'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'}
-    | name:func_id {'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'}
+    = name:identifier {order+:PRIME}+ {p:'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'}
+    | name:func_id {p:'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'}
     ;
 
 predefined_built_operators
