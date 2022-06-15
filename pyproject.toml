@@ -5,7 +5,7 @@ description = "I heart LA"
 authors = ["Yong Li <pressure36@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.7, <3.9.9"
+python = "^3.7"
 tatsu = "^4.4"
 wxpython = "^4.1.0"
 PyMuPDF = "^1.17.0"
