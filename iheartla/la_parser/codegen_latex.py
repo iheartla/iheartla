@@ -395,7 +395,7 @@ class CodeGenLatex(CodeGen):
         content = self.visit(node.name, **kwargs)
         if node.order:
             content += "".join(["'"] * node.order)
-        if node.mode == FuncType.FuncNormal:
+        if node.mode == FuncFormat.FuncNormal:
             content += '\\left( ' + params_str + ' \\right)'
         return content
 

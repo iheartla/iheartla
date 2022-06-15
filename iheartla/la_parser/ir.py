@@ -1122,14 +1122,14 @@ class IntegerNode(ExprNode):
         self.value = value
 
 
-class FuncType(IntEnum):
+class FuncFormat(IntEnum):
     FuncInvalid = -1
     FuncNormal = 0
     FuncShort = 1   # no parenthesis
 
 
 class FunctionNode(ExprNode):
-    def __init__(self, parse_info=None, raw_text=None, mode=FuncType.FuncNormal):
+    def __init__(self, parse_info=None, raw_text=None, mode=FuncFormat.FuncNormal):
         super().__init__(IRNodeType.Function, parse_info=parse_info, raw_text=raw_text)
         self.mode = mode
         self.params = []
