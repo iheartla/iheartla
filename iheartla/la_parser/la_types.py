@@ -259,13 +259,21 @@ class IndexType(LaVarType):
         LaVarType.__init__(self, VarTypeEnum.INDEX, desc, symbol)
 
 
+
+class FuncType(IntEnum):
+    FuncInvalid = -1
+    FuncDetermined = 0
+    FuncDynamic = 1   # need to figure out the params and ret
+
+
 class FunctionType(LaVarType):
-    def __init__(self, desc=None, symbol=None, params=None, ret=None, template_symbols=None, ret_symbols=None):
+    def __init__(self, desc=None, symbol=None, params=None, ret=None, template_symbols=None, ret_symbols=None, cur_type=FuncType.FuncDetermined):
         LaVarType.__init__(self, VarTypeEnum.FUNCTION, desc, symbol)
         self.params = params or []
         self.ret = ret
         self.template_symbols = template_symbols or {}  # symbol: index of params
         self.ret_symbols = ret_symbols or []
+        self.cur_type = cur_type
 
     def get_signature(self):
         signature = 'func,params:'

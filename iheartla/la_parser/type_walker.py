@@ -251,6 +251,7 @@ class TypeWalker(NodeWalker):
         self.la_content = ''
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
         self.visiting_lhs = False
+        self.visiting_solver_eq = True  # e.g: Ax = b
         self.dyn_dim = False
         self.pre_walk = False
         # self.arith_dim_list = []
@@ -2067,11 +2068,12 @@ class TypeWalker(NodeWalker):
         else:
             name_info = self.walk(node.name, **kwargs)
         name_type = name_info.ir.la_type
+        ir_node = FunctionNode(parse_info=node.parseinfo, mode=FuncFormat.FuncNormal if node.p else FuncFormat.FuncShort)
+        ir_node.name = name_info.ir
+        if node.order:
+            ir_node.order = len(node.order)
         if name_type.is_function():
-            ir_node = FunctionNode(parse_info=node.parseinfo, mode=FuncType.FuncNormal if node.p else FuncType.FuncShort)
-            ir_node.name = name_info.ir
-            if node.order:
-                ir_node.order = len(node.order)
+            # function type is already specified in where block
             convertion_dict = {}   # template -> instance
             param_list = []
             assert len(node.params) == len(name_type.params) or len(node.params) == 0, get_err_msg_info(node.parseinfo, "Function error. Parameters count mismatch")
@@ -2138,7 +2140,12 @@ class TypeWalker(NodeWalker):
             node_info.ir = ir_node
             return node_info
         else:
-            assert False, "Not a function"
+            # not in symtable now
+            la_type = FunctionType(cur_type=FuncType.FuncDynamic)
+            self.get_cur_param_data().symtable[ir_node.name.get_main_id()] = la_type
+            # assert False, "Not a function"
+            node_info = NodeInfo(la_type, ir=ir_node)
+            return node_info
             # assert len(node.params) == 1, "Not a function"  # never reach
             # return self.make_mul_info(name_info, self.walk(node.params[0], **kwargs))
 
@@ -2560,9 +2567,10 @@ class TypeWalker(NodeWalker):
                 if not la_is_if(**kwargs):  # symbols in sum don't need to be defined before todo:modify
                     if id0 != 'I':  # special case
                         new_symbol = self.filter_symbol(id0)
-                        self.check_sym_existence(new_symbol, get_err_msg_info(id0_info.ir.parse_info,
-                                                                                         "Symbol {} is not defined".format(id0)))
-                        # pass  # todo:delete
+                        if not self.visiting_solver_eq:
+                            self.check_sym_existence(new_symbol, get_err_msg_info(id0_info.ir.parse_info,
+                                                                                             "Symbol {} is not defined".format(id0)))
+                            # pass  # todo:delete
                     else:
                         # I
                         if 'I' not in self.symtable:
