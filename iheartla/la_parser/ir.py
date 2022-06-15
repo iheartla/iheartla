@@ -1129,3 +1129,4 @@ class FunctionNode(ExprNode):
         self.separators = []
         self.ret = None
         self.name = None
+        self.order = None

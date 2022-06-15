@@ -421,6 +421,10 @@ class grammarinitParser(Parser):
     def _NABLA_(self):  # noqa
         self._pattern('∇')
 
+    @tatsumasu()
+    def _PRIME_(self):  # noqa
+        self._pattern("'")
+
     @tatsumasu('Exponent')
     def _exponent_(self):  # noqa
         self._pattern('[E][+-]?')
@@ -1686,41 +1690,88 @@ class grammarinitParser(Parser):
 
     @tatsumasu('Function')
     def _function_operator_(self):  # noqa
-        self._func_id_()
-        self.name_last_node('name')
-        self._token('(')
+        with self._choice():
+            with self._option():
+                self._identifier_()
+                self.name_last_node('name')
 
-        def block1():
+                def block1():
+                    self._PRIME_()
+                    self.add_last_node_to_name('order')
+                self._positive_closure(block1)
 
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
+                def block3():
+                    self._token('(')
 
-            def block4():
+                    def block4():
 
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
+                        def block5():
+                            self._hspace_()
+                        self._closure(block5)
+                        self._expression_()
+                        self.add_last_node_to_name('params')
 
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
+                        def block7():
 
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
+                            def block8():
+                                self._hspace_()
+                            self._closure(block8)
+                            self._params_separator_()
+                            self.add_last_node_to_name('separators')
+
+                            def block10():
+                                self._hspace_()
+                            self._closure(block10)
+                            self._expression_()
+                            self.add_last_node_to_name('params')
+                        self._closure(block7)
+                    self._closure(block4)
+
+                    def block12():
+                        self._hspace_()
+                    self._closure(block12)
+                    self._token(')')
+                self._closure(block3)
+            with self._option():
+                self._func_id_()
+                self.name_last_node('name')
+
+                def block14():
+                    self._token('(')
+
+                    def block15():
+
+                        def block16():
+                            self._hspace_()
+                        self._closure(block16)
+                        self._expression_()
+                        self.add_last_node_to_name('params')
+
+                        def block18():
+
+                            def block19():
+                                self._hspace_()
+                            self._closure(block19)
+                            self._params_separator_()
+                            self.add_last_node_to_name('separators')
+
+                            def block21():
+                                self._hspace_()
+                            self._closure(block21)
+                            self._expression_()
+                            self.add_last_node_to_name('params')
+                        self._closure(block18)
+                    self._closure(block15)
+
+                    def block23():
+                        self._hspace_()
+                    self._closure(block23)
+                    self._token(')')
+                self._closure(block14)
+            self._error('no available options')
         self.ast._define(
             ['name'],
-            ['params', 'separators']
+            ['order', 'params', 'separators']
         )
 
     @tatsumasu()
@@ -5630,6 +5681,9 @@ class grammarinitSemantics(object):
     def NABLA(self, ast):  # noqa
         return ast
 
+    def PRIME(self, ast):  # noqa
+        return ast
+
     def exponent(self, ast):  # noqa
         return ast
 
@@ -6362,6 +6416,7 @@ class Squareroot(ModelBase):
 
 class Function(ModelBase):
     name = None
+    order = None
     params = None
     separators = None
 

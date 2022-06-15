@@ -617,7 +617,8 @@ class TypeWalker(NodeWalker):
                 if type(stat_list[index]).__name__ == 'Assignment':
                     if stat_list[index].right:
                         # check whether rhs is function type
-                        if type(stat_list[index].right[0]).__name__ == 'Expression' and type(stat_list[index].right[0].value).__name__ == 'Factor' and stat_list[index].right[0].value.id0:
+                        rhs = stat_list[index].right[0]
+                        if type(rhs).__name__ == 'Expression' and type(rhs.value).__name__ == 'Factor' and rhs.value.id0:
                             # specific stat: lhs = id_subs
                             try:
                                 assign_node = self.walk(stat_list[index], **kwargs).ir
@@ -2069,6 +2070,8 @@ class TypeWalker(NodeWalker):
         if name_type.is_function():
             ir_node = FunctionNode(parse_info=node.parseinfo)
             ir_node.name = name_info.ir
+            if node.order:
+                ir_node.order = len(node.order)
             convertion_dict = {}   # template -> instance
             param_list = []
             assert len(node.params) == len(name_type.params), get_err_msg_info(node.parseinfo, "Function error. Parameters count mismatch")

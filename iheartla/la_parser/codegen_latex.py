@@ -392,7 +392,10 @@ class CodeGenLatex(CodeGen):
                 params_str += self.visit(node.params[index], **kwargs)
                 if index < len(node.params)-1:
                     params_str += node.separators[index] + ''
-        return self.visit(node.name, **kwargs) + '\\left( ' + params_str + ' \\right)'
+        order = ''
+        if node.order:
+            order = "".join(["'"] * node.order)
+        return self.visit(node.name, **kwargs) + order + '\\left( ' + params_str + ' \\right)'
 
     def visit_local_func(self, node, **kwargs):
         params_str = ''
