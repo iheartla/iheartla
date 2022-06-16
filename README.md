@@ -1,6 +1,6 @@
 # I❤️LA: Compilable Markdown for Math
 
-I❤️LA is a compilable markdown for math. It can generate working code in your favorite language (C++, Python, more to come) and LaTeX from snippets like this:
+I❤️LA is a compilable markdown for math. It can generate working code in your favorite language (C++, Python, MATLAB, more to come) and LaTeX from snippets like this:
 
 ```
 ∑_i a_i b_i
