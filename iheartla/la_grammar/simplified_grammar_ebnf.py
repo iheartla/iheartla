@@ -21,6 +21,6 @@ SIMPLIFIED += r"""
 func_id=identifier_alone;
 
 identifier_alone::IdentifierAlone
-    = !KEYWORDS(  value:/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*/ | '`' id:/[^`]*/ '`')
+    = !KEYWORDS(  value:(/[A-Za-z\p{Ll}\p{Lu}\p{Lo}](?![\u0308\u0307])\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}](?![\u0308\u0307])\p{M}*)*/|/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?=[\u0308\u0307])([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?=[\u0308\u0307]))*/) | '`' id:/[^`]*/ '`')
     ;
 """
