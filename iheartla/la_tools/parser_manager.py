@@ -437,7 +437,13 @@ class ParserFileManager(object):
         with self._group():
             with self._choice():
                 with self._option():
-                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*')
+                            with self._option():
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
+                            self._error('no available options')
                     self.name_last_node('value')
                 with self._option():
                     self._token('`')
@@ -474,7 +480,13 @@ class ParserFileManager(object):
                                                 with self._option():
                                                     self._pattern(new_id)
                                             self._error('no available options')
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                                with self._group():
+                                    with self._choice():
+                                        with self._option():
+                                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*')
+                                        with self._option():
+                                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
+                                        self._error('no available options')
                                 self.name_last_node('value')
                             with self._option():
                                 self._token('`')
@@ -494,7 +506,13 @@ class ParserFileManager(object):
             with self._group():
                 with self._choice():
                     with self._option():
-                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                        with self._group():
+                            with self._choice():
+                                with self._option():
+                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*')
+                                with self._option():
+                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
+                                self._error('no available options')
                         self.name_last_node('value')
                     with self._option():
                         self._token('`')

@@ -89,4 +89,6 @@ OR = /or/;
 DELTA = /[Δδ𝛿]/;
 NABLA = /∇/;
 PRIME = /'/;
+UDDOT = /[\u0307]/;   
+UDOT = /[\u0308]/;   
 """
