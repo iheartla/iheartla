@@ -428,11 +428,11 @@ class grammarinitParser(Parser):
         self._pattern("'")
 
     @tatsumasu()
-    def _UDDOT_(self):  # noqa
+    def _UDOT_(self):  # noqa
         self._pattern('[\\u0307]')
 
     @tatsumasu()
-    def _UDOT_(self):  # noqa
+    def _UDDOT_(self):  # noqa
         self._pattern('[\\u0308]')
 
     @tatsumasu()
@@ -5770,10 +5770,10 @@ class grammarinitSemantics(object):
     def PRIME(self, ast):  # noqa
         return ast
 
-    def UDDOT(self, ast):  # noqa
+    def UDOT(self, ast):  # noqa
         return ast
 
-    def UDOT(self, ast):  # noqa
+    def UDDOT(self, ast):  # noqa
         return ast
 
     def SOLVE(self, ast):  # noqa

@@ -90,7 +90,7 @@ OR = /or/;
 DELTA = /[Δδ𝛿]/;
 NABLA = /∇/;
 PRIME = /'/;
-UDDOT = /[\u0307]/;   
-UDOT = /[\u0308]/;   
+UDOT = /[\u0307]/;   
+UDDOT = /[\u0308]/;   
 SOLVE = /solve/ | /Solve/ | /SOLVE/;
 """
