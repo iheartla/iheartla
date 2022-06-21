@@ -177,6 +177,8 @@ class grammardefaultParser(Parser):
                 self._DERIVATIVE_()
             with self._option():
                 self._PARTIAL_()
+            with self._option():
+                self._SOLVE_()
             self._error('no available options')
 
     @tatsumasu()
@@ -436,6 +438,17 @@ class grammardefaultParser(Parser):
     @tatsumasu()
     def _UDOT_(self):  # noqa
         self._pattern('[\\u0308]')
+
+    @tatsumasu()
+    def _SOLVE_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._pattern('solve')
+            with self._option():
+                self._pattern('Solve')
+            with self._option():
+                self._pattern('SOLVE')
+            self._error('no available options')
 
     @tatsumasu('Exponent')
     def _exponent_(self):  # noqa
@@ -4646,23 +4659,34 @@ class grammardefaultParser(Parser):
                     self.add_last_node_to_name('right')
                 self._closure(block24)
             with self._option():
+
+                def block28():
+                    self._SOLVE_()
+                    self._token('_')
+                    self._identifier_()
+                    self.name_last_node('v')
+
+                    def block30():
+                        self._hspace_()
+                    self._positive_closure(block30)
+                self._closure(block28)
                 self._expression_()
                 self.name_last_node('lexpr')
 
-                def block29():
+                def block32():
                     self._hspace_()
-                self._closure(block29)
+                self._closure(block32)
                 self._token('=')
                 self.name_last_node('op')
 
-                def block31():
+                def block34():
                     self._hspace_()
-                self._closure(block31)
+                self._closure(block34)
                 self._expression_()
                 self.name_last_node('rexpr')
             self._error('no available options')
         self.ast._define(
-            ['lexpr', 'op', 'rexpr'],
+            ['lexpr', 'op', 'rexpr', 'v'],
             ['left', 'right']
         )
 
@@ -5834,6 +5858,9 @@ class grammardefaultSemantics(object):
     def UDOT(self, ast):  # noqa
         return ast
 
+    def SOLVE(self, ast):  # noqa
+        return ast
+
     def exponent(self, ast):  # noqa
         return ast
 
@@ -6873,6 +6900,7 @@ class Assignment(ModelBase):
     op = None
     rexpr = None
     right = None
+    v = None
 
 
 class LocalFunc(ModelBase):
