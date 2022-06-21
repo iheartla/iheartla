@@ -394,7 +394,13 @@ class CodeGenLatex(CodeGen):
                     params_str += node.separators[index] + ''
         content = self.visit(node.name, **kwargs)
         if node.order:
-            content += "".join(["'"] * node.order)
+            if node.order_mode == OrderFormat.OrderPrime:
+                content += "".join(["'"] * node.order)
+            else:
+                if node.order == 1:
+                    content = "\\dot{{{}}}".format(content)
+                else:  # 2
+                    content = "\\ddot{{{}}}".format(content)
         if node.mode == FuncFormat.FuncNormal:
             content += '\\left( ' + params_str + ' \\right)'
         return content

@@ -283,7 +283,8 @@ class TypeWalker(NodeWalker):
         :param cond: conditional
         :param msg: message
         """
-        assert cond, msg
+        if not self.visiting_solver_eq:
+            assert cond, msg
 
     def get_cur_param_data(self):
         # either main where/given block or local function block
@@ -2080,6 +2081,12 @@ class TypeWalker(NodeWalker):
         ir_node.name = name_info.ir
         if node.order:
             ir_node.order = len(node.order)
+        elif node.d:
+            ir_node.order = 2
+            ir_node.order_mode = OrderFormat.OrderDot
+        elif node.s:
+            ir_node.order = 1
+            ir_node.order_mode = OrderFormat.OrderDot
         if name_type.is_function():
             # function type is already specified in where block
             convertion_dict = {}   # template -> instance

@@ -1127,9 +1127,13 @@ class FuncFormat(IntEnum):
     FuncNormal = 0
     FuncShort = 1   # no parenthesis
 
+class OrderFormat(IntEnum):
+    OrderInvalid = -1
+    OrderPrime = 0
+    OrderDot = 1
 
 class FunctionNode(ExprNode):
-    def __init__(self, parse_info=None, raw_text=None, mode=FuncFormat.FuncNormal):
+    def __init__(self, parse_info=None, raw_text=None, mode=FuncFormat.FuncNormal, order_mode=OrderFormat.OrderPrime):
         super().__init__(IRNodeType.Function, parse_info=parse_info, raw_text=raw_text)
         self.mode = mode
         self.params = []
@@ -1137,3 +1141,4 @@ class FunctionNode(ExprNode):
         self.ret = None
         self.name = None
         self.order = None
+        self.order_mode = order_mode
