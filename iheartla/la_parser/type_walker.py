@@ -251,7 +251,8 @@ class TypeWalker(NodeWalker):
         self.la_content = ''
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
         self.visiting_lhs = False
-        self.visiting_solver_eq = True  # e.g: Ax = b
+        self.visiting_solver_eq = False  # e.g: Ax = b
+        self.unknown_sym = None
         self.dyn_dim = False
         self.pre_walk = False
         # self.arith_dim_list = []
@@ -283,6 +284,8 @@ class TypeWalker(NodeWalker):
         :param cond: conditional
         :param msg: message
         """
+        if cond:
+            print("msg: {}".format(msg))
         if not self.visiting_solver_eq:
             assert cond, msg
 
@@ -1348,6 +1351,11 @@ class TypeWalker(NodeWalker):
         # ir
         assign_node = AssignNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
         if node.lexpr:
+            if node.v:
+                self.visiting_solver_eq = True
+                v_info = self.walk(node.v, **kwargs)
+                node.unknown_id = v_info.ir
+                self.unknown_sym = v_info.ir.get_main_id()
             lexpr_info = self.walk(node.lexpr, **kwargs)
             rexpr_info = self.walk(node.rexpr, **kwargs)
             assign_node.left = lexpr_info.ir
@@ -1542,6 +1550,7 @@ class TypeWalker(NodeWalker):
                     self.symtable[id0] = right_type
             assign_node.symbols = assign_node.symbols.union(right_info.symbols)
             self.expr_dict[id0_info.ir.get_main_id()] = list(right_info.symbols) + [id0_info.ir.get_main_id()]
+        self.visiting_solver_eq = False
         return NodeInfo(None, ir=assign_node, symbols=assign_node.symbols)
 
     def walk_Summation(self, node, **kwargs):
