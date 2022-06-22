@@ -332,6 +332,7 @@ class AssignNode(StmtNode):
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
         self.optimize_param = False
         self.cur_type = cur_type
+        self.unknown_id = None
 
 
 class IfNode(StmtNode):
