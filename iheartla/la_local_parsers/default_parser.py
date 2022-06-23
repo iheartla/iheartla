@@ -4662,26 +4662,35 @@ class grammardefaultParser(Parser):
 
                 def block28():
                     self._SOLVE_()
-                    self._token('_')
-                    self._identifier_()
+                    self._token('_(')
+
+                    def block29():
+                        self._hspace_()
+                    self._closure(block29)
+                    self._where_condition_terse_()
                     self.name_last_node('v')
 
-                    def block30():
+                    def block31():
                         self._hspace_()
-                    self._positive_closure(block30)
+                    self._closure(block31)
+                    self._token(')')
+
+                    def block32():
+                        self._hspace_()
+                    self._positive_closure(block32)
                 self._closure(block28)
                 self._expression_()
                 self.name_last_node('lexpr')
 
-                def block32():
-                    self._hspace_()
-                self._closure(block32)
-                self._token('=')
-                self.name_last_node('op')
-
                 def block34():
                     self._hspace_()
                 self._closure(block34)
+                self._token('=')
+                self.name_last_node('op')
+
+                def block36():
+                    self._hspace_()
+                self._closure(block36)
                 self._expression_()
                 self.name_last_node('rexpr')
             self._error('no available options')
