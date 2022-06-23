@@ -284,10 +284,11 @@ class TypeWalker(NodeWalker):
         :param cond: conditional
         :param msg: message
         """
-        if cond:
-            print("msg: {}".format(msg))
-        if not self.visiting_solver_eq:
-            assert cond, msg
+        # if cond:
+        #     print("msg: {}".format(msg))
+        # if not self.visiting_solver_eq:
+        #     assert cond, msg
+        assert cond, msg
 
     def get_cur_param_data(self):
         # either main where/given block or local function block
@@ -893,7 +894,7 @@ class TypeWalker(NodeWalker):
             if True:
                 self.handle_identifier(id0, id0_info.ir, type_node)
                 # self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
-                if not self.local_func_parsing and not self.visiting_opt:
+                if not self.local_func_parsing and not self.visiting_opt and not self.visiting_solver_eq:
                     # main params: due to multiple blocks
                     self.update_parameters(id0, kwargs[PARAM_INDEX]+id_index)
                 if type_node.la_type.is_matrix():
@@ -1354,8 +1355,9 @@ class TypeWalker(NodeWalker):
             if node.v:
                 self.visiting_solver_eq = True
                 v_info = self.walk(node.v, **kwargs)
-                node.unknown_id = v_info.ir
-                self.unknown_sym = v_info.ir.get_main_id()
+                self.get_cur_param_data().symtable[v_info.id[0].get_main_id()] = v_info.type.la_type
+                node.unknown_id = v_info.id[0]
+                self.unknown_sym = v_info.id[0].get_main_id()
             lexpr_info = self.walk(node.lexpr, **kwargs)
             rexpr_info = self.walk(node.rexpr, **kwargs)
             assign_node.left = lexpr_info.ir
