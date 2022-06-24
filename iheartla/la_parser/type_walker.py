@@ -252,6 +252,7 @@ class TypeWalker(NodeWalker):
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
         self.visiting_lhs = False
         self.visiting_solver_eq = False  # e.g: Ax = b
+        self.need_mutator = False   # whether the node tree needs to be changed: solver
         self.unknown_sym = None
         self.dyn_dim = False
         self.pre_walk = False
@@ -373,6 +374,8 @@ class TypeWalker(NodeWalker):
         self.expr_dict.clear()
         self.visiting_opt = False
         self.visiting_lhs = False
+        self.visiting_solver_eq = False
+        self.need_mutator = False
         self.opt_key = ''
 
     def get_func_symbols(self):
@@ -1351,9 +1354,10 @@ class TypeWalker(NodeWalker):
     def walk_Assignment(self, node, **kwargs):
         # ir
         if node.lexpr:
+            self.visiting_solver_eq = True
+            self.need_mutator = True
             eq_node = EquationNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
             if node.v:
-                self.visiting_solver_eq = True
                 v_info = self.walk(node.v, **kwargs)
                 self.get_cur_param_data().symtable[v_info.id[0].get_main_id()] = v_info.type.la_type
                 node.unknown_id = v_info.id[0]
@@ -1363,6 +1367,7 @@ class TypeWalker(NodeWalker):
             eq_node.left = lexpr_info.ir
             eq_node.right = rexpr_info.ir
             self.assert_expr(lexpr_info.ir.la_type.is_same_type(rexpr_info.ir.la_type), "Different types on lhs and rhs")
+            self.visiting_solver_eq = False
             return NodeInfo(None, ir=eq_node, symbols=eq_node.symbols)
         assign_node = AssignNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
         if type(node.right[0]).__name__ == 'MultiCondExpr':
