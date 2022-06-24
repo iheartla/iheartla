@@ -21,6 +21,7 @@ class IRNodeType(Enum):
     If = 53
     Function = 54
     LocalFunc = 55
+    Equation = 56
     # if condition
     Condition = 99
     In = 100
@@ -332,6 +333,18 @@ class AssignNode(StmtNode):
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
         self.optimize_param = False
         self.cur_type = cur_type
+        self.unknown_id = None
+
+
+class EquationNode(StmtNode):
+    def __init__(self, left=None, right=None, op=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Equation, parse_info=parse_info, raw_text=raw_text)
+        self.left = left
+        self.right = right
+        self.op = op
+        self.symbols = set()
+        self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
+        self.optimize_param = False
         self.unknown_id = None
 
 

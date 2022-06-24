@@ -496,16 +496,16 @@ class CodeGenNumpy(CodeGen):
         for index in range(len(node.stmts)):
             ret_str = ''
             if index == len(node.stmts) - 1:
-                if type(node.stmts[index]).__name__ != 'AssignNode':
-                    if type(node.stmts[index]).__name__ == 'LocalFuncNode':
+                if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Equation):
+                    if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
                         continue
                     kwargs[LHS] = self.ret_symbol
                     ret_str = "    self." + self.ret_symbol + ' = '
             else:
-                if type(node.stmts[index]).__name__ != 'AssignNode':
+                if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Equation):
                     # meaningless
-                    if type(node.stmts[index]).__name__ == 'LocalFuncNode':
+                    if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
                     continue
             stat_info = self.visit(node.stmts[index], **kwargs)
@@ -1177,6 +1177,9 @@ class CodeGenNumpy(CodeGen):
         if node.la_type.is_scalar():
             value_info.content = "({}).item()".format(value_info.content)
         return value_info
+
+    def visit_equation(self, node, **kwargs):
+        return CodeNodeInfo("")
 
     def visit_assignment(self, node, **kwargs):
         if node.cur_type == AssignType.AssignTypeSolver:

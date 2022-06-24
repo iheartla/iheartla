@@ -1350,8 +1350,8 @@ class TypeWalker(NodeWalker):
 
     def walk_Assignment(self, node, **kwargs):
         # ir
-        assign_node = AssignNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
         if node.lexpr:
+            eq_node = EquationNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
             if node.v:
                 self.visiting_solver_eq = True
                 v_info = self.walk(node.v, **kwargs)
@@ -1360,10 +1360,11 @@ class TypeWalker(NodeWalker):
                 self.unknown_sym = v_info.id[0].get_main_id()
             lexpr_info = self.walk(node.lexpr, **kwargs)
             rexpr_info = self.walk(node.rexpr, **kwargs)
-            assign_node.left = lexpr_info.ir
-            assign_node.right = rexpr_info.ir
-            assign_node.cur_type = AssignType.AssignTypeSolver
-            return NodeInfo(None, ir=assign_node, symbols=assign_node.symbols)
+            eq_node.left = lexpr_info.ir
+            eq_node.right = rexpr_info.ir
+            self.assert_expr(lexpr_info.ir.la_type.is_same_type(rexpr_info.ir.la_type), "Different types on lhs and rhs")
+            return NodeInfo(None, ir=eq_node, symbols=eq_node.symbols)
+        assign_node = AssignNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
         if type(node.right[0]).__name__ == 'MultiCondExpr':
             self.assert_expr(len(node.right) == 1, get_err_msg_info(node.right[0].parseinfo, "Invalid multiple rhs"))
             self.assert_expr(len(node.left) == 1, get_err_msg_info(node.left[0].parseinfo, "Invalid multiple lhs"))

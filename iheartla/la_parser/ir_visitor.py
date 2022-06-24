@@ -312,6 +312,7 @@ class IRVisitor(object):
             IRNodeType.If: "visit_if",
             IRNodeType.Function: "visit_function",
             IRNodeType.LocalFunc: "visit_local_func",
+            IRNodeType.Equation: "visit_equation",
             # if condition
             IRNodeType.Condition: "visit_condition",
             IRNodeType.In: "visit_in",
@@ -616,6 +617,9 @@ class IRVisitor(object):
         pass
 
     def visit_assignment(self, node, **kwargs):
+        pass
+
+    def visit_equation(self, node, **kwargs):
         pass
 
     def visit_if(self, node, **kwargs):
