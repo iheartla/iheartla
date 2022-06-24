@@ -27,6 +27,7 @@ from .codegen_macromathjax import CodeGenMacroMathjax
 from .codegen_mathml import CodeGenMathML
 from .codegen_matlab import CodeGenMatlab
 from .type_walker import *
+from .ir_mutator import *
 from .ir import *
 from .ir_visitor import *
 from ..la_tools.la_msg import *
@@ -124,6 +125,7 @@ def get_compiled_parser(grammar, keys='init', extra_dict={}):
 
 
 _type_walker = None
+_ir_mutator = None
 
 
 def get_type_walker():
@@ -133,6 +135,14 @@ def get_type_walker():
     else:
         _type_walker = TypeWalker()
     return _type_walker
+
+
+def get_ir_mutator(type_walker, func_name='iheartla'):
+    global _ir_mutator
+    if not _ir_mutator:
+        _ir_mutator = IRMutator()
+    _ir_mutator.init_type(type_walker, func_name)
+    return _ir_mutator
 
 
 def log_la(content):
@@ -371,6 +381,8 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
     type_walker.symtable.update(existed_syms_dict)
     start_node = type_walker.walk(model)
     record("Second type walker, after")
+    if type_walker.need_mutator:
+        start_node = get_ir_mutator(type_walker).visit_code(start_node)
     start_node.module_list = module_list
     start_node.module_syms = existed_syms_dict
     if len(dependent_modules) > 0:
