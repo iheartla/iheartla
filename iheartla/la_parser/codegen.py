@@ -71,3 +71,88 @@ class CodeGen(IRPrinter):
         self.module_syms = node.module_syms
         self.content = self.pre_str + self.visit(node) + self.post_str
         return copy.deepcopy(self.code_frame)
+
+    def visit_start(self, node, **kwargs):
+        return self.visit(node.stat, **kwargs)
+
+    def visit_add(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        left_info.content = left_info.content + ' + ' + right_info.content
+        left_info.pre_list += right_info.pre_list
+        return left_info
+
+    def visit_sub(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        left_info.content = left_info.content + ' - ' + right_info.content
+        left_info.pre_list += right_info.pre_list
+        return left_info
+
+    def visit_sub_expr(self, node, **kwargs):
+        value_info = self.visit(node.value, **kwargs)
+        value_info.content = '(' + value_info.content + ')'
+        return value_info
+
+    def visit_expression(self, node, **kwargs):
+        exp_info = self.visit(node.value, **kwargs)
+        if node.sign:
+            exp_info.content = '-' + exp_info.content
+        return exp_info
+
+    def visit_function(self, node, **kwargs):
+        name_info = self.visit(node.name, **kwargs)
+        pre_list = []
+        params = []
+        if node.params:
+            for param in node.params:
+                param_info = self.visit(param, **kwargs)
+                params.append(param_info.content)
+                pre_list += param_info.pre_list
+        content = "{}({})".format(name_info.content, ', '.join(params))
+        return CodeNodeInfo(content, pre_list)
+
+    def visit_matrix_rows(self, node, **kwargs):
+        ret = []
+        pre_list = []
+        if node.rs:
+            rs_info = self.visit(node.rs, **kwargs)
+            ret = ret + rs_info.content
+            pre_list += rs_info.pre_list
+        if node.r:
+            r_info = self.visit(node.r, **kwargs)
+            ret.append(r_info.content)
+            pre_list += r_info.pre_list
+        return CodeNodeInfo(ret, pre_list)
+
+    def visit_matrix_row(self, node, **kwargs):
+        ret = []
+        pre_list = []
+        if node.rc:
+            rc_info = self.visit(node.rc, **kwargs)
+            ret += rc_info.content
+            pre_list += rc_info.pre_list
+        if node.exp:
+            exp_info = self.visit(node.exp, **kwargs)
+            ret.append(exp_info.content)
+            pre_list += exp_info.pre_list
+        return CodeNodeInfo(ret, pre_list)
+
+    def visit_matrix_row_commas(self, node, **kwargs):
+        ret = []
+        pre_list = []
+        if node.value:
+            value_info = self.visit(node.value, **kwargs)
+            ret += value_info.content
+            pre_list += value_info.pre_list
+        if node.exp:
+            exp_info = self.visit(node.exp, **kwargs)
+            ret.append(exp_info.content)
+            pre_list += exp_info.pre_list
+        return CodeNodeInfo(ret, pre_list)
+
+    def visit_exp_in_matrix(self, node, **kwargs):
+        exp_info = self.visit(node.value, **kwargs)
+        if node.sign:
+            exp_info.content = '-' + exp_info.content
+        return exp_info
