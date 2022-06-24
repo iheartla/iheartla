@@ -588,17 +588,17 @@ class CodeGenEigen(CodeGen):
             ret_str = ''
             need_semicolon = False
             if index == len(node.stmts) - 1:
-                if type(node.stmts[index]).__name__ != 'AssignNode':
-                    if type(node.stmts[index]).__name__ == 'LocalFuncNode':
+                if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Equation):
+                    if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
                         continue
                     kwargs[LHS] = self.ret_symbol
                     ret_str = "    " + self.ret_symbol + ' = '
                     need_semicolon = True
             else:
-                if type(node.stmts[index]).__name__ != 'AssignNode':
+                if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Equation):
                     # meaningless
-                    if type(node.stmts[index]).__name__ == 'LocalFuncNode':
+                    if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
                     continue
             stat_info = self.visit(node.stmts[index], **kwargs)
@@ -1344,9 +1344,10 @@ class CodeGenEigen(CodeGen):
                 value_info.content = "(double)({})".format(value_info.content)
         return value_info
 
+    def visit_equation(self, node, **kwargs):
+        return CodeNodeInfo("")
+
     def visit_assignment(self, node, **kwargs):
-        if node.cur_type == AssignType.AssignTypeSolver:
-            return CodeNodeInfo("")
         type_info = node
         # visit matrix first
         placeholder = "{}_{}\n".format(self.comment_placeholder, node.parse_info.line)

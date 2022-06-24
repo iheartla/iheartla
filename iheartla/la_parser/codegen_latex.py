@@ -180,7 +180,7 @@ class CodeGenLatex(CodeGen):
                 # elif pre_exp:
                 #     content += " \\\\\n"
                 block_content = self.visit(vblock, **kwargs)
-                if vblock.node_type != IRNodeType.Assignment and vblock.node_type != IRNodeType.LocalFunc:
+                if vblock.node_type != IRNodeType.Assignment and vblock.node_type != IRNodeType.Equation and vblock.node_type != IRNodeType.LocalFunc:
                     # single expression
                     block_content = " \\omit \\span " + block_content
                 content += block_content + " \\\\\n"
@@ -311,10 +311,6 @@ class CodeGenLatex(CodeGen):
         return params_str + '\\rightarrow ' + ret
 
     def visit_assignment(self, node, **kwargs):
-        if node.cur_type == AssignType.AssignTypeSolver:
-            lhs = self.visit(node.left, **kwargs)
-            rhs = self.visit(node.right, **kwargs)
-            return lhs + " & = " + rhs
         content = ''
         lhs_list = []
         for cur_index in range(len(node.left)):
@@ -329,6 +325,11 @@ class CodeGenLatex(CodeGen):
         self.code_frame.expr += content +'\n'
         self.code_frame.expr_dict[node.raw_text] = content
         return content
+
+    def visit_equation(self, node, **kwargs):
+        lhs = self.visit(node.left, **kwargs)
+        rhs = self.visit(node.right, **kwargs)
+        return lhs + " & = " + rhs
 
     def visit_expression(self, node, **kwargs):
         value = self.visit(node.value, **kwargs)
