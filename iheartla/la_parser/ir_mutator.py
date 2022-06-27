@@ -10,15 +10,34 @@ class MutatorVisitType(IntEnum):
 
 def convert_sympy_ast(ast, node_dict):
     if type(ast).__name__ == 'Add':
-        if len(ast.args) == 2:
-            left = convert_sympy_ast(ast.args[0], node_dict)
-            add_node = AddNode(left, convert_sympy_ast(ast.args[1], node_dict))
-            add_node.la_type = left.la_type
-            return add_node
+        cur_nodes = []
+        for cur_index in range(len(ast.args)):
+            cur_nodes.append(convert_sympy_ast(ast.args[cur_index], node_dict))
+        return make_addition(cur_nodes)
+    elif type(ast).__name__ == 'Mul':
+        cur_nodes = []
+        for cur_index in range(len(ast.args)):
+            cur_nodes.append(convert_sympy_ast(ast.args[cur_index], node_dict))
+        return make_mul(cur_nodes)
     elif type(ast).__name__ == 'Symbol':
         return copy.deepcopy(node_dict[ast])
+    elif type(ast).__name__ == 'NegativeOne':
+        return IntegerNode(value=-1)
     print("ast: {}".format(ast))
     return ast
+
+
+def make_addition(nodes):
+    if len(nodes) == 2:
+        return AddNode(nodes[0], nodes[1], la_type=nodes[0].la_type)
+    else:
+        return AddNode(nodes[0], make_addition(nodes[1:]), la_type=nodes[0].la_type)
+
+def make_mul(nodes):
+    if len(nodes) == 2:
+        return MulNode(nodes[0], nodes[1], la_type=nodes[0].la_type)
+    else:
+        return MulNode(nodes[0], make_mul(nodes[1:]), la_type=nodes[0].la_type)
 
 class IRMutator(IRVisitor):
     def __init__(self, parse_type=None):
@@ -78,10 +97,15 @@ class IRMutator(IRVisitor):
         if len(res) > 0:
             lnode = convert_sympy_ast(res[A], self.node_dict)
             rnode = convert_sympy_ast(res[b], self.node_dict)
-            solver_node = SolverNode(parse_info=node.parse_info, raw_text=node.raw_text)
-            solver_node.left = lnode
-            solver_node.right = rnode
-            assign_node = AssignNode([copy.deepcopy(node.unknown_id)], [solver_node], op=node.op, parse_info=node.parse_info, raw_text=node.raw_text)
+            assign_node = AssignNode([copy.deepcopy(node.unknown_id)], [], op=node.op, parse_info=node.parse_info, raw_text=node.raw_text)
+            if self.symtable[node.unknown_id.get_main_id()].is_scalar():
+                div_node = DivNode(rnode, lnode, la_type=ScalarType(), parse_info=node.parse_info, raw_text=node.raw_text)
+                assign_node.right.append(SubexpressionNode(value=div_node, la_type=div_node.la_type, parse_info=node.parse_info, raw_text=node.raw_text))
+            else:
+                solver_node = SolverNode(la_type=self.symtable[node.unknown_id.get_main_id()], parse_info=node.parse_info, raw_text=node.raw_text)
+                solver_node.left = lnode
+                solver_node.right = rnode
+                assign_node.right.append(SubexpressionNode(value=solver_node, la_type=solver_node.la_type, parse_info=node.parse_info, raw_text=node.raw_text))
             return assign_node
         self.cur_v_type = MutatorVisitType.MutatorVisitSecond
         return node

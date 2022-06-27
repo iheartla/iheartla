@@ -551,7 +551,10 @@ class IRVisitor(object):
         return CodeNodeInfo("({}/{})".format(node.numerator, node.denominator))
 
     def visit_integer(self, node, **kwargs):
-        content = str(node.value)
+        if node.value < 0:
+            content = "({})".format(node.value)
+        else:
+            content = str(node.value)
         return CodeNodeInfo(content)
 
     ####################################################
