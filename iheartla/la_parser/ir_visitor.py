@@ -200,7 +200,7 @@ class IRVisitor(object):
                 return self.func_data_dict[self.local_func_name].params_data
         return self.main_param
 
-    def generate_var_name(self, base):
+    def generate_var_name(self, base='sym'):
         index = -1
         if base in self.name_cnt_dict:
             index = self.name_cnt_dict[base]
