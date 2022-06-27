@@ -911,10 +911,10 @@ class CodeGenEigen(CodeGen):
             left_info.content = "{}.solve({})".format(solver_name, right_info.content)
         else:
             if node.right.la_type.is_matrix() and node.right.la_type.sparse:
-                left_info.content = "{}.colPivHouseholderQr().solve(({}).toDense())".format(left_info.content,
+                left_info.content = "({}).colPivHouseholderQr().solve(({}).toDense())".format(left_info.content,
                                                                                             right_info.content)
             else:
-                left_info.content = "{}.colPivHouseholderQr().solve({})".format(left_info.content, right_info.content)
+                left_info.content = "({}).colPivHouseholderQr().solve({})".format(left_info.content, right_info.content)
         left_info.pre_list += pre_list
         return left_info
 

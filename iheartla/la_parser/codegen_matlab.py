@@ -830,7 +830,7 @@ class CodeGenMatlab(CodeGen):
         # parenthesis are important! we're replacing a "power" (higher
         # precedence than multiplication) with a "division" (equal precedence
         # with multiplication)
-        left_info.content = "({}\{})".format(left_info.content, right_info.content)
+        left_info.content = "(({})\({}))".format(left_info.content, right_info.content)
         return left_info
 
     def visit_multi_conditionals(self, node, **kwargs):
