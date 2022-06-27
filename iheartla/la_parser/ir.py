@@ -125,6 +125,9 @@ class IRNode(object):
     def get_child(self, node_type):
         return None
 
+    def contain_sym(self, sym):
+        return sym in self.raw_text
+
 class StmtNode(IRNode):
     def __init__(self, node_type=None, parse_info=None, raw_text=None):
         super().__init__(node_type, parse_info=parse_info, raw_text=raw_text)
