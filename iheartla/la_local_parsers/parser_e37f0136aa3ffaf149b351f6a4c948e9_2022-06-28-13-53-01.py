@@ -1713,7 +1713,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def _function_operator_(self):  # noqa
         with self._choice():
             with self._option():
-                self._identifier_()
+                self._func_id_()
                 self.name_last_node('name')
 
                 def block1():
@@ -1755,7 +1755,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                     self._token(')')
                 self._closure(block3)
             with self._option():
-                self._identifier_()
+                self._func_id_()
                 self.name_last_node('name')
                 with self._group():
                     with self._choice():
