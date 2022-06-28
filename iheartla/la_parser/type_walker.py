@@ -252,6 +252,7 @@ class TypeWalker(NodeWalker):
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
         self.visiting_lhs = False
         self.visiting_solver_eq = False  # e.g: Ax = b
+        self.solved_func = []
         self.need_mutator = False   # whether the node tree needs to be changed: solver
         self.unknown_sym = None
         self.dyn_dim = False
@@ -375,6 +376,7 @@ class TypeWalker(NodeWalker):
         self.visiting_opt = False
         self.visiting_lhs = False
         self.visiting_solver_eq = False
+        self.solved_func.clear()
         self.need_mutator = False
         self.opt_key = ''
 
@@ -413,6 +415,8 @@ class TypeWalker(NodeWalker):
             ret[sym] = "localF;" + sym
         for sym in tmp_sym_dict:
             ret[sym] = "localFP;" + sym
+        for sym in self.solved_func:
+            ret[sym] = "solved;" + sym
         return ret
 
     def generate_var_name(self, base):
@@ -602,6 +606,12 @@ class TypeWalker(NodeWalker):
                             multi_lhs_list.append(lhs_sym)
                         for cur_expr in vblock_info[0].right:
                             self.rhs_raw_str_list.append(cur_expr.text)
+                    if self.pre_walk and vblock_info[0].v:
+                        # solver
+                        self.visiting_solver_eq = True
+                        v_info = self.walk(vblock_info[0].v)
+                        if v_info.type.is_node(IRNodeType.FunctionType):
+                            self.solved_func.append(v_info.id[0].get_main_id())
                 elif type(vblock_info[0]).__name__ == 'LocalFunc':
                     if isinstance(vblock_info[0].name, str):
                         func_sym = vblock_info[0].name
