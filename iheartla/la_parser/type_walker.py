@@ -7,6 +7,7 @@ from ..la_tools.la_msg import *
 from ..la_tools.la_helper import *
 import regex as re
 from ..la_tools.la_helper import filter_subscript
+from .light_walker import  SolverParamWalker
 
 ## Make the visualizer
 try: from ..la_tools.la_visualizer import LaVisualizer
@@ -565,7 +566,7 @@ class TypeWalker(NodeWalker):
         self.main_param.symtable = self.symtable
         self.pre_walk = True if 'pre_walk' in kwargs else False
         # self.symtable.clear()
-        self.visualizer.visualize(node)  # visualize
+        # self.visualizer.visualize(node)  # visualize
         ir_node = StartNode(parse_info=node.parseinfo, raw_text=node.text)
         # if node.directive:
         #     for directive in node.directive:
@@ -1372,6 +1373,10 @@ class TypeWalker(NodeWalker):
                 self.get_cur_param_data().symtable[v_info.id[0].get_main_id()] = v_info.type.la_type
                 eq_node.unknown_id = v_info.id[0]
                 self.unknown_sym = v_info.id[0].get_main_id()
+                #
+                if v_info.type.la_type.is_function():
+                    params_dict = SolverParamWalker.getInstance().walk_param(node, self.unknown_sym)
+                    print("params_dict: {}".format(params_dict))
             lexpr_info = self.walk(node.lexpr, **kwargs)
             rexpr_info = self.walk(node.rexpr, **kwargs)
             eq_node.left = lexpr_info.ir
