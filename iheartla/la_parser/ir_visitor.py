@@ -5,7 +5,263 @@ from ..la_tools.la_helper import *
 import unicodedata
 
 
-class IRVisitor(object):
+class IRBaseVisitor(object):
+    def __init__(self):
+        super().__init__()
+
+    def visit(self, node, **kwargs):
+        type_func = {
+            # base
+            IRNodeType.Id: "visit_id",
+            IRNodeType.Double: "visit_double",
+            IRNodeType.Fraction: "visit_fraction",
+            IRNodeType.Integer: "visit_integer",
+            IRNodeType.Factor: "visit_factor",
+            IRNodeType.Expression: "visit_expression",
+            IRNodeType.Subexpression: "visit_sub_expr",
+            IRNodeType.Constant: "visit_constant",
+            IRNodeType.Cast: "visit_cast",
+            # control
+            IRNodeType.Start: "visit_start",
+            IRNodeType.Block: "visit_block",
+            IRNodeType.Assignment: "visit_assignment",
+            IRNodeType.If: "visit_if",
+            IRNodeType.Function: "visit_function",
+            IRNodeType.LocalFunc: "visit_local_func",
+            IRNodeType.Equation: "visit_equation",
+            # if condition
+            IRNodeType.Condition: "visit_condition",
+            IRNodeType.In: "visit_in",
+            IRNodeType.NotIn: "visit_not_in",
+            IRNodeType.BinComp: "visit_bin_comp",
+            # operators
+            IRNodeType.Add: "visit_add",
+            IRNodeType.Sub: "visit_sub",
+            IRNodeType.Mul: "visit_mul",
+            IRNodeType.Div: "visit_div",
+            IRNodeType.AddSub: "visit_add_sub",
+            IRNodeType.Summation: "visit_summation",
+            IRNodeType.Norm: "visit_norm",
+            IRNodeType.Transpose: "visit_transpose",
+            IRNodeType.Squareroot: "visit_squareroot",
+            IRNodeType.Power: "visit_power",
+            IRNodeType.Solver: "visit_solver",
+            IRNodeType.Derivative: "visit_derivative",
+            IRNodeType.MathFunc: "visit_math_func",
+            IRNodeType.Optimize: "visit_optimize",
+            IRNodeType.Domain: "visit_domain",
+            IRNodeType.Integral: "visit_integral",
+            IRNodeType.InnerProduct: "visit_inner_product",
+            IRNodeType.FroProduct: "visit_fro_product",
+            IRNodeType.HadamardProduct: "visit_hadamard_product",
+            IRNodeType.CrossProduct: "visit_cross_product",
+            IRNodeType.KroneckerProduct: "visit_kronecker_product",
+            IRNodeType.DotProduct: "visit_dot_product",
+            #
+            IRNodeType.Divergence: "visit_divergence",
+            IRNodeType.Gradient: "visit_gradient",
+            IRNodeType.Laplace: "visit_laplace",
+            IRNodeType.Partial: "visit_partial",
+            # matrix
+            IRNodeType.Matrix: "visit_matrix",
+            IRNodeType.MatrixRows: "visit_matrix_rows",
+            IRNodeType.MatrixRow: "visit_matrix_row",
+            IRNodeType.MatrixRowCommas: "visit_matrix_row_commas",
+            IRNodeType.ExpInMatrix: "visit_exp_in_matrix",
+            IRNodeType.MultiConds: "visit_multi_conditionals",
+            IRNodeType.SparseMatrix: "visit_sparse_matrix",
+            IRNodeType.SparseIfs: "visit_sparse_ifs",
+            IRNodeType.SparseIf: "visit_sparse_if",
+            IRNodeType.SparseOther: "visit_sparse_other",
+            IRNodeType.NumMatrix: "visit_num_matrix",
+            IRNodeType.Vector: "visit_vector",
+            IRNodeType.ToMatrix: "visit_to_matrix",
+            #
+            IRNodeType.MatrixIndex: "visit_matrix_index",
+            IRNodeType.VectorIndex: "visit_vector_index",
+            IRNodeType.SequenceIndex: "visit_sequence_index",
+            IRNodeType.SeqDimIndex: "visit_seq_dim_index",
+            # where block
+            IRNodeType.ParamsBlock: "visit_params_block",
+            IRNodeType.WhereConditions: "visit_where_conditions",
+            IRNodeType.WhereCondition: "visit_where_condition",
+            IRNodeType.MatrixType: "visit_matrix_type",
+            IRNodeType.VectorType: "visit_vector_type",
+            IRNodeType.SetType: "visit_set_type",
+            IRNodeType.ScalarType: "visit_scalar_type",
+            IRNodeType.FunctionType: "visit_function_type",
+            # derivatives
+            IRNodeType.Import: "visit_import",
+        }
+        func = getattr(self, type_func[node.node_type], None)
+        if func:
+            return func(node, **kwargs)
+        else:
+            print("invalid node type")
+
+    def visit_id(self, node, **kwargs):
+        pass
+
+    def visit_add(self, node, **kwargs):
+        pass
+
+    def visit_sub(self, node, **kwargs):
+        pass
+
+    def visit_mul(self, node, **kwargs):
+        pass
+
+    def visit_div(self, node, **kwargs):
+        pass
+
+    def visit_add_sub(self, node, **kwargs):
+        pass
+
+    def visit_sub_expr(self, node, **kwargs):
+        pass
+
+    def visit_cast(self, node, **kwargs):
+        pass
+
+    def visit_condition(self, node, **kwargs):
+        pass
+
+    def visit_in(self, node, **kwargs):
+        pass
+
+    def visit_not_in(self, node, **kwargs):
+        pass
+
+    def visit_expression(self, node, **kwargs):
+        pass
+
+    ####################################################
+    def visit_matrix(self, node, **kwargs):
+        pass
+
+    def visit_vector(self, node, **kwargs):
+        pass
+
+    def visit_to_matrix(self, node, **kwargs):
+        pass
+
+    def visit_sparse_matrix(self, node, **kwargs):
+        pass
+
+    def visit_summation(self, node, **kwargs):
+        pass
+
+    def visit_determinant(self, node, **kwargs):
+        pass
+
+    def visit_transpose(self, node, **kwargs):
+        pass
+
+    def visit_squareroot(self, node, **kwargs):
+        pass
+
+    def visit_power(self, node, **kwargs):
+        pass
+
+    def visit_divergence(self, node, **kwargs):
+        pass
+
+    def visit_gradient(self, node, **kwargs):
+        pass
+
+    def visit_laplace(self, node, **kwargs):
+        pass
+
+    def visit_solver(self, node, **kwargs):
+        pass
+
+    def visit_sparse_if(self, node, **kwargs):
+        pass
+
+    def visit_sparse_ifs(self, node, **kwargs):
+        pass
+
+    def visit_function(self, node, **kwargs):
+        pass
+
+    def visit_local_func(self, node, **kwargs):
+        pass
+
+    def visit_sparse_other(self, node, **kwargs):
+        pass
+
+    def visit_matrix_rows(self, node, **kwargs):
+        pass
+
+    def visit_matrix_row(self, node, **kwargs):
+        pass
+
+    def visit_matrix_row_commas(self, node, **kwargs):
+        pass
+
+    def visit_exp_in_matrix(self, node, **kwargs):
+        pass
+
+    def visit_num_matrix(self, node, **kwargs):
+        pass
+
+    def visit_matrix_index(self, node, **kwargs):
+        pass
+
+    def visit_vector_index(self, node, **kwargs):
+        pass
+
+    def visit_sequence_index(self, node, **kwargs):
+        pass
+
+    def visit_seq_dim_index(self, node, **kwargs):
+        pass
+
+    def visit_derivative(self, node, **kwargs):
+        pass
+
+    def visit_partial(self, node, **kwargs):
+        pass
+
+    def visit_factor(self, node, **kwargs):
+        pass
+
+    def visit_double(self, node, **kwargs):
+        pass
+
+    def visit_fraction(self, node, **kwargs):
+        pass
+
+    def visit_integer(self, node, **kwargs):
+        pass
+
+    ####################################################
+    def visit_start(self, node, **kwargs):
+        pass
+
+    def visit_block(self, node, **kwargs):
+        pass
+
+    def visit_assignment(self, node, **kwargs):
+        pass
+
+    def visit_equation(self, node, **kwargs):
+        pass
+
+    def visit_if(self, node, **kwargs):
+        pass
+
+    ####################################################
+    def visit_import(self, node, **kwargs):
+        pass
+
+    ####################################################
+    def walk_object(self, o):
+        raise Exception('Unexpected type %s walked: %s', type(o).__name__, o)
+    ###################################################################
+
+
+class IRVisitor(IRBaseVisitor):
     def __init__(self, parse_type=None):
         super().__init__()
         self.pre_str = ''
@@ -293,237 +549,8 @@ class IRVisitor(object):
     def visit_code(self, node, **kwargs):
         self.content = self.pre_str + self.visit(node) + self.post_str
 
-    def visit(self, node, **kwargs):
-        type_func = {
-            # base
-            IRNodeType.Id: "visit_id",
-            IRNodeType.Double: "visit_double",
-            IRNodeType.Fraction: "visit_fraction",
-            IRNodeType.Integer: "visit_integer",
-            IRNodeType.Factor: "visit_factor",
-            IRNodeType.Expression: "visit_expression",
-            IRNodeType.Subexpression: "visit_sub_expr",
-            IRNodeType.Constant: "visit_constant",
-            IRNodeType.Cast: "visit_cast",
-            # control
-            IRNodeType.Start: "visit_start",
-            IRNodeType.Block: "visit_block",
-            IRNodeType.Assignment: "visit_assignment",
-            IRNodeType.If: "visit_if",
-            IRNodeType.Function: "visit_function",
-            IRNodeType.LocalFunc: "visit_local_func",
-            IRNodeType.Equation: "visit_equation",
-            # if condition
-            IRNodeType.Condition: "visit_condition",
-            IRNodeType.In: "visit_in",
-            IRNodeType.NotIn: "visit_not_in",
-            IRNodeType.BinComp: "visit_bin_comp",
-            # operators
-            IRNodeType.Add: "visit_add",
-            IRNodeType.Sub: "visit_sub",
-            IRNodeType.Mul: "visit_mul",
-            IRNodeType.Div: "visit_div",
-            IRNodeType.AddSub: "visit_add_sub",
-            IRNodeType.Summation: "visit_summation",
-            IRNodeType.Norm: "visit_norm",
-            IRNodeType.Transpose: "visit_transpose",
-            IRNodeType.Squareroot: "visit_squareroot",
-            IRNodeType.Power: "visit_power",
-            IRNodeType.Solver: "visit_solver",
-            IRNodeType.Derivative: "visit_derivative",
-            IRNodeType.MathFunc: "visit_math_func",
-            IRNodeType.Optimize: "visit_optimize",
-            IRNodeType.Domain: "visit_domain",
-            IRNodeType.Integral: "visit_integral",
-            IRNodeType.InnerProduct: "visit_inner_product",
-            IRNodeType.FroProduct: "visit_fro_product",
-            IRNodeType.HadamardProduct: "visit_hadamard_product",
-            IRNodeType.CrossProduct: "visit_cross_product",
-            IRNodeType.KroneckerProduct: "visit_kronecker_product",
-            IRNodeType.DotProduct: "visit_dot_product",
-            #
-            IRNodeType.Divergence: "visit_divergence",
-            IRNodeType.Gradient: "visit_gradient",
-            IRNodeType.Laplace: "visit_laplace",
-            IRNodeType.Partial: "visit_partial",
-            # matrix
-            IRNodeType.Matrix: "visit_matrix",
-            IRNodeType.MatrixRows: "visit_matrix_rows",
-            IRNodeType.MatrixRow: "visit_matrix_row",
-            IRNodeType.MatrixRowCommas: "visit_matrix_row_commas",
-            IRNodeType.ExpInMatrix: "visit_exp_in_matrix",
-            IRNodeType.MultiConds: "visit_multi_conditionals",
-            IRNodeType.SparseMatrix: "visit_sparse_matrix",
-            IRNodeType.SparseIfs: "visit_sparse_ifs",
-            IRNodeType.SparseIf: "visit_sparse_if",
-            IRNodeType.SparseOther: "visit_sparse_other",
-            IRNodeType.NumMatrix: "visit_num_matrix",
-            IRNodeType.Vector: "visit_vector",
-            IRNodeType.ToMatrix: "visit_to_matrix",
-            #
-            IRNodeType.MatrixIndex: "visit_matrix_index",
-            IRNodeType.VectorIndex: "visit_vector_index",
-            IRNodeType.SequenceIndex: "visit_sequence_index",
-            IRNodeType.SeqDimIndex: "visit_seq_dim_index",
-            # where block
-            IRNodeType.ParamsBlock: "visit_params_block",
-            IRNodeType.WhereConditions: "visit_where_conditions",
-            IRNodeType.WhereCondition: "visit_where_condition",
-            IRNodeType.MatrixType: "visit_matrix_type",
-            IRNodeType.VectorType: "visit_vector_type",
-            IRNodeType.SetType: "visit_set_type",
-            IRNodeType.ScalarType: "visit_scalar_type",
-            IRNodeType.FunctionType: "visit_function_type",
-            # derivatives
-            IRNodeType.Import: "visit_import",
-        }
-        func = getattr(self, type_func[node.node_type], None)
-        if func:
-            return func(node, **kwargs)
-        else:
-            print("invalid node type")
-
-    def visit_id(self, node, **kwargs):
-        pass
-
-    def visit_add(self, node, **kwargs):
-        pass
-
-    def visit_sub(self, node, **kwargs):
-        pass
-
-    def visit_mul(self, node, **kwargs):
-        pass
-
-    def visit_div(self, node, **kwargs):
-        pass
-
-    def visit_eq(self, node, **kwargs):
-        pass
-
-    def visit_ne(self, node, **kwargs):
-        pass
-
-    def visit_lt(self, node, **kwargs):
-        pass
-
-    def visit_le(self, node, **kwargs):
-        pass
-
-    def visit_gt(self, node, **kwargs):
-        pass
-
-    def visit_ge(self, node, **kwargs):
-        pass
-
-    def visit_add_sub(self, node, **kwargs):
-        pass
-
-    def visit_sub_expr(self, node, **kwargs):
-        pass
-
-    def visit_cast(self, node, **kwargs):
-        pass
-
-    def visit_condition(self, node, **kwargs):
-        pass
-
-    def visit_in(self, node, **kwargs):
-        pass
-
-    def visit_not_in(self, node, **kwargs):
-        pass
-
-    def visit_expression(self, node, **kwargs):
-        pass
-
-    ####################################################
-    def visit_matrix(self, node, **kwargs):
-        pass
-
-    def visit_vector(self, node, **kwargs):
-        pass
-
     def visit_to_matrix(self, node, **kwargs):
         return self.visit(node.item, **kwargs)
-
-    def visit_sparse_matrix(self, node, **kwargs):
-        pass
-
-    def visit_summation(self, node, **kwargs):
-        pass
-
-    def visit_determinant(self, node, **kwargs):
-        pass
-
-    def visit_transpose(self, node, **kwargs):
-        pass
-
-    def visit_squareroot(self, node, **kwargs):
-        pass
-
-    def visit_power(self, node, **kwargs):
-        pass
-
-    def visit_divergence(self, node, **kwargs):
-        pass
-
-    def visit_gradient(self, node, **kwargs):
-        pass
-
-    def visit_laplace(self, node, **kwargs):
-        pass
-
-    def visit_solver(self, node, **kwargs):
-        pass
-
-    def visit_sparse_if(self, node, **kwargs):
-        pass
-
-    def visit_sparse_ifs(self, node, **kwargs):
-        pass
-
-    def visit_function(self, node, **kwargs):
-        pass
-
-    def visit_local_func(self, node, **kwargs):
-        pass
-
-    def visit_sparse_other(self, node, **kwargs):
-        pass
-
-    def visit_matrix_rows(self, node, **kwargs):
-        pass
-
-    def visit_matrix_row(self, node, **kwargs):
-        pass
-
-    def visit_matrix_row_commas(self, node, **kwargs):
-        pass
-
-    def visit_exp_in_matrix(self, node, **kwargs):
-        pass
-
-    def visit_num_matrix(self, node, **kwargs):
-        pass
-
-    def visit_matrix_index(self, node, **kwargs):
-        pass
-
-    def visit_vector_index(self, node, **kwargs):
-        pass
-
-    def visit_sequence_index(self, node, **kwargs):
-        pass
-
-    def visit_seq_dim_index(self, node, **kwargs):
-        pass
-
-    def visit_derivative(self, node, **kwargs):
-        pass
-
-    def visit_partial(self, node, **kwargs):
-        pass
 
     def visit_factor(self, node, **kwargs):
         if node.id:
@@ -556,31 +583,6 @@ class IRVisitor(object):
         else:
             content = str(node.value)
         return CodeNodeInfo(content)
-
-    ####################################################
-    def visit_start(self, node, **kwargs):
-        pass
-
-    def visit_block(self, node, **kwargs):
-        pass
-
-    def visit_assignment(self, node, **kwargs):
-        pass
-
-    def visit_equation(self, node, **kwargs):
-        pass
-
-    def visit_if(self, node, **kwargs):
-        pass
-
-    ####################################################
-    def visit_import(self, node, **kwargs):
-        pass
-
-    ####################################################
-    def walk_object(self, o):
-        raise Exception('Unexpected type %s walked: %s', type(o).__name__, o)
-    ###################################################################
 
     def is_keyword(self, name):
         return is_keyword(name, parser_type=self.parse_type)

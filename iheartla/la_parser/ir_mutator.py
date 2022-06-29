@@ -1,6 +1,7 @@
 import copy
 import sympy
 from .ir_visitor import *
+from .ir_iterator import *
 
 class MutatorVisitType(IntEnum):
     MutatorVisitInvalid = -1
@@ -39,9 +40,9 @@ def make_mul(nodes):
     else:
         return MulNode(nodes[0], make_mul(nodes[1:]), la_type=nodes[0].la_type)
 
-class IRMutator(IRVisitor):
-    def __init__(self, parse_type=None):
-        super().__init__(parse_type=parse_type)
+class IRMutator(IRIterator):
+    def __init__(self):
+        super().__init__()
         self.visiting_solver = False
         self.unknown_sym = None
         self.substitution_dict = {}
@@ -91,6 +92,7 @@ class IRMutator(IRVisitor):
         rhs = self.visit(node.right, **kwargs)
         print("current equation: {} = {}".format(lhs, rhs))
         if node.eq_type == EqTypeEnum.DEFAULT:
+            # pattern: A x = b
             A = Wild(self.generate_var_name("A"), exclude=[x])
             b = Wild(self.generate_var_name("b"), exclude=[x])
             res = (lhs-(rhs)).match(A*x - b)
