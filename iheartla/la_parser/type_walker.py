@@ -1376,6 +1376,11 @@ class TypeWalker(NodeWalker):
                 #
                 if v_info.type.la_type.is_function():
                     params_dict = SolverParamWalker.getInstance().walk_param(node, self.unknown_sym)
+                    if len(params_dict) > 0:
+                        for key, value_list in params_dict.items():
+                            for sym in value_list:
+                                self.assert_expr(sym not in self.symtable, "Parameter {} has been defined".format(sym))
+                                self.symtable[sym] = v_info.type.la_type.params[key]
                     print("params_dict: {}".format(params_dict))
             lexpr_info = self.walk(node.lexpr, **kwargs)
             rexpr_info = self.walk(node.rexpr, **kwargs)
