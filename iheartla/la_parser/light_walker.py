@@ -541,3 +541,9 @@ class SolverParamWalker(LightWalker):
                 if index not in self.solved_func_params_dict:
                     self.solved_func_params_dict[index] = []
                 self.solved_func_params_dict[index].append(node.params[index].text)
+
+    def walk_Derivative(self, node, **kwargs):
+        if node.upper.text == self.func_name:
+            if 0 not in self.solved_func_params_dict:
+                self.solved_func_params_dict[0] = []
+            self.solved_func_params_dict[0].append(node.lower.text)
