@@ -90,6 +90,8 @@ class IRNodeType(Enum):
     FunctionType = 406
     # Derivatives
     Import = 500
+    # differential equations
+    OdeFirstOrder = 600
 
 
 class IRNode(object):
@@ -339,8 +341,17 @@ class AssignNode(StmtNode):
         self.unknown_id = None
 
 
+class EqTypeEnum(IntFlag):
+    INVALID = 0
+    DEFAULT = 1
+    #
+    NORMAL = 1
+    ODE = 2
+    PDE = 4
+
+
 class EquationNode(StmtNode):
-    def __init__(self, left=None, right=None, op=None, la_type=None, parse_info=None, raw_text=None):
+    def __init__(self, left=None, right=None, op=None, eq_type=EqTypeEnum.DEFAULT, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Equation, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
@@ -349,6 +360,7 @@ class EquationNode(StmtNode):
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
         self.optimize_param = False
         self.unknown_id = None
+        self.eq_type = eq_type
 
 
 class IfNode(StmtNode):
@@ -802,6 +814,14 @@ class SolverNode(ExprNode):
         self.left = None
         self.right = None
         self.pow = None   # -> pow node
+
+
+class OdeFirstOrderNode(ExprNode):
+    def __init__(self, la_type=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.OdeFirstOrder, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        self.func = None
+        self.param = None
+        self.expr = None
 
 
 class MultiCondNode(ExprNode):

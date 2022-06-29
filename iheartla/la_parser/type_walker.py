@@ -253,6 +253,7 @@ class TypeWalker(NodeWalker):
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
         self.visiting_lhs = False
         self.visiting_solver_eq = False  # e.g: Ax = b
+        self.cur_eq_type = EqTypeEnum.DEFAULT
         self.solved_func = []
         self.need_mutator = False   # whether the node tree needs to be changed: solver
         self.unknown_sym = None
@@ -1367,6 +1368,7 @@ class TypeWalker(NodeWalker):
         if node.lexpr:
             self.visiting_solver_eq = True
             self.need_mutator = True
+            self.cur_eq_type = EqTypeEnum.DEFAULT
             eq_node = EquationNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
             if node.v:
                 v_info = self.walk(node.v, **kwargs)
@@ -1388,6 +1390,7 @@ class TypeWalker(NodeWalker):
             eq_node.right = rexpr_info.ir
             self.assert_expr(lexpr_info.ir.la_type.is_same_type(rexpr_info.ir.la_type), "Different types on lhs and rhs")
             self.visiting_solver_eq = False
+            eq_node.eq_type = self.cur_eq_type
             return NodeInfo(None, ir=eq_node, symbols=eq_node.symbols)
         assign_node = AssignNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
         if type(node.right[0]).__name__ == 'MultiCondExpr':
@@ -1940,6 +1943,7 @@ class TypeWalker(NodeWalker):
         return power_node
 
     def walk_Derivative(self, node, **kwargs):
+        self.cur_eq_type |= EqTypeEnum.ODE
         upper_info = self.walk(node.upper, **kwargs)
         lower_info = self.walk(node.lower, **kwargs)
         ir_node = DerivativeNode(parse_info=node.parseinfo, raw_text=node.text, upper=upper_info.ir, lower=lower_info.ir)
@@ -1951,10 +1955,11 @@ class TypeWalker(NodeWalker):
             lorder_info = self.walk(node.lorder, **kwargs)
             uorder_info = self.walk(node.uorder, **kwargs)
             ir_node.order = lorder_info.ir
-        ir_node.la_type = ScalarType()
+        ir_node.la_type = upper_info.la_type
         return NodeInfo(ir_node.la_type, ir=ir_node)
 
     def walk_Partial(self, node, **kwargs):
+        self.cur_eq_type &= EqTypeEnum.PDE
         upper_info = self.walk(node.upper, **kwargs)
         lower_list = []
         lorder_list = []
@@ -2118,12 +2123,15 @@ class TypeWalker(NodeWalker):
         ir_node.name = name_info.ir
         if node.order:
             ir_node.order = len(node.order)
+            self.cur_eq_type |= EqTypeEnum.ODE
         elif node.d:
             ir_node.order = 2
             ir_node.order_mode = OrderFormat.OrderDot
+            self.cur_eq_type |= EqTypeEnum.ODE
         elif node.s:
             ir_node.order = 1
             ir_node.order_mode = OrderFormat.OrderDot
+            self.cur_eq_type |= EqTypeEnum.ODE
         if name_type.is_function():
             # function type is already specified in where block
             convertion_dict = {}   # template -> instance
