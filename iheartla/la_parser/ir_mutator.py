@@ -5,8 +5,9 @@ from .ir_iterator import *
 
 class MutatorVisitType(IntEnum):
     MutatorVisitInvalid = -1
-    MutatorVisitFirst = 0
-    MutatorVisitSecond = 1
+    MutatorVisitNormal = 0
+    MutatorVisitOde = 1
+    MutatorVisitPde = 2
 
 
 def convert_sympy_ast(ast, node_dict):
@@ -49,12 +50,16 @@ class IRMutator(IRIterator):
         self.reverse_dict = {}
         self.node_dict = {}
         self.sympy_dict = {}
-        self.cur_v_type = MutatorVisitType.MutatorVisitFirst
+        self.cur_v_type = MutatorVisitType.MutatorVisitNormal
 
-    def is_first_visit(self):
-        return self.visiting_solver and self.cur_v_type == MutatorVisitType.MutatorVisitFirst
+    def is_normal_visit(self):
+        return self.visiting_solver and self.cur_v_type == MutatorVisitType.MutatorVisitNormal
+
+    def is_ode_visit(self):
+        return self.visiting_solver and self.cur_v_type == MutatorVisitType.MutatorVisitOde
 
     def get_used_var(self, node):
+        print("node raw_text: {}, self.reverse_dict:{}, self.sympy_dict:{}".format(node.raw_text, self.reverse_dict, self.sympy_dict))
         if node.raw_text not in self.substitution_dict:
             new_var = self.generate_var_name("new")
             self.substitution_dict[new_var] = node.raw_text
@@ -107,13 +112,13 @@ class IRMutator(IRIterator):
     def visit_equation(self, node, **kwargs):
         self.visiting_solver = True
         self.unknown_sym = node.unknown_id.get_main_id()
-        x = sympy.Symbol(node.unknown_id.get_main_id(), commutative=True)
-        self.sympy_dict[node.unknown_id.get_main_id()] = x
-        lhs = self.visit(node.left, **kwargs)
-        rhs = self.visit(node.right, **kwargs)
-        print("current equation: {} = {}".format(lhs, rhs))
         if node.eq_type == EqTypeEnum.DEFAULT:
             # pattern: A x = b
+            x = sympy.Symbol(node.unknown_id.get_main_id(), commutative=True)
+            self.sympy_dict[node.unknown_id.get_main_id()] = x
+            lhs = self.visit(node.left, **kwargs)
+            rhs = self.visit(node.right, **kwargs)
+            print("current equation: {} = {}".format(lhs, rhs))
             A = Wild(self.generate_var_name("A"), exclude=[x])
             b = Wild(self.generate_var_name("b"), exclude=[x])
             res = (lhs-(rhs)).match(A*x - b)
@@ -132,23 +137,38 @@ class IRMutator(IRIterator):
                     assign_node.right.append(SubexpressionNode(value=solver_node, la_type=solver_node.la_type, parse_info=node.parse_info, raw_text=node.raw_text))
                 return assign_node
         elif node.eq_type & EqTypeEnum.ODE:
+            self.cur_v_type = MutatorVisitType.MutatorVisitOde
             print("ode")
+            x = sympy.Symbol(node.unknown_id.get_main_id(), commutative=True)
+            self.sympy_dict[node.unknown_id.get_main_id()] = x
+            lhs = self.visit(node.left, **kwargs)
+            rhs = self.visit(node.right, **kwargs)
+            print("current equation: {} = {}".format(lhs, rhs))
+            A = Wild(self.generate_var_name("A"), exclude=[x])
+            b = Wild(self.generate_var_name("b"), exclude=[x])
+            res = (lhs - (rhs)).match(A * x - b)
+            print("res: {}".format(res))
         elif node.eq_type & EqTypeEnum.PDE:
             print("pde")
-        self.cur_v_type = MutatorVisitType.MutatorVisitSecond
+        self.visiting_solver = False
         return node
 
     def visit_expression(self, node, **kwargs):
-        if self.is_first_visit():
+        if self.is_normal_visit():
             if not node.contain_sym(self.unknown_sym):
                 return self.get_used_var(node)
+            return self.visit(node.value, **kwargs)
+        elif self.is_ode_visit():
             return self.visit(node.value, **kwargs)
         return node
 
     def visit_factor(self, node, **kwargs):
-        if self.is_first_visit():
+        if self.is_normal_visit():
             if not node.contain_sym(self.unknown_sym):
                 return self.get_used_var(node)
+        # elif self.is_ode_visit():
+            # if not node.contain_sym(self.unknown_sym):
+            #     return self.get_used_var(node)
             # return self.visit(node.value, **kwargs)
         if node.id:
             return self.visit(node.id, **kwargs)
@@ -167,40 +187,47 @@ class IRMutator(IRIterator):
         elif node.c:
             return self.visit(node.c, **kwargs)
 
+    def visit_function(self, node, **kwargs):
+        if self.is_normal_visit():
+            pass
+        elif self.is_ode_visit():
+            return self.get_used_var(node)
+
     def visit_add(self, node, **kwargs):
-        if self.is_first_visit():
+        if self.is_normal_visit():
             if not node.contain_sym(self.unknown_sym):
                 return self.get_used_var(node)
-            left = self.visit(node.left, **kwargs)
-            right = self.visit(node.right, **kwargs)
-            return left + right
-        return ''
+        left = self.visit(node.left, **kwargs)
+        right = self.visit(node.right, **kwargs)
+        return left + right
 
     def visit_sub(self, node, **kwargs):
-        if self.is_first_visit():
+        if self.is_normal_visit():
             if not node.contain_sym(self.unknown_sym):
                 return self.get_used_var(node)
-            left = self.visit(node.left, **kwargs)
-            right = self.visit(node.right, **kwargs)
-            return left - right
-        return ''
+        left = self.visit(node.left, **kwargs)
+        right = self.visit(node.right, **kwargs)
+        return left - right
 
     def visit_mul(self, node, **kwargs):
-        if self.is_first_visit():
+        if self.is_normal_visit():
             if not node.contain_sym(self.unknown_sym):
                 return self.get_used_var(node)
-            left = self.visit(node.left, **kwargs)
-            right = self.visit(node.right, **kwargs)
-            return left * right
-        return ''
+        left = self.visit(node.left, **kwargs)
+        right = self.visit(node.right, **kwargs)
+        return left * right
 
     def visit_div(self, node, **kwargs):
-        if self.is_first_visit():
+        if self.is_normal_visit():
             if not node.contain_sym(self.unknown_sym):
                 return self.get_used_var(node)
-            left = self.visit(node.left, **kwargs)
-            right = self.visit(node.right, **kwargs)
-            return left / right
+        left = self.visit(node.left, **kwargs)
+        right = self.visit(node.right, **kwargs)
+        return left / right
+
+    def visit_derivative(self, node, **kwargs):
+        if self.is_ode_visit():
+            return self.get_used_var(node)
         return ''
 
     def visit_id(self, node, **kwargs):
