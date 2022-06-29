@@ -361,6 +361,19 @@ class EquationNode(StmtNode):
         self.optimize_param = False
         self.unknown_id = None
         self.eq_type = eq_type
+        self.init_list = []
+
+    def is_formal_eq(self):
+        # not as initial conditions
+        return self.unknown_id is not None
+
+    def get_solved_name(self):
+        if self.unknown_id:
+            return self.unknown_id.get_main_id()
+        return ''
+
+    def add_init(self, init):
+        self.init_list.append(init)
 
 
 class IfNode(StmtNode):

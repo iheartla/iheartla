@@ -78,6 +78,27 @@ class IRMutator(IRIterator):
         return node
 
     def visit_block(self, node, **kwargs):
+        # gather initial expr
+        new_stmts = []
+        eq_index_list = []
+        init_stmts = []
+        for index in range(len(node.stmts)):
+            if node.stmts[index].is_node(IRNodeType.Equation):
+                if node.stmts[index].is_formal_eq():
+                    eq_index_list.append(len(new_stmts))
+                    new_stmts.append(node.stmts[index])
+                else:
+                    init_stmts.append(node.stmts[index])
+            else:
+                new_stmts.append(node.stmts[index])
+        if len(init_stmts) > 0:
+            for cur_index in range(len(init_stmts)):
+                for eq_index in eq_index_list:
+                    if init_stmts[cur_index].contain_sym(new_stmts[eq_index].get_solved_name()):
+                        new_stmts[eq_index].add_init(init_stmts[cur_index])
+                        break
+        node.stmts = new_stmts
+        # visit
         for index in range(len(node.stmts)):
             if node.stmts[index].is_node(IRNodeType.Equation):
                 node.stmts[index] = self.visit(node.stmts[index], **kwargs)
