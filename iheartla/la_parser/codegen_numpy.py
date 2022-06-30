@@ -1178,7 +1178,7 @@ class CodeGenNumpy(CodeGen):
     def visit_div(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        left_info.content = left_info.content + ' / ' + right_info.content
+        left_info.content = "({})".format(left_info.content) + ' / ' + "({})".format(right_info.content)
         left_info.pre_list += right_info.pre_list
         return left_info
 
@@ -1466,7 +1466,7 @@ class CodeGenNumpy(CodeGen):
                 lhs.append(self.visit(eq_node.left).content)
                 rhs.append(self.visit(eq_node.right).content)
             self.visiting_diff_init = False
-            content += "        return solve_ivp({}, [{}, {}], [{}]).{}[0, -1]\n".format(target_name, lhs[0], node.param, rhs[0], node.func)
+            content += "        return solve_ivp({}, [{}, {}], [{}]).y[0, -1]\n".format(target_name, lhs[0], node.param, rhs[0])
         self.visiting_diff_eq = False
         return CodeNodeInfo(content)
 
