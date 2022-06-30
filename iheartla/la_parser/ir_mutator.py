@@ -21,6 +21,8 @@ def convert_sympy_ast(ast, node_dict):
         for cur_index in range(len(ast.args)):
             cur_nodes.append(convert_sympy_ast(ast.args[cur_index], node_dict))
         return make_mul(cur_nodes)
+    elif type(ast).__name__ == 'Pow':
+        return PowerNode(base=convert_sympy_ast(ast.args[0], node_dict), power=convert_sympy_ast(ast.args[1], node_dict))
     elif type(ast).__name__ == 'Symbol':
         return copy.deepcopy(node_dict[ast])
     elif type(ast).__name__ == 'NegativeOne':
@@ -60,6 +62,19 @@ class IRMutator(IRIterator):
         self.cur_v_type = MutatorVisitType.MutatorVisitNormal
         self.cur_func_var = ''
 
+    def init_type(self, type_walker, func_name):
+        self.reset()
+        super(IRMutator, self).init_type(type_walker, func_name)
+
+    def reset(self):
+        self.visiting_solver = False
+        self.unknown_sym = None
+        self.reverse_dict.clear()
+        self.node_dict.clear()
+        self.sympy_dict.clear()
+        self.cur_v_type = MutatorVisitType.MutatorVisitNormal
+        self.cur_func_var = ''
+
     def is_normal_visit(self):
         return self.visiting_solver and self.cur_v_type == MutatorVisitType.MutatorVisitNormal
 
@@ -77,9 +92,10 @@ class IRMutator(IRIterator):
             new_var = self.reverse_dict[node.raw_text]
         return self.sympy_dict[new_var]
 
-    def get_sympy_var(self, sym):
+    def get_sympy_var(self, sym, node):
         if sym not in self.sympy_dict:
             self.sympy_dict[sym] = sympy.Symbol(sym, commutative=True)
+            self.node_dict[self.sympy_dict[sym]] = node
         return self.sympy_dict[sym]
 
     def visit_code(self, node, **kwargs):
@@ -130,7 +146,7 @@ class IRMutator(IRIterator):
             b = Wild(self.generate_var_name("b"), exclude=[x])
             res = (lhs-(rhs)).match(A*x - b)
             print("res: {}".format(res))
-            if len(res) > 0:
+            if res and len(res) > 0:
                 lnode = convert_sympy_ast(res[A], self.node_dict)
                 rnode = convert_sympy_ast(res[b], self.node_dict)
                 assign_node = AssignNode([copy.deepcopy(node.unknown_id)], [], op=node.op, parse_info=node.parse_info, raw_text=node.raw_text)
@@ -153,7 +169,7 @@ class IRMutator(IRIterator):
             b = Wild(self.generate_var_name("b"), exclude=[self.cur_func_var])
             res = (lhs - (rhs)).match(A * self.cur_func_var - b)
             print("res: {}".format(res))
-            if len(res) > 0:
+            if res and len(res) > 0:
                 lnode = convert_sympy_ast(res[A], self.node_dict)
                 rnode = convert_sympy_ast(res[b], self.node_dict)
                 if is_sympy_one(res[A]):
@@ -261,14 +277,14 @@ class IRMutator(IRIterator):
                         content = "{}.coeff({}, {})".format(node.main_id, node.subs[0], node.subs[1])
                     else:
                         content = "{}({}, {})".format(node.main_id, node.subs[0], node.subs[1])
-        return self.get_sympy_var(content)
+        return self.get_sympy_var(content, node)
 
     def visit_IdentifierAlone(self, node, **kwargs):
         if node.value:
             value = node.value
         else:
             value = '`' + node.id + '`'
-        return self.get_sympy_var(value)
+        return self.get_sympy_var(value, node)
 
     def visit_integer(self, node, **kwargs):
         return sympy.Integer(node.value)

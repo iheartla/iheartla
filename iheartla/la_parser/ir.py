@@ -811,12 +811,12 @@ class LaplaceNode(ExprNode):
 
 
 class PowerNode(ExprNode):
-    def __init__(self, la_type=None, parse_info=None, raw_text=None):
+    def __init__(self, base=None, power=None, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Power, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
-        self.base = None
+        self.base = base
         self.t = None
         self.r = None
-        self.power = None
+        self.power = power
 
 
 class SolverNode(ExprNode):
