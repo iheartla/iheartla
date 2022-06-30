@@ -742,7 +742,8 @@ class TypeWalker(NodeWalker):
                             retries = 0
                             self.logger.debug("expr index:{}, stat:{}".format(cnt, cur_stat.text))
                             break
-                        except AssertionError as e:
+                        # except AssertionError as e:
+                        except Exception as e:
                             self.logger.debug("failed stat:{}, e:{}".format(cur_stat.text, e))
                             retries += 1
                             visited_list[cur_index] = True
@@ -3509,13 +3510,16 @@ class TypeWalker(NodeWalker):
         right_line = get_parse_info_buffer(right_info.ir.parse_info).line_info(right_info.ir.parse_info.pos)
         def get_err_msg(extra_msg=''):
             line_msg = '{}. '.format(self.la_msg.get_line_desc(left_line))
-            error_msg = 'Dimension mismatch. Can\'t {} {} {} and {} {}. {}\n'.format(
-                                                                                self.get_op_desc(op),
-                                                                                self.get_type_desc(left_type),
-                                                                                get_parse_info_buffer(left_info.ir.parse_info).text[left_info.ir.parse_info.pos:left_info.ir.parse_info.endpos],
-                                                                                self.get_type_desc(right_type),
-                                                                                      get_parse_info_buffer(right_info.ir.parse_info).text[right_info.ir.parse_info.pos:right_info.ir.parse_info.endpos],
-                                                                                extra_msg)
+            if left_type is None or right_type is None:
+                error_msg = 'No type info.\n'
+            else:
+                error_msg = 'Dimension mismatch. Can\'t {} {} {} and {} {}. {}\n'.format(
+                                                                                    self.get_op_desc(op),
+                                                                                    self.get_type_desc(left_type),
+                                                                                    get_parse_info_buffer(left_info.ir.parse_info).text[left_info.ir.parse_info.pos:left_info.ir.parse_info.endpos],
+                                                                                    self.get_type_desc(right_type),
+                                                                                          get_parse_info_buffer(right_info.ir.parse_info).text[right_info.ir.parse_info.pos:right_info.ir.parse_info.endpos],
+                                                                                    extra_msg)
             raw_text = left_line.text
             if raw_text[-1] != '\n':
                 raw_text += '\n'
@@ -3526,6 +3530,8 @@ class TypeWalker(NodeWalker):
             error_msg = line_msg + error_msg
             return error_msg
         ret_type = None
+        self.assert_expr(left_type, get_err_msg())
+        self.assert_expr(right_type, get_err_msg())
         if op == TypeInferenceEnum.INF_ADD or op == TypeInferenceEnum.INF_SUB:
             ret_type = copy.deepcopy(left_type)  # default type
             if left_type.is_scalar():
