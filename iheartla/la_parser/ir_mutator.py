@@ -149,7 +149,7 @@ class IRMutator(IRIterator):
             if res and len(res) > 0:
                 lnode = convert_sympy_ast(res[A], self.node_dict)
                 rnode = convert_sympy_ast(res[b], self.node_dict)
-                assign_node = AssignNode([copy.deepcopy(node.unknown_id)], [], op=node.op, parse_info=node.parse_info, raw_text=node.raw_text)
+                assign_node = AssignNode([copy.deepcopy(node.unknown_id)], [], parse_info=node.parse_info, raw_text=node.raw_text)
                 if self.symtable[node.unknown_id.get_main_id()].is_scalar():
                     div_node = DivNode(rnode, lnode, la_type=ScalarType(), parse_info=node.parse_info, raw_text=node.raw_text)
                     assign_node.right.append(SubexpressionNode(value=div_node, la_type=div_node.la_type, parse_info=node.parse_info, raw_text=node.raw_text))

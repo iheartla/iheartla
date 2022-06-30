@@ -702,6 +702,7 @@ class TypeWalker(NodeWalker):
         self.opt_syms = self.saved_opt_syms
         self.local_func_parsing = False
         self.is_param_block = False
+        self.visiting_solver_eq = False
 
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
         block_node = BlockNode()
@@ -742,7 +743,7 @@ class TypeWalker(NodeWalker):
                             self.logger.debug("expr index:{}, stat:{}".format(cnt, cur_stat.text))
                             break
                         except AssertionError as e:
-                            self.logger.debug("failed stat:{}".format(cur_stat.text))
+                            self.logger.debug("failed stat:{}, e:{}".format(cur_stat.text, e))
                             retries += 1
                             visited_list[cur_index] = True
                             if retries > len(stat_list):
