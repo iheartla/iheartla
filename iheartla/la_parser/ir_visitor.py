@@ -303,6 +303,8 @@ class IRVisitor(IRBaseVisitor):
         self.convert_matrix = False
         self.visiting_lhs = False
         self.visiting_func_name = False
+        self.visiting_diff_eq = False
+        self.visiting_diff_init = False
         self.enable_tmp_sym = False
         self.lhs_list = []
         self.module_list = []

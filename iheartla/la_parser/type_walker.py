@@ -1369,7 +1369,7 @@ class TypeWalker(NodeWalker):
             self.visiting_solver_eq = True
             self.need_mutator = True
             self.cur_eq_type = EqTypeEnum.DEFAULT
-            eq_node = EquationNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
+            eq_node = EquationNode([], [], parse_info=node.parseinfo, raw_text=node.text)
             if node.v:
                 v_info = self.walk(node.v, **kwargs)
                 self.get_cur_param_data().symtable[v_info.id[0].get_main_id()] = v_info.type.la_type
@@ -1378,10 +1378,11 @@ class TypeWalker(NodeWalker):
                 #
                 if v_info.type.la_type.is_function():
                     params_dict = SolverParamWalker.getInstance().walk_param(node, self.unknown_sym)
+                    eq_node.params_dict = params_dict
                     print("params_dict: {}".format(params_dict))
                     if len(params_dict) > 0:
                         for key, value_list in params_dict.items():
-                            for sym in list(set(value_list)):
+                            for sym in value_list:
                                 self.assert_expr(sym not in self.symtable, "Parameter {} has been defined".format(sym))
                                 self.symtable[sym] = v_info.type.la_type.params[key]
             lexpr_info = self.walk(node.lexpr, **kwargs)

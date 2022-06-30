@@ -27,8 +27,14 @@ def convert_sympy_ast(ast, node_dict):
         return IntegerNode(value=-1)
     elif type(ast).__name__ == 'Integer':
         return IntegerNode(value=ast)
+    elif type(ast).__name__ == 'One':
+        return IntegerNode(value=1)
     print("ast: {}".format(ast))
     return ast
+
+
+def is_sympy_one(ast):
+    return type(ast).__name__ == 'One'
 
 
 def make_addition(nodes):
@@ -150,10 +156,14 @@ class IRMutator(IRIterator):
             if len(res) > 0:
                 lnode = convert_sympy_ast(res[A], self.node_dict)
                 rnode = convert_sympy_ast(res[b], self.node_dict)
-                fraction = DivNode(rnode, lnode)
+                if is_sympy_one(res[A]):
+                    fraction = rnode
+                else:
+                    fraction = DivNode(rnode, lnode)
                 ode_node = OdeFirstOrderNode(func=self.unknown_sym, expr=fraction, la_type=self.symtable[node.unknown_id.get_main_id()],
                                                 parse_info=node.parse_info, raw_text=node.raw_text)
                 ode_node.init_list = node.init_list
+                ode_node.param = node.params_dict[0][0]
                 return ode_node
         elif node.eq_type & EqTypeEnum.PDE:
             print("pde")
@@ -259,3 +269,6 @@ class IRMutator(IRIterator):
         else:
             value = '`' + node.id + '`'
         return self.get_sympy_var(value)
+
+    def visit_integer(self, node, **kwargs):
+        return sympy.Integer(node.value)

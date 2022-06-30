@@ -351,17 +351,15 @@ class EqTypeEnum(IntFlag):
 
 
 class EquationNode(StmtNode):
-    def __init__(self, left=None, right=None, op=None, eq_type=EqTypeEnum.DEFAULT, la_type=None, parse_info=None, raw_text=None):
+    def __init__(self, left=None, right=None, eq_type=EqTypeEnum.DEFAULT, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Equation, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
-        self.op = op
         self.symbols = set()
-        self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
-        self.optimize_param = False
         self.unknown_id = None
         self.eq_type = eq_type
         self.init_list = []
+        self.param_dict = {}
 
     def is_formal_eq(self):
         # not as initial conditions
