@@ -46,11 +46,11 @@ class IRMutator(IRIterator):
         super().__init__()
         self.visiting_solver = False
         self.unknown_sym = None
-        self.substitution_dict = {}
         self.reverse_dict = {}
         self.node_dict = {}
         self.sympy_dict = {}
         self.cur_v_type = MutatorVisitType.MutatorVisitNormal
+        self.cur_func_var = ''
 
     def is_normal_visit(self):
         return self.visiting_solver and self.cur_v_type == MutatorVisitType.MutatorVisitNormal
@@ -60,9 +60,8 @@ class IRMutator(IRIterator):
 
     def get_used_var(self, node):
         print("node raw_text: {}, self.reverse_dict:{}, self.sympy_dict:{}".format(node.raw_text, self.reverse_dict, self.sympy_dict))
-        if node.raw_text not in self.substitution_dict:
+        if node.raw_text not in self.reverse_dict:
             new_var = self.generate_var_name("new")
-            self.substitution_dict[new_var] = node.raw_text
             self.reverse_dict[node.raw_text] = new_var
             self.sympy_dict[new_var] = sympy.Symbol(new_var, commutative=True)
             self.node_dict[self.sympy_dict[new_var]] = node
@@ -138,15 +137,13 @@ class IRMutator(IRIterator):
                 return assign_node
         elif node.eq_type & EqTypeEnum.ODE:
             self.cur_v_type = MutatorVisitType.MutatorVisitOde
-            print("ode")
-            x = sympy.Symbol(node.unknown_id.get_main_id(), commutative=True)
-            self.sympy_dict[node.unknown_id.get_main_id()] = x
+            print("ode") 
             lhs = self.visit(node.left, **kwargs)
             rhs = self.visit(node.right, **kwargs)
             print("current equation: {} = {}".format(lhs, rhs))
-            A = Wild(self.generate_var_name("A"), exclude=[x])
-            b = Wild(self.generate_var_name("b"), exclude=[x])
-            res = (lhs - (rhs)).match(A * x - b)
+            A = Wild(self.generate_var_name("A"), exclude=[self.cur_func_var])
+            b = Wild(self.generate_var_name("b"), exclude=[self.cur_func_var])
+            res = (lhs - (rhs)).match(A * self.cur_func_var - b)
             print("res: {}".format(res))
         elif node.eq_type & EqTypeEnum.PDE:
             print("pde")
@@ -227,7 +224,9 @@ class IRMutator(IRIterator):
 
     def visit_derivative(self, node, **kwargs):
         if self.is_ode_visit():
-            return self.get_used_var(node)
+            name = self.get_used_var(node)
+            self.cur_func_var = name
+            return name
         return ''
 
     def visit_id(self, node, **kwargs):
