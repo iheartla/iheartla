@@ -500,6 +500,9 @@ class CodeGenNumpy(CodeGen):
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
                         continue
+                    elif node.stmts[index].is_node(IRNodeType.OdeFirstOrder):
+                        stats_content += self.visit(node.stmts[index], **kwargs).content
+                        continue
                     kwargs[LHS] = self.ret_symbol
                     ret_str = "    self." + self.ret_symbol + ' = '
             else:
@@ -1441,6 +1444,9 @@ class CodeGenNumpy(CodeGen):
 
     def visit_partial(self, node, **kwargs):
         return CodeNodeInfo("")
+
+    def visit_first_order_ode(self, node, **kwargs):
+        return self.visit(node.expr, **kwargs)
 
     def visit_optimize(self, node, **kwargs):
         self.enable_tmp_sym = True

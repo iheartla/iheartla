@@ -830,11 +830,12 @@ class SolverNode(ExprNode):
 
 
 class OdeFirstOrderNode(ExprNode):
-    def __init__(self, la_type=None, parse_info=None, raw_text=None):
+    def __init__(self, func=None, param=None, expr=None, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.OdeFirstOrder, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
-        self.func = None
-        self.param = None
-        self.expr = None
+        self.func = func
+        self.param = param
+        self.expr = expr
+        self.init_list = []
 
 
 class MultiCondNode(ExprNode):
@@ -1168,7 +1169,7 @@ class FractionNode(ExprNode):
 
 class IntegerNode(ExprNode):
     def __init__(self, la_type=None, parse_info=None, raw_text=None, value=None):
-        super().__init__(IRNodeType.Integer, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        super().__init__(IRNodeType.Integer, la_type=ScalarType(is_int=True), parse_info=parse_info, raw_text=raw_text)
         self.value = value
 
 

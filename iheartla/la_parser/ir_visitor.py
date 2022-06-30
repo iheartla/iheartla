@@ -92,6 +92,8 @@ class IRBaseVisitor(object):
             IRNodeType.FunctionType: "visit_function_type",
             # derivatives
             IRNodeType.Import: "visit_import",
+            # differential equations
+            IRNodeType.OdeFirstOrder: "visit_first_order_ode",
         }
         func = getattr(self, type_func[node.node_type], None)
         if func:
@@ -253,6 +255,9 @@ class IRBaseVisitor(object):
 
     ####################################################
     def visit_import(self, node, **kwargs):
+        pass
+
+    def visit_first_order_ode(self, node, **kwargs):
         pass
 
     ####################################################

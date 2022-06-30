@@ -25,6 +25,8 @@ def convert_sympy_ast(ast, node_dict):
         return copy.deepcopy(node_dict[ast])
     elif type(ast).__name__ == 'NegativeOne':
         return IntegerNode(value=-1)
+    elif type(ast).__name__ == 'Integer':
+        return IntegerNode(value=ast)
     print("ast: {}".format(ast))
     return ast
 
@@ -137,7 +139,7 @@ class IRMutator(IRIterator):
                 return assign_node
         elif node.eq_type & EqTypeEnum.ODE:
             self.cur_v_type = MutatorVisitType.MutatorVisitOde
-            print("ode") 
+            print("ode")
             lhs = self.visit(node.left, **kwargs)
             rhs = self.visit(node.right, **kwargs)
             print("current equation: {} = {}".format(lhs, rhs))
@@ -145,6 +147,14 @@ class IRMutator(IRIterator):
             b = Wild(self.generate_var_name("b"), exclude=[self.cur_func_var])
             res = (lhs - (rhs)).match(A * self.cur_func_var - b)
             print("res: {}".format(res))
+            if len(res) > 0:
+                lnode = convert_sympy_ast(res[A], self.node_dict)
+                rnode = convert_sympy_ast(res[b], self.node_dict)
+                fraction = DivNode(rnode, lnode)
+                ode_node = OdeFirstOrderNode(func=self.unknown_sym, expr=fraction, la_type=self.symtable[node.unknown_id.get_main_id()],
+                                                parse_info=node.parse_info, raw_text=node.raw_text)
+                ode_node.init_list = node.init_list
+                return ode_node
         elif node.eq_type & EqTypeEnum.PDE:
             print("pde")
         self.visiting_solver = False
