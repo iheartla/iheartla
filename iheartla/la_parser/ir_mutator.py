@@ -23,6 +23,8 @@ def convert_sympy_ast(ast, node_dict):
         return make_mul(cur_nodes)
     elif type(ast).__name__ == 'Pow':
         return PowerNode(base=convert_sympy_ast(ast.args[0], node_dict), power=convert_sympy_ast(ast.args[1], node_dict))
+    elif type(ast).__name__ == 'Rational':
+        return DivNode(left=convert_sympy_ast(ast.args[0], node_dict), right=convert_sympy_ast(ast.args[1], node_dict))
     elif type(ast).__name__ == 'Symbol':
         return copy.deepcopy(node_dict[ast])
     elif type(ast).__name__ == 'NegativeOne':
@@ -82,14 +84,15 @@ class IRMutator(IRIterator):
         return self.visiting_solver and self.cur_v_type == MutatorVisitType.MutatorVisitOde
 
     def get_used_var(self, node):
-        print("node raw_text: {}, self.reverse_dict:{}, self.sympy_dict:{}".format(node.raw_text, self.reverse_dict, self.sympy_dict))
-        if node.raw_text not in self.reverse_dict:
+        signature = node.get_signature()
+        print("node raw_text: {}, signature:{}, self.reverse_dict:{}, self.sympy_dict:{}".format(node.raw_text, signature, self.reverse_dict, self.sympy_dict))
+        if signature not in self.reverse_dict:
             new_var = self.generate_var_name("new")
-            self.reverse_dict[node.raw_text] = new_var
+            self.reverse_dict[signature] = new_var
             self.sympy_dict[new_var] = sympy.Symbol(new_var, commutative=True)
             self.node_dict[self.sympy_dict[new_var]] = node
         else:
-            new_var = self.reverse_dict[node.raw_text]
+            new_var = self.reverse_dict[signature]
         return self.sympy_dict[new_var]
 
     def get_sympy_var(self, sym, node):
@@ -164,7 +167,7 @@ class IRMutator(IRIterator):
             print("ode")
             lhs = self.visit(node.left, **kwargs)
             rhs = self.visit(node.right, **kwargs)
-            print("current equation: {} = {}".format(lhs, rhs))
+            print("current equation: {} = {}, solved: {}".format(lhs, rhs, self.cur_func_var))
             A = Wild(self.generate_var_name("A"), exclude=[self.cur_func_var])
             b = Wild(self.generate_var_name("b"), exclude=[self.cur_func_var])
             res = (lhs - (rhs)).match(A * self.cur_func_var - b)

@@ -130,6 +130,9 @@ class IRNode(object):
     def contain_sym(self, sym):
         return sym in self.raw_text
 
+    def get_signature(self):
+        return self.raw_text
+
 class StmtNode(IRNode):
     def __init__(self, node_type=None, la_type=None, parse_info=None, raw_text=None):
         super().__init__(node_type, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
@@ -1079,6 +1082,18 @@ class DerivativeNode(ExprNode):
         self.lower = lower
         self.order = order
 
+    def get_signature(self):
+        if self.is_first_order():
+            return "{}&{}".format(self.upper.raw_text, self.lower.raw_text)
+        return self.raw_text
+
+    def is_first_order(self):
+        if self.order is None:
+            return True
+        if self.order.is_node(IRNodeType.Integer):
+            return self.order.value == 1
+        else:
+            return self.order.raw_text == '1'
 
 class PartialNode(ExprNode):
     def __init__(self, la_type=None, parse_info=None, raw_text=None, upper=None, lower_list=[], order=None, lorder_list=[], d_type=DerivativeType.DerivativeFraction):
