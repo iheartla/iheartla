@@ -53,6 +53,64 @@ def make_mul(nodes):
     else:
         return MulNode(nodes[0], make_mul(nodes[1:]), la_type=nodes[0].la_type)
 
+
+class IRTypeLift(IRIterator):
+    __instance = None
+
+    @staticmethod
+    def getInstance():
+        if IRTypeLift.__instance is None:
+            IRTypeLift()
+        return IRTypeLift.__instance
+
+    def __init__(self):
+        super().__init__()
+        IRTypeLift.__instance = self
+
+    def lift_arith_node(self, left, right):
+        n_left = left
+        n_right = right
+        if left.la_type.is_scalar():
+            if right.la_type.is_matrix():
+                n_left = MulNode(left, NumMatrixNode(id='I', id1=IdNode(right.la_type.rows)))
+        elif left.la_type.is_matrix():
+            if right.la_type.is_scalar():
+                n_right = MulNode(right, NumMatrixNode(id='I', id1=IdNode(left.la_type.rows)))
+        return n_left, n_right
+
+    def visit_assignment(self, node, **kwargs):
+        node.left = [self.visit(node.left[0], **kwargs)]
+        node.right = [self.visit(node.right[0], **kwargs)]
+        return node
+
+    def visit_expression(self, node, **kwargs):
+        return self.visit(node.value, **kwargs)
+
+    def visit_sub_expr(self, node, **kwargs):
+        return self.visit(node.value, **kwargs)
+
+    def visit_add(self, node, **kwargs):
+        node.left, node.right = self.lift_arith_node(node.left, node.right)
+        return node
+
+    def visit_sub(self, node, **kwargs):
+        node.left, node.right = self.lift_arith_node(node.left, node.right)
+        return node
+
+    def visit_mul(self, node, **kwargs):
+        node.left, node.right = self.lift_arith_node(node.left, node.right)
+        return node
+
+    def visit_div(self, node, **kwargs):
+        node.left, node.right = self.lift_arith_node(node.left, node.right)
+        return node
+
+    def visit_solver(self, node, **kwargs):
+        node.left = self.visit(node.left, **kwargs)
+        node.right = self.visit(node.right, **kwargs)
+        return node
+
+
 class IRMutator(IRIterator):
     def __init__(self):
         super().__init__()
@@ -161,6 +219,7 @@ class IRMutator(IRIterator):
                     solver_node.left = lnode
                     solver_node.right = rnode
                     assign_node.right.append(SubexpressionNode(value=solver_node, la_type=solver_node.la_type, parse_info=node.parse_info, raw_text=node.raw_text))
+                assign_node = IRTypeLift.getInstance().visit(assign_node)
                 return assign_node
         elif node.eq_type & EqTypeEnum.ODE:
             self.cur_v_type = MutatorVisitType.MutatorVisitOde

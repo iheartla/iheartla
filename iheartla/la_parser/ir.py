@@ -899,12 +899,12 @@ class ExpInMatrixNode(ExprNode):
 
 
 class NumMatrixNode(ExprNode):
-    def __init__(self, la_type=None, parse_info=None, raw_text=None):
+    def __init__(self, id=None, id1=None, id2=None, left=None, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.NumMatrix, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
-        self.id = None
-        self.id1 = None
-        self.id2 = None
-        self.left = None
+        self.id = id
+        self.id1 = id1
+        self.id2 = id2
+        self.left = left
 
 
 class IndexNode(ExprNode):
