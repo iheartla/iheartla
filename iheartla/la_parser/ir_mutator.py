@@ -182,7 +182,8 @@ class IRMutator(IRIterator):
                 ode_node = OdeFirstOrderNode(func=self.unknown_sym, expr=fraction, la_type=self.symtable[node.unknown_id.get_main_id()],
                                                 parse_info=node.parse_info, raw_text=node.raw_text)
                 ode_node.init_list = node.init_list
-                ode_node.param = node.params_dict[0][0]
+                if len(node.params_dict) > 0:
+                    ode_node.param = node.params_dict[0][0]
                 return ode_node
         elif node.eq_type & EqTypeEnum.PDE:
             print("pde")
@@ -227,7 +228,10 @@ class IRMutator(IRIterator):
         if self.is_normal_visit():
             pass
         elif self.is_ode_visit():
-            return self.get_used_var(node)
+            name = self.get_used_var(node)
+            if node.order:
+                self.cur_func_var = name
+            return name
 
     def visit_add(self, node, **kwargs):
         if self.is_normal_visit():
