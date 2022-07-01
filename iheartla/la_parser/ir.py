@@ -1208,7 +1208,9 @@ class FunctionNode(ExprNode):
         self.order_mode = order_mode
 
     def get_signature(self):
-        if self.order and self.order == 1:
-            if len(self.params) == 1:
-                return "{}&{}".format(self.name.get_main_id(), self.params[0].raw_text)
-        return self.raw_text
+        if self.order:
+            if self.order == 1:
+                if len(self.params) == 1:
+                    return "{}&{}".format(self.name.get_main_id(), self.params[0].raw_text)
+            return self.name.get_main_id()
+        return self.name.raw_text

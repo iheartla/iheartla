@@ -184,6 +184,9 @@ class IRMutator(IRIterator):
                 ode_node.init_list = node.init_list
                 if len(node.params_dict) > 0:
                     ode_node.param = node.params_dict[0][0]
+                else:
+                    # no params
+                    ode_node.param = self.generate_var_name('t')
                 return ode_node
         elif node.eq_type & EqTypeEnum.PDE:
             print("pde")
