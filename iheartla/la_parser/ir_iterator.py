@@ -9,7 +9,7 @@ class IRIterator(IRVisitor):
         super().__init__()
 
     def visit_id(self, node, **kwargs):
-        pass
+        return node
 
     def visit_add(self, node, **kwargs):
         self.visit(node.left, **kwargs)
@@ -33,6 +33,7 @@ class IRIterator(IRVisitor):
 
     def visit_sub_expr(self, node, **kwargs):
         self.visit(node.value, **kwargs)
+        return node
 
     def visit_cast(self, node, **kwargs):
         if node.value:
@@ -50,8 +51,9 @@ class IRIterator(IRVisitor):
 
     def visit_expression(self, node, **kwargs):
         self.visit(node.value, **kwargs)
+        return node
 
-    ####################################################
+        ####################################################
     def visit_matrix(self, node, **kwargs):
         pass
 
@@ -172,21 +174,21 @@ class IRIterator(IRVisitor):
 
     def visit_factor(self, node, **kwargs):
         if node.id:
-            self.visit(node.id, **kwargs)
+            return self.visit(node.id, **kwargs)
         elif node.num:
-            self.visit(node.num, **kwargs)
+            return self.visit(node.num, **kwargs)
         elif node.sub:
-            self.visit(node.sub, **kwargs)
+            return self.visit(node.sub, **kwargs)
         elif node.m:
-            self.visit(node.m, **kwargs)
+            return self.visit(node.m, **kwargs)
         elif node.v:
-            self.visit(node.v, **kwargs)
+            return self.visit(node.v, **kwargs)
         elif node.nm:
-            self.visit(node.nm, **kwargs)
+            return self.visit(node.nm, **kwargs)
         elif node.op:
-            self.visit(node.op, **kwargs)
+            return self.visit(node.op, **kwargs)
         elif node.c:
-            self.visit(node.c, **kwargs)
+            return self.visit(node.c, **kwargs)
 
     def visit_double(self, node, **kwargs):
         pass
