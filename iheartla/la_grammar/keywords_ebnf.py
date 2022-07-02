@@ -28,6 +28,7 @@ BUILTIN_KEYWORDS
     | OR
     | DELTA | NABLA | DERIVATIVE | PARTIAL
     | SOLVE
+    | PRIME
     ;
 
 TRACE = /trace/;
