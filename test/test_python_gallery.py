@@ -425,7 +425,7 @@ class TestGallery(BasePythonTest):
         θ: ℝ
         v: ℝ
         `D_A`: ℝ,ℝ->ℝ^3
-        δ: ℝ,ℝ->ℝ """
+        `δ`: ℝ,ℝ->ℝ """
         func_info = self.gen_func_info(la_str)
         v̄ = np.array([1, 2, 3])
         ō = np.array([2, 2, 4])

@@ -663,7 +663,7 @@ class TypeWalker(NodeWalker):
                                 rhs_id_node = assign_node.right[0].value.id
                                 if rhs_id_node.la_type.is_function():
                                     if lhs_id_node.contain_subscript():
-                                        self.assert_expr(lhs_id_node.node_type == IRNodeType.SequenceIndex, get_err_msg_info(lhs_id_node.parseinfo, "Invalid assignment for function"))
+                                        self.assert_expr(lhs_id_node.node_type == IRNodeType.SequenceIndex, get_err_msg_info(lhs_id_node.parse_info, "Invalid assignment for function"))
                             except AssertionError as e:
                                 # lhs = symbol
                                 continue
