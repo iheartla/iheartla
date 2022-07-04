@@ -2588,7 +2588,7 @@ class TypeWalker(NodeWalker):
         if left_content in self.symtable:
             node_type = self.symtable[left_content].element_type
         #
-        ir_node = IdNode(left_content, right_content, parse_info=parse_info, raw_text=node.text)
+        ir_node = IdNode(left_content, right_content, parse_info=parse_info, raw_text=content)
         ir_node.la_type = node_type
         node_info = NodeInfo(node_type, content, {content}, ir_node)
         self.get_cur_param_data().ids_dict[content] = Identifier(left_content, right_content)
