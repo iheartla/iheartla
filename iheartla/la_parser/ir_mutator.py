@@ -2,6 +2,7 @@ import copy
 import sympy
 from .ir_visitor import *
 from .ir_iterator import *
+from ..la_tools.la_msg import *
 
 class MutatorVisitType(IntEnum):
     MutatorVisitInvalid = -1
@@ -33,12 +34,17 @@ def convert_sympy_ast(ast, node_dict):
         return IntegerNode(value=ast)
     elif type(ast).__name__ == 'One':
         return IntegerNode(value=1)
+    elif type(ast).__name__ == 'Zero':
+        return IntegerNode(value=0)
     print("ast: {}".format(ast))
     return ast
 
 
 def is_sympy_one(ast):
     return type(ast).__name__ == 'One'
+
+def is_sympy_zero(ast):
+    return type(ast).__name__ == 'Zero'
 
 
 def make_addition(nodes):
@@ -207,7 +213,9 @@ class IRMutator(IRIterator):
             b = Wild(self.generate_var_name("b"), exclude=[x])
             res = (lhs-(rhs)).match(A*x - b)
             print("res: {}".format(res))
+            assert res and len(res) > 0, get_err_msg_info(node.parse_info, "Unsolvable equation")
             if res and len(res) > 0:
+                assert not is_sympy_zero(res[A]), get_err_msg_info(node.parse_info, "Unsolvable equation")
                 lnode = convert_sympy_ast(res[A], self.node_dict)
                 rnode = convert_sympy_ast(res[b], self.node_dict)
                 assign_node = AssignNode([copy.deepcopy(node.unknown_id)], [], parse_info=node.parse_info, raw_text=node.raw_text)
@@ -231,6 +239,7 @@ class IRMutator(IRIterator):
             b = Wild(self.generate_var_name("b"), exclude=[self.cur_func_var])
             res = (lhs - (rhs)).match(A * self.cur_func_var - b)
             print("res: {}".format(res))
+            assert res and len(res) > 0, get_err_msg_info(node.parse_info, "Unsolvable ODE equation")
             if res and len(res) > 0:
                 lnode = convert_sympy_ast(res[A], self.node_dict)
                 rnode = convert_sympy_ast(res[b], self.node_dict)
