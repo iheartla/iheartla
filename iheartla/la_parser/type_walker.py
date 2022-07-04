@@ -222,6 +222,7 @@ def la_remove_key(keys, **kwargs):
 class TypeWalker(NodeWalker):
     def __init__(self):
         super().__init__()
+        self.pre_func_symtable = {}
         self.symtable = {}
         self.tmp_symtable = {}  # temporary variables in integral or optimization
         self.parameters = []
@@ -338,10 +339,17 @@ class TypeWalker(NodeWalker):
     def is_inside_sum(self):
         return len(self.sum_subs) > 0
 
+    def save_func_symtable(self):
+        self.pre_func_symtable.clear()
+        for k, value in self.symtable.items():
+            if value.is_function():
+                self.pre_func_symtable[k] = value
+
     def reset(self):
         self.reset_state()
 
     def reset_state(self, la_content=''):
+        self.save_func_symtable()
         self.symtable.clear()
         self.tmp_symtable.clear()
         self.parameters.clear()
@@ -2204,7 +2212,10 @@ class TypeWalker(NodeWalker):
             return node_info
         else:
             # not in symtable now
-            la_type = FunctionType(cur_type=FuncType.FuncDynamic)
+            if ir_node.name.get_name() in self.pre_func_symtable:
+                la_type = self.pre_func_symtable[ir_node.name.get_name()]
+            else:
+                la_type = FunctionType(cur_type=FuncType.FuncDynamic)
             self.get_cur_param_data().symtable[ir_node.name.get_main_id()] = la_type
             # assert False, "Not a function"
             node_info = NodeInfo(la_type, ir=ir_node)
