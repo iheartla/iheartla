@@ -512,7 +512,6 @@ class CodeGenNumpy(CodeGen):
                         self.visit(node.stmts[index], **kwargs)
                     elif node.stmts[index].is_node(IRNodeType.OdeFirstOrder):
                         stats_content += self.visit(node.stmts[index], **kwargs).content
-                        continue
                     continue
             stat_info = self.visit(node.stmts[index], **kwargs)
             if stat_info.pre_list:
