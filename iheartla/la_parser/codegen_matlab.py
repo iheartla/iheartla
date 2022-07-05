@@ -575,6 +575,9 @@ class CodeGenMatlab(CodeGen):
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
                         continue
+                    elif node.stmts[index].is_node(IRNodeType.OdeFirstOrder):
+                        stats_content += self.visit(node.stmts[index], **kwargs).content
+                        continue
                     kwargs[LHS] = self.ret_symbol
                     ret_str = "    " + self.ret_symbol + ' = '
             else:
@@ -582,6 +585,8 @@ class CodeGenMatlab(CodeGen):
                     # meaningless
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
+                    elif node.stmts[index].is_node(IRNodeType.OdeFirstOrder):
+                        stats_content += self.visit(node.stmts[index], **kwargs).content
                     continue
             stat_info = self.visit(node.stmts[index], **kwargs)
             if stat_info.pre_list:
@@ -712,6 +717,22 @@ class CodeGenMatlab(CodeGen):
             content.append("    end\n")
         content.append("end\n")
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
+
+    def visit_function(self, node, **kwargs):
+        name_info = self.visit(node.name, **kwargs)
+        pre_list = []
+        params = []
+        if node.params:
+            for param in node.params:
+                param_info = self.visit(param, **kwargs)
+                params.append(param_info.content)
+                pre_list += param_info.pre_list
+        if self.visiting_diff_eq:
+            if self.visiting_diff_init:
+                return CodeNodeInfo(','.join(params), pre_list)
+            return name_info
+        content = "{}({})".format(name_info.content, ', '.join(params))
+        return CodeNodeInfo(content, pre_list)
 
     def visit_local_func(self, node, **kwargs):
         self.local_func_parsing = True
@@ -1479,7 +1500,25 @@ class CodeGenMatlab(CodeGen):
         return CodeNodeInfo("")
 
     def visit_first_order_ode(self, node, **kwargs):
-        return CodeNodeInfo("")
+        self.visiting_diff_eq = True
+        target_name = self.generate_var_name("target")
+        content = "    function ret = {}({}, {})\n".format(target_name, node.param, node.func)
+        content += "        ret = {};\n".format(self.visit(node.expr, **kwargs).content)
+        content += "    end\n"
+        content += "    function ret = {}({})\n".format(node.func, node.param)
+        if len(node.init_list) > 0:
+            self.visiting_diff_init = True
+            lhs = []
+            rhs = []
+            for eq_node in node.init_list:
+                lhs.append(self.visit(eq_node.left).content)
+                rhs.append(self.visit(eq_node.right).content)
+            self.visiting_diff_init = False
+            content += "        [{}, {}] = ode23(@{}, [{}, {}], [{}]);\n".format(node.param, node.func, target_name, lhs[0], node.param, rhs[0])
+            content += "        ret = {}(length({}));\n".format(node.func, node.func)
+            content += "    end\n"
+        self.visiting_diff_eq = False
+        return CodeNodeInfo(content)
 
     def visit_optimize(self, node, **kwargs):
         self.opt_key = node.key
