@@ -501,7 +501,7 @@ class CodeGenNumpy(CodeGen):
                         self.visit(node.stmts[index], **kwargs)
                         continue
                     elif node.stmts[index].is_node(IRNodeType.OdeFirstOrder):
-                        stats_content += self.visit(node.stmts[index], **kwargs).content
+                        self.visit(node.stmts[index], **kwargs)
                         continue
                     kwargs[LHS] = self.ret_symbol
                     ret_str = "    self." + self.ret_symbol + ' = '
@@ -511,7 +511,7 @@ class CodeGenNumpy(CodeGen):
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
                     elif node.stmts[index].is_node(IRNodeType.OdeFirstOrder):
-                        stats_content += self.visit(node.stmts[index], **kwargs).content
+                        self.visit(node.stmts[index], **kwargs)
                     continue
             stat_info = self.visit(node.stmts[index], **kwargs)
             if stat_info.pre_list:
@@ -1454,9 +1454,9 @@ class CodeGenNumpy(CodeGen):
     def visit_first_order_ode(self, node, **kwargs):
         self.visiting_diff_eq = True
         target_name = self.generate_var_name("target")
-        content = "    def {}({}, {}):\n".format(target_name, node.param, node.func)
+        content = "    def {}(self, {}, {}):\n".format(target_name, node.param, node.func)
         content += "        return {}\n".format(self.visit(node.expr, **kwargs).content)
-        content += "    def {}({}):\n".format(node.func, node.param)
+        content += "    def {}(self, {}):\n".format(node.func, node.param)
         if len(node.init_list) > 0:
             self.visiting_diff_init = True
             lhs = []
@@ -1465,9 +1465,10 @@ class CodeGenNumpy(CodeGen):
                 lhs.append(self.visit(eq_node.left).content)
                 rhs.append(self.visit(eq_node.right).content)
             self.visiting_diff_init = False
-            content += "        return solve_ivp({}, [{}, {}], [{}]).y[0, -1]\n".format(target_name, lhs[0], node.param, rhs[0])
+            content += "        return solve_ivp(self.{}, [{}, {}], [{}]).y[0, -1]\n".format(target_name, lhs[0], node.param, rhs[0])
         self.visiting_diff_eq = False
-        return CodeNodeInfo(content)
+        self.local_func_def += content
+        return CodeNodeInfo()
 
     def visit_optimize(self, node, **kwargs):
         self.enable_tmp_sym = True

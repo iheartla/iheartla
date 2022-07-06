@@ -1696,9 +1696,9 @@ class CodeGenEigen(CodeGen):
             x = self.generate_var_name("x")
             content += "    {\n"
             content += "        double {} = {};\n".format(x, rhs[0])
-            content += "        {} ret = integrate_adaptive(make_controlled(1E-12, 1E-12, runge_kutta_dopri5<double>()), {}::{}, {}, double({}), {}, 0.1);\n".format(self.get_ctype(self.symtable[node.func].ret[0]), self.func_name, target_name, x,
+            content += "        integrate_adaptive(make_controlled(1E-12, 1E-12, runge_kutta_dopri5<double>()), {}::{}, {}, double({}), {}, 0.1);\n".format(self.func_name, target_name, x,
                                                                                lhs[0], node.param)
-            content += "        return ret;\n".format(node.func, node.func)
+            content += "        return {};\n".format(x)
             content += "    }\n"
         self.visiting_diff_eq = False
         self.local_func_def += content
