@@ -592,6 +592,9 @@ class CodeGenEigen(CodeGen):
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
                         continue
+                    elif node.stmts[index].is_node(IRNodeType.OdeFirstOrder):
+                        stats_content += self.visit(node.stmts[index], **kwargs).content
+                        continue
                     kwargs[LHS] = self.ret_symbol
                     ret_str = "    " + self.ret_symbol + ' = '
                     need_semicolon = True
@@ -600,6 +603,8 @@ class CodeGenEigen(CodeGen):
                     # meaningless
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
+                    elif node.stmts[index].is_node(IRNodeType.OdeFirstOrder):
+                        stats_content += self.visit(node.stmts[index], **kwargs).content
                     continue
             stat_info = self.visit(node.stmts[index], **kwargs)
             if stat_info.pre_list:
@@ -762,6 +767,22 @@ class CodeGenEigen(CodeGen):
         content.append("}\n")
         self.del_name_conventions(name_convention)
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
+
+    def visit_function(self, node, **kwargs):
+        name_info = self.visit(node.name, **kwargs)
+        pre_list = []
+        params = []
+        if node.params:
+            for param in node.params:
+                param_info = self.visit(param, **kwargs)
+                params.append(param_info.content)
+                pre_list += param_info.pre_list
+        if self.visiting_diff_eq:
+            if self.visiting_diff_init:
+                return CodeNodeInfo(','.join(params), pre_list)
+            return name_info
+        content = "{}({})".format(name_info.content, ', '.join(params))
+        return CodeNodeInfo(content, pre_list)
 
     def visit_local_func(self, node, **kwargs):
         self.local_func_parsing = True
@@ -1652,7 +1673,31 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo("")
 
     def visit_first_order_ode(self, node, **kwargs):
-        return CodeNodeInfo("")
+        self.visiting_diff_eq = True
+        target_name = self.generate_var_name("rhs")
+        content = "    void {}(const {} {}, {} &d{}d{}, const {} {})\n".format(target_name, self.get_ctype(node.expr.la_type), node.func,
+                                                                                    self.get_ctype(node.expr.la_type), node.func, node.param,
+                                                                                    self.get_ctype(self.symtable[node.func].params[0]), node.param)
+        content += "    {\n"
+        content += "        d{}d{} = {};\n".format(node.func, node.param, self.visit(node.expr, **kwargs).content)
+        content += "    }\n"
+        content += "    {} {}({} {})\n".format(self.get_ctype(self.symtable[node.func].ret[0]), node.func,
+                                               self.get_ctype(self.symtable[node.func].params[0]), node.param)
+        if len(node.init_list) > 0:
+            self.visiting_diff_init = True
+            lhs = []
+            rhs = []
+            for eq_node in node.init_list:
+                lhs.append(self.visit(eq_node.left).content)
+                rhs.append(self.visit(eq_node.right).content)
+            self.visiting_diff_init = False
+            content += "    {\n"
+            content += "        {} ret = integrate({}, {}, {}, {}, 0.1);\n".format(self.get_ctype(self.symtable[node.func].ret[0]), target_name, rhs[0],
+                                                                               lhs[0], node.param)
+            content += "        return ret;\n".format(node.func, node.func)
+            content += "    }\n"
+        self.visiting_diff_eq = False
+        return CodeNodeInfo(content)
 
     def visit_optimize(self, node, **kwargs):
         self.enable_tmp_sym = True
