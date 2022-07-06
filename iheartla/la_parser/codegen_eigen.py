@@ -15,6 +15,8 @@ class CodeGenEigen(CodeGen):
             self.pre_str += '#include <unsupported/Eigen/MatrixFunctions>\n'
         if self.has_opt:
             self.pre_str += '#include <LBFGS.h>\n'
+        self.pre_str += '#include <boost/numeric/odeint.hpp>\n'
+        self.pre_str += 'using namespace boost::numeric::odeint;\n'
         self.pre_str += '\n'
         self.code_frame.desc = '/*\n{}\n*/\n'''.format(self.la_content)
         self.code_frame.include = self.pre_str
@@ -593,7 +595,7 @@ class CodeGenEigen(CodeGen):
                         self.visit(node.stmts[index], **kwargs)
                         continue
                     elif node.stmts[index].is_node(IRNodeType.OdeFirstOrder):
-                        stats_content += self.visit(node.stmts[index], **kwargs).content
+                        self.visit(node.stmts[index], **kwargs)
                         continue
                     kwargs[LHS] = self.ret_symbol
                     ret_str = "    " + self.ret_symbol + ' = '
@@ -604,7 +606,7 @@ class CodeGenEigen(CodeGen):
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
                     elif node.stmts[index].is_node(IRNodeType.OdeFirstOrder):
-                        stats_content += self.visit(node.stmts[index], **kwargs).content
+                        self.visit(node.stmts[index], **kwargs)
                     continue
             stat_info = self.visit(node.stmts[index], **kwargs)
             if stat_info.pre_list:
@@ -1675,7 +1677,7 @@ class CodeGenEigen(CodeGen):
     def visit_first_order_ode(self, node, **kwargs):
         self.visiting_diff_eq = True
         target_name = self.generate_var_name("rhs")
-        content = "    void {}(const {} {}, {} &d{}d{}, const {} {})\n".format(target_name, self.get_ctype(node.expr.la_type), node.func,
+        content = "    static void {}(const {} {}, {} &d{}d{}, const {} {})\n".format(target_name, self.get_ctype(node.expr.la_type), node.func,
                                                                                     self.get_ctype(node.expr.la_type), node.func, node.param,
                                                                                     self.get_ctype(self.symtable[node.func].params[0]), node.param)
         content += "    {\n"
@@ -1691,13 +1693,16 @@ class CodeGenEigen(CodeGen):
                 lhs.append(self.visit(eq_node.left).content)
                 rhs.append(self.visit(eq_node.right).content)
             self.visiting_diff_init = False
+            x = self.generate_var_name("x")
             content += "    {\n"
-            content += "        {} ret = integrate({}, {}, {}, {}, 0.1);\n".format(self.get_ctype(self.symtable[node.func].ret[0]), target_name, rhs[0],
+            content += "        double {} = {};\n".format(x, rhs[0])
+            content += "        {} ret = integrate_adaptive(make_controlled(1E-12, 1E-12, runge_kutta_dopri5<double>()), {}::{}, {}, double({}), {}, 0.1);\n".format(self.get_ctype(self.symtable[node.func].ret[0]), self.func_name, target_name, x,
                                                                                lhs[0], node.param)
             content += "        return ret;\n".format(node.func, node.func)
             content += "    }\n"
         self.visiting_diff_eq = False
-        return CodeNodeInfo(content)
+        self.local_func_def += content
+        return CodeNodeInfo()
 
     def visit_optimize(self, node, **kwargs):
         self.enable_tmp_sym = True
