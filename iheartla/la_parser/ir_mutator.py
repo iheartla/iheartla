@@ -246,7 +246,7 @@ class IRMutator(IRIterator):
                 if is_sympy_one(res[A]):
                     fraction = rnode
                 else:
-                    fraction = DivNode(rnode, lnode)
+                    fraction = DivNode(rnode, lnode, la_type=lnode.la_type)
                 ode_node = OdeFirstOrderNode(func=self.unknown_sym, expr=fraction, la_type=self.symtable[node.unknown_id.get_main_id()],
                                                 parse_info=node.parse_info, raw_text=node.raw_text)
                 ode_node.init_list = node.init_list
