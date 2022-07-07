@@ -135,7 +135,7 @@ assignment::Assignment
     =
     left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'=' {hspace} {separator_with_space} right+:right_hand_side {{hspace} ',' {hspace} right+:expression}
     | left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'+=' {hspace} {separator_with_space} right+:right_hand_side {{hspace} ',' {hspace} right+:expression}
-    | {SOLVE '_(' {hspace} v:where_condition_terse {hspace}')' {hspace}+} lexpr:expression {hspace} op:'=' {hspace} rexpr:expression 
+    | {SOLVE '_(' {hspace} v:where_condition_terse {hspace}')' {hspace}} lexpr:expression {hspace} op:'=' {hspace} rexpr:expression 
     ;
     
 #### name:(func_id | identifier)
