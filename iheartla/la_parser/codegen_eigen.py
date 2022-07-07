@@ -1684,7 +1684,7 @@ class CodeGenEigen(CodeGen):
         content += "    {\n"
         content += "        d{}d{} = {};\n".format(node.func, node.param, self.visit(node.expr, **kwargs).content)
         content += "    }\n"
-        content += "    {} {}({} {})\n".format(self.get_ctype(self.symtable[node.func].ret[0]), node.func,
+        content += "    {} {}({} d{})\n".format(self.get_ctype(self.symtable[node.func].ret[0]), node.func,
                                                self.get_ctype(self.symtable[node.func].params[0]), node.param)
         if len(node.init_list) > 0:
             self.visiting_diff_init = True
@@ -1697,7 +1697,7 @@ class CodeGenEigen(CodeGen):
             x = self.generate_var_name("x")
             content += "    {\n"
             content += "        double {} = {};\n".format(x, rhs[0])
-            content += "        integrate_adaptive(make_controlled(1E-12, 1E-12, runge_kutta_dopri5<double>()), {}::{}, {}, double({}), {}, 0.1);\n".format(self.func_name, target_name, x,
+            content += "        integrate_adaptive(make_controlled(1E-12, 1E-12, runge_kutta_dopri5<double>()), {}::{}, {}, double({}), d{}, 0.1);\n".format(self.func_name, target_name, x,
                                                                                lhs[0], node.param)
             content += "        return {};\n".format(x)
             content += "    }\n"
