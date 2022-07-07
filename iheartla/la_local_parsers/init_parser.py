@@ -4531,7 +4531,7 @@ class grammarinitParser(Parser):
 
                     def block32():
                         self._hspace_()
-                    self._positive_closure(block32)
+                    self._closure(block32)
                 self._closure(block28)
                 self._expression_()
                 self.name_last_node('lexpr')
