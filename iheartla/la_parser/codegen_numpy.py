@@ -1456,7 +1456,7 @@ class CodeGenNumpy(CodeGen):
         target_name = self.generate_var_name("target")
         content = "    def {}(self, {}, {}):\n".format(target_name, node.param, node.func)
         content += "        return {}\n".format(self.visit(node.expr, **kwargs).content)
-        content += "    def {}(self, {}):\n".format(node.func, node.param)
+        content += "    def {}(self, d{}):\n".format(node.func, node.param)
         if len(node.init_list) > 0:
             self.visiting_diff_init = True
             lhs = []
@@ -1465,7 +1465,7 @@ class CodeGenNumpy(CodeGen):
                 lhs.append(self.visit(eq_node.left).content)
                 rhs.append(self.visit(eq_node.right).content)
             self.visiting_diff_init = False
-            content += "        return solve_ivp(self.{}, [{}, {}], [{}]).y[0, -1]\n".format(target_name, lhs[0], node.param, rhs[0])
+            content += "        return solve_ivp(self.{}, [{}, d{}], [{}]).y[0, -1]\n".format(target_name, lhs[0], node.param, rhs[0])
         self.visiting_diff_eq = False
         self.local_func_def += content
         return CodeNodeInfo()

@@ -1505,7 +1505,7 @@ class CodeGenMatlab(CodeGen):
         content = "    function ret = {}({}, {})\n".format(target_name, node.param, node.func)
         content += "        ret = {};\n".format(self.visit(node.expr, **kwargs).content)
         content += "    end\n"
-        content += "    function ret = {}({})\n".format(node.func, node.param)
+        content += "    function ret = {}(d{})\n".format(node.func, node.param)
         if len(node.init_list) > 0:
             self.visiting_diff_init = True
             lhs = []
@@ -1514,7 +1514,7 @@ class CodeGenMatlab(CodeGen):
                 lhs.append(self.visit(eq_node.left).content)
                 rhs.append(self.visit(eq_node.right).content)
             self.visiting_diff_init = False
-            content += "        [{}, {}] = ode23(@{}, [{}, {}], [{}]);\n".format(node.param, node.func, target_name, lhs[0], node.param, rhs[0])
+            content += "        [{}, {}] = ode23(@{}, [{}, d{}], [{}]);\n".format(node.param, node.func, target_name, lhs[0], node.param, rhs[0])
             content += "        ret = {}(length({}));\n".format(node.func, node.func)
             content += "    end\n"
         self.visiting_diff_eq = False
