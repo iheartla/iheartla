@@ -15,8 +15,9 @@ class CodeGenEigen(CodeGen):
             self.pre_str += '#include <unsupported/Eigen/MatrixFunctions>\n'
         if self.has_opt:
             self.pre_str += '#include <LBFGS.h>\n'
-        self.pre_str += '#include <boost/numeric/odeint.hpp>\n'
-        self.pre_str += 'using namespace boost::numeric::odeint;\n'
+        if self.need_mutator:
+            self.pre_str += '#include <boost/numeric/odeint.hpp>\n'
+            self.pre_str += 'using namespace boost::numeric::odeint;\n'
         self.pre_str += '\n'
         self.code_frame.desc = '/*\n{}\n*/\n'''.format(self.la_content)
         self.code_frame.include = self.pre_str
