@@ -22,14 +22,6 @@ from .la_data import *
 from enum import Enum, IntFlag
 
 
-class TypeInferenceEnum(Enum):
-    INF_ADD = 0
-    INF_SUB = 1
-    INF_MUL = 2
-    INF_DIV = 3
-    INF_MATRIX_ROW = 4
-
-
 class WalkTypeEnum(Enum):
     RETRIEVE_EXPRESSION = 0   # default
     RETRIEVE_VAR = 1
@@ -444,47 +436,6 @@ class TypeWalker(NodeWalker):
             index += 1
         self.name_cnt_dict[base] = index - 1
         return ret
-
-    def get_op_desc(self, op):
-        desc = ""
-        if op == TypeInferenceEnum.INF_ADD:
-            desc = "add"
-        elif op == TypeInferenceEnum.INF_SUB:
-            desc = "subtract"
-        elif op == TypeInferenceEnum.INF_MUL:
-            desc = "multiply"
-        elif op == TypeInferenceEnum.INF_DIV:
-            desc = "divide"
-        elif op == TypeInferenceEnum.INF_MATRIX_ROW:
-            desc = "place"
-        return desc
-
-    def get_type_desc(self, la_type):
-        desc = "NoneType"
-        if la_type.is_sequence():
-            desc = "sequence"
-        elif la_type.is_matrix():
-            dim_str = "{}, {}".format(la_type.rows, la_type.cols)
-            if la_type.is_dynamic():
-                if la_type.is_dynamic_row() and la_type.is_dynamic_col():
-                    dim_str = "*,*"
-                elif la_type.is_dynamic_row():
-                    dim_str = "*,{}".format(la_type.cols)
-                elif la_type.is_dynamic_col():
-                    dim_str = "{},*".format(la_type.rows)
-            desc = "matrix({})".format(dim_str)
-        elif la_type.is_vector():
-            dim_str = "{}".format(la_type.rows)
-            if la_type.is_dynamic_row():
-                dim_str = "*"
-            desc = "vector({})".format(dim_str)
-        elif la_type.is_scalar():
-            desc = "scalar"
-        elif la_type.is_set():
-            desc = "set"
-        elif la_type.is_function():
-            desc = "function"
-        return desc
 
     def get_line_desc(self, node):
         # ir node
@@ -3525,10 +3476,10 @@ class TypeWalker(NodeWalker):
                 error_msg = 'No type info.\n'
             else:
                 error_msg = 'Dimension mismatch. Can\'t {} {} {} and {} {}. {}\n'.format(
-                                                                                    self.get_op_desc(op),
-                                                                                    self.get_type_desc(left_type),
+                                                                                    get_op_desc(op),
+                                                                                    get_type_desc(left_type),
                                                                                     get_parse_info_buffer(left_info.ir.parse_info).text[left_info.ir.parse_info.pos:left_info.ir.parse_info.endpos],
-                                                                                    self.get_type_desc(right_type),
+                                                                                    get_type_desc(right_type),
                                                                                           get_parse_info_buffer(right_info.ir.parse_info).text[right_info.ir.parse_info.pos:right_info.ir.parse_info.endpos],
                                                                                     extra_msg)
             raw_text = left_line.text
