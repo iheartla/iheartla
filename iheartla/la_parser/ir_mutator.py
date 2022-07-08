@@ -49,15 +49,17 @@ def is_sympy_zero(ast):
 
 def make_addition(nodes):
     if len(nodes) == 2:
-        return AddNode(nodes[0], nodes[1], la_type=nodes[0].la_type)
+        return AddNode(nodes[0], nodes[1], la_type=get_derived_type(TypeInferenceEnum.INF_ADD, nodes[0].la_type, nodes[1].la_type))
     else:
-        return AddNode(nodes[0], make_addition(nodes[1:]), la_type=nodes[0].la_type)
+        right = make_addition(nodes[1:])
+        return AddNode(nodes[0], right, la_type=get_derived_type(TypeInferenceEnum.INF_ADD, nodes[0].la_type, right.la_type))
 
 def make_mul(nodes):
     if len(nodes) == 2:
-        return MulNode(nodes[0], nodes[1], la_type=nodes[0].la_type)
+        return MulNode(nodes[0], nodes[1], la_type=get_derived_type(TypeInferenceEnum.INF_MUL, nodes[0].la_type, nodes[1].la_type))
     else:
-        return MulNode(nodes[0], make_mul(nodes[1:]), la_type=nodes[0].la_type)
+        right = make_mul(nodes[1:])
+        return MulNode(nodes[0], right, la_type=get_derived_type(TypeInferenceEnum.INF_MUL, nodes[0].la_type, right.la_type))
 
 
 class IRTypeLift(IRIterator):
