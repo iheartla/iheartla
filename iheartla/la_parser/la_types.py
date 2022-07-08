@@ -1,3 +1,4 @@
+import copy
 from enum import Enum, IntEnum, IntFlag
 
 
@@ -334,3 +335,169 @@ class Identifier(object):
 
     def get_main_id(self):
         return self.main_id
+
+# Useful functions
+from ..la_tools.la_msg import *
+from ..la_tools.la_helper import *
+
+
+class TypeInferenceEnum(Enum):
+    INF_ADD = 0
+    INF_SUB = 1
+    INF_MUL = 2
+    INF_DIV = 3
+    INF_MATRIX_ROW = 4
+
+
+def get_op_desc(op):
+    desc = ""
+    if op == TypeInferenceEnum.INF_ADD:
+        desc = "add"
+    elif op == TypeInferenceEnum.INF_SUB:
+        desc = "subtract"
+    elif op == TypeInferenceEnum.INF_MUL:
+        desc = "multiply"
+    elif op == TypeInferenceEnum.INF_DIV:
+        desc = "divide"
+    elif op == TypeInferenceEnum.INF_MATRIX_ROW:
+        desc = "place"
+    return desc
+
+
+def get_type_desc(la_type):
+    desc = "NoneType"
+    if la_type.is_sequence():
+        desc = "sequence"
+    elif la_type.is_matrix():
+        dim_str = "{}, {}".format(la_type.rows, la_type.cols)
+        if la_type.is_dynamic():
+            if la_type.is_dynamic_row() and la_type.is_dynamic_col():
+                dim_str = "*,*"
+            elif la_type.is_dynamic_row():
+                dim_str = "*,{}".format(la_type.cols)
+            elif la_type.is_dynamic_col():
+                dim_str = "{},*".format(la_type.rows)
+        desc = "matrix({})".format(dim_str)
+    elif la_type.is_vector():
+        dim_str = "{}".format(la_type.rows)
+        if la_type.is_dynamic_row():
+            dim_str = "*"
+        desc = "vector({})".format(dim_str)
+    elif la_type.is_scalar():
+        desc = "scalar"
+    elif la_type.is_set():
+        desc = "set"
+    elif la_type.is_function():
+        desc = "function"
+    return desc
+
+
+def get_derived_type(op, left_type, right_type):
+    """
+    Assume derived type is valid
+    """
+    ret_type = None
+    if op == TypeInferenceEnum.INF_ADD or op == TypeInferenceEnum.INF_SUB:
+        ret_type = copy.deepcopy(left_type)  # default type
+        if left_type.is_scalar():
+            ret_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+        elif left_type.is_matrix():
+            # assert right_type.is_matrix() or right_type.is_vector(), error_msg
+            if left_type.is_dynamic() or right_type.is_dynamic():
+                if left_type.is_dynamic() and right_type.is_dynamic():
+                    if left_type.is_dynamic_row() and left_type.is_dynamic_col():
+                        ret_type = copy.deepcopy(right_type)
+                    elif left_type.is_dynamic_row():
+                        if right_type.is_dynamic_row() and right_type.is_dynamic_col():
+                            ret_type = copy.deepcopy(left_type)
+                        elif right_type.is_dynamic_row():
+                            ret_type = copy.deepcopy(left_type)
+                        elif right_type.is_dynamic_col():
+                            ret_type = copy.deepcopy(left_type)
+                            ret_type.rows = right_type.rows
+                            ret_type.set_dynamic_type(DynamicTypeEnum.DYN_INVALID)  # change to static type
+                    elif left_type.is_dynamic_col():
+                        if right_type.is_dynamic_row() and right_type.is_dynamic_col():
+                            ret_type = copy.deepcopy(left_type)
+                        elif right_type.is_dynamic_row():
+                            ret_type = copy.deepcopy(left_type)
+                            ret_type.cols = right_type.cols
+                            ret_type.set_dynamic_type(DynamicTypeEnum.DYN_INVALID)  # change to static type
+                        elif right_type.is_dynamic_col():
+                            ret_type = copy.deepcopy(left_type)
+                else:
+                    if left_type.is_dynamic():
+                        if left_type.is_dynamic_row() and left_type.is_dynamic_col():
+                            ret_type = copy.deepcopy(right_type)
+                        else:
+                            pass
+                    else:
+                        if right_type.is_dynamic_row() and right_type.is_dynamic_col():
+                            ret_type = copy.deepcopy(left_type)
+                        else:
+                            pass
+            else:
+                # static
+                if left_type.sparse and right_type.sparse:
+                    ret_type.sparse = True
+                else:
+                    ret_type.sparse = False
+            ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+        elif left_type.is_vector():
+            if right_type.is_matrix():
+                ret_type = copy.deepcopy(right_type)
+            ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+        else:
+            # sequence et al.
+            pass
+        # index type checking
+        if left_type.index_type or right_type.index_type:
+            ret_type.index_type = True
+            if op == TypeInferenceEnum.INF_ADD:
+                pass
+            else:
+                if left_type.index_type and right_type.index_type:
+                    ret_type.index_type = False
+    elif op == TypeInferenceEnum.INF_MUL:
+        if left_type.is_scalar():
+            ret_type = copy.deepcopy(right_type)
+            ret_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+        elif left_type.is_matrix():
+            if right_type.is_scalar():
+                ret_type = copy.deepcopy(left_type)
+            elif right_type.is_matrix():
+                ret_type = MatrixType(rows=left_type.rows, cols=right_type.cols)
+                if left_type.sparse and right_type.sparse:
+                    ret_type.sparse = True
+                # if left_type.rows == 1 and right_type.cols == 1:
+                #     ret_type = ScalarType()
+                ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+            elif right_type.is_vector():
+                if left_type.rows == 1:
+                    # scalar
+                    ret_type = ScalarType()
+                    need_cast = True
+                    ret_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+                else:
+                    ret_type = VectorType(rows=left_type.rows)
+                    ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+        elif left_type.is_vector():
+            if right_type.is_scalar():
+                ret_type = copy.deepcopy(left_type)
+                ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+            elif right_type.is_matrix():
+                ret_type = MatrixType(rows=left_type.rows, cols=right_type.cols)
+                ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+            elif right_type.is_vector():
+                ret_type = copy.deepcopy(left_type)
+                ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+    elif op == TypeInferenceEnum.INF_DIV:
+        ret_type = copy.deepcopy(left_type)
+        if left_type.is_scalar():
+            ret_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+        else:
+            ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+    elif op == TypeInferenceEnum.INF_MATRIX_ROW:
+        # assert left_type.var_type == right_type.var_type
+        ret_type = copy.deepcopy(left_type)
+    return ret_type
