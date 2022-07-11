@@ -130,7 +130,7 @@ class IRNode(object):
     def contain_sym(self, sym):
         return sym in self.raw_text
 
-    def get_signature(self):
+    def get_signature(self, extra=None):
         return self.raw_text
 
 class StmtNode(IRNode):
@@ -1082,7 +1082,7 @@ class DerivativeNode(ExprNode):
         self.lower = lower
         self.order = order
 
-    def get_signature(self):
+    def get_signature(self, extra=None):
         if self.is_first_order():
             return "{}&{}".format(self.upper.raw_text, self.lower.raw_text)
         return self.raw_text
@@ -1207,10 +1207,16 @@ class FunctionNode(ExprNode):
         self.order = None
         self.order_mode = order_mode
 
-    def get_signature(self):
+    def get_signature(self, extra=None):
+        if extra is None:
+            extra = {}
         if self.order:
             if self.order == 1:
                 if len(self.params) == 1:
                     return "{}&{}".format(self.name.get_main_id(), self.params[0].raw_text)
+                else:
+                    # no param
+                    if "param" in extra:
+                        return "{}&{}".format(self.name.get_main_id(), extra["param"])
             return self.name.get_main_id()
         return self.name.raw_text

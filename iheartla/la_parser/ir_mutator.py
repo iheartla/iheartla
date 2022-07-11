@@ -129,6 +129,7 @@ class IRMutator(IRIterator):
         self.sympy_dict = {}
         self.cur_v_type = MutatorVisitType.MutatorVisitNormal
         self.cur_func_var = ''
+        self.cur_func_param = {}  # params for func in ode/pde
 
     def init_type(self, type_walker, func_name):
         self.reset()
@@ -150,7 +151,10 @@ class IRMutator(IRIterator):
         return self.visiting_solver and self.cur_v_type == MutatorVisitType.MutatorVisitOde
 
     def get_used_var(self, node):
-        signature = node.get_signature()
+        extra = {}
+        if len(self.cur_func_param) > 0:
+            extra = {"param": self.cur_func_param[0][0]}
+        signature = node.get_signature(extra)
         print("node raw_text: {}, signature:{}, self.reverse_dict:{}, self.sympy_dict:{}".format(node.raw_text, signature, self.reverse_dict, self.sympy_dict))
         if signature not in self.reverse_dict:
             new_var = self.generate_var_name("new")
@@ -233,6 +237,7 @@ class IRMutator(IRIterator):
                 return assign_node
         elif node.eq_type & EqTypeEnum.ODE:
             self.cur_v_type = MutatorVisitType.MutatorVisitOde
+            self.cur_func_param = node.params_dict
             print("ode")
             lhs = self.visit(node.left, **kwargs)
             rhs = self.visit(node.right, **kwargs)
