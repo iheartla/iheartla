@@ -4522,35 +4522,75 @@ class grammarinitParser(Parser):
                         self._hspace_()
                     self._closure(block29)
                     self._where_condition_terse_()
-                    self.name_last_node('v')
+                    self.add_last_node_to_name('v')
 
                     def block31():
                         self._hspace_()
                     self._closure(block31)
-                    self._token(')')
 
                     def block32():
-                        self._hspace_()
+                        self._token(',')
+
+                        def block33():
+                            self._hspace_()
+                        self._closure(block33)
+                        self._where_condition_terse_()
+                        self.add_last_node_to_name('v')
+
+                        def block35():
+                            self._hspace_()
+                        self._closure(block35)
                     self._closure(block32)
+                    self._token(')')
+
+                    def block36():
+                        self._hspace_()
+                    self._closure(block36)
                 self._closure(block28)
                 self._expression_()
-                self.name_last_node('lexpr')
+                self.add_last_node_to_name('lexpr')
 
-                def block34():
+                def block38():
                     self._hspace_()
-                self._closure(block34)
+                self._closure(block38)
                 self._token('=')
                 self.name_last_node('op')
 
-                def block36():
+                def block40():
                     self._hspace_()
-                self._closure(block36)
+                self._closure(block40)
                 self._expression_()
-                self.name_last_node('rexpr')
+                self.add_last_node_to_name('rexpr')
+
+                def block42():
+
+                    def block43():
+                        self._hspace_()
+                    self._closure(block43)
+                    self._token(';')
+
+                    def block44():
+                        self._hspace_()
+                    self._closure(block44)
+                    self._expression_()
+                    self.add_last_node_to_name('lexpr')
+
+                    def block46():
+                        self._hspace_()
+                    self._closure(block46)
+                    self._token('=')
+                    self.name_last_node('op')
+
+                    def block48():
+                        self._hspace_()
+                    self._closure(block48)
+                    self._expression_()
+                    self.add_last_node_to_name('rexpr')
+                self._closure(block42)
             self._error('no available options')
         self.ast._define(
-            ['lexpr', 'op', 'rexpr', 'v'],
-            ['left', 'right']
+            ['op'],
+            ['left', 'lexpr', 'rexpr', 'right', 'v']
         )
 
     @tatsumasu('LocalFunc')
