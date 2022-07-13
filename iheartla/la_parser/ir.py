@@ -356,8 +356,8 @@ class EqTypeEnum(IntFlag):
 class EquationNode(StmtNode):
     def __init__(self, left=None, right=None, eq_type=EqTypeEnum.DEFAULT, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Equation, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
-        self.left = left
-        self.right = right
+        self.left = left if left is not None else []
+        self.right = right if right is not None else []
         self.symbols = set()
         self.unknown_id = None
         self.eq_type = eq_type

@@ -327,8 +327,9 @@ class CodeGenLatex(CodeGen):
         return content
 
     def visit_equation(self, node, **kwargs):
-        lhs = self.visit(node.left, **kwargs)
-        rhs = self.visit(node.right, **kwargs)
+        for l_index in range(len(node.left)):
+            lhs = self.visit(node.left[l_index], **kwargs)
+            rhs = self.visit(node.right[l_index], **kwargs)
         return lhs + " & = " + rhs
 
     def visit_expression(self, node, **kwargs):

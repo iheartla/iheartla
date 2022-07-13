@@ -249,7 +249,7 @@ class TypeWalker(NodeWalker):
         self.cur_eq_type = EqTypeEnum.DEFAULT
         self.solved_func = []
         self.need_mutator = False   # whether the node tree needs to be changed: solver
-        self.unknown_sym = None
+        self.unknown_sym = []
         self.dyn_dim = False
         self.pre_walk = False
         # self.arith_dim_list = []
@@ -570,9 +570,10 @@ class TypeWalker(NodeWalker):
                     if self.pre_walk and vblock_info[0].v:
                         # solver
                         self.visiting_solver_eq = True
-                        v_info = self.walk(vblock_info[0].v)
-                        if v_info.type.is_node(IRNodeType.FunctionType):
-                            self.solved_func.append(v_info.id[0].get_main_id())
+                        for cur_v in vblock_info[0].v:
+                            v_info = self.walk(cur_v)
+                            if v_info.type.is_node(IRNodeType.FunctionType):
+                                self.solved_func.append(v_info.id[0].get_main_id())
                 elif type(vblock_info[0]).__name__ == 'LocalFunc':
                     if isinstance(vblock_info[0].name, str):
                         func_sym = vblock_info[0].name
@@ -1327,30 +1328,34 @@ class TypeWalker(NodeWalker):
     def walk_Assignment(self, node, **kwargs):
         # ir
         if node.lexpr:
+            self.unknown_sym.clear()
             self.visiting_solver_eq = True
             self.need_mutator = True
             self.cur_eq_type = EqTypeEnum.DEFAULT
             eq_node = EquationNode([], [], parse_info=node.parseinfo, raw_text=node.text)
             if node.v:
-                v_info = self.walk(node.v, **kwargs)
-                self.get_cur_param_data().symtable[v_info.id[0].get_main_id()] = v_info.type.la_type
-                eq_node.unknown_id = v_info.id[0]
-                self.unknown_sym = v_info.id[0].get_main_id()
-                #
-                if v_info.type.la_type.is_function():
-                    params_dict = SolverParamWalker.getInstance().walk_param(node, self.unknown_sym)
-                    eq_node.params_dict = params_dict
-                    print("params_dict: {}".format(params_dict))
-                    if len(params_dict) > 0:
-                        for key, value_list in params_dict.items():
-                            for sym in value_list:
-                                self.assert_expr(sym not in self.symtable, "Parameter {} has been defined".format(sym))
-                                self.symtable[sym] = v_info.type.la_type.params[key]
-            lexpr_info = self.walk(node.lexpr, **kwargs)
-            rexpr_info = self.walk(node.rexpr, **kwargs)
-            eq_node.left = lexpr_info.ir
-            eq_node.right = rexpr_info.ir
-            self.assert_expr(lexpr_info.ir.la_type.is_same_type(rexpr_info.ir.la_type), "Different types on lhs and rhs")
+                for v_index in range(len(node.v)):
+                    v_info = self.walk(node.v[v_index], **kwargs)
+                    self.get_cur_param_data().symtable[v_info.id[0].get_main_id()] = v_info.type.la_type
+                    eq_node.unknown_id = v_info.id[0]
+                    self.unknown_sym.append(v_info.id[0].get_main_id())
+                    #
+                    if v_info.type.la_type.is_function():
+                        params_dict = SolverParamWalker.getInstance().walk_param(node, self.unknown_sym)
+                        eq_node.params_dict = params_dict
+                        print("params_dict: {}".format(params_dict))
+                        if len(params_dict) > 0:
+                            for key, value_list in params_dict.items():
+                                for sym in value_list:
+                                    self.assert_expr(sym not in self.symtable, "Parameter {} has been defined".format(sym))
+                                    self.symtable[sym] = v_info.type.la_type.params[key]
+
+            for l_index in range(len(node.lexpr)):
+                lexpr_info = self.walk(node.lexpr[l_index], **kwargs)
+                rexpr_info = self.walk(node.rexpr[l_index], **kwargs)
+                eq_node.left.append(lexpr_info.ir)
+                eq_node.right.append(rexpr_info.ir)
+                self.assert_expr(lexpr_info.ir.la_type.is_same_type(rexpr_info.ir.la_type), "Different types on lhs and rhs")
             self.visiting_solver_eq = False
             eq_node.eq_type = self.cur_eq_type
             return NodeInfo(None, ir=eq_node, symbols=eq_node.symbols)
