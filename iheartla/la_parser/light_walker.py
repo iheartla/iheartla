@@ -521,7 +521,7 @@ class SolverParamWalker(LightWalker):
         super().__init__()
         SolverParamWalker.__instance = self
         self.solved_func_params_dict = {}  # parameter list for solved function
-        self.func_name = ''
+        self.func_name = []
 
     def walk_param(self, node, name, **kwargs):
         self.func_name = name
@@ -536,7 +536,7 @@ class SolverParamWalker(LightWalker):
             self.walk(node.rexpr, **kwargs)
 
     def walk_Function(self, node, **kwargs):
-        if node.name == self.func_name:
+        if node.name in self.func_name:
             for index in range(len(node.params)):
                 if index not in self.solved_func_params_dict:
                     self.solved_func_params_dict[index] = []
@@ -544,7 +544,7 @@ class SolverParamWalker(LightWalker):
                     self.solved_func_params_dict[index].append(node.params[index].text)
 
     def walk_Derivative(self, node, **kwargs):
-        if node.upper.text == self.func_name:
+        if node.upper.text in self.func_name:
             if 0 not in self.solved_func_params_dict:
                 self.solved_func_params_dict[0] = []
             if node.lower.text not in self.solved_func_params_dict[0]:

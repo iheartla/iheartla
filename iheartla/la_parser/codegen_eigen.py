@@ -1691,8 +1691,9 @@ class CodeGenEigen(CodeGen):
             lhs = []
             rhs = []
             for eq_node in node.init_list:
-                lhs.append(self.visit(eq_node.left).content)
-                rhs.append(self.visit(eq_node.right).content)
+                for l_index in range(len(eq_node.left)):
+                    lhs.append(self.visit(eq_node.left[l_index]).content)
+                    rhs.append(self.visit(eq_node.right[l_index]).content)
             self.visiting_diff_init = False
             x = self.generate_var_name("x")
             content += "    {\n"

@@ -239,12 +239,13 @@ class IRMutator(IRIterator):
             self.cur_v_type = MutatorVisitType.MutatorVisitOde
             self.cur_func_param = node.params_dict
             print("ode")
-            lhs = self.visit(node.left, **kwargs)
-            rhs = self.visit(node.right, **kwargs)
-            print("current equation: {} = {}, solved: {}".format(lhs, rhs, self.cur_func_var))
-            A = Wild(self.generate_var_name("A"), exclude=[self.cur_func_var])
-            b = Wild(self.generate_var_name("b"), exclude=[self.cur_func_var])
-            res = (lhs - (rhs)).match(A * self.cur_func_var - b)
+            for c_index in range(len(node.left)):
+                lhs = self.visit(node.left[c_index], **kwargs)
+                rhs = self.visit(node.right[c_index], **kwargs)
+                print("current equation: {} = {}, solved: {}".format(lhs, rhs, self.cur_func_var))
+                A = Wild(self.generate_var_name("A"), exclude=[self.cur_func_var])
+                b = Wild(self.generate_var_name("b"), exclude=[self.cur_func_var])
+                res = (lhs - (rhs)).match(A * self.cur_func_var - b)
             print("res: {}".format(res))
             assert res and len(res) > 0, get_err_msg_info(node.parse_info, "Unsolvable ODE equation")
             if res and len(res) > 0:

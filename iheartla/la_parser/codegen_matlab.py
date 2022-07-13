@@ -1511,8 +1511,9 @@ class CodeGenMatlab(CodeGen):
             lhs = []
             rhs = []
             for eq_node in node.init_list:
-                lhs.append(self.visit(eq_node.left).content)
-                rhs.append(self.visit(eq_node.right).content)
+                for l_index in range(len(eq_node.left)):
+                    lhs.append(self.visit(eq_node.left[l_index]).content)
+                    rhs.append(self.visit(eq_node.right[l_index]).content)
             self.visiting_diff_init = False
             content += "        [{}, {}] = ode23(@{}, [{}, d{}], [{}]);\n".format(node.param, node.func, target_name, lhs[0], node.param, rhs[0])
             content += "        ret = {}(length({}));\n".format(node.func, node.func)
