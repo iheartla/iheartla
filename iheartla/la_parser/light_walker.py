@@ -532,8 +532,9 @@ class SolverParamWalker(LightWalker):
     def walk_Assignment(self, node, **kwargs):
         if node.v:
             self.walk(node.v, **kwargs)
-            self.walk(node.lexpr, **kwargs)
-            self.walk(node.rexpr, **kwargs)
+            for c_index in range(len(node.lexpr)):
+                self.walk(node.lexpr[c_index], **kwargs)
+                self.walk(node.rexpr[c_index], **kwargs)
 
     def walk_Function(self, node, **kwargs):
         if node.name in self.func_name:

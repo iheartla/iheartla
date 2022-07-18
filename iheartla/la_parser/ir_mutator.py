@@ -212,8 +212,8 @@ class IRMutator(IRIterator):
             # pattern: A x = b
             x = sympy.Symbol(node.unknown_id.get_main_id(), commutative=True)
             self.sympy_dict[node.unknown_id.get_main_id()] = x
-            lhs = self.visit(node.left, **kwargs)
-            rhs = self.visit(node.right, **kwargs)
+            lhs = self.visit(node.left[0], **kwargs)
+            rhs = self.visit(node.right[0], **kwargs)
             print("current equation: {} = {}".format(lhs, rhs))
             A = Wild(self.generate_var_name("A"), exclude=[x])
             b = Wild(self.generate_var_name("b"), exclude=[x])
