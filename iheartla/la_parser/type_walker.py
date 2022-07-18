@@ -1334,6 +1334,7 @@ class TypeWalker(NodeWalker):
             self.cur_eq_type = EqTypeEnum.DEFAULT
             eq_node = EquationNode([], [], parse_info=node.parseinfo, raw_text=node.text)
             if node.v:
+                has_func = False
                 for v_index in range(len(node.v)):
                     v_info = self.walk(node.v[v_index], **kwargs)
                     self.get_cur_param_data().symtable[v_info.id[0].get_main_id()] = v_info.type.la_type
@@ -1341,14 +1342,16 @@ class TypeWalker(NodeWalker):
                     self.unknown_sym.append(v_info.id[0].get_main_id())
                     #
                     if v_info.type.la_type.is_function():
-                        params_dict = SolverParamWalker.getInstance().walk_param(node, self.unknown_sym)
-                        eq_node.params_dict = params_dict
-                        print("params_dict: {}".format(params_dict))
-                        if len(params_dict) > 0:
-                            for key, value_list in params_dict.items():
-                                for sym in value_list:
-                                    self.assert_expr(sym not in self.symtable, "Parameter {} has been defined".format(sym))
-                                    self.symtable[sym] = v_info.type.la_type.params[key]
+                        has_func = True
+                if has_func:
+                    params_dict = SolverParamWalker.getInstance().walk_param(node, self.unknown_sym)
+                    eq_node.params_dict = params_dict
+                    print("params_dict: {}".format(params_dict))
+                    if len(params_dict) > 0:
+                        for key, value_list in params_dict.items():
+                            for sym in value_list:
+                                self.assert_expr(sym not in self.symtable, "Parameter {} has been defined".format(sym))
+                                self.symtable[sym] = v_info.type.la_type.params[key]
 
             for l_index in range(len(node.lexpr)):
                 lexpr_info = self.walk(node.lexpr[l_index], **kwargs)
