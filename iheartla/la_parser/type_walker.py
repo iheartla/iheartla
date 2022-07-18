@@ -2168,12 +2168,12 @@ class TypeWalker(NodeWalker):
             return node_info
         else:
             # not in symtable now
-            if ir_node.name.get_name() in self.pre_func_symtable:
-                la_type = self.pre_func_symtable[ir_node.name.get_name()]
-            else:
-                la_type = FunctionType(cur_type=FuncType.FuncDynamic)
-            self.get_cur_param_data().symtable[ir_node.name.get_main_id()] = la_type
-            # assert False, "Not a function"
+            # if ir_node.name.get_name() in self.pre_func_symtable:
+            #     la_type = self.pre_func_symtable[ir_node.name.get_name()]
+            # else:
+            #     la_type = FunctionType(cur_type=FuncType.FuncDynamic)
+            # self.get_cur_param_data().symtable[ir_node.name.get_main_id()] = la_type
+            assert False, "Not a function"
             node_info = NodeInfo(la_type, ir=ir_node)
             return node_info
             # assert len(node.params) == 1, "Not a function"  # never reach
