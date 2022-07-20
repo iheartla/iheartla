@@ -1325,43 +1325,47 @@ class TypeWalker(NodeWalker):
         self.expr_dict[local_func_name] = list(ir_node.symbols) + [local_func_name]
         return NodeInfo(ir=ir_node)
 
+    def get_eq_node_info(self, node, **kwargs):
+        self.unknown_sym.clear()
+        self.visiting_solver_eq = True
+        self.need_mutator = True
+        self.cur_eq_type = EqTypeEnum.DEFAULT
+        eq_node = EquationNode([], [], parse_info=node.parseinfo, raw_text=node.text)
+        if node.v:
+            has_func = False
+            for v_index in range(len(node.v)):
+                v_info = self.walk(node.v[v_index], **kwargs)
+                self.get_cur_param_data().symtable[v_info.id[0].get_main_id()] = v_info.type.la_type
+                eq_node.unknown_id = v_info.id[0]
+                self.unknown_sym.append(v_info.id[0].get_main_id())
+                #
+                if v_info.type.la_type.is_function():
+                    has_func = True
+            if has_func:
+                params_dict = SolverParamWalker.getInstance().walk_param(node, self.unknown_sym)
+                eq_node.params_dict = params_dict
+                print("params_dict: {}".format(params_dict))
+                if len(params_dict) > 0:
+                    for key, value_list in params_dict.items():
+                        for sym in value_list:
+                            self.assert_expr(sym not in self.symtable, "Parameter {} has been defined".format(sym))
+                            self.symtable[sym] = v_info.type.la_type.params[key]
+
+        for l_index in range(len(node.lexpr)):
+            lexpr_info = self.walk(node.lexpr[l_index], **kwargs)
+            rexpr_info = self.walk(node.rexpr[l_index], **kwargs)
+            eq_node.left.append(lexpr_info.ir)
+            eq_node.right.append(rexpr_info.ir)
+            self.assert_expr(lexpr_info.ir.la_type.is_same_type(rexpr_info.ir.la_type),
+                             "Different types on lhs and rhs")
+        self.visiting_solver_eq = False
+        eq_node.eq_type = self.cur_eq_type
+        return NodeInfo(None, ir=eq_node, symbols=eq_node.symbols)
+
     def walk_Assignment(self, node, **kwargs):
         # ir
         if node.lexpr:
-            self.unknown_sym.clear()
-            self.visiting_solver_eq = True
-            self.need_mutator = True
-            self.cur_eq_type = EqTypeEnum.DEFAULT
-            eq_node = EquationNode([], [], parse_info=node.parseinfo, raw_text=node.text)
-            if node.v:
-                has_func = False
-                for v_index in range(len(node.v)):
-                    v_info = self.walk(node.v[v_index], **kwargs)
-                    self.get_cur_param_data().symtable[v_info.id[0].get_main_id()] = v_info.type.la_type
-                    eq_node.unknown_id = v_info.id[0]
-                    self.unknown_sym.append(v_info.id[0].get_main_id())
-                    #
-                    if v_info.type.la_type.is_function():
-                        has_func = True
-                if has_func:
-                    params_dict = SolverParamWalker.getInstance().walk_param(node, self.unknown_sym)
-                    eq_node.params_dict = params_dict
-                    print("params_dict: {}".format(params_dict))
-                    if len(params_dict) > 0:
-                        for key, value_list in params_dict.items():
-                            for sym in value_list:
-                                self.assert_expr(sym not in self.symtable, "Parameter {} has been defined".format(sym))
-                                self.symtable[sym] = v_info.type.la_type.params[key]
-
-            for l_index in range(len(node.lexpr)):
-                lexpr_info = self.walk(node.lexpr[l_index], **kwargs)
-                rexpr_info = self.walk(node.rexpr[l_index], **kwargs)
-                eq_node.left.append(lexpr_info.ir)
-                eq_node.right.append(rexpr_info.ir)
-                self.assert_expr(lexpr_info.ir.la_type.is_same_type(rexpr_info.ir.la_type), "Different types on lhs and rhs")
-            self.visiting_solver_eq = False
-            eq_node.eq_type = self.cur_eq_type
-            return NodeInfo(None, ir=eq_node, symbols=eq_node.symbols)
+            return self.get_eq_node_info(node, **kwargs)
         assign_node = AssignNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
         if type(node.right[0]).__name__ == 'MultiCondExpr':
             self.assert_expr(len(node.right) == 1, get_err_msg_info(node.right[0].parseinfo, "Invalid multiple rhs"))
