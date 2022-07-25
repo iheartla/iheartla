@@ -307,6 +307,7 @@ class IRVisitor(IRBaseVisitor):
         self.visiting_diff_eq = False
         self.visiting_diff_init = False
         self.enable_tmp_sym = False
+        self.class_only = False
         self.lhs_list = []
         self.module_list = []
         self.module_syms = {}
