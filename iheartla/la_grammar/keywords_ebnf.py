@@ -29,6 +29,7 @@ BUILTIN_KEYWORDS
     | DELTA | NABLA | DERIVATIVE | PARTIAL
     | SOLVE
     | PRIME
+    | SUBSET
     ;
 
 TRACE = /trace/;
@@ -94,4 +95,5 @@ PRIME = /'/;
 UDOT = /[\u0307]/;   
 UDDOT = /[\u0308]/;   
 SOLVE = /solve/ | /Solve/ | /SOLVE/;
+SUBSET = /⊂/;
 """

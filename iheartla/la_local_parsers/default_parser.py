@@ -181,6 +181,8 @@ class grammardefaultParser(Parser):
                 self._SOLVE_()
             with self._option():
                 self._PRIME_()
+            with self._option():
+                self._SUBSET_()
             self._error('no available options')
 
     @tatsumasu()
@@ -451,6 +453,10 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._pattern('SOLVE')
             self._error('no available options')
+
+    @tatsumasu()
+    def _SUBSET_(self):  # noqa
+        self._pattern('⊂')
 
     @tatsumasu('Exponent')
     def _exponent_(self):  # noqa
@@ -3845,38 +3851,41 @@ class grammardefaultParser(Parser):
                     self._token(':')
                 with self._option():
                     self._IN_()
+                with self._option():
+                    self._SUBSET_()
+                    self.name_last_node('subset')
                 self._error('no available options')
 
-        def block7():
+        def block8():
             self._hspace_()
-        self._closure(block7)
+        self._closure(block8)
         self._la_type_()
         self.name_last_node('type')
 
-        def block9():
+        def block10():
 
-            def block10():
+            def block11():
                 self._hspace_()
-            self._closure(block10)
+            self._closure(block11)
             self._token('index')
             self.name_last_node('index')
-        self._closure(block9)
+        self._closure(block10)
 
-        def block12():
-
-            def block13():
-                self._hspace_()
-            self._closure(block13)
-            self._token(':')
+        def block13():
 
             def block14():
                 self._hspace_()
             self._closure(block14)
+            self._token(':')
+
+            def block15():
+                self._hspace_()
+            self._closure(block15)
             self._description_()
             self.name_last_node('desc')
-        self._closure(block12)
+        self._closure(block13)
         self.ast._define(
-            ['desc', 'index', 'type'],
+            ['desc', 'index', 'subset', 'type'],
             ['id']
         )
 
@@ -3908,24 +3917,27 @@ class grammardefaultParser(Parser):
                     self._token(':')
                 with self._option():
                     self._IN_()
+                with self._option():
+                    self._SUBSET_()
+                    self.name_last_node('subset')
                 self._error('no available options')
 
-        def block7():
+        def block8():
             self._hspace_()
-        self._closure(block7)
+        self._closure(block8)
         self._la_type_()
         self.name_last_node('type')
 
-        def block9():
+        def block10():
 
-            def block10():
+            def block11():
                 self._hspace_()
-            self._closure(block10)
+            self._closure(block11)
             self._token('index')
             self.name_last_node('index')
-        self._closure(block9)
+        self._closure(block10)
         self.ast._define(
-            ['index', 'type'],
+            ['index', 'subset', 'type'],
             ['id']
         )
 
@@ -5912,6 +5924,9 @@ class grammardefaultSemantics(object):
     def SOLVE(self, ast):  # noqa
         return ast
 
+    def SUBSET(self, ast):  # noqa
+        return ast
+
     def exponent(self, ast):  # noqa
         return ast
 
@@ -6875,6 +6890,7 @@ class WhereCondition(ModelBase):
     desc = None
     id = None
     index = None
+    subset = None
     type = None
 
 

@@ -13,11 +13,11 @@ where_conditions::WhereConditions
     ;
 
 where_condition::WhereCondition
-    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN) {hspace} type:la_type {{hspace} index:'index'} { {hspace} ':' {hspace} desc:description}
+    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN | subset:SUBSET) {hspace} type:la_type {{hspace} index:'index'} { {hspace} ':' {hspace} desc:description}
     ;
     
 where_condition_terse::WhereCondition
-    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN) {hspace} type:la_type {{hspace} index:'index'}
+    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN| subset:SUBSET) {hspace} type:la_type {{hspace} index:'index'}
     ;
 
 matrix_type::MatrixType
