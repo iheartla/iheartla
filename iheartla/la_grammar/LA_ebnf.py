@@ -6,6 +6,7 @@ from .base_ebnf import BASE
 from .trigonometry_ebnf import TRIGONOMETRY
 from .shared_ebnf import SHARED
 from .arithmetic_ebnf import ARITHMETIC
+from ..la_grammar.types_ebnf import TYPES
 START = r"""
 @@grammar::LA
 @@whitespace :: /(?!.*)/     #parse whitespace manually
@@ -15,7 +16,7 @@ start::Start
     = {{separator_with_space} {hspace} vblock+:valid_block {separator_with_space}}+ {blank} $
     ;
 """
-LA = START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + SHARED + ARITHMETIC
+LA = START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + SHARED + ARITHMETIC + TYPES
 #include :: "keywords.ebnf"
 #include :: "number.ebnf"
 #include :: "operators.ebnf"

@@ -7,8 +7,9 @@ from .trigonometry_ebnf import TRIGONOMETRY
 from .shared_ebnf import SHARED
 from .LA_ebnf import START
 from .arithmetic_ebnf import ARITHMETIC
+from ..la_grammar.types_ebnf import TYPES
 
-SIMPLIFIED = START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + SHARED + ARITHMETIC
+SIMPLIFIED = START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + SHARED + ARITHMETIC + TYPES
 #include :: "keywords.ebnf"
 #include :: "number.ebnf"
 #include :: "operators.ebnf"

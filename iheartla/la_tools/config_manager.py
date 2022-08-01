@@ -2,6 +2,8 @@ from enum import Enum
 import os.path
 from pathlib import Path
 from ..la_tools.la_helper import *
+from ..la_tools.parser_manager import ParserManager
+from ..la_companion.config_walker import ConfigWalker
 
 
 class ConfMgr(object):
@@ -19,6 +21,8 @@ class ConfMgr(object):
             self.path = os.getcwd()  # path for iheartla source file
             self.source_file = 'iheartla'
             self.conf_file = None
+            self.parser = ParserManager.getInstance().get_parser('config', '')
+            self.walker = ConfigWalker()
             ConfMgr.__instance = self
 
     def set_source(self, source):
@@ -43,6 +47,8 @@ class ConfMgr(object):
     def parse(self):
         content = self.get_conf_content()
         if content:
+            model = self.parser.parse(content, parseinfo=True)
+            start_node = self.walker.walk(model)
             print(content)
 
 

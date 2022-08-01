@@ -3937,408 +3937,6 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             ['id']
         )
 
-    @tatsumasu('MatrixType')
-    def _matrix_type_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._pattern('matrix')
-
-                def block0():
-                    self._hspace_()
-                self._closure(block0)
-                self._token('(')
-
-                def block1():
-                    self._hspace_()
-                self._closure(block1)
-                self._dimension_()
-                self.name_last_node('id1')
-
-                def block3():
-                    self._hspace_()
-                self._closure(block3)
-                self._token(',')
-
-                def block4():
-                    self._hspace_()
-                self._closure(block4)
-                self._dimension_()
-                self.name_last_node('id2')
-
-                def block6():
-                    self._hspace_()
-                self._closure(block6)
-                self._token(')')
-
-                def block7():
-
-                    def block8():
-                        self._hspace_()
-                    self._positive_closure(block8)
-                    self._matrix_attribute_()
-                    self.add_last_node_to_name('attr')
-                self._closure(block7)
-            with self._option():
-                self._pattern('[ℝℤ]')
-                self.name_last_node('type')
-
-                def block11():
-                    self._hspace_()
-                self._closure(block11)
-                self._token('^')
-
-                def block12():
-                    self._hspace_()
-                self._closure(block12)
-                self._token('(')
-
-                def block13():
-                    self._hspace_()
-                self._closure(block13)
-                self._dimension_()
-                self.name_last_node('id1')
-
-                def block15():
-                    self._hspace_()
-                self._closure(block15)
-                self._token('×')
-
-                def block16():
-                    self._hspace_()
-                self._closure(block16)
-                self._dimension_()
-                self.name_last_node('id2')
-
-                def block18():
-                    self._hspace_()
-                self._closure(block18)
-                self._token(')')
-
-                def block19():
-
-                    def block20():
-                        self._hspace_()
-                    self._positive_closure(block20)
-                    self._matrix_attribute_()
-                    self.add_last_node_to_name('attr')
-                self._closure(block19)
-            self._error('no available options')
-        self.ast._define(
-            ['id1', 'id2', 'type'],
-            ['attr']
-        )
-
-    @tatsumasu()
-    def _matrix_attribute_(self):  # noqa
-        self._SPARSE_()
-
-    @tatsumasu('VectorType')
-    def _vector_type_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._pattern('vector')
-
-                def block0():
-                    self._hspace_()
-                self._closure(block0)
-                self._token('(')
-
-                def block1():
-                    self._hspace_()
-                self._closure(block1)
-                self._dimension_()
-                self.name_last_node('id1')
-
-                def block3():
-                    self._hspace_()
-                self._closure(block3)
-                self._token(')')
-            with self._option():
-                self._pattern('[ℝℤ]')
-                self.name_last_node('type')
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._token('^')
-
-                def block6():
-                    self._hspace_()
-                self._closure(block6)
-                self._token('(')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._dimension_()
-                self.name_last_node('id1')
-
-                def block9():
-                    self._hspace_()
-                self._closure(block9)
-                self._token(')')
-            with self._option():
-                self._pattern('[ℝℤ]')
-                self.name_last_node('type')
-
-                def block11():
-                    self._hspace_()
-                self._closure(block11)
-                self._token('^')
-
-                def block12():
-                    self._hspace_()
-                self._closure(block12)
-                self._dimension_()
-                self.name_last_node('id1')
-            with self._option():
-                self._pattern('[ℝℤ]')
-                self.name_last_node('type')
-                self._sup_integer_()
-                self.name_last_node('id1')
-            self._error('no available options')
-        self.ast._define(
-            ['id1', 'type'],
-            []
-        )
-
-    @tatsumasu('ScalarType')
-    def _scalar_type_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._pattern('scalar')
-            with self._option():
-                self._pattern('ℝ')
-            with self._option():
-                self._pattern('ℤ')
-                self.name_last_node('z')
-            self._error('no available options')
-        self.ast._define(
-            ['z'],
-            []
-        )
-
-    @tatsumasu('SetType')
-    def _set_type_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._token('{')
-
-                def block0():
-                    self._hspace_()
-                self._closure(block0)
-                self._pattern('[ℝℤ]')
-                self.add_last_node_to_name('type')
-
-                def block2():
-                    self._hspace_()
-                self._closure(block2)
-
-                def block3():
-                    self._token('×')
-
-                    def block4():
-                        self._hspace_()
-                    self._closure(block4)
-                    self._pattern('[ℝℤ]')
-                    self.add_last_node_to_name('type')
-
-                    def block6():
-                        self._hspace_()
-                    self._closure(block6)
-                self._closure(block3)
-                self._token('}')
-            with self._option():
-                self._token('{')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._pattern('[ℝℤ]')
-                self.name_last_node('type1')
-
-                def block9():
-                    self._hspace_()
-                self._closure(block9)
-                self._token('^')
-
-                def block10():
-                    self._hspace_()
-                self._closure(block10)
-                with self._group():
-                    self._integer_()
-                self.name_last_node('cnt')
-
-                def block12():
-                    self._hspace_()
-                self._closure(block12)
-                self._token('}')
-            with self._option():
-                self._token('{')
-
-                def block13():
-                    self._hspace_()
-                self._closure(block13)
-                self._pattern('[ℝℤ]')
-                self.name_last_node('type2')
-                with self._optional():
-                    self._sup_integer_()
-                self.name_last_node('cnt')
-
-                def block16():
-                    self._hspace_()
-                self._closure(block16)
-                self._token('}')
-            self._error('no available options')
-        self.ast._define(
-            ['cnt', 'type1', 'type2'],
-            ['type']
-        )
-
-    @tatsumasu()
-    @nomemo
-    def _dimension_(self):  # noqa
-        self._arithmetic_expression_()
-
-    @tatsumasu()
-    def _la_type_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._function_type_()
-            with self._option():
-                self._matrix_type_()
-            with self._option():
-                self._vector_type_()
-            with self._option():
-                self._set_type_()
-            with self._option():
-                self._scalar_type_()
-            self._error('no available options')
-
-    @tatsumasu()
-    def _params_type_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._matrix_type_()
-            with self._option():
-                self._vector_type_()
-            with self._option():
-                self._scalar_type_()
-            with self._option():
-                self._set_type_()
-            self._error('no available options')
-
-    @tatsumasu('FunctionType')
-    def _function_type_(self):  # noqa
-        with self._group():
-            with self._choice():
-                with self._option():
-                    with self._group():
-                        self._params_type_()
-                        self.add_last_node_to_name('params')
-
-                        def block1():
-
-                            def block2():
-                                self._hspace_()
-                            self._closure(block2)
-                            self._params_separator_()
-                            self.add_last_node_to_name('separators')
-
-                            def block4():
-                                self._hspace_()
-                            self._closure(block4)
-                            self._params_type_()
-                            self.add_last_node_to_name('params')
-                        self._closure(block1)
-                with self._option():
-                    self._token('∅')
-                    self.name_last_node('empty')
-                with self._option():
-                    self._token('{')
-
-                    def block7():
-                        self._hspace_()
-                    self._closure(block7)
-                    self._token('}')
-                self._error('no available options')
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        with self._group():
-            with self._choice():
-                with self._option():
-                    self._token('→')
-                with self._option():
-                    self._token('->')
-                self._error('no available options')
-
-        def block11():
-            self._hspace_()
-        self._closure(block11)
-        self._params_type_()
-        self.add_last_node_to_name('ret')
-
-        def block13():
-
-            def block14():
-                self._hspace_()
-            self._closure(block14)
-            self._params_separator_()
-            self.add_last_node_to_name('ret_separators')
-
-            def block16():
-                self._hspace_()
-            self._closure(block16)
-            self._params_type_()
-            self.add_last_node_to_name('ret')
-        self._closure(block13)
-        self.ast._define(
-            ['empty'],
-            ['params', 'ret', 'ret_separators', 'separators']
-        )
-
-    @tatsumasu('Integer')
-    def _integer_(self):  # noqa
-
-        def block1():
-            self._digit_()
-        self._positive_closure(block1)
-        self.name_last_node('value')
-        self.ast._define(
-            ['value'],
-            []
-        )
-
-    @tatsumasu('SupInteger')
-    def _sup_integer_(self):  # noqa
-
-        def block1():
-            self._pattern('[\\u2070\\u00B9\\u00B2\\u00B3\\u2074-\\u2079]')
-        self._positive_closure(block1)
-        self.name_last_node('value')
-        self.ast._define(
-            ['value'],
-            []
-        )
-
-    @tatsumasu('SubInteger')
-    def _sub_integer_(self):  # noqa
-
-        def block1():
-            self._pattern('[\\u2080-\\u2089]')
-        self._positive_closure(block1)
-        self.name_last_node('value')
-        self.ast._define(
-            ['value'],
-            []
-        )
-
-    @tatsumasu()
-    def _digit_(self):  # noqa
-        self._pattern('\\d')
-
     @tatsumasu()
     @nomemo
     def _valid_block_(self):  # noqa
@@ -5481,6 +5079,407 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             []
         )
 
+    @tatsumasu('MatrixType')
+    def _matrix_type_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._pattern('matrix')
+
+                def block0():
+                    self._hspace_()
+                self._closure(block0)
+                self._token('(')
+
+                def block1():
+                    self._hspace_()
+                self._closure(block1)
+                self._dimension_()
+                self.name_last_node('id1')
+
+                def block3():
+                    self._hspace_()
+                self._closure(block3)
+                self._token(',')
+
+                def block4():
+                    self._hspace_()
+                self._closure(block4)
+                self._dimension_()
+                self.name_last_node('id2')
+
+                def block6():
+                    self._hspace_()
+                self._closure(block6)
+                self._token(')')
+
+                def block7():
+
+                    def block8():
+                        self._hspace_()
+                    self._positive_closure(block8)
+                    self._matrix_attribute_()
+                    self.add_last_node_to_name('attr')
+                self._closure(block7)
+            with self._option():
+                self._pattern('[ℝℤ]')
+                self.name_last_node('type')
+
+                def block11():
+                    self._hspace_()
+                self._closure(block11)
+                self._token('^')
+
+                def block12():
+                    self._hspace_()
+                self._closure(block12)
+                self._token('(')
+
+                def block13():
+                    self._hspace_()
+                self._closure(block13)
+                self._dimension_()
+                self.name_last_node('id1')
+
+                def block15():
+                    self._hspace_()
+                self._closure(block15)
+                self._token('×')
+
+                def block16():
+                    self._hspace_()
+                self._closure(block16)
+                self._dimension_()
+                self.name_last_node('id2')
+
+                def block18():
+                    self._hspace_()
+                self._closure(block18)
+                self._token(')')
+
+                def block19():
+
+                    def block20():
+                        self._hspace_()
+                    self._positive_closure(block20)
+                    self._matrix_attribute_()
+                    self.add_last_node_to_name('attr')
+                self._closure(block19)
+            self._error('no available options')
+        self.ast._define(
+            ['id1', 'id2', 'type'],
+            ['attr']
+        )
+
+    @tatsumasu()
+    def _matrix_attribute_(self):  # noqa
+        self._SPARSE_()
+
+    @tatsumasu('VectorType')
+    def _vector_type_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._pattern('vector')
+
+                def block0():
+                    self._hspace_()
+                self._closure(block0)
+                self._token('(')
+
+                def block1():
+                    self._hspace_()
+                self._closure(block1)
+                self._dimension_()
+                self.name_last_node('id1')
+
+                def block3():
+                    self._hspace_()
+                self._closure(block3)
+                self._token(')')
+            with self._option():
+                self._pattern('[ℝℤ]')
+                self.name_last_node('type')
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._token('^')
+
+                def block6():
+                    self._hspace_()
+                self._closure(block6)
+                self._token('(')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._dimension_()
+                self.name_last_node('id1')
+
+                def block9():
+                    self._hspace_()
+                self._closure(block9)
+                self._token(')')
+            with self._option():
+                self._pattern('[ℝℤ]')
+                self.name_last_node('type')
+
+                def block11():
+                    self._hspace_()
+                self._closure(block11)
+                self._token('^')
+
+                def block12():
+                    self._hspace_()
+                self._closure(block12)
+                self._dimension_()
+                self.name_last_node('id1')
+            with self._option():
+                self._pattern('[ℝℤ]')
+                self.name_last_node('type')
+                self._sup_integer_()
+                self.name_last_node('id1')
+            self._error('no available options')
+        self.ast._define(
+            ['id1', 'type'],
+            []
+        )
+
+    @tatsumasu('ScalarType')
+    def _scalar_type_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._pattern('scalar')
+            with self._option():
+                self._pattern('ℝ')
+            with self._option():
+                self._pattern('ℤ')
+                self.name_last_node('z')
+            self._error('no available options')
+        self.ast._define(
+            ['z'],
+            []
+        )
+
+    @tatsumasu('SetType')
+    def _set_type_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._token('{')
+
+                def block0():
+                    self._hspace_()
+                self._closure(block0)
+                self._pattern('[ℝℤ]')
+                self.add_last_node_to_name('type')
+
+                def block2():
+                    self._hspace_()
+                self._closure(block2)
+
+                def block3():
+                    self._token('×')
+
+                    def block4():
+                        self._hspace_()
+                    self._closure(block4)
+                    self._pattern('[ℝℤ]')
+                    self.add_last_node_to_name('type')
+
+                    def block6():
+                        self._hspace_()
+                    self._closure(block6)
+                self._closure(block3)
+                self._token('}')
+            with self._option():
+                self._token('{')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._pattern('[ℝℤ]')
+                self.name_last_node('type1')
+
+                def block9():
+                    self._hspace_()
+                self._closure(block9)
+                self._token('^')
+
+                def block10():
+                    self._hspace_()
+                self._closure(block10)
+                with self._group():
+                    self._integer_()
+                self.name_last_node('cnt')
+
+                def block12():
+                    self._hspace_()
+                self._closure(block12)
+                self._token('}')
+            with self._option():
+                self._token('{')
+
+                def block13():
+                    self._hspace_()
+                self._closure(block13)
+                self._pattern('[ℝℤ]')
+                self.name_last_node('type2')
+                with self._optional():
+                    self._sup_integer_()
+                self.name_last_node('cnt')
+
+                def block16():
+                    self._hspace_()
+                self._closure(block16)
+                self._token('}')
+            self._error('no available options')
+        self.ast._define(
+            ['cnt', 'type1', 'type2'],
+            ['type']
+        )
+
+    @tatsumasu()
+    def _dimension_(self):  # noqa
+        self._arithmetic_expression_()
+
+    @tatsumasu()
+    def _la_type_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._function_type_()
+            with self._option():
+                self._matrix_type_()
+            with self._option():
+                self._vector_type_()
+            with self._option():
+                self._set_type_()
+            with self._option():
+                self._scalar_type_()
+            self._error('no available options')
+
+    @tatsumasu()
+    def _params_type_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._matrix_type_()
+            with self._option():
+                self._vector_type_()
+            with self._option():
+                self._scalar_type_()
+            with self._option():
+                self._set_type_()
+            self._error('no available options')
+
+    @tatsumasu('FunctionType')
+    def _function_type_(self):  # noqa
+        with self._group():
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._params_type_()
+                        self.add_last_node_to_name('params')
+
+                        def block1():
+
+                            def block2():
+                                self._hspace_()
+                            self._closure(block2)
+                            self._params_separator_()
+                            self.add_last_node_to_name('separators')
+
+                            def block4():
+                                self._hspace_()
+                            self._closure(block4)
+                            self._params_type_()
+                            self.add_last_node_to_name('params')
+                        self._closure(block1)
+                with self._option():
+                    self._token('∅')
+                    self.name_last_node('empty')
+                with self._option():
+                    self._token('{')
+
+                    def block7():
+                        self._hspace_()
+                    self._closure(block7)
+                    self._token('}')
+                self._error('no available options')
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._token('→')
+                with self._option():
+                    self._token('->')
+                self._error('no available options')
+
+        def block11():
+            self._hspace_()
+        self._closure(block11)
+        self._params_type_()
+        self.add_last_node_to_name('ret')
+
+        def block13():
+
+            def block14():
+                self._hspace_()
+            self._closure(block14)
+            self._params_separator_()
+            self.add_last_node_to_name('ret_separators')
+
+            def block16():
+                self._hspace_()
+            self._closure(block16)
+            self._params_type_()
+            self.add_last_node_to_name('ret')
+        self._closure(block13)
+        self.ast._define(
+            ['empty'],
+            ['params', 'ret', 'ret_separators', 'separators']
+        )
+
+    @tatsumasu('Integer')
+    def _integer_(self):  # noqa
+
+        def block1():
+            self._digit_()
+        self._positive_closure(block1)
+        self.name_last_node('value')
+        self.ast._define(
+            ['value'],
+            []
+        )
+
+    @tatsumasu('SupInteger')
+    def _sup_integer_(self):  # noqa
+
+        def block1():
+            self._pattern('[\\u2070\\u00B9\\u00B2\\u00B3\\u2074-\\u2079]')
+        self._positive_closure(block1)
+        self.name_last_node('value')
+        self.ast._define(
+            ['value'],
+            []
+        )
+
+    @tatsumasu('SubInteger')
+    def _sub_integer_(self):  # noqa
+
+        def block1():
+            self._pattern('[\\u2080-\\u2089]')
+        self._positive_closure(block1)
+        self.name_last_node('value')
+        self.ast._define(
+            ['value'],
+            []
+        )
+
+    @tatsumasu()
+    def _digit_(self):  # noqa
+        self._pattern('\\d')
+
     @tatsumasu()
     def _func_id_(self):  # noqa
         self._identifier_alone_()
@@ -6184,45 +6183,6 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
     def where_condition_terse(self, ast):  # noqa
         return ast
 
-    def matrix_type(self, ast):  # noqa
-        return ast
-
-    def matrix_attribute(self, ast):  # noqa
-        return ast
-
-    def vector_type(self, ast):  # noqa
-        return ast
-
-    def scalar_type(self, ast):  # noqa
-        return ast
-
-    def set_type(self, ast):  # noqa
-        return ast
-
-    def dimension(self, ast):  # noqa
-        return ast
-
-    def la_type(self, ast):  # noqa
-        return ast
-
-    def params_type(self, ast):  # noqa
-        return ast
-
-    def function_type(self, ast):  # noqa
-        return ast
-
-    def integer(self, ast):  # noqa
-        return ast
-
-    def sup_integer(self, ast):  # noqa
-        return ast
-
-    def sub_integer(self, ast):  # noqa
-        return ast
-
-    def digit(self, ast):  # noqa
-        return ast
-
     def valid_block(self, ast):  # noqa
         return ast
 
@@ -6323,6 +6283,45 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
         return ast
 
     def arithmetic_subexpression(self, ast):  # noqa
+        return ast
+
+    def matrix_type(self, ast):  # noqa
+        return ast
+
+    def matrix_attribute(self, ast):  # noqa
+        return ast
+
+    def vector_type(self, ast):  # noqa
+        return ast
+
+    def scalar_type(self, ast):  # noqa
+        return ast
+
+    def set_type(self, ast):  # noqa
+        return ast
+
+    def dimension(self, ast):  # noqa
+        return ast
+
+    def la_type(self, ast):  # noqa
+        return ast
+
+    def params_type(self, ast):  # noqa
+        return ast
+
+    def function_type(self, ast):  # noqa
+        return ast
+
+    def integer(self, ast):  # noqa
+        return ast
+
+    def sup_integer(self, ast):  # noqa
+        return ast
+
+    def sub_integer(self, ast):  # noqa
+        return ast
+
+    def digit(self, ast):  # noqa
         return ast
 
     def func_id(self, ast):  # noqa
@@ -6808,49 +6807,6 @@ class WhereCondition(ModelBase):
     type = None
 
 
-class MatrixType(ModelBase):
-    attr = None
-    id1 = None
-    id2 = None
-    type = None
-
-
-class VectorType(ModelBase):
-    id1 = None
-    type = None
-
-
-class ScalarType(ModelBase):
-    z = None
-
-
-class SetType(ModelBase):
-    cnt = None
-    type = None
-    type1 = None
-    type2 = None
-
-
-class FunctionType(ModelBase):
-    empty = None
-    params = None
-    ret = None
-    ret_separators = None
-    separators = None
-
-
-class Integer(ModelBase):
-    value = None
-
-
-class SupInteger(ModelBase):
-    value = None
-
-
-class SubInteger(ModelBase):
-    value = None
-
-
 class ParamsBlock(ModelBase):
     annotation = None
     conds = None
@@ -6987,6 +6943,49 @@ class ArithFactor(ModelBase):
 
 
 class ArithSubexpression(ModelBase):
+    value = None
+
+
+class MatrixType(ModelBase):
+    attr = None
+    id1 = None
+    id2 = None
+    type = None
+
+
+class VectorType(ModelBase):
+    id1 = None
+    type = None
+
+
+class ScalarType(ModelBase):
+    z = None
+
+
+class SetType(ModelBase):
+    cnt = None
+    type = None
+    type1 = None
+    type2 = None
+
+
+class FunctionType(ModelBase):
+    empty = None
+    params = None
+    ret = None
+    ret_separators = None
+    separators = None
+
+
+class Integer(ModelBase):
+    value = None
+
+
+class SupInteger(ModelBase):
+    value = None
+
+
+class SubInteger(ModelBase):
     value = None
 
 
