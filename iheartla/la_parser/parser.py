@@ -118,7 +118,7 @@ else:
 
 _grammar_content = None  # content in file
 _default_key = 'default'
-_parser_manager = ParserManager(GRAMMAR_DIR)
+_parser_manager = ParserManager.getInstance(GRAMMAR_DIR)
 
 
 def get_compiled_parser(grammar, keys='init', extra_dict={}):
