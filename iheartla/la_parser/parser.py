@@ -31,6 +31,7 @@ from .ir_mutator import *
 from .ir import *
 from .ir_visitor import *
 from ..la_tools.la_msg import *
+from ..la_tools.config_manager import *
 from ..la_tools.la_helper import *
 from ..la_tools.parser_manager import ParserManager
 import subprocess
@@ -406,6 +407,7 @@ def clean_parsers():
 
 def parse_and_translate(content, frame, parser_type=None, func_name=None):
     record("parse_and_translate")
+    ConfMgr.getInstance().parse()
     def get_parse_result(parser_type):
         parser = get_default_parser()
         model = parser.parse(content, parseinfo=True)
@@ -522,12 +524,15 @@ def compile_la_content(la_content,
 
 
 def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX,
-                       class_only=False):
+                       class_only=False, conf_file=None):
     """
     used for command line
     """
     # Alec: maybe this compile_la_file should just call compile_la_content after
     # reading the content?
+    ConfMgr.getInstance().set_source(la_file)
+    ConfMgr.getInstance().set_conf(conf_file)
+    ConfMgr.getInstance().parse()
     if la_file == "-":
         content = "\n".join(sys.stdin.readlines())
         base_name = "iheartla"

@@ -1,4 +1,7 @@
 from enum import Enum
+import os.path
+from pathlib import Path
+from ..la_tools.la_helper import *
 
 
 class ConfMgr(object):
@@ -13,4 +16,33 @@ class ConfMgr(object):
         if ConfMgr.__instance is not None:
             raise Exception("Class ConfMgr is a singleton!")
         else:
+            self.path = os.getcwd()  # path for iheartla source file
+            self.source_file = 'iheartla'
+            self.conf_file = None
             ConfMgr.__instance = self
+
+    def set_source(self, source):
+        p = Path(source)
+        base_name = os.path.basename(p)
+        self.source_file = os.path.splitext(base_name)[0]
+        self.path = os.path.dirname(p)
+
+    def set_conf(self, conf):
+        self.conf_file = conf
+
+    def get_conf_content(self):
+        content = None
+        if self.conf_file:
+            content = read_from_file(self.conf_file)
+        else:
+            src = "{}/{}.conf".format(self.path, self.source_file)
+            if os.path.exists(src):
+                content = read_from_file(src)
+        return content
+
+    def parse(self):
+        content = self.get_conf_content()
+        if content:
+            print(content)
+
+
