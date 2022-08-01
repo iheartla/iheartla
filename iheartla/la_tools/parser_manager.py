@@ -20,16 +20,27 @@ from datetime import datetime
 
 
 class ParserManager(object):
+    __instance = None
+    @staticmethod
+    def getInstance(grammar_dir=''):
+        if ParserManager.__instance is None:
+            ParserManager(grammar_dir)
+        return ParserManager.__instance
+
     def __init__(self, grammar_dir):
-        if DEBUG_PARSER:
-            self.parser_file_manager = ParserFileManager(grammar_dir)
-            self.cache_dir = self.parser_file_manager.cache_dir
-            self.grammar_dir = self.parser_file_manager.grammar_dir
-            self.save_threads = self.parser_file_manager.save_threads
+        if ParserManager.__instance is not None:
+            raise Exception("Class ParserManager is a singleton!")
         else:
-            self.init_parser = grammarinitParser(semantics=grammarinitModelBuilderSemantics())
-            self.default_parser = grammardefaultParser(semantics=grammardefaultModelBuilderSemantics())
-            self.config_parser = grammarconfigParser(semantics=grammarconfigModelBuilderSemantics())
+            if DEBUG_PARSER:
+                self.parser_file_manager = ParserFileManager(grammar_dir)
+                self.cache_dir = self.parser_file_manager.cache_dir
+                self.grammar_dir = self.parser_file_manager.grammar_dir
+                self.save_threads = self.parser_file_manager.save_threads
+            else:
+                self.init_parser = grammarinitParser(semantics=grammarinitModelBuilderSemantics())
+                self.default_parser = grammardefaultParser(semantics=grammardefaultModelBuilderSemantics())
+                self.config_parser = grammarconfigParser(semantics=grammarconfigModelBuilderSemantics())
+            ParserManager.__instance = self
 
     def get_parser(self, key, grammar, extra_dict={}):
         if DEBUG_PARSER:
