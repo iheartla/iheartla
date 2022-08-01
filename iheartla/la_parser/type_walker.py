@@ -7,7 +7,7 @@ from ..la_tools.la_msg import *
 from ..la_tools.la_helper import *
 import regex as re
 from ..la_tools.la_helper import filter_subscript
-from .light_walker import  SolverParamWalker
+from .light_walker import SolverParamWalker
 
 ## Make the visualizer
 try: from ..la_tools.la_visualizer import LaVisualizer
