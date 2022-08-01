@@ -3,6 +3,7 @@ from .la_logger import *
 if not DEBUG_PARSER:
     from ..la_local_parsers.init_parser import grammarinitParser, grammarinitModelBuilderSemantics
     from ..la_local_parsers.default_parser import grammardefaultParser, grammardefaultModelBuilderSemantics
+    from ..la_local_parsers.config_parser import grammarconfigParser, grammarconfigModelBuilderSemantics
 import pickle
 import tatsu
 import time
@@ -28,6 +29,7 @@ class ParserManager(object):
         else:
             self.init_parser = grammarinitParser(semantics=grammarinitModelBuilderSemantics())
             self.default_parser = grammardefaultParser(semantics=grammardefaultModelBuilderSemantics())
+            self.config_parser = grammarconfigParser(semantics=grammarconfigModelBuilderSemantics())
 
     def get_parser(self, key, grammar, extra_dict={}):
         if DEBUG_PARSER:
@@ -35,8 +37,15 @@ class ParserManager(object):
         else:
             if key == 'init':
                 return self.init_parser
+            elif key == 'config':
+                return self.config_parser
             self.modify_default_parser(extra_dict)
             return self.default_parser
+
+    def create_config_parser(self):
+        if DEBUG_PARSER:
+            from ..la_companion.config_ebnf import CONFIG
+            self.get_parser('config', CONFIG)
 
     def set_test_mode(self):
         if DEBUG_PARSER:
@@ -73,7 +82,8 @@ class ParserFileManager(object):
         self.module_dir = "iheartla"
         self.default_hash_value = hashlib.md5("default".encode()).hexdigest()
         self.init_hash_value = hashlib.md5("init".encode()).hexdigest()
-        self.default_parsers_dict = {self.init_hash_value: 0, self.default_hash_value: 0}
+        self.config_hash_value = hashlib.md5("config".encode()).hexdigest()
+        self.default_parsers_dict = {self.init_hash_value: 0, self.default_hash_value: 0, self.config_hash_value: 0}
         for f in (self.grammar_dir.parent / 'la_local_parsers').glob('parser*.py'):
             name, hash_value, t = self.separate_parser_file(f.name)
             if hash_value in self.default_parsers_dict:
@@ -385,6 +395,10 @@ class ParserFileManager(object):
                 init_parser = read_from_file(la_local_parsers / f)
                 init_parser = init_parser.replace(self.init_hash_value, 'init')
                 save_to_file(init_parser, os.path.join(la_local_parsers, 'init_parser.py'))
+            if self.config_hash_value in f:
+                config_parser = read_from_file(la_local_parsers / f)
+                config_parser = config_parser.replace(self.config_hash_value, 'config')
+                save_to_file(config_parser, os.path.join(la_local_parsers, 'config_parser.py'))
             if self.default_hash_value in f:
                 def_parser = read_from_file(la_local_parsers / f)
                 def_parser = def_parser.replace(self.default_hash_value, 'default')
@@ -636,6 +650,9 @@ def recreate_local_parser_cache():
 
     print('## Re-creating the parsers.')
     iheartla.la_parser.parser.create_parser()
+
+    print('## Re-creating config parser.')
+    PM.create_config_parser()
 
     print('## Waiting for them to be saved.')
     for thread in PM.parser_file_manager.save_threads: thread.join()
