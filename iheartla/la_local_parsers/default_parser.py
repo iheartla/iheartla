@@ -115,77 +115,6 @@ class grammardefaultParser(Parser):
         )
 
     @tatsumasu()
-    def _BUILTIN_KEYWORDS_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._WHERE_()
-            with self._option():
-                self._GIVEN_()
-            with self._option():
-                self._SUM_()
-            with self._option():
-                self._MIN_()
-            with self._option():
-                self._MAX_()
-            with self._option():
-                self._ARGMIN_()
-            with self._option():
-                self._ARGMAX_()
-            with self._option():
-                self._INT_()
-            with self._option():
-                self._IF_()
-            with self._option():
-                self._OTHERWISE_()
-            with self._option():
-                self._IN_()
-            with self._option():
-                self._EXP_()
-            with self._option():
-                self._LOG_()
-            with self._option():
-                self._LN_()
-            with self._option():
-                self._SQRT_()
-            with self._option():
-                self._SUBJECT_TO_()
-            with self._option():
-                self._FROM_()
-            with self._option():
-                self._PI_()
-            with self._option():
-                self._token('|')
-            with self._option():
-                self._pattern('ℝ')
-            with self._option():
-                self._pattern('ℤ')
-            with self._option():
-                self._pattern('ᵀ')
-            with self._option():
-                self._WITH_()
-            with self._option():
-                self._INITIAL_()
-            with self._option():
-                self._AND_()
-            with self._option():
-                self._OR_()
-            with self._option():
-                self._DELTA_()
-            with self._option():
-                self._NABLA_()
-            with self._option():
-                self._DERIVATIVE_()
-            with self._option():
-                self._PARTIAL_()
-            with self._option():
-                self._SOLVE_()
-            with self._option():
-                self._PRIME_()
-            with self._option():
-                self._SUBSET_()
-            self._error('no available options')
-
-    @tatsumasu()
     def _TRACE_(self):  # noqa
         self._pattern('trace')
 
@@ -457,6 +386,77 @@ class grammardefaultParser(Parser):
     @tatsumasu()
     def _SUBSET_(self):  # noqa
         self._pattern('⊂')
+
+    @tatsumasu()
+    def _BUILTIN_KEYWORDS_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._WHERE_()
+            with self._option():
+                self._GIVEN_()
+            with self._option():
+                self._SUM_()
+            with self._option():
+                self._MIN_()
+            with self._option():
+                self._MAX_()
+            with self._option():
+                self._ARGMIN_()
+            with self._option():
+                self._ARGMAX_()
+            with self._option():
+                self._INT_()
+            with self._option():
+                self._IF_()
+            with self._option():
+                self._OTHERWISE_()
+            with self._option():
+                self._IN_()
+            with self._option():
+                self._EXP_()
+            with self._option():
+                self._LOG_()
+            with self._option():
+                self._LN_()
+            with self._option():
+                self._SQRT_()
+            with self._option():
+                self._SUBJECT_TO_()
+            with self._option():
+                self._FROM_()
+            with self._option():
+                self._PI_()
+            with self._option():
+                self._token('|')
+            with self._option():
+                self._pattern('ℝ')
+            with self._option():
+                self._pattern('ℤ')
+            with self._option():
+                self._pattern('ᵀ')
+            with self._option():
+                self._WITH_()
+            with self._option():
+                self._INITIAL_()
+            with self._option():
+                self._AND_()
+            with self._option():
+                self._OR_()
+            with self._option():
+                self._DELTA_()
+            with self._option():
+                self._NABLA_()
+            with self._option():
+                self._DERIVATIVE_()
+            with self._option():
+                self._PARTIAL_()
+            with self._option():
+                self._SOLVE_()
+            with self._option():
+                self._PRIME_()
+            with self._option():
+                self._SUBSET_()
+            self._error('no available options')
 
     @tatsumasu('Exponent')
     def _exponent_(self):  # noqa
@@ -5731,9 +5731,6 @@ class grammardefaultSemantics(object):
     def start(self, ast):  # noqa
         return ast
 
-    def BUILTIN_KEYWORDS(self, ast):  # noqa
-        return ast
-
     def TRACE(self, ast):  # noqa
         return ast
 
@@ -5924,6 +5921,9 @@ class grammardefaultSemantics(object):
         return ast
 
     def SUBSET(self, ast):  # noqa
+        return ast
+
+    def BUILTIN_KEYWORDS(self, ast):  # noqa
         return ast
 
     def exponent(self, ast):  # noqa

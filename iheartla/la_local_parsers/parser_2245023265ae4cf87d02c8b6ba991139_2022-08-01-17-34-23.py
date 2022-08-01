@@ -138,77 +138,8 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
                 self._TRIANGLE_()
             with self._option():
                 self._MESH_()
-            self._error('no available options')
-
-    @tatsumasu()
-    def _BUILTIN_KEYWORDS_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._WHERE_()
-            with self._option():
-                self._GIVEN_()
-            with self._option():
-                self._SUM_()
-            with self._option():
-                self._MIN_()
-            with self._option():
-                self._MAX_()
-            with self._option():
-                self._ARGMIN_()
-            with self._option():
-                self._ARGMAX_()
-            with self._option():
-                self._INT_()
-            with self._option():
-                self._IF_()
-            with self._option():
-                self._OTHERWISE_()
-            with self._option():
-                self._IN_()
-            with self._option():
-                self._EXP_()
-            with self._option():
-                self._LOG_()
-            with self._option():
-                self._LN_()
-            with self._option():
-                self._SQRT_()
-            with self._option():
-                self._SUBJECT_TO_()
             with self._option():
                 self._FROM_()
-            with self._option():
-                self._PI_()
-            with self._option():
-                self._token('|')
-            with self._option():
-                self._pattern('ℝ')
-            with self._option():
-                self._pattern('ℤ')
-            with self._option():
-                self._pattern('ᵀ')
-            with self._option():
-                self._WITH_()
-            with self._option():
-                self._INITIAL_()
-            with self._option():
-                self._AND_()
-            with self._option():
-                self._OR_()
-            with self._option():
-                self._DELTA_()
-            with self._option():
-                self._NABLA_()
-            with self._option():
-                self._DERIVATIVE_()
-            with self._option():
-                self._PARTIAL_()
-            with self._option():
-                self._SOLVE_()
-            with self._option():
-                self._PRIME_()
-            with self._option():
-                self._SUBSET_()
             self._error('no available options')
 
     @tatsumasu()
@@ -1355,12 +1286,7 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
 
     @tatsumasu()
     def _KEYWORDS_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._BUILTIN_KEYWORDS_()
-            with self._option():
-                self._CONF_KEYWORDS_()
-            self._error('no available options')
+        self._CONF_KEYWORDS_()
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
@@ -1505,14 +1431,43 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
             []
         )
 
+    @tatsumasu('Operators')
+    def _operators_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._Divergence_()
+            with self._option():
+                self._Gradient_()
+            with self._option():
+                self._Laplacian_()
+            self._error('no available options')
+
+    @tatsumasu()
+    def _Divergence_(self):  # noqa
+        self._pattern('∇⋅')
+
+    @tatsumasu()
+    def _Gradient_(self):  # noqa
+        self._pattern('∇')
+
+    @tatsumasu()
+    def _Laplacian_(self):  # noqa
+        self._pattern('Δ')
+
     @tatsumasu('Mapping')
     def _mapping_(self):  # noqa
-        self._identifier_()
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._identifier_()
+                with self._option():
+                    self._operators_()
+                self._error('no available options')
         self.name_last_node('lhs')
 
-        def block1():
+        def block2():
             self._hspace_()
-        self._closure(block1)
+        self._closure(block2)
         with self._group():
             with self._choice():
                 with self._option():
@@ -1524,9 +1479,9 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
                     self.name_last_node('subset')
                 self._error('no available options')
 
-        def block4():
+        def block5():
             self._hspace_()
-        self._closure(block4)
+        self._closure(block5)
         with self._group():
             with self._choice():
                 with self._option():
@@ -1534,35 +1489,35 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
                         self._map_type_()
                         self.add_last_node_to_name('params')
 
-                        def block6():
+                        def block7():
 
-                            def block7():
+                            def block8():
                                 self._hspace_()
-                            self._closure(block7)
+                            self._closure(block8)
                             self._params_separator_()
                             self.add_last_node_to_name('separators')
 
-                            def block9():
+                            def block10():
                                 self._hspace_()
-                            self._closure(block9)
+                            self._closure(block10)
                             self._map_type_()
                             self.add_last_node_to_name('params')
-                        self._closure(block6)
+                        self._closure(block7)
                 with self._option():
                     self._token('∅')
                     self.name_last_node('empty')
                 with self._option():
                     self._token('{')
 
-                    def block12():
+                    def block13():
                         self._hspace_()
-                    self._closure(block12)
+                    self._closure(block13)
                     self._token('}')
                 self._error('no available options')
 
-        def block14():
+        def block15():
             self._hspace_()
-        self._closure(block14)
+        self._closure(block15)
         with self._group():
             with self._choice():
                 with self._option():
@@ -1571,36 +1526,40 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
                     self._token('->')
                 self._error('no available options')
 
-        def block16():
+        def block17():
             self._hspace_()
-        self._closure(block16)
+        self._closure(block17)
         self._map_type_()
         self.add_last_node_to_name('ret')
 
-        def block18():
+        def block19():
 
-            def block19():
+            def block20():
                 self._hspace_()
-            self._closure(block19)
+            self._closure(block20)
             self._params_separator_()
             self.add_last_node_to_name('ret_separators')
 
-            def block21():
+            def block22():
                 self._hspace_()
-            self._closure(block21)
+            self._closure(block22)
             self._map_type_()
             self.add_last_node_to_name('ret')
-        self._closure(block18)
+        self._closure(block19)
 
-        def block23():
+        def block24():
 
-            def block24():
+            def block25():
                 self._hspace_()
-            self._closure(block24)
+            self._closure(block25)
             self._FROM_()
+
+            def block26():
+                self._hspace_()
+            self._closure(block26)
             self._module_()
             self.name_last_node('ref')
-        self._closure(block23)
+        self._closure(block24)
         self.ast._define(
             ['empty', 'lhs', 'ref', 'subset'],
             ['params', 'ret', 'ret_separators', 'separators']
@@ -1619,9 +1578,7 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
     def _module_(self):  # noqa
         with self._ifnot():
             self._KEYWORDS_()
-        self._token('`')
         self._pattern('[A-Za-z0-9_]*')
-        self._token('`')
 
 
 class grammar2245023265ae4cf87d02c8b6ba991139Semantics(object):
@@ -1644,9 +1601,6 @@ class grammar2245023265ae4cf87d02c8b6ba991139Semantics(object):
         return ast
 
     def CONF_KEYWORDS(self, ast):  # noqa
-        return ast
-
-    def BUILTIN_KEYWORDS(self, ast):  # noqa
         return ast
 
     def TRACE(self, ast):  # noqa
@@ -1988,6 +1942,18 @@ class grammar2245023265ae4cf87d02c8b6ba991139Semantics(object):
     def point_cloud(self, ast):  # noqa
         return ast
 
+    def operators(self, ast):  # noqa
+        return ast
+
+    def Divergence(self, ast):  # noqa
+        return ast
+
+    def Gradient(self, ast):  # noqa
+        return ast
+
+    def Laplacian(self, ast):  # noqa
+        return ast
+
     def mapping(self, ast):  # noqa
         return ast
 
@@ -2189,6 +2155,10 @@ class Triangle(ModelBase):
 
 class Point(ModelBase):
     v = None
+
+
+class Operators(ModelBase):
+    pass
 
 
 class Mapping(ModelBase):
