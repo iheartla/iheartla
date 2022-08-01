@@ -1,4 +1,4 @@
-from ..la_grammar.keywords_ebnf import KEYWORDS
+from ..la_grammar.keywords_ebnf import KEYWORDS, KEYS
 from ..la_grammar.number_ebnf import NUMBER
 from ..la_grammar.operators_ebnf import OPERATORS
 from ..la_grammar.matrix_ebnf import MATRIX
@@ -26,15 +26,15 @@ CONF_KEYWORDS
     = IS
     | TRIANGLE
     | MESH
+    | FROM
     ;
 """
-CONFIG = START + KEYWORDS + BASE + ARITHMETIC + TYPES + NUMBER
+CONFIG = START + KEYS + BASE + ARITHMETIC + TYPES + NUMBER
 
 CONFIG += r""" 
 
 KEYWORDS
-    = BUILTIN_KEYWORDS 
-    | CONF_KEYWORDS;
+    = CONF_KEYWORDS;
 
 identifier_alone::IdentifierAlone
     = !KEYWORDS( value:(/[A-Za-z\p{Ll}\p{Lu}\p{Lo}](?![\u0308\u0307])\p{M}*/|/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?=[\u0308\u0307])/) | '`' id:/[^`]*/ '`')
@@ -61,18 +61,33 @@ point_cloud::Point
     = POINT {hspace}+ CLOUD {hspace} '(' {hspace} v:identifier {hspace}')'
     ;
     
+operators::Operators
+    = Divergence
+    | Gradient
+    | Laplacian
+    ;
+    
+Divergence
+    = /∇⋅/;
+    
+Gradient
+    = /∇/;
+    
+Laplacian
+    = /Δ/;
+    
 mapping::Mapping
-   = lhs:identifier {hspace} (':'| IN | subset:SUBSET) {hspace}
+   = lhs:(identifier | operators) {hspace} (':'| IN | subset:SUBSET) {hspace}
    ((params+:map_type {{hspace} separators+:params_separator {hspace} params+:map_type})|empty:'∅'|'{'{hspace}'}') 
    {hspace} ('→'|'->') {hspace} 
    ret+:map_type {{hspace} ret_separators+:params_separator {hspace} ret+:map_type} 
-   {{hspace} FROM ref:module}
+   {{hspace} FROM {hspace} ref:module}
     ;
     
 map_type::MapType
     = params_type | identifier;
 
 module
-    = !KEYWORDS '`' /[A-Za-z0-9_]*/ '`'
+    = !KEYWORDS /[A-Za-z0-9_]*/ 
     ;
 """

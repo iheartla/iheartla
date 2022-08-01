@@ -1,37 +1,4 @@
-KEYWORDS = r"""
-BUILTIN_KEYWORDS
-    =
-    | WHERE
-    | GIVEN
-    | SUM
-    | MIN
-    | MAX
-    | ARGMIN
-    | ARGMAX
-    | INT
-    | IF
-    | OTHERWISE
-    | IN
-    | EXP
-    | LOG
-    | LN
-    | SQRT
-    | SUBJECT_TO
-    | FROM
-    | PI
-    | '|'
-    | /ℝ/|/ℤ/ | /ᵀ/
-    #| SIN | COS | ASIN | ARCSIN | ACOS | ARCCOS | TAN | ATAN | ARCTAN | ATAN2
-    | WITH
-    | INITIAL
-    | AND
-    | OR
-    | DELTA | NABLA | DERIVATIVE | PARTIAL
-    | SOLVE
-    | PRIME
-    | SUBSET
-    ;
-
+KEYS = r"""
 TRACE = /trace/;
 TR = /tr/;
 VEC = /vec/;
@@ -96,4 +63,39 @@ UDOT = /[\u0307]/;
 UDDOT = /[\u0308]/;   
 SOLVE = /solve/ | /Solve/ | /SOLVE/;
 SUBSET = /⊂/;
+"""
+
+KEYWORDS = KEYS + r"""
+BUILTIN_KEYWORDS
+    =
+    | WHERE
+    | GIVEN
+    | SUM
+    | MIN
+    | MAX
+    | ARGMIN
+    | ARGMAX
+    | INT
+    | IF
+    | OTHERWISE
+    | IN
+    | EXP
+    | LOG
+    | LN
+    | SQRT
+    | SUBJECT_TO
+    | FROM
+    | PI
+    | '|'
+    | /ℝ/|/ℤ/ | /ᵀ/
+    #| SIN | COS | ASIN | ARCSIN | ACOS | ARCCOS | TAN | ATAN | ARCTAN | ATAN2
+    | WITH
+    | INITIAL
+    | AND
+    | OR
+    | DELTA | NABLA | DERIVATIVE | PARTIAL
+    | SOLVE
+    | PRIME
+    | SUBSET
+    ;
 """
