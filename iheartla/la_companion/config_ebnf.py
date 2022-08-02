@@ -34,6 +34,7 @@ CONF_KEYWORDS
     | MESH
     | FROM
     | SOLVE | WITH | ODE | EXPLICIT | IMPLICIT | EULER | RK
+    | DELTA | NABLA | /∇⋅/
     ;
 """
 CONFIG = START + KEYS + BASE + ARITHMETIC + TYPES + NUMBER
@@ -69,28 +70,32 @@ point_cloud::Point
     ;
     
 operators::Operators
-    = Divergence
-    | Gradient
-    | Laplacian
+    = d:Divergence
+    | g:Gradient
+    | l:Laplacian
     ;
     
 Divergence
     = /∇⋅/;
     
 Gradient
-    = /∇/;
+    = NABLA;
     
 Laplacian
-    = /Δ/;
+    = DELTA;
     
 mapping::Mapping
-   = lhs:(identifier | operators) {hspace} (':'| IN | subset:SUBSET) {hspace}
-   ((params+:map_type {{hspace} separators+:params_separator {hspace} params+:map_type})|empty:'∅'|'{'{hspace}'}') 
+   = lhs:(identifier | operators) {hspace} (':'| IN | subset:SUBSET) {hspace} rhs:mapping_rhs
+    ;
+    
+mapping_rhs::Rhs
+    =
+    ((params+:map_type {{hspace} separators+:params_separator {hspace} params+:map_type})|empty:'∅'|'{'{hspace}'}') 
    {hspace} ('→'|'->') {hspace} 
    ret+:map_type {{hspace} ret_separators+:params_separator {hspace} ret+:map_type} 
    {{hspace} FROM {hspace} ref:module}
     ;
-    
+
 map_type::MapType
     = params_type | identifier;
 
