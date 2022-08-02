@@ -438,8 +438,9 @@ def get_derived_type(op, left_type, right_type):
                             pass
             else:
                 # static
-                if left_type.sparse and right_type.sparse:
-                    ret_type.sparse = True
+                if left_type.sparse:
+                    if right_type.is_matrix() and right_type.sparse:
+                        ret_type.sparse = True
                 else:
                     ret_type.sparse = False
             ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
