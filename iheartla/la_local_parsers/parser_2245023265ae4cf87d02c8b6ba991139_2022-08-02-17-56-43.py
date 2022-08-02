@@ -178,6 +178,12 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
                 self._EULER_()
             with self._option():
                 self._RK_()
+            with self._option():
+                self._DELTA_()
+            with self._option():
+                self._NABLA_()
+            with self._option():
+                self._pattern('∇⋅')
             self._error('no available options')
 
     @tatsumasu()
@@ -1476,11 +1482,18 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
         with self._choice():
             with self._option():
                 self._Divergence_()
+                self.name_last_node('d')
             with self._option():
                 self._Gradient_()
+                self.name_last_node('g')
             with self._option():
                 self._Laplacian_()
+                self.name_last_node('l')
             self._error('no available options')
+        self.ast._define(
+            ['d', 'g', 'l'],
+            []
+        )
 
     @tatsumasu()
     def _Divergence_(self):  # noqa
@@ -1488,11 +1501,11 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
 
     @tatsumasu()
     def _Gradient_(self):  # noqa
-        self._pattern('∇')
+        self._NABLA_()
 
     @tatsumasu()
     def _Laplacian_(self):  # noqa
-        self._pattern('Δ')
+        self._DELTA_()
 
     @tatsumasu('Mapping')
     def _mapping_(self):  # noqa
@@ -1522,6 +1535,15 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
         def block5():
             self._hspace_()
         self._closure(block5)
+        self._mapping_rhs_()
+        self.name_last_node('rhs')
+        self.ast._define(
+            ['lhs', 'rhs', 'subset'],
+            []
+        )
+
+    @tatsumasu('Rhs')
+    def _mapping_rhs_(self):  # noqa
         with self._group():
             with self._choice():
                 with self._option():
@@ -1529,35 +1551,35 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
                         self._map_type_()
                         self.add_last_node_to_name('params')
 
-                        def block7():
+                        def block1():
 
-                            def block8():
+                            def block2():
                                 self._hspace_()
-                            self._closure(block8)
+                            self._closure(block2)
                             self._params_separator_()
                             self.add_last_node_to_name('separators')
 
-                            def block10():
+                            def block4():
                                 self._hspace_()
-                            self._closure(block10)
+                            self._closure(block4)
                             self._map_type_()
                             self.add_last_node_to_name('params')
-                        self._closure(block7)
+                        self._closure(block1)
                 with self._option():
                     self._token('∅')
                     self.name_last_node('empty')
                 with self._option():
                     self._token('{')
 
-                    def block13():
+                    def block7():
                         self._hspace_()
-                    self._closure(block13)
+                    self._closure(block7)
                     self._token('}')
                 self._error('no available options')
 
-        def block15():
+        def block9():
             self._hspace_()
-        self._closure(block15)
+        self._closure(block9)
         with self._group():
             with self._choice():
                 with self._option():
@@ -1566,42 +1588,42 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
                     self._token('->')
                 self._error('no available options')
 
-        def block17():
+        def block11():
             self._hspace_()
-        self._closure(block17)
+        self._closure(block11)
         self._map_type_()
         self.add_last_node_to_name('ret')
 
-        def block19():
+        def block13():
+
+            def block14():
+                self._hspace_()
+            self._closure(block14)
+            self._params_separator_()
+            self.add_last_node_to_name('ret_separators')
+
+            def block16():
+                self._hspace_()
+            self._closure(block16)
+            self._map_type_()
+            self.add_last_node_to_name('ret')
+        self._closure(block13)
+
+        def block18():
+
+            def block19():
+                self._hspace_()
+            self._closure(block19)
+            self._FROM_()
 
             def block20():
                 self._hspace_()
             self._closure(block20)
-            self._params_separator_()
-            self.add_last_node_to_name('ret_separators')
-
-            def block22():
-                self._hspace_()
-            self._closure(block22)
-            self._map_type_()
-            self.add_last_node_to_name('ret')
-        self._closure(block19)
-
-        def block24():
-
-            def block25():
-                self._hspace_()
-            self._closure(block25)
-            self._FROM_()
-
-            def block26():
-                self._hspace_()
-            self._closure(block26)
             self._module_()
             self.name_last_node('ref')
-        self._closure(block24)
+        self._closure(block18)
         self.ast._define(
-            ['empty', 'lhs', 'ref', 'subset'],
+            ['empty', 'ref'],
             ['params', 'ret', 'ret_separators', 'separators']
         )
 
@@ -2066,6 +2088,9 @@ class grammar2245023265ae4cf87d02c8b6ba991139Semantics(object):
     def mapping(self, ast):  # noqa
         return ast
 
+    def mapping_rhs(self, ast):  # noqa
+        return ast
+
     def map_type(self, ast):  # noqa
         return ast
 
@@ -2276,18 +2301,24 @@ class Point(ModelBase):
 
 
 class Operators(ModelBase):
-    pass
+    d = None
+    g = None
+    l = None
 
 
 class Mapping(ModelBase):
-    empty = None
     lhs = None
+    rhs = None
+    subset = None
+
+
+class Rhs(ModelBase):
+    empty = None
     params = None
     ref = None
     ret = None
     ret_separators = None
     separators = None
-    subset = None
 
 
 class MapType(ModelBase):
