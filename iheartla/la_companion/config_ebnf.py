@@ -21,12 +21,19 @@ TRIANGLE = /triangle/;
 MESH = /mesh/;
 POINT = /point/;
 CLOUD = /cloud/;
+LU = /LU/;
+ODE = /ODE/;
+EXPLICIT = /explicit/;
+IMPLICIT = /implicit/;
+EULER = /euler/;
+RK = /RK/;
 
 CONF_KEYWORDS
     = IS
     | TRIANGLE
     | MESH
     | FROM
+    | SOLVE | WITH | ODE | EXPLICIT | IMPLICIT | EULER | RK
     ;
 """
 CONFIG = START + KEYS + BASE + ARITHMETIC + TYPES + NUMBER
@@ -42,7 +49,7 @@ identifier_alone::IdentifierAlone
     ;
 
 valid_block
-    = definition | mapping
+    = definition | mapping | solver
     ;
     
 definition
@@ -89,5 +96,20 @@ map_type::MapType
 
 module
     = !KEYWORDS /[A-Za-z0-9_]*/ 
+    ;
+    
+solver
+    = SOLVE {hspace} target {hspace} WITH {hspace} method
+    ;
+    
+target
+    = ODE | module
+    ;
+    
+method
+    = LU
+    | EXPLICIT {hspace}+ EULER
+    | IMPLICIT {hspace}+ EULER
+    | RK
     ;
 """

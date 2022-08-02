@@ -130,6 +130,30 @@ class grammarconfigParser(Parser):
         self._pattern('cloud')
 
     @tatsumasu()
+    def _LU_(self):  # noqa
+        self._pattern('LU')
+
+    @tatsumasu()
+    def _ODE_(self):  # noqa
+        self._pattern('ODE')
+
+    @tatsumasu()
+    def _EXPLICIT_(self):  # noqa
+        self._pattern('explicit')
+
+    @tatsumasu()
+    def _IMPLICIT_(self):  # noqa
+        self._pattern('implicit')
+
+    @tatsumasu()
+    def _EULER_(self):  # noqa
+        self._pattern('euler')
+
+    @tatsumasu()
+    def _RK_(self):  # noqa
+        self._pattern('RK')
+
+    @tatsumasu()
     def _CONF_KEYWORDS_(self):  # noqa
         with self._choice():
             with self._option():
@@ -140,6 +164,20 @@ class grammarconfigParser(Parser):
                 self._MESH_()
             with self._option():
                 self._FROM_()
+            with self._option():
+                self._SOLVE_()
+            with self._option():
+                self._WITH_()
+            with self._option():
+                self._ODE_()
+            with self._option():
+                self._EXPLICIT_()
+            with self._option():
+                self._IMPLICIT_()
+            with self._option():
+                self._EULER_()
+            with self._option():
+                self._RK_()
             self._error('no available options')
 
     @tatsumasu()
@@ -1321,6 +1359,8 @@ class grammarconfigParser(Parser):
                 self._definition_()
             with self._option():
                 self._mapping_()
+            with self._option():
+                self._solver_()
             self._error('no available options')
 
     @tatsumasu()
@@ -1580,6 +1620,57 @@ class grammarconfigParser(Parser):
             self._KEYWORDS_()
         self._pattern('[A-Za-z0-9_]*')
 
+    @tatsumasu()
+    def _solver_(self):  # noqa
+        self._SOLVE_()
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._target_()
+
+        def block1():
+            self._hspace_()
+        self._closure(block1)
+        self._WITH_()
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._method_()
+
+    @tatsumasu()
+    def _target_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._ODE_()
+            with self._option():
+                self._module_()
+            self._error('no available options')
+
+    @tatsumasu()
+    def _method_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._LU_()
+            with self._option():
+                self._EXPLICIT_()
+
+                def block0():
+                    self._hspace_()
+                self._positive_closure(block0)
+                self._EULER_()
+            with self._option():
+                self._IMPLICIT_()
+
+                def block1():
+                    self._hspace_()
+                self._positive_closure(block1)
+                self._EULER_()
+            with self._option():
+                self._RK_()
+            self._error('no available options')
+
 
 class grammarconfigSemantics(object):
     def start(self, ast):  # noqa
@@ -1598,6 +1689,24 @@ class grammarconfigSemantics(object):
         return ast
 
     def CLOUD(self, ast):  # noqa
+        return ast
+
+    def LU(self, ast):  # noqa
+        return ast
+
+    def ODE(self, ast):  # noqa
+        return ast
+
+    def EXPLICIT(self, ast):  # noqa
+        return ast
+
+    def IMPLICIT(self, ast):  # noqa
+        return ast
+
+    def EULER(self, ast):  # noqa
+        return ast
+
+    def RK(self, ast):  # noqa
         return ast
 
     def CONF_KEYWORDS(self, ast):  # noqa
@@ -1961,6 +2070,15 @@ class grammarconfigSemantics(object):
         return ast
 
     def module(self, ast):  # noqa
+        return ast
+
+    def solver(self, ast):  # noqa
+        return ast
+
+    def target(self, ast):  # noqa
+        return ast
+
+    def method(self, ast):  # noqa
         return ast
 
 
