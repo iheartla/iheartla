@@ -12,6 +12,7 @@ class VarTypeEnum(Enum):
     SCALAR = 5
     FUNCTION = 6
     INDEX = 7
+    MAPPING = 8
 
 
 class DynamicTypeEnum(IntFlag):
@@ -296,6 +297,16 @@ class FunctionType(LaVarType):
         for cur_ret in self.ret:
             ret_list.append(cur_ret.get_json_content())
         return """{{"type": "function", "params":[{}], "ret":[{}]}}""".format(','.join(param_list), ','.join(ret_list))
+
+
+class MappingType(LaVarType):
+    def __init__(self, desc=None, symbol=None, params=None, ret=None, template_symbols=None, ret_symbols=None, cur_type=FuncType.FuncDetermined):
+        LaVarType.__init__(self, VarTypeEnum.MAPPING, desc, symbol)
+        self.params = params or []
+        self.ret = ret
+        self.template_symbols = template_symbols or {}  # symbol: index of params
+        self.ret_symbols = ret_symbols or []
+        self.cur_type = cur_type
 
 
 class SummationAttrs(object):

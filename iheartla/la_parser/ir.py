@@ -88,6 +88,7 @@ class IRNodeType(Enum):
     SetType = 404
     ScalarType = 405
     FunctionType = 406
+    MappingType = 407
     # Derivatives
     Import = 500
     # differential equations
@@ -265,6 +266,15 @@ class ScalarTypeNode(ExprNode):
 class FunctionTypeNode(ExprNode):
     def __init__(self, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.FunctionType, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        self.empty = None
+        self.params = []
+        self.separators = []
+        self.ret = None
+
+
+class MappingTypeNode(ExprNode):
+    def __init__(self, la_type=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.MappingType, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.empty = None
         self.params = []
         self.separators = []

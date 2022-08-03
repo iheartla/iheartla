@@ -1127,6 +1127,35 @@ class TypeWalker(NodeWalker):
         ir_node.la_type = la_type
         return ir_node
 
+    def walk_MappingType(self, node, **kwargs):
+        ir_node = MappingTypeNode(parse_info=node.parseinfo, raw_text=node.text)
+        ir_node.empty = node.empty
+        ir_node.separators = node.separators
+        params = []
+        template_symbols = {}
+        template_ret = []
+        if node.params:
+            for index in range(len(node.params)):
+                param_node = self.walk(node.params[index], **kwargs)
+                ir_node.params.append(param_node.ir)
+                params.append(param_node.la_type)
+        ret_list = []
+        if node.ret:
+            for cur_index in range(len(node.ret)):
+                ret_node = self.walk(node.ret[cur_index], **kwargs).ir
+                ir_node.ret = ret_node
+                ret = ret_node.la_type
+                ret_list.append(ret)
+        elif node.ret_type:
+            for cur_index in range(len(node.ret_type)):
+                ret_node = self.walk(node.ret_type[cur_index], **kwargs)
+                ir_node.ret = ret_node
+                ret = ret_node.la_type
+                ret_list.append(ret)
+        la_type = MappingType(params=params, ret=ret_list, template_symbols=template_symbols, ret_symbols=template_ret)
+        ir_node.la_type = la_type
+        return ir_node
+
     def update_parameters(self, identifier, index):
         if self.contain_subscript(identifier):
             arr = self.get_all_ids(identifier)
