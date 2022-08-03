@@ -1756,12 +1756,14 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
 
                 def block18():
                     self._import_()
+                    self.name_last_node('im')
                 self._closure(block18)
             with self._option():
                 self._import_()
+                self.name_last_node('im')
             self._error('no available options')
         self.ast._define(
-            ['empty'],
+            ['empty', 'im'],
             ['params', 'ret', 'ret_separators', 'separators']
         )
 
@@ -2573,6 +2575,7 @@ class Mapping(ModelBase):
 
 class Rhs(ModelBase):
     empty = None
+    im = None
     params = None
     ret = None
     ret_separators = None

@@ -94,9 +94,9 @@ mapping_rhs::Rhs
     ((params+:map_type {{hspace} separators+:params_separator {hspace} params+:map_type})|empty:'∅'|'{'{hspace}'}') 
    {hspace} ('→'|'->') {hspace} 
    ret+:map_type {{hspace} ret_separators+:params_separator {hspace} ret+:map_type} 
-   {import}
+   {im:import}
    |
-   import
+   im:import
     ;
 
 import::Import
