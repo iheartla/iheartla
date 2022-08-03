@@ -310,6 +310,21 @@ class CodeGenLatex(CodeGen):
                     params_str += node.separators[index] + ''
         return params_str + '\\rightarrow ' + ret
 
+    def visit_mapping_type(self, node, **kwargs):
+        ret = self.visit(node.ret, **kwargs)
+        if len(node.params) == 0:
+            if node.empty:
+                params_str = '\\varnothing'
+            else:
+                params_str = '\{\}'
+        else:
+            params_str = ''
+            for index in range(len(node.params)):
+                params_str += self.visit(node.params[index], **kwargs)
+                if index < len(node.params)-1:
+                    params_str += node.separators[index] + ''
+        return params_str + '\\rightarrow ' + ret
+
     def visit_assignment(self, node, **kwargs):
         content = ''
         lhs_list = []
