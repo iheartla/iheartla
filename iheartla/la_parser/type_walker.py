@@ -274,6 +274,8 @@ class TypeWalker(NodeWalker):
         self.used_params = []
         self.opt_syms = []
         self.expr_dict = {}        # lhs id -> symbols in current expr
+        self.smooth_dict = {}
+        self.mapping_dict = {}
 
     def assert_expr(self, cond, msg):
         """
@@ -866,6 +868,11 @@ class TypeWalker(NodeWalker):
             id0_info = self.walk(node.id[id_index], **kwargs)
             ir_node.id.append(id0_info.ir)
             id0 = id0_info.content
+            if node.subset:
+                # surface def
+                if type_node.la_type.is_vector():
+                    dim = type_node.la_type.rows
+                    self.smooth_dict[id0] = dim
             if hasattr(node, 'desc') and node.desc is not None:
                 self.desc_dict[id0_info.ir.get_main_id()] = node.desc
             if True:
@@ -918,6 +925,8 @@ class TypeWalker(NodeWalker):
                                 self.get_cur_param_data().update_dim_dict(id1, self.get_main_id(id0), 0)
                         else:
                             self.get_cur_param_data().arith_dim_list.append(type_node.la_type.rows)
+                elif type_node.la_type.is_mapping():
+                    self.mapping_dict[id0] = type_node
         ir_node.type = type_node
         return ir_node
 
