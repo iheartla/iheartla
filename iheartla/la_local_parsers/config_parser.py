@@ -1102,6 +1102,8 @@ class grammarconfigParser(Parser):
             with self._option():
                 self._function_type_()
             with self._option():
+                self._mapping_type_()
+            with self._option():
                 self._matrix_type_()
             with self._option():
                 self._vector_type_()
@@ -1193,6 +1195,145 @@ class grammarconfigParser(Parser):
         self.ast._define(
             ['empty'],
             ['params', 'ret', 'ret_separators', 'separators']
+        )
+
+    @tatsumasu('MappingType')
+    def _mapping_type_(self):  # noqa
+        with self._choice():
+            with self._option():
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            with self._group():
+                                self._identifier_()
+                                self.add_last_node_to_name('params')
+
+                                def block1():
+
+                                    def block2():
+                                        self._hspace_()
+                                    self._closure(block2)
+                                    self._params_separator_()
+                                    self.add_last_node_to_name('separators')
+
+                                    def block4():
+                                        self._hspace_()
+                                    self._closure(block4)
+                                    self._identifier_()
+                                    self.add_last_node_to_name('params')
+                                self._closure(block1)
+                        with self._option():
+                            self._token('∅')
+                            self.name_last_node('empty')
+                        with self._option():
+                            self._token('{')
+
+                            def block7():
+                                self._hspace_()
+                            self._closure(block7)
+                            self._token('}')
+                        self._error('no available options')
+
+                def block9():
+                    self._hspace_()
+                self._closure(block9)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._token('→')
+                        with self._option():
+                            self._token('->')
+                        self._error('no available options')
+
+                def block11():
+                    self._hspace_()
+                self._closure(block11)
+                self._params_type_()
+                self.add_last_node_to_name('ret_type')
+
+                def block13():
+
+                    def block14():
+                        self._hspace_()
+                    self._closure(block14)
+                    self._params_separator_()
+                    self.add_last_node_to_name('ret_separators')
+
+                    def block16():
+                        self._hspace_()
+                    self._closure(block16)
+                    self._params_type_()
+                    self.add_last_node_to_name('ret_type')
+                self._closure(block13)
+            with self._option():
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            with self._group():
+                                self._identifier_()
+                                self.add_last_node_to_name('params')
+
+                                def block19():
+
+                                    def block20():
+                                        self._hspace_()
+                                    self._closure(block20)
+                                    self._params_separator_()
+                                    self.add_last_node_to_name('separators')
+
+                                    def block22():
+                                        self._hspace_()
+                                    self._closure(block22)
+                                    self._identifier_()
+                                    self.add_last_node_to_name('params')
+                                self._closure(block19)
+                        with self._option():
+                            self._token('∅')
+                            self.name_last_node('empty')
+                        with self._option():
+                            self._token('{')
+
+                            def block25():
+                                self._hspace_()
+                            self._closure(block25)
+                            self._token('}')
+                        self._error('no available options')
+
+                def block27():
+                    self._hspace_()
+                self._closure(block27)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._token('→')
+                        with self._option():
+                            self._token('->')
+                        self._error('no available options')
+
+                def block29():
+                    self._hspace_()
+                self._closure(block29)
+                self._identifier_()
+                self.add_last_node_to_name('ret')
+
+                def block31():
+
+                    def block32():
+                        self._hspace_()
+                    self._closure(block32)
+                    self._params_separator_()
+                    self.add_last_node_to_name('ret_separators')
+
+                    def block34():
+                        self._hspace_()
+                    self._closure(block34)
+                    self._identifier_()
+                    self.add_last_node_to_name('ret')
+                self._closure(block31)
+            self._error('no available options')
+        self.ast._define(
+            ['empty'],
+            ['params', 'ret', 'ret_separators', 'ret_type', 'separators']
         )
 
     @tatsumasu('Integer')
@@ -2022,6 +2163,9 @@ class grammarconfigSemantics(object):
     def function_type(self, ast):  # noqa
         return ast
 
+    def mapping_type(self, ast):  # noqa
+        return ast
+
     def integer(self, ast):  # noqa
         return ast
 
@@ -2250,6 +2394,15 @@ class FunctionType(ModelBase):
     params = None
     ret = None
     ret_separators = None
+    separators = None
+
+
+class MappingType(ModelBase):
+    empty = None
+    params = None
+    ret = None
+    ret_separators = None
+    ret_type = None
     separators = None
 
 
