@@ -56,6 +56,9 @@ class ConfigWalker(NodeWalker):
         # print(node)
         pass
 
+    def walk_SizeOp(self, node, **kwargs):
+        param = self.walk(node.i, **kwargs)
+
     def walk_IdentifierAlone(self, node, **kwargs):
         node_type = LaVarType(VarTypeEnum.INVALID)
         if node.value:

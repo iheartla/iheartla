@@ -35,6 +35,7 @@ CONF_KEYWORDS
     | FROM
     | SOLVE | WITH | ODE | EXPLICIT | IMPLICIT | EULER | RK
     | DELTA | NABLA | /∇⋅/
+    | /#/
     ;
 """
 CONFIG = START + KEYS + BASE + ARITHMETIC + TYPES + NUMBER
@@ -93,11 +94,25 @@ mapping_rhs::Rhs
     ((params+:map_type {{hspace} separators+:params_separator {hspace} params+:map_type})|empty:'∅'|'{'{hspace}'}') 
    {hspace} ('→'|'->') {hspace} 
    ret+:map_type {{hspace} ret_separators+:params_separator {hspace} ret+:map_type} 
-   {{hspace} FROM {hspace} ref:module}
+   {import}
+   |
+   import
     ;
 
+import::Import
+    = names+:identifier {{hspace} ',' {hspace} names+:identifier } {hspace} FROM  {hspace}+ package:module {hspace} 
+    {'(' {{hspace} params+:module_param {{hspace} separators+:params_separator {hspace} params+:module_param}} {hspace} ')'} {hspace}
+    ;
+    
 map_type::MapType
-    = params_type | identifier;
+    = params_type | size_op | identifier;
+    
+module_param
+    = size_op | identifier;
+    
+size_op::SizeOp
+    = /#/ {hspace} i:identifier
+    ;
 
 module
     = !KEYWORDS /[A-Za-z0-9_]*/ 
