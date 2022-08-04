@@ -25,7 +25,7 @@ class DynamicTypeEnum(IntFlag):
 class LaVarType(object):
     def __init__(self, var_type, desc=None, element_type=None, symbol=None, index_type=False, dynamic=DynamicTypeEnum.DYN_INVALID):
         super().__init__()
-        self.var_type = var_type
+        self.var_type = var_type if var_type else VarTypeEnum.INVALID
         self.desc = desc   # only parameters need description
         self.element_type = element_type
         self.symbol = symbol
