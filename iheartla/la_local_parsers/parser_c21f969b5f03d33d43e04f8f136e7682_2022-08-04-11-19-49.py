@@ -4197,9 +4197,58 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     self._expression_()
                     self.add_last_node_to_name('rexpr')
                 self._closure(block42)
+            with self._option():
+                self._SOLVE_()
+                self._token('_')
+                self._identifier_()
+                self.name_last_node('u')
+
+                def block51():
+                    self._hspace_()
+                self._closure(block51)
+                self._expression_()
+                self.add_last_node_to_name('lexpr')
+
+                def block53():
+                    self._hspace_()
+                self._closure(block53)
+                self._token('=')
+                self.name_last_node('op')
+
+                def block55():
+                    self._hspace_()
+                self._closure(block55)
+                self._expression_()
+                self.add_last_node_to_name('rexpr')
+
+                def block57():
+
+                    def block58():
+                        self._hspace_()
+                    self._closure(block58)
+                    self._token(';')
+
+                    def block59():
+                        self._hspace_()
+                    self._closure(block59)
+                    self._expression_()
+                    self.add_last_node_to_name('lexpr')
+
+                    def block61():
+                        self._hspace_()
+                    self._closure(block61)
+                    self._token('=')
+                    self.name_last_node('op')
+
+                    def block63():
+                        self._hspace_()
+                    self._closure(block63)
+                    self._expression_()
+                    self.add_last_node_to_name('rexpr')
+                self._closure(block57)
             self._error('no available options')
         self.ast._define(
-            ['op'],
+            ['op', 'u'],
             ['left', 'lexpr', 'rexpr', 'right', 'v']
         )
 
@@ -6974,6 +7023,7 @@ class Assignment(ModelBase):
     op = None
     rexpr = None
     right = None
+    u = None
     v = None
 
 

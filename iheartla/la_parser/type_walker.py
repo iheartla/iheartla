@@ -276,6 +276,7 @@ class TypeWalker(NodeWalker):
         self.expr_dict = {}        # lhs id -> symbols in current expr
         self.smooth_dict = {}
         self.mapping_dict = {}
+        self.omit_assert = False
 
     def assert_expr(self, cond, msg):
         """
@@ -287,7 +288,8 @@ class TypeWalker(NodeWalker):
         #     print("msg: {}".format(msg))
         # if not self.visiting_solver_eq:
         #     assert cond, msg
-        assert cond, msg
+        if not self.omit_assert:
+            assert cond, msg
 
     def get_cur_param_data(self):
         # either main where/given block or local function block
@@ -383,6 +385,7 @@ class TypeWalker(NodeWalker):
         self.solved_func.clear()
         self.need_mutator = False
         self.opt_key = ''
+        self.omit_assert = False
 
     def get_func_symbols(self):
         ret = {}
@@ -1388,6 +1391,12 @@ class TypeWalker(NodeWalker):
                         for sym in value_list:
                             self.assert_expr(sym not in self.symtable, "Parameter {} has been defined".format(sym))
                             self.symtable[sym] = v_info.type.la_type.params[key]
+        elif node.u:
+            # incomplete variable type
+            self.omit_assert = True
+            print(node.u)
+            pass
+
 
         for l_index in range(len(node.lexpr)):
             lexpr_info = self.walk(node.lexpr[l_index], **kwargs)
@@ -1397,6 +1406,7 @@ class TypeWalker(NodeWalker):
             self.assert_expr(lexpr_info.ir.la_type.is_same_type(rexpr_info.ir.la_type),
                              "Different types on lhs and rhs")
         self.visiting_solver_eq = False
+        self.omit_assert = False
         eq_node.eq_type = self.cur_eq_type
         return NodeInfo(None, ir=eq_node, symbols=eq_node.symbols)
 
