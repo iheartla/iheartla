@@ -99,11 +99,19 @@ class IRNode(object):
     def __init__(self, node_type=None, parent=None, la_type=None, parse_info=None, raw_text=None):
         super().__init__()
         self.node_type = node_type
-        self.la_type = la_type
+        self._la_type = la_type if la_type else LaVarType(VarTypeEnum.INVALID)
         self.parent = None
         self.set_parent(parent)
         self.parse_info = parse_info
         self.raw_text = raw_text
+
+    @property
+    def la_type(self):
+        return self._la_type
+
+    @la_type.setter
+    def la_type(self, value):
+        self._la_type = value if value else LaVarType(VarTypeEnum.INVALID)
 
     def is_node(self, node_type):
         return self.node_type == node_type
