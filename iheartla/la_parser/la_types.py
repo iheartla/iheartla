@@ -50,6 +50,9 @@ class LaVarType(object):
     def is_dynamic_dim(self):
         return self.dynamic & DynamicTypeEnum.DYN_DIM
 
+    def replace_sym_dims(self, mapping_dict):
+        pass
+
     def set_dynamic_type(self, dynamic_type):
         self.dynamic = dynamic_type
 
@@ -183,6 +186,9 @@ class SequenceType(LaVarType):
     def is_dynamic(self):
         return self.element_type.is_dynamic()
 
+    def replace_sym_dims(self, mapping_dict):
+        self.element_type.replace_sym_dims(mapping_dict)
+
     def get_json_content(self):
         return """{{"type": "sequence", "is_int":"{}", "element":{}, "size":"{}"}}""".format(self.is_integer_element(), self.element_type.get_json_content(), self.size)
 
@@ -216,6 +222,12 @@ class MatrixType(LaVarType):
     def is_integer_element(self):
         return self.element_type.is_integer_element()
 
+    def replace_sym_dims(self, mapping_dict):
+        if self.rows in mapping_dict:
+            self.rows = mapping_dict[self.rows]
+        if self.cols in mapping_dict:
+            self.cols = mapping_dict[self.cols]
+
     def get_json_content(self):
         return """{{"type": "matrix", "is_int":"{}", "element":{}, "rows":"{}", "cols":"{}"}}""".format(self.is_integer_element(), self.element_type.get_json_content(), self.rows, self.cols)
 
@@ -235,6 +247,10 @@ class VectorType(LaVarType):
 
     def is_integer_element(self):
         return self.element_type.is_integer_element()
+
+    def replace_sym_dims(self, mapping_dict):
+        if self.rows in mapping_dict:
+            self.rows = mapping_dict[self.rows]
 
     def get_json_content(self):
         return """{{"type": "vector", "is_int":"{}", "element":{}, "rows":"{}"}}""".format(self.is_integer_element(), self.element_type.get_json_content(), self.rows)

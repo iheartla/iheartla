@@ -311,6 +311,8 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
                     par = module.params[cur_index]
                     par_list.append(par.get_name())
                     par_mapping_dict[tmp_type_walker.parameters[cur_index]] = par.get_name()
+                # check whether the dimensions depend on parameters
+                replace_sym_dims(tmp_type_walker.symtable, par_mapping_dict)
                 for sym in module.names:
                     if sym.get_name() not in tmp_type_walker.symtable:
                         parse_info = sym.parse_info
