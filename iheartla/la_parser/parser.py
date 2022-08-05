@@ -302,6 +302,15 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
                 pre_frame = walk_model_frame(parser_type, tmp_type_walker, tmp_start_node, module.module.get_name())
                 name_list = []
                 par_list = []
+                if len(tmp_type_walker.parameters) != len(module.params):
+                    parse_info = sym.parse_info
+                    err_msg = "Parameters doesn't match, need {} while given {}".format(len(tmp_type_walker.parameters), len(module.params))
+                    raise
+                par_mapping_dict = {}
+                for cur_index in range(len(module.params)):
+                    par = module.params[cur_index]
+                    par_list.append(par.get_name())
+                    par_mapping_dict[tmp_type_walker.parameters[cur_index]] = par.get_name()
                 for sym in module.names:
                     if sym.get_name() not in tmp_type_walker.symtable:
                         parse_info = sym.parse_info
@@ -309,12 +318,7 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
                         raise
                     existed_syms_dict[sym.get_name()] = copy.deepcopy(tmp_type_walker.symtable[sym.get_name()])
                     name_list.append(sym.get_name())
-                for par in module.params:
-                    par_list.append(par.get_name())
-                if len(tmp_type_walker.parameters) != len(module.params):
-                    parse_info = sym.parse_info
-                    err_msg = "Parameters doesn't match, need {} while given {}".format(len(tmp_type_walker.parameters), len(module.params))
-                    raise
+
                 module_list.append(CodeModule(frame=pre_frame, name=module.module.get_name(), syms=name_list, params=par_list))
                 module_param_list.append(copy.deepcopy(tmp_type_walker.parameters))
                 module_sym_list.append(copy.deepcopy(tmp_type_walker.symtable))
