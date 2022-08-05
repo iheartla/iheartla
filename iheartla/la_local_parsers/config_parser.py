@@ -462,6 +462,10 @@ class grammarconfigParser(Parser):
         self._pattern('⊂')
 
     @tatsumasu()
+    def _AS_(self):  # noqa
+        self._pattern('as')
+
+    @tatsumasu()
     def _hspace_(self):  # noqa
         with self._choice():
             with self._option():
@@ -2164,6 +2168,9 @@ class grammarconfigSemantics(object):
         return ast
 
     def SUBSET(self, ast):  # noqa
+        return ast
+
+    def AS(self, ast):  # noqa
         return ast
 
     def hspace(self, ast):  # noqa

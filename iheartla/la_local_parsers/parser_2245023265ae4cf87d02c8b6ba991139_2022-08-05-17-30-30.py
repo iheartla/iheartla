@@ -462,6 +462,10 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
         self._pattern('⊂')
 
     @tatsumasu()
+    def _AS_(self):  # noqa
+        self._pattern('as')
+
+    @tatsumasu()
     def _hspace_(self):  # noqa
         with self._choice():
             with self._option():
@@ -2164,6 +2168,9 @@ class grammar2245023265ae4cf87d02c8b6ba991139Semantics(object):
         return ast
 
     def SUBSET(self, ast):  # noqa
+        return ast
+
+    def AS(self, ast):  # noqa
         return ast
 
     def hspace(self, ast):  # noqa
