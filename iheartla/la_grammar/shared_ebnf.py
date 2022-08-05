@@ -4,8 +4,12 @@ Directive
     ;
 
 import::Import
-    = names+:multi_str {{hspace} ',' {hspace} names+:multi_str } {hspace} FROM  {hspace}+ package:multi_str {hspace} 
+    = names+:import_var {{hspace} ',' {hspace} names+:import_var } {hspace} FROM  {hspace}+ package:multi_str {hspace} 
     {'(' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'} {hspace}
+    ;
+    
+import_var::ImportVar
+    = name:multi_str {{hspace} AS {hspace} r:multi_str}
     ;
 
 where_conditions::WhereConditions

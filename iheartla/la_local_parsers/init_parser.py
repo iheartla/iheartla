@@ -384,6 +384,10 @@ class grammarinitParser(Parser):
         self._pattern('⊂')
 
     @tatsumasu()
+    def _AS_(self):  # noqa
+        self._pattern('as')
+
+    @tatsumasu()
     def _BUILTIN_KEYWORDS_(self):  # noqa
         with self._choice():
             with self._option():
@@ -452,6 +456,8 @@ class grammarinitParser(Parser):
                 self._PRIME_()
             with self._option():
                 self._SUBSET_()
+            with self._option():
+                self._AS_()
             self._error('no available options')
 
     @tatsumasu('Exponent')
@@ -3724,7 +3730,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('Import')
     def _import_(self):  # noqa
-        self._multi_str_()
+        self._import_var_()
         self.add_last_node_to_name('names')
 
         def block1():
@@ -3737,7 +3743,7 @@ class grammarinitParser(Parser):
             def block3():
                 self._hspace_()
             self._closure(block3)
-            self._multi_str_()
+            self._import_var_()
             self.add_last_node_to_name('names')
         self._closure(block1)
 
@@ -3795,6 +3801,29 @@ class grammarinitParser(Parser):
         self.ast._define(
             ['package'],
             ['names', 'params', 'separators']
+        )
+
+    @tatsumasu('ImportVar')
+    def _import_var_(self):  # noqa
+        self._multi_str_()
+        self.name_last_node('name')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._AS_()
+
+            def block3():
+                self._hspace_()
+            self._closure(block3)
+            self._multi_str_()
+            self.name_last_node('r')
+        self._closure(block1)
+        self.ast._define(
+            ['name', 'r'],
+            []
         )
 
     @tatsumasu('WhereConditions')
@@ -6028,6 +6057,9 @@ class grammarinitSemantics(object):
     def SUBSET(self, ast):  # noqa
         return ast
 
+    def AS(self, ast):  # noqa
+        return ast
+
     def BUILTIN_KEYWORDS(self, ast):  # noqa
         return ast
 
@@ -6362,6 +6394,9 @@ class grammarinitSemantics(object):
         return ast
 
     def import_(self, ast):  # noqa
+        return ast
+
+    def import_var(self, ast):  # noqa
         return ast
 
     def where_conditions(self, ast):  # noqa
@@ -6986,6 +7021,11 @@ class Import(ModelBase):
     package = None
     params = None
     separators = None
+
+
+class ImportVar(ModelBase):
+    name = None
+    r = None
 
 
 class WhereConditions(ModelBase):
