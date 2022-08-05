@@ -91,6 +91,7 @@ class IRNodeType(Enum):
     MappingType = 407
     # Derivatives
     Import = 500
+    ImportVar = 501
     # differential equations
     OdeFirstOrder = 600
 
@@ -310,6 +311,12 @@ class ImportNode(StmtNode):
             param_list.append(par.get_name())
         return param_list
 
+
+class ImportVarNode(StmtNode):
+    def __init__(self, name=None, rname=None, la_type=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.ImportVar, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        self.name = name
+        self.rname = rname
 
 
 class BlockNode(StmtNode):

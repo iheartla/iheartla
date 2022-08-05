@@ -1176,6 +1176,12 @@ class TypeWalker(NodeWalker):
             self.parameters[index] = identifier
 
     ###################################################################
+    def walk_ImportVar(self, node, **kwargs):
+        rname = None
+        if node.r:
+            rname = self.walk(node.r, **kwargs).ir
+        return NodeInfo(ir=ImportVarNode(self.walk(node.name, **kwargs).ir, rname))
+
     def walk_Import(self, node, **kwargs):
         params = []
         params_list = []
@@ -1189,9 +1195,9 @@ class TypeWalker(NodeWalker):
         name_list = []
         name_ir_list = []
         for cur_name in node.names:
-            name_info = self.walk(cur_name, **kwargs)
-            name_ir_list.append(name_info.ir)
-            name_list.append(name_info.ir.get_name())
+            name_ir = self.walk(cur_name, **kwargs).ir.name
+            name_ir_list.append(name_ir)
+            name_list.append(name_ir.get_name())
         if package_info.ir.get_name() in self.packages:
             package = package_info.ir
             func_list = self.packages[package_info.ir.get_name()]
@@ -1394,9 +1400,7 @@ class TypeWalker(NodeWalker):
         elif node.u:
             # incomplete variable type
             self.omit_assert = True
-            print(node.u)
-            pass
-
+            # print(node.u)
 
         for l_index in range(len(node.lexpr)):
             lexpr_info = self.walk(node.lexpr[l_index], **kwargs)
