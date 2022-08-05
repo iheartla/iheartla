@@ -204,6 +204,13 @@ def filter_subscript(symbol):
     return symbol
 
 
+def replace_sym_dims(sym_dict, mapping_dict):
+    # given symtable, replace the dimensions for each la_type
+    for sym in sym_dict:
+        sym_dict[sym].replace_sym_dims(mapping_dict)
+    return sym_dict
+
+
 def la_debug(msg):
     LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT).debug(msg)
 
