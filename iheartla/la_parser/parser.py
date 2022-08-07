@@ -301,6 +301,7 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
                 tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model, parser_type)
                 pre_frame = walk_model_frame(parser_type, tmp_type_walker, tmp_start_node, module.module.get_name())
                 name_list = []
+                r_name_list = []
                 par_list = []
                 if len(tmp_type_walker.parameters) != len(module.params):
                     parse_info = sym.parse_info
@@ -320,9 +321,10 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
                         raise
                     r_sym = module.r_dict[sym.get_name()]
                     existed_syms_dict[r_sym] = copy.deepcopy(tmp_type_walker.symtable[sym.get_name()])
-                    name_list.append(r_sym)
+                    name_list.append(sym.get_name())
+                    r_name_list.append(r_sym)
 
-                module_list.append(CodeModule(frame=pre_frame, name=module.module.get_name(), syms=name_list, params=par_list))
+                module_list.append(CodeModule(frame=pre_frame, name=module.module.get_name(), syms=name_list, r_syms=r_name_list, params=par_list))
                 module_param_list.append(copy.deepcopy(tmp_type_walker.parameters))
                 module_sym_list.append(copy.deepcopy(tmp_type_walker.symtable))
             except:
