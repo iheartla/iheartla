@@ -1194,8 +1194,14 @@ class TypeWalker(NodeWalker):
         package_info = self.walk(node.package, **kwargs)
         name_list = []
         name_ir_list = []
+        r_dict = {}
         for cur_name in node.names:
-            name_ir = self.walk(cur_name, **kwargs).ir.name
+            import_var = self.walk(cur_name, **kwargs).ir
+            name_ir = import_var.name
+            if import_var.rname:
+                r_dict[name_ir.get_name()] = import_var.rname.get_name()
+            else:
+                r_dict[name_ir.get_name()] = name_ir.get_name()
             name_ir_list.append(name_ir)
             name_list.append(name_ir.get_name())
         if package_info.ir.get_name() in self.packages:
@@ -1209,7 +1215,7 @@ class TypeWalker(NodeWalker):
             module = package_info.ir
             self.import_module_list.append(DependenceData(module.get_name(), params_list, name_list))
         import_node = ImportNode(package=package, module=module, names=name_ir_list, separators=node.separators,
-                                     params=params, parse_info=node.parseinfo, raw_text=node.text)
+                                     params=params, r_dict=r_dict, parse_info=node.parseinfo, raw_text=node.text)
         return import_node
 
     def walk_Statements(self, node, **kwargs):
