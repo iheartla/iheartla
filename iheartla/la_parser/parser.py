@@ -318,8 +318,9 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
                         parse_info = sym.parse_info
                         err_msg = "Symbol {} doesn't exist in module {}".format(sym.get_name(), module.module.get_name())
                         raise
-                    existed_syms_dict[sym.get_name()] = copy.deepcopy(tmp_type_walker.symtable[sym.get_name()])
-                    name_list.append(sym.get_name())
+                    r_sym = module.r_dict[sym.get_name()]
+                    existed_syms_dict[r_sym] = copy.deepcopy(tmp_type_walker.symtable[sym.get_name()])
+                    name_list.append(r_sym)
 
                 module_list.append(CodeModule(frame=pre_frame, name=module.module.get_name(), syms=name_list, params=par_list))
                 module_param_list.append(copy.deepcopy(tmp_type_walker.parameters))

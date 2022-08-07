@@ -291,13 +291,14 @@ class MappingTypeNode(ExprNode):
 
 
 class ImportNode(StmtNode):
-    def __init__(self, package=None, module=None, names=None, separators=None, params=None, la_type=None, parse_info=None, raw_text=None):
+    def __init__(self, package=None, module=None, names=None, separators=None, params=None, r_dict=None, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Import, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.package = package # builtin
         self.module = module   # custom
         self.names = names     # imported symbols
         self.params = params   # parameters to initialize modules
         self.separators = separators
+        self.r_dict = r_dict   # A as B from XXX
 
     def get_name_list(self):
         name_list = []
