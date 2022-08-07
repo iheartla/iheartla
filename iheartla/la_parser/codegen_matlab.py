@@ -186,8 +186,8 @@ class CodeGenMatlab(CodeGen):
                                                                         ', '.join(module.params))
                 else:
                     init_struct += "    {}_ = {}();\n".format(module.name, module.name)
-                for sym in module.syms:
-                    init_var += "    {} = {}_.{};\n".format(sym, module.name, sym)
+                for cur_index in range(len(module.syms)):
+                    init_var += "    {} = {}_.{};\n".format(module.r_syms[cur_index], module.name, module.syms[cur_index])
         return def_struct + init_struct + init_var
 
     def get_struct_definition(self, init_content):

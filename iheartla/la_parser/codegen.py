@@ -50,10 +50,11 @@ class CodeFrame(object):
 
 
 class CodeModule(object):
-    def __init__(self, frame=None, name='iheartla', syms=[], params=[]):
+    def __init__(self, frame=None, name='iheartla', syms=None, r_syms=None, params=None):
         self.frame = frame   # code frame
         self.name = name     # module name
         self.syms = syms     # imported symbols
+        self.r_syms = r_syms   # imported symbols (renamed)
         self.params = params # parameters
 
 

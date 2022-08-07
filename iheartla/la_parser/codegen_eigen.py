@@ -233,11 +233,12 @@ class CodeGenEigen(CodeGen):
                     init_struct_list.append("    _{}({})".format(module.name, ', '.join(module.params)))
                 else:
                     init_struct_list.append("    _{}()".format(module.name))
-                for sym in module.syms:
-                    if self.symtable[sym].is_function():
+                for cur_index in range(len(module.syms)):
+                    sym = module.syms[cur_index]
+                    if self.symtable[module.r_syms[cur_index]].is_function():
                         imported_function += self.copy_func_impl(sym, module.name)
                     else:
-                        init_var += "        {} = _{}.{};\n".format(sym, module.name, sym)
+                        init_var += "        {} = _{}.{};\n".format(module.r_syms[cur_index], module.name, sym)
             init_struct += ',\n'.join(init_struct_list) + '\n'
         content = ["struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),

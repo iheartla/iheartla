@@ -165,8 +165,9 @@ class CodeGenNumpy(CodeGen):
                     init_struct += "        _{} = self.{}({})\n".format(module.name, module.name, ', '.join(module.params))
                 else:
                     init_struct += "        _{} = self.{}()\n".format(module.name, module.name)
-                for sym in module.syms:
-                    init_var += "        self.{} = _{}.{}\n".format(sym, module.name, sym)
+                for cur_index in range(len(module.syms)):
+                    sym = module.syms[cur_index]
+                    init_var += "        self.{} = _{}.{}\n".format(module.r_syms[cur_index], module.name, sym)
         content = ["class {}:".format(self.get_result_type()),
                    "    def __init__(self,{}".format(def_str[3:]),
                    self.get_used_params_content(),
