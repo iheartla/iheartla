@@ -8,7 +8,7 @@ from ..la_tools.la_helper import *
 import regex as re
 from ..la_tools.la_helper import filter_subscript
 from ..la_parser.type_walker import *
-
+from .geometry import *
 
 class ConfigWalker(NodeWalker):
     def __init__(self):
@@ -27,12 +27,10 @@ class ConfigWalker(NodeWalker):
         print(node)
 
     def walk_Triangle(self, node, **kwargs):
-        # print(node)
-        pass
+        return Triangle(self.walk(node.v, **kwargs), self.walk(node.e, **kwargs), self.walk(node.f, **kwargs))
 
     def walk_Point(self, node, **kwargs):
-        # print(node)
-        pass
+        return PointCloud(self.walk(node.v, **kwargs))
 
     def walk_Operators(self, node, **kwargs):
         # print(node)
@@ -61,7 +59,9 @@ class ConfigWalker(NodeWalker):
         pass
 
     def walk_Geometry(self, node, **kwargs):
-        pass
+        id = self.walk(node.id)
+        geometry = self.walk(node.g)
+        return node.text
 
     def walk_ImportVar(self, node, **kwargs):
         rname = None

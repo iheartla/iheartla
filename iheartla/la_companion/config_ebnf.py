@@ -55,7 +55,7 @@ valid_block
     ;
     
 definition::Geometry
-    = id:identifier {hspace}+ IS {hspace}+ geometry_type;
+    = id:identifier {hspace}+ IS {hspace}+ g:geometry_type;
 
 geometry_type
     = triangle_mesh
