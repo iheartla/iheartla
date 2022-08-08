@@ -1530,8 +1530,9 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
             self._hspace_()
         self._positive_closure(block2)
         self._geometry_type_()
+        self.name_last_node('g')
         self.ast._define(
-            ['id'],
+            ['g', 'id'],
             []
         )
 
@@ -2585,6 +2586,7 @@ class Fraction(ModelBase):
 
 
 class Geometry(ModelBase):
+    g = None
     id = None
 
 
