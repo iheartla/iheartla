@@ -54,10 +54,10 @@ valid_block
     = definition | mapping | solver
     ;
     
-definition
-    = id:identifier {hspace}+ IS {hspace}+ geometry;
+definition::Geometry
+    = id:identifier {hspace}+ IS {hspace}+ geometry_type;
 
-geometry
+geometry_type
     = triangle_mesh
     | point_cloud
     ;
@@ -98,10 +98,14 @@ mapping_rhs::Rhs
    |
    im:import
     ;
-
+    
 import::Import
-    = names+:identifier {{hspace} ',' {hspace} names+:identifier } {hspace} FROM  {hspace}+ package:module {hspace} 
+    = names+:import_var {{hspace} ',' {hspace} names+:import_var } {hspace} FROM  {hspace}+ package:module {hspace} 
     {'(' {{hspace} params+:module_param {{hspace} separators+:params_separator {hspace} params+:module_param}} {hspace} ')'} {hspace}
+    ;
+    
+import_var::ImportVar
+    = name:identifier {{hspace} AS {hspace} r:identifier}
     ;
     
 map_type::MapType
@@ -114,7 +118,7 @@ size_op::SizeOp
     = /#/ {hspace} i:identifier
     ;
 
-module
+module::Module
     = !KEYWORDS /[A-Za-z0-9_]*/ 
     ;
     

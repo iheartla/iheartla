@@ -60,6 +60,8 @@ class IRNodeType(Enum):
     Gradient = 223
     Laplace = 224
     Partial = 225
+    Size = 226
+    Module = 227
     # matrix
     Matrix = 300
     MatrixRows = 301
@@ -1130,6 +1132,15 @@ class PartialNode(ExprNode):
         self.lorder_list = lorder_list
         self.order = order
 
+class SizeNode(ExprNode):
+    def __init__(self, param=None, la_type=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Size, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        self.param = param
+
+class ModuleNode(ExprNode):
+    def __init__(self, value=None, la_type=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Module, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        self.value = value
 
 class MathFuncType(IntEnum):
     MathFuncInvalid = -1

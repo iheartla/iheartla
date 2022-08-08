@@ -41,7 +41,7 @@ class ConfigWalker(NodeWalker):
     def walk_Mapping(self, node, **kwargs):
         # print(node)
         lhs = self.walk(node.lhs, **kwargs)
-        print("lhs: {}".format(lhs))
+        # print("lhs: {}".format(lhs))
         if type(node.lhs).__name__ == 'Operators':
             if node.lhs.l:
                 if node.rhs.im:
@@ -60,29 +60,48 @@ class ConfigWalker(NodeWalker):
         # print(node)
         pass
 
+    def walk_Geometry(self, node, **kwargs):
+        pass
+
+    def walk_ImportVar(self, node, **kwargs):
+        rname = None
+        if node.r:
+            rname = self.walk(node.r, **kwargs)
+        return ImportVarNode(self.walk(node.name, **kwargs), rname)
+
     def walk_Import(self, node, **kwargs):
         params = []
         params_list = []
         module = None
         package = None
         for par in node.params:
-            par_info = self.walk(par, **kwargs)
-            params.append(par_info.ir)
-            params_list.append(par_info.ir.get_name())
+            par_ir = self.walk(par, **kwargs)
+            params.append(par_ir)
+            # params_list.append(par_ir.get_name())
         package_info = self.walk(node.package, **kwargs)
         name_list = []
         name_ir_list = []
+        r_dict = {}
         for cur_name in node.names:
-            name_info = self.walk(cur_name, **kwargs)
-            name_ir_list.append(name_info.ir)
-            name_list.append(name_info.ir.get_name())
-        module = package_info.ir
+            import_var = self.walk(cur_name, **kwargs)
+            name_ir = import_var.name
+            if import_var.rname:
+                r_dict[name_ir.get_name()] = import_var.rname.get_name()
+            else:
+                r_dict[name_ir.get_name()] = name_ir.get_name()
+            name_ir_list.append(name_ir)
+            name_list.append(name_ir.get_name())
+        module = package_info
         import_node = ImportNode(package=package, module=module, names=name_ir_list, separators=node.separators,
-                                     params=params, parse_info=node.parseinfo, raw_text=node.text)
+                                 params=params, r_dict=r_dict, parse_info=node.parseinfo, raw_text=node.text)
         return import_node
 
     def walk_SizeOp(self, node, **kwargs):
         param = self.walk(node.i, **kwargs)
+        return SizeNode(param, parse_info=node.parseinfo, raw_text=node.text)
+
+    def walk_Module(self, node, **kwargs):
+        return ModuleNode(node.text, parse_info=node.parseinfo, raw_text=node.text)
 
     def walk_IdentifierAlone(self, node, **kwargs):
         node_type = LaVarType(VarTypeEnum.INVALID)
@@ -94,6 +113,5 @@ class ConfigWalker(NodeWalker):
             value = node.const
         #
         ir_node = IdNode(value, parse_info=node.parseinfo, raw_text=node.text)
-        node_info = NodeInfo(node_type, value, {value}, ir_node)
-        return node_info
+        return ir_node
 
