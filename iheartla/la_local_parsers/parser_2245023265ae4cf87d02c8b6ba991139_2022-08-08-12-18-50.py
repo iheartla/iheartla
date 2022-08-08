@@ -1516,7 +1516,7 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
                 self._solver_()
             self._error('no available options')
 
-    @tatsumasu()
+    @tatsumasu('Geometry')
     def _definition_(self):  # noqa
         self._identifier_()
         self.name_last_node('id')
@@ -1529,14 +1529,14 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
         def block2():
             self._hspace_()
         self._positive_closure(block2)
-        self._geometry_()
+        self._geometry_type_()
         self.ast._define(
             ['id'],
             []
         )
 
     @tatsumasu()
-    def _geometry_(self):  # noqa
+    def _geometry_type_(self):  # noqa
         with self._choice():
             with self._option():
                 self._triangle_mesh_()
@@ -1773,7 +1773,7 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
 
     @tatsumasu('Import')
     def _import_(self):  # noqa
-        self._identifier_()
+        self._import_var_()
         self.add_last_node_to_name('names')
 
         def block1():
@@ -1786,7 +1786,7 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
             def block3():
                 self._hspace_()
             self._closure(block3)
-            self._identifier_()
+            self._import_var_()
             self.add_last_node_to_name('names')
         self._closure(block1)
 
@@ -1846,6 +1846,29 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
             ['names', 'params', 'separators']
         )
 
+    @tatsumasu('ImportVar')
+    def _import_var_(self):  # noqa
+        self._identifier_()
+        self.name_last_node('name')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._AS_()
+
+            def block3():
+                self._hspace_()
+            self._closure(block3)
+            self._identifier_()
+            self.name_last_node('r')
+        self._closure(block1)
+        self.ast._define(
+            ['name', 'r'],
+            []
+        )
+
     @tatsumasu('MapType')
     def _map_type_(self):  # noqa
         with self._choice():
@@ -1880,7 +1903,7 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
             []
         )
 
-    @tatsumasu()
+    @tatsumasu('Module')
     def _module_(self):  # noqa
         with self._ifnot():
             self._KEYWORDS_()
@@ -2314,7 +2337,7 @@ class grammar2245023265ae4cf87d02c8b6ba991139Semantics(object):
     def definition(self, ast):  # noqa
         return ast
 
-    def geometry(self, ast):  # noqa
+    def geometry_type(self, ast):  # noqa
         return ast
 
     def triangle_mesh(self, ast):  # noqa
@@ -2342,6 +2365,9 @@ class grammar2245023265ae4cf87d02c8b6ba991139Semantics(object):
         return ast
 
     def import_(self, ast):  # noqa
+        return ast
+
+    def import_var(self, ast):  # noqa
         return ast
 
     def map_type(self, ast):  # noqa
@@ -2558,6 +2584,10 @@ class Fraction(ModelBase):
     value = None
 
 
+class Geometry(ModelBase):
+    id = None
+
+
 class Triangle(ModelBase):
     e = None
     f = None
@@ -2596,9 +2626,18 @@ class Import(ModelBase):
     separators = None
 
 
+class ImportVar(ModelBase):
+    name = None
+    r = None
+
+
 class MapType(ModelBase):
     pass
 
 
 class SizeOp(ModelBase):
     i = None
+
+
+class Module(ModelBase):
+    pass
