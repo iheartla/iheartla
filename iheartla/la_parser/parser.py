@@ -27,6 +27,7 @@ from .codegen_macromathjax import CodeGenMacroMathjax
 from .codegen_mathml import CodeGenMathML
 from .codegen_matlab import CodeGenMatlab
 from .type_walker import *
+from .de_walker import *
 from .ir_mutator import *
 from .ir import *
 from .ir_visitor import *
@@ -127,6 +128,7 @@ def get_compiled_parser(grammar, keys='init', extra_dict={}):
 
 
 _type_walker = None
+_de_walker = None
 _ir_mutator = None
 
 
@@ -137,6 +139,15 @@ def get_type_walker():
     else:
         _type_walker = TypeWalker()
     return _type_walker
+
+
+def get_de_walker():
+    global _de_walker
+    if _de_walker:
+        _de_walker.reset()
+    else:
+        _de_walker = DeWalker()
+    return _de_walker
 
 
 def get_ir_mutator(type_walker, func_name='iheartla'):
@@ -419,7 +430,13 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
     ConfMgr.getInstance().parse()
     def get_parse_result(parser_type):
         parser = get_default_parser()
+        # parse de
         model = parser.parse(content, parseinfo=True)
+        de_walker = get_de_walker()
+        new_content = de_walker.walk(model)
+        print("new_content:\n{}".format(new_content))
+        #
+        model = parser.parse(new_content, parseinfo=True)
         # type walker
         type_walker, start_node = parse_ir_node(content, model, parser_type)
         # parsing Latex at the same time

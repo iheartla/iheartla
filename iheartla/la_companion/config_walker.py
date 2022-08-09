@@ -24,7 +24,7 @@ class ConfigWalker(NodeWalker):
     def walk_Start(self, node, **kwargs):
         for block in node.vblock:
             self.walk(block, **kwargs)
-        print(node)
+        # print(node)
 
     def walk_Triangle(self, node, **kwargs):
         return Triangle(self.walk(node.v, **kwargs), self.walk(node.e, **kwargs), self.walk(node.f, **kwargs))
@@ -48,7 +48,8 @@ class ConfigWalker(NodeWalker):
                 # self.laplacian_dict[lhs] = self.walk(node.rhs, **kwargs)
         else:
             # identifier
-            print(rhs)
+            # print(rhs)
+            pass
         # if node.ref:
         #     ref = self.walk(node.ref, **kwargs)
         #     print("ref: {}, {}".format(ref, node.ref))
@@ -64,7 +65,7 @@ class ConfigWalker(NodeWalker):
                 ret_ir = self.walk(node.ret[0], **kwargs)
                 if par_ir.is_node(IRNodeType.Id):
                     pass
-                print(par)
+                # print(par)
             else:
                 # function
                 pass
