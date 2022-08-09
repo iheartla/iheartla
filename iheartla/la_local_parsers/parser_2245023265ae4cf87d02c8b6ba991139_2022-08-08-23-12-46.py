@@ -1758,11 +1758,6 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
                     self._map_type_()
                     self.add_last_node_to_name('ret')
                 self._closure(block13)
-
-                def block18():
-                    self._import_()
-                    self.name_last_node('im')
-                self._closure(block18)
             with self._option():
                 self._import_()
                 self.name_last_node('im')
@@ -1870,7 +1865,7 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
             []
         )
 
-    @tatsumasu('MapType')
+    @tatsumasu()
     def _map_type_(self):  # noqa
         with self._choice():
             with self._option():
@@ -2631,10 +2626,6 @@ class Import(ModelBase):
 class ImportVar(ModelBase):
     name = None
     r = None
-
-
-class MapType(ModelBase):
-    pass
 
 
 class SizeOp(ModelBase):

@@ -62,6 +62,7 @@ class IRNodeType(Enum):
     Partial = 225
     Size = 226
     Module = 227
+    Geometry = 228
     # matrix
     Matrix = 300
     MatrixRows = 301
@@ -1141,6 +1142,13 @@ class ModuleNode(ExprNode):
     def __init__(self, value=None, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Module, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.value = value
+
+class GeometryNode(StmtNode):
+    def __init__(self, name=None, geometry=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Geometry, parse_info=parse_info, raw_text=raw_text)
+        self.name = name
+        self.geometry = geometry
+
 
 class MathFuncType(IntEnum):
     MathFuncInvalid = -1

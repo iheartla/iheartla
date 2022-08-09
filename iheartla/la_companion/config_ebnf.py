@@ -94,7 +94,6 @@ mapping_rhs::Rhs
     ((params+:map_type {{hspace} separators+:params_separator {hspace} params+:map_type})|empty:'∅'|'{'{hspace}'}') 
    {hspace} ('→'|'->') {hspace} 
    ret+:map_type {{hspace} ret_separators+:params_separator {hspace} ret+:map_type} 
-   {im:import}
    |
    im:import
     ;
@@ -108,7 +107,7 @@ import_var::ImportVar
     = name:identifier {{hspace} AS {hspace} r:identifier}
     ;
     
-map_type::MapType
+map_type
     = params_type | size_op | identifier;
     
 module_param
