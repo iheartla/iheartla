@@ -6,9 +6,10 @@ from ..la_tools.la_logger import *
 from ..la_tools.la_msg import *
 from ..la_tools.la_helper import *
 import regex as re
+from .light_walker import LightWalker
 
 
-class DeWalker(NodeWalker):
+class DeWalker(LightWalker):
     def __init__(self):
         super().__init__()
 
