@@ -853,7 +853,7 @@ class TypeWalker(NodeWalker):
         return ir_node
 
     def walk_DeWhereCondition(self, node, **kwargs):
-        print(node)
+        # print(node)
         pass
 
     def walk_WhereCondition(self, node, **kwargs):
@@ -1621,7 +1621,8 @@ class TypeWalker(NodeWalker):
         return NodeInfo(None, ir=assign_node, symbols=assign_node.symbols)
 
     def walk_DeSolver(self, node, **kwargs):
-        print(node)
+        # print(node)
+        pass
 
     def walk_Summation(self, node, **kwargs):
         self.logger.debug("cur sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
