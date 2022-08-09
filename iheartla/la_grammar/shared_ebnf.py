@@ -16,12 +16,23 @@ where_conditions::WhereConditions
     = {hspace} value+:where_condition {{separator_with_space}+ value+:where_condition}
     ;
 
-where_condition::WhereCondition
-    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN | subset:SUBSET) {hspace} type:la_type {{hspace} index:'index'} { {hspace} ':' {hspace} desc:description}
+where_condition
+    =
+    la_where_condition
+    | de_where_condition
+    ;
+    
+    
+la_where_condition::WhereCondition
+    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN) {hspace} type:la_type {{hspace} index:'index'} { {hspace} ':' {hspace} desc:description}
+    ;
+    
+de_where_condition::DeWhereCondition
+    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} subset:SUBSET {hspace} type:la_type {{hspace} index:'index'} { {hspace} ':' {hspace} desc:description}
     ;
     
 where_condition_terse::WhereCondition
-    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN| subset:SUBSET) {hspace} type:la_type {{hspace} index:'index'}
+    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN) {hspace} type:la_type {{hspace} index:'index'}
     ;
 
 #######################################################################################################################
@@ -49,6 +60,7 @@ statement
     =
     | local_func
     | assignment
+    | de_solver
     | right_hand_side
     ;
 
@@ -67,10 +79,14 @@ assignment::Assignment
     | left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'+=' {hspace} {separator_with_space} right+:right_hand_side {{hspace} ',' {hspace} right+:expression}
     | {SOLVE '_(' {hspace} v+:where_condition_terse {hspace} {',' {hspace} v+:where_condition_terse {hspace}} ')' {hspace}} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression 
     {{hspace} ';' {hspace} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression }
-    | SOLVE '_' u:identifier {hspace} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression 
+    ;
+   
+de_solver::DeSolver
+    =
+    SOLVE '_' u:identifier {hspace} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression 
     {{hspace} ';' {hspace} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression }
     ;
-    
+ 
 #### name:(func_id | identifier)
 local_func::LocalFunc
     = name:identifier def_p:'(' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')' {hspace} 

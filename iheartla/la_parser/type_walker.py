@@ -852,6 +852,10 @@ class TypeWalker(NodeWalker):
         self.parameters = prev_parameters + self.parameters
         return ir_node
 
+    def walk_DeWhereCondition(self, node, **kwargs):
+        print(node)
+        pass
+
     def walk_WhereCondition(self, node, **kwargs):
         ir_node = WhereConditionNode(parse_info=node.parseinfo, raw_text=node.text)
         ret = node.text.split(':')
@@ -871,11 +875,11 @@ class TypeWalker(NodeWalker):
             id0_info = self.walk(node.id[id_index], **kwargs)
             ir_node.id.append(id0_info.ir)
             id0 = id0_info.content
-            if node.subset:
-                # surface def
-                if type_node.la_type.is_vector():
-                    dim = type_node.la_type.rows
-                    self.smooth_dict[id0] = dim
+            # if node.subset:
+            #     # surface def
+            #     if type_node.la_type.is_vector():
+            #         dim = type_node.la_type.rows
+            #         self.smooth_dict[id0] = dim
             if hasattr(node, 'desc') and node.desc is not None:
                 self.desc_dict[id0_info.ir.get_main_id()] = node.desc
             if True:
@@ -1615,6 +1619,9 @@ class TypeWalker(NodeWalker):
             self.expr_dict[id0_info.ir.get_main_id()] = list(right_info.symbols) + [id0_info.ir.get_main_id()]
         self.visiting_solver_eq = False
         return NodeInfo(None, ir=assign_node, symbols=assign_node.symbols)
+
+    def walk_DeSolver(self, node, **kwargs):
+        print(node)
 
     def walk_Summation(self, node, **kwargs):
         self.logger.debug("cur sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))

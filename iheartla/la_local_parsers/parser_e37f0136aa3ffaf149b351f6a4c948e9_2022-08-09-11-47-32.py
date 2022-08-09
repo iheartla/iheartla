@@ -3848,8 +3848,17 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             ['value']
         )
 
-    @tatsumasu('WhereCondition')
+    @tatsumasu()
     def _where_condition_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._la_where_condition_()
+            with self._option():
+                self._de_where_condition_()
+            self._error('no available options')
+
+    @tatsumasu('WhereCondition')
+    def _la_where_condition_(self):  # noqa
         self._identifier_()
         self.add_last_node_to_name('id')
 
@@ -3876,39 +3885,94 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                     self._token(':')
                 with self._option():
                     self._IN_()
-                with self._option():
-                    self._SUBSET_()
-                    self.name_last_node('subset')
                 self._error('no available options')
 
-        def block8():
+        def block7():
             self._hspace_()
-        self._closure(block8)
+        self._closure(block7)
         self._la_type_()
         self.name_last_node('type')
 
-        def block10():
+        def block9():
 
-            def block11():
+            def block10():
                 self._hspace_()
-            self._closure(block11)
+            self._closure(block10)
             self._token('index')
             self.name_last_node('index')
-        self._closure(block10)
+        self._closure(block9)
 
-        def block13():
+        def block12():
+
+            def block13():
+                self._hspace_()
+            self._closure(block13)
+            self._token(':')
 
             def block14():
                 self._hspace_()
             self._closure(block14)
-            self._token(':')
-
-            def block15():
-                self._hspace_()
-            self._closure(block15)
             self._description_()
             self.name_last_node('desc')
-        self._closure(block13)
+        self._closure(block12)
+        self.ast._define(
+            ['desc', 'index', 'type'],
+            ['id']
+        )
+
+    @tatsumasu('DeWhereCondition')
+    def _de_where_condition_(self):  # noqa
+        self._identifier_()
+        self.add_last_node_to_name('id')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._token(',')
+
+            def block3():
+                self._hspace_()
+            self._closure(block3)
+            self._identifier_()
+            self.add_last_node_to_name('id')
+        self._closure(block1)
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._SUBSET_()
+        self.name_last_node('subset')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
+        self._la_type_()
+        self.name_last_node('type')
+
+        def block9():
+
+            def block10():
+                self._hspace_()
+            self._closure(block10)
+            self._token('index')
+            self.name_last_node('index')
+        self._closure(block9)
+
+        def block12():
+
+            def block13():
+                self._hspace_()
+            self._closure(block13)
+            self._token(':')
+
+            def block14():
+                self._hspace_()
+            self._closure(block14)
+            self._description_()
+            self.name_last_node('desc')
+        self._closure(block12)
         self.ast._define(
             ['desc', 'index', 'subset', 'type'],
             ['id']
@@ -3942,27 +4006,24 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                     self._token(':')
                 with self._option():
                     self._IN_()
-                with self._option():
-                    self._SUBSET_()
-                    self.name_last_node('subset')
                 self._error('no available options')
 
-        def block8():
+        def block7():
             self._hspace_()
-        self._closure(block8)
+        self._closure(block7)
         self._la_type_()
         self.name_last_node('type')
 
-        def block10():
+        def block9():
 
-            def block11():
+            def block10():
                 self._hspace_()
-            self._closure(block11)
+            self._closure(block10)
             self._token('index')
             self.name_last_node('index')
-        self._closure(block10)
+        self._closure(block9)
         self.ast._define(
-            ['index', 'subset', 'type'],
+            ['index', 'type'],
             ['id']
         )
 
@@ -4024,6 +4085,8 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 self._local_func_()
             with self._option():
                 self._assignment_()
+            with self._option():
+                self._de_solver_()
             with self._option():
                 self._right_hand_side_()
             self._error('no available options')
@@ -4226,59 +4289,65 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                     self._expression_()
                     self.add_last_node_to_name('rexpr')
                 self._closure(block42)
-            with self._option():
-                self._SOLVE_()
-                self._token('_')
-                self._identifier_()
-                self.name_last_node('u')
-
-                def block51():
-                    self._hspace_()
-                self._closure(block51)
-                self._expression_()
-                self.add_last_node_to_name('lexpr')
-
-                def block53():
-                    self._hspace_()
-                self._closure(block53)
-                self._token('=')
-                self.name_last_node('op')
-
-                def block55():
-                    self._hspace_()
-                self._closure(block55)
-                self._expression_()
-                self.add_last_node_to_name('rexpr')
-
-                def block57():
-
-                    def block58():
-                        self._hspace_()
-                    self._closure(block58)
-                    self._token(';')
-
-                    def block59():
-                        self._hspace_()
-                    self._closure(block59)
-                    self._expression_()
-                    self.add_last_node_to_name('lexpr')
-
-                    def block61():
-                        self._hspace_()
-                    self._closure(block61)
-                    self._token('=')
-                    self.name_last_node('op')
-
-                    def block63():
-                        self._hspace_()
-                    self._closure(block63)
-                    self._expression_()
-                    self.add_last_node_to_name('rexpr')
-                self._closure(block57)
             self._error('no available options')
         self.ast._define(
-            ['op', 'u'],
+            ['op'],
             ['left', 'lexpr', 'rexpr', 'right', 'v']
+        )
+
+    @tatsumasu('DeSolver')
+    def _de_solver_(self):  # noqa
+        self._SOLVE_()
+        self._token('_')
+        self._identifier_()
+        self.name_last_node('u')
+
+        def block1():
+            self._hspace_()
+        self._closure(block1)
+        self._expression_()
+        self.add_last_node_to_name('lexpr')
+
+        def block3():
+            self._hspace_()
+        self._closure(block3)
+        self._token('=')
+        self.name_last_node('op')
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._expression_()
+        self.add_last_node_to_name('rexpr')
+
+        def block7():
+
+            def block8():
+                self._hspace_()
+            self._closure(block8)
+            self._token(';')
+
+            def block9():
+                self._hspace_()
+            self._closure(block9)
+            self._expression_()
+            self.add_last_node_to_name('lexpr')
+
+            def block11():
+                self._hspace_()
+            self._closure(block11)
+            self._token('=')
+            self.name_last_node('op')
+
+            def block13():
+                self._hspace_()
+            self._closure(block13)
+            self._expression_()
+            self.add_last_node_to_name('rexpr')
+        self._closure(block7)
+        self.ast._define(
+            ['op', 'u'],
+            ['lexpr', 'rexpr']
         )
 
     @tatsumasu('LocalFunc')
@@ -6405,6 +6474,12 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
     def where_condition(self, ast):  # noqa
         return ast
 
+    def la_where_condition(self, ast):  # noqa
+        return ast
+
+    def de_where_condition(self, ast):  # noqa
+        return ast
+
     def where_condition_terse(self, ast):  # noqa
         return ast
 
@@ -6427,6 +6502,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
         return ast
 
     def assignment(self, ast):  # noqa
+        return ast
+
+    def de_solver(self, ast):  # noqa
         return ast
 
     def local_func(self, ast):  # noqa
@@ -7036,6 +7114,13 @@ class WhereCondition(ModelBase):
     desc = None
     id = None
     index = None
+    type = None
+
+
+class DeWhereCondition(ModelBase):
+    desc = None
+    id = None
+    index = None
     subset = None
     type = None
 
@@ -7060,8 +7145,14 @@ class Assignment(ModelBase):
     op = None
     rexpr = None
     right = None
-    u = None
     v = None
+
+
+class DeSolver(ModelBase):
+    lexpr = None
+    op = None
+    rexpr = None
+    u = None
 
 
 class LocalFunc(ModelBase):
