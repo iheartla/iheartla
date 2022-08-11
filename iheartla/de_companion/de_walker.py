@@ -1,12 +1,12 @@
 import copy
 from tatsu.model import NodeWalker
 from tatsu.objectmodel import Node
-from .la_types import *
-from ..la_tools.la_logger import *
-from ..la_tools.la_msg import *
-from ..la_tools.la_helper import *
+from iheartla.la_parser.la_types import *
+from iheartla.la_tools.la_logger import *
+from iheartla.la_tools.la_msg import *
+from iheartla.la_tools.la_helper import *
 import regex as re
-from .light_walker import LightWalker
+from ..la_parser.light_walker import LightWalker
 
 
 class DeWalker(LightWalker):
@@ -54,6 +54,7 @@ class DeWalker(LightWalker):
 
     def walk_Statements(self, node, **kwargs):
         if type(node.stat).__name__ == 'DeSolver':
+            return ''
             return self.walk(node.stat, **kwargs)
         return node.text
 
