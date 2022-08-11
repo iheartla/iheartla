@@ -3,7 +3,7 @@ import os.path
 from pathlib import Path
 from ..la_tools.la_helper import *
 from ..la_tools.parser_manager import ParserManager
-from ..la_companion.config_walker import ConfigWalker
+from ..de_companion.config_walker import ConfigWalker
 
 
 class ConfMgr(object):
