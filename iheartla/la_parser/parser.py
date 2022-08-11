@@ -1,23 +1,7 @@
-from pprint import pprint
-import time
-from tatsu.objectmodel import Node
-from tatsu.semantics import ModelBuilderSemantics
-from tatsu.ast import AST
-import tatsu
 from tatsu.exceptions import (
     FailedCut,
-    FailedExpectingEndOfText,
-    FailedLeftRecursion,
-    FailedLookahead,
-    FailedParse,
-    FailedPattern,
-    FailedRef,
-    FailedSemantics,
-    FailedKeywordSemantics,
-    FailedToken,
-    OptionSucceeded
+    FailedParse
 )
-from enum import Enum
 from .codegen import *
 from .codegen_numpy import CodeGenNumpy
 from .codegen_eigen import CodeGenEigen
@@ -27,9 +11,8 @@ from .codegen_macromathjax import CodeGenMacroMathjax
 from .codegen_mathml import CodeGenMathML
 from .codegen_matlab import CodeGenMatlab
 from .type_walker import *
-from .de_walker import *
+from iheartla.de_companion.de_walker import *
 from .ir_mutator import *
-from .ir import *
 from .ir_visitor import *
 from ..la_tools.la_msg import *
 from ..la_tools.config_manager import *
@@ -438,7 +421,7 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
         #
         model = parser.parse(new_content, parseinfo=True)
         # type walker
-        type_walker, start_node = parse_ir_node(content, model, parser_type)
+        type_walker, start_node = parse_ir_node(new_content, model, parser_type)
         # parsing Latex at the same time
         latex_thread = threading.Thread(target=generate_latex_code, args=(type_walker, start_node, frame,))
         latex_thread.start()
