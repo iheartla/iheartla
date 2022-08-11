@@ -1074,22 +1074,6 @@ class TypeWalker(NodeWalker):
         ir_node.la_type = SetType(size=cnt, int_list=int_list, element_type = ScalarType())
         return ir_node
 
-    def get_unicode_number(self, unicode):
-        # 0:\u2070,1:\u00B9,2:\u00B2,3:\u00B3,4-9:[\u2074-\u2079]
-        number_dict = {'⁰':0,'¹':1,'²':2, '³':3,'⁴':4,'⁵':5,'⁶':6,'⁷':7,'⁸':8,'⁹':9 }
-        return number_dict[unicode]
-
-    def get_unicode_sub_number(self, unicode):
-        # 0-9:[\u2080-\u2089]
-        number_dict = {'₀':0,'₁':1,'₂':2, '₃':3,'₄':4,'₅':5,'₆':6,'₇':7,'₈':8,'₉':9 }
-        return number_dict[unicode]
-
-    def get_unicode_fraction(self, unicode):
-        fraction_dict = {'¼':[1,4],'½':[1,2],'¾':[3,4],'⅐':[1,7],'⅑':[1,9],'⅒':[1,10],'⅓':[1,3],'⅔':[2,3],
-                       '⅕':[1,5],'⅖':[2,5],'⅗':[3,5],'⅘':[4,5],'⅙':[1,6],'⅚':[5,6],'⅛':[1,8],'⅜':[3,8],'⅝':[5,8],
-                       '⅞':[7,8]}
-        return fraction_dict[unicode]
-
     def walk_FunctionType(self, node, **kwargs):
         ir_node = FunctionTypeNode(parse_info=node.parseinfo, raw_text=node.text)
         ir_node.empty = node.empty
@@ -2740,7 +2724,7 @@ class TypeWalker(NodeWalker):
     def walk_SubInteger(self, node, **kwargs):
         value = 0
         for index in range(len(node.value)):
-            value += self.get_unicode_sub_number(node.value[len(node.value) - 1 - index]) * 10 ** index
+            value += get_unicode_sub_number(node.value[len(node.value) - 1 - index]) * 10 ** index
         node_type = ScalarType(is_int=True, is_constant=True)
         node_info = NodeInfo(node_type, content=int(value))
         #
@@ -2753,7 +2737,7 @@ class TypeWalker(NodeWalker):
     def walk_SupInteger(self, node, **kwargs):
         value = 0
         for index in range(len(node.value)):
-            value += self.get_unicode_number(node.value[len(node.value) - 1 - index]) * 10 ** index
+            value += get_unicode_number(node.value[len(node.value) - 1 - index]) * 10 ** index
         node_type = ScalarType(is_int=True, is_constant=True)
         node_info = NodeInfo(node_type, content=int(value))
         #
@@ -2778,7 +2762,7 @@ class TypeWalker(NodeWalker):
         return node_info
 
     def walk_Fraction(self, node, **kwargs):
-        frac_list = self.get_unicode_fraction(node.value)
+        frac_list = get_unicode_fraction(node.value)
         node_info = NodeInfo(ScalarType(), content=node.text)
         ir_node = FractionNode(node.parseinfo, node.value, frac_list[0], frac_list[1], raw_text=node.text)
         ir_node.la_type = node_info.la_type
