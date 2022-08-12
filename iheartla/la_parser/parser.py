@@ -153,17 +153,18 @@ def generate_latex_code(type_walker, node_info, frame):
         ## xelatex places its output in the current working directory, not next to the input file.
         ## We need to pass subprocess.run() the directory where we created the tex file.
         ## If we are running in a bundle, we don't have the PATH available. Assume MacTex.
-        PATH = os.environ['PATH']
-        PATH = ':'.join(
-            ['/Library/TeX/texbin', '/usr/texbin', '/usr/local/bin', '/opt/local/bin', '/usr/bin', '/bin', PATH])
+        env = copy.copy(os.environ)
+        env['PATH'] = ':'.join(
+            ['/Library/TeX/texbin', '/usr/texbin', '/usr/local/bin', '/opt/local/bin', '/usr/bin', '/bin',
+             os.environ['PATH']])
         ret = subprocess.run(["xelatex", "-interaction=nonstopmode", tex_file_name], capture_output=True, cwd=tmpdir,
-                             env={"PATH": PATH})
+                             env=env)
         if ret.returncode == 0:
             ## If we are running in a bundle, we don't have the PATH available. Assume MacTex.
             ## But then we may not have ghostscript `gs` available, either.
             ret = subprocess.run(
                 ["pdfcrop", "--margins", "30", "{}.pdf".format(template_name), "{}.pdf".format(template_name)],
-                capture_output=True, cwd=tmpdir, env={"PATH": PATH})
+                capture_output=True, cwd=tmpdir, env=env)
             # If xelatex worked, we have a PDF, even if pdfcrop failed.
             # if ret.returncode == 0:
             show_pdf = io.BytesIO(open("{}.pdf".format(template_name), 'rb').read())
