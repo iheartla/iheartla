@@ -20,6 +20,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: brew install eigen
       - run: python -m pip install --upgrade pip
-      - run: pip install setuptools wheel pyinstaller attrdict regex tatsu wxpython PyMuPDF sympy appdirs cppyy numpy scipy
+      - run: pip install setuptools attrdict
+      - run: pip install wheel pyinstaller regex tatsu wxpython PyMuPDF sympy appdirs cppyy numpy scipy
       - run: sh run_test.sh
 
