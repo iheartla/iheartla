@@ -203,6 +203,7 @@ class VectorType(LaVarType):
         self.rows = rows
         self.rows_ir = rows_ir
         self.cols = 1
+        self.sparse = False
 
     def get_signature(self):
         if self.element_type:
