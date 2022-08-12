@@ -701,7 +701,7 @@ class TypeWalker(NodeWalker):
                             ir_node.vblock[index_list[cur_index]] = type_info.ir  # latex use
                             new_list.append(type_info.ir)
                             if update_ret_type:
-                                self.symtable[self.ret_symbol] = type_info.la_type
+                                self.symtable[self.ret_symbol] = type_info.la_type if not isinstance(type_info.la_type, list) else type_info.la_type[0]
                             order_list[cur_index] = cnt
                             cnt += 1
                             retries = 0
@@ -735,7 +735,7 @@ class TypeWalker(NodeWalker):
                 ir_node.vblock[index_list[index]] = type_info.ir  # latex use
                 block_node.add_stmt(type_info.ir)
                 if update_ret_type:
-                    self.symtable[self.ret_symbol] = type_info.la_type
+                    self.symtable[self.ret_symbol] = type_info.la_type if not isinstance(type_info.la_type, list) else type_info.la_type[0]
         ir_node.stat = block_node
 
     ###################################################################
