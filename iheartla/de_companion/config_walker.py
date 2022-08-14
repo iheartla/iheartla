@@ -18,13 +18,13 @@ class ConfigWalker(NodeWalker):
         self.gradient_dict = {}
         self.divergence_dict = {}
         self.laplacian_dict = {}
-        self.par_dict = {}
+        self.par_dict = {}   # parameters
         self.ode_dict = {}
 
     def walk_Start(self, node, **kwargs):
         for block in node.vblock:
             self.walk(block, **kwargs)
-        # print(node)
+        print("end parsing config")
 
     def walk_Triangle(self, node, **kwargs):
         return Triangle(self.walk(node.v, **kwargs), self.walk(node.e, **kwargs), self.walk(node.f, **kwargs))
@@ -42,6 +42,7 @@ class ConfigWalker(NodeWalker):
             print(node.type.text)
             for id_index in range(len(node.id)):
                 cur_id = self.walk(node.id[id_index], **kwargs)
+                self.par_dict[cur_id.get_name()] = la_type
             return ''
         else:
             #
@@ -49,6 +50,7 @@ class ConfigWalker(NodeWalker):
             print(node.type.text)
             for id_index in range(len(node.id)):
                 cur_id = self.walk(node.id[id_index], **kwargs)
+                self.par_dict[cur_id.get_name()] = la_type
         return node.text
 
     def walk_VectorType(self, node, **kwargs):
@@ -175,3 +177,54 @@ class ConfigWalker(NodeWalker):
         ir_node = IdNode(value, parse_info=node.parseinfo, raw_text=node.text)
         return ir_node
 
+#### Arith
+    def walk_ArithExpression(self, node, **kwargs):
+        value_ir = self.walk(node.value, **kwargs)
+        ir_node = ExpressionNode(parse_info=node.parseinfo, raw_text=node.text)
+        ir_node.value = value_ir
+        ir_node.sign = node.sign
+        return ir_node
+
+    def walk_ArithSubexpression(self, node, **kwargs):
+        value_ir = self.walk(node.value, **kwargs)
+        ir_node = SubexpressionNode(parse_info=node.parseinfo, raw_text=node.text)
+        ir_node.value = value_ir
+        return ir_node
+
+    def walk_ArithAdd(self, node, **kwargs):
+        left_ir = self.walk(node.left, **kwargs)
+        right_ir = self.walk(node.right, **kwargs)
+        ir_node = AddNode(left_ir, right_ir, parse_info=node.parseinfo, raw_text=node.text)
+        return ir_node
+
+    def walk_ArithSubtract(self, node, **kwargs):
+        left_ir = self.walk(node.left, **kwargs)
+        right_ir = self.walk(node.right, **kwargs)
+        ir_node = SubNode(left_ir, right_ir, parse_info=node.parseinfo, raw_text=node.text)
+        return ir_node
+
+    def walk_ArithMultiply(self, node, **kwargs):
+        left_ir = self.walk(node.left, **kwargs)
+        right_ir = self.walk(node.right, **kwargs)
+        ir_node = MulNode(left_ir, right_ir, parse_info=node.parseinfo, raw_text=node.text)
+        return ir_node
+
+    def walk_ArithDivide(self, node, **kwargs):
+        left_ir = self.walk(node.left, **kwargs)
+        right_ir = self.walk(node.right, **kwargs)
+        ir_node = DivNode(left_ir, right_ir, parse_info=node.parseinfo, raw_text=node.text)
+        return ir_node
+
+    def walk_ArithFactor(self, node, **kwargs):
+        ir_node = FactorNode(parse_info=node.parseinfo, raw_text=node.text)
+        if node.id0:
+            id_ir = self.walk(node.id0, **kwargs)
+            ir_node.id = id_ir
+        elif node.num:
+            ir_node.num = self.walk(node.num, **kwargs)
+        elif node.sub:
+            ir_node.sub = self.walk(node.sub, **kwargs)
+        elif node.size:
+            ir_node.size = self.walk(node.size, **kwargs)
+        return ir_node
+####
