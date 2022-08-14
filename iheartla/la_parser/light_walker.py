@@ -72,37 +72,35 @@ class LightWalker(NodeWalker):
         return node.text
 
     def walk_Expression(self, node, **kwargs):
-        self.walk(node.value, **kwargs)
-        return node.text
+        return self.walk(node.value, **kwargs)
 
     def walk_Add(self, node, **kwargs):
-        self.walk(node.left, **kwargs)
-        self.walk(node.right, **kwargs)
-        return node.text
+        lhs = self.walk(node.left, **kwargs)
+        rhs = self.walk(node.right, **kwargs)
+        return "{} + {}".format(lhs, rhs)
 
     def walk_Subtract(self, node, **kwargs):
-        self.walk(node.left, **kwargs)
-        self.walk(node.right, **kwargs)
-        return node.text
+        lhs = self.walk(node.left, **kwargs)
+        rhs = self.walk(node.right, **kwargs)
+        return "{} - {}".format(lhs, rhs)
 
     def walk_AddSub(self, node, **kwargs):
-        self.walk(node.left, **kwargs)
-        self.walk(node.right, **kwargs)
-        return node.text
+        lhs = self.walk(node.left, **kwargs)
+        rhs = self.walk(node.right, **kwargs)
+        return "{} ± {}".format(lhs, rhs)
 
     def walk_Multiply(self, node, **kwargs):
-        self.walk(node.left, **kwargs)
-        self.walk(node.right, **kwargs)
-        return node.text
+        lhs = self.walk(node.left, **kwargs)
+        rhs = self.walk(node.right, **kwargs)
+        return "{} {}".format(lhs, rhs)
 
     def walk_Divide(self, node, **kwargs):
-        self.walk(node.left, **kwargs)
-        self.walk(node.right, **kwargs)
-        return node.text
+        lhs = self.walk(node.left, **kwargs)
+        rhs = self.walk(node.right, **kwargs)
+        return "{}/{}".format(lhs, rhs)
 
     def walk_Subexpression(self, node, **kwargs):
-        self.walk(node.value, **kwargs)
-        return node.text
+        return "{{}}".format(self.walk(node.value, **kwargs))
 
     def walk_LocalFunc(self, node, **kwargs):
         self.walk(node.name)
@@ -341,21 +339,21 @@ class LightWalker(NodeWalker):
 
     def walk_Factor(self, node, **kwargs):
         if node.id0:
-            self.walk(node.id0, **kwargs)
+            return self.walk(node.id0, **kwargs)
         elif node.num:
-            self.walk(node.num, **kwargs)
+            return self.walk(node.num, **kwargs)
         elif node.sub:
-            self.walk(node.sub, **kwargs)
+            return self.walk(node.sub, **kwargs)
         elif node.m:
-            self.walk(node.m, **kwargs)
+            return self.walk(node.m, **kwargs)
         elif node.v:
-            self.walk(node.v, **kwargs)
+            return self.walk(node.v, **kwargs)
         elif node.nm:
-            self.walk(node.nm, **kwargs)
+            return self.walk(node.nm, **kwargs)
         elif node.op:
-            self.walk(node.op, **kwargs)
+            return self.walk(node.op, **kwargs)
         elif node.c:
-            self.walk(node.c, **kwargs)
+            return self.walk(node.c, **kwargs)
         return node.text
 
     def walk_Pi(self, node, **kwargs):

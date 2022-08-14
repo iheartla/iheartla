@@ -8,6 +8,7 @@ from iheartla.la_tools.la_helper import *
 import regex as re
 from ..la_parser.light_walker import LightWalker
 from ..la_parser.ir import *
+from ..la_tools.config_manager import *
 
 
 class DeWalker(LightWalker):
@@ -15,6 +16,7 @@ class DeWalker(LightWalker):
         super().__init__()
         self.smooth_dict = {}     # M in R^3
         self.mapping_dict = {}
+        self.cfg_mgr = ConfMgr.getInstance()
 
     def reset(self):
         pass
@@ -104,11 +106,22 @@ class DeWalker(LightWalker):
 
     def walk_Statements(self, node, **kwargs):
         if type(node.stat).__name__ == 'DeSolver':
-            return ''
             return self.walk(node.stat, **kwargs)
         return node.text
 
     def walk_DeSolver(self, node, **kwargs):
+        unknown = self.walk(node.u, **kwargs)
+        stat_list = []
+        for cur_index in range(len(node.lexpr)):
+            lhs = self.walk(node.lexpr[cur_index], **kwargs)
+            rhs = self.walk(node.rexpr[cur_index], **kwargs)
+            stat_list.append("{} = {}".format(lhs, rhs))
+        return "solve_{} {}".format(unknown, '\n'.join(stat_list))
+
+    def walk_Laplace(self, node, **kwargs):
+        if node.name in self.cfg_mgr.walker.laplacian_dict:
+            import_node = self.cfg_mgr.walker.laplacian_dict[node.name]
+            return "{}{}".format(import_node.get_imported_sym()[0], node.value.text)
         return node.text
 
     def walk_SubInteger(self, node, **kwargs):

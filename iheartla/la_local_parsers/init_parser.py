@@ -938,11 +938,27 @@ class grammarinitParser(Parser):
     @tatsumasu('Divergence')
     def _divergence_(self):  # noqa
         self._NABLA_()
+        self.name_last_node('name')
 
-        def block0():
+        def block1():
             self._hspace_()
-        self._closure(block0)
+        self._closure(block1)
         self._token('⋅')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._factor_()
+        self.name_last_node('value')
+        self.ast._define(
+            ['name', 'value'],
+            []
+        )
+
+    @tatsumasu('Gradient')
+    def _gradient_(self):  # noqa
+        self._NABLA_()
+        self.name_last_node('name')
 
         def block1():
             self._hspace_()
@@ -950,35 +966,22 @@ class grammarinitParser(Parser):
         self._factor_()
         self.name_last_node('value')
         self.ast._define(
-            ['value'],
-            []
-        )
-
-    @tatsumasu('Gradient')
-    def _gradient_(self):  # noqa
-        self._NABLA_()
-
-        def block0():
-            self._hspace_()
-        self._closure(block0)
-        self._factor_()
-        self.name_last_node('value')
-        self.ast._define(
-            ['value'],
+            ['name', 'value'],
             []
         )
 
     @tatsumasu('Laplace')
     def _laplacian_(self):  # noqa
         self._DELTA_()
+        self.name_last_node('name')
 
-        def block0():
+        def block1():
             self._hspace_()
-        self._closure(block0)
+        self._closure(block1)
         self._factor_()
         self.name_last_node('value')
         self.ast._define(
-            ['value'],
+            ['name', 'value'],
             []
         )
 
@@ -6798,14 +6801,17 @@ class Partial(ModelBase):
 
 
 class Divergence(ModelBase):
+    name = None
     value = None
 
 
 class Gradient(ModelBase):
+    name = None
     value = None
 
 
 class Laplace(ModelBase):
+    name = None
     value = None
 
 
