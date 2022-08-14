@@ -63,7 +63,7 @@ class ConfigWalker(NodeWalker):
         else:
             element_type = ScalarType()
         id1_content = self.walk(node.id1, **kwargs)
-        la_type = VectorType(rows=id1_content, element_type=element_type)
+        la_type = VectorType(rows=id1_content.raw_text, element_type=element_type)
         return la_type
 
     def walk_MatrixType(self, node, **kwargs):
@@ -99,6 +99,13 @@ class ConfigWalker(NodeWalker):
             for cur_index in range(len(node.ret_type)):
                 ret_node = self.walk(node.ret_type[cur_index], **kwargs)
                 ret_list.append(ret_node)
+            if len(ret_list) == 1 and len(params) == 1:
+                t_type = ret_list[0]
+                if params[0].is_node(IRNodeType.Id):
+                    if t_type.is_vector():
+                        # V → ℝ^n
+                        la_type = MatrixType(rows=SizeNode(params[0]), cols=t_type.rows, element_type=t_type.element_type)
+                        return la_type
         la_type = MappingType(params=params, ret=ret_list)
         return la_type
 
