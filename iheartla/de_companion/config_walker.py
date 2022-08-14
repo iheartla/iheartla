@@ -84,34 +84,23 @@ class ConfigWalker(NodeWalker):
             la_type.sparse = True
         return la_type
 
-    def walk_Mapping(self, node, **kwargs):
-        # print(node)
-        lhs = self.walk(node.lhs, **kwargs)
-        rhs = self.walk(node.rhs, **kwargs)
-        # print("lhs: {}".format(lhs))
-        if type(node.lhs).__name__ == 'Operators':
-            pass
-        else:
-            # identifier
-            # print(rhs)
-            pass
-        # if node.ref:
-        #     ref = self.walk(node.ref, **kwargs)
-        #     print("ref: {}, {}".format(ref, node.ref))
-
-    def walk_Rhs(self, node, **kwargs):
-        # normal mapping
-        if len(node.params) == 1:
-            par_ir = self.walk(node.params[0], **kwargs)
-            ret_ir = self.walk(node.ret[0], **kwargs)
-            if par_ir.is_node(IRNodeType.Id):
-                pass
-            # print(par)
-        else:
-            # function
-            pass
-
-        return node.text
+    def walk_MappingType(self, node, **kwargs):
+        params = []
+        if node.params:
+            for index in range(len(node.params)):
+                param_node = self.walk(node.params[index], **kwargs)
+                params.append(param_node)
+        ret_list = []
+        if node.ret:
+            for cur_index in range(len(node.ret)):
+                ret_node = self.walk(node.ret[cur_index], **kwargs).ir
+                ret_list.append(ret_node)
+        elif node.ret_type:
+            for cur_index in range(len(node.ret_type)):
+                ret_node = self.walk(node.ret_type[cur_index], **kwargs)
+                ret_list.append(ret_node)
+        la_type = MappingType(params=params, ret=ret_list)
+        return la_type
 
     def walk_Geometry(self, node, **kwargs):
         id = self.walk(node.id)
