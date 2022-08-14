@@ -341,6 +341,10 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
             continue  # valid single identifier
         multi_list.append(multi_lhs)
     #
+    for dim in type_walker.multi_dim_list:
+        if _id_pattern.fullmatch(dim):
+            continue
+        multi_list.append(dim)
     for par in start_node.get_module_pars_list():
         if _id_pattern.fullmatch(par):
             continue  # valid single identifier
