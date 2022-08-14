@@ -37,6 +37,7 @@ arithmetic_division::ArithDivide
 arithmetic_factor::ArithFactor
     =
     sub:arithmetic_subexpression
+    | size:size_op
     | id0:identifier
     | num:number
     ;

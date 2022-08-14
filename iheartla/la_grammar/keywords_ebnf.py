@@ -64,6 +64,7 @@ UDDOT = /[\u0308]/;
 SOLVE = /solve/ | /Solve/ | /SOLVE/;
 SUBSET = /⊂/;
 AS = /as/;
+POUND = /#/;
 """
 
 KEYWORDS = KEYS + r"""
@@ -99,5 +100,6 @@ BUILTIN_KEYWORDS
     | PRIME
     | SUBSET
     | AS
+    | POUND
     ;
 """

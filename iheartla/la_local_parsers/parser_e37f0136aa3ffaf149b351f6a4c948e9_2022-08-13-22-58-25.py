@@ -388,6 +388,10 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self._pattern('as')
 
     @tatsumasu()
+    def _POUND_(self):  # noqa
+        self._pattern('#')
+
+    @tatsumasu()
     def _BUILTIN_KEYWORDS_(self):  # noqa
         with self._choice():
             with self._option():
@@ -458,6 +462,8 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 self._SUBSET_()
             with self._option():
                 self._AS_()
+            with self._option():
+                self._POUND_()
             self._error('no available options')
 
     @tatsumasu('Exponent')
@@ -2714,6 +2720,16 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self.ast._define(
             ['left'],
             ['right']
+        )
+
+    @tatsumasu('SizeOp')
+    def _size_op_(self):  # noqa
+        self._POUND_()
+        self._identifier_()
+        self.name_last_node('i')
+        self.ast._define(
+            ['i'],
+            []
         )
 
     @tatsumasu()
@@ -5196,6 +5212,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 self._arithmetic_subexpression_()
                 self.name_last_node('sub')
             with self._option():
+                self._size_op_()
+                self.name_last_node('size')
+            with self._option():
                 self._identifier_()
                 self.name_last_node('id0')
             with self._option():
@@ -5203,7 +5222,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 self.name_last_node('num')
             self._error('no available options')
         self.ast._define(
-            ['id0', 'num', 'sub'],
+            ['id0', 'num', 'size', 'sub'],
             []
         )
 
@@ -6129,6 +6148,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
     def AS(self, ast):  # noqa
         return ast
 
+    def POUND(self, ast):  # noqa
+        return ast
+
     def BUILTIN_KEYWORDS(self, ast):  # noqa
         return ast
 
@@ -6334,6 +6356,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
         return ast
 
     def identifier_with_subscript(self, ast):  # noqa
+        return ast
+
+    def size_op(self, ast):  # noqa
         return ast
 
     def keyword_str(self, ast):  # noqa
@@ -6961,6 +6986,10 @@ class IdentifierSubscript(ModelBase):
     right = None
 
 
+class SizeOp(ModelBase):
+    i = None
+
+
 class IdentifierAlone(ModelBase):
     id = None
     value = None
@@ -7264,6 +7293,7 @@ class ArithDivide(ModelBase):
 class ArithFactor(ModelBase):
     id0 = None
     num = None
+    size = None
     sub = None
 
 

@@ -27,7 +27,10 @@ identifier_with_subscript::IdentifierSubscript
     | ({','} right+:(sub_integer)) } )
     ;
 
-
+size_op::SizeOp
+    = POUND i:identifier
+    ;
+    
 keyword_str
     = /[A-Za-z][A-Za-z0-9]*/
     ;

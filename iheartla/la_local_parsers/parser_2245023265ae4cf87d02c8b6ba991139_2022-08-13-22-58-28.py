@@ -185,7 +185,7 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
             with self._option():
                 self._pattern('∇⋅')
             with self._option():
-                self._pattern('#')
+                self._POUND_()
             self._error('no available options')
 
     @tatsumasu()
@@ -466,6 +466,10 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
         self._pattern('as')
 
     @tatsumasu()
+    def _POUND_(self):  # noqa
+        self._pattern('#')
+
+    @tatsumasu()
     def _hspace_(self):  # noqa
         with self._choice():
             with self._option():
@@ -572,6 +576,16 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
         self.ast._define(
             ['left'],
             ['right']
+        )
+
+    @tatsumasu('SizeOp')
+    def _size_op_(self):  # noqa
+        self._POUND_()
+        self._identifier_()
+        self.name_last_node('i')
+        self.ast._define(
+            ['i'],
+            []
         )
 
     @tatsumasu()
@@ -810,6 +824,9 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
                 self._arithmetic_subexpression_()
                 self.name_last_node('sub')
             with self._option():
+                self._size_op_()
+                self.name_last_node('size')
+            with self._option():
                 self._identifier_()
                 self.name_last_node('id0')
             with self._option():
@@ -817,7 +834,7 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
                 self.name_last_node('num')
             self._error('no available options')
         self.ast._define(
-            ['id0', 'num', 'sub'],
+            ['id0', 'num', 'size', 'sub'],
             []
         )
 
@@ -1513,6 +1530,8 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
             with self._option():
                 self._mapping_()
             with self._option():
+                self._where_condition_()
+            with self._option():
                 self._solver_()
             self._error('no available options')
 
@@ -1654,6 +1673,69 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
     @tatsumasu()
     def _Laplacian_(self):  # noqa
         self._DELTA_()
+
+    @tatsumasu('WhereCondition')
+    def _where_condition_(self):  # noqa
+        self._identifier_()
+        self.add_last_node_to_name('id')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._token(',')
+
+            def block3():
+                self._hspace_()
+            self._closure(block3)
+            self._identifier_()
+            self.add_last_node_to_name('id')
+        self._closure(block1)
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._token(':')
+                with self._option():
+                    self._IN_()
+                self._error('no available options')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
+        self._la_type_()
+        self.name_last_node('type')
+
+        def block9():
+
+            def block10():
+                self._hspace_()
+            self._closure(block10)
+            self._token('index')
+            self.name_last_node('index')
+        self._closure(block9)
+
+        def block12():
+
+            def block13():
+                self._hspace_()
+            self._closure(block13)
+            self._token(':')
+
+            def block14():
+                self._hspace_()
+            self._closure(block14)
+            self._description_()
+            self.name_last_node('desc')
+        self._closure(block12)
+        self.ast._define(
+            ['desc', 'index', 'type'],
+            ['id']
+        )
 
     @tatsumasu('Mapping')
     def _mapping_(self):  # noqa
@@ -1884,20 +1966,6 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
             with self._option():
                 self._identifier_()
             self._error('no available options')
-
-    @tatsumasu('SizeOp')
-    def _size_op_(self):  # noqa
-        self._pattern('#')
-
-        def block0():
-            self._hspace_()
-        self._closure(block0)
-        self._identifier_()
-        self.name_last_node('i')
-        self.ast._define(
-            ['i'],
-            []
-        )
 
     @tatsumasu('Module')
     def _module_(self):  # noqa
@@ -2192,6 +2260,9 @@ class grammar2245023265ae4cf87d02c8b6ba991139Semantics(object):
     def AS(self, ast):  # noqa
         return ast
 
+    def POUND(self, ast):  # noqa
+        return ast
+
     def hspace(self, ast):  # noqa
         return ast
 
@@ -2205,6 +2276,9 @@ class grammar2245023265ae4cf87d02c8b6ba991139Semantics(object):
         return ast
 
     def identifier_with_subscript(self, ast):  # noqa
+        return ast
+
+    def size_op(self, ast):  # noqa
         return ast
 
     def keyword_str(self, ast):  # noqa
@@ -2354,6 +2428,9 @@ class grammar2245023265ae4cf87d02c8b6ba991139Semantics(object):
     def Laplacian(self, ast):  # noqa
         return ast
 
+    def where_condition(self, ast):  # noqa
+        return ast
+
     def mapping(self, ast):  # noqa
         return ast
 
@@ -2370,9 +2447,6 @@ class grammar2245023265ae4cf87d02c8b6ba991139Semantics(object):
         return ast
 
     def module_param(self, ast):  # noqa
-        return ast
-
-    def size_op(self, ast):  # noqa
         return ast
 
     def module(self, ast):  # noqa
@@ -2451,6 +2525,10 @@ class IdentifierSubscript(ModelBase):
     right = None
 
 
+class SizeOp(ModelBase):
+    i = None
+
+
 class IdentifierAlone(ModelBase):
     id = None
     value = None
@@ -2496,6 +2574,7 @@ class ArithDivide(ModelBase):
 class ArithFactor(ModelBase):
     id0 = None
     num = None
+    size = None
     sub = None
 
 
@@ -2601,6 +2680,13 @@ class Operators(ModelBase):
     l = None
 
 
+class WhereCondition(ModelBase):
+    desc = None
+    id = None
+    index = None
+    type = None
+
+
 class Mapping(ModelBase):
     lhs = None
     rhs = None
@@ -2626,10 +2712,6 @@ class Import(ModelBase):
 class ImportVar(ModelBase):
     name = None
     r = None
-
-
-class SizeOp(ModelBase):
-    i = None
 
 
 class Module(ModelBase):
