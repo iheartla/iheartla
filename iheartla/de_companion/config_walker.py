@@ -36,6 +36,52 @@ class ConfigWalker(NodeWalker):
         # print(node)
         return node.text
 
+    def walk_WhereCondition(self, node, **kwargs):
+        if type(node.type).__name__ == 'MappingType':
+            la_type = self.walk(node.type, **kwargs)
+            print(node.type.text)
+            for id_index in range(len(node.id)):
+                cur_id = self.walk(node.id[id_index], **kwargs)
+            return ''
+        else:
+            #
+            la_type = self.walk(node.type, **kwargs)
+            print(node.type.text)
+            for id_index in range(len(node.id)):
+                cur_id = self.walk(node.id[id_index], **kwargs)
+        return node.text
+
+    def walk_VectorType(self, node, **kwargs):
+        element_type = ''
+        if node.type:
+            if node.type == 'ℝ':
+                element_type = ScalarType()
+            elif node.type == 'ℤ':
+                element_type = ScalarType(is_int=True)
+        else:
+            element_type = ScalarType()
+        id1_content = self.walk(node.id1, **kwargs)
+        la_type = VectorType(rows=id1_content, element_type=element_type)
+        return la_type
+
+    def walk_MatrixType(self, node, **kwargs):
+        ir_node = MatrixTypeNode(parse_info=node.parseinfo, raw_text=node.text)
+        element_type = ''
+        if node.type:
+            ir_node.type = node.type
+            if node.type == 'ℝ':
+                element_type = ScalarType()
+            elif node.type == 'ℤ':
+                element_type = ScalarType(is_int=True)
+        else:
+            element_type = ScalarType()
+        id1_content = self.walk(node.id1, **kwargs)
+        id2_content = self.walk(node.id2, **kwargs)
+        la_type = MatrixType(rows=id1_content, cols=id2_content, element_type=element_type)
+        if node.attr and 'sparse' in node.attr:
+            la_type.sparse = True
+        return la_type
+
     def walk_Mapping(self, node, **kwargs):
         # print(node)
         lhs = self.walk(node.lhs, **kwargs)
