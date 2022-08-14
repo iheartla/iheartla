@@ -315,6 +315,9 @@ class ImportNode(StmtNode):
             param_list.append(par.get_name())
         return param_list
 
+    def get_imported_sym(self):
+        return [name.get_main_id() if name.get_main_id() not in self.r_dict else self.r_dict[name.get_main_id()] for name in self.names]
+
 
 class ImportVarNode(StmtNode):
     def __init__(self, name=None, rname=None, la_type=None, parse_info=None, raw_text=None):

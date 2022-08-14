@@ -64,13 +64,13 @@ partial::Partial
     ;
 
 divergence::Divergence
-    = NABLA {hspace} '⋅' {hspace} value:factor;
+    = name:NABLA {hspace} '⋅' {hspace} value:factor;
 
 gradient::Gradient
-    = NABLA {hspace} value:factor;
+    = name:NABLA {hspace} value:factor;
     
 laplacian::Laplace
-    = DELTA {hspace} value:factor;
+    = name:DELTA {hspace} value:factor;
 
 power_operator::Power
     = base:factor t:'^T'
