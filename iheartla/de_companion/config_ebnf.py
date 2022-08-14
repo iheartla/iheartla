@@ -53,6 +53,7 @@ identifier_alone::IdentifierAlone
 valid_block
     = definition 
     | mapping
+    | import_def
     | where_condition 
     | solver
     ;
@@ -93,7 +94,7 @@ where_condition::WhereCondition
     ;
     
 mapping::Mapping
-   = lhs:(identifier | operators) {hspace} (':'| IN | subset:SUBSET) {hspace} rhs:mapping_rhs
+   = lhs:(identifier | operators) {hspace} (':'| IN) {hspace} rhs:mapping_rhs
     ;
     
 mapping_rhs::Rhs
@@ -101,8 +102,10 @@ mapping_rhs::Rhs
     ((params+:map_type {{hspace} separators+:params_separator {hspace} params+:map_type})|empty:'∅'|'{'{hspace}'}') 
    {hspace} ('→'|'->') {hspace} 
    ret+:map_type {{hspace} ret_separators+:params_separator {hspace} ret+:map_type} 
-   |
-   im:import
+    ;
+    
+import_def::ImportDef
+    = lhs:(identifier | operators) {hspace} (':'| IN) {hspace} rhs:import
     ;
     
 import::Import
