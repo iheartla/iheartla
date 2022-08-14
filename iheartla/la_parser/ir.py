@@ -1209,6 +1209,7 @@ class FactorNode(ExprNode):
         self.m = None
         self.v = None
         self.s = None
+        self.size = None
 
 
 class DoubleNode(ExprNode):
