@@ -90,10 +90,7 @@ class ConfigWalker(NodeWalker):
         rhs = self.walk(node.rhs, **kwargs)
         # print("lhs: {}".format(lhs))
         if type(node.lhs).__name__ == 'Operators':
-            if node.lhs.l:
-                if node.rhs.im:
-                    self.laplacian_dict[lhs] = rhs
-                # self.laplacian_dict[lhs] = self.walk(node.rhs, **kwargs)
+            pass
         else:
             # identifier
             # print(rhs)
@@ -103,20 +100,16 @@ class ConfigWalker(NodeWalker):
         #     print("ref: {}, {}".format(ref, node.ref))
 
     def walk_Rhs(self, node, **kwargs):
-        if node.im:
-            # import
-            return self.walk(node.im, **kwargs)
-        else:
-            # normal mapping
-            if len(node.params) == 1:
-                par_ir = self.walk(node.params[0], **kwargs)
-                ret_ir = self.walk(node.ret[0], **kwargs)
-                if par_ir.is_node(IRNodeType.Id):
-                    pass
-                # print(par)
-            else:
-                # function
+        # normal mapping
+        if len(node.params) == 1:
+            par_ir = self.walk(node.params[0], **kwargs)
+            ret_ir = self.walk(node.ret[0], **kwargs)
+            if par_ir.is_node(IRNodeType.Id):
                 pass
+            # print(par)
+        else:
+            # function
+            pass
 
         return node.text
 
@@ -130,6 +123,14 @@ class ConfigWalker(NodeWalker):
         if node.r:
             rname = self.walk(node.r, **kwargs)
         return ImportVarNode(self.walk(node.name, **kwargs), rname)
+
+    def walk_ImportDef(self, node, **kwargs):
+        lhs = self.walk(node.lhs)
+        rhs = self.walk(node.rhs)
+        if type(node.lhs).__name__ == 'Operators':
+            if node.lhs.l:
+                self.laplacian_dict[lhs] = rhs
+        return node.text
 
     def walk_Import(self, node, **kwargs):
         params = []

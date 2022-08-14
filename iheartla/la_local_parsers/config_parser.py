@@ -1530,6 +1530,8 @@ class grammarconfigParser(Parser):
             with self._option():
                 self._mapping_()
             with self._option():
+                self._import_def_()
+            with self._option():
                 self._where_condition_()
             with self._option():
                 self._solver_()
@@ -1757,96 +1759,119 @@ class grammarconfigParser(Parser):
                     self._token(':')
                 with self._option():
                     self._IN_()
-                with self._option():
-                    self._SUBSET_()
-                    self.name_last_node('subset')
                 self._error('no available options')
 
-        def block5():
+        def block4():
             self._hspace_()
-        self._closure(block5)
+        self._closure(block4)
         self._mapping_rhs_()
         self.name_last_node('rhs')
         self.ast._define(
-            ['lhs', 'rhs', 'subset'],
+            ['lhs', 'rhs'],
             []
         )
 
     @tatsumasu('Rhs')
     def _mapping_rhs_(self):  # noqa
-        with self._choice():
-            with self._option():
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            with self._group():
-                                self._map_type_()
-                                self.add_last_node_to_name('params')
+        with self._group():
+            with self._choice():
+                with self._option():
+                    with self._group():
+                        self._map_type_()
+                        self.add_last_node_to_name('params')
 
-                                def block1():
+                        def block1():
 
-                                    def block2():
-                                        self._hspace_()
-                                    self._closure(block2)
-                                    self._params_separator_()
-                                    self.add_last_node_to_name('separators')
-
-                                    def block4():
-                                        self._hspace_()
-                                    self._closure(block4)
-                                    self._map_type_()
-                                    self.add_last_node_to_name('params')
-                                self._closure(block1)
-                        with self._option():
-                            self._token('∅')
-                            self.name_last_node('empty')
-                        with self._option():
-                            self._token('{')
-
-                            def block7():
+                            def block2():
                                 self._hspace_()
-                            self._closure(block7)
-                            self._token('}')
-                        self._error('no available options')
+                            self._closure(block2)
+                            self._params_separator_()
+                            self.add_last_node_to_name('separators')
 
-                def block9():
-                    self._hspace_()
-                self._closure(block9)
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            self._token('→')
-                        with self._option():
-                            self._token('->')
-                        self._error('no available options')
+                            def block4():
+                                self._hspace_()
+                            self._closure(block4)
+                            self._map_type_()
+                            self.add_last_node_to_name('params')
+                        self._closure(block1)
+                with self._option():
+                    self._token('∅')
+                    self.name_last_node('empty')
+                with self._option():
+                    self._token('{')
 
-                def block11():
-                    self._hspace_()
-                self._closure(block11)
-                self._map_type_()
-                self.add_last_node_to_name('ret')
-
-                def block13():
-
-                    def block14():
+                    def block7():
                         self._hspace_()
-                    self._closure(block14)
-                    self._params_separator_()
-                    self.add_last_node_to_name('ret_separators')
+                    self._closure(block7)
+                    self._token('}')
+                self._error('no available options')
 
-                    def block16():
-                        self._hspace_()
-                    self._closure(block16)
-                    self._map_type_()
-                    self.add_last_node_to_name('ret')
-                self._closure(block13)
-            with self._option():
-                self._import_()
-                self.name_last_node('im')
-            self._error('no available options')
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._token('→')
+                with self._option():
+                    self._token('->')
+                self._error('no available options')
+
+        def block11():
+            self._hspace_()
+        self._closure(block11)
+        self._map_type_()
+        self.add_last_node_to_name('ret')
+
+        def block13():
+
+            def block14():
+                self._hspace_()
+            self._closure(block14)
+            self._params_separator_()
+            self.add_last_node_to_name('ret_separators')
+
+            def block16():
+                self._hspace_()
+            self._closure(block16)
+            self._map_type_()
+            self.add_last_node_to_name('ret')
+        self._closure(block13)
         self.ast._define(
-            ['empty', 'im'],
+            ['empty'],
             ['params', 'ret', 'ret_separators', 'separators']
+        )
+
+    @tatsumasu('ImportDef')
+    def _import_def_(self):  # noqa
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._identifier_()
+                with self._option():
+                    self._operators_()
+                self._error('no available options')
+        self.name_last_node('lhs')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._token(':')
+                with self._option():
+                    self._IN_()
+                self._error('no available options')
+
+        def block4():
+            self._hspace_()
+        self._closure(block4)
+        self._import_()
+        self.name_last_node('rhs')
+        self.ast._define(
+            ['lhs', 'rhs'],
+            []
         )
 
     @tatsumasu('Import')
@@ -2437,6 +2462,9 @@ class grammarconfigSemantics(object):
     def mapping_rhs(self, ast):  # noqa
         return ast
 
+    def import_def(self, ast):  # noqa
+        return ast
+
     def import_(self, ast):  # noqa
         return ast
 
@@ -2690,16 +2718,19 @@ class WhereCondition(ModelBase):
 class Mapping(ModelBase):
     lhs = None
     rhs = None
-    subset = None
 
 
 class Rhs(ModelBase):
     empty = None
-    im = None
     params = None
     ret = None
     ret_separators = None
     separators = None
+
+
+class ImportDef(ModelBase):
+    lhs = None
+    rhs = None
 
 
 class Import(ModelBase):
