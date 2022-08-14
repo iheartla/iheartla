@@ -52,7 +52,6 @@ identifier_alone::IdentifierAlone
 
 valid_block
     = definition 
-    | mapping
     | import_def
     | where_condition 
     | solver
@@ -91,17 +90,6 @@ Laplacian
     
 where_condition::WhereCondition
     = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN) {hspace} type:la_type {{hspace} index:'index'} { {hspace} ':' {hspace} desc:description}
-    ;
-    
-mapping::Mapping
-   = lhs:(identifier | operators) {hspace} (':'| IN) {hspace} rhs:mapping_rhs
-    ;
-    
-mapping_rhs::Rhs
-    =
-    ((params+:map_type {{hspace} separators+:params_separator {hspace} params+:map_type})|empty:'∅'|'{'{hspace}'}') 
-   {hspace} ('→'|'->') {hspace} 
-   ret+:map_type {{hspace} ret_separators+:params_separator {hspace} ret+:map_type} 
     ;
     
 import_def::ImportDef
