@@ -235,6 +235,7 @@ class TypeWalker(NodeWalker):
         self.constants = ['π']
         self.pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*")
         self.multi_lhs_list = []
+        self.multi_dim_list = []    # P ∈ ℝ^(4 × dd)
         self.lhs_list = []
         # self.directive_parsing = True   # directives grammar
         self.sum_subs = []
@@ -356,6 +357,8 @@ class TypeWalker(NodeWalker):
         self.has_opt = False
         self.sum_subs.clear()
         self.sum_sym_list.clear()
+        self.multi_lhs_list.clear()
+        self.multi_dim_list.clear()
         self.lhs_subs.clear()
         self.lhs_sym_list.clear()
         self.sum_conds.clear()
@@ -531,7 +534,7 @@ class TypeWalker(NodeWalker):
         self.main_param.symtable = self.symtable
         self.pre_walk = True if 'pre_walk' in kwargs else False
         # self.symtable.clear()
-        # self.visualizer.visualize(node)  # visualize
+        self.visualizer.visualize(node)  # visualize
         ir_node = StartNode(parse_info=node.parseinfo, raw_text=node.text)
         # if node.directive:
         #     for directive in node.directive:
@@ -3377,6 +3380,9 @@ class TypeWalker(NodeWalker):
             else:
                 id0_info = self.walk(node.id0, **kwargs)
                 id0 = id0_info.ir.get_main_id()
+                if self.pre_walk:
+                    if len(id0) > 1:
+                        self.multi_dim_list.append(id0)
                 add_sym_info(id0, node.parseinfo)
                 node_info = NodeInfo(id0_info.la_type, id0, id0_info.symbols, id0_info.ir)
                 # node_info = NodeInfo(self.symtable[id0], id0, id0_info.symbols)
