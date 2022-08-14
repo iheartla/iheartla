@@ -35,7 +35,7 @@ CONF_KEYWORDS
     | FROM
     | SOLVE | WITH | ODE | EXPLICIT | IMPLICIT | EULER | RK
     | DELTA | NABLA | /∇⋅/
-    | /#/
+    | POUND
     ;
 """
 CONFIG = START + KEYS + BASE + ARITHMETIC + TYPES + NUMBER
@@ -51,7 +51,10 @@ identifier_alone::IdentifierAlone
     ;
 
 valid_block
-    = definition | mapping | solver
+    = definition 
+    | mapping
+    | where_condition 
+    | solver
     ;
     
 definition::Geometry
@@ -85,6 +88,10 @@ Gradient
 Laplacian
     = DELTA;
     
+where_condition::WhereCondition
+    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN) {hspace} type:la_type {{hspace} index:'index'} { {hspace} ':' {hspace} desc:description}
+    ;
+    
 mapping::Mapping
    = lhs:(identifier | operators) {hspace} (':'| IN | subset:SUBSET) {hspace} rhs:mapping_rhs
     ;
@@ -112,10 +119,6 @@ map_type
     
 module_param
     = size_op | identifier;
-    
-size_op::SizeOp
-    = /#/ {hspace} i:identifier
-    ;
 
 module::Module
     = !KEYWORDS /[A-Za-z0-9_]*/ 
