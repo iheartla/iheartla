@@ -55,7 +55,7 @@ class ParserManager(object):
 
     def create_config_parser(self):
         if DEBUG_PARSER:
-            from ..la_companion.config_ebnf import CONFIG
+            from ..de_companion.config_ebnf import CONFIG
             self.get_parser('config', CONFIG)
 
     def set_test_mode(self):
