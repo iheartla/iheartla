@@ -17,7 +17,7 @@ class DeLightWalker(LightWalker):
         self.sym_list.clear()
 
     def walk_DeWhereCondition(self, node, **kwargs):
-        self.has_de = False
+        self.has_de = True
         # M in R^3
         assert type(node.type).__name__ == 'VectorType'
         la_type = self.walk(node.type, **kwargs)
