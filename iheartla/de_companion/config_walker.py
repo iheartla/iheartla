@@ -20,6 +20,15 @@ class ConfigWalker(NodeWalker):
         self.laplacian_dict = {}
         self.par_dict = {}   # parameters
         self.ode_dict = {}
+        # env
+        self.smooth_dict = {}
+        self.mapping_dict = {}
+        self.sym_list = []
+
+    def set_env(self, de_light_walker):
+        self.smooth_dict = de_light_walker.smooth_dict
+        self.mapping_dict = de_light_walker.mapping_dict
+        self.sym_list = de_light_walker.sym_list
 
     def walk_Start(self, node, **kwargs):
         for block in node.vblock:
@@ -112,6 +121,8 @@ class ConfigWalker(NodeWalker):
     def walk_Geometry(self, node, **kwargs):
         id = self.walk(node.id)
         geometry = self.walk(node.g)
+        if id.get_main_id() in self.smooth_dict:
+            geometry.dim = self.smooth_dict[id.get_main_id()]
         return GeometryNode(id, geometry)
 
     def walk_ImportVar(self, node, **kwargs):

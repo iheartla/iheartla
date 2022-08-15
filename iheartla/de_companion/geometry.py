@@ -8,9 +8,10 @@ class GeometryType(Enum):
 
 
 class Geometry(object):
-    def __init__(self, g_type=GeometryType.INVALID):
+    def __init__(self, g_type=GeometryType.INVALID, dim=3):
         super().__init__()
         self.g_type = g_type
+        self.dim = dim
 
 
 class Triangle(Geometry):

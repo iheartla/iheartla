@@ -44,10 +44,11 @@ class ConfMgr(object):
                 content = read_from_file(src)
         return content
 
-    def parse(self):
+    def parse(self, de_light_walker):
         content = self.get_conf_content()
         if content:
             model = self.parser.parse(content, parseinfo=True)
+            self.walker.set_env(de_light_walker)
             start_node = self.walker.walk(model)
             print(content)
 
