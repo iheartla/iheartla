@@ -7,12 +7,15 @@ class DeLightWalker(LightWalker):
         super().__init__()
         self.smooth_dict = {}     # M in R^3
         self.mapping_dict = {}
+        self.has_de = False
 
     def reset(self):
         self.smooth_dict.clear()
         self.mapping_dict.clear()
+        self.has_de = False
 
     def walk_DeWhereCondition(self, node, **kwargs):
+        self.has_de = False
         # M in R^3
         assert type(node.type).__name__ == 'VectorType'
         la_type = self.walk(node.type, **kwargs)
