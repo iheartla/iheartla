@@ -20,9 +20,10 @@ class LightWalker(NodeWalker):
         pass
 
     def walk_Start(self, node, **kwargs):
+        content_list = []
         for vblock in node.vblock:
-            self.walk(vblock, **kwargs)
-        return node.text
+            content_list.append(self.walk(vblock, **kwargs))
+        return '\n'.join(content_list)
 
     def walk_ParamsBlock(self, node, **kwargs):
         self.walk(node.conds, **kwargs)
@@ -67,8 +68,8 @@ class LightWalker(NodeWalker):
         return node.text
 
     def walk_Statements(self, node, **kwargs):
-        if node.stats:
-            self.walk(node.stats, **kwargs)
+        if node.stat:
+            self.walk(node.stat, **kwargs)
         return node.text
 
     def walk_Expression(self, node, **kwargs):
