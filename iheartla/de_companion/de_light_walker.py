@@ -7,12 +7,14 @@ class DeLightWalker(LightWalker):
         super().__init__()
         self.smooth_dict = {}     # M in R^3
         self.mapping_dict = {}
+        self.sym_list = []
         self.has_de = False
 
     def reset(self):
         self.smooth_dict.clear()
         self.mapping_dict.clear()
         self.has_de = False
+        self.sym_list.clear()
 
     def walk_DeWhereCondition(self, node, **kwargs):
         self.has_de = False
@@ -22,6 +24,7 @@ class DeLightWalker(LightWalker):
         for id_index in range(len(node.id)):
             cur_id = self.walk(node.id[id_index], **kwargs)
             self.smooth_dict[cur_id] = la_type.rows
+            self.sym_list.append(cur_id)
         return ""
 
     def walk_WhereCondition(self, node, **kwargs):
@@ -30,7 +33,12 @@ class DeLightWalker(LightWalker):
             for id_index in range(len(node.id)):
                 cur_id = self.walk(node.id[id_index], **kwargs)
                 self.mapping_dict[cur_id] = la_type
+                self.sym_list.append(cur_id)
             return ''
+        else:
+            for id_index in range(len(node.id)):
+                cur_id = self.walk(node.id[id_index], **kwargs)
+                self.sym_list.append(cur_id)
         return node.text
 
     def walk_VectorType(self, node, **kwargs):
@@ -65,6 +73,11 @@ class DeLightWalker(LightWalker):
                 ret_list.append(ret_type)
         la_type = MappingType(params=params, ret=ret_list, template_symbols=template_symbols, ret_symbols=template_ret)
         return la_type
+
+    def walk_DeSolver(self, node, **kwargs):
+        unknown = self.walk(node.u, **kwargs)
+        self.sym_list.append(unknown)
+        return node.text
 
     def walk_SubInteger(self, node, **kwargs):
         value = 0
