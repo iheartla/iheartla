@@ -26,7 +26,9 @@ def get_de_light_walker():
 def parse_de_content(model, content):
     de_light_walker = get_de_light_walker()
     de_light_walker.walk(model)
-    ConfMgr.getInstance().parse()
-    de_walker = get_de_walker()
-    new_content = de_walker.walk(model)
-    return new_content
+    if de_light_walker.has_de:
+        ConfMgr.getInstance().parse()
+        de_walker = get_de_walker()
+        new_content = de_walker.walk(model)
+        return new_content
+    return content
