@@ -8,6 +8,7 @@ from iheartla.la_tools.la_helper import *
 import regex as re
 from .de_light_walker import DeLightWalker
 from ..la_parser.ir import *
+from ..la_parser.ir_visitor import *
 from ..la_tools.config_manager import *
 
 
@@ -19,11 +20,26 @@ class DeWalker(DeLightWalker):
     def reset(self):
         super(DeWalker, self).reset()
 
+    def gen_extra_content(self):
+        extra = ''
+        # geometry info
+        content_list = []
+        for sym in self.cfg_mgr.walker.cfg_symtable:
+            c_type = self.cfg_mgr.walker.cfg_symtable[sym]
+            content_list.append("{} ∈ {}".format(sym, c_type.get_raw_text()))
+        #
+        if len(content_list) > 0:
+            extra += '\n'.join(content_list) + '\n'
+        return extra
+
     def walk_Start(self, node, **kwargs):
+        # gen content from cfg
+        extra = self.gen_extra_content()
+        #
         content_list = []
         for vblock in node.vblock:
             content_list.append(self.walk(vblock, **kwargs))
-        return '\n'.join(content_list)
+        return extra + '\n'.join(content_list)
 
     def walk_ParamsBlock(self, node, **kwargs):
         content = self.walk(node.conds, **kwargs)
