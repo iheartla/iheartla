@@ -20,15 +20,23 @@ class ConfigWalker(NodeWalker):
         self.laplacian_dict = {}
         self.par_dict = {}   # parameters
         self.ode_dict = {}
+        self.dim_cnt = 0
+        self.cfg_symtable = {}  # new symbols from config file
         # env
         self.smooth_dict = {}
         self.mapping_dict = {}
         self.sym_list = []
+        #
+        self.cur_dim = 3
 
     def set_env(self, de_light_walker):
         self.smooth_dict = de_light_walker.smooth_dict
         self.mapping_dict = de_light_walker.mapping_dict
         self.sym_list = de_light_walker.sym_list
+
+    def gen_dim(self):
+        self.dim_cnt += 1
+        return "dim{}".format(self.dim_cnt)
 
     def walk_Start(self, node, **kwargs):
         for block in node.vblock:
@@ -36,10 +44,16 @@ class ConfigWalker(NodeWalker):
         print("end parsing config")
 
     def walk_Triangle(self, node, **kwargs):
-        return Triangle(self.walk(node.v, **kwargs), self.walk(node.e, **kwargs), self.walk(node.f, **kwargs))
+        v = self.walk(node.v, **kwargs)
+        self.cfg_symtable[v.get_main_id()] = MatrixType(rows=self.gen_dim(), cols=self.cur_dim)
+        e = self.walk(node.e, **kwargs)
+        self.cfg_symtable[e.get_main_id()] = MatrixType(rows=self.gen_dim(), cols=2)
+        f = self.walk(node.f, **kwargs)
+        self.cfg_symtable[f.get_main_id()] = MatrixType(rows=self.gen_dim(), cols=3)
+        return CfgTriangle(v, e, f)
 
     def walk_Point(self, node, **kwargs):
-        return PointCloud(self.walk(node.v, **kwargs))
+        return CfgPointCloud(self.walk(node.v, **kwargs))
 
     def walk_Operators(self, node, **kwargs):
         # print(node)
@@ -119,10 +133,12 @@ class ConfigWalker(NodeWalker):
         return la_type
 
     def walk_Geometry(self, node, **kwargs):
+        self.cur_dim = 3
         id = self.walk(node.id)
-        geometry = self.walk(node.g)
         if id.get_main_id() in self.smooth_dict:
-            geometry.dim = self.smooth_dict[id.get_main_id()]
+            self.cur_dim = self.smooth_dict[id.get_main_id()]
+        geometry = self.walk(node.g)
+        # generate new symbols
         return GeometryNode(id, geometry)
 
     def walk_ImportVar(self, node, **kwargs):
@@ -167,8 +183,9 @@ class ConfigWalker(NodeWalker):
         return import_node
 
     def walk_SizeOp(self, node, **kwargs):
-        param = self.walk(node.i, **kwargs)
-        return SizeNode(param, parse_info=node.parseinfo, raw_text=node.text)
+        param = self.walk(node.i, **kwargs).get_main_id()
+        assert param in self.cfg_symtable, "{} is not defined".format(param)
+        return self.cfg_symtable[param].rows
 
     def walk_Module(self, node, **kwargs):
         return ModuleNode(node.text, parse_info=node.parseinfo, raw_text=node.text)

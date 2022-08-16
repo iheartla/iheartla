@@ -7,14 +7,14 @@ class GeometryType(Enum):
     POINT = 1
 
 
-class Geometry(object):
+class CfgGeometry(object):
     def __init__(self, g_type=GeometryType.INVALID, dim=3):
         super().__init__()
         self.g_type = g_type
         self.dim = dim
 
 
-class Triangle(Geometry):
+class CfgTriangle(CfgGeometry):
     def __init__(self, v=None, e=None, f=None):
         super().__init__(GeometryType.TRIANGLE)
         self.v = v
@@ -22,7 +22,7 @@ class Triangle(Geometry):
         self.f = f
 
 
-class PointCloud(Geometry):
+class CfgPointCloud(CfgGeometry):
     def __init__(self, v=None):
         super().__init__(GeometryType.POINT)
         self.v = v
