@@ -43,6 +43,7 @@ class IRVisitor(object):
         self.visiting_lhs = False
         self.visiting_func_name = False
         self.enable_tmp_sym = False
+        self.class_only = False
         self.lhs_list = []
         self.module_list = []
         self.module_syms = {}

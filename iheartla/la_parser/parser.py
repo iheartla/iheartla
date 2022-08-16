@@ -85,10 +85,11 @@ def get_codegen(parser_type):
     return _codegen_dict[parser_type]
 
 
-def walk_model(parser_type, type_walker, node_info, func_name=None, struct=False):
+def walk_model(parser_type, type_walker, node_info, func_name=None, struct=False, class_only=False):
     gen = get_codegen(parser_type)
     #
     gen.init_type(type_walker, func_name)
+    gen.class_only = class_only
     code_frame = gen.visit_code(node_info)
     if parser_type != ParserTypeEnum.LATEX:  # print once
         gen.print_symbols()
@@ -179,17 +180,18 @@ def generate_latex_code(type_walker, node_info, frame):
         ## xelatex places its output in the current working directory, not next to the input file.
         ## We need to pass subprocess.run() the directory where we created the tex file.
         ## If we are running in a bundle, we don't have the PATH available. Assume MacTex.
-        PATH = os.environ['PATH']
-        PATH = ':'.join(
-            ['/Library/TeX/texbin', '/usr/texbin', '/usr/local/bin', '/opt/local/bin', '/usr/bin', '/bin', PATH])
+        env = copy.copy(os.environ)
+        env['PATH'] = ':'.join(
+            ['/Library/TeX/texbin', '/usr/texbin', '/usr/local/bin', '/opt/local/bin', '/usr/bin', '/bin',
+             os.environ['PATH']])
         ret = subprocess.run(["xelatex", "-interaction=nonstopmode", tex_file_name], capture_output=True, cwd=tmpdir,
-                             env={"PATH": PATH})
+                             env=env)
         if ret.returncode == 0:
             ## If we are running in a bundle, we don't have the PATH available. Assume MacTex.
             ## But then we may not have ghostscript `gs` available, either.
             ret = subprocess.run(
                 ["pdfcrop", "--margins", "30", "{}.pdf".format(template_name), "{}.pdf".format(template_name)],
-                capture_output=True, cwd=tmpdir, env={"PATH": PATH})
+                capture_output=True, cwd=tmpdir, env=env)
             # If xelatex worked, we have a PDF, even if pdfcrop failed.
             # if ret.returncode == 0:
             show_pdf = io.BytesIO(open("{}.pdf".format(template_name), 'rb').read())
@@ -445,7 +447,8 @@ def compile_la_content(la_content,
                        path=None,
                        struct=False,
                        get_json=False,
-                       get_vars=False):
+                       get_vars=False,
+                       class_only=False):
     set_source_name(func_name)
     if path:
         global _module_path
@@ -469,7 +472,7 @@ def compile_la_content(la_content,
                     type_walker, start_node = parse_ir_node(la_content, model, cur_type)
                     if get_vars and var_data == '':
                         var_data = VarData(type_walker.parameters, type_walker.lhs_list, type_walker.ret_symbol)
-                    cur_content = walk_model(cur_type, type_walker, start_node, func_name, struct)
+                    cur_content = walk_model(cur_type, type_walker, start_node, func_name, struct, class_only=class_only)
                     ret.append(cur_content)
                     if get_json and json == '':
                         json = type_walker.gen_json_content()
@@ -481,7 +484,7 @@ def compile_la_content(la_content,
                 if parser_type & cur_type:
                     if get_vars and var_data == '':
                         var_data = VarData(type_walker.parameters, type_walker.lhs_list, type_walker.ret_symbol)
-                    cur_content = walk_model(cur_type, type_walker, start_node, func_name, struct)
+                    cur_content = walk_model(cur_type, type_walker, start_node, func_name, struct, class_only=class_only)
                     record("compile {}".format(str(cur_type)))
                     ret.append(cur_content)
                     if get_json and json == '':
@@ -507,7 +510,8 @@ def compile_la_content(la_content,
         return ret
 
 
-def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX):
+def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX,
+                       class_only=False):
     """
     used for command line
     """
@@ -546,7 +550,7 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
             # generateRandomData. When called with no arguments (nargin == 0),
             # it will issue a warning and run with random data.
             cur_file_name = Path(la_file).with_suffix(cur_suffix[cur_index])
-            cur_content = compile_la_content(content, cur_types[cur_index], base_name)
+            cur_content = compile_la_content(content, cur_types[cur_index], base_name, class_only=class_only)
             write_output(cur_content[0], cur_file_name)
     except FailedParse as e:
         print(LaMsg.getInstance().get_parse_error(e))

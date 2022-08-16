@@ -60,7 +60,7 @@ You can find releases on the GitHub [release page](https://github.com/iheartla/i
 
 I❤️LA depends on Python 3.x and several modules. You can install the modules via `pip`:
 
-    pip3 install tatsu==4.4 regex wxpython PyMuPDF sympy
+    pip3 install tatsu==4.4 regex wxpython PyMuPDF==1.18.7 sympy
     ## For development, also install:
     pip3 install graphviz cppyy numpy scipy pyinstaller
 
