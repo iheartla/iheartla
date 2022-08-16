@@ -153,6 +153,9 @@ class LaVarType(object):
     def get_json_content(self):
         return ''
 
+    def get_raw_text(self):
+        return ''
+
 
 class ScalarType(LaVarType):
     def __init__(self, is_int=False, desc=None, element_type=None, symbol=None, index_type=False, is_constant=False, dynamic=DynamicTypeEnum.DYN_INVALID):
@@ -170,6 +173,9 @@ class ScalarType(LaVarType):
 
     def get_json_content(self):
         return """{{"type": "scalar", "is_int":"{}"}}""".format(self.is_integer_element())
+
+    def get_raw_text(self):
+        return 'ℝ' if self.is_int else 'ℤ'
 
 
 class SequenceType(LaVarType):
@@ -231,6 +237,10 @@ class MatrixType(LaVarType):
     def get_json_content(self):
         return """{{"type": "matrix", "is_int":"{}", "element":{}, "rows":"{}", "cols":"{}"}}""".format(self.is_integer_element(), self.element_type.get_json_content(), self.rows, self.cols)
 
+    def get_raw_text(self):
+        e_type = 'ℝ' if self.element_type.is_int else 'ℤ'
+        return "{}^({}×{})".format(e_type, self.rows, self.cols)
+
 
 class VectorType(LaVarType):
     def __init__(self, rows=0, desc=None, element_type=ScalarType(), symbol=None, dynamic=DynamicTypeEnum.DYN_INVALID, rows_ir=None):
@@ -256,6 +266,10 @@ class VectorType(LaVarType):
     def get_json_content(self):
         return """{{"type": "vector", "is_int":"{}", "element":{}, "rows":"{}"}}""".format(self.is_integer_element(), self.element_type.get_json_content(), self.rows)
 
+    def get_raw_text(self):
+        e_type = 'ℝ' if self.element_type.is_int else 'ℤ'
+        return "{}^{}".format(e_type, self.rows)
+
 
 class SetType(LaVarType):
     def __init__(self, size=0, desc=None, element_type=None, symbol=None, int_list=None, dynamic=DynamicTypeEnum.DYN_INVALID):
@@ -274,6 +288,23 @@ class SetType(LaVarType):
 
     def get_json_content(self):
         return """{{"type": "set", "is_int":"{}", "element":[{}], "size":"{}"}}""".format(self.is_integer_element(), ','.join(['"{}"'.format(1 if i else 0) for i in self.int_list]), self.size)
+
+    def get_raw_text(self):
+        all_true = True
+        all_false = True
+        content_list = []
+        for value in self.int_list:
+            if value:
+                content_list.append('ℤ')
+                all_false = False
+            else:
+                content_list.append('ℝ')
+                all_true = False
+        if all_true:
+            return "{{ ℤ^{} }}".format(self.size)
+        elif all_false:
+            return "{{ ℤ^{} }}".format(self.size)
+        return "{{ {} }}".format('×'.join(content_list))
 
 
 class IndexType(LaVarType):
