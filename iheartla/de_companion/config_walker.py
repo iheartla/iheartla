@@ -165,11 +165,12 @@ class ConfigWalker(NodeWalker):
         for par in node.params:
             par_ir = self.walk(par, **kwargs)
             params.append(par_ir)
-            # params_list.append(par_ir.get_name())
+            params_list.append(par_ir.get_name())
         package_info = self.walk(node.package, **kwargs)
         name_list = []
         name_ir_list = []
         r_dict = {}
+        raw_name_list = []
         for cur_name in node.names:
             import_var = self.walk(cur_name, **kwargs)
             name_ir = import_var.name
@@ -179,9 +180,11 @@ class ConfigWalker(NodeWalker):
                 r_dict[name_ir.get_name()] = name_ir.get_name()
             name_ir_list.append(name_ir)
             name_list.append(name_ir.get_name())
+            raw_name_list.append(cur_name.text)
         module = package_info
+        raw_text = "{} from {}({})".format(', '.join(raw_name_list), module.raw_text, ', '.join(params_list))
         import_node = ImportNode(package=package, module=module, names=name_ir_list, separators=node.separators,
-                                 params=params, r_dict=r_dict, parse_info=node.parseinfo, raw_text=node.text)
+                                 params=params, r_dict=r_dict, parse_info=node.parseinfo, raw_text=raw_text)
         return import_node
 
     def walk_SizeOp(self, node, **kwargs):
@@ -190,7 +193,7 @@ class ConfigWalker(NodeWalker):
         return IdNode(self.cfg_symtable[param].rows)
 
     def walk_Module(self, node, **kwargs):
-        return ModuleNode(node.text, parse_info=node.parseinfo, raw_text=node.text)
+        return ModuleNode(node.text, parse_info=node.parseinfo, raw_text=node.ast)
 
     def walk_IdentifierAlone(self, node, **kwargs):
         node_type = LaVarType(VarTypeEnum.INVALID)
