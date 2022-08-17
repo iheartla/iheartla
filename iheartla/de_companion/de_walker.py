@@ -28,6 +28,9 @@ class DeWalker(DeLightWalker):
             c_type = self.cfg_mgr.walker.cfg_symtable[sym]
             content_list.append("{} ∈ {}".format(sym, c_type.get_raw_text()))
         #
+        # laplacian
+        for sym, node in self.cfg_mgr.walker.laplacian_dict.items():
+            content_list.append(node.raw_text)
         if len(content_list) > 0:
             extra += '\n'.join(content_list) + '\n'
         return extra

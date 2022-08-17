@@ -127,7 +127,9 @@ class ConfigWalker(NodeWalker):
                 if params[0].is_node(IRNodeType.Id):
                     if t_type.is_vector():
                         # V → ℝ^n
-                        la_type = MatrixType(rows=SizeNode(params[0]), cols=t_type.rows, element_type=t_type.element_type)
+                        name = params[0].get_name()
+                        assert name in self.cfg_symtable, "{} not defined".format(name)
+                        la_type = MatrixType(rows=self.cfg_symtable[name].rows, cols=t_type.rows, element_type=t_type.element_type)
                         return la_type
         la_type = MappingType(params=params, ret=ret_list)
         return la_type
@@ -185,7 +187,7 @@ class ConfigWalker(NodeWalker):
     def walk_SizeOp(self, node, **kwargs):
         param = self.walk(node.i, **kwargs).get_main_id()
         assert param in self.cfg_symtable, "{} is not defined".format(param)
-        return self.cfg_symtable[param].rows
+        return IdNode(self.cfg_symtable[param].rows)
 
     def walk_Module(self, node, **kwargs):
         return ModuleNode(node.text, parse_info=node.parseinfo, raw_text=node.text)
