@@ -190,7 +190,7 @@ class ConfigWalker(NodeWalker):
     def walk_SizeOp(self, node, **kwargs):
         param = self.walk(node.i, **kwargs).get_main_id()
         assert param in self.cfg_symtable, "{} is not defined".format(param)
-        return IdNode(self.cfg_symtable[param].rows)
+        return IdNode(self.cfg_symtable[param].rows, raw_text=self.cfg_symtable[param].rows)
 
     def walk_Module(self, node, **kwargs):
         return ModuleNode(node.text, parse_info=node.parseinfo, raw_text=node.ast)
@@ -213,36 +213,42 @@ class ConfigWalker(NodeWalker):
         ir_node = ExpressionNode(parse_info=node.parseinfo, raw_text=node.text)
         ir_node.value = value_ir
         ir_node.sign = node.sign
+        ir_node.raw_text = value_ir.raw_text
         return ir_node
 
     def walk_ArithSubexpression(self, node, **kwargs):
         value_ir = self.walk(node.value, **kwargs)
         ir_node = SubexpressionNode(parse_info=node.parseinfo, raw_text=node.text)
         ir_node.value = value_ir
+        ir_node.raw_text = '({})'.format(value_ir.raw_text)
         return ir_node
 
     def walk_ArithAdd(self, node, **kwargs):
         left_ir = self.walk(node.left, **kwargs)
         right_ir = self.walk(node.right, **kwargs)
         ir_node = AddNode(left_ir, right_ir, parse_info=node.parseinfo, raw_text=node.text)
+        ir_node.raw_text = '{}+{}'.format(left_ir.raw_text, right_ir.raw_text)
         return ir_node
 
     def walk_ArithSubtract(self, node, **kwargs):
         left_ir = self.walk(node.left, **kwargs)
         right_ir = self.walk(node.right, **kwargs)
         ir_node = SubNode(left_ir, right_ir, parse_info=node.parseinfo, raw_text=node.text)
+        ir_node.raw_text = '{}-{}'.format(left_ir.raw_text, right_ir.raw_text)
         return ir_node
 
     def walk_ArithMultiply(self, node, **kwargs):
         left_ir = self.walk(node.left, **kwargs)
         right_ir = self.walk(node.right, **kwargs)
         ir_node = MulNode(left_ir, right_ir, parse_info=node.parseinfo, raw_text=node.text)
+        ir_node.raw_text = '{}{}'.format(left_ir.raw_text, right_ir.raw_text)
         return ir_node
 
     def walk_ArithDivide(self, node, **kwargs):
         left_ir = self.walk(node.left, **kwargs)
         right_ir = self.walk(node.right, **kwargs)
         ir_node = DivNode(left_ir, right_ir, parse_info=node.parseinfo, raw_text=node.text)
+        ir_node.raw_text = '{}/{}'.format(left_ir.raw_text, right_ir.raw_text)
         return ir_node
 
     def walk_ArithFactor(self, node, **kwargs):
@@ -250,11 +256,15 @@ class ConfigWalker(NodeWalker):
         if node.id0:
             id_ir = self.walk(node.id0, **kwargs)
             ir_node.id = id_ir
+            ir_node.raw_text = id_ir.raw_text
         elif node.num:
             ir_node.num = self.walk(node.num, **kwargs)
+            ir_node.raw_text = ir_node.num.raw_text
         elif node.sub:
             ir_node.sub = self.walk(node.sub, **kwargs)
+            ir_node.raw_text = ir_node.sub.raw_text
         elif node.size:
             ir_node.size = self.walk(node.size, **kwargs)
+            ir_node.raw_text = ir_node.size.raw_text
         return ir_node
 ####
