@@ -85,8 +85,8 @@ class ConfigWalker(NodeWalker):
                 element_type = ScalarType(is_int=True)
         else:
             element_type = ScalarType()
-        id1_content = self.walk(node.id1, **kwargs)
-        la_type = VectorType(rows=id1_content.raw_text, element_type=element_type)
+        id1_ir = self.walk(node.id1, **kwargs)
+        la_type = VectorType(rows=id1_ir.raw_text, rows_ir=id1_ir.raw_text, element_type=element_type)
         return la_type
 
     def walk_MatrixType(self, node, **kwargs):
@@ -100,9 +100,9 @@ class ConfigWalker(NodeWalker):
                 element_type = ScalarType(is_int=True)
         else:
             element_type = ScalarType()
-        id1_content = self.walk(node.id1, **kwargs)
-        id2_content = self.walk(node.id2, **kwargs)
-        la_type = MatrixType(rows=id1_content, cols=id2_content, element_type=element_type)
+        id1_ir = self.walk(node.id1, **kwargs)
+        id2_ir = self.walk(node.id2, **kwargs)
+        la_type = MatrixType(rows=id1_ir.raw_text, cols=id2_ir.raw_text, rows_ir=id1_ir, cols_ir=id2_ir, element_type=element_type)
         if node.attr and 'sparse' in node.attr:
             la_type.sparse = True
         return la_type
