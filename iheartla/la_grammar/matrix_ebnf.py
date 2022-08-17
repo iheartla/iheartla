@@ -116,6 +116,7 @@ operations_in_matrix
     | sqrt_in_matrix_operator
     | function_operator
     | builtin_operators
+    | pseudoinverse_in_matrix_operator
     ;
 
 power_in_matrix_operator::Power
@@ -145,7 +146,11 @@ kronecker_product_in_matrix_operator::KroneckerProduct
 trans_in_matrix_operator::Transpose
     = f:factor_in_matrix /ᵀ/
     ;
-    
+
+pseudoinverse_in_matrix_operator::PseudoInverse
+    = f:factor_in_matrix /⁺/
+    ;
+
 sqrt_in_matrix_operator::Squareroot
     = /√/ f:factor_in_matrix;
 

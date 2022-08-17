@@ -21,6 +21,7 @@ operations
     | sqrt_operator
     | function_operator
     | builtin_operators
+    | pseudoinverse_operator
     ;
 
 
@@ -148,7 +149,11 @@ kronecker_product_operator::KroneckerProduct
 trans_operator::Transpose
     = f:factor /ᵀ/
     ;
-    
+
+pseudoinverse_operator::PseudoInverse
+    = f:factor /⁺/
+    ;
+
 sqrt_operator::Squareroot
     = /√/ f:factor;
 
