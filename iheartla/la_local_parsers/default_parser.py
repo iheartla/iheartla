@@ -532,6 +532,8 @@ class grammardefaultParser(Parser):
                 self._function_operator_()
             with self._option():
                 self._builtin_operators_()
+            with self._option():
+                self._pseudoinverse_operator_()
             self._error('no available options')
 
     @tatsumasu('Add')
@@ -1405,6 +1407,17 @@ class grammardefaultParser(Parser):
             []
         )
 
+    @tatsumasu('PseudoInverse')
+    @nomemo
+    def _pseudoinverse_operator_(self):  # noqa
+        self._factor_()
+        self.name_last_node('f')
+        self._pattern('⁺')
+        self.ast._define(
+            ['f'],
+            []
+        )
+
     @tatsumasu('Squareroot')
     def _sqrt_operator_(self):  # noqa
         self._pattern('√')
@@ -2133,6 +2146,8 @@ class grammardefaultParser(Parser):
                 self._function_operator_()
             with self._option():
                 self._builtin_operators_()
+            with self._option():
+                self._pseudoinverse_in_matrix_operator_()
             self._error('no available options')
 
     @tatsumasu('Power')
@@ -2230,6 +2245,17 @@ class grammardefaultParser(Parser):
         self._factor_in_matrix_()
         self.name_last_node('f')
         self._pattern('ᵀ')
+        self.ast._define(
+            ['f'],
+            []
+        )
+
+    @tatsumasu('PseudoInverse')
+    @nomemo
+    def _pseudoinverse_in_matrix_operator_(self):  # noqa
+        self._factor_in_matrix_()
+        self.name_last_node('f')
+        self._pattern('⁺')
         self.ast._define(
             ['f'],
             []
@@ -5487,6 +5513,9 @@ class grammardefaultSemantics(object):
     def trans_operator(self, ast):  # noqa
         return ast
 
+    def pseudoinverse_operator(self, ast):  # noqa
+        return ast
+
     def sqrt_operator(self, ast):  # noqa
         return ast
 
@@ -5575,6 +5604,9 @@ class grammardefaultSemantics(object):
         return ast
 
     def trans_in_matrix_operator(self, ast):  # noqa
+        return ast
+
+    def pseudoinverse_in_matrix_operator(self, ast):  # noqa
         return ast
 
     def sqrt_in_matrix_operator(self, ast):  # noqa
@@ -6086,6 +6118,10 @@ class KroneckerProduct(ModelBase):
 
 
 class Transpose(ModelBase):
+    f = None
+
+
+class PseudoInverse(ModelBase):
     f = None
 
 
