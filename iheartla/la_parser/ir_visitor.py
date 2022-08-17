@@ -103,25 +103,25 @@ class IRBaseVisitor(object):
             print("invalid node type")
 
     def visit_id(self, node, **kwargs):
-        pass
+        return node.get_name()
 
     def visit_add(self, node, **kwargs):
-        pass
+        return self.visit(node.left, **kwargs) + '+' + self.visit(node.right, **kwargs)
 
     def visit_sub(self, node, **kwargs):
-        pass
+        return self.visit(node.left, **kwargs) + '-' + self.visit(node.right, **kwargs)
 
     def visit_mul(self, node, **kwargs):
-        pass
+        return self.visit(node.left, **kwargs) + ' ' + self.visit(node.right, **kwargs)
 
     def visit_div(self, node, **kwargs):
-        pass
+        return self.visit(node.left, **kwargs) + '/' + self.visit(node.right, **kwargs)
 
     def visit_add_sub(self, node, **kwargs):
-        pass
+        return self.visit(node.left, **kwargs) + " {} ".format(node.op) + self.visit(node.right, **kwargs)
 
     def visit_sub_expr(self, node, **kwargs):
-        pass
+        return '(' + self.visit(node.value, **kwargs) + ')'
 
     def visit_cast(self, node, **kwargs):
         pass
@@ -136,7 +136,10 @@ class IRBaseVisitor(object):
         pass
 
     def visit_expression(self, node, **kwargs):
-        pass
+        value = self.visit(node.value, **kwargs)
+        if node.sign:
+            value = node.sign + value
+        return value
 
     ####################################################
     def visit_matrix(self, node, **kwargs):
@@ -227,16 +230,31 @@ class IRBaseVisitor(object):
         pass
 
     def visit_factor(self, node, **kwargs):
-        pass
+        if node.id:
+            return self.visit(node.id, **kwargs)
+        elif node.num:
+            return self.visit(node.num, **kwargs)
+        elif node.sub:
+            return self.visit(node.sub, **kwargs)
+        elif node.m:
+            return self.visit(node.m, **kwargs)
+        elif node.v:
+            return self.visit(node.v, **kwargs)
+        elif node.nm:
+            return self.visit(node.nm, **kwargs)
+        elif node.op:
+            return self.visit(node.op, **kwargs)
+        elif node.c:
+            return self.visit(node.c, **kwargs)
 
     def visit_double(self, node, **kwargs):
-        pass
+        return str(node.value)
 
     def visit_fraction(self, node, **kwargs):
-        pass
+        return str(node.unicode)
 
     def visit_integer(self, node, **kwargs):
-        pass
+        return str(node.value)
 
     ####################################################
     def visit_start(self, node, **kwargs):
@@ -562,24 +580,6 @@ class IRVisitor(IRBaseVisitor):
 
     def visit_to_matrix(self, node, **kwargs):
         return self.visit(node.item, **kwargs)
-
-    def visit_factor(self, node, **kwargs):
-        if node.id:
-            return self.visit(node.id, **kwargs)
-        elif node.num:
-            return self.visit(node.num, **kwargs)
-        elif node.sub:
-            return self.visit(node.sub, **kwargs)
-        elif node.m:
-            return self.visit(node.m, **kwargs)
-        elif node.v:
-            return self.visit(node.v, **kwargs)
-        elif node.nm:
-            return self.visit(node.nm, **kwargs)
-        elif node.op:
-            return self.visit(node.op, **kwargs)
-        elif node.c:
-            return self.visit(node.c, **kwargs)
 
     def visit_double(self, node, **kwargs):
         content = str(node.value)
