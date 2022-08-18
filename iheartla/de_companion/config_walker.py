@@ -18,7 +18,7 @@ class ConfigWalker(NodeWalker):
         self.gradient_dict = {}
         self.divergence_dict = {}
         self.laplacian_dict = {}
-        self.par_dict = {}   # parameters
+        self.par_dict = {}      # parameters
         self.ode_dict = {}
         self.dim_cnt = 0
         self.cfg_symtable = {}  # new symbols from config file
@@ -26,6 +26,7 @@ class ConfigWalker(NodeWalker):
         self.smooth_dict = {}
         self.mapping_dict = {}
         self.sym_list = []
+        self.solved_list = []
         #
         self.cur_dim = 3
 
@@ -33,6 +34,7 @@ class ConfigWalker(NodeWalker):
         self.smooth_dict = de_light_walker.smooth_dict
         self.mapping_dict = de_light_walker.mapping_dict
         self.sym_list = de_light_walker.sym_list
+        self.solved_list = de_light_walker.solved_list
 
     def gen_dim(self):
         self.dim_cnt += 1
