@@ -9,6 +9,7 @@ import regex as re
 from ..la_tools.la_helper import filter_subscript
 from ..la_parser.type_walker import *
 from .geometry import *
+import string
 
 class ConfigWalker(NodeWalker):
     def __init__(self):
@@ -21,6 +22,7 @@ class ConfigWalker(NodeWalker):
         self.par_dict = {}      # parameters
         self.ode_dict = {}
         self.dim_cnt = 0
+        self.dim_list = []
         self.cfg_symtable = {}  # new symbols from config file
         # env
         self.smooth_dict = {}
@@ -37,8 +39,16 @@ class ConfigWalker(NodeWalker):
         self.solved_list = de_light_walker.solved_list
 
     def gen_dim(self):
-        self.dim_cnt += 1
-        return "dim{}".format(self.dim_cnt)
+        new_dim = ''
+        for i in string.ascii_lowercase:
+            if i not in self.dim_list and i not in self.sym_list:
+                new_dim = i
+                self.dim_list.append(i)
+                break
+        if new_dim == '':
+            self.dim_cnt += 1
+            new_dim = "dim{}".format(self.dim_cnt)
+        return new_dim
 
     def walk_Start(self, node, **kwargs):
         for block in node.vblock:
