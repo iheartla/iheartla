@@ -309,6 +309,16 @@ class ImportNode(StmtNode):
             name_list.append(name.get_name())
         return name_list
 
+    def get_name_raw_list(self):
+        name_list = []
+        for name in self.names:
+            raw = name.get_name()
+            if raw in self.r_dict:
+                name_list.append("{} as {}".format(raw, self.r_dict[raw]))
+            else:
+                name_list.append(raw)
+        return name_list
+
     def get_param_list(self):
         param_list = []
         for par in self.params:
