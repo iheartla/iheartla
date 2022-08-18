@@ -92,7 +92,7 @@ class DeWalker(DeLightWalker):
             lhs = self.walk(node.lexpr[cur_index], **kwargs)
             rhs = self.walk(node.rexpr[cur_index], **kwargs)
             stat_list.append("{} = {}".format(lhs, rhs))
-        return "solve_{} {}".format(unknown, '\n'.join(stat_list))
+        return "solve_({} ∈ {}) {}".format(unknown, self.cfg_mgr.walker.par_dict[unknown].get_raw_text(), '\n'.join(stat_list))
 
     def walk_Laplace(self, node, **kwargs):
         if node.name in self.cfg_mgr.walker.laplacian_dict:
