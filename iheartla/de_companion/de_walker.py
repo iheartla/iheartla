@@ -29,7 +29,8 @@ class DeWalker(DeLightWalker):
             content_list.append("{} ∈ {}".format(sym, c_type.get_raw_text()))
         #
         for sym, c_type in self.cfg_mgr.walker.par_dict.items():
-            content_list.append("{} ∈ {}".format(sym, c_type.get_raw_text()))
+            if sym not in self.cfg_mgr.walker.solved_list:
+                content_list.append("{} ∈ {}".format(sym, c_type.get_raw_text()))
         # laplacian
         for sym, node in self.cfg_mgr.walker.laplacian_dict.items():
             content_list.append(node.raw_text)

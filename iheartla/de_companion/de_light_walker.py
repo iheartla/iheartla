@@ -8,6 +8,7 @@ class DeLightWalker(LightWalker):
         self.smooth_dict = {}     # M in R^3
         self.mapping_dict = {}
         self.sym_list = []
+        self.solved_list = []
         self.has_de = False
 
     def reset(self):
@@ -15,6 +16,7 @@ class DeLightWalker(LightWalker):
         self.mapping_dict.clear()
         self.has_de = False
         self.sym_list.clear()
+        self.solved_list.clear()
 
     def walk_DeWhereCondition(self, node, **kwargs):
         self.has_de = True
@@ -77,6 +79,7 @@ class DeLightWalker(LightWalker):
     def walk_DeSolver(self, node, **kwargs):
         unknown = self.walk(node.u, **kwargs)
         self.sym_list.append(unknown)
+        self.solved_list.append(unknown)
         return node.text
 
     def walk_SubInteger(self, node, **kwargs):
