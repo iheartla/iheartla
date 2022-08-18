@@ -8,7 +8,7 @@ class CodeGenEigen(CodeGen):
 
     def init_type(self, type_walker, func_name):
         super().init_type(type_walker, func_name)
-        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n'''
+        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n'''
         self.post_str = ''''''
         self.ret = 'ret'
         if self.unofficial_method:
@@ -859,6 +859,11 @@ class CodeGenEigen(CodeGen):
         f_info.content = "{}.transpose()".format(f_info.content)
         return f_info
 
+    def visit_pseudoinverse(self, node, **kwargs):
+        f_info = self.visit(node.f, **kwargs)
+        f_info.content = "{}.completeOrthogonalDecomposition().pseudoInverse()".format(f_info.content)
+        return f_info
+        
     def visit_squareroot(self, node, **kwargs):
         f_info = self.visit(node.value, **kwargs)
         f_info.content = "sqrt({})".format(f_info.content)
