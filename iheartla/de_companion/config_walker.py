@@ -59,9 +59,10 @@ class ConfigWalker(NodeWalker):
         v = self.walk(node.v, **kwargs)
         self.cfg_symtable[v.get_main_id()] = MatrixType(rows=self.gen_dim(), cols=self.cur_dim)
         e = self.walk(node.e, **kwargs)
-        self.cfg_symtable[e.get_main_id()] = MatrixType(rows=self.gen_dim(), cols=2)
+        # self.cfg_symtable[e.get_main_id()] = MatrixType(rows=self.gen_dim(), cols=2)
+        self.cfg_symtable[e.get_main_id()] = SetType(int_list=[True, True], size=2)
         f = self.walk(node.f, **kwargs)
-        self.cfg_symtable[f.get_main_id()] = MatrixType(rows=self.gen_dim(), cols=3)
+        self.cfg_symtable[f.get_main_id()] = MatrixType(rows=self.gen_dim(), cols=3, element_type=ScalarType(is_int=True))
         return CfgTriangle(v, e, f)
 
     def walk_Point(self, node, **kwargs):

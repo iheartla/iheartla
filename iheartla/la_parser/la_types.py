@@ -238,7 +238,7 @@ class MatrixType(LaVarType):
         return """{{"type": "matrix", "is_int":"{}", "element":{}, "rows":"{}", "cols":"{}"}}""".format(self.is_integer_element(), self.element_type.get_json_content(), self.rows, self.cols)
 
     def get_raw_text(self):
-        e_type = 'ℝ' if self.element_type.is_int else 'ℤ'
+        e_type = 'ℤ' if self.element_type.is_int else 'ℝ'
         return "{}^({}×{})".format(e_type, self.rows, self.cols)
 
 
