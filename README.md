@@ -34,7 +34,7 @@ P ∈ ℝ^(4 × d)
 
 In other words, I❤️LA is a linear algebra domain specific language (DSL) that targets other languages. Write once, use everywhere.
 
-For more, see the [wiki](https://github.com/pressureless/linear_algebra/wiki).
+For more, see the [wiki](https://github.com/pressureless/linear_algebra/wiki) or the [website](https://iheartla.github.io/). Join the [Discord](https://discord.gg/JvfYb6BXqJ).
 
 ## Running
 
