@@ -32,6 +32,9 @@ class ConfigWalker(NodeWalker):
         #
         self.cur_dim = 3
 
+    def reset(self):
+        pass
+
     def set_env(self, de_light_walker):
         self.smooth_dict = de_light_walker.smooth_dict
         self.mapping_dict = de_light_walker.mapping_dict

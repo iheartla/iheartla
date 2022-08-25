@@ -23,7 +23,12 @@ class ConfMgr(object):
             self.conf_file = None
             self.parser = ParserManager.getInstance().get_parser('config', '')
             self.walker = ConfigWalker()
+            self.has_de = False
             ConfMgr.__instance = self
+
+    def reset(self):
+        self.has_de = False
+        self.walker.reset()
 
     def set_source(self, source):
         p = Path(source)
@@ -45,6 +50,7 @@ class ConfMgr(object):
         return content
 
     def parse(self, de_light_walker):
+        self.has_de = True
         content = self.get_conf_content()
         if content:
             model = self.parser.parse(content, parseinfo=True)
