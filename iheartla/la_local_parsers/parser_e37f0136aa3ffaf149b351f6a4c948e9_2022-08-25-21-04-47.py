@@ -1719,7 +1719,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def _single_if_condition_(self):  # noqa
         with self._choice():
             with self._option():
-                self._statement_()
+                self._expression_()
                 self.name_last_node('stat')
 
                 def block1():
@@ -1744,7 +1744,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 def block6():
                     self._hspace_()
                 self._closure(block6)
-                self._statement_()
+                self._expression_()
                 self.name_last_node('stat')
             self._error('no available options')
         self.ast._define(
