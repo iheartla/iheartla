@@ -20,8 +20,8 @@ multi_if_conditions::MultiIfs
     ;
 
 single_if_condition::SingleIf
-    = stat:statement {hspace} IF {hspace} cond:if_condition
-    | cond:if_condition  {hspace} ':' {hspace} stat:statement
+    = stat:expression {hspace} IF {hspace} cond:if_condition
+    | cond:if_condition  {hspace} ':' {hspace} stat:expression
     ;
 
 rows::MatrixRows
