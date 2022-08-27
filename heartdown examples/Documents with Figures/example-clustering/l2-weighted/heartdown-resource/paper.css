@@ -1,0 +1,418 @@
+body
+{
+  position:static;
+  top: 0;
+  left: 0;
+  font-size: 12pt;
+  font-family: "Linux Libertine", serif;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+  text-align: justify;
+  border-radius: 8px;
+  margin: auto;
+}
+#flexer
+{
+  display: flex;
+  flex-flow: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start ;
+  align-items: stretch ;
+  /*height: 100%;*/
+}
+#arrows
+{
+  min-width: 70px;
+  /*height: 100%;*/
+  /* grow shrink basis*/
+  flex: 5 0 auto;
+}
+#main
+{
+  padding-left:  10px;
+  padding-right: 10px;
+  flex: 1 3 auto;
+/*  min-height: none;
+  min-height: 0%;*/
+  max-width: 585px;
+  min-width: 485px;
+}
+#glossary_holder {
+  min-width: 200px;
+  flex: 5 0 auto;
+  height: 100%;
+}
+.glossary{
+  position: fixed; 
+  top: 10px; 
+  border: 1px solid #666666;
+  margin-left: 5px;
+  margin-right: 5px;
+  padding-bottom: 10px;
+  padding-right: 5px;
+  padding-left: 5px;
+  background-color: white;
+  overflow: scroll;
+  /*z-index: 10;*/
+  /* box-shadow: 0 3px 10px rgb(0 0 0 / 0.2); */
+  box-shadow: 0 0 50px #ccc;
+  max-height: 90%;
+  max-width: 400px;
+}
+.glosary_title{
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.glosary_line{
+  /*margin-left: 10px;*/
+  /*margin-right: 10px;*/
+  /*margin-bottom: 10px;*/
+  /*line-height: 1.6;*/
+}
+.flex-space
+{
+  flex-basis: .5;
+}
+.title{
+    margin: 13.4px 0 13.4px;
+    padding: 15px 0 3px;
+    border-top: none;
+    clear: both;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 120%;
+    text-align: center;
+}
+.author{
+    border-top: none;
+    clear: both;
+    font-size: 16px;
+    line-height: 120%;
+    text-align: center;
+}
+.div_line{
+  margin-bottom: 3px;
+  padding-left: 2ex;
+  text-indent: -2ex;
+}
+@keyframes eqShowup {
+  from {
+    opacity: 0;
+    max-height: 0;
+    /*background-color: #B8D0E8;*/
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+    /*background-color: #B8D0E8;*/
+  }
+}
+
+/* About the tips
+https://atomiks.github.io/tippyjs/v6/themes/
+https://github.com/atomiks/tippyjs/issues/720
+*/
+/* The rectangle border */
+.tippy-box {
+  background-color: white;
+  color: black;
+  border: 1px solid #666666;
+}
+
+/* The triangle border */
+.tippy-box[data-theme~='light'] > .tippy-svg-arrow > svg:first-child {
+  fill: #666666;
+}
+
+/* The fill */
+.tippy-box[data-theme~='light'] > .tippy-svg-arrow > svg:last-child {
+  fill: white;
+  bottom: 15.4px;
+} 
+.eqInfoDiv {
+  /*background-color: #B8D0E8;*/
+  /*transition: opacity 4000ms;*/
+  /*will-change: opacity;*/
+  text-align: left;
+  /*transition-duration: 2.2s;*/
+  /*transition: width 2s;*/
+  /*color: white;*/
+  animation-name: eqShowup;
+  animation-duration: 0.5s;
+  margin-left: 20px;
+  /*opacity: 1;*/
+}
+.opShallow{
+  /*opacity: 0.3;*/
+  /*background: rgba(225, 0, 0, .5);*/
+}
+.opNorm{
+  opacity: 1;
+}
+.eqHighlight{
+  transform: scale(1.1);
+  transition-duration: 0.5s;
+  /*background-color: #B8D0E8;*/
+  opacity: 1;
+}
+.eqDivHighlight{
+  /*background-color: #B8D0E8;*/
+}
+.eqNormal{
+  transform: none;
+  transition-duration: 0.2s;
+  background-color: white;
+}
+a:link, a:visited {
+    color: #38A;
+    text-decoration: none;
+}
+/*mjx-container mjx-utext {
+  font-family: "Linux Libertine", serif;
+}
+mjx-container svg text {
+  font-family: "Linux Libertine", serif;
+}*/
+figcaption {
+  font-family: "Linux Biolinum", sans;
+  font-weight: normal;
+}
+h1,h2,h3,h4,h5 {
+  font-family: "Linux Biolinum", sans;
+  page-break-after: avoid;
+  break-after: avoid;
+  margin: 13.4px 0 13.4px;
+  padding: 15px 0 3px;
+  border-top: none;
+  clear: both;
+}
+h1{
+    border-bottom: 3px solid;
+    font-size: 20px;
+    font-weight: bold;
+}
+h2{
+    counter-reset: h3 h4 h5 h6;
+    border-bottom: 2px solid #999;
+    color: #555;
+    font-weight: bold;
+    font-size: 18px;
+}
+h3 {
+    color: #555;
+    font-size: 16px;
+}
+a.detail{
+  color: red; 
+}
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+.paperSymbol{
+  /*color: red; */
+  border-bottom: 1px dotted #000;
+  text-decoration: none;
+}
+.blink {
+  /*color: #8B0000;*/
+  /*background-color: rgba(139, 0, 0, 0.8);  */
+  /*border: 2px solid rgba(139, 0, 0, .5);  */
+  border-bottom: 2px solid red;
+  /*text-decoration: 2px solid red;*/
+  /*border-radius: 4px;*/
+/*  animation: blink-animation 0.5s steps(2, start) 3;
+  -webkit-animation: blink-animation 0.5s steps(2, start) 3;*/
+/*  animation-duration: 3s;*/
+} 
+/*https://htmlcolorcodes.com/color-names/*/
+.highlight_color1 {
+  /* #8dd3c7 */
+  background-color: rgba(141,211,199, 0.5);  
+  /*border: 2px solid rgba(255, 0, 0, .5); */
+  border-radius: 4px;
+}
+.highlight_color2 { 
+  /* #ffed6f */
+  background-color: rgba(255,237,111, 0.5);   
+  border-radius: 4px;
+}
+.highlight_color3 { 
+  /* #bebada */
+  background-color: rgba(190,186,218, 0.5);   
+  border-radius: 4px;
+}
+.highlight_color4 {
+  /* #d9d9d9 */
+  background-color: rgba(217,217,217, 0.5);   
+  border-radius: 4px;
+}
+.highlight_color5 { 
+  /* #80b1d3 */
+  background-color: rgba(128,177,211, 0.5);   
+  border-radius: 4px;
+}
+.highlight_color6 { 
+  /* #fdb462 */
+  background-color: rgba(253,180,98, 0.5);   
+  border-radius: 4px;
+}
+.highlight_color7 { 
+  /* #b3de69 */
+  background-color: rgba(179,222,105, 0.5);   
+  border-radius: 4px;
+}
+.highlight_color8 { 
+  /* #fccde5 */
+  background-color: rgba(252,205,229, 0.5);   
+  border-radius: 4px;
+}
+.highlight_color9 { 
+  /* #bc80bd */
+ background-color: rgba(188,128,189, 0.5);   
+  border-radius: 4px;
+}
+.highlight_color10 { 
+  /* #ccebc5 */
+  background-color: rgba(204,235,197, 0.5);   
+  border-radius: 4px;
+}
+.highlight_error {
+  border-bottom: 2px solid red;
+}
+.highlight_red {
+ /*color: red; */
+  background-color: rgba(255, 0, 0, .5);  
+}
+.highlight_green {
+ /*color: green; */
+  background-color: rgba(0, 255, 0, .5);  
+}
+.highlight_blue {
+ /*color: blue; */
+  background-color: rgba(0, 0, 255, .5);  
+}
+.highlight_grey {
+  /* equation info when clicking equations */
+ color: #666666; 
+/*  background-color: rgba(102, 102, 102, .5);  
+  border: 2px solid rgba(102, 102, 102, .5); 
+  border-radius: 2px;*/
+}
+.errorMsg{
+  text-align: left;
+  color: red;
+  font-size: 14px;
+  white-space: pre-wrap; /* css-3 */
+  white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+  white-space: -pre-wrap; /* Opera 4-6 */
+  white-space: -o-pre-wrap; /* Opera 7 */
+  word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+.editBtn{
+/*
+  border: none;
+  background-color: rgba(0, 0, 0, .2);
+*/
+  margin-left: 20px;
+  margin-top: 1ex;
+}
+.highlight {
+  /*color: red; */
+  background-color: rgba(255, 0, 0, .5);  
+  /*border: 2px solid rgba(255, 0, 0, .5); */
+  border-radius: 4px;
+}
+.normal {
+ color: black; 
+}
+.clickable_sym{
+ /*color: red; */
+  background-color: rgba(255, 0, 0, .5);  
+  /*border: 2px solid rgba(255, 0, 0, .5);*/
+  border-radius: 4px;
+}
+.arrow{
+  position:absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+span
+{
+  width: 100%;
+}
+figure
+{
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  
+  width: 100%;
+  text-align: center;
+}
+figcaption
+{
+  text-align: center;
+}
+
+@font-face {
+    font-family: 'Linux Libertine'; /* normal */
+    src: url('./fonts/linux-libertine/LinLibertine_R.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Linux Libertine'; /* italic */
+    src: url('./fonts/linux-libertine/LinLibertine_RI.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Linux Libertine'; /* bold */
+    src: url('./fonts/linux-libertine/LinLibertine_RB.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Linux Libertine'; /* bold */
+    src: url('./fonts/linux-libertine/LinLibertine_RBI.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Linux Biolinum'; /* normal */
+    src: url('./fonts/linux-biolinum/LinBiolinum_R.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Linux Biolinum'; /* italic */
+    src: url('./fonts/linux-biolinum/LinBiolinum_RI.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Linux Biolinum'; /* bold */
+    src: url('./fonts/linux-biolinum/LinBiolinum_RB.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Linux Biolinum'; /* bold */
+    src: url('./fonts/linux-biolinum/LinBiolinum_RBI.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+}

@@ -1,0 +1,92 @@
+<html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+            <script>
+        MathJax = {
+          loader: {
+            load: ["[attrLabel]/attr-label.js"],
+            paths: { attrLabel: "./heartdown-resource" },
+          },
+          tex: { packages: { "[+]": ["attr-label"] },
+           inlineMath: [['$', '$']]
+           },
+           options: {
+            enableAssistiveMml: false
+          },
+        };
+            </script>
+            <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+            <script src="https://unpkg.com/@popperjs/core@2"></script>
+            <script src="https://unpkg.com/tippy.js@6"></script>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/svg-arrow.css"/>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/border.css" />
+            <script src="./heartdown-resource/d3.min.js"></script>
+            <script src="./heartdown-resource/svg.min.js"></script>
+            <script type="text/javascript" src='./heartdown-resource/paper.js'></script>
+            <link rel="stylesheet" href="./heartdown-resource/paper.css">
+        </head>
+        <script>
+        const iheartla_data = JSON.parse('{"equations":[{"name":"clustering", "parameters":[{"sym":"y", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"m"}, "size":"dim_0"}, "desc":"cG9pbnRzICR5X2kkIHdoaWNoIGFyZSBjbG9zZXIgdG8gJGNfaSQgdGhhbiBhbnkgb3RoZXIgY2x1c3RlciAkY197aiBcbmVxIGl9JA=="},{"sym":"w", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "size":"dim_0"}, "desc":"T3VyIGRhdGEgcG9pbnRzIGhhdmUgYXNzb2NpYXRlZCB3ZWlnaHRzICR3X2kkLg=="}], "definition":[{"sym":"c", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"m"}, "desc":"Y2x1c3RlciBjZW50ZXJzICRjX2kg4oiIIOKEnV5tJA=="}], "local_func":[], "dependence":[], "undesc_list":[] }], "context":["clustering"] }');
+        const sym_data = JSON.parse('{"y":[{"desc":"cG9pbnRzICR5X2kkIHdoaWNoIGFyZSBjbG9zZXIgdG8gJGNfaSQgdGhhbiBhbnkgb3RoZXIgY2x1c3RlciAkY197aiBcbmVxIGl9JA==", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"m"}, "size":"dim_0"}, "def_module":"clustering", "is_defined":false, "used_equations":[], "color":"color3"}],"w":[{"desc":"T3VyIGRhdGEgcG9pbnRzIGhhdmUgYXNzb2NpYXRlZCB3ZWlnaHRzICR3X2kkLg==", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "size":"dim_0"}, "def_module":"clustering", "is_defined":false, "used_equations":[], "color":"color2"}],"c":[{"desc":"Y2x1c3RlciBjZW50ZXJzICRjX2kg4oiIIOKEnV5tJA==", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"m"}, "def_module":"clustering", "is_defined":true, "used_equations":[], "color":"color1"}]}');
+        window.onload = onLoad;
+        function reportWindowSize() {
+          var arrows = document.querySelectorAll(".arrow");
+          if (arrows) {
+            for (var i = arrows.length - 1; i >= 0; i--) {
+              var arrow = arrows[i];
+              var body = document.querySelector("body");
+              var style = window.getComputedStyle(body);
+              var arrowPanel = document.querySelector("#arrows");
+              var arrowRect = arrowPanel.getBoundingClientRect();
+              var curOffset = parseInt(style.marginLeft, 10)
+              var oldOffset = arrow.getAttribute('offset');
+              curOffset += arrowRect.width;
+              arrow.setAttribute('offset', curOffset);
+              // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
+              var arrowStyle = window.getComputedStyle(arrow); 
+              var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
+              arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
+              var newWidth = parseInt(style.width, 10) + parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+              arrow.style.width = `${newWidth}px`;
+              arrow.style.height = style.height; 
+              // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
+            }
+          }
+          adjustGlossaryBtn();
+        }
+        window.onresize = reportWindowSize;
+        document.addEventListener("click", function(evt){
+            onClickPage();
+        });
+        
+        </script>
+<body>
+    <div id="flexer">
+        <div id="arrows"></div>
+        <div id="main">
+        <div class='context' id='context-clustering-0' context='clustering'>
+
+<h1 id='k-means'>1&nbsp;K-Means</h1><p>In k-means clustering, we are given a sequence of data $x_i ∈ ℝ^m$. We want to cluster the data into $k ∈ ℤ$ clusters. First, we initialize the <span sym="c" context="clustering">cluster centers ${\prosedeflabel{clustering}{{c}}}_i ∈ ℝ^m$</span> arbitrarily. Then we iteratively update cluster centers. The updated cluster centers are the points which minimize the sum of squared distances to all <span sym="y" context="clustering">points ${\prosedeflabel{clustering}{{y}}}_i$ which are closer to ${\proselabel{clustering}{{c}}}_i$ than any other cluster ${\proselabel{clustering}{{c}}}_{j \neq i}$</span>. <span sym="w" context="clustering">Our data points have associated weights ${\prosedeflabel{clustering}{{w}}}_i$.</span></p>
+<p>
+        <div class='equation' code_block="clustering" code="bWluXyggYyDiiIgg4oSdXm0gKSDiiJFfaSB3X2kg4oCWIHlfaSAtIGMg4oCWXjIKd2hlcmUKeV9pIOKIiCDihJ1ebQp3X2kg4oiIIOKEnQ==">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\begin{aligned} \min_{\mathit{c}  \in \mathbb{R}^{ \mathit{m}}} \quad & \sum_{\mathit{i}} \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'w', 'clustering', 'use', false, '')", "id":"clustering-w", "sym":"w", "func":"clustering",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{w}} }_{ \mathit{i} }\left\|\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'y', 'clustering', 'use', false, '')", "id":"clustering-y", "sym":"y", "func":"clustering",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{y}} }_{ \mathit{i} } - \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'c', 'clustering', 'use', false, '')", "id":"clustering-c", "sym":"c", "func":"clustering",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{c}} }\right\|^{2} \\
+\end{aligned}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'clustering', ['y', 'w', 'c'], false, [], [], 'bWluXyggYyDiiIgg4oSdXm0gKSDiiJFfaSB3X2kg4oCWIHlfaSAtIGMg4oCWXjI=', false);"} }{}
+\end{align*}
+\tag{1}\label{1}$$</div>
+        </p>
+<figure onclick="clickFigure(this, 'clusters')" name="clusters"><pre class="errorMsg" hidden></pre>
+
+<iframe id="clusters" scrolling="no" style="border:none;" seamless="seamless" src="./clusters.html" height="525" width="100%"></iframe>
+<figcaption>K-Means with $k=4$. Cluster centers are shown in black. Clusters are strongly affected by outliers with the L2 norm.</figcaption> 
+</figure>
+
+<div class="references"></div></div>
+        </div>
+        <div id="glossary_holder"><div id="glossary" class="glossary"></div></div>
+    </div>
+</body>
+</html>

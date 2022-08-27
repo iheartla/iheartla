@@ -1,0 +1,122 @@
+<html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+            <script>
+        MathJax = {
+          loader: {
+            load: ["[attrLabel]/attr-label.js"],
+            paths: { attrLabel: "../heartdown-resource" },
+          },
+          tex: { packages: { "[+]": ["attr-label"] },
+           inlineMath: [['$', '$']]
+           },
+           options: {
+            enableAssistiveMml: false
+          },
+        };
+            </script>
+            <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+            <script src="https://unpkg.com/@popperjs/core@2"></script>
+            <script src="https://unpkg.com/tippy.js@6"></script>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/svg-arrow.css"/>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/border.css" />
+            <script src="../heartdown-resource/d3.min.js"></script>
+            <script src="../heartdown-resource/svg.min.js"></script>
+            <script type="text/javascript" src='../heartdown-resource/paper.js'></script>
+            <link rel="stylesheet" href="../heartdown-resource/paper.css">
+        </head>
+        <script>
+        const iheartla_data = JSON.parse('{"equations":[{"name":"computation", "parameters":[{"sym":"$λ_s$", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"ICTOu19zJCBpcyBhIHdlaWdodCB0byBjb250cm9sIHRoZSByZWxhdGl2ZSBjb250cmlidXRpb25zIG9mIHRoZSB0d28gdGVybXMsIGFuZCBpcyBzZXQgdG8gMC40IA=="},{"sym":"$E_a$", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"D", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"},{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}},{"sym":"$S_1$", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"$S_2$", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"$U_1$", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"$U_2$", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"R", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3"}, "size":"dim_0"}, "desc":"ICRSX2kkIGlzIGFueSByZWdpb24gb2YgYSBwYXRjaCB3aGljaCBpcyB2aXNpYmxlIGZyb20gdGhlIHNhbWUgc2lkZSBpbiBib3RoIHN0YXRlcyA="}], "definition":[{"sym":"E", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IGFuIGVuZXJneSBmdW5jdGlvbiAkRSh4KSQsIHdoZXJlICR4JCByZXByZXNlbnRzIHRoZSBsaW5rYWdlIGNvbmZpZ3VyYXRpb24gYW5kIGdlb21ldHJpYyBwYXJhbWV0ZXJzIG9mIHRoZSB0cmFuc2Zvcm1pbmcgcG9wLXVwIA=="},{"sym":"$E_s$", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IFRoZSBzaGFwZSB0ZXJtICRFX3MkIHJlcHJlc2VudHMgdGhlIHNoYXBlIGNvbnN0cmFpbnQg"},{"sym":"$E_c$", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"$E_f$", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IFRoZSBmbGlwIHRlcm0gJEVfZiQgcmVwcmVzZW50cyB0aGUgZmxpcCBjb25zdHJhaW50LCBwZW5hbGl6aW5nIGFueSBwYXRjaCBhcmVhcyB3aGljaCBkbyBub3QgZmxpcCBhbmQgYXJlIHZpc2libGUgaW4gYm90aCB1bnRyYW5zZm9ybWVkIGFuZCB0cmFuc2Zvcm1lZCBzdGF0ZXMg"}], "local_func":[], "dependence":[], "undesc_list":["D","$U_2$","$E_a$","$E_c$","$S_1$","$U_1$","$S_2$"] }], "context":["computation"] }');
+        const sym_data = JSON.parse('{"$λ_s$":[{"desc":"ICTOu19zJCBpcyBhIHdlaWdodCB0byBjb250cm9sIHRoZSByZWxhdGl2ZSBjb250cmlidXRpb25zIG9mIHRoZSB0d28gdGVybXMsIGFuZCBpcyBzZXQgdG8gMC40IA==", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"computation", "is_defined":false, "used_equations":[], "color":"color4"}],"$E_a$":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"computation", "is_defined":false, "used_equations":[], "color":"color5"}],"D":[{"desc":"None", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"},{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "def_module":"computation", "is_defined":false, "used_equations":[], "color":"color4"}],"$S_1$":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"computation", "is_defined":false, "used_equations":[], "color":"color3"}],"$S_2$":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"computation", "is_defined":false, "used_equations":[], "color":"color2"}],"$U_1$":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"computation", "is_defined":false, "used_equations":[], "color":"color6"}],"$U_2$":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"computation", "is_defined":false, "used_equations":[], "color":"color5"}],"R":[{"desc":"ICRSX2kkIGlzIGFueSByZWdpb24gb2YgYSBwYXRjaCB3aGljaCBpcyB2aXNpYmxlIGZyb20gdGhlIHNhbWUgc2lkZSBpbiBib3RoIHN0YXRlcyA=", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3"}, "size":"dim_0"}, "def_module":"computation", "is_defined":false, "used_equations":[], "color":"color2"}],"E":[{"desc":"IGFuIGVuZXJneSBmdW5jdGlvbiAkRSh4KSQsIHdoZXJlICR4JCByZXByZXNlbnRzIHRoZSBsaW5rYWdlIGNvbmZpZ3VyYXRpb24gYW5kIGdlb21ldHJpYyBwYXJhbWV0ZXJzIG9mIHRoZSB0cmFuc2Zvcm1pbmcgcG9wLXVwIA==", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"computation", "is_defined":true, "used_equations":[], "color":"color3"}],"$E_s$":[{"desc":"IFRoZSBzaGFwZSB0ZXJtICRFX3MkIHJlcHJlc2VudHMgdGhlIHNoYXBlIGNvbnN0cmFpbnQg", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"computation", "is_defined":true, "used_equations":[], "color":"color2"}],"$E_c$":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"computation", "is_defined":true, "used_equations":[], "color":"color1"}],"$E_f$":[{"desc":"IFRoZSBmbGlwIHRlcm0gJEVfZiQgcmVwcmVzZW50cyB0aGUgZmxpcCBjb25zdHJhaW50LCBwZW5hbGl6aW5nIGFueSBwYXRjaCBhcmVhcyB3aGljaCBkbyBub3QgZmxpcCBhbmQgYXJlIHZpc2libGUgaW4gYm90aCB1bnRyYW5zZm9ybWVkIGFuZCB0cmFuc2Zvcm1lZCBzdGF0ZXMg", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"computation", "is_defined":true, "used_equations":[], "color":"color1"}]}');
+        window.onload = onLoad;
+        function reportWindowSize() {
+          var arrows = document.querySelectorAll(".arrow");
+          if (arrows) {
+            for (var i = arrows.length - 1; i >= 0; i--) {
+              var arrow = arrows[i];
+              var body = document.querySelector("body");
+              var style = window.getComputedStyle(body);
+              var arrowPanel = document.querySelector("#arrows");
+              var arrowRect = arrowPanel.getBoundingClientRect();
+              var curOffset = parseInt(style.marginLeft, 10)
+              var oldOffset = arrow.getAttribute('offset');
+              curOffset += arrowRect.width;
+              arrow.setAttribute('offset', curOffset);
+              // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
+              var arrowStyle = window.getComputedStyle(arrow); 
+              var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
+              arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
+              var newWidth = parseInt(style.width, 10) + parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+              arrow.style.width = `${newWidth}px`;
+              arrow.style.height = style.height; 
+              // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
+            }
+          }
+          adjustGlossaryBtn();
+        }
+        window.onresize = reportWindowSize;
+        document.addEventListener("click", function(evt){
+            onClickPage();
+        });
+        
+        </script>
+<body>
+    <div id="flexer">
+        <div id="arrows"></div>
+        <div id="main">
+        <div class='title'>Computational Design of Transforming Pop-up Books</div><div class='author'>NAN XIAO and ZHE ZHU, TNList, Tsinghua University</div><div class='author'>RALPH R. MARTIN, Cardiff University</div><div class='author'>KUN XU and JIA-MING LU and SHI-MIN HU, TNList, Tsinghua University</div><h1 id='algorithm'>4&nbsp;ALGORITHM</h1><h2 id='optimization'>4.2&nbsp;Optimization</h2><h3 id='energy-function'>4.2.1&nbsp;Energy function</h3><div class='context' id='context-computation-0' context='computation'>
+<p>We define the optimisation problem in terms of minimising <span sym="E" context="computation">  an energy function ${\prosedeflabel{computation}{{E}}}(x)$, where $x$ represents the linkage configuration and geometric parameters of the transforming pop-up  </span>. For simplicity of presentation, we leave the dependence on $x$ implicit in the following.</p>
+<p>Ensuring freedom from collisions is enforced as a hard constraint. Given a configuration $x$, we first check for collision during transformation, and if detected, we give the energy function ${\proselabel{computation}{{E}}}$ a value certain to be greater than the energy for any non-colliding configuration. Our implementation uses the OBB-tree algorithm [Gottschalk et al. 1996] for collision detection, like other recent mechanical modeling works such as [Zhu et al. 2012]. Optionally, to avoid collision with the ground, we add a dummy ground patch of large enough area to enclose the design, and include it during collision checking. Users may choose whether to enable this option or not: if the goal is to place the pop-up inside a book, this option should be enabled, but if the goal is to make a free-standing pop-up, it is unnecessary.</p>
+<p>If there is no collision, the energy function ${\proselabel{computation}{{E}}}$ is defined as the sum of a shape term and a flip term:</p>
+<p>
+        <div class='equation' code_block="computation" code="RSA9IGAkzrtfcyRgYCRFX3MkYCArICgxIC0gYCTOu19zJGApYCRFX2YkYCAKd2hlcmUKYCTOu19zJGAg4oiIIOKEnSA=">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'E', 'computation', 'def', false, '')", "id":"computation-E", "sym":"E", "func":"computation",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathit{E}} } & = \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$λ_s$', 'computation', 'use', false, '')", "id":"computation-$λ_s$", "sym":"$λ_s$", "func":"computation",  "localFunc":"", "type":"use", "case":"equation"} }{ {λ_s} }\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$E_s$', 'computation', 'use', false, '')", "id":"computation-$E_s$", "sym":"$E_s$", "func":"computation",  "localFunc":"", "type":"use", "case":"equation"} }{ {E_s} } + \left( 1 - \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$λ_s$', 'computation', 'use', false, '')", "id":"computation-$λ_s$", "sym":"$λ_s$", "func":"computation",  "localFunc":"", "type":"use", "case":"equation"} }{ {λ_s} } \right)\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$E_f$', 'computation', 'use', false, '')", "id":"computation-$E_f$", "sym":"$E_f$", "func":"computation",  "localFunc":"", "type":"use", "case":"equation"} }{ {E_f} }\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'computation', ['$E_f$', '$λ_s$', '$E_s$', 'E'], false, [], [], 'RSA9IGAkzrtfcyRgYCRFX3MkYCArICgxIC0gYCTOu19zJGApYCRFX2YkYA==');"} }{}
+\end{align*}
+\tag{1}\label{1}$$</div>
+        </p>
+<p><span sym="E_s" context="computation">  The shape term ${\prosedeflabel{computation}{{E_s}}}$ represents the shape constraint  </span>, i.e. it favors shapes of pop-up for which the untransformed and transformed states are good matches to the user given patterns. <span sym="E_f" context="computation">  The flip term ${\prosedeflabel{computation}{{E_f}}}$ represents the flip constraint, penalizing any patch areas which do not flip and are visible in both untransformed and transformed states  </span>. <span sym="λ_s" context="computation">  ${\prosedeflabel{computation}{{λ_s}}}$ is a weight to control the relative contributions of the two terms, and is set to 0.4  </span>.</p>
+<p>Shape term. The shape term accounts for how well the pop-up in the untransformed and transformed states ${\proselabel{computation}{{S_1}}}$ and ${\proselabel{computation}{{S_2}}}$ match the shapes of the user given source and target patterns ${\proselabel{computation}{{U_1}}}$ and ${\proselabel{computation}{{U_2}}}$. The shape matching cost is defined in terms of a contour matching cost and an area matching cost:<br />
+
+        <div class='equation' code_block="computation" code="YCRFX3MkYCA9IGAkRV9jJGAgKyBgJEVfYSRgIAp3aGVyZQpgJEVfYSRgIOKIiCDihJ0=">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$E_s$', 'computation', 'def', false, '')", "id":"computation-$E_s$", "sym":"$E_s$", "func":"computation",  "localFunc":"", "type":"def", "case":"equation"} }{ {E_s} } & = \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$E_c$', 'computation', 'use', false, '')", "id":"computation-$E_c$", "sym":"$E_c$", "func":"computation",  "localFunc":"", "type":"use", "case":"equation"} }{ {E_c} } + \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$E_a$', 'computation', 'use', false, '')", "id":"computation-$E_a$", "sym":"$E_a$", "func":"computation",  "localFunc":"", "type":"use", "case":"equation"} }{ {E_a} }\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'computation', ['$E_c$', '$E_a$', '$E_s$'], false, [], [], 'YCRFX3MkYCA9IGAkRV9jJGAgKyBgJEVfYSRg');"} }{}
+\end{align*}
+\tag{2}\label{2}$$</div>
+        <br />
+The contour matching cost is computed using the shape context method [Belongie et al. 2002], and is given by:<br />
+
+        <div class='equation' code_block="computation" code="YCRFX2MkYCA9IEQoYCRTXzEkYCwgYCRVXzEkYCkgKyBEKGAkU18yJGAsIGAkVV8yJGApCndoZXJlCkQg4oiIIOKEnSwg4oSdIC0+IOKEnQpgJFNfMSRgIOKIiCDihJ0KYCRTXzIkYCDiiIgg4oSdCmAkVV8xJGAg4oiIIOKEnQpgJFVfMiRgIOKIiCDihJ0=">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$E_c$', 'computation', 'def', false, '')", "id":"computation-$E_c$", "sym":"$E_c$", "func":"computation",  "localFunc":"", "type":"def", "case":"equation"} }{ {E_c} } & = \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'D', 'computation', 'use', false, '')", "id":"computation-D", "sym":"D", "func":"computation",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{D}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$S_1$', 'computation', 'use', false, '')", "id":"computation-$S_1$", "sym":"$S_1$", "func":"computation",  "localFunc":"", "type":"use", "case":"equation"} }{ {S_1} },\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$U_1$', 'computation', 'use', false, '')", "id":"computation-$U_1$", "sym":"$U_1$", "func":"computation",  "localFunc":"", "type":"use", "case":"equation"} }{ {U_1} } \right) + \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'D', 'computation', 'use', false, '')", "id":"computation-D", "sym":"D", "func":"computation",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{D}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$S_2$', 'computation', 'use', false, '')", "id":"computation-$S_2$", "sym":"$S_2$", "func":"computation",  "localFunc":"", "type":"use", "case":"equation"} }{ {S_2} },\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$U_2$', 'computation', 'use', false, '')", "id":"computation-$U_2$", "sym":"$U_2$", "func":"computation",  "localFunc":"", "type":"use", "case":"equation"} }{ {U_2} } \right)\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'computation', ['D', '$S_2$', '$S_1$', '$U_1$', '$U_2$', '$E_c$'], false, [], [], 'YCRFX2MkYCA9IEQoYCRTXzEkYCwgYCRVXzEkYCkgKyBEKGAkU18yJGAsIGAkVV8yJGAp');"} }{}
+\end{align*}
+\tag{3}\label{3}$$</div>
+        <br />
+where ${\proselabel{computation}{{D}}}(·)$ denotes the shape context matching cost. In our implementation, we sample 100 points on each contour to perform this computation.</p>
+<p>The area matching cost measures the difference of region coverage between the pop-up and user given patterns. It is computed as:</p>
+<p>$${\proselabel{computation}{{E_a}}} = \sum_i {\prosedeflabel{computation}{{\lambda_a}}} ||S_i \setminus U_i|| + (1-\lambda_a)||U_i \setminus S_i||\tag{4}\label{4}$$</p>
+<p>where \ is the set difference operator, $∥ · ∥$ denotes the normalized area of a region, i.e. its area divided by the sum of the areas of all patches, and ${\prosedeflabel{computation}{{\lambda_a}}}$ is a relative weight. $S_i \setminus U_i$ are redundant regions, i.e. regions covered by the pop-up but not covered by the user given pattern. $U_i \setminus S_i$ are unrepresented regions, i.e. regions covered by the user given pattern but not covered by the pop-up. Redundant regions are relatively unimportant, since the later patch refinement step can crop them. However, unrepresented regions will show the ground patch as they will not be included in the transforming pop-up. Hence, in our implementation, we set ${\prosedeflabel{computation}{{\lambda_a}}} = 0.1$ to more strongly penalize unrepresented regions.</p>
+<p>Flip term. Since visible regions in untransformed and transformed states are painted with source and target pattern textures respectively, to avoid conflicts in texture painting, we should minimise regions which are visible in both untransformed and transformed states which do not show different sides of the paper. The flip term is simply defined as the sum of the areas of all regions which violate this constraint (again normalized as in Equation 4):</p>
+<p>
+        <div class='equation' code_block="computation" code="YCRFX2YkYCA9IHN1bV9pIHx8Ul9pfHwKd2hlcmUKClJfaSDiiIgg4oSdXjM=">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$E_f$', 'computation', 'def', false, '')", "id":"computation-$E_f$", "sym":"$E_f$", "func":"computation",  "localFunc":"", "type":"def", "case":"equation"} }{ {E_f} } & = \sum_{\mathit{i}} \left\|\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'R', 'computation', 'use', false, '')", "id":"computation-R", "sym":"R", "func":"computation",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{R}} }_{ \mathit{i} }\right\|\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'computation', ['R', '$E_f$'], false, [], [], 'YCRFX2YkYCA9IHN1bV9pIHx8Ul9pfHw=');"} }{}
+\end{align*}
+\tag{5}\label{5}$$</div>
+        </p>
+<p>where <span sym="R" context="computation">  ${\prosedeflabel{computation}{{R}}}_i$ is any region of a patch which is visible from the same side in both states  </span>.</p>
+<div class="references"></div></div>
+        </div>
+        <div id="glossary_holder"><div id="glossary" class="glossary"></div></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+            <script>
+        MathJax = {
+          loader: {
+            load: ["[attrLabel]/attr-label.js"],
+            paths: { attrLabel: "../heartdown-resource" },
+          },
+          tex: { packages: { "[+]": ["attr-label"] },
+           inlineMath: [['$', '$']]
+           },
+           options: {
+            enableAssistiveMml: false
+          },
+        };
+            </script>
+            <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+            <script src="https://unpkg.com/@popperjs/core@2"></script>
+            <script src="https://unpkg.com/tippy.js@6"></script>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/svg-arrow.css"/>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/border.css" />
+            <script src="../heartdown-resource/d3.min.js"></script>
+            <script src="../heartdown-resource/svg.min.js"></script>
+            <script type="text/javascript" src='../heartdown-resource/paper.js'></script>
+            <link rel="stylesheet" href="../heartdown-resource/paper.css">
+        </head>
+        <script>
+        const iheartla_data = JSON.parse('{"equations":[{"name":"Stable", "parameters":[{"sym":"F", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "desc":"dGhlIGRlZm9ybWF0aW9uIGdyYWRpZW50"},{"sym":"μ", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"dGhlIExhbcOpIGNvbnN0YW50"},{"sym":"$I_C$", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"dGhlIGZpcnN0IHJpZ2h0IENhdWNoeS1HcmVlbiBpbnZhcmlhbnQ="},{"sym":"λ", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"dGhlIExhbcOpIGNvbnN0YW50"},{"sym":"$f_0$", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3"}, "desc":"dGhlIGZpcnN0IGNvbHVtbiBvZiBtYXRyaXggRiA="},{"sym":"$f_1$", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3"}, "desc":"dGhlIHNlY29uZCBjb2x1bW4gb2YgbWF0cml4IEY="},{"sym":"$f_2$", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3"}, "desc":"dGhlIHRoaXJkIGNvbHVtbiBvZiBtYXRyaXggRg=="}], "definition":[{"sym":"α", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"J", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"$P(F)$", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}},{"sym":"$\\\\frac{\\\\partial J}{\\\\partial F}$", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "desc":"ICAkXGZyYWN7XHBhcnRpYWwgSn17XHBhcnRpYWwgRn0kIChhLmsuYS4gdGhlIGNvZmFjdG9yIG1hdHJpeCkg"}], "local_func":[], "dependence":[], "undesc_list":["$P(F)$","α","J"] }], "context":["Stable"] }');
+        const sym_data = JSON.parse('{"F":[{"desc":"dGhlIGRlZm9ybWF0aW9uIGdyYWRpZW50", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "def_module":"Stable", "is_defined":false, "used_equations":[], "color":"color7"}],"μ":[{"desc":"dGhlIExhbcOpIGNvbnN0YW50", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"Stable", "is_defined":false, "used_equations":[], "color":"color6"}],"$I_C$":[{"desc":"dGhlIGZpcnN0IHJpZ2h0IENhdWNoeS1HcmVlbiBpbnZhcmlhbnQ=", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"Stable", "is_defined":false, "used_equations":[], "color":"color5"}],"λ":[{"desc":"dGhlIExhbcOpIGNvbnN0YW50", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"Stable", "is_defined":false, "used_equations":[], "color":"color8"}],"$f_0$":[{"desc":"dGhlIGZpcnN0IGNvbHVtbiBvZiBtYXRyaXggRiA=", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3"}, "def_module":"Stable", "is_defined":false, "used_equations":[], "color":"color5"}],"$f_1$":[{"desc":"dGhlIHNlY29uZCBjb2x1bW4gb2YgbWF0cml4IEY=", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3"}, "def_module":"Stable", "is_defined":false, "used_equations":[], "color":"color4"}],"$f_2$":[{"desc":"dGhlIHRoaXJkIGNvbHVtbiBvZiBtYXRyaXggRg==", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3"}, "def_module":"Stable", "is_defined":false, "used_equations":[], "color":"color3"}],"α":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"Stable", "is_defined":true, "used_equations":[], "color":"color4"}],"J":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"Stable", "is_defined":true, "used_equations":[], "color":"color2"}],"$P(F)$":[{"desc":"None", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "def_module":"Stable", "is_defined":true, "used_equations":[], "color":"color3"}],"$\\\\frac{\\\\partial J}{\\\\partial F}$":[{"desc":"ICAkXGZyYWN7XHBhcnRpYWwgSn17XHBhcnRpYWwgRn0kIChhLmsuYS4gdGhlIGNvZmFjdG9yIG1hdHJpeCkg", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "def_module":"Stable", "is_defined":true, "used_equations":[], "color":"color1"}]}');
+        window.onload = onLoad;
+        function reportWindowSize() {
+          var arrows = document.querySelectorAll(".arrow");
+          if (arrows) {
+            for (var i = arrows.length - 1; i >= 0; i--) {
+              var arrow = arrows[i];
+              var body = document.querySelector("body");
+              var style = window.getComputedStyle(body);
+              var arrowPanel = document.querySelector("#arrows");
+              var arrowRect = arrowPanel.getBoundingClientRect();
+              var curOffset = parseInt(style.marginLeft, 10)
+              var oldOffset = arrow.getAttribute('offset');
+              curOffset += arrowRect.width;
+              arrow.setAttribute('offset', curOffset);
+              // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
+              var arrowStyle = window.getComputedStyle(arrow); 
+              var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
+              arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
+              var newWidth = parseInt(style.width, 10) + parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+              arrow.style.width = `${newWidth}px`;
+              arrow.style.height = style.height; 
+              // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
+            }
+          }
+          adjustGlossaryBtn();
+        }
+        window.onresize = reportWindowSize;
+        document.addEventListener("click", function(evt){
+            onClickPage();
+        });
+        
+        </script>
+<body>
+    <div id="flexer">
+        <div id="arrows"></div>
+        <div id="main">
+        <div class='title'>Stable Neo-Hookean Flesh Simulation</div><div class='author'>BREANNAN SMITH, Pixar Animation Studios</div><div class='author'>FERNANDO DE GOES, Pixar Animation Studios</div><div class='author'>THEODORE KIM, Pixar Animation Studios</div><div class='context' id='context-Stable-0' context='Stable'>
+<h1 id='energy-eigenanalysis'>4&nbsp;ENERGY EIGENANALYSIS</h1><h2 id='first-piola-kirchhoff-stress-pk1'>4.2&nbsp;First Piola-Kirchhoff Stress (PK1)</h2><p>We sart from the PK1 for Eqn. 14,</p>
+<p>
+        <div class='equation' code_block="Stable" code="YCRQKEYpJGAgPSDOvCgxLTEvKGAkSV9DJGArMSkpRiArIM67KEotIM6xKWAkXGZyYWN7XHBhcnRpYWwgSn17XHBhcnRpYWwgRn0kYAoKd2hlcmUgCkY6IOKEnV4oM8OXMyk6IHRoZSBkZWZvcm1hdGlvbiBncmFkaWVudArOvDog4oSdIDogdGhlIExhbcOpIGNvbnN0YW50CmAkSV9DJGA6IOKEnSA6IHRoZSBmaXJzdCByaWdodCBDYXVjaHktR3JlZW4gaW52YXJpYW50Cs67OiDihJ0gOiB0aGUgTGFtw6kgY29uc3RhbnQ=">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$P(F)$', 'Stable', 'def', false, '')", "id":"Stable-$P(F)$", "sym":"$P(F)$", "func":"Stable",  "localFunc":"", "type":"def", "case":"equation"} }{ {P(F)} } & = \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'μ', 'Stable', 'use', false, '')", "id":"Stable-μ", "sym":"μ", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{μ}} }\left( 1 - \frac{1}{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$I_C$', 'Stable', 'use', false, '')", "id":"Stable-$I_C$", "sym":"$I_C$", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {I_C} } + 1} \right)\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'F', 'Stable', 'use', false, '')", "id":"Stable-F", "sym":"F", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{F}} } + \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'λ', 'Stable', 'use', false, '')", "id":"Stable-λ", "sym":"λ", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{λ}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'J', 'Stable', 'use', false, '')", "id":"Stable-J", "sym":"J", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{J}} } - \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'α', 'Stable', 'use', false, '')", "id":"Stable-α", "sym":"α", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{α}} } \right)\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$\\\\frac{\\\\partial J}{\\\\partial F}$', 'Stable', 'use', false, '')", "id":"Stable-$\\\\frac{\\\\partial J}{\\\\partial F}$", "sym":"$\\\\frac{\\\\partial J}{\\\\partial F}$", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {\frac{\partial J}{\partial F}} }\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Stable', ['$\\\\frac{\\\\partial J}{\\\\partial F}$', 'α', 'J', 'μ', 'F', '$I_C$', 'λ', '$P(F)$'], false, [], [], 'YCRQKEYpJGAgPSDOvCgxLTEvKGAkSV9DJGArMSkpRiArIM67KEotIM6xKWAkXGZyYWN7XHBhcnRpYWwgSn17XHBhcnRpYWwgRn0kYA==');"} }{}
+\end{align*}
+\tag{18}\label{18}$$</div>
+        </p>
+<p>where <span class='equation' code_block="Stable" code="zrEgPSAxICsgzrwvzrsgLSDOvC8oNM67KQ==">$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'α', 'Stable', 'def', false, '')", "id":"Stable-α", "sym":"α", "func":"Stable",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathit{α}} } & = 1 + \frac{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'μ', 'Stable', 'use', false, '')", "id":"Stable-μ", "sym":"μ", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{μ}} }}{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'λ', 'Stable', 'use', false, '')", "id":"Stable-λ", "sym":"λ", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{λ}} }} - \frac{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'μ', 'Stable', 'use', false, '')", "id":"Stable-μ", "sym":"μ", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{μ}} }}{4\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'λ', 'Stable', 'use', false, '')", "id":"Stable-λ", "sym":"λ", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{λ}} }}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Stable', ['μ', 'λ', 'α'], false, [], [], 'zrEgPSAxICsgzrwvzrsgLSDOvC8oNM67KQ==');"} }{}
+\end{align*}
+$</span>. We omit the subscript, as we only consider one model in this section. Using the column-wise notation for ${\proselabel{Stable}{{F}}}$ (Eqn.1) and the identity <span class='equation' code_block="Stable" code="SiA9YCRmXzAkYOKLhShgJGZfMSRgw5dgJGZfMiRgKQ==">$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'J', 'Stable', 'def', false, '')", "id":"Stable-J", "sym":"J", "func":"Stable",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathit{J}} } & = \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$f_0$', 'Stable', 'use', false, '')", "id":"Stable-$f_0$", "sym":"$f_0$", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {f_0} } \cdot \left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$f_1$', 'Stable', 'use', false, '')", "id":"Stable-$f_1$", "sym":"$f_1$", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {f_1} } × \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$f_2$', 'Stable', 'use', false, '')", "id":"Stable-$f_2$", "sym":"$f_2$", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {f_2} } \right)\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Stable', ['$f_2$', '$f_1$', '$f_0$', 'J'], false, [], [], 'SiA9YCRmXzAkYOKLhShgJGZfMSRgw5dgJGZfMiRgKQ==');"} }{}
+\end{align*}
+$</span>, we write <span sym="\\frac{\\partial J}{\\partial F}" context="Stable">   ${\prosedeflabel{Stable}{{\frac{\partial J}{\partial {\proselabel{Stable}{{F}}}}}}}$ (a.k.a. the cofactor matrix)  </span> as cross products:</p>
+<p>
+        <div class='equation' code_block="Stable" code="YCRcZnJhY3tccGFydGlhbCBKfXtccGFydGlhbCBGfSRgID0gW2AkZl8xJGDDl2AkZl8yJGAgYCRmXzIkYMOXYCRmXzAkYCBgJGZfMCRgw5dgJGZfMSRgXQoKd2hlcmUgCmAkZl8wJGA6IOKEnV4zOiB0aGUgZmlyc3QgY29sdW1uIG9mIG1hdHJpeCBGIApgJGZfMSRgOiDihJ1eMzogdGhlIHNlY29uZCBjb2x1bW4gb2YgbWF0cml4IEYKYCRmXzIkYDog4oSdXjM6IHRoZSB0aGlyZCBjb2x1bW4gb2YgbWF0cml4IEYK">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$\\\\frac{\\\\partial J}{\\\\partial F}$', 'Stable', 'def', false, '')", "id":"Stable-$\\\\frac{\\\\partial J}{\\\\partial F}$", "sym":"$\\\\frac{\\\\partial J}{\\\\partial F}$", "func":"Stable",  "localFunc":"", "type":"def", "case":"equation"} }{ {\frac{\partial J}{\partial F}} } & = \begin{bmatrix}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$f_1$', 'Stable', 'use', false, '')", "id":"Stable-$f_1$", "sym":"$f_1$", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {f_1} } × \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$f_2$', 'Stable', 'use', false, '')", "id":"Stable-$f_2$", "sym":"$f_2$", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {f_2} } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$f_2$', 'Stable', 'use', false, '')", "id":"Stable-$f_2$", "sym":"$f_2$", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {f_2} } × \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$f_0$', 'Stable', 'use', false, '')", "id":"Stable-$f_0$", "sym":"$f_0$", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {f_0} } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$f_0$', 'Stable', 'use', false, '')", "id":"Stable-$f_0$", "sym":"$f_0$", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {f_0} } × \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$f_1$', 'Stable', 'use', false, '')", "id":"Stable-$f_1$", "sym":"$f_1$", "func":"Stable",  "localFunc":"", "type":"use", "case":"equation"} }{ {f_1} }\\
+\end{bmatrix}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Stable', ['$f_2$', '$f_1$', '$f_0$', '$\\\\frac{\\\\partial J}{\\\\partial F}$'], false, [], [], 'YCRcZnJhY3tccGFydGlhbCBKfXtccGFydGlhbCBGfSRgID0gW2AkZl8xJGDDl2AkZl8yJGAgYCRmXzIkYMOXYCRmXzAkYCBgJGZfMCRgw5dgJGZfMSRgXQ==');"} }{}
+\end{align*}
+\tag{19}\label{19}$$</div>
+        </p>
+<p>This is a convenient shorthand for computing ${\proselabel{Stable}{{\frac{\partial J}{\partial {\proselabel{Stable}{{F}}}}}}}$, and will be useful when analyzing $\frac{\partial^2 {\proselabel{Stable}{{J}}}}{\partial {\proselabel{Stable}{{F}}}^2}$.</p>
+<div class="references"></div></div>
+        </div>
+        <div id="glossary_holder"><div id="glossary" class="glossary"></div></div>
+    </div>
+</body>
+</html>

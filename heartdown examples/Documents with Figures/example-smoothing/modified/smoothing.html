@@ -1,0 +1,103 @@
+<html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+            <script>
+        MathJax = {
+          loader: {
+            load: ["[attrLabel]/attr-label.js"],
+            paths: { attrLabel: "./heartdown-resource" },
+          },
+          tex: { packages: { "[+]": ["attr-label"] },
+           inlineMath: [['$', '$']]
+           },
+           options: {
+            enableAssistiveMml: false
+          },
+        };
+            </script>
+            <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+            <script src="https://unpkg.com/@popperjs/core@2"></script>
+            <script src="https://unpkg.com/tippy.js@6"></script>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/svg-arrow.css"/>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/border.css" />
+            <script src="./heartdown-resource/d3.min.js"></script>
+            <script src="./heartdown-resource/svg.min.js"></script>
+            <script type="text/javascript" src='./heartdown-resource/paper.js'></script>
+            <link rel="stylesheet" href="./heartdown-resource/paper.css">
+        </head>
+        <script>
+        const iheartla_data = JSON.parse('{"equations":[{"name":"MeshSmoothing", "parameters":[{"sym":"V", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n", "cols":"3"}, "desc":"YSBtZXNoIHdpdGggdmVydGljZXMgJFYkIGFuZCBlZGdlcyAkUyQ="},{"sym":"L", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n", "cols":"n"}, "desc":"JEwkIGlzIHRoZSBjb3RhbmdlbnQgTGFwbGFjaWFuIG1hdHJpeCw="},{"sym":"λ", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"JM67JCBiYWxhbmNlcyB0aGUgdHdvIHRlcm1zLg=="}], "definition":[{"sym":"U", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n", "cols":"3"}, "desc":"c21vb3RoZWQgdmVydGV4IHBvc2l0aW9ucyAkVSQ="},{"sym":"E_\\\\text{data}", "type_info":{"type": "function", "params":[{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n", "cols":"3"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "desc":"bWVhc3VyZXMgdGhlIGNoYW5nZSBpbiB2ZXJ0ZXggdmFsdWVzLA=="},{"sym":"E_\\\\text{smoothness}", "type_info":{"type": "function", "params":[{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n", "cols":"3"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "desc":"bWVhc3VyZXMgdGhlIExhcGxhY2lhbiBzbW9vdGhuZXNzLA=="}], "local_func":[{"name":"E_\\\\text{data}", "parameters":[{"sym":"U", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n", "cols":"3"}, "desc":"c21vb3RoZWQgdmVydGV4IHBvc2l0aW9ucyAkVSQ="}]},{"name":"E_\\\\text{smoothness}", "parameters":[{"sym":"U", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n", "cols":"3"}, "desc":"c21vb3RoZWQgdmVydGV4IHBvc2l0aW9ucyAkVSQ="}]}], "dependence":[], "undesc_list":[] }], "context":["MeshSmoothing"] }');
+        const sym_data = JSON.parse('{"V":[{"desc":"YSBtZXNoIHdpdGggdmVydGljZXMgJFYkIGFuZCBlZGdlcyAkUyQ=", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n", "cols":"3"}, "def_module":"MeshSmoothing", "is_defined":false, "used_equations":[], "color":"color2"}],"L":[{"desc":"JEwkIGlzIHRoZSBjb3RhbmdlbnQgTGFwbGFjaWFuIG1hdHJpeCw=", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n", "cols":"n"}, "def_module":"MeshSmoothing", "is_defined":false, "used_equations":[], "color":"color3"}],"λ":[{"desc":"JM67JCBiYWxhbmNlcyB0aGUgdHdvIHRlcm1zLg==", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"MeshSmoothing", "is_defined":false, "used_equations":[], "color":"color4"}],"U":[{"desc":"c21vb3RoZWQgdmVydGV4IHBvc2l0aW9ucyAkVSQ=", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n", "cols":"3"}, "def_module":"MeshSmoothing", "is_defined":true, "used_equations":[], "color":"color1"}],"E_\\\\text{data}":[{"desc":"bWVhc3VyZXMgdGhlIGNoYW5nZSBpbiB2ZXJ0ZXggdmFsdWVzLA==", "type_info":{"type": "function", "params":[{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n", "cols":"3"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "def_module":"MeshSmoothing", "is_defined":true, "used_equations":[], "color":"color3"}],"E_\\\\text{smoothness}":[{"desc":"bWVhc3VyZXMgdGhlIExhcGxhY2lhbiBzbW9vdGhuZXNzLA==", "type_info":{"type": "function", "params":[{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n", "cols":"3"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "def_module":"MeshSmoothing", "is_defined":true, "used_equations":[], "color":"color2"}]}');
+        window.onload = onLoad;
+        function reportWindowSize() {
+          var arrows = document.querySelectorAll(".arrow");
+          if (arrows) {
+            for (var i = arrows.length - 1; i >= 0; i--) {
+              var arrow = arrows[i];
+              var body = document.querySelector("body");
+              var style = window.getComputedStyle(body);
+              var arrowPanel = document.querySelector("#arrows");
+              var arrowRect = arrowPanel.getBoundingClientRect();
+              var curOffset = parseInt(style.marginLeft, 10)
+              var oldOffset = arrow.getAttribute('offset');
+              curOffset += arrowRect.width;
+              arrow.setAttribute('offset', curOffset);
+              // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
+              var arrowStyle = window.getComputedStyle(arrow); 
+              var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
+              arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
+              var newWidth = parseInt(style.width, 10) + parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+              arrow.style.width = `${newWidth}px`;
+              arrow.style.height = style.height; 
+              // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
+            }
+          }
+          adjustGlossaryBtn();
+        }
+        window.onresize = reportWindowSize;
+        document.addEventListener("click", function(evt){
+            onClickPage();
+        });
+        
+        </script>
+<body>
+    <div id="flexer">
+        <div id="arrows"></div>
+        <div id="main">
+        <h1 id='mesh-smoothing'>1&nbsp;Mesh Smoothing</h1><div class='context' id='context-MeshSmoothing-0' context='MeshSmoothing'>
+
+<p>We consider the problem of smoothing <span sym="V" context="MeshSmoothing">a mesh with vertices ${\prosedeflabel{MeshSmoothing}{{V}}}$ and edges $S$</span>. We can express the <span sym="U" context="MeshSmoothing">smoothed vertex positions ${\prosedeflabel{MeshSmoothing}{{U}}}$</span> as a least squares problem with a data term and a smoothness term:</p>
+<p>
+        <div class='equation' code_block="MeshSmoothing" code="dHJhY2UgZnJvbSBsaW5lYXJhbGdlYnJhCgptaW5fKCBVIOKIiCDihJ1eKG7DlzMpICkgKDEtzrspIGBFX1x0ZXh0e2RhdGF9YChVKSArIM67IGBFX1x0ZXh0e3Ntb290aG5lc3N9YChVKQp3aGVyZQpWIOKIiCDihJ1eKG7DlzMpOiBUaGUgdmVydGljZXMgb2YgdGhlIG1lc2gKTCDiiIgg4oSdXihuw5duKSBzcGFyc2U6IFRoZSBMYXBsYWNpYW4gbWF0cml4Cs67IOKIiCDihJ0=">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\begin{aligned} \min_{\mathit{U} \in \mathbb{R}^{ \mathit{n} \times 3 }} \quad & \left( 1 - \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'λ', 'MeshSmoothing', 'use', false, 'E_\\\\text{smoothness}')", "id":"MeshSmoothing-λ", "sym":"λ", "func":"MeshSmoothing",  "localFunc":"E_\\\\text{smoothness}", "type":"use", "case":"equation"} }{ {\mathit{λ}} } \right)\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'E_\\\\text{data}', 'MeshSmoothing', 'use', false, 'E_\\\\text{smoothness}')", "id":"MeshSmoothing-E_\\\\text{data}", "sym":"E_\\\\text{data}", "func":"MeshSmoothing",  "localFunc":"E_\\\\text{smoothness}", "type":"use", "case":"equation"} }{ {E_\text{data}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'U', 'MeshSmoothing', 'use', true, 'E_\\\\text{smoothness}')", "id":"MeshSmoothing-U", "sym":"U", "func":"MeshSmoothing",  "localFunc":"E_\\\\text{smoothness}", "type":"use", "case":"equation"} }{ {\mathit{U}} } \right) + \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'λ', 'MeshSmoothing', 'use', false, 'E_\\\\text{smoothness}')", "id":"MeshSmoothing-λ", "sym":"λ", "func":"MeshSmoothing",  "localFunc":"E_\\\\text{smoothness}", "type":"use", "case":"equation"} }{ {\mathit{λ}} }\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'E_\\\\text{smoothness}', 'MeshSmoothing', 'use', false, 'E_\\\\text{smoothness}')", "id":"MeshSmoothing-E_\\\\text{smoothness}", "sym":"E_\\\\text{smoothness}", "func":"MeshSmoothing",  "localFunc":"E_\\\\text{smoothness}", "type":"use", "case":"equation"} }{ {E_\text{smoothness}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'U', 'MeshSmoothing', 'use', true, 'E_\\\\text{smoothness}')", "id":"MeshSmoothing-U", "sym":"U", "func":"MeshSmoothing",  "localFunc":"E_\\\\text{smoothness}", "type":"use", "case":"equation"} }{ {\mathit{U}} } \right) \\
+\end{aligned}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'MeshSmoothing', ['E_\\\\text{smoothness}', 'E_\\\\text{data}', 'U', 'λ'], false, [], [], 'bWluXyggVSDiiIgg4oSdXihuw5czKSApICgxLc67KSBgRV9cdGV4dHtkYXRhfWAoVSkgKyDOuyBgRV9cdGV4dHtzbW9vdGhuZXNzfWAoVSk=', false);"} }{}
+\end{align*}
+\tag{1}\label{1}$$</div>
+        </p>
+<p>where  <span class='equation' code_block="MeshSmoothing" code="YEVfXHRleHR7ZGF0YX1gKFUpID0g4oCWIFUgLSBWIOKAlsKyIHdoZXJlIFUg4oiIIOKEnV4obsOXMyk=">$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'E_\\\\text{data}', 'MeshSmoothing', 'def', false, '')", "id":"MeshSmoothing-E_\\\\text{data}", "sym":"E_\\\\text{data}", "func":"MeshSmoothing",  "localFunc":"", "type":"def", "case":"equation"} }{ {E_\text{data}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'U', 'MeshSmoothing', 'use', true, 'E_\\\\text{data}')", "id":"MeshSmoothing-U", "sym":"U", "func":"MeshSmoothing",  "localFunc":"E_\\\\text{data}", "type":"use", "case":"equation"} }{ {\mathit{U}} } \right) & = \left\|\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'U', 'MeshSmoothing', 'use', true, 'E_\\\\text{data}')", "id":"MeshSmoothing-U", "sym":"U", "func":"MeshSmoothing",  "localFunc":"E_\\\\text{data}", "type":"use", "case":"equation"} }{ {\mathit{U}} } - \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'V', 'MeshSmoothing', 'use', false, 'E_\\\\text{data}')", "id":"MeshSmoothing-V", "sym":"V", "func":"MeshSmoothing",  "localFunc":"E_\\\\text{data}", "type":"use", "case":"equation"} }{ {\mathit{V}} }\right\|^{2}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'MeshSmoothing', ['V', 'U', 'E_\\\\text{data}'], true, 'E_\\\\text{data}', ['U'], 'YEVfXHRleHR7ZGF0YX1gKFUpID0g4oCWIFUgLSBWIOKAlsKyIHdoZXJlIFUg4oiIIOKEnV4obsOXMyk=');"} }{}
+\end{align*}
+$</span> <span sym="E_\\text{data}" context="MeshSmoothing">measures the change in vertex values,</span> <span class='equation' code_block="MeshSmoothing" code="YEVfXHRleHR7c21vb3RobmVzc31gKFUpID0gdHJhY2UoIFXhtYAgTCBVICkgd2hlcmUgVSDiiIgg4oSdXihuw5czKQ==">$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'E_\\\\text{smoothness}', 'MeshSmoothing', 'def', false, 'E_\\\\text{data}')", "id":"MeshSmoothing-E_\\\\text{smoothness}", "sym":"E_\\\\text{smoothness}", "func":"MeshSmoothing",  "localFunc":"E_\\\\text{data}", "type":"def", "case":"equation"} }{ {E_\text{smoothness}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'U', 'MeshSmoothing', 'use', true, 'E_\\\\text{smoothness}')", "id":"MeshSmoothing-U", "sym":"U", "func":"MeshSmoothing",  "localFunc":"E_\\\\text{smoothness}", "type":"use", "case":"equation"} }{ {\mathit{U}} } \right) & = trace\left( {\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'U', 'MeshSmoothing', 'use', true, 'E_\\\\text{smoothness}')", "id":"MeshSmoothing-U", "sym":"U", "func":"MeshSmoothing",  "localFunc":"E_\\\\text{smoothness}", "type":"use", "case":"equation"} }{ {\mathit{U}} }}^T\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'L', 'MeshSmoothing', 'use', false, 'E_\\\\text{smoothness}')", "id":"MeshSmoothing-L", "sym":"L", "func":"MeshSmoothing",  "localFunc":"E_\\\\text{smoothness}", "type":"use", "case":"equation"} }{ {\mathit{L}} }\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'U', 'MeshSmoothing', 'use', true, 'E_\\\\text{smoothness}')", "id":"MeshSmoothing-U", "sym":"U", "func":"MeshSmoothing",  "localFunc":"E_\\\\text{smoothness}", "type":"use", "case":"equation"} }{ {\mathit{U}} } \right)\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'MeshSmoothing', ['L', 'U', 'E_\\\\text{smoothness}'], true, 'E_\\\\text{smoothness}', ['U'], 'YEVfXHRleHR7c21vb3RobmVzc31gKFUpID0gdHJhY2UoIFXhtYAgTCBVICkgd2hlcmUgVSDiiIgg4oSdXihuw5czKQ==');"} }{}
+\end{align*}
+$</span> <span sym="E_\\text{smoothness}" context="MeshSmoothing">measures the Laplacian smoothness,</span> and the scalar <span sym="λ" context="MeshSmoothing">${\prosedeflabel{MeshSmoothing}{{λ}}}$ balances the two terms.</span> Here, <span sym="L" context="MeshSmoothing">${\prosedeflabel{MeshSmoothing}{{L}}}$ is the cotangent Laplacian matrix,</span> which is different from the $\proselabel{ImageTools}{L}$ in Section 2.</p>
+<figure onclick="clickFigure(this, 'smoothed')" name="smoothed"><pre class="errorMsg" hidden></pre>
+
+<iframe id="smoothed" scrolling="no" style="border:none;" seamless="seamless" src="./smoothed.html" height="525" width="100%"></iframe>
+<figcaption>Clockwise from upper-left: The input noisy surface, the surface smoothed with ${\proselabel{MeshSmoothing}{{λ}}}=0.1, 0.5, 0.9$.</figcaption> 
+</figure>
+
+<div class="references"></div></div>
+        </div>
+        <div id="glossary_holder"><div id="glossary" class="glossary"></div></div>
+    </div>
+</body>
+</html>

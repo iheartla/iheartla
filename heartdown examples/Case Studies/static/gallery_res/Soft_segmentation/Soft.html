@@ -1,0 +1,123 @@
+<html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+            <script>
+        MathJax = {
+          loader: {
+            load: ["[attrLabel]/attr-label.js"],
+            paths: { attrLabel: "../heartdown-resource" },
+          },
+          tex: { packages: { "[+]": ["attr-label"] },
+           inlineMath: [['$', '$']]
+           },
+           options: {
+            enableAssistiveMml: false
+          },
+        };
+            </script>
+            <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+            <script src="https://unpkg.com/@popperjs/core@2"></script>
+            <script src="https://unpkg.com/tippy.js@6"></script>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/svg-arrow.css"/>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/border.css" />
+            <script src="../heartdown-resource/d3.min.js"></script>
+            <script src="../heartdown-resource/svg.min.js"></script>
+            <script type="text/javascript" src='../heartdown-resource/paper.js'></script>
+            <link rel="stylesheet" href="../heartdown-resource/paper.css">
+        </head>
+        <script>
+        const iheartla_data = JSON.parse('{"equations":[{"name":"soft", "parameters":[{"sym":"D", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "function", "params":[{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "size":"dim_0"}, "desc":"IHRoZSBsYXllciBjb2xvciBjb3N0ICREIF9pKCBcYm9sZHN5bWJvbHt1fSAgX2kpJCBpcyBkZWZpbmVkIGFzIHRoZSBzcXVhcmVkIE1haGFsYW5vYmlzIGRpc3RhbmNlIG9mIHRoZSBsYXllciBjb2xvciAkXGJvbGRzeW1ib2x7dX0gIF9pJCB0byB0aGUgbGF5ZXIgZGlzdHJpYnV0aW9uICROKCBcYm9sZHN5bWJvbHt1fSAgX2ksIM6jX2kpJCA="},{"sym":"$\\\\boldsymbol{u}$", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3"}, "size":"dim_0"}, "desc":"IHRoZSBsYXllciBjb2xvciBpbiBSR0IgYXMgJFxib2xkc3ltYm9se3V9IF5wX2kkICA="},{"sym":"σ", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"ICTPgyQgaXMgdGhlIHNwYXJzaXR5IHdlaWdodCB0aGF0IGlzIHNldCB0byAxMCBpbiBvdXIgaW1wbGVtZW50YXRpb24g"},{"sym":"α", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "size":"dim_0"}, "desc":"IHRoZSBvcGFjaXR5IHZhbHVlIGFzICTOsSBfaV5wJCAg"}], "definition":[{"sym":"$F_S$", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IHRoZSBzcGFyc2UgY29sb3IgdW5taXhpbmcgZW5lcmd5IGZ1bmN0aW9uIA=="}], "local_func":[], "dependence":[], "undesc_list":[] }], "context":["soft"] }');
+        const sym_data = JSON.parse('{"D":[{"desc":"IHRoZSBsYXllciBjb2xvciBjb3N0ICREIF9pKCBcYm9sZHN5bWJvbHt1fSAgX2kpJCBpcyBkZWZpbmVkIGFzIHRoZSBzcXVhcmVkIE1haGFsYW5vYmlzIGRpc3RhbmNlIG9mIHRoZSBsYXllciBjb2xvciAkXGJvbGRzeW1ib2x7dX0gIF9pJCB0byB0aGUgbGF5ZXIgZGlzdHJpYnV0aW9uICROKCBcYm9sZHN5bWJvbHt1fSAgX2ksIM6jX2kpJCA=", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "function", "params":[{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "size":"dim_0"}, "def_module":"soft", "is_defined":false, "used_equations":[], "color":"color5"}],"$\\\\boldsymbol{u}$":[{"desc":"IHRoZSBsYXllciBjb2xvciBpbiBSR0IgYXMgJFxib2xkc3ltYm9se3V9IF5wX2kkICA=", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3"}, "size":"dim_0"}, "def_module":"soft", "is_defined":false, "used_equations":[], "color":"color4"}],"σ":[{"desc":"ICTPgyQgaXMgdGhlIHNwYXJzaXR5IHdlaWdodCB0aGF0IGlzIHNldCB0byAxMCBpbiBvdXIgaW1wbGVtZW50YXRpb24g", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"soft", "is_defined":false, "used_equations":[], "color":"color3"}],"α":[{"desc":"IHRoZSBvcGFjaXR5IHZhbHVlIGFzICTOsSBfaV5wJCAg", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "size":"dim_0"}, "def_module":"soft", "is_defined":false, "used_equations":[], "color":"color2"}],"$F_S$":[{"desc":"IHRoZSBzcGFyc2UgY29sb3IgdW5taXhpbmcgZW5lcmd5IGZ1bmN0aW9uIA==", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"soft", "is_defined":true, "used_equations":[], "color":"color1"}]}');
+        window.onload = onLoad;
+        function reportWindowSize() {
+          var arrows = document.querySelectorAll(".arrow");
+          if (arrows) {
+            for (var i = arrows.length - 1; i >= 0; i--) {
+              var arrow = arrows[i];
+              var body = document.querySelector("body");
+              var style = window.getComputedStyle(body);
+              var arrowPanel = document.querySelector("#arrows");
+              var arrowRect = arrowPanel.getBoundingClientRect();
+              var curOffset = parseInt(style.marginLeft, 10)
+              var oldOffset = arrow.getAttribute('offset');
+              curOffset += arrowRect.width;
+              arrow.setAttribute('offset', curOffset);
+              // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
+              var arrowStyle = window.getComputedStyle(arrow); 
+              var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
+              arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
+              var newWidth = parseInt(style.width, 10) + parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+              arrow.style.width = `${newWidth}px`;
+              arrow.style.height = style.height; 
+              // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
+            }
+          }
+          adjustGlossaryBtn();
+        }
+        window.onresize = reportWindowSize;
+        document.addEventListener("click", function(evt){
+            onClickPage();
+        });
+        
+        </script>
+<body>
+    <div id="flexer">
+        <div id="arrows"></div>
+        <div id="main">
+        <div class='title'>Unmixing-Based Soft Color Segmentation for Image Manipulation</div><div class='author'>YAG IZAKSOY, ETH Zurich and Disney Research Zurich</div><div class='author'>TUNC OZANAYDIN and ALJOSA SMOLIC, Disney Research Zurich</div><div class='author'>MARC POLLEFEYS, ETH Zurich</div><div class='context' id='context-soft-0' context='soft'>
+<h1 id='soft-color-segmentation'>3&nbsp;SOFT COLOR SEGMENTATION</h1><p>Our main objective in this paper is to decompose an image into multiple partially-transparent segments of homogeneous colors, i.e. soft color segments, which can then be used for various image manipulation tasks. Borrowing from image manipulation terminology, we will refer to such soft color segments simply as layers throughout this paper.</p>
+<p>A crucial property of soft color segmentation is that overlaying all layers obtained from an image yields the original image itself so that editing individual layers is possible without degrading the original image. In mathematical terms, for a pixel $p$, we denote <span sym="α" context="soft">  the opacity value as ${\prosedeflabel{soft}{{α}}} _i^p$   </span>and <span sym="\\boldsymbol{u}" context="soft">  the layer color in RGB as ${\prosedeflabel{soft}{{\boldsymbol{u}}}} ^p_i$   </span>for the ith layer. and we want to satisfy the color constraint:</p>
+<p>$$
+\sum_{i} {\proselabel{soft}{{α}}} _{i}^{p} {\proselabel{soft}{{\boldsymbol{u}}}} _{i}^{p}=\boldsymbol{c}^{p} \quad \forall p
+\tag{1}\label{1}$$</p>
+<p>where $c^p$ denotes the original color of the pixel. The total number of layers will be denoted by $N$.</p>
+<p>We assume that the original input image is fully opaque, and thus require the opacity values over all layers to add up to unity, which we express as the alpha constraint:</p>
+<p>$$
+\sum_{i} {\proselabel{soft}{{α}}} _{i}^{p}=1 \quad \forall p
+\tag{2}\label{2}$$</p>
+<p>Finally, the permissible range for the alpha and color values are enforced by the box constraint:</p>
+<p>$$
+{\proselabel{soft}{{α}}} _{i}^{p}, {\proselabel{soft}{{\boldsymbol{u}}}} _{i}^{p} \in[0,1] \quad \forall i, p
+\tag{3}\label{3}$$</p>
+<p>For convenience, we will drop the superscript p in the remainder of the paper and present our formulation at the pixel level, unless stated otherwise.</p>
+<p>It should be noted that different representations for overlaying multiple layers exist. We use Equation 1, to which we refer as alpha-add representation, in our formulation which does not assume any particular ordering of the layers. This representation has also been used by Tai et al. [2007] and Chen et al. [2013] among others. In most commercial image editing software, however, the representation proposed by Porter and Duff [1984], referred in this paper as overlay representation, is used. The difference and conversion between the two representations are presented in the appendix.</p>
+<p>Our algorithm for computing high-quality soft color segments can be described by three stages: color unmixing, matte regularization, and color refinement, which will be discussed in the remainder of this section.</p>
+<p>Color Unmixing: An important property we want to achieve within each layer is color homogeneity: the colors present in a layer should be sufficiently similar. To this end, we associate each layer with a 3D normal distribution representing the spread of the layer colors in RGB space, and we refer to the set of $N$ distributions as the color model. Our novel technique for automatically extracting the color model for an image is discussed in detail in Section 5.</p>
+<p>Given the color model, we propose <span sym="F_S" context="soft">  the sparse color unmixing energy function  </span> in order to find a preliminary approximation to the layer colors and opacities:</p>
+<p>
+        <div class='equation' code_block="soft" code="YCRGX1MkYCA9IHN1bV9pIM6xX2kgRF9pKGAkXGJvbGRzeW1ib2x7dX0kYF9pKSArIM+DKChzdW1faSDOsV9pKS8oc3VtX2kgzrFfaV4yKSAtIDEpCgp3aGVyZQoKRF9pOiDihJ1eMyAtPiDihJ0KYCRcYm9sZHN5bWJvbHt1fSRgX2k6IOKEnV4zCs+DOiDihJ0KzrFfaTog4oSdIA==">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$F_S$', 'soft', 'def', false, '')", "id":"soft-$F_S$", "sym":"$F_S$", "func":"soft",  "localFunc":"", "type":"def", "case":"equation"} }{ {F_S} } & = \sum_{\mathit{i}} \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'α', 'soft', 'use', false, '')", "id":"soft-α", "sym":"α", "func":"soft",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{α}} }_{ \mathit{i} }\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'D', 'soft', 'use', false, '')", "id":"soft-D", "sym":"D", "func":"soft",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{D}} }_{ \mathit{i} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$\\\\boldsymbol{u}$', 'soft', 'use', false, '')", "id":"soft-$\\\\boldsymbol{u}$", "sym":"$\\\\boldsymbol{u}$", "func":"soft",  "localFunc":"", "type":"use", "case":"equation"} }{ {\boldsymbol{u}} }_{ \mathit{i} } \right) + \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'σ', 'soft', 'use', false, '')", "id":"soft-σ", "sym":"σ", "func":"soft",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{σ}} }\left( \frac{\sum_{\mathit{i}} \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'α', 'soft', 'use', false, '')", "id":"soft-α", "sym":"α", "func":"soft",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{α}} }_{ \mathit{i} }}{\sum_{\mathit{i}} {\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'α', 'soft', 'use', false, '')", "id":"soft-α", "sym":"α", "func":"soft",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{α}} }_{ \mathit{i} }}^{2}} - 1 \right)\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'soft', ['σ', '$\\\\boldsymbol{u}$', 'α', 'D', '$F_S$'], false, [], [], 'YCRGX1MkYCA9IHN1bV9pIM6xX2kgRF9pKGAkXGJvbGRzeW1ib2x7dX0kYF9pKSArIM-DKChzdW1faSDOsV9pKS8oc3VtX2kgzrFfaV4yKSAtIDEp');"} }{}
+\end{align*}
+\tag{4}\label{4}$$</div>
+        <br />
+where <span sym="D" context="soft">  the layer color cost ${\prosedeflabel{soft}{{D}}} _i( {\proselabel{soft}{{\boldsymbol{u}}}}  _i)$ is defined as the squared Mahalanobis distance of the layer color ${\proselabel{soft}{{\boldsymbol{u}}}}  _i$ to the layer distribution $N( {\proselabel{soft}{{\boldsymbol{u}}}}  _i, Σ_i)$  </span>, and <span sym="σ" context="soft">  ${\prosedeflabel{soft}{{σ}}}$ is the sparsity weight that is set to 10 in our implementation  </span>. The energy function in Equation 4 is minimized for all ${\proselabel{soft}{{α}}} _i$ and ${\proselabel{soft}{{\boldsymbol{u}}}}  _i$ simultaneously while satisfying the constraints defined in Equations 1-3 using the original method of multipliers [Bertsekas 1982]. For each pixel, for the layer with best fitting distribution, we initialize the alpha value to 1 and the layer color ui to the pixel color. The rest of the layers are initialized to zero alpha value and the mean of their distributions as layer colors. The first term in Equation 4 favors layer colors that fit well with the corresponding distribution especially for layers with high alpha values, which is essential for getting homogeneous colors in each layer. The second term pushes the alpha values to be sparse, i.e. favors 0 or 1 alpha values.</p>
+<p>The first term in Equation 4 appears as the color unmixing energy proposed by Aksoy et al. [2016] as a part of their system for green-screen keying. They do not include a sparsity term in their formulation, and this inherently results in favoring small alpha values, which results in many layers appearing in regions that should actually be opaque in a single layer. The reason is that a better-fitting layer color for the layer with alpha close to 1 (hence a lower color unmixing energy) becomes favorable by leaking small contributions from others (assigning small alpha values to multiple layers) with virtually no additional cost as the sample costs are multiplied with alpha values in the color unmixing energy. This decreases the compactness of the segmentation and, as a result, potentially creates visual artifacts when the layers are edited indepen- dently. Figure 2 shows such an example obtained through minimizing the color unmixing energy, where the alpha channel of the layer that captures the yellow road line is noisy on the asphalt region, even though the yellow of the road is not a part of the color of the asphalt. While these errors might seem insignificant at first, they result in unintended changes in the image when subjected to various layer manipulation operations such as contrast enhancement and color changes, as demonstrated in Figure 2.</p>
+<figure>
+<img src="./img/img3.png" alt="Trulli" style="width:100%" class = "center">
+<figcaption align = "center">Fig. 3. Two layers corresponding to the dark (top) and light wood color in the original image (a) are shown before (b) and after (c) matte regularization and color refinement.</figcaption> 
+</figure>
+<p>The sparsity term in Equation 4 is zero when one of the layers is fully opaque (and thus all other layers are fully transparent), and increases as the alpha values move away from zero or one. Another term for favoring matte sparsity has been proposed by Levin et al. [2008]:</p>
+<p>$$
+\sum_{i}\left| {\proselabel{soft}{{α}}} _{i}\right|^{0.9}+\left|1- {\proselabel{soft}{{α}}} _{i}\right|^{0.9}
+\tag{5}\label{5}$$</p>
+<p>This cost is infinitely differentiable in the interval [0, 1]. Its infinite derivatives at ${\proselabel{soft}{{α}}} _{i}=0^{+}$ and ${\proselabel{soft}{{α}}} _{i}=1^{-}$ causes the alpha values to stay at these extremes in the optimization process we employ. In spectral matting, the behavior of this function is used to keep alpha values from taking values outside [0, 1]. In our case, as the box constraints are enforced during the optimization of the sparse color unmixing energy, the negative values our sparsity cost takes outside the interval do not affect our results adversely.</p>
+<p>Matte Regularization: Sparse color unmixing is done independently for each pixel and there is no term ensuring spatial coherency. This may result in sudden changes in opacities that do not quite agree with the underlying image texture, as shown in Figure 3(b). Hence, spatial regularization of the opacity channels is necessary for ensuring smooth layers as in Figure 3(c). This issue also occurs frequently in sampling-based natural matting. The common practice for alpha regularization is using the matting Laplacian introduced by Levin et al. [2008] as the smoothness term and solve a linear system that also includes the spatially non-coherent alpha values, as proposed by Gastal and Oliveira [2010]. While this method is very effective in regularizing mattes, on the downside, it is computationally expensive and consumes a high amount of memory especially as the image resolution increases.</p>
+<p>The guided filter proposed by He et al. [2013] provides an efficient way to filter any image using the texture information from a particular image, referred to as the guide image. The guided filter is an edge-aware filtering method that can make use of an image, the guide image, to extract the edge characteristics and filter a second image using the edge information from the guide image efficiently. They discuss the theoretical similarity between their filter and the matting Laplacian and show that getting satisfactory alpha mattes is possible through guided filtering when the original image is used as the guide image. While filtering the mattes with the guided filter only approximates the behavior of the matting Laplacian, we observed that this approximation provides sufficient quality for the mattes obtained through sparse color unmixing. For a 1 MP image, we use 60 as the filter radius and $10^{−4}$ as ε for the guided filter, as recommended by He et al. [2013] for matting, to regularize the alpha matte of each layer. As the resultant alpha values do not necessarily add up to 1, we normalize the sum of the alpha values for each pixel after filtering to get rid of small deviations from the alpha constraint. The filter radius is scaled according to the image resolution. Note that the layer colors are not affected by this filtering and they will be updated in the next step.</p>
+<p>While enforcing spatial coherency on opacity channels is trivial using off-the-shelf filtering, dealing with its side effects is not straightforward. Obtaining spatially smooth results while avoiding disturbing color artifacts requires a second step that we discuss next.</p>
+<p>Color Refinement: As the original alpha values are modified due to regularization, we can no longer guarantee that all pixels still satisfy the color constraint defined in Equation 1. Violating the color constraint in general severely limits the ability to use soft segments for image manipulation. For illustration, Figure 6 shows a pair of examples where KNN matting fails to satisfy the color constraint, which results in unintended color shifts in their results. To avoid such artifacts, we introduce a second energy minimization step, where we replace the alpha constraint defined in Equation 2 in the color unmixing formulation with the following term that forces the final alpha values to be as close as possible to the regularized alpha values:</p>
+<p>$$
+\sum_{i}\left( {\proselabel{soft}{{α}}} _{i}-\hat{{\proselabel{soft}{{α}}} }_{i}\right)^{2}=0
+\tag{6}\label{6}$$</p>
+<p>where $\hat{{\proselabel{soft}{{α}}} }_{i}$ represents the regularized alpha value of the $i^{th}$ layer. By running the energy minimization using this constraint, we recompute unmixed colors at all layers so that they satisfy the color constraint while retaining spatial coherency of the alpha channel. Note that since the alpha values are determined prior to this second optimization, the sparsity term in Equation 4 becomes irrelevant. Hence, we only employ the unmixing term of the energy in this step. For the optimization, we initialize the layer colors as the values found in the previous energy minimization step.</p>
+<p>Finally, to summarize our color unmixing process: we first minimize the sparse color unmixing energy in Equation 4 for every pixel independently. We then regularize the alpha channels of the soft layers using the guided filter and refine the colors by running the energy minimization once again, this time augmented with the new alpha constraint defined in Equation 6. This way we achieve soft segments that satisfy the fundamental color, alpha, and box constraints, as well as the matte sparsity and spatial coherency requirements for high-quality soft-segmentation.</p>
+<p>Note that the two energy minimization steps are computed independently for each pixel, and the guided filter can be implemented as a series of box filters. These properties make our algorithm easily parallelizable and highly scalable.</p>
+<div class="references"></div></div>
+        </div>
+        <div id="glossary_holder"><div id="glossary" class="glossary"></div></div>
+    </div>
+</body>
+</html>

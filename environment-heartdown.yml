@@ -3,11 +3,38 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.9
-  - tatsu
-  - regex
-  - sympy
-  - appdirs
-  - pybtex
-  - tornado
-prefix: /Users/anonymous/opt/miniconda3/envs/heartdown
+  - appdirs=1.4.4=pyh9f0ad1d_0
+  - bzip2=1.0.8=h8ffe710_4
+  - ca-certificates=2022.6.15=h5b45459_0
+  - latexcodec=2.0.1=pyh9f0ad1d_0
+  - libffi=3.4.2=h8ffe710_5
+  - libsqlite=3.39.2=h8ffe710_1
+  - libzlib=1.2.12=h8ffe710_2
+  - mpmath=1.2.1=pyhd8ed1ab_0
+  - openssl=3.0.5=h8ffe710_1
+  - pip=22.2.2=pyhd8ed1ab_0
+  - pybtex=0.24.0=pyhd8ed1ab_2
+  - python=3.9.13=hcf16a7b_0_cpython
+  - python_abi=3.9=2_cp39
+  - pyyaml=6.0=py39hb82d6ee_4
+  - regex=2022.8.17=py39hb82d6ee_0
+  - setuptools=65.2.0=py39hcbf5309_0
+  - six=1.16.0=pyh6c4a22f_0
+  - sqlite=3.39.2=h8ffe710_1
+  - sympy=1.10.1=py39hcbf5309_1
+  - tatsu=5.6.1=pyhd8ed1ab_0
+  - tk=8.6.12=h8ffe710_0
+  - tornado=6.2=py39hb82d6ee_0
+  - tzdata=2022c=h191b570_0
+  - ucrt=10.0.20348.0=h57928b3_0
+  - vc=14.2=hb210afc_6
+  - vs2015_runtime=14.29.30037=h902a5da_6
+  - wheel=0.37.1=pyhd8ed1ab_0
+  - xz=5.2.6=h8d14728_0
+  - yaml=0.2.5=h8ffe710_2
+  - pip:
+    - numpy==1.23.2
+    - plotly==5.10.0
+    - scipy==1.9.0
+    - tenacity==8.0.1
+prefix: C:\Users\mrder\miniconda3\envs\heartdown

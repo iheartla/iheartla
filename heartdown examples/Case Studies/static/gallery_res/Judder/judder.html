@@ -1,0 +1,447 @@
+<html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+            <script>
+        MathJax = {
+          loader: {
+            load: ["[attrLabel]/attr-label.js"],
+            paths: { attrLabel: "../heartdown-resource" },
+          },
+          tex: { packages: { "[+]": ["attr-label"] },
+           inlineMath: [['$', '$']]
+           },
+           options: {
+            enableAssistiveMml: false
+          },
+        };
+            </script>
+            <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+            <script src="https://unpkg.com/@popperjs/core@2"></script>
+            <script src="https://unpkg.com/tippy.js@6"></script>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/svg-arrow.css"/>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/border.css" />
+            <script src="../heartdown-resource/d3.min.js"></script>
+            <script src="../heartdown-resource/svg.min.js"></script>
+            <script type="text/javascript" src='../heartdown-resource/paper.js'></script>
+            <link rel="stylesheet" href="../heartdown-resource/paper.css">
+        </head>
+        <script>
+        const iheartla_data = JSON.parse('{"equations":[{"name":"judder", "parameters":[{"sym":"F", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IGZyYW1lIHJhdGUgJEYkIA=="},{"sym":"L", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"ICBtZWFuIGx1bWluYW5jZSAkTCQg"},{"sym":"S", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IHNwZWVkICRTJCA="},{"sym":"P", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"},{"type": "scalar", "is_int":"False"},{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}},{"sym":"a", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"ICRhJCBhbmQgJGIkIGFyZSBrbm93biBjb25zdGFudHMg"},{"sym":"b", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"ICRhJCBhbmQgJGIkIGFyZSBrbm93biBjb25zdGFudHMg"},{"sym":"M", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IGEgZmFjdG9yICRNJCA="},{"sym":"$L_a$", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"ICRMX2EkICwgJExfYiQgYXMgdGhlIGx1bWluYW5jZXMg"},{"sym":"$L_b$", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"ICRMX2EkICwgJExfYiQgYXMgdGhlIGx1bWluYW5jZXMg"}], "definition":[{"sym":"J", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IGFuIGVhc2lseSBleHByZXNzaWJsZSBtb2RlbCBvZiBqdWRkZXIgJEokIA=="},{"sym":"$F_a$", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IERlbm90aW5nICRGX2EkIGFuZCAkRl9iJCBhcyB0aGUgdHdvIGZyYW1lIHJhdGVzIA=="},{"sym":"$F_b$", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IERlbm90aW5nICRGX2EkIGFuZCAkRl9iJCBhcyB0aGUgdHdvIGZyYW1lIHJhdGVzIA=="},{"sym":"CFF", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "desc":"ICB0aGUgY3JpdGljYWwgZmxpY2tlciBmdXNpb24gcmF0ZSAoJENGRiQpIA=="},{"sym":"α", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "desc":"ICAkzrEkIHRoZSBsb2dhcml0aG0gZnVuY3Rpb24g"},{"sym":"β", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "desc":"ICAkzrIkIGlzIHRoZSBtdWx0aXBsaWNhdGl2ZSBpbnZlcnNlIA=="}], "local_func":[{"name":"CFF", "parameters":[{"sym":"L", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"ICBtZWFuIGx1bWluYW5jZSAkTCQg"}]},{"name":"α", "parameters":[{"sym":"F", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IGZyYW1lIHJhdGUgJEYkIA=="}]},{"name":"β", "parameters":[{"sym":"L", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"ICBtZWFuIGx1bWluYW5jZSAkTCQg"}]}], "dependence":[], "undesc_list":["P"] },{"name":"error", "parameters":[{"sym":"O", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"N"}, "desc":"ICRPIChpKSQgYmVpbmcgdGhlIG9ic2VydmVkIG1lYW5zIGZvciBlYWNoIGNvbmRpdGlvbiAg"},{"sym":"M", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"N"}, "desc":"ICRNIChpKSQgdmFsdWVzIHByZWRpY3RlZCBieSBvdXIgbW9kZWwg"}], "definition":[{"sym":"E", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IHRoZSBlcnJvciAkRSQgIA=="}], "local_func":[], "dependence":[], "undesc_list":[] },{"name":"third", "parameters":[{"sym":"a", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"b", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"$F_b$", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"$F_a$", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"$L_a$", "type_info":{"type": "scalar", "is_int":"False"}}], "definition":[{"sym":"$L_b$", "type_info":{"type": "scalar", "is_int":"False"}}], "local_func":[], "dependence":[], "undesc_list":["$L_a$","$L_b$","b","a","$F_a$","$F_b$"] }], "context":["judder","error","judder"] }');
+        const sym_data = JSON.parse('{"F":[{"desc":"IGZyYW1lIHJhdGUgJEYkIA==", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"judder", "is_defined":false, "used_equations":[], "color":"color2"}],"L":[{"desc":"ICBtZWFuIGx1bWluYW5jZSAkTCQg", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"judder", "is_defined":false, "used_equations":[], "color":"color1"}],"S":[{"desc":"IHNwZWVkICRTJCA=", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"judder", "is_defined":false, "used_equations":[], "color":"color7"}],"P":[{"desc":"None", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"},{"type": "scalar", "is_int":"False"},{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "def_module":"judder", "is_defined":false, "used_equations":[], "color":"color6"}],"a":[{"desc":"ICRhJCBhbmQgJGIkIGFyZSBrbm93biBjb25zdGFudHMg", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"judder", "is_defined":false, "used_equations":[], "color":"color6"},{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"third", "is_defined":false, "used_equations":[], "color":"color6"}],"b":[{"desc":"ICRhJCBhbmQgJGIkIGFyZSBrbm93biBjb25zdGFudHMg", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"judder", "is_defined":false, "used_equations":[], "color":"color3"},{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"third", "is_defined":false, "used_equations":[], "color":"color3"}],"M":[{"desc":"IGEgZmFjdG9yICRNJCA=", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"judder", "is_defined":false, "used_equations":[], "color":"color3"},{"desc":"ICRNIChpKSQgdmFsdWVzIHByZWRpY3RlZCBieSBvdXIgbW9kZWwg", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"N"}, "def_module":"error", "is_defined":false, "used_equations":[], "color":"color3"}],"$L_a$":[{"desc":"ICRMX2EkICwgJExfYiQgYXMgdGhlIGx1bWluYW5jZXMg", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"judder", "is_defined":false, "used_equations":[], "color":"color1"},{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"third", "is_defined":false, "used_equations":[], "color":"color1"}],"$L_b$":[{"desc":"ICRMX2EkICwgJExfYiQgYXMgdGhlIGx1bWluYW5jZXMg", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"judder", "is_defined":false, "used_equations":[], "color":"color7"},{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"third", "is_defined":true, "used_equations":[], "color":"color7"}],"J":[{"desc":"IGFuIGVhc2lseSBleHByZXNzaWJsZSBtb2RlbCBvZiBqdWRkZXIgJEokIA==", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"judder", "is_defined":true, "used_equations":[], "color":"color5"}],"$F_a$":[{"desc":"IERlbm90aW5nICRGX2EkIGFuZCAkRl9iJCBhcyB0aGUgdHdvIGZyYW1lIHJhdGVzIA==", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"judder", "is_defined":true, "used_equations":[], "color":"color5"},{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"third", "is_defined":false, "used_equations":[], "color":"color5"}],"$F_b$":[{"desc":"IERlbm90aW5nICRGX2EkIGFuZCAkRl9iJCBhcyB0aGUgdHdvIGZyYW1lIHJhdGVzIA==", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"judder", "is_defined":true, "used_equations":[], "color":"color4"},{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"third", "is_defined":false, "used_equations":[], "color":"color4"}],"CFF":[{"desc":"ICB0aGUgY3JpdGljYWwgZmxpY2tlciBmdXNpb24gcmF0ZSAoJENGRiQpIA==", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "def_module":"judder", "is_defined":true, "used_equations":[], "color":"color2"}],"α":[{"desc":"ICAkzrEkIHRoZSBsb2dhcml0aG0gZnVuY3Rpb24g", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "def_module":"judder", "is_defined":true, "used_equations":[], "color":"color4"}],"β":[{"desc":"ICAkzrIkIGlzIHRoZSBtdWx0aXBsaWNhdGl2ZSBpbnZlcnNlIA==", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "def_module":"judder", "is_defined":true, "used_equations":[], "color":"color3"}],"O":[{"desc":"ICRPIChpKSQgYmVpbmcgdGhlIG9ic2VydmVkIG1lYW5zIGZvciBlYWNoIGNvbmRpdGlvbiAg", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"N"}, "def_module":"error", "is_defined":false, "used_equations":[], "color":"color2"}],"E":[{"desc":"IHRoZSBlcnJvciAkRSQgIA==", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"error", "is_defined":true, "used_equations":[], "color":"color1"}]}');
+        window.onload = onLoad;
+        function reportWindowSize() {
+          var arrows = document.querySelectorAll(".arrow");
+          if (arrows) {
+            for (var i = arrows.length - 1; i >= 0; i--) {
+              var arrow = arrows[i];
+              var body = document.querySelector("body");
+              var style = window.getComputedStyle(body);
+              var arrowPanel = document.querySelector("#arrows");
+              var arrowRect = arrowPanel.getBoundingClientRect();
+              var curOffset = parseInt(style.marginLeft, 10)
+              var oldOffset = arrow.getAttribute('offset');
+              curOffset += arrowRect.width;
+              arrow.setAttribute('offset', curOffset);
+              // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
+              var arrowStyle = window.getComputedStyle(arrow); 
+              var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
+              arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
+              var newWidth = parseInt(style.width, 10) + parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+              arrow.style.width = `${newWidth}px`;
+              arrow.style.height = style.height; 
+              // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
+            }
+          }
+          adjustGlossaryBtn();
+        }
+        window.onresize = reportWindowSize;
+        document.addEventListener("click", function(evt){
+            onClickPage();
+        });
+        
+        </script>
+<body>
+    <div id="flexer">
+        <div id="arrows"></div>
+        <div id="main">
+        <div class='title'>A Luminance-aware Model of Judder Perception</div><div class='author'>ALEXANDRE CHAPIRO, ROBIN ATKINS, and SCOTT DALY, Dolby Laboratories, USA</div><p class='abstract'>The perceived discrepancy between continuous motion as seen in nature and frame-by-frame exhibition on a display, sometimes termed judder, is an integral part of video presentation. Over time, content creators have developed a set of rules and guidelines for maintaining a desirable cinematic look under the restrictions placed by display technology without incurring prohibitive judder. With the advent of novel displays capable of high brightness, contrast, and frame rates, these guidelines are no longer sufficient to present audiences with a uniform viewing experience. In this work, we analyze the main factors for perceptual motion artifacts in digital presentation and gather psychophysical data to generate a model of judder perception. Our model enables applications like matching perceived motion artifacts to a traditionally desirable level and maintain a cinematic motion look.
+</p><div class='context' id='context-judder-0' context='judder'>
+
+<h1 id='introduction'>1&nbsp;INTRODUCTION</h1><p>In this work, we pursue a practical examination of motion artifacts in the modern display landscape. In vision science such artifacts can be classified in various ways based on distinct features of the perceivable error (Section 2.2)—we will simplify this discussion and refer to these effects collectively as judder. When excessive, it ruins the quality of motion in a video and makes the content difficult or unpleasant to watch. Details of moving objects may be lost completely, and certain scenes can become disturbing or even entirely un-watchable. This is especially true for camera pans, which are the focus of this work. Pans are characterized by a swivel motion, generally horizontal, such that the majority of the filmed scene appears to move in the direction opposite to the camera rotation.</p>
+<p>Judder is widespread in modern display systems but not when looking at real-life objects, chiefly due to static presentation: That is, a display presents us with a quickly changing series of still frames. When images are updated at the traditionally used frequency (known as frame rate, historically set at 24 unique frames per second for cinema), there often remains a perceptible residual difference between a real-life object and its displayed counterpart (see Figure 1). When frame rates are increased, judder is reduced or even becomes imperceptible to viewers. </p>
+<figure>
+<img src="./img/img1.png" alt="Trulli" style="width:100%" class = "center">
+<figcaption align = "center">Fig. 1. This figure represents the horizontal movement of an image. Unlike the continuous case (left), the discrete static presentation (middle) of moving objects naturally leads to a mismatch within the human visual system. Instead of varying smoothly, object position jumps ahead or lags behind the continuous original, generating perceptual artifacts. Higher frame rates (right) reduce this artifact.
+</figcaption> 
+</figure>
+
+<p>Although judder can be seen as undesirable if one aims to reproduce reality exactly, some audiences have become accustomed to a certain look when consuming cinematic content, including the 24 frame-per-second (FPS) presentation format. This appearance is strongly associated with artistic presentation, Hollywood or other higher-budget production, and professional quality. When the frame rate is increased, some viewers balk at the smooth motion, which is then perceived as an artifact itself [<a class="citation" href="#ref-giardina2012peter" id="cite-giardina2012peter">Giardina 2012</a>]. This is often referred to as the soap opera effect, associated with low-cost or home production. This reaction is generally not present when considering non-cinematic forms of entertainment [<a class="citation" href="#ref-wilcox2015evidence" id="cite-wilcox2015evidence">Wilcox et al. 2015</a>]. In sports, video games and low-budget productions, high frame rates have become standard and judder is expected to be minimized. Further, a dichotomy between users that prefer smooth motion and others who prefer a certain level of “cinematic” judder exists: When considering cinematic content, we see that judder is a unique artifact that we may want to preserve, within some threshold—not too high so as to not ruin the quality of the content but not too low or we risk making viewers unhappy with the content’s new look.</p>
+<p>An additional degree of freedom in this problem is that motion artifacts are influenced by other factors associated with the displayed content and the screen being employed by the viewer. Several factors may affect judder [<a class="citation" href="#ref-7306410" id="cite-7306410">Daly et al. 2015</a>; <a class="citation" href="#ref-larimer200141" id="cite-larimer200141">Larimer et al. 2001</a>], such as content brightness, dynamic range, contrast, speed and direction of motion, shutter angle and shutter speed, eccentricity in the field of view of the observer, and, of course, frame rate. Interestingly, as display technologies evolve, mainly with the introduction of high dynamic range televisions and projectors, the magnitudes of several of these factors (e.g., brightness, contrast, etc.) are changing, thus affecting their influence on judder. Feedback from artists and audiences shows that some movies that had desirable judder characteristics in a traditional cinema in the past may now appear to have too much judder when seen in high dynamic range (HDR) cinemas. This places new and restricting constraints on content creators in relation to what kind of scenes and motions can be present in their movies, effectively diminishing the HDR effect or enforcing only slow movement to be present. Our work aims to model judder perceptually, paving the way for tools that are able to quantify and control judder.</p>
+<h1 id='related-work'>2&nbsp;RELATED WORK</h1><p>The differences between the natural continuous motion of an object and its discrete sampled counterpart result in perceived artifacts that we term judder. In this section, we point out that:<br />
+- Existing perceptual metrics are not sufficient to predict judder preference (Section 2.1, 2.2)<br />
+- Judder is likely to become a more prominent problem for novel display modes such as HDR (Section 2.3)<br />
+- Existing frame interpolation methods require additional information to produce perceptually pleasant results (Section 2.4)</p>
+<h2 id='motion-perception'>2.1&nbsp;Motion Perception</h2><p>Motion perception has been widely studied [<a class="citation" href="#ref-nishida2011advancement" id="cite-nishida2011advancement">Nishida 2011</a>], from the basics such as Fourier motion and the aperture problem to more advanced topics such as transparent motion [<a class="citation" href="#ref-mulligan1992motion" id="cite-mulligan1992motion">Mulligan and others 1992</a>], motion aftereffects [<a class="citation" href="#ref-derrington1985separate" id="cite-derrington1985separate">Derrington and Badcock 1985</a>], and biological motion [<a class="citation" href="#ref-johansson1973visual" id="cite-johansson1973visual">Johansson 1973</a>]. Other vision science work directed to distortions of practical interest include the motion sharpening effect, whereby blur levels of static frames are substantially less visible when the frames are displayed in motion [<a class="citation" href="#ref-bex1995sharpening" id="cite-bex1995sharpening">Bex et al. 1995</a>; <a class="citation" href="#ref-takeuchi2005sharpening" id="cite-takeuchi2005sharpening">Takeuchi and De 2005</a>; <a class="citation" href="#ref-westerink1995perceived" id="cite-westerink1995perceived">Westerink and Teunissen 1995</a>]. The smoothness of sampled motion without specifically referring to the common term, judder, has been investigated including the effects of intermittent occlusion [<a class="citation" href="#ref-scherzer2009intermittent" id="cite-scherzer2009intermittent">Scherzer and Ekroll 2009</a>], which can be applied to projector shutter designs.</p>
+<p>Perceptual image difference metrics such as HDR-VDP [<a class="citation" href="#ref-mantiuk2011hdr" id="cite-mantiuk2011hdr">Mantiuk et al. 2011</a>] compare two images by employing a pipeline modeling the human visual system. Video difference metrics are much less common. Work from Watson and Malo on the Standard Spatial Observer [<a class="citation" href="#ref-watson2002video" id="cite-watson2002video">Watson and Malo 2002</a>] contains a video quality metric based on their existing model but does not provide implementation strategies. [aydin2010video] extend their previous work on HDR image comparison to videos by employing a spatiotemporal contrast sensitivity function (STCSF) and a three-dimensional cortex transform. The window of visibility [<a class="citation" href="#ref-watson2013high" id="cite-watson2013high">Watson 2013</a>; <a class="citation" href="#ref-watson1986temporal" id="cite-watson1986temporal">Watson and others 1986</a>] has been developed to model the interactions of the visual system with spatiotemporal aliasing distortions due to frame rate designs and more recently this work has been extended to a pyramid of visibility by showing that the STCSF is well approximated as a linearly separable function of its factors, including the log of adapting luminance [<a class="citation" href="#ref-watson2016pyramid" id="cite-watson2016pyramid">Watson and Ahumada 2016</a>].</p>
+<p>Most of these works have been geared toward threshold detection of temporal artifacts as modeled by the STCSF. By contrast, our work focuses on suprathreshold appearance and aims to provide a practical model that can be used to predict and compare distortions relevant to display applications.</p>
+<h2 id='judder-and-frame-rate'>2.2&nbsp;Judder and Frame Rate</h2><p>Subjective preference for higher frame rates was studied by [<a class="citation" href="#ref-wilcox2015evidence" id="cite-wilcox2015evidence">Wilcox et al. 2015</a>], who showed that in an experimental setting audiences preferred high frame rate clips to traditional 24Hz presentation. This work was later extended [<a class="citation" href="#ref-allison2016expert" id="cite-allison2016expert">Allison et al. 2016</a>] to specifically target expert viewers with similar outcomes. A stronger preference for high frame rate presentation was found for action clips. Shutter angle was not found to play an effect on participants’ choices. Although higher frame rates were preferred, the stimuli employed in the experiments were relatively simple short clips and may not fully evoke a cinematic sensation associated with high production value feature films, which may have reduced the propensity of the audience to be disturbed by the “soap opera effect.”</p>
+<p>Explorations specifically on the perception of judder include qualitative work on understanding what underlies the “film look” [<a class="citation" href="#ref-roberts2002film" id="cite-roberts2002film">Roberts 2002</a>], including factors such as frame rate, object motion, and whole-frame motion (panning), as well as the causes within the eye as opposed to on-screen. The perception of double edges and their relation to source image sharpness is discussed.</p>
+<p>Initial work on judder from a vision science perspective [<a class="citation" href="#ref-larimer200141" id="cite-larimer200141">Larimer et al. 2001</a>] found that judder increases at both the high speeds (as expected), as well as the very low speeds. This result was confirmed in this work, as seen in Section 5 and 6. An initial investigation on fundamental judder perception [<a class="citation" href="#ref-7306410" id="cite-7306410">Daly et al. 2015</a>] from a quantitative approach discussed four underlying components of judder: motion blur, non-smooth motion, multiple edges, and flickering. The relative weights of these distortions into an overall perception of judder are unknown, and individual variability is possible. The dominant effect was frame rate, followed by speed, but other factors had measurable effects. The study sampled few variations in a large set of perceptual factors to achieve a high level understanding of the space, and thus is not suitable as the basis of a visual model.</p>
+<h2 id='display-technology'>2.3&nbsp;Display Technology</h2><p>Although standard cinema specifications only require a luminance of 48cd/m2 [<a class="citation" href="#ref-DCI" id="cite-DCI">DCI 2012</a>], high dynamic range and ultra-bright displays are becoming ever more common and important as part of UHD television [<a class="citation" href="#ref-nilsson2015ultra" id="cite-nilsson2015ultra">Nilsson 2015</a>]. Major TV manufacturers including LG, Sony, Panasonic, Samsung, and TCL have released consumer-level HDR screens with peak luminance varying from 800 to 4000cd/m2, with yet brighter displays announced or demonstrated. With the introduction of OLED televisions into the market, ultra-high contrast display has also become ubiquitous.</p>
+<p>Recent art has seen the effect of extended luminance and contrast explored for other perceptual factors such as color [<a class="citation" href="#ref-kim2009modeling" id="cite-kim2009modeling">Kim et al. 2009</a>] and stereopsis [<a class="citation" href="#ref-didyk2012luminance" id="cite-didyk2012luminance">Didyk et al. 2012</a>], and researchers have noted that judder is likely to become a more prominent problem for novel display modes such as HDR [<a class="citation" href="#ref-mccarthy2016independent" id="cite-mccarthy2016independent">McCarthy 2016</a>; <a class="citation" href="#ref-noland2016high" id="cite-noland2016high">Noland 2016</a>], confirmed by this work. Feedback from industry professionals shows that a commonly used technique to combat judder introduced by increased brightness in novel displays consists of simply reducing content brightness during grading, which is undesirable.</p>
+<p>In the context of limited transmission bandwidth, perceived quality tradeoffs between spatial and temporal resolutions have been shown to have a nonlinear relationship [<a class="citation" href="#ref-debattista2018frame" id="cite-debattista2018frame">Debattista et al. 2018</a>].</p>
+<h2 id='frame-interpolation'>2.4&nbsp;Frame Interpolation</h2><p>This work is done within the context of presentation on a modern display. Such displays are generally capable of showing images at a higher rate than the traditional 24Hz (e.g., 60, 120, or 144Hz). In this section, we discuss the problem of video frame rate re-sampling. These algorithms are occasionally concerned with the removal or preservation of judder, but lack the psychophysical data to make informed editing decisions.</p>
+<p>There is a great variety of frame interpolation methods available. Traditional methods use motion flow vectors computed during video encoding [<a class="citation" href="#ref-zhai2005a" id="cite-zhai2005a">Zhai et al. 2005</a>], derivatives of optical flow [<a class="citation" href="#ref-mahajan2009moving" id="cite-mahajan2009moving">Mahajan et al. 2009</a>] or even phase-based motion estimation [<a class="citation" href="#ref-meyer2015phase" id="cite-meyer2015phase">Meyer et al. 2015</a>]. Because motion estimation often fails, especially when the movement is non-translational or when objects are not rigid, these methods may generate artifacts. Recent advances in machine learning have been applied to frame interpolation, both as a tool to compute better flow [<a class="citation" href="#ref-dosovitskiy2015flownet" id="cite-dosovitskiy2015flownet">Dosovitskiy et al. 2015</a>], to generate entirely new frames at the cost of adding blur [<a class="citation" href="#ref-vondrick2016generating" id="cite-vondrick2016generating">Vondrick et al. 2016</a>], or combine both techniques [<a class="citation" href="#ref-liu2017video" id="cite-liu2017video">Liu et al. 2017</a>]. While these methods can be used to obtain video at different frame rates, they do not solve the problem of finding a desirable judder pattern intrinsically.</p>
+<p>Templin and colleagues developed a method to simulate arbitrary frame rates on displays with high refresh rates [<a class="citation" href="#ref-templin2016emulating" id="cite-templin2016emulating">Templin et al. 2016</a>]. This method is meant for fine-tuned control of frame rate effects and was developed specifically to control judder but does not provide a definite answer for what the desirable characteristics of a video asset are in terms of judder or how to predict or match judder across different display technologies. This is precisely the goal of our work.</p>
+<h1 id='experimental-setup'>3&nbsp;EXPERIMENTAL SETUP</h1><p>To study judder through psychophysical trials, an experimental setup consisting of a display capable of reliably showing content at a large range of frame rates is necessary. To test the suitability of a display for our study, we measured its refresh rate and stability with a pair of Thorlabs PDA36A photo sensors that measure light in the visible wavelengths (350–780nm) at a frequency of up to 10MHz connected to an oscilloscope. A sample measurement can be seen in the supplementary material. To assess potential crosstalk between consecutive frames, the display was filmed with a high-speed camera while displaying temporal calibration targets.</p>
+<p>After some experimentation, we found that our LCD displays were unable to show individual frames correctly at 120Hz due to slow rise times, resulting in incorrect frame brightness. Instead, our setup consists of an LG C7 2017 55” RGBW OLED TV. The display was calibrated to a standard CIE D65 (x = 0.3127, y = 0.329) whitepoint using a Photo Research SpectraScan PR740 spectroradiometer perpendicular to the center point of the screen. The display operated at a resolution of 1920×1080.</p>
+<p>We also found that typical video players are unable to reliably play at 120Hz without frame drops or repeats. To fix this we employed a custom OpenGL GPU implementation with multithreaded image loading from disk. To read uncompressed video frames, our application required a fast hard drive: For our resolution, 1920 ∗ 1080 ∗ 3 (RGB) ∗1 byte (8-bit images) ∗120Hz ≃ 750 MB/s, assuming a perfect system. Our server had a RAID-0 disk array providing &gt;2GB/s read speeds and a Quadro M4000 GPU and was connected to the display via an HDMI 2.0 cable.</p>
+<h1 id='psychophysical-experiments'>4&nbsp;PSYCHOPHYSICAL EXPERIMENTS</h1><p>Based on previous work discussed in Section 2.2 and feedback from industry content creators, we identified the main components of video that are believed to impact judder. Our goal is to examine these factors and generate a predictive model. We ran three psychophysical experiments measuring perceived judder.</p>
+<h2 id='perceptual-factors-affecting-judder'>4.1&nbsp;Perceptual Factors Affecting Judder</h2><p>The following are expected to be the strongest and most useful elements, present in all three studies:</p>
+<p>Frame Rate. Expected to be the main factor affecting judder [<a class="citation" href="#ref-watson2013high" id="cite-watson2013high">Watson 2013</a>], frame rate is in many ways the most malleable dimension for the manipulation of cinematic content as changes can be made without significantly altering the composition. Our experiments were performed on subsets of 24, 30, 60, and 120Hz. Frame rates under 24Hz are not widely employed in practice. In the practical cinematic scenarios targeted in this work [<a class="citation" href="#ref-fujine2007real" id="cite-fujine2007real">Fujine et al. 2007</a>], rates over 120Hz are unlikely to exhibit judder, although motion artifacts could be visible at higher frame rates under different conditions, such as very high stimulus speed [<a class="citation" href="#ref-watson1986temporal" id="cite-watson1986temporal">Watson and others 1986</a>].</p>
+<p>Speed. As this work is mostly concerned with camera pans, we chose to parametrize this dimension based on panning speed, i.e., we assume the analyzed scene will have a unique dominant motion component. To select meaningful values, we turn to existing rules of thumb for pans in cinema [<a class="citation" href="#ref-burum2007american" id="cite-burum2007american">Burum 2007</a>]. In many cases, a 7s pan across the screen is considered the fast limit for a traditional shot to avoid motion artifacts. We chose to probe pans with speeds of 5, 7, 11, and 17s so we have information above, at, and below this limit. These speeds translate to approximately 2, 3, 4.7, and 6.6 deg/s based on the viewing distance of three picture heights, which corresponds to a horizontal 33◦ viewing angle for the whole screen. We expect higher speeds to translate into more perceived judder. For very slow speeds, the opposite may happen due to spatial position accuracy, especially at lower spatial resolutions [<a class="citation" href="#ref-larimer200141" id="cite-larimer200141">Larimer et al. 2001</a>]. These values are all within the region of smooth pursuit tracking [<a class="citation" href="#ref-li2010effects" id="cite-li2010effects">Li et al. 2010</a>; <a class="citation" href="#ref-meyer1985upper" id="cite-meyer1985upper">Meyer et al. 1985</a>]. Smooth pursuit has a gain slip of about 0.9, and for wide field of view, catch-up saccades are used by the visual system to continue with smooth pursuit tracking. We expect that both smooth pursuit eye movements and occasional catch-up saccades may occur for some viewers, but that the rating assessment would be accumulated during the smooth pursuit behavior during any given trial. In particular, any visibility during a saccade will be substantially suppressed.</p>
+<p>Adapting Luminance. Known to influence spatiotemporal contrast sensitivity [<a class="citation" href="#ref-de1958research" id="cite-de1958research">Lange 1958</a>; <a class="citation" href="#ref-van1967spatial" id="cite-van1967spatial">Van and Bouman 1967</a>], adapting luminance has been modelled in image engineering [<a class="citation" href="#ref-barten1989square" id="cite-barten1989square">Barten 1989</a>; <a class="citation" href="#ref-daly1992visible" id="cite-daly1992visible">Daly 1992</a>]. Following common practice in this field, we model adaptation luminance as the mean of the image’s luminance in cd/m2. We expect sensitivity to rise as luminance increases, so it is reasonable to expect that judder may become more noticeable. We test mean luminance levels of 2.5, 10, and 40cd/m2. Note that image brightness varies based on scene content and the values presented here are taken as representative averages of mean luminance present in cinema and home theater for the first and second, while the final value is equally spaced but higher and represents a hypothetical high-luminance screen.</p>
+<p>Additional factors are explored in some of our experiments:</p>
+<p>Contrast. The STCSF operates on contrast, which is expected to be a factor. In this work, we used Michelson contrast, defined as (Imax − Imin )/(Imax + Imin ) to describe this factor, where I is the luminance image being used. Higher contrast is expected to lead to more perceived judder. We probed contrast values of 0.95, 0.75, and 0.5. Cinematic content traditionally strives to use as much of the available contrast as possible, and as such reducing contrast is usually not a feasible form of judder control.</p>
+<p>Shutter Angle. More generally, motion blur reduces the retinal-image contrast of high spatial frequencies, potentially reducing judder. Shutter angles are traditionally described in degrees of arc with 360◦ representing a shutter that is open for the entire duration between frame captures. Smaller values represent fractional exposures: A 180◦ shutter means the sensor is exposed for half the available time. We explored shutter angle values of 360◦, 180◦, and 0◦ (the latter taken by convention when using an unaltered still image to simulate a camera pan). Blur is often used to control judder by content creators when no other options are available, but blurring strongly alters the scene leading to lost information.</p>
+<p>Motion Direction. Previous research on judder [<a class="citation" href="#ref-7306410" id="cite-7306410">Daly et al. 2015</a>] hypothesized that horizontal motions may produce more judder than vertical for some stimuli due to the better performance of horizontal smooth pursuit over vertical [<a class="citation" href="#ref-ke2013directional" id="cite-ke2013directional">Ke et al. 2013</a>], but no data are provided to compare these results quantitatively.</p>
+<p>To gauge whether directionality of motion is an integral part of judder perception, we ran a brief user study. The experimental procedure, stimulus, and analysis were identical to Experiment 1 described in Section 4.2 and 5, but the only variables were frame rate at 24, 30, and 60 FPS and directionality, with the edge moving top-to-bottom (vertical) or left-to-right (horizontal). Thirteen users participated, with results shown in Figure 2. Frame rate was a significant factor (F = 410.58, p ≪ 0.01). Direction was not found to be significant (F = 2.24, p = 0.14) with horizontal and vertical showing very similar behavior in terms of judder. In the rest of this work, we focus on horizontal movement, as this is the most common case in cinema and television.</p>
+<figure>
+<img src="./img/img2.png" alt="Trulli" style="width:50%" class = "center">
+<figcaption align = "center">Fig. 2. Vertical bars depict 95% confidence intervals.
+</figcaption> 
+</figure>
+<h2 id='experimental-procedure'>4.2&nbsp;Experimental Procedure</h2><p>Participants were seated comfortably in a dark room. A chin rest was not employed as we felt that simulating natural viewing conditions would be more important than restricting head movements.<br />
+The experiment was performed with binocular viewing and natural pupil size. The display was placed at a standard three picture heights from the participants [<a class="citation" href="#ref-poynton2012digital" id="cite-poynton2012digital">Poynton 2012</a>].</p>
+<p>As the goal of this work is to generate a transducer function from a high-dimentional space of parameters to judder, direct comparisons between conditions would have resulted in a prohibitively large number of trials. Instead, participants were instructed to rate stimuli in terms of judder on a scale of 0–9 (the former meaning no judder), with judder defined to participants as the absence of smooth motion. Stimuli were shown in three blocks of equal luminance (at mean luminance levels of 2.5, 10, or 40cd/m2) to allow participants to perform at a stable luminance adaptation state, with random block order and random presentation order of stimuli within each block for each participant. To allow the users to calibrate their responses to the dataset, a training session was conducted prior to each experiment that consisted of one of these three blocks chosen at random. Training results were excluded from further analysis. Results for each participant were normalized to use the entire 0–9 range to account for<br />
+user variability.</p>
+<p>Participants could observe each stimulus as many times as necessary to make their decision, after which responses were recorded using a standard keyboard. Each run consisted of 3 frame rates, 3 luminance levels, 4 speeds, and 1 additional parameter per experiment with 3 states, totaling 108 stimuli for the main experiment and an additional 36 for the training session. Participants took, on average, 30 minutes to complete the experiment, which was judged to be the longest period possible before fatigue.</p>
+<h2 id='stimuli'>4.3&nbsp;Stimuli</h2><p>As we expect higher spatio-temporal sensitivity to achromatic stimuli [<a class="citation" href="#ref-kelly1983spatiotemporal" id="cite-kelly1983spatiotemporal">Kelly 1983</a>], images were presented in grayscale (see Figure 3).</p>
+<p>Experiment 1. This experiment had the following variables:</p>
+<ul>
+<li>Framerate=[30,60,120]Hz </li>
+<li>Mean luminance=[2.5,10,40]cd/m2</li>
+<li>Speed=[17,11,7,5]secondpanacrossthescreen</li>
+<li>MichelsonContrast=[0.5,0.75,0.95]<br />
+We employed a traditional vision science stimulus termed “disembodied moving edge” [<a class="citation" href="#ref-savoy1989isolated" id="cite-savoy1989isolated">Savoy and Burns 1989</a>] on a gray background. The edge moved across the screen left-to-right with the desired speed. The edge consisted of two vertical, adjacent columns of pixels with values M and m symmetric about the mean and calculated to match the desired contrast (see Appendix A), which then smoothly decayed toward the mean away from the edge.</li>
+</ul>
+<figure>
+<img src="./img/img3.png" alt="Trulli" style="width:100%" class = "center">
+<figcaption align = "center">Fig. 3. Stimuli used in our experiments. In each trial, the displayed image represented by the red rectangle, pans across the scene horizontally at the desired speed.
+</figcaption> 
+</figure>
+
+<p>Experiment 2. This experiment had the following variables:<br />
+- Framerate=[30,60,120]Hz<br />
+- Mean luminance=[2.5,10,40]cd/m2<br />
+- Speed=[17,11,7,5]secondpanacrossthescreen<br />
+- Images=[bunny,thorny,дas]</p>
+<p>In this experiment, we chose to employ still image pans to provide participants with more realistic stimuli. A 1920×1080 window of a larger image is displayed and pans across the screen at the desired speed. Three images were selected, depicting a rendered scene from Big Buck Bunny1 and two natural scenes showing a thorny cactus flower with strong diagonal features and a gas station with strong vertical lines.</p>
+<p>Experiment 3. This experiment had the following variables:<br />
+- Framerate=[24,30,60]Hz<br />
+- Mean luminance=[2.5,10,40]cd/m2<br />
+- Speed=[17,11,7,5]secondpanacrossthescreen<br />
+- Shutter Angle = [0◦, 180◦, 360◦]</p>
+<p>In this experiment, we used only the thorny image from Experiment 2 but were interested in exploring the effect of shutter angle on judder. As the original content is a still image, we consider its shutter angle to be 0◦ by convention. Knowing the speed and frame duration for each stimulus, we computationally simulated shutter angles of 180◦ and 360◦ to see if photorealistic motion blur values (i.e., as would have been shot with a real-life camera) for image pans could be used as a viable strategy to mitigate judder. Although stronger blurring is possible and often employed as a tool in production, we chose not to include it in this test as it would significantly alter the scene. In addition, we explored lower frame rates introducing 24Hz and removing 120Hz from the set.</p>
+<h1 id='experiment-results'>5&nbsp;EXPERIMENT RESULTS</h1><p>The results of experiments 1 to 3 were analyzed using linear mixed regression, treating participants as random effects to capture differences in their baseline rates of judder detection. The resulting p-values are reported below. Effect sizes are discussed in Section A.2.</p>
+<p>Experiment 1. Twelve participants took part. As expected from Section 4.1, significant factors included mean luminance (F = 53.68, p ≪ 0.01), frame rate (F = 633.07, p ≪ 0.01) and speed (F = 36.34, p ≪ 0.01). Contrast was not found to be a significant factor (F = 0.54, p = 0.46), possibly due to all stimuli being of suprathreshold contrast and contrast constancy effects [<a class="citation" href="#ref-georgeson1975contrast" id="cite-georgeson1975contrast">Georgeson and Sullivan 1975</a>].</p>
+<p>The results of this experiment can be seen in Figure 4; for simplicity, the plotted data have been averaged over the contrast dimension and participants. By comparing the three plots, we note that frame rate has a powerful effect on mitigating judder, with results at 120 and 60Hz showing little perceived judder, while 30Hz stimuli were all perceived with high levels of judder. A clear trend from the 30Hz plot is that, at this frame rate, judder increases uniformly with luminance. In addition, speed has a nearly linear effect on perceived judder.</p>
+<figure>
+<img src="./img/img4.png" alt="Trulli" style="width:100%" class = "center">
+<figcaption align = "center">Fig. 4. Results for experiment 1 (moving edge), averaged over participants and contrasts. Vertical lines depict standard error over all samples. Results for 120 (right) and 60 FPS (mid) show little judder. Thirty FPS (left) appeared considerably distorted—judder increases almost linearly with speed, and there is a neat separation between luminance levels (plotted in red, green, and blue), with higher luminances considered to have more judder.
+</figcaption> 
+</figure>
+<figure>
+<img src="./img/img5.png" alt="Trulli" style="width:100%" class = "center">
+<figcaption align = "center">Fig. 5. Results for experiment 2 (panning complex images), averaged over participants and images. Vertical lines depict standard error over all samples. Results are similar to experiment 1, with 120 (right) and 60 FPS (mid) not showing much judder. Thirty FPS (left) continues to present a positive and clearly separable correlation of judder with speed and luminance.
+</figcaption> 
+</figure>
+<figure>
+<img src="./img/img6.png" alt="Trulli" style="width:100%" class = "center">
+<figcaption align = "center">Fig. 6. Results for experiment3(panning thorny cactus image,with shutter angle variations),averaged over participants and shutter angles. Verticallines depict standard error over all samples. Note that here we probe different frame rates. Sixty FPS (right) shows little judder, while 30 FPS (mid) exhibits similar behavior to experiments 1 and 2. Twenty-four FPS (left) shows even stronger judder responses, with a larger separation between the first luminance level of 2.5cd/m2 and the remaining levels, indicating that an increase in brightness has a strong impact on perceived judder.
+</figcaption> 
+</figure>
+
+<p>Experiment 2. Eleven participants took part. Once again, mean luminance (F = 52.09, p ≪ 0.01), frame rate (F = 849.78, p ≪ 0.01), and speed (F = 40.26, p ≪ 0.01) were found to be significant factors. Type of image shown (F = 1.62, p = 0.20) was not significant.</p>
+<p>The results can be seen in Figure 5, averaged out over the three different image types and participants for simplicity. The product of this experiment is similar to experiment 1, which validates our expectation that judder perception for more realistic stimuli still follows the expected trends.</p>
+<p>Experiment 3. Ten participants took part. Significant factors included mean luminance (F = 249.77, p ≪ 0.01), frame rate (F = 1017.50, p ≪ 0.01), and speed (F = 154.92, p ≪ 0.01). Shutter angle was not found to be a significant factor (F = 0.23, p = 0.63).</p>
+<p>The results can be seen in Figure 6, averaged out over shutter angle and users, for simplicity. In this experiment, we introduced a lower-frame-rate condition, 24Hz, and removed the highest frame rate from previous cases, as its results contained almost no information (120Hz). As this results in a different scaling of the responses, data were normalized such that the blocks overlapping with experiments 1 and 2 have matching means before generating the model described in Section 6. Note that, as previously, little judder is experienced at 60Hz, while results for 30Hz look similar to earlier studies. At 24Hz, a stronger difference between the lowest luminance level (targeting standard dynamic range cinema) and the higher luminances is seen.</p>
+<p>Variables that were not found to be significant were not included in our perceptual model of judder, although this result does not necessarily indicate that contrast, shutter angle, or type of image will never affect judder. It is possible, for example, that stronger distortions such as non-photorealistic blurring above 360◦ could significantly affect judder perception, but such values were not tested in this work, as they would strongly alter the look of the scene and thus do not lead to a satisfactory solution to mitigate judder.</p>
+<h1 id='judder-model'>6&nbsp;JUDDER MODEL</h1><p>To obtain <span sym="J" context="judder">  an easily expressible model of judder ${\prosedeflabel{judder}{{J}}}$  </span> based on the most important factors,<span sym="L" context="judder">   mean luminance ${\prosedeflabel{judder}{{L}}}$  </span>, <span sym="F" context="judder">  frame rate ${\prosedeflabel{judder}{{F}}}$  </span>, and <span sym="S" context="judder">  speed ${\prosedeflabel{judder}{{S}}}$  </span>, we combine the results of experiments 1–3 to design a single empirical model. We fit the perceptual data provided by user study participants into a second degree polynomial model:</p>
+<p>
+        <div class='equation' code_block="judder" code="SiA9IFAozrEoRiksIM6yKEwpLCBTKQpGIOKIiCDihJ0KTCDiiIgg4oSdClMg4oiIIOKEnQpQIOKIiCDihJ0sIOKEnSwg4oSdIC0+IOKEnQo=">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'J', 'judder', 'def', false, '')", "id":"judder-J", "sym":"J", "func":"judder",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathit{J}} } & = \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'P', 'judder', 'use', false, '')", "id":"judder-P", "sym":"P", "func":"judder",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{P}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'α', 'judder', 'use', false, '')", "id":"judder-α", "sym":"α", "func":"judder",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{α}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'F', 'judder', 'use', false, '')", "id":"judder-F", "sym":"F", "func":"judder",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{F}} } \right),\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'β', 'judder', 'use', false, '')", "id":"judder-β", "sym":"β", "func":"judder",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{β}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'L', 'judder', 'use', false, '')", "id":"judder-L", "sym":"L", "func":"judder",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{L}} } \right),\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'S', 'judder', 'use', false, '')", "id":"judder-S", "sym":"S", "func":"judder",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{S}} } \right)\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'judder', ['S', 'F', 'P', 'α', 'β', 'L', 'J'], false, [], [], 'SiA9IFAozrEoRiksIM6yKEwpLCBTKQ==');"} }{}
+\end{align*}
+\tag{1}\label{1}$$</div>
+        <br />
+where ${\proselabel{judder}{{α}}}$ and ${\proselabel{judder}{{β}}}$ are nonlinearities employed in perceptual modeling; specifically, for luminance we employ <span sym="α" context="judder">   ${\prosedeflabel{judder}{{α}}}$ the logarithm function  </span> and for frame rate <span sym="β" context="judder">   ${\prosedeflabel{judder}{{β}}}$ is the multiplicative inverse  </span>, i.e., we model on frame duration. For details on the resulting function, please see Section A.3.</p>
+</div><div class='context' id='context-error-0' context='error'>
+<p>This is an excellent fit to the psychophysical data, with a mean absolute error of 0.24 (equivalent to 9.4%) between measured and predicted judder at the probed points. To present the reader with an error metric that relates to physical quantities, we also computed the mean error in the log-luminance domain (to avoid under representing errors in low-luminance conditions). Given $N$ as the number of measured conditions, <span sym="O" context="error">  ${\prosedeflabel{error}{{O}}} (i)$ being the observed means for each condition   </span>and <span sym="M" context="error">  ${\prosedeflabel{error}{{M}}} (i)$ values predicted by our model  </span>, we calculate <span sym="E" context="error">  the error ${\prosedeflabel{error}{{E}}}$   </span>as</p>
+<p>
+        <div class='equation' code_block="error" code="RSA9IHN1bV9pIHxsb2coT19pKSAtIGxvZyhNX2kpfC9sb2coT19pKSAKCk8g4oiIIOKEnV5OCk0g4oiIIOKEnV5OCg==">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'E', 'error', 'def', false, '')", "id":"error-E", "sym":"E", "func":"error",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathit{E}} } & = \sum_{\mathit{i}} \frac{\left| \log{ \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'O', 'error', 'use', false, '')", "id":"error-O", "sym":"O", "func":"error",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{O}} }_{ \mathit{i} } } -  \log{ \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'M', 'error', 'use', false, '')", "id":"error-M", "sym":"M", "func":"error",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{M}} }_{ \mathit{i} } }\right|}{ \log{ \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'O', 'error', 'use', false, '')", "id":"error-O", "sym":"O", "func":"error",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{O}} }_{ \mathit{i} } }}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'error', ['O', 'M', 'E'], false, [], [], 'RSA9IHN1bV9pIHxsb2coT19pKSAtIGxvZyhNX2kpfC9sb2coT19pKQ==');"} }{}
+\end{align*}
+\tag{2}\label{2}$$</div>
+        </p>
+<p>resulting in ${\proselabel{error}{{E}}}$ at approximately 1.37%. A visualization of this model for a speed of 1/7 pictures per second can be seen in Figure 7 (left). A rendering of the overlaid surfaces for various speeds and a cross section of the resulting shapes for a given frame rate can be seen in Figure 8.</p>
+<figure>
+<img src="./img/img7.png" alt="Trulli" style="width:100%" class = "center">
+<figcaption align = "center">Fig. 7. A rendering of our judder model for a speed of 1/7 pictures per second. Vertical bars depict 95% confidence intervals. The horizontal line is an isoline with constant predicted judder, plotted separately in the inset. Note that a cinema reference of $2.5cd/m^2$ and 24 FPS, has an equivalent predicted judder for $10cd/m^2$ of roughly 31 FPS.
+</figcaption> 
+</figure>
+
+<p>Finally, our model allows us to compute iso-lines over which perceived judder is expected to remain constant—this is a good opportunity to explore the hitherto unknown perceptual consequences of changes in judder due to different display technologies. In Figure 7 (right), we see that the predicted frame rate necessary to match the judder of a 24Hz, 2.5cd/m2 stimulus at 1/7 pic/s (a typical cinema frame rate and brightness at traditionally peak acceptable speed) displayed at 10cd/m2 is approximately 31Hz. This is significantly lower than the frame rates available in modern home theater displays. In addition, we calculate that if operating on speed, rather than frame rate, the judder of a traditionally fast 5s pan at $2.5cd/m^2$ is equivalent to that of an extremely slow 17s pan at a higher luminance of $15cd/m^2$. This further demonstrates that novel display technologies will require content creators to adapt their processes to deal with the newly introduced increase in perceptual sensitivity, as the increase in brightness will incur prohibitive judder even for slow moving objects unless frame rates are increased.</p>
+<figure>
+<img src="./img/img8.png" alt="Trulli" style="width:100%" class = "center">
+<figcaption align = "center">Fig. 8. On the left, we show our judder model plotted for a variety of speeds: 5, 10, and 17s pans. The plot is rotated for clarity. On the right, we see a cross section of various speeds projected on the luminance plane.
+</figcaption> 
+</figure>
+<h1 id='validation'>7&nbsp;VALIDATION</h1><p>To test the validity of our model with more complex stimuli, we ran a Validation experiment. Using the same setup as the experiments described in Section 3, 15 participants were shown short reference videos at a lower frame rate and brightness. They were then presented with another version of the same video, but at a higher frame rate. The experimental task was to find the best match in terms of judder by controlling the mean luminance of the test stimulus through logmean offsets. Five stimuli were employed, two shots from Nocturne,2 dubbed Ballet and Kids, and one shot from Big Buck Bunny. All stimuli contained camera pans and were likely to generate some perceivable judder and can be seen in the accompanying video. The details for each of the five tested cases can be seen in Table 1, with additional details presented in Appendix A.4.</p>
+<p>We computed luminance predictions to match judder between test and reference using our metric as described in Equation (1). Although no other judder metric exists, we adapted the wellknown Ferry-Porter law for flicker fusion thresholds [<a class="citation" href="#ref-tyler1990analysis" id="cite-tyler1990analysis">Tyler and Hamer 1990</a>] to predict temporal artifact sensitivity. It is normally expressed as</p>
+</div><div class='context' id='context-judder-1' context='judder'>
+<p>
+        <div class='equation' code_block="judder" code="Q0ZGKEwpID0gYSDii4UgbG9nKEwpICsgYiB3aGVyZSBMIOKIiCDihJ0KCmEg4oiIIOKEnQpiIOKIiCDihJ0K">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'CFF', 'judder', 'def', false, '')", "id":"judder-CFF", "sym":"CFF", "func":"judder",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathit{CFF}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'L', 'judder', 'use', true, 'CFF')", "id":"judder-L", "sym":"L", "func":"judder",  "localFunc":"CFF", "type":"use", "case":"equation"} }{ {\mathit{L}} } \right) & = \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'a', 'judder', 'use', false, 'CFF')", "id":"judder-a", "sym":"a", "func":"judder",  "localFunc":"CFF", "type":"use", "case":"equation"} }{ {\mathit{a}} } \cdot  \log{ \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'L', 'judder', 'use', true, 'CFF')", "id":"judder-L", "sym":"L", "func":"judder",  "localFunc":"CFF", "type":"use", "case":"equation"} }{ {\mathit{L}} } } + \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'b', 'judder', 'use', false, 'CFF')", "id":"judder-b", "sym":"b", "func":"judder",  "localFunc":"CFF", "type":"use", "case":"equation"} }{ {\mathit{b}} }\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'judder', ['a', 'L', 'b', 'CFF'], true, 'CFF', ['L'], 'Q0ZGKEwpID0gYSDii4UgbG9nKEwpICsgYiB3aGVyZSBMIOKIiCDihJ0=');"} }{}
+\end{align*}
+\tag{3}\label{3}$$</div>
+        </p>
+<p>where <span sym="a;b" context="judder">  ${\prosedeflabel{judder}{{a}}}$ and ${\prosedeflabel{judder}{{b}}}$ are known constants  </span> and L is the mean luminance. If we introduce the simplifying assumption that<span sym="CFF" context="judder">   the critical flicker fusion rate (${\prosedeflabel{judder}{{CFF}}}$)  </span> is linearly correlated through <span sym="M" context="judder">  a factor ${\prosedeflabel{judder}{{M}}}$  </span> with judder-sensitivity, then we can obtain a log-luminance equivalence like the one queried in this experiment. <span sym="F_a;F_b" context="judder">  Denoting ${\prosedeflabel{judder}{{F_a}}}$ and ${\prosedeflabel{judder}{{F_b}}}$ as the two frame rates  </span> and <span sym="L_a;L_b" context="judder">  ${\prosedeflabel{judder}{{L_a}}}$ , ${\prosedeflabel{judder}{{L_b}}}$ as the luminances  </span>:</p>
+<p>
+        <div class='equation' code_block="judder" code="YCRGX2EkYCA9IE3ii4UgQ0ZGKGAkTF9hJGApCgpNIOKIiCDihJ0KYCRMX2EkYCDiiIgg4oSd">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$F_a$', 'judder', 'def', false, 'CFF')", "id":"judder-$F_a$", "sym":"$F_a$", "func":"judder",  "localFunc":"CFF", "type":"def", "case":"equation"} }{ {F_a} } & = \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'M', 'judder', 'use', false, 'CFF')", "id":"judder-M", "sym":"M", "func":"judder",  "localFunc":"CFF", "type":"use", "case":"equation"} }{ {\mathit{M}} } \cdot \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'CFF', 'judder', 'use', false, 'CFF')", "id":"judder-CFF", "sym":"CFF", "func":"judder",  "localFunc":"CFF", "type":"use", "case":"equation"} }{ {\mathit{CFF}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$L_a$', 'judder', 'use', false, 'CFF')", "id":"judder-$L_a$", "sym":"$L_a$", "func":"judder",  "localFunc":"CFF", "type":"use", "case":"equation"} }{ {L_a} } \right)\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'judder', ['CFF', 'M', '$L_a$', '$F_a$'], false, [], [], 'YCRGX2EkYCA9IE3ii4UgQ0ZGKGAkTF9hJGAp');"} }{}
+\end{align*}
+\tag{4}\label{4}$$</div>
+        </p>
+<figure>
+<img src="./img/table.png" alt="Trulli" style="width:100%" class = "center">
+</figure>
+<p>
+        <div class='equation' code_block="judder" code="YCRGX2IkYCA9IE3ii4UgQ0ZGKGAkTF9iJGApCgpgJExfYiRgIOKIiCDihJ0=">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$F_b$', 'judder', 'def', false, 'CFF')", "id":"judder-$F_b$", "sym":"$F_b$", "func":"judder",  "localFunc":"CFF", "type":"def", "case":"equation"} }{ {F_b} } & = \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'M', 'judder', 'use', false, 'CFF')", "id":"judder-M", "sym":"M", "func":"judder",  "localFunc":"CFF", "type":"use", "case":"equation"} }{ {\mathit{M}} } \cdot \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'CFF', 'judder', 'use', false, 'CFF')", "id":"judder-CFF", "sym":"CFF", "func":"judder",  "localFunc":"CFF", "type":"use", "case":"equation"} }{ {\mathit{CFF}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$L_b$', 'judder', 'use', false, 'CFF')", "id":"judder-$L_b$", "sym":"$L_b$", "func":"judder",  "localFunc":"CFF", "type":"use", "case":"equation"} }{ {L_b} } \right)\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'judder', ['CFF', '$L_b$', 'M', '$F_b$'], false, [], [], 'YCRGX2IkYCA9IE3ii4UgQ0ZGKGAkTF9iJGAp');"} }{}
+\end{align*}
+\tag{5}\label{5}$$</div>
+        <br />
+Solving for ${\proselabel{judder}{{L_b}}}$ , we obtain the matching luminance prediction:</p>
+<p>
+        <div class='equation' code_block="third" code="CmAkTF9iJGAgPSAxMF4oKGEgYCRGX2IkYGxvZygoYCRMX2EkYCkpK2IoYCRGX2IkYC1gJEZfYSRgKSkvKGFgJEZfYSRgKSkKYSDiiIgg4oSdCmIg4oiIIOKEnQpgJEZfYiRgIOKIiCDihJ0KYCRGX2EkYCDiiIgg4oSdCmAkTF9hJGAg4oiIIOKEnQo=">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$L_b$', 'third', 'def', false, '')", "id":"third-$L_b$", "sym":"$L_b$", "func":"third",  "localFunc":"", "type":"def", "case":"equation"} }{ {L_b} } & = {10}^{\frac{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'a', 'third', 'use', false, '')", "id":"third-a", "sym":"a", "func":"third",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{a}} }\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$F_b$', 'third', 'use', false, '')", "id":"third-$F_b$", "sym":"$F_b$", "func":"third",  "localFunc":"", "type":"use", "case":"equation"} }{ {F_b} } \log{ \left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$L_a$', 'third', 'use', false, '')", "id":"third-$L_a$", "sym":"$L_a$", "func":"third",  "localFunc":"", "type":"use", "case":"equation"} }{ {L_a} } \right) } + \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'b', 'third', 'use', false, '')", "id":"third-b", "sym":"b", "func":"third",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{b}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$F_b$', 'third', 'use', false, '')", "id":"third-$F_b$", "sym":"$F_b$", "func":"third",  "localFunc":"", "type":"use", "case":"equation"} }{ {F_b} } - \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$F_a$', 'third', 'use', false, '')", "id":"third-$F_a$", "sym":"$F_a$", "func":"third",  "localFunc":"", "type":"use", "case":"equation"} }{ {F_a} } \right)}{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'a', 'third', 'use', false, '')", "id":"third-a", "sym":"a", "func":"third",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{a}} }\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$F_a$', 'third', 'use', false, '')", "id":"third-$F_a$", "sym":"$F_a$", "func":"third",  "localFunc":"", "type":"use", "case":"equation"} }{ {F_a} }}}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'third', ['$L_a$', 'a', '$F_a$', '$F_b$', 'b', '$L_b$'], false, [], [], 'YCRMX2IkYCA9IDEwXigoYSBgJEZfYiRgbG9nKChgJExfYSRgKSkrYihgJEZfYiRgLWAkRl9hJGApKS8oYWAkRl9hJGApKQ==');"} }{}
+\end{align*}
+\tag{6}\label{6}$$</div>
+        </p>
+<p>The results of this experiment can be seen in Figure 9, along with the predicted luminance match given by our model with the appropriate pan speed. Participants found the assignment to be challenging, as it included a cross-dimensional matching task across different image brightnesses. The prediction given by the static Ferry-Porter law only takes mean luminance into account and, even with the free parameter M, underestimates the luminance required to match our stimuli in every case: Using Equation (2) we obtain a mean luminance error of 17.1%. Our model achieves a mean error of 6.51%, improving the prediction in every case and falling within the 95% confidence interval in all but one case.</p>
+<figure>
+<img src="./img/img9.png" alt="Trulli" style="width:20%" class = "center">
+<figcaption align = "center">Fig. 9. The horizontal axis shows the experimental conditions as seen in Table 1. The vertical axis shows the luminance selected by users to match judder compared to model predictions. Vertical bars show 95% confidence intervals.
+</figcaption> 
+</figure>
+<h2 id='applications-to-content-creation'>7.1&nbsp;Applications to Content Creation</h2><p>An application of our model is flagging content that is likely to produce high levels of judder in post production. Given the content and a target display, a shot boundary detector is applied to segment the video into shots. We recover the frame rate of the video and, for each shot, we calculate the mean luminance and translation speed. We proceed to apply our model as presented in Section 6. We demonstrate this technique by applying our model to the entire Big Buck Bunny short, which is composed of 128 shots. Shots that contain speed values less than the minimum explored in our user studies (i.e., a 17s pan or 2 deg/s average) were excluded from the computation, and judder prediction was set to zero. In this case, we simulate a cinema projector with a maximum and minimum brightness of 50 and 0.05cd/m2, respectively, and a gamma of 2.4 with a user sitting at three picture heights from the screen. Figure 10 shows the resulting judder prediction.</p>
+<p>Similarly to the task of users in the validation experiment described in Section 7, content flagged as having excessive judder can be tone-mapped to a lower mean luminance range automatically. As an example, we selected shot 47 of Big Buck Bunny that showed a judder value of 7.1 in Figure 10. We can adapt the 7s rule as referenced in Section 4.1 to produce an estimate of a high boundary for acceptable judder: We set speed to the eponymous 7s pan, frame rate to a standard 24Hz, and mean luminance to 2.5cd/m2. The resulting value is 5.1 on our judder scale. We proceed to fix the speed and frame rate of the selected shot, and model judder for various mean luminance levels. We find that in order for this shot to have a predicted judder of 5.1, its mean luminance must be reduced from 16 to 3.1cd/m2 or approximately 0.72 log units. The judder scale for this shot, as well as a sample image tone mapped using a simple log-luminance offset, are shown in Figure 11. A comprehensive review of modern tone mapping methods was presented by [<a class="citation" href="#ref-eilertsen2017comparative" id="cite-eilertsen2017comparative">Eilertsen et al. 2017</a>].</p>
+<figure>
+<img src="./img/img10.png" alt="Trulli" style="width:100%" class = "center">
+<figcaption align = "center">Fig. 10. WeestimatedperceivedjudderforeachshotinBigBuckBunny. From top to bottom, we show the parameters used in our model—frame rate, mean luminance, and mean speed, and, finally, our model’s prediction. This system can help flag problematic shots within a feature film at an early stage during post processing.
+</figcaption> 
+</figure>
+
+<h1 id='conclusions-limitations-and-future-work'>8&nbsp;CONCLUSIONS, LIMITATIONS, AND FUTURE WORK</h1><p>We proposed the first model that predicts the magnitude of perceived judder for a given video. We gathered psychophysical data on a number of relevant factors using simple stimuli and later demonstrated that these measurements are also valid for complex scenes. Our experiments generated valuable data that can provide guidance to content creators considering emerging display technologies, such as necessary updates to existing rules of thumb in cinematography. This information can also be useful to display manufacturers and content providers when considering technical requirements for consumer technologies. Finally, perceptual judder modeling is crucial for frame rate re-sampling applications to avoid judder or other undesirable artifacts such as the “soap opera effect.”</p>
+<p>Our work has certain limitations: The first is that our model is only valid for clips that contain relatively stable motion with a single dominant component, such as a camera pan. The “ballet” clip used in Section 7, for example, contains a speed ramp-up that may have caused our results to deviate from the data gathered from users as they may have graded on the slower or faster portion of the clip. Clips where little to no motion is detected are not expected to contain visible judder and are not supported by our model.</p>
+<p>Extending Fourier-based spatio-temporal video difference prediction approaches (Section 2.1) to supra-treshold differences for judder would be an interesting task. Such algorithms require lengthy computation times per video, however, making them impractical for common real-time applications.</p>
+<p>Although this work focused chiefly on judder arising from camera pans, as this is the most common scenario, an interesting avenue for future work would be to generalize the model to separate objects on the scene. User attention can be predicted using a visual saliency model and object speed could be estimated through optical flow techniques.</p>
+<p>Our studies explored an overall sense of judder, but there are certainly different perceptual components to this artifact that contribute to the whole as subcomponents. At this stage of inquiry, we felt the strongest need would be to address the overall perception of judder. A logical next step would be to study the perceptual components of judder as their understanding may be useful to algorithm design. We hope our work encourages the community to further explore spatio-temporal artifacts and make all our experimental data fully available for analysis.</p>
+<h1 id='appendix'>9&nbsp;APPENDIX</h1><h2 id='disembodied-edge-calculation'>9.1&nbsp;Disembodied Edge Calculation</h2><p>Given a desired Michelson contrast $c$ and mean ${\proselabel{judder}{{L_a}}}$, we calculate the maximum and minimum values $\proselabel{Edge}{M}$ and $m$ as $\proselabel{Edge}{M}= {\proselabel{judder}{{L_a}}} (1 + c)$, $m= {\proselabel{judder}{{L_a}}} (1 − c)$. As a consequence of this, the resulting Michelson contrast is exactly $( {\proselabel{judder}{{L_a}}} + {\proselabel{judder}{{L_a}}} *c − {\proselabel{judder}{{L_a}}} + {\proselabel{judder}{{L_a}}} * c)/( {\proselabel{judder}{{L_a}}} + {\proselabel{judder}{{L_a}}} * c + {\proselabel{judder}{{L_a}}} − {\proselabel{judder}{{L_a}}} * c)=2 {\proselabel{judder}{{L_a}}} *c/(2 {\proselabel{judder}{{L_a}}} )=c$. If one of these values does not fit within the dynamic range of the display being used, then both values can be shifted using a multiplier $k$ so that $\proselabel{Edge}{M}= \proselabel{Edge}{M}* k$, $m = m* k$ to accommodate these practical constraints.</p>
+<p>The maximum and minimum values computed in the previous step are set to fall off to the background level ${\proselabel{judder}{{L_a}}}$ in a smooth fashion. In our application, we employed a screen with horizontal resolution of 1920 pixels and found a visibly acceptable smoothness to be achieved using a Gaussian falloff with standard deviation of 45 pixels.</p>
+<h2 id='effect-size'>9.2&nbsp;Effect Size</h2><p>Effect size can be calculated from an arbitrary scale such as the judder scale introduced by our article. We include the calculation of a Pearson’s correlation coefficient in the supplementary material containing the raw data for experiments 1–3. Following the guidelines set by “A Power Primer” (1992), we find that in all three experiments the independent variables speed and luminance had a small to medium strength effect on judder, frame rate had a strong effect, and the fourth variable (contrast, image type, and shutter angle, respectively) had an effect less than small.</p>
+<h2 id='judder-model_1'>9.3&nbsp;Judder Model</h2><p>Below, on the left, are the coefficients for our judder model as described in Section 6. On the right, the power of the appropriate term. This information is also available in the supplementary material. Note that our model takes as input speed in pixels per second on a screen with a horizontal resolution of 1,920×1,080 at three picture heights’ distance, subtending a 33◦ field of view. If a speed S is given in degrees per second, then a conversion function for speed should be used as follows: $γ({\proselabel{judder}{{S}}}) = {\proselabel{judder}{{S}}} * 1920$ . In addition:</p>
+<p>
+        <div class='equation' code_block="judder" code="zrEoRikgPSAxL0Ygd2hlcmUgRiDiiIgg4oSd">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'α', 'judder', 'def', false, 'CFF')", "id":"judder-α", "sym":"α", "func":"judder",  "localFunc":"CFF", "type":"def", "case":"equation"} }{ {\mathit{α}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'F', 'judder', 'use', true, 'α')", "id":"judder-F", "sym":"F", "func":"judder",  "localFunc":"α", "type":"use", "case":"equation"} }{ {\mathit{F}} } \right) & = \frac{1}{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'F', 'judder', 'use', true, 'α')", "id":"judder-F", "sym":"F", "func":"judder",  "localFunc":"α", "type":"use", "case":"equation"} }{ {\mathit{F}} }}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'judder', ['F', 'α'], true, 'α', ['F'], 'zrEoRikgPSAxL0Ygd2hlcmUgRiDiiIgg4oSd');"} }{}
+\end{align*}
+\tag{7}\label{7}$$</div>
+        </p>
+<p>
+        <div class='equation' code_block="judder" code="zrIoTCkgPSBsb2dfMTAoTCkgd2hlcmUgTCDiiIgg4oSd">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'β', 'judder', 'def', false, 'α')", "id":"judder-β", "sym":"β", "func":"judder",  "localFunc":"α", "type":"def", "case":"equation"} }{ {\mathit{β}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'L', 'judder', 'use', true, 'β')", "id":"judder-L", "sym":"L", "func":"judder",  "localFunc":"β", "type":"use", "case":"equation"} }{ {\mathit{L}} } \right) & =  \log_{10}{ \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'L', 'judder', 'use', true, 'β')", "id":"judder-L", "sym":"L", "func":"judder",  "localFunc":"β", "type":"use", "case":"equation"} }{ {\mathit{L}} } }\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'judder', ['L', 'β'], true, 'β', ['L'], 'zrIoTCkgPSBsb2dfMTAoTCkgd2hlcmUgTCDiiIgg4oSd');"} }{}
+\end{align*}
+\tag{8}\label{8}$$</div>
+        </p>
+<h2 id='validation-data'>9.4&nbsp;Validation Data</h2><p>To compute a judder prediction using our model for an arbitrary scene, a speed measurement is necessary. As we are mostly concerned with panning scenes we expect the clip to have a strong main motion component due to the camera motion. We computed a frame-to-frame best-fit translation, which is pooled over all frames, filtered (speeds below 1 deg/s fall short of the smooth pursuit range [<a class="citation" href="#ref-meyer1985upper" id="cite-meyer1985upper">Meyer et al. 1985</a>] and are filtered out), and averaged to compute the speed. Note that this procedure is only valid for clips that contain relatively stable motion. We obtained a mean panning speed of approximately 8s for Bunny, a fast 4.4s for Ballet, and 6.4s for Kids.</p>
+<h1 id='acknowledgments'>10&nbsp;ACKNOWLEDGMENTS</h1><p>The authors thank Shane Ruggieri for helping prepare the video for the article and Sema Berkiten for final edits. We thank Shane, Thad Beier, and Jim Crenshaw for the insightful discussions on industry practices relating to judder manageulent and motion in general. We thank Thomas Wan and the immersive experience team for help with the experimental setup and hardware. We thank the user study participants for their efforts. We thank Timo Kunkel and Sema for help with style and Seth Frey for help with the statistical analysis.</p>
+<h1 id='reference'>11&nbsp;REFERENCE</h1><div class="references">
+<table>
+<tbody>
+<tr id="ref-giardina2012peter">
+<td><p>Carolyn Giardina. 2012. Peter Jackson responds to “Hobbit” footage critics, explains 48-frames strategy. <i>The Hollywood Reporter</i>, (2012) </p></td>
+</tr>
+<tr id="ref-wilcox2015evidence">
+<td><p>Laurie M. Wilcox, Robert S. Allison, John Helliker, Bert Dunk and Roy C. Anthony. 2015. Evidence that viewers prefer higher frame-rate film. <i>ACM Transactions on Applied Perception (TAP)</i> 12, (2015) </p></td>
+</tr>
+<tr id="ref-7306410">
+<td><p>Scott Daly, Ning Xu, James Crenshaw and Vikrant J.. Zunjarrao. 2015. A Psychophysical Study Exploring Judder Using Fundamental Signals and Complex Imagery. <i>SMPTE Motion Imaging Journal</i> 124, (2015) </p></td>
+</tr>
+<tr id="ref-larimer200141">
+<td><p>James Larimer, Jennifer Gille and James Wong. 2001. 41.2: Judder-Induced Edge Flicker in Moving Objects. </p></td>
+</tr>
+<tr id="ref-nishida2011advancement">
+<td><p>Shin&rsquo;ya Nishida. 2011. Advancement of motion psychophysics: Review 2001&ndash;2010. <i>Journal of vision</i> 11, (2011) </p></td>
+</tr>
+<tr id="ref-mulligan1992motion">
+<td><p>Jeffrey B. Mulligan and  others. 1992. Motion transparency is restricted to two planes. <i>Investigative Ophthalmology and Visual Science</i> 33, (1992) </p></td>
+</tr>
+<tr id="ref-derrington1985separate">
+<td><p>Andrew M. Derrington and David R. Badcock. 1985. Separate detectors for simple and complex grating patterns?. <i>Vision research</i> 25, (1985) </p></td>
+</tr>
+<tr id="ref-johansson1973visual">
+<td><p>Gunnar Johansson. 1973. Visual perception of biological motion and a model for its analysis. <i>Perception \&amp; psychophysics</i> 14, (1973) </p></td>
+</tr>
+<tr id="ref-bex1995sharpening">
+<td><p>PJ Bex, GK Edgar and AT Smith. 1995. Sharpening of drifting, blurred images. <i>Vision research</i> 35, (1995) </p></td>
+</tr>
+<tr id="ref-takeuchi2005sharpening">
+<td><p>Tatsuto Takeuchi and Karen K. De. 2005. Sharpening image motion based on the spatio-temporal characteristics of human vision. </p></td>
+</tr>
+<tr id="ref-westerink1995perceived">
+<td><p>Joyce HDM. Westerink and Kees Teunissen. 1995. Perceived sharpness in complex moving images. <i>Displays</i> 16, (1995) </p></td>
+</tr>
+<tr id="ref-scherzer2009intermittent">
+<td><p>Tom R. Scherzer and Vebj{\o}rn Ekroll. 2009. Intermittent occlusion enhances the smoothness of sampled motion. <i>Journal of Vision</i> 9, (2009) </p></td>
+</tr>
+<tr id="ref-mantiuk2011hdr">
+<td><p>Rafa{\l} Mantiuk, Kil Joong. Kim, Allan G. Rempel and Wolfgang Heidrich. 2011. HDR-VDP-2: A calibrated visual metric for visibility and quality predictions in all luminance conditions. <i>ACM Transactions on graphics (TOG)</i> 30, (2011) </p></td>
+</tr>
+<tr id="ref-watson2002video">
+<td><p>Andrew B. Watson and Jesus Malo. 2002. Video quality measures based on the standard spatial observer. </p></td>
+</tr>
+<tr id="ref-watson2013high">
+<td><p>Andrew B. Watson. 2013. High frame rates and human vision: A view through the window of visibility. <i>SMPTE Motion Imaging Journal</i> 122, (2013) </p></td>
+</tr>
+<tr id="ref-watson1986temporal">
+<td><p>Andrew B. Watson and  others. 1986. Temporal sensitivity. <i>Handbook of perception and human performance</i> 1, (1986) </p></td>
+</tr>
+<tr id="ref-watson2016pyramid">
+<td><p>Andrew B. Watson and Albert J. Ahumada. 2016. The pyramid of visibility. <i>Electronic Imaging</i> 2016, (2016) </p></td>
+</tr>
+<tr id="ref-allison2016expert">
+<td><p>Robert S. Allison, Laurie M. Wilcox, Roy C. Anthony, John Helliker and Bert Dunk. 2016. Expert Viewers’ preferences for higher frame rate 3D Film. <i>Journal of Imaging Science and Technology</i> 60, (2016) </p></td>
+</tr>
+<tr id="ref-roberts2002film">
+<td><p>Alan Roberts. 2002. The film look: It&rsquo;s not just jerky motion. <i>BBC R\&amp;D White Paper, WHP</i> 53, (2002) </p></td>
+</tr>
+<tr id="ref-DCI">
+<td><p> DCI. 2012. Digital Cinema Initiatives, LLC. High Frame Rates Digital Cinema Recommended Practice.. <i>http://www.dcimovies.com/Recommended_Practice/</i>, (2012) </p></td>
+</tr>
+<tr id="ref-nilsson2015ultra">
+<td><p>Mike Nilsson. 2015. Ultra high definition video formats and standardisation. <i>BT Media and Broadcast Research Paper</i>, (2015) </p></td>
+</tr>
+<tr id="ref-kim2009modeling">
+<td><p>Min H. Kim, Tim Weyrich and Jan Kautz. 2009. Modeling human color perception under extended luminance levels. </p></td>
+</tr>
+<tr id="ref-didyk2012luminance">
+<td><p>Piotr Didyk, Tobias Ritschel, Elmar Eisemann, Karol Myszkowski, Hans-Peter Seidel and Wojciech Matusik. 2012. A luminance-contrast-aware disparity model and applications. <i>ACM Transactions on Graphics (TOG)</i> 31, (2012) </p></td>
+</tr>
+<tr id="ref-mccarthy2016independent">
+<td><p>Sean T. McCarthy. 2016. How independent are HDR, WCG, and HFR in human visual perception and the creative process. <i>SMPTE Motion Imaging Journal</i> 125, (2016) </p></td>
+</tr>
+<tr id="ref-noland2016high">
+<td><p>Katy C. Noland. 2016. High Frame Rate Television: Sampling Theory, the Human Visual System, and Why the Nyquist&ndash;Shannon Theorem Does Not Apply. <i>SMPTE Motion Imaging Journal</i> 125, (2016) </p></td>
+</tr>
+<tr id="ref-debattista2018frame">
+<td><p>Kurt Debattista, Keith Bugeja, Sandro Spina, Thomas Bashford-Rogers and Vedad Hulusic. 2018. Frame rate vs resolution: A subjective evaluation of spatiotemporal perceived quality under varying computational budgets. </p></td>
+</tr>
+<tr id="ref-zhai2005a">
+<td><p>Jiefu Zhai, Keman Yu, Jiang Li and Shipeng Li. 2005. A Low Complexity Motion Compensated Frame Interpolation Method. </p></td>
+</tr>
+<tr id="ref-mahajan2009moving">
+<td><p>Dhruv Mahajan, Fu-Chung Huang, Wojciech Matusik, Ravi Ramamoorthi and Peter Belhumeur. 2009. Moving gradients: a path-based method for plausible image interpolation. <i>ACM Transactions on Graphics (TOG)</i> 28, (2009) </p></td>
+</tr>
+<tr id="ref-meyer2015phase">
+<td><p>Simone Meyer, Oliver Wang, Henning Zimmer, Max Grosse and Alexander Sorkine-Hornung. 2015. Phase-based frame interpolation for video. </p></td>
+</tr>
+<tr id="ref-dosovitskiy2015flownet">
+<td><p>Alexey Dosovitskiy, Philipp Fischer, Eddy Ilg, Philip Hausser, Caner Hazirbas, Vladimir Golkov, Patrick Van, Daniel Cremers and Thomas Brox. 2015. Flownet: Learning optical flow with convolutional networks. </p></td>
+</tr>
+<tr id="ref-vondrick2016generating">
+<td><p>Carl Vondrick, Hamed Pirsiavash and Antonio Torralba. 2016. Generating videos with scene dynamics. <i>Advances in neural information processing systems</i> 29, (2016) </p></td>
+</tr>
+<tr id="ref-liu2017video">
+<td><p>Ziwei Liu, Raymond A. Yeh, Xiaoou Tang, Yiming Liu and Aseem Agarwala. 2017. Video frame synthesis using deep voxel flow. </p></td>
+</tr>
+<tr id="ref-templin2016emulating">
+<td><p>Krzysztof Templin, Piotr Didyk, Karol Myszkowski and Hans-Peter Seidel. 2016. Emulating displays with continuously varying frame rates. <i>ACM Transactions on Graphics (TOG)</i> 35, (2016) </p></td>
+</tr>
+<tr id="ref-fujine2007real">
+<td><p>Toshiyuki Fujine, Yuhji Kikuchi, Michiyuki Sugino and Yasuhiro Yoshida. 2007. Real-life in-home viewing conditions for flat panel displays and statistical characteristics of broadcast video signal. <i>Japanese journal of applied physics</i> 46, (2007) </p></td>
+</tr>
+<tr id="ref-burum2007american">
+<td><p>Stephen H. Burum. 2007. American cinematographer manual. </p></td>
+</tr>
+<tr id="ref-li2010effects">
+<td><p>Feng Li, Jeff B. Pelz and Scott J. Daly. 2010. Effects of stimulus size and velocity on steady-state smooth pursuit induced by realistic images. </p></td>
+</tr>
+<tr id="ref-meyer1985upper">
+<td><p>Craig H. Meyer, Adrian G. Lasker and David A. Robinson. 1985. The upper limit of human smooth pursuit velocity. <i>Vision research</i> 25, (1985) </p></td>
+</tr>
+<tr id="ref-de1958research">
+<td><p>H Lange. 1958. Research into the dynamic nature of the human fovea→ cortex systems with intermittent and modulated light. I. Attenuation characteristics with white and colored light. <i>Josa</i> 48, (1958) </p></td>
+</tr>
+<tr id="ref-van1967spatial">
+<td><p>Floris L. Van and Maarten A. Bouman. 1967. Spatial modulation transfer in the human eye. <i>JOSA</i> 57, (1967) </p></td>
+</tr>
+<tr id="ref-barten1989square">
+<td><p>Peter GJ. Barten. 1989. The square root integral (SQRI): a new metric to describe the effect of various display parameters on perceived image quality. </p></td>
+</tr>
+<tr id="ref-daly1992visible">
+<td><p>Scott J. Daly. 1992. Visible differences predictor: an algorithm for the assessment of image fidelity. </p></td>
+</tr>
+<tr id="ref-ke2013directional">
+<td><p>Sally R. Ke, Jessica Lam, Dinesh K. Pai and Miriam Spering. 2013. Directional asymmetries in human smooth pursuit eye movements. <i>Investigative ophthalmology \&amp; visual science</i> 54, (2013) </p></td>
+</tr>
+<tr id="ref-poynton2012digital">
+<td><p>Charles Poynton. 2012. Digital video and HD: Algorithms and Interfaces. </p></td>
+</tr>
+<tr id="ref-kelly1983spatiotemporal">
+<td><p>DH Kelly. 1983. Spatiotemporal variation of chromatic and achromatic contrast thresholds. <i>JOSA</i> 73, (1983) </p></td>
+</tr>
+<tr id="ref-savoy1989isolated">
+<td><p>R Savoy and M Burns. 1989. Isolated cone classes and the dis-embodied edge: New stimuli for psychophysics and neurophysiology. <i>Investigative Ophthalmology and Visual Science</i> 30, (1989) </p></td>
+</tr>
+<tr id="ref-georgeson1975contrast">
+<td><p>MA Georgeson and GD Sullivan. 1975. Contrast constancy: deblurring in human vision by spatial frequency channels.. <i>The Journal of physiology</i> 252, (1975) </p></td>
+</tr>
+<tr id="ref-tyler1990analysis">
+<td><p>Christopher W. Tyler and Russell D. Hamer. 1990. Analysis of visual modulation sensitivity. IV. Validity of the Ferry&ndash;Porter law. <i>JOSA A</i> 7, (1990) </p></td>
+</tr>
+<tr id="ref-eilertsen2017comparative">
+<td><p>Gabriel Eilertsen, Rafal Konrad. Mantiuk and Jonas Unger. 2017. A comparative review of tone-mapping algorithms for high dynamic range video. </p></td>
+</tr>
+</tbody>
+</table>
+</div></div>
+        </div>
+        <div id="glossary_holder"><div id="glossary" class="glossary"></div></div>
+    </div>
+</body>
+</html>

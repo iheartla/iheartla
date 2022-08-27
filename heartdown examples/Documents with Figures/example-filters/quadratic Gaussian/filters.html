@@ -1,0 +1,92 @@
+<html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+            <script>
+        MathJax = {
+          loader: {
+            load: ["[attrLabel]/attr-label.js"],
+            paths: { attrLabel: "./heartdown-resource" },
+          },
+          tex: { packages: { "[+]": ["attr-label"] },
+           inlineMath: [['$', '$']]
+           },
+           options: {
+            enableAssistiveMml: false
+          },
+        };
+            </script>
+            <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+            <script src="https://unpkg.com/@popperjs/core@2"></script>
+            <script src="https://unpkg.com/tippy.js@6"></script>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/svg-arrow.css"/>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/border.css" />
+            <script src="./heartdown-resource/d3.min.js"></script>
+            <script src="./heartdown-resource/svg.min.js"></script>
+            <script type="text/javascript" src='./heartdown-resource/paper.js'></script>
+            <link rel="stylesheet" href="./heartdown-resource/paper.css">
+        </head>
+        <script>
+        const iheartla_data = JSON.parse('{"equations":[{"name":"filters", "parameters":[], "definition":[{"sym":"f", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "desc":"ZmlsdGVyIGZ1bmN0aW9uICRmJA=="}], "local_func":[{"name":"f", "parameters":[{"sym":"x", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"dmFsdWVzICR4JCBpbiAkWy0xLDFdJA=="}]}], "dependence":[], "undesc_list":[] }], "context":["filters"] }');
+        const sym_data = JSON.parse('{"f":[{"desc":"ZmlsdGVyIGZ1bmN0aW9uICRmJA==", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "def_module":"filters", "is_defined":true, "used_equations":[], "color":"color2"}],"x":[{"desc":"dmFsdWVzICR4JCBpbiAkWy0xLDFdJA==", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"filters", "is_defined":false, "used_equations":[], "color":"color1"}]}');
+        window.onload = onLoad;
+        function reportWindowSize() {
+          var arrows = document.querySelectorAll(".arrow");
+          if (arrows) {
+            for (var i = arrows.length - 1; i >= 0; i--) {
+              var arrow = arrows[i];
+              var body = document.querySelector("body");
+              var style = window.getComputedStyle(body);
+              var arrowPanel = document.querySelector("#arrows");
+              var arrowRect = arrowPanel.getBoundingClientRect();
+              var curOffset = parseInt(style.marginLeft, 10)
+              var oldOffset = arrow.getAttribute('offset');
+              curOffset += arrowRect.width;
+              arrow.setAttribute('offset', curOffset);
+              // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
+              var arrowStyle = window.getComputedStyle(arrow); 
+              var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
+              arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
+              var newWidth = parseInt(style.width, 10) + parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+              arrow.style.width = `${newWidth}px`;
+              arrow.style.height = style.height; 
+              // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
+            }
+          }
+          adjustGlossaryBtn();
+        }
+        window.onresize = reportWindowSize;
+        document.addEventListener("click", function(evt){
+            onClickPage();
+        });
+        
+        </script>
+<body>
+    <div id="flexer">
+        <div id="arrows"></div>
+        <div id="main">
+        <div class='context' id='context-filters-0' context='filters'>
+
+<h1 id='image-filtering'>1&nbsp;Image Filtering</h1><p>To filter an image, we take a weighted average of pixels in a window around each pixel. We will use a quadratic Gaussian approximation to create a <span sym="f" context="filters">filter function ${\prosedeflabel{filters}{{f}}}$</span> that applies to <span sym="x" context="filters">values ${\prosedeflabel{filters}{{x}}}$ in $[-1,1]$</span>:</p>
+<p>
+        <div class='equation' code_block="filters" code="Zih4KSA9IHsgMS0zeMKyICAgICAgICAgICAgICAgaWYgfHh8IDwg4oWTCiAgICAgICAgIDEuNXjCsiAtIDN8eHwgKyAxLjUgIGlmIHx4fCA8IDEKICAgICAgICAgMCBvdGhlcndpc2Ugd2hlcmUgeCDiiIgg4oSd">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'f', 'filters', 'def', false, '')", "id":"filters-f", "sym":"f", "func":"filters",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathit{f}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'filters', 'use', true, 'f')", "id":"filters-x", "sym":"x", "func":"filters",  "localFunc":"f", "type":"use", "case":"equation"} }{ {\mathit{x}} } \right) & = \begin{cases} 1 - 3{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'filters', 'use', true, 'f')", "id":"filters-x", "sym":"x", "func":"filters",  "localFunc":"f", "type":"use", "case":"equation"} }{ {\mathit{x}} }}^{2} & \text{if }  \left|\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'filters', 'use', true, 'f')", "id":"filters-x", "sym":"x", "func":"filters",  "localFunc":"f", "type":"use", "case":"equation"} }{ {\mathit{x}} }\right| < ⅓ \\1.5{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'filters', 'use', true, 'f')", "id":"filters-x", "sym":"x", "func":"filters",  "localFunc":"f", "type":"use", "case":"equation"} }{ {\mathit{x}} }}^{2} - 3\left|\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'filters', 'use', true, 'f')", "id":"filters-x", "sym":"x", "func":"filters",  "localFunc":"f", "type":"use", "case":"equation"} }{ {\mathit{x}} }\right| + 1.5 & \text{if }  \left|\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'filters', 'use', true, 'f')", "id":"filters-x", "sym":"x", "func":"filters",  "localFunc":"f", "type":"use", "case":"equation"} }{ {\mathit{x}} }\right| < 1 \\ 0 & \text{otherwise} \end{cases}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'filters', ['x', 'f'], true, 'f', ['x'], 'Zih4KSA9IHsgMS0zeMKyICAgICAgICAgICAgICAgaWYgfHh8IDwg4oWTCiAgICAgICAgIDEuNXjCsiAtIDN8eHwgKyAxLjUgIGlmIHx4fCA8IDEKICAgICAgICAgMCBvdGhlcndpc2Ugd2hlcmUgeCDiiIgg4oSd');"} }{}
+\end{align*}
+\tag{1}\label{1}$$</div>
+        </p>
+<figure onclick="clickFigure(this, 'wikipedia')" name="wikipedia"><pre class="errorMsg" hidden></pre>
+
+<img src="wikipedia.png" alt="input" style="max-width: 100%">
+<img src="output.png" alt="output" style="max-width: 100%">
+<figcaption>Top: The input image. Bottom: The filtered image.</figcaption> 
+</figure>
+
+<div class="references"></div></div>
+        </div>
+        <div id="glossary_holder"><div id="glossary" class="glossary"></div></div>
+    </div>
+</body>
+</html>

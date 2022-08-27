@@ -1,0 +1,151 @@
+<html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+            <script>
+        MathJax = {
+          loader: {
+            load: ["[attrLabel]/attr-label.js"],
+            paths: { attrLabel: "../heartdown-resource" },
+          },
+          tex: { packages: { "[+]": ["attr-label"] },
+           inlineMath: [['$', '$']]
+           },
+           options: {
+            enableAssistiveMml: false
+          },
+        };
+            </script>
+            <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+            <script src="https://unpkg.com/@popperjs/core@2"></script>
+            <script src="https://unpkg.com/tippy.js@6"></script>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/svg-arrow.css"/>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/border.css" />
+            <script src="../heartdown-resource/d3.min.js"></script>
+            <script src="../heartdown-resource/svg.min.js"></script>
+            <script type="text/javascript" src='../heartdown-resource/paper.js'></script>
+            <link rel="stylesheet" href="../heartdown-resource/paper.css">
+        </head>
+        <script>
+        const iheartla_data = JSON.parse('{"equations":[{"name":"Generic", "parameters":[{"sym":"J", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2", "cols":"2"}, "desc":"VGhlIEphY29iaWFuIG1hdHJpeA=="},{"sym":"x", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"cG9pbnQgY29vcmRpbmF0ZQ=="},{"sym":"y", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"cG9pbnQgY29vcmRpbmF0ZQ=="},{"sym":"u", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"dmVjdG9yIGZpZWxkIGNvb3JkaW5hdGU="},{"sym":"v", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"dmVjdG9yIGZpZWxkIGNvb3JkaW5hdGU="}], "definition":[{"sym":"$x_p$", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2"}},{"sym":"$v_p$", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2"}},{"sym":"M", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2", "cols":"6"}, "desc":"ICRNJCBpcyBhIDIgw5cgNiBtYXRyaXgg"}], "local_func":[], "dependence":[], "undesc_list":["$x_p$","$v_p$"] }], "context":["Generic"] }');
+        const sym_data = JSON.parse('{"J":[{"desc":"VGhlIEphY29iaWFuIG1hdHJpeA==", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2", "cols":"2"}, "def_module":"Generic", "is_defined":false, "used_equations":[], "color":"color4"}],"x":[{"desc":"cG9pbnQgY29vcmRpbmF0ZQ==", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"Generic", "is_defined":false, "used_equations":[], "color":"color4"}],"y":[{"desc":"cG9pbnQgY29vcmRpbmF0ZQ==", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"Generic", "is_defined":false, "used_equations":[], "color":"color2"}],"u":[{"desc":"dmVjdG9yIGZpZWxkIGNvb3JkaW5hdGU=", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"Generic", "is_defined":false, "used_equations":[], "color":"color3"}],"v":[{"desc":"dmVjdG9yIGZpZWxkIGNvb3JkaW5hdGU=", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"Generic", "is_defined":false, "used_equations":[], "color":"color1"}],"$x_p$":[{"desc":"None", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2"}, "def_module":"Generic", "is_defined":true, "used_equations":[], "color":"color1"}],"$v_p$":[{"desc":"None", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2"}, "def_module":"Generic", "is_defined":true, "used_equations":[], "color":"color2"}],"M":[{"desc":"ICRNJCBpcyBhIDIgw5cgNiBtYXRyaXgg", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2", "cols":"6"}, "def_module":"Generic", "is_defined":true, "used_equations":[], "color":"color3"}]}');
+        window.onload = onLoad;
+        function reportWindowSize() {
+          var arrows = document.querySelectorAll(".arrow");
+          if (arrows) {
+            for (var i = arrows.length - 1; i >= 0; i--) {
+              var arrow = arrows[i];
+              var body = document.querySelector("body");
+              var style = window.getComputedStyle(body);
+              var arrowPanel = document.querySelector("#arrows");
+              var arrowRect = arrowPanel.getBoundingClientRect();
+              var curOffset = parseInt(style.marginLeft, 10)
+              var oldOffset = arrow.getAttribute('offset');
+              curOffset += arrowRect.width;
+              arrow.setAttribute('offset', curOffset);
+              // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
+              var arrowStyle = window.getComputedStyle(arrow); 
+              var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
+              arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
+              var newWidth = parseInt(style.width, 10) + parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+              arrow.style.width = `${newWidth}px`;
+              arrow.style.height = style.height; 
+              // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
+            }
+          }
+          adjustGlossaryBtn();
+        }
+        window.onresize = reportWindowSize;
+        document.addEventListener("click", function(evt){
+            onClickPage();
+        });
+        
+        </script>
+<body>
+    <div id="flexer">
+        <div id="arrows"></div>
+        <div id="main">
+        <div class='title'>Generic Objective Vortices for Flow Visualization</div><div class='author'>TOBIAS GÜNTHER and MARKUS GROSS, ETH Zürich</div><div class='author'>HOLGER THEISEL, University of Magdeburg</div><div class='context' id='context-Generic-0' context='Generic'>
+<h1 id='objectivity-by-optimal-reference-frame'>4&nbsp;OBJECTIVITY BY OPTIMAL REFERENCE FRAME</h1><p>The main idea of our approach is to estimate an optimal reference frame locally for every point $({\proselabel{Generic}{{x}}}, t)$: the local frame $(Q, c)$ is chosen such that the transformed velocity field is as steady as possible in a neighborhood of $({\proselabel{Generic}{{x}}},t)$. We locally assume that $Q$ and $c$ are spatially-constant. Since we waive the spatial and temporal connection to neighboring points, all derivatives are solved for individually, including $\dot{Q}, \ddot{Q}, \dot{\mathbf{c}}, \ddot{\mathbf{c}}$. For every point (x,t), we define a spatial neighborhood U around it to which we fit the reference frame transformation. To compute the optimal reference frame in $U$, we set $Q = I, c = 0^2$, and find the unknowns $\dot{Q}, \ddot{Q}, \dot{\mathbf{c}}, \ddot{\mathbf{c}}$, which contain 6 scalars (angles and offsets) in 2D and 12 in 3D, that minimize</p>
+<p>$$
+\int_{U}\left\|\mathbf{{\proselabel{Generic}{{v}}}}_{t}^{*}\right\|^{2} d V \rightarrow \min
+\tag{13}\label{13}$$</p>
+<p>With these locally optimal $\dot{Q}, \ddot{Q}, \dot{\mathbf{c}}, \ddot{\mathbf{c}}$, we obtain the new local optimal fields $\overline{\mathbf{{\proselabel{Generic}{{v}}}}}, \bar{{\proselabel{Generic}{{J}}}}, \overline{\mathbf{{\proselabel{Generic}{{v}}}}}_{t}, \overline{\mathbf{a}}$ by applying Eqs. (4)–(7). With these, existing vortex measures can be made objective simply by replacing $ \mathbf{{\proselabel{Generic}{{v}}}}, {\proselabel{Generic}{{J}}}, \mathbf{{\proselabel{Generic}{{v}}}}_{t}, \mathbf{a}$ with $\overline{\mathbf{{\proselabel{Generic}{{v}}}}}, \bar{{\proselabel{Generic}{{J}}}}, \overline{\mathbf{{\proselabel{Generic}{{v}}}}}_{t}, \overline{\mathbf{a}}$, respectively. Note that although Eq. (13) is minimized for every point (x,t), in practice it is computed only at discrete grid points; usually the same grid on which v is given.</p>
+<p>Minimizing Eq. (13) is not straightforward, since ${\proselabel{Generic}{{v}}}_t^*$ is non-linear in $\dot{Q}, \ddot{Q}, \dot{\mathbf{c}}, \ddot{\mathbf{c}}$. However, vt∗ can be equivalently rephrased and thereby linearized by substitution. Instead of solving for $\dot{Q}, \ddot{Q}, \dot{\mathbf{c}}, \ddot{\mathbf{c}}$ directly3, we solve for a suitable combination of these unknowns, stored in u:</p>
+<p>$$
+\mathbf{{\proselabel{Generic}{{v}}}}_{t}^{*}=\mathbf{Q}\left(\mathbf{{\proselabel{Generic}{{v}}}}_{t}-\mathbf{{\proselabel{Generic}{{M}}}} \mathbf{{\proselabel{Generic}{{u}}}}\right)
+\tag{14}\label{14}$$</p>
+<p>In 3D, M is a 3 × 12 matrix</p>
+<p>$$
+\mathbf{{\proselabel{Generic}{{M}}}}=(-\mathbf{{\proselabel{Generic}{{J}}}} \mathbf{X}+\mathbf{V}, \mathbf{{\proselabel{Generic}{{J}}}}, \mathbf{X}, \mathbf{I})
+\tag{15}\label{15}$$</p>
+<p>with X = sk(x), V = sk(v), and u is a 12-vector</p>
+<p>$$
+\mathbf{{\proselabel{Generic}{{u}}}}=\left(\begin{array}{l}
+\mathbf{{\proselabel{Generic}{{u}}}}_{1} \\
+\mathbf{{\proselabel{Generic}{{u}}}}_{2} \\
+\mathbf{{\proselabel{Generic}{{u}}}}_{3} \\
+\mathbf{{\proselabel{Generic}{{u}}}}_{4}
+\end{array}\right)=\left(\begin{array}{c}
+a p\left(\mathbf{Q}^{\mathrm{T}} \dot{\mathbf{Q}}\right) \\
+\mathbf{Q}^{\mathrm{T}} \dot{\mathbf{c}} \\
+a p\left(\mathbf{Q}^{\mathrm{T}} \ddot{\mathbf{Q}}-\left(\mathbf{Q}^{\mathrm{T}} \dot{\mathbf{Q}}\right)^{2}\right) \\
+-\left(\mathbf{Q}^{\mathrm{T}} \ddot{\mathbf{c}}-\mathbf{Q}^{\mathrm{T}} \dot{\mathbf{Q}} \mathbf{Q}^{\mathrm{T}} \dot{\mathbf{c}}\right)
+\end{array}\right)
+\tag{16}\label{16}$$</p>
+<p>In 2D, ${\proselabel{Generic}{{M}}}$ and ${\proselabel{Generic}{{u}}}$ have a slightly different form. <span sym="M" context="Generic">  ${\prosedeflabel{Generic}{{M}}}$ is a 2 × 6 matrix  </span></p>
+<p>
+        <div class='equation' code_block="Generic" code="TT1bLUpgJHhfcCRgK2Akdl9wJGAgIEogIGAkeF9wJGAgIElfMl0gCgp3aGVyZQpKOiDihJ1eKDLDlzIpOiBUaGUgSmFjb2JpYW4gbWF0cml4Cng6IOKEnSA6IHBvaW50IGNvb3JkaW5hdGUKeTog4oSdIDogcG9pbnQgY29vcmRpbmF0ZQp1OiDihJ0gOiB2ZWN0b3IgZmllbGQgY29vcmRpbmF0ZQp2OiDihJ0gOiB2ZWN0b3IgZmllbGQgY29vcmRpbmF0ZQo=">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'M', 'Generic', 'def', false, '')", "id":"Generic-M", "sym":"M", "func":"Generic",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathit{M}} } & = \begin{bmatrix}
+-\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'J', 'Generic', 'use', false, '')", "id":"Generic-J", "sym":"J", "func":"Generic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{J}} }\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$x_p$', 'Generic', 'use', false, '')", "id":"Generic-$x_p$", "sym":"$x_p$", "func":"Generic",  "localFunc":"", "type":"use", "case":"equation"} }{ {x_p} } + \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$v_p$', 'Generic', 'use', false, '')", "id":"Generic-$v_p$", "sym":"$v_p$", "func":"Generic",  "localFunc":"", "type":"use", "case":"equation"} }{ {v_p} } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'J', 'Generic', 'use', false, '')", "id":"Generic-J", "sym":"J", "func":"Generic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{J}} } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$x_p$', 'Generic', 'use', false, '')", "id":"Generic-$x_p$", "sym":"$x_p$", "func":"Generic",  "localFunc":"", "type":"use", "case":"equation"} }{ {x_p} } & I_{ 2 }\\
+\end{bmatrix}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Generic', ['$x_p$', 'J', '$v_p$', 'M'], false, [], [], 'TT1bLUpgJHhfcCRgK2Akdl9wJGAgIEogIGAkeF9wJGAgIElfMl0=');"} }{}
+\end{align*}
+\tag{17}\label{17}$$</div>
+        </p>
+<p>with <span class='equation' code_block="Generic" code="IGAkeF9wJGAgPSAoLXksIHgp">$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$x_p$', 'Generic', 'def', false, '')", "id":"Generic-$x_p$", "sym":"$x_p$", "func":"Generic",  "localFunc":"", "type":"def", "case":"equation"} }{ {x_p} } & = \begin{pmatrix}
+-\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'y', 'Generic', 'use', false, '')", "id":"Generic-y", "sym":"y", "func":"Generic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{y}} }\\\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'Generic', 'use', false, '')", "id":"Generic-x", "sym":"x", "func":"Generic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{x}} }\end{pmatrix}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Generic', ['x', 'y', '$x_p$'], false, [], [], 'YCR4X3AkYCA9ICgteSwgeCk=');"} }{}
+\end{align*}
+$</span>, <span class='equation' code_block="Generic" code="IGAkdl9wJGAgPSAoLXYsIHUp">$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$v_p$', 'Generic', 'def', false, '')", "id":"Generic-$v_p$", "sym":"$v_p$", "func":"Generic",  "localFunc":"", "type":"def", "case":"equation"} }{ {v_p} } & = \begin{pmatrix}
+-\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'v', 'Generic', 'use', false, '')", "id":"Generic-v", "sym":"v", "func":"Generic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{v}} }\\\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'u', 'Generic', 'use', false, '')", "id":"Generic-u", "sym":"u", "func":"Generic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{u}} }\end{pmatrix}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Generic', ['v', 'u', '$v_p$'], false, [], [], 'YCR2X3AkYCA9ICgtdiwgdSk=');"} }{}
+\end{align*}
+$</span>, and u is a 6-vector. Note that ${\proselabel{Generic}{{u}}}_1$ and ${\proselabel{Generic}{{u}}}_3$ are scalars in 2D, namely the first-order and second-order derivative of the angular velocity of the rotation of the frame. The reformulation of Eq. (7) into Eq. (14)–(17) is a straightforward exercise in algebra. Eq. (14) shows that the vector field and the reference frame are completely separated: M contains only v and its derivatives, while all information of the frame is stored in u.</p>
+<p>Eq. (13) is minimized using Eq. (14), which can be written as the solution of the linear system</p>
+<p>$$
+\widehat{\mathbf{{\proselabel{Generic}{{M}}}}} \mathbf{{\proselabel{Generic}{{u}}}}=\widehat{\mathbf{{\proselabel{Generic}{{y}}}}} 
+\tag{18}\label{18}$$</p>
+<p>$$
+\text { with } \widehat{\mathbf{{\proselabel{Generic}{{M}}}}}=\int_{U} \mathbf{{\proselabel{Generic}{{M}}}}^{\mathrm{T}} \mathbf{{\proselabel{Generic}{{M}}}} d V \quad, \quad \widehat{\mathbf{{\proselabel{Generic}{{y}}}}}=\int_{U} \mathbf{{\proselabel{Generic}{{M}}}}^{\mathrm{T}} \mathbf{{\proselabel{Generic}{{v}}}}_{t} d V .
+\tag{19}\label{19}$$</p>
+<p>Let $\overline{\mathbf{{\proselabel{Generic}{{u}}}}}=\left(\overline{\mathbf{{\proselabel{Generic}{{u}}}}}_{1}, \overline{\mathbf{{\proselabel{Generic}{{u}}}}}_{2}, \overline{\mathbf{{\proselabel{Generic}{{u}}}}}_{3}, \overline{\mathbf{{\proselabel{Generic}{{u}}}}}_{4}\right)^{\mathrm{T}}=\widehat{\mathbf{{\proselabel{Generic}{{M}}}}}^{-1} \widehat{\mathbf{{\proselabel{Generic}{{y}}}}}$ be the solution of Eq. (18). Then, the new fields in the locally optimal reference frame are</p>
+<p>$$ 
+\overline{\mathbf{{\proselabel{Generic}{{v}}}}} =\mathbf{{\proselabel{Generic}{{v}}}}+s k\left(\overline{\mathbf{{\proselabel{Generic}{{u}}}}}_{1}\right) \mathbf{{\proselabel{Generic}{{x}}}}+\overline{\mathbf{{\proselabel{Generic}{{u}}}}}_{2} 
+\tag{20}\label{20}$$</p>
+<p>$$
+\overline{\mathbf{{\proselabel{Generic}{{J}}}}} =\mathbf{{\proselabel{Generic}{{J}}}}+s k\left(\overline{\mathbf{{\proselabel{Generic}{{u}}}}}_{1}\right) 
+\tag{21}\label{21}$$</p>
+<p>$$
+\overline{\mathbf{{\proselabel{Generic}{{v}}}}}_{t} =\mathbf{{\proselabel{Generic}{{v}}}}_{t}-\mathbf{{\proselabel{Generic}{{M}}}} \overline{\mathbf{{\proselabel{Generic}{{u}}}}} 
+\tag{22}\label{22}$$</p>
+<p>$$
+\overline{\mathbf{a}} =\overline{\mathbf{{\proselabel{Generic}{{J}}}}} \overline{\mathbf{{\proselabel{Generic}{{v}}}}}+\overline{\mathbf{{\proselabel{Generic}{{v}}}}}_{t}
+\tag{23}\label{23}$$</p>
+<p>which follows directly from insertion of $\overline{\mathbf{{\proselabel{Generic}{{u}}}}}_{1}, \overline{\mathbf{{\proselabel{Generic}{{u}}}}}_{2}, \overline{\mathbf{{\proselabel{Generic}{{u}}}}}_{3}, \overline{\mathbf{{\proselabel{Generic}{{u}}}}}_{4}$ into the Eqs.(4)–(7), using the operator sk from Eq. (1) to remove ap.</p>
+<p>Theorem 4.1 (Objectivity in Optimal Frames). Given an at least C1 continuous vector field v, let v be its observation in the most-steady reference frame and let J, vt , a be its observed derivatives. Any scalar measure s that is computed from $\overline{\mathbf{{\proselabel{Generic}{{v}}}}}, \bar{{\proselabel{Generic}{{J}}}}, \overline{\mathbf{{\proselabel{Generic}{{v}}}}}_{t}, \overline{\mathbf{a}}$ remains unchanged under any smooth rotation and translation of the reference frame of v as in Eq. (3). A vector r that is computed in the optimal frame from $\overline{\mathbf{{\proselabel{Generic}{{v}}}}}, \bar{{\proselabel{Generic}{{J}}}}, \overline{\mathbf{{\proselabel{Generic}{{v}}}}}_{t}, \overline{\mathbf{a}}$ is objective, i.e., a transformation of v via Eq. (3) transforms r to $r^* = Q(t)r$. A second-order tensor T computed from $\overline{\mathbf{{\proselabel{Generic}{{v}}}}}, \bar{{\proselabel{Generic}{{J}}}}, \overline{\mathbf{{\proselabel{Generic}{{v}}}}}_{t}, \overline{\mathbf{a}}$ is objective, since a transformation of v via Eq. (3) transforms T to $\mathrm{T}^{*}=\mathrm{Q}(t) \mathrm{TQ}(t)^{\mathrm{T}}$.</p>
+<p>See Appendix B for a proof that $\overline{\mathbf{{\proselabel{Generic}{{v}}}}}, \bar{{\proselabel{Generic}{{J}}}}, \overline{\mathbf{{\proselabel{Generic}{{v}}}}}_{t}, \overline{\mathbf{a}}$ are objective. </p>
+<p>Theorem 4.2 (Continuity of Solution). If the input vector field ${\proselabel{Generic}{{v}}}$ is $C^1$ continuous,then $\overline{\mathbf{{\proselabel{Generic}{{v}}}}}, \bar{{\proselabel{Generic}{{J}}}}, \overline{\mathbf{{\proselabel{Generic}{{v}}}}}_{t}, \overline{\mathbf{a}}$ are at least $C^0$ continuous. </p>
+<p>All $\overline{\mathbf{{\proselabel{Generic}{{v}}}}}, \bar{{\proselabel{Generic}{{J}}}}, \overline{\mathbf{{\proselabel{Generic}{{v}}}}}_{t}, \overline{\mathbf{a}}$ are computed by integrating only first-order derivatives in a region $U$. If both ${\proselabel{Generic}{{v}}}$ and its first-order partials are continuous (i.e., ${\proselabel{Generic}{{v}}}$ is $C^1$ continuous), then $\overline{{\proselabel{Generic}{{v}}}}$ is at least $C^0$ continuous.</p>
+<div class="references"></div></div>
+        </div>
+        <div id="glossary_holder"><div id="glossary" class="glossary"></div></div>
+    </div>
+</body>
+</html>

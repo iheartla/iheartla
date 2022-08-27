@@ -19,3 +19,4 @@ la_test/generated_code.py
 /linear_algebra.spec
 iheartla.egg-info
 web/pyodide
+.vscode/launch.json

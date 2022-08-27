@@ -1,0 +1,178 @@
+<html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+            <script>
+        MathJax = {
+          loader: {
+            load: ["[attrLabel]/attr-label.js"],
+            paths: { attrLabel: "../heartdown-resource" },
+          },
+          tex: { packages: { "[+]": ["attr-label"] },
+           inlineMath: [['$', '$']]
+           },
+           options: {
+            enableAssistiveMml: false
+          },
+        };
+            </script>
+            <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+            <script src="https://unpkg.com/@popperjs/core@2"></script>
+            <script src="https://unpkg.com/tippy.js@6"></script>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/svg-arrow.css"/>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/border.css" />
+            <script src="../heartdown-resource/d3.min.js"></script>
+            <script src="../heartdown-resource/svg.min.js"></script>
+            <script type="text/javascript" src='../heartdown-resource/paper.js'></script>
+            <link rel="stylesheet" href="../heartdown-resource/paper.css">
+        </head>
+        <script>
+        const iheartla_data = JSON.parse('{"equations":[{"name":"Anisotropic", "parameters":[{"sym":"a", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3"}},{"sym":"C", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}},{"sym":"F", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "desc":"c2NhbGluZyBhbmQgcm90YXRpb24gbWF0cml4"}], "definition":[{"sym":"A", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}},{"sym":"$\\\\lambda_{0,1,2}$", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IG5vbi16ZXJvIGVpZ2VudmFsdWVzIA=="},{"sym":"$I_5$", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"$\\\\frac{∂I₅}{∂F}$", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "desc":"IFBLMSA="},{"sym":"$\\\\frac{∂²I₅}{∂f²}$", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"9", "cols":"9"}, "desc":"IEhlc3NpYW4gaW4gM0Qg"},{"sym":"$\\\\mathbf{Q}_{0}$", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "desc":"IHRoZSBlaWdlbm1hdHJpY2VzIA=="},{"sym":"$\\\\mathbf{Q}_{1}$", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "desc":"IHRoZSBlaWdlbm1hdHJpY2VzIA=="},{"sym":"$\\\\mathbf{Q}_{2}$", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "desc":"IHRoZSBlaWdlbm1hdHJpY2VzIA=="}], "local_func":[], "dependence":[], "undesc_list":["a","C","$I_5$","A"] },{"name":"Anisotropic2D", "parameters":[{"sym":"a", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2"}},{"sym":"A", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2", "cols":"2"}}], "definition":[{"sym":"$\\\\lambda_{0,1}$", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IHRoZSBlaWdlbnZhbHVlcyA="},{"sym":"$\\\\frac{∂²I₅}{∂f²}$", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"4", "cols":"4"}, "desc":"IFRoZSBIZXNzaWFuIA=="},{"sym":"$\\\\mathbf{Q}_{0}$", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2", "cols":"2"}, "desc":"IHRoZSBlaWdlbm1hdHJpY2VzIA=="},{"sym":"$\\\\mathbf{Q}_{1}$", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2", "cols":"2"}, "desc":"IHRoZSBlaWdlbm1hdHJpY2VzIA=="}], "local_func":[], "dependence":[], "undesc_list":["a","A"] }], "context":["Anisotropic","Anisotropic2D"] }');
+        const sym_data = JSON.parse('{"a":[{"desc":"None", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3"}, "def_module":"Anisotropic", "is_defined":false, "used_equations":[], "color":"color2"},{"desc":"None", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2"}, "def_module":"Anisotropic2D", "is_defined":false, "used_equations":[], "color":"color2"}],"C":[{"desc":"None", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "def_module":"Anisotropic", "is_defined":false, "used_equations":[], "color":"color3"}],"F":[{"desc":"c2NhbGluZyBhbmQgcm90YXRpb24gbWF0cml4", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "def_module":"Anisotropic", "is_defined":false, "used_equations":[], "color":"color2"}],"A":[{"desc":"None", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "def_module":"Anisotropic", "is_defined":true, "used_equations":[], "color":"color1"},{"desc":"None", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2", "cols":"2"}, "def_module":"Anisotropic2D", "is_defined":false, "used_equations":[], "color":"color1"}],"$\\\\lambda_{0,1,2}$":[{"desc":"IG5vbi16ZXJvIGVpZ2VudmFsdWVzIA==", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"Anisotropic", "is_defined":true, "used_equations":[], "color":"color1"}],"$I_5$":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"Anisotropic", "is_defined":true, "used_equations":[], "color":"color2"}],"$\\\\frac{∂I₅}{∂F}$":[{"desc":"IFBLMSA=", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "def_module":"Anisotropic", "is_defined":true, "used_equations":[], "color":"color3"}],"$\\\\frac{∂²I₅}{∂f²}$":[{"desc":"IEhlc3NpYW4gaW4gM0Qg", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"9", "cols":"9"}, "def_module":"Anisotropic", "is_defined":true, "used_equations":[], "color":"color2"},{"desc":"IFRoZSBIZXNzaWFuIA==", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"4", "cols":"4"}, "def_module":"Anisotropic2D", "is_defined":true, "used_equations":[], "color":"color2"}],"$\\\\mathbf{Q}_{0}$":[{"desc":"IHRoZSBlaWdlbm1hdHJpY2VzIA==", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "def_module":"Anisotropic", "is_defined":true, "used_equations":[], "color":"color3"},{"desc":"IHRoZSBlaWdlbm1hdHJpY2VzIA==", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2", "cols":"2"}, "def_module":"Anisotropic2D", "is_defined":true, "used_equations":[], "color":"color3"}],"$\\\\mathbf{Q}_{1}$":[{"desc":"IHRoZSBlaWdlbm1hdHJpY2VzIA==", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "def_module":"Anisotropic", "is_defined":true, "used_equations":[], "color":"color1"},{"desc":"IHRoZSBlaWdlbm1hdHJpY2VzIA==", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"2", "cols":"2"}, "def_module":"Anisotropic2D", "is_defined":true, "used_equations":[], "color":"color1"}],"$\\\\mathbf{Q}_{2}$":[{"desc":"IHRoZSBlaWdlbm1hdHJpY2VzIA==", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "def_module":"Anisotropic", "is_defined":true, "used_equations":[], "color":"color3"}],"$\\\\lambda_{0,1}$":[{"desc":"IHRoZSBlaWdlbnZhbHVlcyA=", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"Anisotropic2D", "is_defined":true, "used_equations":[], "color":"color1"}]}');
+        window.onload = onLoad;
+        function reportWindowSize() {
+          var arrows = document.querySelectorAll(".arrow");
+          if (arrows) {
+            for (var i = arrows.length - 1; i >= 0; i--) {
+              var arrow = arrows[i];
+              var body = document.querySelector("body");
+              var style = window.getComputedStyle(body);
+              var arrowPanel = document.querySelector("#arrows");
+              var arrowRect = arrowPanel.getBoundingClientRect();
+              var curOffset = parseInt(style.marginLeft, 10)
+              var oldOffset = arrow.getAttribute('offset');
+              curOffset += arrowRect.width;
+              arrow.setAttribute('offset', curOffset);
+              // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
+              var arrowStyle = window.getComputedStyle(arrow); 
+              var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
+              arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
+              var newWidth = parseInt(style.width, 10) + parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+              arrow.style.width = `${newWidth}px`;
+              arrow.style.height = style.height; 
+              // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
+            }
+          }
+          adjustGlossaryBtn();
+        }
+        window.onresize = reportWindowSize;
+        document.addEventListener("click", function(evt){
+            onClickPage();
+        });
+        
+        </script>
+<body>
+    <div id="flexer">
+        <div id="arrows"></div>
+        <div id="main">
+        <div class='title'>Anisotropic Elasticity for Inversion-Safety and Element Rehabilitation</div><div class='author'>THEODORE KIM, Pixar Animation Studios</div><div class='author'>FERNANDO DE GOES, Pixar Animation Studios</div><div class='author'>HAYLEY IBEN, Pixar Animation Studios</div><div class='context' id='context-Anisotropic-0' context='Anisotropic'>
+<h1 id='an-eigenanalysis-of-proselabelanisotropici_5'>4&nbsp;AN EIGENANALYSIS OF ${\proselabel{Anisotropic}{{I_5}}}$</h1><h2 id='the-eigensystem-of-proselabelanisotropici_5'>4.1&nbsp;The Eigensystem of ${\proselabel{Anisotropic}{{I_5}}}$</h2><p>We will now show that the eigensystem of any energy expressed solely in terms of ${\proselabel{Anisotropic}{{I_5}}}$ can be written down in closed form. The ${\proselabel{Anisotropic}{{I_5}}}$ invariant can be written in several forms,</p>
+<p>
+        <div class='equation' code_block="Anisotropic" code="dHIgZnJvbSBsaW5lYXJhbGdlYnJhCmAkSV81JGAgPSB0cihDQSkKCndoZXJlCgphIOKIiCDihJ1eMwpDIOKIiCDihJ1eKDPDlzMp">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$I_5$', 'Anisotropic', 'def', false, '')", "id":"Anisotropic-$I_5$", "sym":"$I_5$", "func":"Anisotropic",  "localFunc":"", "type":"def", "case":"equation"} }{ {I_5} } & = tr\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'C', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-C", "sym":"C", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{C}} }\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-A", "sym":"A", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{A}} } \right)\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Anisotropic', ['C', 'A', '$I_5$'], false, [], [], 'YCRJXzUkYCA9IHRyKENBKQ==');"} }{}
+\end{align*}
+\tag{5}\label{5}$$</div>
+        <br />
+where <span class='equation' code_block="Anisotropic" code="IEEgPSBhIGFeVCA=">$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic', 'def', false, '')", "id":"Anisotropic-A", "sym":"A", "func":"Anisotropic",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathit{A}} } & = \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'a', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-a", "sym":"a", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{a}} }{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'a', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-a", "sym":"a", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{a}} }}^T\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Anisotropic', ['a', 'A'], false, [], [], 'QSA9IGEgYV5U');"} }{}
+\end{align*}
+$</span> and $\|\cdot\|_{2}^{2}$ denotes the squared Euclidean norm. The <span sym="\\frac{∂I₅}{∂F}" context="Anisotropic">  PK1  </span> and <span sym="\\frac{∂²I₅}{∂f²}" context="Anisotropic">  Hessian in 3D  </span> are</p>
+<p>
+        <div class='equation' code_block="Anisotropic" code="YCRcZnJhY3viiIJJ4oKFfXviiIJGfSRgID0gMkZBCkYg4oiIIOKEnV4oM8OXMyk6IHNjYWxpbmcgYW5kIHJvdGF0aW9uIG1hdHJpeAo=">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$\\\\frac{∂I₅}{∂F}$', 'Anisotropic', 'def', false, '')", "id":"Anisotropic-$\\\\frac{∂I₅}{∂F}$", "sym":"$\\\\frac{∂I₅}{∂F}$", "func":"Anisotropic",  "localFunc":"", "type":"def", "case":"equation"} }{ {\frac{∂I₅}{∂F}} } & = 2\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'F', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-F", "sym":"F", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{F}} }\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-A", "sym":"A", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{A}} }\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Anisotropic', ['A', 'F', '$\\\\frac{∂I₅}{∂F}$'], false, [], [], 'YCRcZnJhY3viiIJJ4oKFfXviiIJGfSRgID0gMkZB');"} }{}
+\end{align*}
+\tag{6}\label{6}$$</div>
+        <br />
+
+        <div class='equation' code_block="Anisotropic" code="YCRcZnJhY3viiILCsknigoV9e+KIgmbCsn0kYCA9IDJbQeKCgSzigoFJ4oKDICBB4oKBLOKCgknigoMgIEHigoEs4oKDSeKCgwogICAgICAgICAgICAgICBB4oKCLOKCgUnigoMgIEHigoIs4oKCSeKCgyAgQeKCgizigoNJ4oKDCiAgICAgICAgICAgICAgIEHigoMs4oKBSeKCgyAgQeKCgyzigoJJ4oKDICBB4oKDLOKCg0nigoNdIAoK">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$\\\\frac{∂²I₅}{∂f²}$', 'Anisotropic', 'def', false, '')", "id":"Anisotropic-$\\\\frac{∂²I₅}{∂f²}$", "sym":"$\\\\frac{∂²I₅}{∂f²}$", "func":"Anisotropic",  "localFunc":"", "type":"def", "case":"equation"} }{ {\frac{∂²I₅}{∂f²}} } & = 2\begin{bmatrix}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-A", "sym":"A", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{A}} }_{1, 1}I_{ 3 } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-A", "sym":"A", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{A}} }_{1, 2}I_{ 3 } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-A", "sym":"A", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{A}} }_{1, 3}I_{ 3 }\\
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-A", "sym":"A", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{A}} }_{2, 1}I_{ 3 } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-A", "sym":"A", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{A}} }_{2, 2}I_{ 3 } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-A", "sym":"A", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{A}} }_{2, 3}I_{ 3 }\\
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-A", "sym":"A", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{A}} }_{3, 1}I_{ 3 } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-A", "sym":"A", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{A}} }_{3, 2}I_{ 3 } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-A", "sym":"A", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{A}} }_{3, 3}I_{ 3 }\\
+\end{bmatrix}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Anisotropic', ['A', '$\\\\frac{∂²I₅}{∂f²}$'], false, [], [], 'YCRcZnJhY3viiILCsknigoV9e-KIgmbCsn0kYCA9IDJbQeKCgSzigoFJ4oKDICBB4oKBLOKCgknigoMgIEHigoEs4oKDSeKCgwogICAgICAgICAgICAgICBB4oKCLOKCgUnigoMgIEHigoIs4oKCSeKCgyAgQeKCgizigoNJ4oKDCiAgICAgICAgICAgICAgIEHigoMs4oKBSeKCgyAgQeKCgyzigoJJ4oKDICBB4oKDLOKCg0nigoNd');"} }{}
+\end{align*}
+\tag{7}\label{7}$$</div>
+        <br />
+where $I _{3×3}$ is a 3×3 identity matrix,and ${\proselabel{Anisotropic}{{A}}} _{ij}$ is the $(i, j)$ scalar entry of ${\proselabel{Anisotropic}{{A}}}$. (Appendix A shows the matrix explicitly.) Since Eqn. 7 is constant in ${\proselabel{Anisotropic}{{a}}}$, it is straightforward to state its eigensystem in closed form. In 3D, it contains three identical <span sym="\\lambda_{0,1,2}" context="Anisotropic">  non-zero eigenvalues  </span>, <span class='equation' code_block="Anisotropic" code="YCRcbGFtYmRhX3swLDEsMn0kYD0yfHxhfHxfMl4y">$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$\\\\lambda_{0,1,2}$', 'Anisotropic', 'def', false, '')", "id":"Anisotropic-$\\\\lambda_{0,1,2}$", "sym":"$\\\\lambda_{0,1,2}$", "func":"Anisotropic",  "localFunc":"", "type":"def", "case":"equation"} }{ {\lambda_{0,1,2}} } & = 2\left\|\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'a', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-a", "sym":"a", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{a}} }\right\|_2^{2}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Anisotropic', ['a', '$\\\\lambda_{0,1,2}$'], false, [], [], 'YCRcbGFtYmRhX3swLDEsMn0kYD0yfHxhfHxfMl4y');"} }{}
+\end{align*}
+$</span>, and since fiber directions are usually normalized, this simplifies to ${\proselabel{Anisotropic}{{\lambda_{0,1,2}}}}=2$. The eigenvalue is repeated, so <span sym="\\mathbf{Q}_{0};\\mathbf{Q}_{1};\\mathbf{Q}_{2}" context="Anisotropic">  the eigenmatrices  </span> are arbitrary up to rotation, but one convenient phrasing is:<br />
+
+        <div class='equation' code_block="Anisotropic" code="YCRcbWF0aGJme1F9X3swfSRgID0gW2FeVAogICAgICAgICAgICAgICAwCiAgICAgICAgICAgICAgIDBdIApgJFxtYXRoYmZ7UX1fezF9JGAgPSBbMAogICAgICAgICAgICAgICAgICAgIGFeVAogICAgICAgICAgICAgICAwXSAKYCRcbWF0aGJme1F9X3syfSRgID0gWyAwCiAgICAgICAgICAgICAgIDAKICAgICAgICAgICAgICAgYV5UXSAKCg==">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$\\\\mathbf{Q}_{0}$', 'Anisotropic', 'def', false, '')", "id":"Anisotropic-$\\\\mathbf{Q}_{0}$", "sym":"$\\\\mathbf{Q}_{0}$", "func":"Anisotropic",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathbf{Q}_{0}} } & = \begin{bmatrix}
+{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'a', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-a", "sym":"a", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{a}} }}^T\\
+0\\
+0\\
+\end{bmatrix}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Anisotropic', ['a', '$\\\\mathbf{Q}_{0}$'], false, [], [], 'YCRcbWF0aGJme1F9X3swfSRgID0gW2FeVAogICAgICAgICAgICAgICAwCiAgICAgICAgICAgICAgIDBd');"} }{}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$\\\\mathbf{Q}_{1}$', 'Anisotropic', 'def', false, '')", "id":"Anisotropic-$\\\\mathbf{Q}_{1}$", "sym":"$\\\\mathbf{Q}_{1}$", "func":"Anisotropic",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathbf{Q}_{1}} } & = \begin{bmatrix}
+0\\
+{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'a', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-a", "sym":"a", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{a}} }}^T\\
+0\\
+\end{bmatrix}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Anisotropic', ['a', '$\\\\mathbf{Q}_{1}$'], false, [], [], 'YCRcbWF0aGJme1F9X3sxfSRgID0gWzAKICAgICAgICAgICAgICAgICAgICBhXlQKICAgICAgICAgICAgICAgMF0=');"} }{}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$\\\\mathbf{Q}_{2}$', 'Anisotropic', 'def', false, '')", "id":"Anisotropic-$\\\\mathbf{Q}_{2}$", "sym":"$\\\\mathbf{Q}_{2}$", "func":"Anisotropic",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathbf{Q}_{2}} } & = \begin{bmatrix}
+0\\
+0\\
+{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'a', 'Anisotropic', 'use', false, '')", "id":"Anisotropic-a", "sym":"a", "func":"Anisotropic",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{a}} }}^T\\
+\end{bmatrix}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Anisotropic', ['a', '$\\\\mathbf{Q}_{2}$'], false, [], [], 'YCRcbWF0aGJme1F9X3syfSRgID0gWyAwCiAgICAgICAgICAgICAgIDAKICAgICAgICAgICAgICAgYV5UXQ==');"} }{}
+\end{align*}
+\notag$$</div>
+        </p>
+<p>This eigenstructure has a straightforward interpretation. ${\proselabel{Anisotropic}{{I_5}}}$ introduces scaling constraints along the anisotropy direction, so the three eigenvectors encode this rank-three phenomenon. The remaining eigenvalues are all zero, so the Hessian contains a rank-six null space. We have provided supplemental Matlab/Octave code that validate these expressions.</p>
+</div><div class='context' id='context-Anisotropic2D-0' context='Anisotropic2D'>
+<p>The 2D case follows similarly. <span sym="\\frac{∂²I₅}{∂f²}" context="Anisotropic2D">  The Hessian  </span> is</p>
+<p>
+        <div class='equation' code_block="Anisotropic2D" code="dHIgZnJvbSBsaW5lYXJhbGdlYnJhCmAkXGZyYWN74oiCwrJJ4oKFfXviiIJmwrJ9JGAgPSAyW0HigoEs4oKBSV8yICBB4oKBLOKCgklfMgogICAgICAgICAgICAgICBB4oKCLOKCgUlfMiAgQeKCgizigoJJXzJdIAoKd2hlcmUKCmEg4oiIIOKEnV4yCkEg4oiIIOKEnV4oMsOXMik=">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$\\\\frac{∂²I₅}{∂f²}$', 'Anisotropic2D', 'def', false, '')", "id":"Anisotropic2D-$\\\\frac{∂²I₅}{∂f²}$", "sym":"$\\\\frac{∂²I₅}{∂f²}$", "func":"Anisotropic2D",  "localFunc":"", "type":"def", "case":"equation"} }{ {\frac{∂²I₅}{∂f²}} } & = 2\begin{bmatrix}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic2D', 'use', false, '')", "id":"Anisotropic2D-A", "sym":"A", "func":"Anisotropic2D",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{A}} }_{1, 1}I_{ 2 } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic2D', 'use', false, '')", "id":"Anisotropic2D-A", "sym":"A", "func":"Anisotropic2D",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{A}} }_{1, 2}I_{ 2 }\\
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic2D', 'use', false, '')", "id":"Anisotropic2D-A", "sym":"A", "func":"Anisotropic2D",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{A}} }_{2, 1}I_{ 2 } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'A', 'Anisotropic2D', 'use', false, '')", "id":"Anisotropic2D-A", "sym":"A", "func":"Anisotropic2D",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{A}} }_{2, 2}I_{ 2 }\\
+\end{bmatrix}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Anisotropic2D', ['A', '$\\\\frac{∂²I₅}{∂f²}$'], false, [], [], 'YCRcZnJhY3viiILCsknigoV9e-KIgmbCsn0kYCA9IDJbQeKCgSzigoFJXzIgIEHigoEs4oKCSV8yCiAgICAgICAgICAgICAgIEHigoIs4oKBSV8yICBB4oKCLOKCgklfMl0=');"} }{}
+\end{align*}
+\tag{8}\label{8}$$</div>
+        </p>
+<p><span sym="\\lambda_{0,1}" context="Anisotropic2D">  the eigenvalues  </span> are <span class='equation' code_block="Anisotropic2D" code="YCRcbGFtYmRhX3swLDF9JGA9Mnx8YXx8XzJeMg==">$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$\\\\lambda_{0,1}$', 'Anisotropic2D', 'def', false, '')", "id":"Anisotropic2D-$\\\\lambda_{0,1}$", "sym":"$\\\\lambda_{0,1}$", "func":"Anisotropic2D",  "localFunc":"", "type":"def", "case":"equation"} }{ {\lambda_{0,1}} } & = 2\left\|\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'a', 'Anisotropic2D', 'use', false, '')", "id":"Anisotropic2D-a", "sym":"a", "func":"Anisotropic2D",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{a}} }\right\|_2^{2}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Anisotropic2D', ['a', '$\\\\lambda_{0,1}$'], false, [], [], 'YCRcbGFtYmRhX3swLDF9JGA9Mnx8YXx8XzJeMg==');"} }{}
+\end{align*}
+$</span>, and <span sym="\\mathbf{Q}_{0};\\mathbf{Q}_{1}" context="Anisotropic2D">  the eigenmatrices  </span> become</p>
+<p>
+        <div class='equation' code_block="Anisotropic2D" code="YCRcbWF0aGJme1F9X3swfSRgID0gW2FeVAogICAgICAgICAgICAgICAwXSAKYCRcbWF0aGJme1F9X3sxfSRgID0gWzAKICAgICAgICAgICAgICAgICAgICBhXlRdIA==">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$\\\\mathbf{Q}_{0}$', 'Anisotropic2D', 'def', false, '')", "id":"Anisotropic2D-$\\\\mathbf{Q}_{0}$", "sym":"$\\\\mathbf{Q}_{0}$", "func":"Anisotropic2D",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathbf{Q}_{0}} } & = \begin{bmatrix}
+{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'a', 'Anisotropic2D', 'use', false, '')", "id":"Anisotropic2D-a", "sym":"a", "func":"Anisotropic2D",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{a}} }}^T\\
+0\\
+\end{bmatrix}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Anisotropic2D', ['a', '$\\\\mathbf{Q}_{0}$'], false, [], [], 'YCRcbWF0aGJme1F9X3swfSRgID0gW2FeVAogICAgICAgICAgICAgICAwXQ==');"} }{}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$\\\\mathbf{Q}_{1}$', 'Anisotropic2D', 'def', false, '')", "id":"Anisotropic2D-$\\\\mathbf{Q}_{1}$", "sym":"$\\\\mathbf{Q}_{1}$", "func":"Anisotropic2D",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathbf{Q}_{1}} } & = \begin{bmatrix}
+0\\
+{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'a', 'Anisotropic2D', 'use', false, '')", "id":"Anisotropic2D-a", "sym":"a", "func":"Anisotropic2D",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{a}} }}^T\\
+\end{bmatrix}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'Anisotropic2D', ['a', '$\\\\mathbf{Q}_{1}$'], false, [], [], 'YCRcbWF0aGJme1F9X3sxfSRgID0gWzAKICAgICAgICAgICAgICAgICAgICBhXlRd');"} }{}
+\end{align*}
+\notag$$</div>
+        </p>
+<div class="references"></div></div>
+        </div>
+        <div id="glossary_holder"><div id="glossary" class="glossary"></div></div>
+    </div>
+</body>
+</html>

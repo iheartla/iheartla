@@ -1,0 +1,138 @@
+<html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+            <script>
+        MathJax = {
+          loader: {
+            load: ["[attrLabel]/attr-label.js"],
+            paths: { attrLabel: "../heartdown-resource" },
+          },
+          tex: { packages: { "[+]": ["attr-label"] },
+           inlineMath: [['$', '$']]
+           },
+           options: {
+            enableAssistiveMml: false
+          },
+        };
+            </script>
+            <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+            <script src="https://unpkg.com/@popperjs/core@2"></script>
+            <script src="https://unpkg.com/tippy.js@6"></script>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/svg-arrow.css"/>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/border.css" />
+            <script src="../heartdown-resource/d3.min.js"></script>
+            <script src="../heartdown-resource/svg.min.js"></script>
+            <script type="text/javascript" src='../heartdown-resource/paper.js'></script>
+            <link rel="stylesheet" href="../heartdown-resource/paper.css">
+        </head>
+        <script>
+        const iheartla_data = JSON.parse('{"equations":[{"name":"nautilus", "parameters":[{"sym":"x", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n"}},{"sym":"λ", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"v", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "size":"dim_0"}}], "definition":[{"sym":"H", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "desc":"IGRldGVjdGVkIGdsb2JhbCBzeW1tZXRyeSBob21vZ3JhcGhpZXMsICRIJCA="},{"sym":"P", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "desc":"ICRQJCBpcyB0aGUgcHVyZSBwZXJzcGVjdGl2ZSBwYXJ0IG9mICRIJCAg"},{"sym":"S", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "desc":"ICRTJCBpcyBhbiBpbi1wbGFuZSBzeW1tZXRyeSA="},{"sym":"E", "type_info":{"type": "function", "params":[{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n"}], "ret":[{"type": "scalar", "is_int":"False"}]}}], "local_func":[{"name":"E", "parameters":[{"sym":"x", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n"}}]}], "dependence":[], "undesc_list":["x","λ","E","v"] }], "context":["nautilus"] }');
+        const sym_data = JSON.parse('{"x":[{"desc":"None", "type_info":{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n"}, "def_module":"nautilus", "is_defined":false, "used_equations":[], "color":"color7"}],"λ":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"nautilus", "is_defined":false, "used_equations":[], "color":"color6"}],"v":[{"desc":"None", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "size":"dim_0"}, "def_module":"nautilus", "is_defined":false, "used_equations":[], "color":"color5"}],"H":[{"desc":"IGRldGVjdGVkIGdsb2JhbCBzeW1tZXRyeSBob21vZ3JhcGhpZXMsICRIJCA=", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "def_module":"nautilus", "is_defined":true, "used_equations":[], "color":"color4"}],"P":[{"desc":"ICRQJCBpcyB0aGUgcHVyZSBwZXJzcGVjdGl2ZSBwYXJ0IG9mICRIJCAg", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "def_module":"nautilus", "is_defined":true, "used_equations":[], "color":"color3"}],"S":[{"desc":"ICRTJCBpcyBhbiBpbi1wbGFuZSBzeW1tZXRyeSA=", "type_info":{"type": "matrix", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"3", "cols":"3"}, "def_module":"nautilus", "is_defined":true, "used_equations":[], "color":"color2"}],"E":[{"desc":"None", "type_info":{"type": "function", "params":[{"type": "vector", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "rows":"n"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "def_module":"nautilus", "is_defined":true, "used_equations":[], "color":"color1"}]}');
+        window.onload = onLoad;
+        function reportWindowSize() {
+          var arrows = document.querySelectorAll(".arrow");
+          if (arrows) {
+            for (var i = arrows.length - 1; i >= 0; i--) {
+              var arrow = arrows[i];
+              var body = document.querySelector("body");
+              var style = window.getComputedStyle(body);
+              var arrowPanel = document.querySelector("#arrows");
+              var arrowRect = arrowPanel.getBoundingClientRect();
+              var curOffset = parseInt(style.marginLeft, 10)
+              var oldOffset = arrow.getAttribute('offset');
+              curOffset += arrowRect.width;
+              arrow.setAttribute('offset', curOffset);
+              // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
+              var arrowStyle = window.getComputedStyle(arrow); 
+              var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
+              arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
+              var newWidth = parseInt(style.width, 10) + parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+              arrow.style.width = `${newWidth}px`;
+              arrow.style.height = style.height; 
+              // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
+            }
+          }
+          adjustGlossaryBtn();
+        }
+        window.onresize = reportWindowSize;
+        document.addEventListener("click", function(evt){
+            onClickPage();
+        });
+        
+        </script>
+<body>
+    <div id="flexer">
+        <div id="arrows"></div>
+        <div id="main">
+        <div class='title'>Nautilus Recovering Regional Symmetry Transformations for Image Editing</div><div class='author'>MICHAL LUKÁČ, Adobe Research and Czech Technical University in Prague</div><div class='author'>DANIEL SÝKORA, Czech Technical University in Prague</div><div class='author'>KALYAN SUNKAVALLI, Adobe Research</div><div class='author'>ELI SHECHTMAN, Adobe Research</div><div class='author'>ONDŘEJ JAMRIŠKA, Czech Technical University in Prague</div><div class='author'>NATHAN CARR, Adobe Research</div><div class='author'>TOMÁŠ PAJDLA, Czech Technical University in Prague</div><h1 id='applications'>6&nbsp;APPLICATIONS</h1><p>To demonstrate the practical utility and versatility of our method, we have implemented several image editing applications where the knowledge of the symmetric transformation and its spatial support simplifies the task or removes the need for manual input. We compare our results on each of these applications to their current state-of-the-art methods, and demonstrate that our general framework is able to replicate and improve upon their quality.</p>
+<div class='context' id='context-nautilus-0' context='nautilus'>
+<h2 id='image-rectification'>6.1&nbsp;Image Rectification</h2><p>Previous techniques for removing perspective distortion and shear from a photograph require the manual specification or detection of corresponding points, right angles, vanishing lines [Liebowitz and Zisserman 1998], congruent line segments [Aiger et al. 2012], global measurements such as the rank of the image matrix [Zhang et al. 2012] or change of scale [Pritts et al. 2014].</p>
+<p>In our solution we rectify the image using one of our <span sym="H" context="nautilus">  detected global symmetry homographies, ${\prosedeflabel{nautilus}{{H}}}$  </span>. The key is to assume that ${\proselabel{nautilus}{{H}}}$ has the following structure:</p>
+<p>
+        <div class='equation' code_block="nautilus" code="SCA9IFBTUOKBu8K5">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'H', 'nautilus', 'def', false, '')", "id":"nautilus-H", "sym":"H", "func":"nautilus",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathit{H}} } & = \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'P', 'nautilus', 'use', false, '')", "id":"nautilus-P", "sym":"P", "func":"nautilus",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{P}} }\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'S', 'nautilus', 'use', false, '')", "id":"nautilus-S", "sym":"S", "func":"nautilus",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{S}} }\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'P', 'nautilus', 'use', false, '')", "id":"nautilus-P", "sym":"P", "func":"nautilus",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{P}} }^{-1}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'nautilus', ['S', 'P', 'H'], false, [], [], 'SCA9IFBTUOKBu8K5');"} }{}
+\end{align*}
+\tag{8}\label{8}$$</div>
+        <br />
+where<br />
+
+        <div class='equation' code_block="nautilus" code="UCA9IFsxIHjigoEgMAogICAgIDAgeOKCgiAwCiAgICAgeOKCgyB44oKEIDFdClMgPSBbeOKChSB44oKGIHjigocKICAgICB44oKIIHjigokgeOKCgeKCgAogICAgIDAgMCAxXQp3aGVyZQp4IOKIiCDihJ1ebg==">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'P', 'nautilus', 'def', false, '')", "id":"nautilus-P", "sym":"P", "func":"nautilus",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathit{P}} } & = \begin{bmatrix}
+1 & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'nautilus', 'use', false, '')", "id":"nautilus-x", "sym":"x", "func":"nautilus",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{x}} }_{ 1 } & 0\\
+0 & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'nautilus', 'use', false, '')", "id":"nautilus-x", "sym":"x", "func":"nautilus",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{x}} }_{ 2 } & 0\\
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'nautilus', 'use', false, '')", "id":"nautilus-x", "sym":"x", "func":"nautilus",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{x}} }_{ 3 } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'nautilus', 'use', false, '')", "id":"nautilus-x", "sym":"x", "func":"nautilus",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{x}} }_{ 4 } & 1\\
+\end{bmatrix}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'nautilus', ['x', 'P'], false, [], [], 'UCA9IFsxIHjigoEgMAogICAgIDAgeOKCgiAwCiAgICAgeOKCgyB44oKEIDFd');"} }{}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'S', 'nautilus', 'def', false, '')", "id":"nautilus-S", "sym":"S", "func":"nautilus",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathit{S}} } & = \begin{bmatrix}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'nautilus', 'use', false, '')", "id":"nautilus-x", "sym":"x", "func":"nautilus",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{x}} }_{ 5 } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'nautilus', 'use', false, '')", "id":"nautilus-x", "sym":"x", "func":"nautilus",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{x}} }_{ 6 } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'nautilus', 'use', false, '')", "id":"nautilus-x", "sym":"x", "func":"nautilus",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{x}} }_{ 7 }\\
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'nautilus', 'use', false, '')", "id":"nautilus-x", "sym":"x", "func":"nautilus",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{x}} }_{ 8 } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'nautilus', 'use', false, '')", "id":"nautilus-x", "sym":"x", "func":"nautilus",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{x}} }_{ 9 } & \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'nautilus', 'use', false, '')", "id":"nautilus-x", "sym":"x", "func":"nautilus",  "localFunc":"", "type":"use", "case":"equation"} }{ {\mathit{x}} }_{ 10 }\\
+0 & 0 & 1\\
+\end{bmatrix}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'nautilus', ['x', 'S'], false, [], [], 'UyA9IFt44oKFIHjigoYgeOKChwogICAgIHjigoggeOKCiSB44oKB4oKACiAgICAgMCAwIDFd');"} }{}
+\end{align*}
+\tag{9}\label{9}$$</div>
+        <br />
+<span sym="P" context="nautilus">  ${\prosedeflabel{nautilus}{{P}}}$ is the pure perspective part of ${\proselabel{nautilus}{{H}}}$   </span> and <span sym="S" context="nautilus">  ${\prosedeflabel{nautilus}{{S}}}$ is an in-plane symmetry  </span> which we assume to be a general similarity transform, i.e., uniform scale, rotation, and translation. In addition, we assume that this similarity transformation has a non-zero rotational component, failing which the decomposition can become under-constrained.</p>
+<p>To obtain the rectified image we need to estimate ${\proselabel{nautilus}{{P}}}$ and then apply its inverse. To do that we formulate the task as a non-linear optimization problem, with the following objective function:<br />
+
+        <div class='equation' code_block="nautilus" code="RSh4KSA9IM67fHwoeOKChSwgeOKCiCkgLSAoeOKCiSwgeOKChil8fF4yICsgc3VtX2kgfHxIIHZfaSAtIFBTUOKBu8K5IHZfaXx8XjIgd2hlcmUgeCDiiIgg4oSdXm4KCndoZXJlCs67IOKIiCDihJ0Kdl9pIOKIiCDihJ1eKDMgw5cgMyk=">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'E', 'nautilus', 'def', false, '')", "id":"nautilus-E", "sym":"E", "func":"nautilus",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathit{E}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'nautilus', 'use', true, 'E')", "id":"nautilus-x", "sym":"x", "func":"nautilus",  "localFunc":"E", "type":"use", "case":"equation"} }{ {\mathit{x}} } \right) & = \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'λ', 'nautilus', 'use', false, 'E')", "id":"nautilus-λ", "sym":"λ", "func":"nautilus",  "localFunc":"E", "type":"use", "case":"equation"} }{ {\mathit{λ}} }\left\|\begin{pmatrix}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'nautilus', 'use', true, 'E')", "id":"nautilus-x", "sym":"x", "func":"nautilus",  "localFunc":"E", "type":"use", "case":"equation"} }{ {\mathit{x}} }_{ 5 }\\\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'nautilus', 'use', true, 'E')", "id":"nautilus-x", "sym":"x", "func":"nautilus",  "localFunc":"E", "type":"use", "case":"equation"} }{ {\mathit{x}} }_{ 8 }\end{pmatrix} - \begin{pmatrix}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'nautilus', 'use', true, 'E')", "id":"nautilus-x", "sym":"x", "func":"nautilus",  "localFunc":"E", "type":"use", "case":"equation"} }{ {\mathit{x}} }_{ 9 }\\\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'x', 'nautilus', 'use', true, 'E')", "id":"nautilus-x", "sym":"x", "func":"nautilus",  "localFunc":"E", "type":"use", "case":"equation"} }{ {\mathit{x}} }_{ 6 }\end{pmatrix}\right\|^{2} + \sum_{\mathit{i}} \left\|\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'H', 'nautilus', 'use', false, 'E')", "id":"nautilus-H", "sym":"H", "func":"nautilus",  "localFunc":"E", "type":"use", "case":"equation"} }{ {\mathit{H}} }\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'v', 'nautilus', 'use', false, 'E')", "id":"nautilus-v", "sym":"v", "func":"nautilus",  "localFunc":"E", "type":"use", "case":"equation"} }{ {\mathit{v}} }_{ \mathit{i} } - \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'P', 'nautilus', 'use', false, 'E')", "id":"nautilus-P", "sym":"P", "func":"nautilus",  "localFunc":"E", "type":"use", "case":"equation"} }{ {\mathit{P}} }\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'S', 'nautilus', 'use', false, 'E')", "id":"nautilus-S", "sym":"S", "func":"nautilus",  "localFunc":"E", "type":"use", "case":"equation"} }{ {\mathit{S}} }\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'P', 'nautilus', 'use', false, 'E')", "id":"nautilus-P", "sym":"P", "func":"nautilus",  "localFunc":"E", "type":"use", "case":"equation"} }{ {\mathit{P}} }^{-1}\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'v', 'nautilus', 'use', false, 'E')", "id":"nautilus-v", "sym":"v", "func":"nautilus",  "localFunc":"E", "type":"use", "case":"equation"} }{ {\mathit{v}} }_{ \mathit{i} }\right\|^{2}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'nautilus', ['P', 'x', 'H', 'v', 'λ', 'S', 'E'], true, 'E', ['x'], 'RSh4KSA9IM67fHwoeOKChSwgeOKCiCkgLSAoeOKCiSwgeOKChil8fF4yICsgc3VtX2kgfHxIIHZfaSAtIFBTUOKBu8K5IHZfaXx8XjIgd2hlcmUgeCDiiIgg4oSdXm4=');"} }{}
+\end{align*}
+\tag{10}\label{10}$$</div>
+        <br />
+The first term of (10) enforces ${\proselabel{nautilus}{{S}}}$ to be as close to a similarity as possible, and the second term ensures that the decomposition is close to the input homography ${\proselabel{nautilus}{{H}}}$ (measured using the re-projection error of the four image corners ${\proselabel{nautilus}{{v}}}_{1...4}$).</p>
+<p>Minimizing ${\proselabel{nautilus}{{E}}}({\proselabel{nautilus}{{x}}})$ is feasible only when the rotation angle of the underlying similarity is away from 0◦ and 180◦. This can be verified by finding the closest similarity ${\proselabel{nautilus}{{S}}}^′$ to the input homography ${\proselabel{nautilus}{{H}}}$ and computing $α = arctan({\proselabel{nautilus}{{x}}}₈/{\proselabel{nautilus}{{x}}}₅)$. When $α ∈ (10◦, 170◦)$ we initialize ${\proselabel{nautilus}{{P}}}$ with the identity matrix, ${\proselabel{nautilus}{{S}}} = {\proselabel{nautilus}{{S}}}^′$ and then run a non-linear optimization using the L-BFGS algorithm [Liu and Nocedal 1989; Nocedal 1980] where exact partial derivatives of ${\proselabel{nautilus}{{E}}}({\proselabel{nautilus}{{x}}})$ are computed using dual numbers [Piponi 2004]. To avoid getting stuck in an inappropriate local minima, we allow for greater freedom at the beginning of the optimization. We start with ${\proselabel{nautilus}{{λ}}} = 1$ to let the algorithm explore a fruitful direction, and gradually increase it until it reaches ${\proselabel{nautilus}{{λ}}} = 109$ which allows us to strictly enforce ${\proselabel{nautilus}{{S}}}$ to be a similarity transform. To ensure that the resulting decomposition is meaningful we use the value of ${\proselabel{nautilus}{{E}}}({\proselabel{nautilus}{{x}}})$. In practice, we observed ${\proselabel{nautilus}{{E}}}({\proselabel{nautilus}{{x}}}) < 1$ indicates a good rectification (see Fig. 8).</p>
+<figure>
+<img src="./img/img8.png" alt="Trulli" style="width:100%" class = "center">
+<figcaption align = "center">Fig. 8. Rectification of images captured under perspective (a). We compare Aiger et al. [2012] (b), Zhang et al. [2012] (c), and Pritts et al. [2014] (d) against our approach (e, used symmetry inset). Source images: © Isabella Josie.
+</figcaption> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="references"></div></div>
+        </div>
+        <div id="glossary_holder"><div id="glossary" class="glossary"></div></div>
+    </div>
+</body>
+</html>

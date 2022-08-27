@@ -1,0 +1,120 @@
+<html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+            <script>
+        MathJax = {
+          loader: {
+            load: ["[attrLabel]/attr-label.js"],
+            paths: { attrLabel: "../heartdown-resource" },
+          },
+          tex: { packages: { "[+]": ["attr-label"] },
+           inlineMath: [['$', '$']]
+           },
+           options: {
+            enableAssistiveMml: false
+          },
+        };
+            </script>
+            <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+            <script src="https://unpkg.com/@popperjs/core@2"></script>
+            <script src="https://unpkg.com/tippy.js@6"></script>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/svg-arrow.css"/>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/border.css" />
+            <script src="../heartdown-resource/d3.min.js"></script>
+            <script src="../heartdown-resource/svg.min.js"></script>
+            <script type="text/javascript" src='../heartdown-resource/paper.js'></script>
+            <link rel="stylesheet" href="../heartdown-resource/paper.css">
+        </head>
+        <script>
+        const iheartla_data = JSON.parse('{"equations":[{"name":"perceptual", "parameters":[{"sym":"CSF", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}},{"sym":"ω", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "size":"dim_0"}, "desc":"ICTPiSQgaXMgaW4gY3BkIA=="},{"sym":"$m̃_{t,b}$", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"ICRtzINfe3QsYn0kIGlzIHRoZSB0aHJlc2hvbGQgcGFyYW1ldGVyIA=="},{"sym":"$β_b$", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"ICTOsl9iJCBpcyB0aGUgcG93ZXIgcGFyYW1ldGVyIG9mIHRoZSBtb2RlbCA="},{"sym":"$σ_P^A$", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"$σ_P^B$", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"$σ_O^A$", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"$σ_O^B$", "type_info":{"type": "scalar", "is_int":"False"}}], "definition":[{"sym":"$∆Q_P$", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"$∆Q_O$", "type_info":{"type": "scalar", "is_int":"False"}},{"sym":"m", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"},{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}},{"sym":"m̃", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"},{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}},{"sym":"$E_b$", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}}], "local_func":[{"name":"m", "parameters":[{"sym":"ω", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"ICTPiSQgaXMgaW4gY3BkIA=="},{"sym":"σ", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IGEgR2F1c3NpYW4gYmx1ciBrZXJuZWwgJM+DJCBpbiB0aGUgc3BhdGlhbCBkb21haW4g"}]},{"name":"m̃", "parameters":[{"sym":"ω", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"ICTPiSQgaXMgaW4gY3BkIA=="},{"sym":"σ", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IGEgR2F1c3NpYW4gYmx1ciBrZXJuZWwgJM+DJCBpbiB0aGUgc3BhdGlhbCBkb21haW4g"}]},{"name":"$E_b$", "parameters":[{"sym":"σ", "type_info":{"type": "scalar", "is_int":"False"}, "desc":"IGEgR2F1c3NpYW4gYmx1ciBrZXJuZWwgJM+DJCBpbiB0aGUgc3BhdGlhbCBkb21haW4g"}]}], "dependence":[], "undesc_list":["m̃","$σ_P^A$","$σ_P^B$","$E_b$","m","$σ_O^B$","$σ_O^A$","$∆Q_O$","CSF","$∆Q_P$"] }], "context":["perceptual"] }');
+        const sym_data = JSON.parse('{"CSF":[{"desc":"None", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "def_module":"perceptual", "is_defined":false, "used_equations":[], "color":"color5"}],"ω":[{"desc":"ICTPiSQgaXMgaW4gY3BkIA==", "type_info":{"type": "sequence", "is_int":"False", "element":{"type": "scalar", "is_int":"False"}, "size":"dim_0"}, "def_module":"perceptual", "is_defined":false, "used_equations":[], "color":"color4"}],"$m̃_{t,b}$":[{"desc":"ICRtzINfe3QsYn0kIGlzIHRoZSB0aHJlc2hvbGQgcGFyYW1ldGVyIA==", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"perceptual", "is_defined":false, "used_equations":[], "color":"color6"}],"$β_b$":[{"desc":"ICTOsl9iJCBpcyB0aGUgcG93ZXIgcGFyYW1ldGVyIG9mIHRoZSBtb2RlbCA=", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"perceptual", "is_defined":false, "used_equations":[], "color":"color5"}],"$σ_P^A$":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"perceptual", "is_defined":false, "used_equations":[], "color":"color2"}],"$σ_P^B$":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"perceptual", "is_defined":false, "used_equations":[], "color":"color5"}],"$σ_O^A$":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"perceptual", "is_defined":false, "used_equations":[], "color":"color6"}],"$σ_O^B$":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"perceptual", "is_defined":false, "used_equations":[], "color":"color4"}],"$∆Q_P$":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"perceptual", "is_defined":true, "used_equations":[], "color":"color3"}],"$∆Q_O$":[{"desc":"None", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"perceptual", "is_defined":true, "used_equations":[], "color":"color2"}],"m":[{"desc":"None", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"},{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "def_module":"perceptual", "is_defined":true, "used_equations":[], "color":"color1"}],"σ":[{"desc":"IGEgR2F1c3NpYW4gYmx1ciBrZXJuZWwgJM+DJCBpbiB0aGUgc3BhdGlhbCBkb21haW4g", "type_info":{"type": "scalar", "is_int":"False"}, "def_module":"perceptual", "is_defined":false, "used_equations":[], "color":"color3"}],"m̃":[{"desc":"None", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"},{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "def_module":"perceptual", "is_defined":true, "used_equations":[], "color":"color2"}],"$E_b$":[{"desc":"None", "type_info":{"type": "function", "params":[{"type": "scalar", "is_int":"False"}], "ret":[{"type": "scalar", "is_int":"False"}]}, "def_module":"perceptual", "is_defined":true, "used_equations":[], "color":"color1"}]}');
+        window.onload = onLoad;
+        function reportWindowSize() {
+          var arrows = document.querySelectorAll(".arrow");
+          if (arrows) {
+            for (var i = arrows.length - 1; i >= 0; i--) {
+              var arrow = arrows[i];
+              var body = document.querySelector("body");
+              var style = window.getComputedStyle(body);
+              var arrowPanel = document.querySelector("#arrows");
+              var arrowRect = arrowPanel.getBoundingClientRect();
+              var curOffset = parseInt(style.marginLeft, 10)
+              var oldOffset = arrow.getAttribute('offset');
+              curOffset += arrowRect.width;
+              arrow.setAttribute('offset', curOffset);
+              // console.log(`oldOffset:${oldOffset}, curOffset:${curOffset}`);
+              var arrowStyle = window.getComputedStyle(arrow); 
+              var arrowOffset = parseInt(document.querySelector(".arrow").style.marginLeft, 10)
+              arrow.style.marginLeft = `${arrowOffset+curOffset-oldOffset}px`;
+              var newWidth = parseInt(style.width, 10) + parseInt(style.marginLeft, 10) + parseInt(style.marginRight, 10);
+              arrow.style.width = `${newWidth}px`;
+              arrow.style.height = style.height; 
+              // console.log(`arrow.style.width:${arrow.style.width}, arrow.style.height:${arrow.style.height}`)
+            }
+          }
+          adjustGlossaryBtn();
+        }
+        window.onresize = reportWindowSize;
+        document.addEventListener("click", function(evt){
+            onClickPage();
+        });
+        
+        </script>
+<body>
+    <div id="flexer">
+        <div id="arrows"></div>
+        <div id="main">
+        <div class='title'>A perceptual model of motion quality for rendering with adaptive refresh-rate and resolution</div><div class='author'>GYORGY DENES, University of Cambridge</div><div class='author'>AKSHAY JINDAL, University of Cambridge</div><div class='author'>ALIAKSEI MIKHAILIUK, University of Cambridge</div><div class='author'>RAFAŁ K. MANTIUK, University of Cambridge</div><h1 id='a-perceptual-model-for-motion-quality'>5&nbsp;A PERCEPTUAL MODEL FOR MOTION QUALITY</h1><h2 id='from-proselabel-to-quality'>5.3&nbsp;From ${\proselabel{}{{σ}}}$ to quality</h2><div class='context' id='context-perceptual-0' context='perceptual'>
+<p>Blur introduced by eye motion, hold-type blur, and spatial resolution will result in the loss of sharpness. To quantify this in terms of loss of perceived quality, we map the physical amount of blur to the perceived quality difference in JND units. Our blur quality function is inspired by the energy models of blur detection [Watson and Ahumada 2011]. Such mapping is applied to the orthogonal (${\proselabel{perceptual}{{σ}}}_O$) and parallel (${\proselabel{perceptual}{{σ}}}_P$) components of the anisotropic blur separately, resulting in two independent quality values ($Q_O$ and $Q_P$).</p>
+<p>As we are interested in content-independent predictions, we assume the worst-case scenario: an infinitely thin line (Dirac delta function $δ(x)$), which contains uniform energy across all spatial frequencies. When convolved with <span sym="σ" context="perceptual">  a Gaussian blur kernel ${\prosedeflabel{perceptual}{{σ}}}$ in the spatial domain  </span>, the resulting image is a Gaussian function with standard deviation ${\proselabel{perceptual}{{σ}}}$. The Fourier transform of this signal is also a Gaussian, given by:</p>
+<p>
+        <div class='equation' code_block="perceptual" code="bSjPiTvPgykgPSBleHAoLTLPgF4yIM+JXjIgz4NeMikgd2hlcmUgz4kg4oiIIOKEnSwgz4PiiIgg4oSd">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'm', 'perceptual', 'def', false, '')", "id":"perceptual-m", "sym":"m", "func":"perceptual",  "localFunc":"", "type":"def", "case":"equation"} }{ {\mathit{m}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'ω', 'perceptual', 'use', true, 'm')", "id":"perceptual-ω", "sym":"ω", "func":"perceptual",  "localFunc":"m", "type":"use", "case":"equation"} }{ {\mathit{ω}} };\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'σ', 'perceptual', 'use', true, 'm')", "id":"perceptual-σ", "sym":"σ", "func":"perceptual",  "localFunc":"m", "type":"use", "case":"equation"} }{ {\mathit{σ}} } \right) & = exp\left( -2{\pi}^{2}{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'ω', 'perceptual', 'use', true, 'm')", "id":"perceptual-ω", "sym":"ω", "func":"perceptual",  "localFunc":"m", "type":"use", "case":"equation"} }{ {\mathit{ω}} }}^{2}{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'σ', 'perceptual', 'use', true, 'm')", "id":"perceptual-σ", "sym":"σ", "func":"perceptual",  "localFunc":"m", "type":"use", "case":"equation"} }{ {\mathit{σ}} }}^{2} \right)\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'perceptual', ['σ', 'ω', 'm'], true, 'm', ['ω', 'σ'], 'bSjPiTvPgykgPSBleHAoLTLPgF4yIM-JXjIgz4NeMikgd2hlcmUgz4kg4oiIIOKEnSwgz4PiiIgg4oSd');"} }{}
+\end{align*}
+\tag{12}\label{12}$$</div>
+        </p>
+<p>where <span sym="ω" context="perceptual">  ${\prosedeflabel{perceptual}{{ω}}}$ is in cpd  </span>. To account for the spatial contrast sensitivity of visual system, we modulate the Fourier coefficients with the CSF</p>
+<p>
+        <div class='equation' code_block="perceptual" code="bcyDKM+JO8+DKSA9IENTRijPiSkgbSjPiTvPgykgd2hlcmUgz4kg4oiIIOKEnSwgz4PiiIgg4oSdCndoZXJlCkNTRiDiiIgg4oSdLT7ihJ0K">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'm̃', 'perceptual', 'def', false, 'm')", "id":"perceptual-m̃", "sym":"m̃", "func":"perceptual",  "localFunc":"m", "type":"def", "case":"equation"} }{ {\textit{m̃}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'ω', 'perceptual', 'use', true, 'm̃')", "id":"perceptual-ω", "sym":"ω", "func":"perceptual",  "localFunc":"m̃", "type":"use", "case":"equation"} }{ {\mathit{ω}} };\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'σ', 'perceptual', 'use', true, 'm̃')", "id":"perceptual-σ", "sym":"σ", "func":"perceptual",  "localFunc":"m̃", "type":"use", "case":"equation"} }{ {\mathit{σ}} } \right) & = \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'CSF', 'perceptual', 'use', false, 'm̃')", "id":"perceptual-CSF", "sym":"CSF", "func":"perceptual",  "localFunc":"m̃", "type":"use", "case":"equation"} }{ {\mathit{CSF}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'ω', 'perceptual', 'use', true, 'm̃')", "id":"perceptual-ω", "sym":"ω", "func":"perceptual",  "localFunc":"m̃", "type":"use", "case":"equation"} }{ {\mathit{ω}} } \right)\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'm', 'perceptual', 'use', false, 'm̃')", "id":"perceptual-m", "sym":"m", "func":"perceptual",  "localFunc":"m̃", "type":"use", "case":"equation"} }{ {\mathit{m}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'ω', 'perceptual', 'use', true, 'm̃')", "id":"perceptual-ω", "sym":"ω", "func":"perceptual",  "localFunc":"m̃", "type":"use", "case":"equation"} }{ {\mathit{ω}} };\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'σ', 'perceptual', 'use', true, 'm̃')", "id":"perceptual-σ", "sym":"σ", "func":"perceptual",  "localFunc":"m̃", "type":"use", "case":"equation"} }{ {\mathit{σ}} } \right)\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'perceptual', ['CSF', 'm', 'σ', 'ω', 'm̃'], true, 'm̃', ['ω', 'σ'], 'bcyDKM-JO8-DKSA9IENTRijPiSkgbSjPiTvPgykgd2hlcmUgz4kg4oiIIOKEnSwgz4PiiIgg4oSd');"} }{}
+\end{align*}
+\tag{13}\label{13}$$</div>
+        <br />
+where CSF is Barten’s CSF model with the recommended standard observer parameters and the background luminance of 100 $cd/{\proselabel{perceptual}{{m}}}^2$ [Barten 2003].</p>
+<p>To compute the overall energy in a distorted signal, we sample a range of frequencies ${\proselabel{perceptual}{{ω}}}_i={1,2,...,64}$[cpd],andcomputethe blur energy as:</p>
+<p>
+        <div class='equation' code_block="perceptual" code="YCRFX2IkYCjPgykgPSBzdW1faSAoIChtzIMoz4lfaSA7IM+DKSkvYCRtzINfe3QsYn0kYCleYCTOsl9iJGAgIHdoZXJlIM+DIOKIiCDihJ0Kd2hlcmUKz4lfaSDiiIgg4oSdCmAkbcyDX3t0LGJ9JGAg4oiIIOKEnQpgJM6yX2IkYCDiiIgg4oSd">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$E_b$', 'perceptual', 'def', false, 'm̃')", "id":"perceptual-$E_b$", "sym":"$E_b$", "func":"perceptual",  "localFunc":"m̃", "type":"def", "case":"equation"} }{ {E_b} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'σ', 'perceptual', 'use', true, '$E_b$')", "id":"perceptual-σ", "sym":"σ", "func":"perceptual",  "localFunc":"$E_b$", "type":"use", "case":"equation"} }{ {\mathit{σ}} } \right) & = \sum_{\mathit{i}} {\left( \frac{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'm̃', 'perceptual', 'use', false, '$E_b$')", "id":"perceptual-m̃", "sym":"m̃", "func":"perceptual",  "localFunc":"$E_b$", "type":"use", "case":"equation"} }{ {\textit{m̃}} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'ω', 'perceptual', 'use', true, '$E_b$')", "id":"perceptual-ω", "sym":"ω", "func":"perceptual",  "localFunc":"$E_b$", "type":"use", "case":"equation"} }{ {\mathit{ω}} }_{ \mathit{i} };\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, 'σ', 'perceptual', 'use', true, '$E_b$')", "id":"perceptual-σ", "sym":"σ", "func":"perceptual",  "localFunc":"$E_b$", "type":"use", "case":"equation"} }{ {\mathit{σ}} } \right)}{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$m̃_{t,b}$', 'perceptual', 'use', false, '$E_b$')", "id":"perceptual-$m̃_{t,b}$", "sym":"$m̃_{t,b}$", "func":"perceptual",  "localFunc":"$E_b$", "type":"use", "case":"equation"} }{ {m̃_{t,b}} }} \right)}^{\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$β_b$', 'perceptual', 'use', false, '$E_b$')", "id":"perceptual-$β_b$", "sym":"$β_b$", "func":"perceptual",  "localFunc":"$E_b$", "type":"use", "case":"equation"} }{ {β_b} }}\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'perceptual', ['$β_b$', 'σ', '$m̃_{t,b}$', 'm̃', 'ω', '$E_b$'], true, '$E_b$', ['σ'], 'YCRFX2IkYCjPgykgPSBzdW1faSAoIChtzIMoz4lfaSA7IM-DKSkvYCRtzINfe3QsYn0kYCleYCTOsl9iJGAgIHdoZXJlIM-DIOKIiCDihJ0=');"} }{}
+\end{align*}
+\tag{14}\label{14}$$</div>
+        </p>
+<p>where <span sym="m̃_{t,b}" context="perceptual">  ${\prosedeflabel{perceptual}{{m̃_{t,b}}}}$ is the threshold parameter  </span> and <span sym="β_b" context="perceptual">  ${\prosedeflabel{perceptual}{{β_b}}}$ is the power parameter of the model  </span>. Both of these are fitted to psychophysical data in Section 6.3.</p>
+<p>Energy differences can be interpreted as quality differences, yielding:</p>
+<p>
+        <div class='equation' code_block="perceptual" code="YCTiiIZRX1AkYCA9IGAkRV9iJGAoYCTPg19QXkEkYCkgLSBgJEVfYiRgKGAkz4NfUF5CJGApCmAk4oiGUV9PJGAgPSBgJEVfYiRgKGAkz4NfT15BJGApIC0gYCRFX2IkYChgJM+DX09eQiRgKQp3aGVyZQpgJM+DX1BeQSRgIOKIiCDihJ0KYCTPg19QXkIkYCDiiIgg4oSdCmAkz4NfT15BJGAg4oiIIOKEnQpgJM+DX09eQiRgIOKIiCDihJ0=">
+        $$\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{align*}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$∆Q_P$', 'perceptual', 'def', false, '$E_b$')", "id":"perceptual-$∆Q_P$", "sym":"$∆Q_P$", "func":"perceptual",  "localFunc":"$E_b$", "type":"def", "case":"equation"} }{ {∆Q_P} } & = \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$E_b$', 'perceptual', 'use', false, '$E_b$')", "id":"perceptual-$E_b$", "sym":"$E_b$", "func":"perceptual",  "localFunc":"$E_b$", "type":"use", "case":"equation"} }{ {E_b} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$σ_P^A$', 'perceptual', 'use', false, '$E_b$')", "id":"perceptual-$σ_P^A$", "sym":"$σ_P^A$", "func":"perceptual",  "localFunc":"$E_b$", "type":"use", "case":"equation"} }{ {σ_P^A} } \right) - \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$E_b$', 'perceptual', 'use', false, '$E_b$')", "id":"perceptual-$E_b$", "sym":"$E_b$", "func":"perceptual",  "localFunc":"$E_b$", "type":"use", "case":"equation"} }{ {E_b} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$σ_P^B$', 'perceptual', 'use', false, '$E_b$')", "id":"perceptual-$σ_P^B$", "sym":"$σ_P^B$", "func":"perceptual",  "localFunc":"$E_b$", "type":"use", "case":"equation"} }{ {σ_P^B} } \right)\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'perceptual', ['$E_b$', '$σ_P^A$', '$σ_P^B$', '$∆Q_P$'], false, [], [], 'YCTiiIZRX1AkYCA9IGAkRV9iJGAoYCTPg19QXkEkYCkgLSBgJEVfYiRgKGAkz4NfUF5CJGAp');"} }{}
+\idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$∆Q_O$', 'perceptual', 'def', false, '$E_b$')", "id":"perceptual-$∆Q_O$", "sym":"$∆Q_O$", "func":"perceptual",  "localFunc":"$E_b$", "type":"def", "case":"equation"} }{ {∆Q_O} } & = \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$E_b$', 'perceptual', 'use', false, '$E_b$')", "id":"perceptual-$E_b$", "sym":"$E_b$", "func":"perceptual",  "localFunc":"$E_b$", "type":"use", "case":"equation"} }{ {E_b} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$σ_O^A$', 'perceptual', 'use', false, '$E_b$')", "id":"perceptual-$σ_O^A$", "sym":"$σ_O^A$", "func":"perceptual",  "localFunc":"$E_b$", "type":"use", "case":"equation"} }{ {σ_O^A} } \right) - \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$E_b$', 'perceptual', 'use', false, '$E_b$')", "id":"perceptual-$E_b$", "sym":"$E_b$", "func":"perceptual",  "localFunc":"$E_b$", "type":"use", "case":"equation"} }{ {E_b} }\left( \idlabel{ {"onclick":"event.stopPropagation(); onClickSymbol(this, '$σ_O^B$', 'perceptual', 'use', false, '$E_b$')", "id":"perceptual-$σ_O^B$", "sym":"$σ_O^B$", "func":"perceptual",  "localFunc":"$E_b$", "type":"use", "case":"equation"} }{ {σ_O^B} } \right)\\\eqlabel{ {"onclick":"event.stopPropagation(); onClickEq(this, 'perceptual', ['$E_b$', '$σ_O^B$', '$σ_O^A$', '$∆Q_O$'], false, [], [], 'YCTiiIZRX08kYCA9IGAkRV9iJGAoYCTPg19PXkEkYCkgLSBgJEVfYiRgKGAkz4NfT15CJGAp');"} }{}
+\end{align*}
+\tag{15}\label{15}$$</div>
+        <br />
+substituting in the standard deviations of the blur components for $A$ and $B$, in the directions parallel ($P$) and orthogonal ($O$) to SPEM. </p>
+<p>We further explain why an energy model is suitable to predict JND differences in the supplemental material (Section S.1).</p>
+<div class="references"></div></div>
+        </div>
+        <div id="glossary_holder"><div id="glossary" class="glossary"></div></div>
+    </div>
+</body>
+</html>
