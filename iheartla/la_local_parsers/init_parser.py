@@ -1669,24 +1669,22 @@ class grammarinitParser(Parser):
         self._closure(block0)
         self._multi_if_conditions_()
         self.name_last_node('ifs')
+        with self._optional():
 
-        def block2():
+            def block2():
+                self._separator_with_space_()
+            self._positive_closure(block2)
 
             def block3():
-                self._separator_with_space_()
-            self._positive_closure(block3)
-
-            def block4():
                 self._hspace_()
-            self._closure(block4)
+            self._closure(block3)
             self._expression_()
             self.name_last_node('other')
 
-            def block6():
+            def block5():
                 self._hspace_()
-            self._closure(block6)
+            self._closure(block5)
             self._OTHERWISE_()
-        self._closure(block2)
         self.ast._define(
             ['ifs', 'other'],
             []
