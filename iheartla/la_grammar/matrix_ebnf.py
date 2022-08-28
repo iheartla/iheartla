@@ -11,7 +11,7 @@ vector::Vector
     
 multi_cond_expr::MultiCondExpr
     = '{' {hspace} ifs:multi_if_conditions
-    {{separator_with_space}+ {hspace} other:expression {hspace} OTHERWISE }
+    [{separator_with_space}+ {hspace} other:expression {hspace} OTHERWISE ]
     ;
     
 multi_if_conditions::MultiIfs
