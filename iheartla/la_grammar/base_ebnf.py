@@ -37,7 +37,7 @@ multi_str::IdentifierAlone
     ;
 
 description
-    = /[^`;\n\r\f]*/
+    = /[^;\n\r\f]*/
     ;
 
 desc_identifier
