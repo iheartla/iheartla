@@ -160,8 +160,8 @@ solver_in_matrix_operator::Solver
     ;
 
 sum_in_matrix_operator::Summation
-    = SUM '_' sub:identifier_alone {hspace}+ exp:term_in_matrix
-    | SUM '_' sub:identifier_alone &'(' {hspace} exp:term_in_matrix
-    | SUM '_(' {hspace} id:identifier_alone {hspace} 'for' {hspace} cond:if_condition {hspace} ')' {hspace}+ exp:term_in_matrix
+    = SUM '_' sub:identifier_alone &'(' {hspace} exp:term_in_matrix
+    | SUM '_(' {hspace} id:identifier_alone {hspace} 'for' {hspace} cond:if_condition {hspace} ')' exp:term_in_matrix
+    | SUM '_(' {hspace} enum+:identifier_alone {{hspace} ',' {hspace} enum+:identifier_alone} {hspace} IN {hspace} range:(function_operator | identifier_alone) {hspace} ')' exp:term
     ;
 """
