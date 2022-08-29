@@ -11,7 +11,7 @@ vector::Vector
     
 multi_cond_expr::MultiCondExpr
     = '{' {hspace} ifs:multi_if_conditions
-    {{separator_with_space}+ {hspace} other:expression {hspace} OTHERWISE }
+    [{separator_with_space}+ {hspace} other:expression {hspace} OTHERWISE ]
     ;
     
 multi_if_conditions::MultiIfs
@@ -20,8 +20,8 @@ multi_if_conditions::MultiIfs
     ;
 
 single_if_condition::SingleIf
-    = stat:statement {hspace} IF {hspace} cond:if_condition
-    | cond:if_condition  {hspace} ':' {hspace} stat:statement
+    = stat:expression {hspace} IF {hspace} cond:if_condition
+    | cond:if_condition  {hspace} ':' {hspace} stat:expression
     ;
 
 rows::MatrixRows
@@ -116,6 +116,7 @@ operations_in_matrix
     | sqrt_in_matrix_operator
     | function_operator
     | builtin_operators
+    | pseudoinverse_in_matrix_operator
     ;
 
 power_in_matrix_operator::Power
@@ -145,6 +146,10 @@ kronecker_product_in_matrix_operator::KroneckerProduct
 trans_in_matrix_operator::Transpose
     = f:factor_in_matrix /ᵀ/
     ;
+
+pseudoinverse_in_matrix_operator::PseudoInverse
+    = f:factor_in_matrix /⁺/
+    ;
     
 sqrt_in_matrix_operator::Squareroot
     = /√/ f:factor_in_matrix;
@@ -155,8 +160,8 @@ solver_in_matrix_operator::Solver
     ;
 
 sum_in_matrix_operator::Summation
-    = SUM '_' sub:identifier_alone {hspace}+ exp:term_in_matrix
-    | SUM '_' sub:identifier_alone &'(' {hspace} exp:term_in_matrix
-    | SUM '_(' {hspace} id:identifier_alone {hspace} 'for' {hspace} cond:if_condition {hspace} ')' {hspace}+ exp:term_in_matrix
+    = SUM '_' sub:identifier_alone &'(' {hspace} exp:term_in_matrix
+    | SUM '_(' {hspace} id:identifier_alone {hspace} 'for' {hspace} cond:if_condition {hspace} ')' exp:term_in_matrix
+    | SUM '_(' {hspace} enum+:identifier_alone {{hspace} ',' {hspace} enum+:identifier_alone} {hspace} IN {hspace} range:(function_operator | identifier_alone) {hspace} ')' exp:term
     ;
 """

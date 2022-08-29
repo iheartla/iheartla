@@ -12,5 +12,5 @@ dependencies:
   - pip
   - pybtex
   - pip:
-    - PyMuPDF
+    - PyMuPDF==1.18.7
 prefix: /Users/anonymous/opt/miniconda3/envs/iheartla-gui

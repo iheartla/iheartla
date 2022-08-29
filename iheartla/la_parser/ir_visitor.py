@@ -43,6 +43,7 @@ class IRBaseVisitor(object):
             IRNodeType.Summation: "visit_summation",
             IRNodeType.Norm: "visit_norm",
             IRNodeType.Transpose: "visit_transpose",
+            IRNodeType.PseudoInverse: "visit_pseudoinverse",
             IRNodeType.Squareroot: "visit_squareroot",
             IRNodeType.Power: "visit_power",
             IRNodeType.Solver: "visit_solver",

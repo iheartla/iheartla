@@ -612,7 +612,7 @@ class grammar2245023265ae4cf87d02c8b6ba991139Parser(Parser):
 
     @tatsumasu()
     def _description_(self):  # noqa
-        self._pattern('[^`;\\n\\r\\f]*')
+        self._pattern('[^;\\n\\r\\f]*')
 
     @tatsumasu()
     def _desc_identifier_(self):  # noqa

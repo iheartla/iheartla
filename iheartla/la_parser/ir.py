@@ -56,13 +56,14 @@ class IRNodeType(Enum):
     KroneckerProduct = 219
     DotProduct = 220
     Squareroot = 221
-    Divergence = 222
-    Gradient = 223
-    Laplace = 224
-    Partial = 225
-    Size = 226
-    Module = 227
-    Geometry = 228
+    PseudoInverse = 222
+    Divergence = 223
+    Gradient = 224
+    Laplace = 225
+    Partial = 226
+    Size = 227
+    Module = 228
+    Geometry = 229
     # matrix
     Matrix = 300
     MatrixRows = 301
@@ -830,6 +831,10 @@ class TransposeNode(ExprNode):
         super().__init__(IRNodeType.Transpose, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.f = None
 
+class PseudoInverseNode(ExprNode):
+    def __init__(self, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.PseudoInverse, parse_info=parse_info, raw_text=raw_text)
+        self.f = None
 
 class SquarerootNode(ExprNode):
     def __init__(self, la_type=None, parse_info=None, raw_text=None):

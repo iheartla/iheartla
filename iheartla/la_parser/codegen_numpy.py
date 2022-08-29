@@ -783,6 +783,14 @@ class CodeGenNumpy(CodeGen):
             f_info.content = "{}.T".format(f_info.content)
         return f_info
 
+    def visit_pseudoinverse(self, node, **kwargs):
+        f_info = self.visit(node.f, **kwargs)
+        if node.f.la_type.is_vector():
+            f_info.content = "{}.T.reshape(1, {}) / ({}.dot({})) ".format(f_info.content, node.f.la_type.rows)
+        else:
+            f_info.content = "np.linalg.pinv({})".format(f_info.content)
+        return f_info
+
     def visit_squareroot(self, node, **kwargs):
         f_info = self.visit(node.value, **kwargs)
         f_info.content = "np.sqrt({})".format(f_info.content)

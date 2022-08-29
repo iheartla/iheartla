@@ -605,6 +605,8 @@ class grammardefaultParser(Parser):
                 self._function_operator_()
             with self._option():
                 self._builtin_operators_()
+            with self._option():
+                self._pseudoinverse_operator_()
             self._error('no available options')
 
     @tatsumasu('Add')
@@ -1726,6 +1728,17 @@ class grammardefaultParser(Parser):
             []
         )
 
+    @tatsumasu('PseudoInverse')
+    @nomemo
+    def _pseudoinverse_operator_(self):  # noqa
+        self._factor_()
+        self.name_last_node('f')
+        self._pattern('⁺')
+        self.ast._define(
+            ['f'],
+            []
+        )
+
     @tatsumasu('Squareroot')
     def _sqrt_operator_(self):  # noqa
         self._pattern('√')
@@ -1942,24 +1955,22 @@ class grammardefaultParser(Parser):
         self._closure(block0)
         self._multi_if_conditions_()
         self.name_last_node('ifs')
+        with self._optional():
 
-        def block2():
+            def block2():
+                self._separator_with_space_()
+            self._positive_closure(block2)
 
             def block3():
-                self._separator_with_space_()
-            self._positive_closure(block3)
-
-            def block4():
                 self._hspace_()
-            self._closure(block4)
+            self._closure(block3)
             self._expression_()
             self.name_last_node('other')
 
-            def block6():
+            def block5():
                 self._hspace_()
-            self._closure(block6)
+            self._closure(block5)
             self._OTHERWISE_()
-        self._closure(block2)
         self.ast._define(
             ['ifs', 'other'],
             []
@@ -1992,7 +2003,7 @@ class grammardefaultParser(Parser):
     def _single_if_condition_(self):  # noqa
         with self._choice():
             with self._option():
-                self._statement_()
+                self._expression_()
                 self.name_last_node('stat')
 
                 def block1():
@@ -2017,7 +2028,7 @@ class grammardefaultParser(Parser):
                 def block6():
                     self._hspace_()
                 self._closure(block6)
-                self._statement_()
+                self._expression_()
                 self.name_last_node('stat')
             self._error('no available options')
         self.ast._define(
@@ -2415,6 +2426,8 @@ class grammardefaultParser(Parser):
                 self._function_operator_()
             with self._option():
                 self._builtin_operators_()
+            with self._option():
+                self._pseudoinverse_in_matrix_operator_()
             self._error('no available options')
 
     @tatsumasu('Power')
@@ -2517,6 +2530,17 @@ class grammardefaultParser(Parser):
             []
         )
 
+    @tatsumasu('PseudoInverse')
+    @nomemo
+    def _pseudoinverse_in_matrix_operator_(self):  # noqa
+        self._factor_in_matrix_()
+        self.name_last_node('f')
+        self._pattern('⁺')
+        self.ast._define(
+            ['f'],
+            []
+        )
+
     @tatsumasu('Squareroot')
     def _sqrt_in_matrix_operator_(self):  # noqa
         self._pattern('√')
@@ -2564,60 +2588,92 @@ class grammardefaultParser(Parser):
                 self._token('_')
                 self._identifier_alone_()
                 self.name_last_node('sub')
-
-                def block1():
-                    self._hspace_()
-                self._positive_closure(block1)
-                self._term_in_matrix_()
-                self.name_last_node('exp')
-            with self._option():
-                self._SUM_()
-                self._token('_')
-                self._identifier_alone_()
-                self.name_last_node('sub')
                 with self._if():
                     self._token('(')
 
-                def block4():
+                def block1():
                     self._hspace_()
-                self._closure(block4)
+                self._closure(block1)
                 self._term_in_matrix_()
                 self.name_last_node('exp')
             with self._option():
                 self._SUM_()
                 self._token('_(')
 
+                def block3():
+                    self._hspace_()
+                self._closure(block3)
+                self._identifier_alone_()
+                self.name_last_node('id')
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._token('for')
+
                 def block6():
                     self._hspace_()
                 self._closure(block6)
-                self._identifier_alone_()
-                self.name_last_node('id')
+                self._if_condition_()
+                self.name_last_node('cond')
 
                 def block8():
                     self._hspace_()
                 self._closure(block8)
-                self._token('for')
-
-                def block9():
-                    self._hspace_()
-                self._closure(block9)
-                self._if_condition_()
-                self.name_last_node('cond')
-
-                def block11():
-                    self._hspace_()
-                self._closure(block11)
                 self._token(')')
+                self._term_in_matrix_()
+                self.name_last_node('exp')
+            with self._option():
+                self._SUM_()
+                self._token('_(')
+
+                def block10():
+                    self._hspace_()
+                self._closure(block10)
+                self._identifier_alone_()
+                self.add_last_node_to_name('enum')
 
                 def block12():
+
+                    def block13():
+                        self._hspace_()
+                    self._closure(block13)
+                    self._token(',')
+
+                    def block14():
+                        self._hspace_()
+                    self._closure(block14)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('enum')
+                self._closure(block12)
+
+                def block16():
                     self._hspace_()
-                self._positive_closure(block12)
-                self._term_in_matrix_()
+                self._closure(block16)
+                self._IN_()
+
+                def block17():
+                    self._hspace_()
+                self._closure(block17)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._function_operator_()
+                        with self._option():
+                            self._identifier_alone_()
+                        self._error('no available options')
+                self.name_last_node('range')
+
+                def block20():
+                    self._hspace_()
+                self._closure(block20)
+                self._token(')')
+                self._term_()
                 self.name_last_node('exp')
             self._error('no available options')
         self.ast._define(
-            ['cond', 'exp', 'id', 'sub'],
-            []
+            ['cond', 'exp', 'id', 'range', 'sub'],
+            ['enum']
         )
 
     @tatsumasu()
@@ -2763,7 +2819,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu()
     def _description_(self):  # noqa
-        self._pattern('[^`;\\n\\r\\f]*')
+        self._pattern('[^;\\n\\r\\f]*')
 
     @tatsumasu()
     def _desc_identifier_(self):  # noqa
@@ -6335,6 +6391,9 @@ class grammardefaultSemantics(object):
     def trans_operator(self, ast):  # noqa
         return ast
 
+    def pseudoinverse_operator(self, ast):  # noqa
+        return ast
+
     def sqrt_operator(self, ast):  # noqa
         return ast
 
@@ -6420,6 +6479,9 @@ class grammardefaultSemantics(object):
         return ast
 
     def trans_in_matrix_operator(self, ast):  # noqa
+        return ast
+
+    def pseudoinverse_in_matrix_operator(self, ast):  # noqa
         return ast
 
     def sqrt_in_matrix_operator(self, ast):  # noqa
@@ -6986,6 +7048,10 @@ class KroneckerProduct(ModelBase):
 
 
 class Transpose(ModelBase):
+    f = None
+
+
+class PseudoInverse(ModelBase):
     f = None
 
 
