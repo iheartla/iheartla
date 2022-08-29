@@ -3,7 +3,7 @@ body
   position:static;
   top: 0;
   left: 0;
-  font-size: 12pt;
+  font-size: 16pt;
   font-family: "Linux Libertine", serif;
   -webkit-hyphens: auto;
   -ms-hyphens: auto;
@@ -23,7 +23,7 @@ body
 }
 #arrows
 {
-  min-width: 70px;
+  min-width: 50px;
   /*height: 100%;*/
   /* grow shrink basis*/
   flex: 5 0 auto;

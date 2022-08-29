@@ -115,14 +115,14 @@ iframe{
     width: 100%;
     margin-left: 0px;
     margin-right: 0px;
-    /*
-    -webkit-transform: translate(-5%, 0px) scale(0.95);
+
+    -webkit-transform: translate(-0%, 0px) scale(1);
     -moz-transform-origin: top left;
     -webkit-transform-origin: top left;
     -o-transform-origin: top left;
     -ms-transform-origin: top left;
     transform-origin: top left;
-    */
+
 }
 h1
 {
