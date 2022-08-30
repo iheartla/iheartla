@@ -582,6 +582,7 @@ class TypeWalker(NodeWalker):
                             v_info = self.walk(cur_v)
                             if v_info.type.is_node(IRNodeType.FunctionType):
                                 self.solved_func.append(v_info.id[0].get_main_id())
+                                self.lhs_list.append(v_info.id[0].get_main_id())
                 elif type(vblock_info[0]).__name__ == 'LocalFunc':
                     if isinstance(vblock_info[0].name, str):
                         func_sym = vblock_info[0].name
@@ -1382,6 +1383,7 @@ class TypeWalker(NodeWalker):
                 self.get_cur_param_data().symtable[v_info.id[0].get_main_id()] = v_info.type.la_type
                 eq_node.unknown_id = v_info.id[0]
                 self.unknown_sym.append(v_info.id[0].get_main_id())
+                self.lhs_list.append(v_info.id[0].get_main_id())
                 #
                 if v_info.type.la_type.is_function():
                     has_func = True
