@@ -26,6 +26,7 @@ from .codegen_mathjax import CodeGenMathjax
 from .codegen_macromathjax import CodeGenMacroMathjax
 from .codegen_mathml import CodeGenMathML
 from .codegen_matlab import CodeGenMatlab
+from .codegen_glsl import CodeGenGLSL
 from .type_walker import *
 from .ir import *
 from .ir_visitor import *
@@ -81,6 +82,8 @@ def get_codegen(parser_type):
             gen = CodeGenMathML()
         elif parser_type == ParserTypeEnum.MATLAB:
             gen = CodeGenMatlab()
+        elif parser_type == ParserTypeEnum.GLSL:
+            gen = CodeGenGLSL()
         _codegen_dict[parser_type] = gen
     return _codegen_dict[parser_type]
 
@@ -442,7 +445,7 @@ def get_file_name(path_name):
 
 
 def compile_la_content(la_content,
-                       parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX | ParserTypeEnum.MATHJAX | ParserTypeEnum.MATLAB | ParserTypeEnum.MACROMATHJAX,
+                       parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX | ParserTypeEnum.MATHJAX | ParserTypeEnum.MATLAB | ParserTypeEnum.MACROMATHJAX | ParserTypeEnum.GLSL,
                        func_name=None,
                        path=None,
                        struct=False,
@@ -467,7 +470,7 @@ def compile_la_content(la_content,
         record("First type walker, after")
         if len(start_node.directives) > 0 and len(start_node.get_module_directives()) > 0:
             # dependent modules
-            for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.MATLAB, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,  ParserTypeEnum.MATHML, ParserTypeEnum.MACROMATHJAX]:
+            for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.MATLAB, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,  ParserTypeEnum.MATHML, ParserTypeEnum.MACROMATHJAX, ParserTypeEnum.GLSL]:
                 if parser_type & cur_type:
                     type_walker, start_node = parse_ir_node(la_content, model, cur_type)
                     if get_vars and var_data == '':
@@ -480,7 +483,7 @@ def compile_la_content(la_content,
             # free
             record("compile_la_content, free")
             type_walker, start_node = parse_ir_node(la_content, model, parser_type=ParserTypeEnum.EIGEN, start_node=start_node, type_walker=type_walker)
-            for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.MATLAB, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,  ParserTypeEnum.MATHML, ParserTypeEnum.MACROMATHJAX]:
+            for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.MATLAB, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,  ParserTypeEnum.MATHML, ParserTypeEnum.MACROMATHJAX, ParserTypeEnum.GLSL]:
                 if parser_type & cur_type:
                     if get_vars and var_data == '':
                         var_data = VarData(type_walker.parameters, type_walker.lhs_list, type_walker.ret_symbol)
@@ -510,7 +513,7 @@ def compile_la_content(la_content,
         return ret
 
 
-def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX,
+def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX | ParserTypeEnum.GLSL,
                        class_only=False):
     """
     used for command line
@@ -534,7 +537,7 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
             else:
                 save_to_file(content, file_name)
         cur_types = [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,
-                         ParserTypeEnum.MATLAB]
+                         ParserTypeEnum.MATLAB, ParserTypeEnum.GLSL]
         cur_suffix = [".py", ".cpp", ".tex", ".tex", ".m"]
         for cur_index in range(len(cur_types)):
             # Alec: in matlab a .m file can either be a "script" or a "function".

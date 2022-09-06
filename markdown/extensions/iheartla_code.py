@@ -1,5 +1,7 @@
 import os
 from textwrap import dedent
+
+from iheartla.la_parser.parser import parse_and_translate
 from . import Extension, WHEEL_MODE
 from ..preprocessors import Preprocessor
 from ..postprocessors import Postprocessor
@@ -804,7 +806,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
             return frame_list
         cur_index = 0
         for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,
-                         ParserTypeEnum.MATHML, ParserTypeEnum.MATLAB, ParserTypeEnum.MACROMATHJAX]:
+                         ParserTypeEnum.MATHML, ParserTypeEnum.MATLAB, ParserTypeEnum.MACROMATHJAX, ParserTypeEnum.GLSL]:
             if self.md.parser_type & cur_type:
                 self.save_with_type(get_frame_list(cur_index), cur_type)
                 cur_index += 1
@@ -816,6 +818,8 @@ class IheartlaBlockPreprocessor(Preprocessor):
             self.save_python(code_frame_list)
         elif parser_type == ParserTypeEnum.MATLAB:
             self.save_matlab(code_frame_list)
+        elif parser_type == ParserTypeEnum.GLSL:
+            self.save_glsl(code_frame_list)
 
     def save_cpp(self, code_frame_list):
         lib_header = None
@@ -847,7 +851,15 @@ class IheartlaBlockPreprocessor(Preprocessor):
             self.md.lib_matlab = lib_content
             # save_to_file(lib_content, "{}/lib.m".format(self.md.path))
 
-
+    def save_glsl(self, code_frame_list):
+        lib_header = None
+        lib_content = ''
+        for code_frame in code_frame_list:
+            if lib_header is None:
+                lib_header = code_frame.include
+            lib_content += code_frame.struct + '\n'
+        if lib_header is not None:
+            self.md.lib_glsl = lib_header + lib_content
 
     def _escape(self, txt):
         """ basic html escaping """

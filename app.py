@@ -257,7 +257,7 @@ def save_output_code(md, path):
 
 
 def process_input(content, input_dir='.', resource_dir='.', file_name='result',
-                  parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.MATLAB,
+                  parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.MATLAB | ParserTypeEnum.GLSL,
                   server_mode=False):
     """
     Given the source string, generate the html result
@@ -427,7 +427,7 @@ if __name__ == '__main__':
     else:
         parser_type = ParserTypeEnum.DEFAULT
         out_dict = {"numpy": ParserTypeEnum.NUMPY, "eigen": ParserTypeEnum.EIGEN, "latex": ParserTypeEnum.LATEX,
-                    "mathjax": ParserTypeEnum.MATHJAX, "matlab": ParserTypeEnum.MATLAB}
+                    "mathjax": ParserTypeEnum.MATHJAX, "matlab": ParserTypeEnum.MATLAB, "glsl": ParserTypeEnum.GLSL}
         if args.output:
             # when output args are present _only_ output those
             parser_type = ParserTypeEnum.INVALID
@@ -436,7 +436,7 @@ if __name__ == '__main__':
                 assert out in out_dict, "Parameters after -o or --output can only be numpy, eigen, latex, or matlab"
                 parser_type = parser_type | out_dict[out]
         else:
-            parser_type = ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.MATLAB
+            parser_type = ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.MATLAB | ParserTypeEnum.GLSL
         for paper_file in args.paper:
             content = read_from_file(paper_file)
             base_name = os.path.basename(Path(paper_file))

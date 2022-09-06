@@ -22,6 +22,8 @@ class CodeFrame(object):
             content = self.desc + self.include + self.struct + '\n\n' + self.rand_data + '\n\n\n' + self.main
         elif self.parse_type == ParserTypeEnum.NUMPY:
             content = self.desc + self.include + self.struct + '\n\n' + self.rand_data + '\n\n\n' + self.main
+        elif self.parse_type == ParserTypeEnum.GLSL:
+            content = self.desc + self.include + self.struct + '\n\n' + self.rand_data + '\n\n\n' + self.main
         elif self.parse_type == ParserTypeEnum.MATLAB:
             content = self.struct  # struct already contains everything
         elif self.parse_type == ParserTypeEnum.LATEX:

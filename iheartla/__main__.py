@@ -57,7 +57,7 @@ if __name__ == '__main__':
         elif args.input:
             # output all defaults (unless outputs present)
             parser_type = ParserTypeEnum.DEFAULT
-            out_dict = {"numpy": ParserTypeEnum.NUMPY, "eigen": ParserTypeEnum.EIGEN, "latex": ParserTypeEnum.LATEX, "mathjax": ParserTypeEnum.MATHJAX, "matlab": ParserTypeEnum.MATLAB}
+            out_dict = {"numpy": ParserTypeEnum.NUMPY, "eigen": ParserTypeEnum.EIGEN, "latex": ParserTypeEnum.LATEX, "mathjax": ParserTypeEnum.MATHJAX, "matlab": ParserTypeEnum.MATLAB, "glsl": ParserTypeEnum.GLSL}
             if args.output:
                 # when output args are present _only_ output those
                 parser_type = ParserTypeEnum.INVALID

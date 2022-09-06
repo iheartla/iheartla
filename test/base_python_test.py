@@ -47,7 +47,7 @@ class BasePythonTest(unittest.TestCase):
 
     def gen_func_info(self, parse_str):
         func_name = "iheartla"   # can use different name in future
-        parse_type = ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN
+        parse_type = ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.GLSL
         if TEST_MATLAB:
             parse_type = parse_type | ParserTypeEnum.MATLAB
         # Numpy

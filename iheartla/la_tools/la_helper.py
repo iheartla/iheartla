@@ -34,6 +34,7 @@ class ParserTypeEnum(IntFlag):
     MATHJAX = 256
     MATHML = 512
     MACROMATHJAX = 1024
+    GLSL = 2048
 
 
 def is_keyword(name, parser_type=ParserTypeEnum.DEFAULT):
