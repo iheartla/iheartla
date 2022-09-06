@@ -9,6 +9,7 @@ class LaVisualizer(object):
         self.tags = {}
         self.index = 0
         self.queue = []
+        self.cnt = 0
 
     def visualize(self, node):
         self.reset()
@@ -41,7 +42,8 @@ class LaVisualizer(object):
                         if children is not None:
                             self.handleChild(children, cur_index, k)
         src = Source(self.ps.source)
-        src.render('AST', view=False)
+        self.cnt += 1
+        src.render('AST{}'.format(self.cnt), view=False)
 
     def handleChild(self, child, cur_index, k):
         if isinstance(child, Node):
