@@ -580,9 +580,12 @@ class TypeWalker(NodeWalker):
                         self.visiting_solver_eq = True
                         for cur_v in vblock_info[0].v:
                             v_info = self.walk(cur_v)
+                            v_id = v_info.id[0].get_main_id()
                             if v_info.type.is_node(IRNodeType.FunctionType):
-                                self.solved_func.append(v_info.id[0].get_main_id())
-                                self.lhs_list.append(v_info.id[0].get_main_id())
+                                self.solved_func.append(v_id)
+                            self.lhs_list.append(v_id)
+                            if len(v_id) > 1:
+                                multi_lhs_list.append(v_id)
                 elif type(vblock_info[0]).__name__ == 'LocalFunc':
                     if isinstance(vblock_info[0].name, str):
                         func_sym = vblock_info[0].name
