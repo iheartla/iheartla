@@ -223,15 +223,15 @@ def get_start_node(model):
     return type_walker, start_node
 
 
-def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=None, type_walker=None):
-    record("parse_ir_node")
-    global _grammar_content
-    current_content = _grammar_content
-    if start_node is None:
-        record("parse_ir_node, start_node")
-        # type walker
-        type_walker = get_type_walker()
-        start_node = type_walker.walk(model, pre_walk=True)
+def get_new_parser(start_node, current_content, parser_type=ParserTypeEnum.EIGEN):
+    """
+    Get the new parser based on information from start_node
+    :param start_node:
+    :param current_content:
+    :param parser_type:
+    :return: new parser and others
+    """
+    type_walker = get_type_walker()
     extra_dict = {}
     parse_key = _default_key
     # deal with packages
@@ -290,7 +290,8 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
                 par_list = []
                 if len(tmp_type_walker.parameters) != len(module.params):
                     parse_info = sym.parse_info
-                    err_msg = "Parameters doesn't match, need {} while given {}".format(len(tmp_type_walker.parameters), len(module.params))
+                    err_msg = "Parameters doesn't match, need {} while given {}".format(len(tmp_type_walker.parameters),
+                                                                                        len(module.params))
                     raise
                 par_mapping_dict = {}
                 for cur_index in range(len(module.params)):
@@ -302,14 +303,17 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
                 for sym in module.names:
                     if sym.get_name() not in tmp_type_walker.symtable:
                         parse_info = sym.parse_info
-                        err_msg = "Symbol {} doesn't exist in module {}".format(sym.get_name(), module.module.get_name())
+                        err_msg = "Symbol {} doesn't exist in module {}".format(sym.get_name(),
+                                                                                module.module.get_name())
                         raise
                     r_sym = module.r_dict[sym.get_name()]
                     existed_syms_dict[r_sym] = copy.deepcopy(tmp_type_walker.symtable[sym.get_name()])
                     name_list.append(sym.get_name())
                     r_name_list.append(r_sym)
 
-                module_list.append(CodeModule(frame=pre_frame, name=module.module.get_name(), syms=name_list, r_syms=r_name_list, params=par_list))
+                module_list.append(
+                    CodeModule(frame=pre_frame, name=module.module.get_name(), syms=name_list, r_syms=r_name_list,
+                               params=par_list))
                 module_param_list.append(copy.deepcopy(tmp_type_walker.parameters))
                 module_sym_list.append(copy.deepcopy(tmp_type_walker.symtable))
             except:
@@ -373,6 +377,20 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
     # get new parser
     record("Get new parser")
     parser = get_compiled_parser(current_content, parse_key, extra_dict)
+    return parser, existed_syms_dict, module_list, dependent_modules, module_param_list, module_sym_list
+
+
+def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=None, type_walker=None):
+    record("parse_ir_node")
+    global _grammar_content
+    current_content = _grammar_content
+    if start_node is None:
+        record("parse_ir_node, start_node")
+        # type walker
+        type_walker = get_type_walker()
+        start_node = type_walker.walk(model, pre_walk=True)
+    # get new parser
+    parser, existed_syms_dict, module_list, dependent_modules, module_param_list, module_sym_list = get_new_parser(start_node, current_content, parser_type)
     record("Second Parsing, before")
     model = parser.parse(content, parseinfo=True)
     record("Second type walker, before")
@@ -409,6 +427,12 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
         parser = get_default_parser()
         # parse de
         model = parser.parse(content, parseinfo=True)
+        # type walker
+        type_walker = get_type_walker()
+        start_node = type_walker.walk(model, pre_walk=True)
+        new_parser, _, _, _, _, _ = get_new_parser(start_node, content)
+        model = new_parser.parse(content, parseinfo=True)
+        #
         new_content = parse_de_content(model, content)
         print("new_content:\n{}".format(new_content))
         #
@@ -421,7 +445,13 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
         # other type
         if parser_type is None:
             parser_type = ParserTypeEnum.NUMPY
-        res = walk_model(parser_type, type_walker, start_node, func_name)
+        if ConfMgr.getInstance().has_de:
+            code_frame = walk_model(parser_type, type_walker, start_node, func_name, struct=True)
+            if parser_type == ParserTypeEnum.EIGEN:
+                code_frame.include += "#include <igl/readOFF.h>\n"
+            res = code_frame.desc + code_frame.include + code_frame.struct
+        else:
+            res = walk_model(parser_type, type_walker, start_node, func_name)
         return res, 0
     if DEBUG_MODE:
         result = get_parse_result(parser_type)
