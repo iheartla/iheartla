@@ -403,12 +403,10 @@ E: { ℤ × ℤ }''')
             pathname = fileDialog.GetPath()
             if file_type == FileType.LA:
                 content = self.control.GetValue()
-            elif file_type == FileType.EIGEN:
-                content = self.midPanel.get_content(MidPanelEnum.PYTHON)
-            elif file_type == FileType.NUMPY:
-                content = self.midPanel.get_content(MidPanelEnum.CPP)
             elif file_type == FileType.LATEX:
                 content = self.latexPanel.get_content()
+            else:
+                content = self.midPanel.get_content()
             if content == "":
                 self.statusbar.SetStatusText("Blank content", 0)
                 return
