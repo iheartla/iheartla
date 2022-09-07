@@ -2,6 +2,7 @@ import wx
 from enum import Enum
 from ..la_gui.python_ctrl import PyTextControl
 from ..la_gui.cpp_ctrl import CppTextControl
+from ..la_gui.glsl_ctrl import GLSLTextControl
 from ..la_gui.mat_ctrl import MatlabTextControl
 from ..la_gui.latex_panel import LatexControl
 
@@ -12,6 +13,7 @@ class MidPanelEnum(Enum):
     MATHJAX = 3
     MATLAB = 4
     MATHML = 5
+    GLSL = 6
 
 
 class MidPanel(wx.Panel):
@@ -19,6 +21,7 @@ class MidPanel(wx.Panel):
         super(MidPanel, self).__init__(parent, **kwargs)
         self.py_ctrl = PyTextControl(self)
         self.cpp_ctrl = CppTextControl(self)
+        self.glsl_ctrl = GLSLTextControl(self)
         self.jax_ctrl = LatexControl(self)
         self.mat_ctrl = MatlabTextControl(self)
         self.mathml_ctrl = LatexControl(self)
@@ -26,6 +29,7 @@ class MidPanel(wx.Panel):
         self.panel_dict = {
             MidPanelEnum.PYTHON: self.py_ctrl,
             MidPanelEnum.CPP: self.cpp_ctrl,
+            MidPanelEnum.GLSL: self.glsl_ctrl,
             MidPanelEnum.MATHJAX: self.jax_ctrl,
             MidPanelEnum.MATLAB: self.mat_ctrl,
             MidPanelEnum.MATHML: self.mathml_ctrl,
@@ -56,6 +60,8 @@ class MidPanel(wx.Panel):
             self.py_ctrl.Show()
         elif self.cur_type == MidPanelEnum.CPP:
             self.cpp_ctrl.Show()
+        elif self.cur_type == MidPanelEnum.GLSL:
+            self.glsl_ctrl.Show()
         elif self.cur_type == MidPanelEnum.MATHJAX:
             self.jax_ctrl.Show()
         elif self.cur_type == MidPanelEnum.MATLAB:
@@ -68,6 +74,8 @@ class MidPanel(wx.Panel):
         self.py_ctrl.SetSize((self.GetSize().width, self.GetSize().height))
         self.cpp_ctrl.SetPosition((0, 0))
         self.cpp_ctrl.SetSize((self.GetSize().width, self.GetSize().height))
+        self.glsl_ctrl.SetPosition((0, 0))
+        self.glsl_ctrl.SetSize((self.GetSize().width, self.GetSize().height))
         self.jax_ctrl.SetPosition((0, 0))
         self.jax_ctrl.SetSize((self.GetSize().width, self.GetSize().height))
         self.mat_ctrl.SetPosition((0, 0))

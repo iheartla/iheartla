@@ -24,6 +24,7 @@ class FileType(Enum):
     NUMPY = 1
     EIGEN = 2
     LATEX = 3
+    GLSL = 4
 
 
 class MainWindow(wx.Frame):
@@ -48,6 +49,7 @@ class MainWindow(wx.Frame):
         item_save_la = menu_file.Append(wx.NewId(), "&Save LA As...", " Save LA code to a file")
         item_save_python = menu_file.Append(wx.NewId(), "&Save Numpy As...", " Save Numpy code to a file")
         item_save_eigen = menu_file.Append(wx.NewId(), "&Save Eigen As...", " Save Eigen code to a file")
+        item_save_glsl = menu_file.Append(wx.NewId(), "&Save GLSL As...", " Save GLSL code to a file")
         item_save_tex = menu_file.Append(wx.NewId(), "&Save Latex As...", " Save Latex code to a file")
         item_about = menu_file.Append(wx.ID_ABOUT, "&About", " Information about this program")
         menu_run = wx.Menu()
@@ -65,6 +67,7 @@ class MainWindow(wx.Frame):
         menu_language = wx.Menu()
         py_lang = menu_language.AppendRadioItem(wx.NewId(), "&Python with NumPy")
         cpp_lang = menu_language.AppendRadioItem(wx.NewId(), "&C++ with Eigen")
+        glsl_lang = menu_language.AppendRadioItem(wx.NewId(), "&GLSL frag shader")
         mathjax_lang = menu_language.AppendRadioItem(wx.NewId(), "&MathJax")
         matlab_lang = menu_language.AppendRadioItem(wx.NewId(), "&Matlab")
         mathml_lang = menu_language.AppendRadioItem(wx.NewId(), "&MathML")
@@ -90,6 +93,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnSaveLA, item_save_la)
         self.Bind(wx.EVT_MENU, self.OnSavePython, item_save_python)
         self.Bind(wx.EVT_MENU, self.OnSaveEigen, item_save_eigen)
+        self.Bind(wx.EVT_MENU, self.OnSaveGLSL, item_save_glsl)
         self.Bind(wx.EVT_MENU, self.OnSaveTex, item_save_tex)
         # Edit
         self.Bind(wx.EVT_MENU, self.OnUndo, self.undo_item)
@@ -102,6 +106,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnKeyEnter, item_run)
         self.Bind(wx.EVT_MENU, self.OnClickNumpy, py_lang)
         self.Bind(wx.EVT_MENU, self.OnClickEigen, cpp_lang)
+        self.Bind(wx.EVT_MENU, self.OnClickGLSL, glsl_lang)
         self.Bind(wx.EVT_MENU, self.OnClickMathjax, mathjax_lang)
         self.Bind(wx.EVT_MENU, self.OnClickMatlab, matlab_lang)
         self.Bind(wx.EVT_MENU, self.OnClickMathml, mathml_lang)
@@ -266,6 +271,10 @@ E: { ℤ × ℤ }''')
         self.midPanel.set_panel(MidPanelEnum.MATHML)
         self.parser_type = ParserTypeEnum.MATHML
 
+    def OnClickGLSL(self, e):
+        self.midPanel.set_panel(MidPanelEnum.GLSL)
+        self.parser_type = ParserTypeEnum.GLSL
+
     def OnCleanCache(self, e):
         clean_parsers()
 
@@ -326,6 +335,9 @@ E: { ℤ × ℤ }''')
 
     def OnSaveEigen(self, e):
         self.save_content(FileType.EIGEN)
+
+    def OnSaveGLSL(self, e):
+        self.save_content(FileType.GLSL)
 
     def OnSaveTex(self, e):
         self.save_content(FileType.LATEX)
@@ -392,6 +404,8 @@ E: { ℤ × ℤ }''')
             tips = "Save LA code"
         elif file_type == FileType.EIGEN:
             tips = "Save Eigen code"
+        elif file_type == FileType.GLSL:
+            tips = "Save GLSL code"
         elif file_type == FileType.NUMPY:
             tips = "Save Numpy code"
         elif file_type == FileType.LATEX:
