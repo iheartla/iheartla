@@ -1409,9 +1409,9 @@ class TypeWalker(NodeWalker):
                         for sym in value_list:
                             self.assert_expr(sym not in self.symtable, "Parameter {} has been defined".format(sym))
                             self.symtable[sym] = v_info.type.la_type.params[key]
-        elif node.u:
+        # elif node.u:
             # incomplete variable type
-            self.omit_assert = True
+            # self.omit_assert = True
             # print(node.u)
 
         for l_index in range(len(node.lexpr)):
