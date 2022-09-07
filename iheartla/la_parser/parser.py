@@ -223,7 +223,7 @@ def get_start_node(model):
     return type_walker, start_node
 
 
-def get_new_parser(start_node, current_content, parser_type=ParserTypeEnum.EIGEN):
+def get_new_parser(start_node, current_content, type_walker, parser_type=ParserTypeEnum.EIGEN):
     """
     Get the new parser based on information from start_node
     :param start_node:
@@ -231,7 +231,6 @@ def get_new_parser(start_node, current_content, parser_type=ParserTypeEnum.EIGEN
     :param parser_type:
     :return: new parser and others
     """
-    type_walker = get_type_walker()
     extra_dict = {}
     parse_key = _default_key
     # deal with packages
@@ -325,6 +324,8 @@ def get_new_parser(start_node, current_content, parser_type=ParserTypeEnum.EIGEN
             func_dict[name] = "importFP;" + name
     multi_list = []
     for parameter in type_walker.parameters:
+        if parameter is None:
+            continue
         if _id_pattern.fullmatch(parameter):
             continue  # valid single identifier
         if len(parameter) > 1 and '_' not in parameter and '`' not in parameter:
@@ -390,7 +391,7 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
         type_walker = get_type_walker()
         start_node = type_walker.walk(model, pre_walk=True)
     # get new parser
-    parser, existed_syms_dict, module_list, dependent_modules, module_param_list, module_sym_list = get_new_parser(start_node, current_content, parser_type)
+    parser, existed_syms_dict, module_list, dependent_modules, module_param_list, module_sym_list = get_new_parser(start_node, current_content, type_walker, parser_type)
     record("Second Parsing, before")
     model = parser.parse(content, parseinfo=True)
     record("Second type walker, before")
@@ -430,7 +431,7 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
         # type walker
         type_walker = get_type_walker()
         start_node = type_walker.walk(model, pre_walk=True)
-        new_parser, _, _, _, _, _ = get_new_parser(start_node, content)
+        new_parser, _, _, _, _, _ = get_new_parser(start_node, content, type_walker)
         model = new_parser.parse(content, parseinfo=True)
         #
         new_content = parse_de_content(model, content)
