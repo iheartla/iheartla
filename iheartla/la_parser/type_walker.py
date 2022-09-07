@@ -608,6 +608,16 @@ class TypeWalker(NodeWalker):
                         self.is_param_block = False
                     for cur_expr in vblock_info[0].expr:
                         self.rhs_raw_str_list.append(cur_expr.text)
+                elif type(vblock_info[0]).__name__ == 'DeSolver':
+                    # De Solver
+                    self.visiting_solver_eq = True
+                    v_info = self.walk(vblock_info[0].u)
+                    v_id = v_info.ir.get_main_id()
+                    # if v_info.ir.is_node(IRNodeType.FunctionType):
+                    #     self.solved_func.append(v_id)
+                    self.lhs_list.append(v_id)
+                    if len(v_id) > 1:
+                        multi_lhs_list.append(v_id)
                 else:
                     self.rhs_raw_str_list.append(vblock_info[0].text)
         ir_node.vblock = vblock_list
