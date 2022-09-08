@@ -1859,10 +1859,20 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._closure(block6)
                 self._expr_in_matrix_()
                 self.name_last_node('exp')
+                with self._group():
+                    with self._choice():
+                        with self._option():
 
-                def block8():
-                    self._hspace_()
-                self._positive_closure(block8)
+                            def block8():
+                                self._hspace_()
+                            self._closure(block8)
+                            self._token(',')
+                        with self._option():
+
+                            def block9():
+                                self._hspace_()
+                            self._positive_closure(block9)
+                        self._error('no available options')
             self._error('no available options')
         self.ast._define(
             ['exp', 'value'],
