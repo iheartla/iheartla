@@ -77,7 +77,7 @@ multiplication_in_matrix::Multiply
 
 division_in_matrix::Divide
     =
-    left:term_in_matrix  '/' right:factor_in_matrix
+    left:term_in_matrix  op:('/'|'÷') right:factor_in_matrix
     ;
 
 number_matrix::NumMatrix
