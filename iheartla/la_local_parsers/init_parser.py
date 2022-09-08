@@ -1958,11 +1958,18 @@ class grammarinitParser(Parser):
     def _division_in_matrix_(self):  # noqa
         self._term_in_matrix_()
         self.name_last_node('left')
-        self._token('/')
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._token('/')
+                with self._option():
+                    self._token('÷')
+                self._error('no available options')
+        self.name_last_node('op')
         self._factor_in_matrix_()
         self.name_last_node('right')
         self.ast._define(
-            ['left', 'right'],
+            ['left', 'op', 'right'],
             []
         )
 
