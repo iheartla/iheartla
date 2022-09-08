@@ -41,7 +41,7 @@ row::MatrixRow
 row_with_commas::MatrixRowCommas
     =
     | value:row_with_commas {hspace} exp:expr_in_matrix ({hspace} ',' | {hspace}+)
-    | {hspace} exp:expr_in_matrix {hspace}+
+    | {hspace} exp:expr_in_matrix ({hspace} ',' | {hspace}+)
     ;
 
 expr_in_matrix::ExpInMatrix
