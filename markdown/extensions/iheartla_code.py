@@ -616,22 +616,26 @@ class IheartlaBlockPreprocessor(Preprocessor):
         for name, block_data in file_dict.items():
             cur_hash = hashlib.md5("{}:{}".format(name, block_data.get_content()).encode()).hexdigest()
             if cur_hash in cached_data:
-                code_list, equation_data = cached_data[cur_hash]
+                code_dict, equation_data = cached_data[cur_hash]
                 self.md.changed_dict[name] = False
             else:
-                code_list, equation_data = compile_la_content(block_data.get_content(),
+                code_dict, equation_data = compile_la_content(block_data.get_content(),
                                                                   parser_type=self.md.parser_type | ParserTypeEnum.MATHJAX | ParserTypeEnum.MACROMATHJAX,
                                                                   func_name=name, path=self.md.path, struct=True,
                                                                   get_json=True)
                 self.md.changed_dict[name] = True
-            new_cached_data[cur_hash] = [code_list, equation_data]
+            new_cached_data[cur_hash] = [code_dict, equation_data]
             equation_data.name = name
             equation_dict[name] = equation_data
-            full_code_sequence.append(code_list[:-2])
+            def dict_without( d, keys ):
+                d = dict(d)
+                for k in keys: del d[k]
+                return d
+            full_code_sequence.append( dict_without( code_dict, [ ParserTypeEnum.MATHJAX, ParserTypeEnum.MACROMATHJAX ] ) )
             # Find all expr for each original iheartla block
             index_dict = {}
-            expr_dict = code_list[-1].expr_dict
-            expr_raw_dict = code_list[-2].expr_dict
+            expr_dict = code_dict[ParserTypeEnum.MACROMATHJAX].expr_dict
+            expr_raw_dict = code_dict[ParserTypeEnum.MATHJAX].expr_dict
             for raw_text, math_code in expr_dict.items():
                 for cur_index in range(len(block_data.code_list)):
                     if raw_text in block_data.code_list[cur_index]:
@@ -667,7 +671,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                 original_block = block_data.block_list[cur_index]
                 if block_data.inline_list[cur_index]:
                     raw_math = r"""$\begin{{align*}}{}\end{{align*}}$""".format(raw_content)
-                    math_code = r"""${}{}{}$""".format(code_list[-1].pre_str, content, code_list[-1].post_str)
+                    math_code = r"""${}{}{}$""".format(code_dict[ParserTypeEnum.MACROMATHJAX].pre_str, content, code_dict[ParserTypeEnum.MACROMATHJAX].post_str)
                     content = r"""<span class='equation' code_block="{}" code="{}">{}</span>""".format(
                         block_data.module_name, base64_encode(block_data.code_list[cur_index]), math_code)
                     # content = self.md.htmlStash.store(content)
@@ -677,7 +681,7 @@ class IheartlaBlockPreprocessor(Preprocessor):
                     if not block_data.number_list[cur_index]:
                         tag_info = r"""\notag"""
                     raw_math = r"""$${}$$""".format(raw_content)
-                    math_code = r"""$${}{}{}{}$$""".format(code_list[-1].pre_str, content, code_list[-1].post_str, tag_info)
+                    math_code = r"""$${}{}{}{}$$""".format(code_dict[ParserTypeEnum.MACROMATHJAX].pre_str, content, code_dict[ParserTypeEnum.MACROMATHJAX].post_str, tag_info)
                     content = r"""
         <div class='equation' code_block="{}" code="{}">
         {}</div>
@@ -797,17 +801,15 @@ class IheartlaBlockPreprocessor(Preprocessor):
         pass
 
     def save_code(self, full_code_sequence):
-        def get_frame_list(index):
-            frame_list = []
-            for code_list in full_code_sequence:
-                frame_list.append(code_list[index])
-            return frame_list
-        cur_index = 0
-        for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,
-                         ParserTypeEnum.MATHML, ParserTypeEnum.MATLAB, ParserTypeEnum.MACROMATHJAX]:
+        # For every type of code
+        for cur_type in ParserTypeEnum:
+            # If we're looking for it
             if self.md.parser_type & cur_type:
-                self.save_with_type(get_frame_list(cur_index), cur_type)
-                cur_index += 1
+                # Take all of the snippets from the `full_code_sequence`, which
+                # is a list of `compile_la_content()` output.
+                frame_list = [ code[cur_type] for code in full_code_sequence ]
+                # Save the snippets. (The save function will ignore un-savable data.)
+                self.save_with_type( frame_list, cur_type )
 
     def save_with_type(self, code_frame_list, parser_type):
         if parser_type == ParserTypeEnum.EIGEN:

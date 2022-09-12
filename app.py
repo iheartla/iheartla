@@ -425,7 +425,7 @@ if __name__ == '__main__':
         import iheartla.la_tools.parser_manager
         iheartla.la_tools.parser_manager.recreate_local_parser_cache()
     else:
-        parser_type = ParserTypeEnum.DEFAULT
+        parser_type = ParserTypeEnumDefaults
         out_dict = {"numpy": ParserTypeEnum.NUMPY, "eigen": ParserTypeEnum.EIGEN, "latex": ParserTypeEnum.LATEX,
                     "mathjax": ParserTypeEnum.MATHJAX, "matlab": ParserTypeEnum.MATLAB}
         if args.output:
