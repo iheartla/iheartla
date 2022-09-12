@@ -458,7 +458,7 @@ def compile_la_content(la_content,
     if True:
     # try:
         model = parser.parse(la_content, parseinfo=True)
-        ret = []
+        ret = {}
         json = ''
         var_data = ''
         #
@@ -473,7 +473,7 @@ def compile_la_content(la_content,
                     if get_vars and var_data == '':
                         var_data = VarData(type_walker.parameters, type_walker.lhs_list, type_walker.ret_symbol)
                     cur_content = walk_model(cur_type, type_walker, start_node, func_name, struct, class_only=class_only)
-                    ret.append(cur_content)
+                    ret[cur_type] = cur_content
                     if get_json and json == '':
                         json = type_walker.gen_json_content()
         else:
@@ -486,7 +486,7 @@ def compile_la_content(la_content,
                         var_data = VarData(type_walker.parameters, type_walker.lhs_list, type_walker.ret_symbol)
                     cur_content = walk_model(cur_type, type_walker, start_node, func_name, struct, class_only=class_only)
                     record("compile {}".format(str(cur_type)))
-                    ret.append(cur_content)
+                    ret[cur_type] = cur_content
                     if get_json and json == '':
                         json = type_walker.gen_json_content()
     # except FailedParse as e:
@@ -533,25 +533,29 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
                 print("\n")
             else:
                 save_to_file(content, file_name)
-        cur_types = [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,
-                         ParserTypeEnum.MATLAB]
-        cur_suffix = [".py", ".cpp", ".tex", ".tex", ".m"]
-        for cur_index in range(len(cur_types)):
-            # Alec: in matlab a .m file can either be a "script" or a "function".
-            #
-            # A function-file should have a main function with the same name as the
-            # file. Within that function there can be sub-functions.
-            #
-            # A script-file can have funtions (and sub functions) as long as they
-            # *do not* have the same name as the file.
-            #
-            # For now, I'm making the assumption that we output a function-file called
-            # *.m with a main function called * and a sub function
-            # generateRandomData. When called with no arguments (nargin == 0),
-            # it will issue a warning and run with random data.
-            cur_file_name = Path(la_file).with_suffix(cur_suffix[cur_index])
-            cur_content = compile_la_content(content, cur_types[cur_index], base_name, class_only=class_only)
-            write_output(cur_content[0], cur_file_name)
+        type2suffix = {
+            ParserTypeEnum.NUMPY: ".py",
+            ParserTypeEnum.EIGEN: ".cpp",
+            ParserTypeEnum.LATEX: ".tex",
+            ParserTypeEnum.MATHJAX: ".tex",
+            ParserTypeEnum.MATLAB: ".m"
+        }
+        # Alec: in matlab a .m file can either be a "script" or a "function".
+        #
+        # A function-file should have a main function with the same name as the
+        # file. Within that function there can be sub-functions.
+        #
+        # A script-file can have funtions (and sub functions) as long as they
+        # *do not* have the same name as the file.
+        #
+        # For now, I'm making the assumption that we output a function-file called
+        # *.m with a main function called * and a sub function
+        # generateRandomData. When called with no arguments (nargin == 0),
+        # it will issue a warning and run with random data.
+        cur_contents = compile_la_content(content, list( type2suffix.vals() ), base_name, class_only=class_only)
+        for cur_type, cur_content in cur_contents.items():
+            cur_file_name = Path(la_file).with_suffix(type2suffix[cur_type])
+            write_output(cur_content, cur_file_name)
     except FailedParse as e:
         print(LaMsg.getInstance().get_parse_error(e))
         raise
