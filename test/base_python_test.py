@@ -54,11 +54,11 @@ class BasePythonTest(unittest.TestCase):
         results = compile_la_content(parse_str, parse_type)
         module_name = 'test.generated_code{}'.format(BasePythonTest.cnt)
         file_name = 'test/generated_code{}.py'.format(BasePythonTest.cnt)
-        save_to_file(results[0], file_name)
+        save_to_file(results[ParserTypeEnum.NUMPY], file_name)
         module = importlib.import_module(module_name)
         subprocess.run(["rm", file_name], capture_output=False)
         # Eigen
-        content = results[1]
+        content = results[ParserTypeEnum.EIGEN]
         # add namespace
         namespace = "eigen_code{}".format(BasePythonTest.cnt)
         pos = content.rfind("#include")
@@ -73,7 +73,7 @@ class BasePythonTest(unittest.TestCase):
         mat_file_name = None
         mat_func_name = None
         if TEST_MATLAB:
-            mat_content = results[-1]
+            mat_content = results[ParserTypeEnum.MATLAB]
             mat_func_name = "iheartla_{}".format(BasePythonTest.cnt)
             mat_content = mat_content.replace('iheartla', mat_func_name)
             mat_file_name = 'test/{}.m'.format(mat_func_name)
