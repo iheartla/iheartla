@@ -207,8 +207,10 @@ function compileFunction(){
     console.log(source)
     pythonCode = `
 import iheartla.la_parser.parser
+from iheartla.la_tools.la_helper import ParserTypeEnum
 source_code = r"""${source}"""
-code = iheartla.la_parser.parser.compile_la_content(source_code)
+code_dict = iheartla.la_parser.parser.compile_la_content(source_code)
+code = [code_dict[ParserTypeEnum.NUMPY], code_dict[ParserTypeEnum.EIGEN], code_dict[ParserTypeEnum.LATEX], code_dict[ParserTypeEnum.MATHJAX], code_dict[ParserTypeEnum.MATLAB]]
 `
     setTimeout(function(){
         try {
