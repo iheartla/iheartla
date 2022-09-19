@@ -43,7 +43,6 @@ class IRVisitor(object):
         self.visiting_lhs = False
         self.visiting_func_name = False
         self.enable_tmp_sym = False
-        self.class_only = False
         self.lhs_list = []
         self.module_list = []
         self.module_syms = {}
@@ -327,7 +326,6 @@ class IRVisitor(object):
             IRNodeType.Summation: "visit_summation",
             IRNodeType.Norm: "visit_norm",
             IRNodeType.Transpose: "visit_transpose",
-            IRNodeType.PseudoInverse: "visit_pseudoinverse",
             IRNodeType.Squareroot: "visit_squareroot",
             IRNodeType.Power: "visit_power",
             IRNodeType.Solver: "visit_solver",
@@ -466,9 +464,6 @@ class IRVisitor(object):
         pass
 
     def visit_transpose(self, node, **kwargs):
-        pass
-
-    def visit_pseudoinverse(self, node, **kwargs):
         pass
 
     def visit_squareroot(self, node, **kwargs):

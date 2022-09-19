@@ -704,7 +704,7 @@ class TypeWalker(NodeWalker):
                             ir_node.vblock[index_list[cur_index]] = type_info.ir  # latex use
                             new_list.append(type_info.ir)
                             if update_ret_type:
-                                self.symtable[self.ret_symbol] = type_info.la_type if not isinstance(type_info.la_type, list) else type_info.la_type[0]
+                                self.symtable[self.ret_symbol] = type_info.la_type
                             order_list[cur_index] = cnt
                             cnt += 1
                             retries = 0
@@ -737,7 +737,7 @@ class TypeWalker(NodeWalker):
                 ir_node.vblock[index_list[index]] = type_info.ir  # latex use
                 block_node.add_stmt(type_info.ir)
                 if update_ret_type:
-                    self.symtable[self.ret_symbol] = type_info.la_type if not isinstance(type_info.la_type, list) else type_info.la_type[0]
+                    self.symtable[self.ret_symbol] = type_info.la_type
         ir_node.stat = block_node
 
     ###################################################################
@@ -1947,24 +1947,6 @@ class TypeWalker(NodeWalker):
         f_info = self.walk(node.f, **kwargs)
         ir_node.f = f_info.ir
         assert f_info.la_type.is_matrix() or f_info.la_type.is_vector(), get_err_msg_info(f_info.ir.parse_info,"Transpose error. The base must be a matrix or vector")
-        if f_info.la_type.is_matrix():
-            node_type = MatrixType(rows=f_info.la_type.cols, cols=f_info.la_type.rows, sparse=f_info.la_type.sparse)
-            if f_info.la_type.is_dynamic_row():
-                node_type.set_dynamic_type(DynamicTypeEnum.DYN_COL)
-            if f_info.la_type.is_dynamic_col():
-                node_type.set_dynamic_type(DynamicTypeEnum.DYN_ROW)
-        elif f_info.la_type.is_vector():
-            node_type = MatrixType(rows=1, cols=f_info.la_type.rows)
-        node_info = NodeInfo(node_type, symbols=f_info.symbols)
-        node_info.ir = ir_node
-        node_info.la_type = node_type
-        return node_info
-
-    def walk_PseudoInverse(self, node, **kwargs):
-        ir_node = PseudoInverseNode(parse_info=node.parseinfo)
-        f_info = self.walk(node.f, **kwargs)
-        ir_node.f = f_info.ir
-        assert f_info.la_type.is_matrix() or f_info.la_type.is_vector(), get_err_msg_info(f_info.ir.parse_info,"Pseudoinverse error. The base must be a matrix or vector")
         if f_info.la_type.is_matrix():
             node_type = MatrixType(rows=f_info.la_type.cols, cols=f_info.la_type.rows, sparse=f_info.la_type.sparse)
             if f_info.la_type.is_dynamic_row():

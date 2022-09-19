@@ -1,6 +1,6 @@
 import base64
 import time
-from enum import Enum, Flag
+from enum import Enum, IntFlag
 from tatsu._version import __version__
 import sys
 from textwrap import dedent
@@ -10,7 +10,7 @@ import regex as re
 from .la_logger import *
 
 
-DEBUG_MODE = False
+DEBUG_MODE = True
 DEBUG_PARSER = False  # used for new grammer files
 DEBUG_TIME = False    # used for time recoding (to optimize)
 TEST_MATLAB = False   # used for running tests for MATLAB
@@ -19,9 +19,9 @@ start_time = None
 INPUT_HISTORY = "input_history"
 OUTPUT_CODE = "output_code"
 IMG_CODE = "."
-class ParserTypeEnum(Flag):
+class ParserTypeEnum(IntFlag):
     INVALID = 0
-    # DEFAULT = 15
+    DEFAULT = 15
     #
     LATEX = 1
     NUMPY = 2
@@ -34,10 +34,9 @@ class ParserTypeEnum(Flag):
     MATHJAX = 256
     MATHML = 512
     MACROMATHJAX = 1024
-## TODO: Q: Do we want to store lists or sets instead of using bitwise enum functionality?
-ParserTypeEnumDefaults = ParserTypeEnum.LATEX | ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.MATLAB
 
-def is_keyword(name, parser_type=ParserTypeEnumDefaults):
+
+def is_keyword(name, parser_type=ParserTypeEnum.DEFAULT):
     if parser_type == ParserTypeEnum.NUMPY:
         return keyword.iskeyword(name)
     elif parser_type == ParserTypeEnum.EIGEN:

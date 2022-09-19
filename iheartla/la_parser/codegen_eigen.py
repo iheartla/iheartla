@@ -8,7 +8,7 @@ class CodeGenEigen(CodeGen):
 
     def init_type(self, type_walker, func_name):
         super().init_type(type_walker, func_name)
-        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n'''
+        self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n'''
         self.post_str = ''''''
         self.ret = 'ret'
         if self.unofficial_method:
@@ -626,11 +626,10 @@ class CodeGenEigen(CodeGen):
         main_content += self.get_ret_display()
         main_content.append('    return 0;')
         main_content.append('}')
+        self.code_frame.main = self.trim_content('\n'.join(main_content))
+        self.code_frame.rand_data = self.trim_content('\n'.join(test_function))
         self.code_frame.struct = self.trim_content(content)
-        if not self.class_only:
-            self.code_frame.main = self.trim_content('\n'.join(main_content))
-            self.code_frame.rand_data = self.trim_content('\n'.join(test_function))
-            content += '\n\n' + '\n'.join(test_function) + '\n\n\n' + '\n'.join(main_content)
+        content += '\n\n' + '\n'.join(test_function) + '\n\n\n' + '\n'.join(main_content)
         # convert special string in identifiers
         content = self.trim_content(content)
         return content
@@ -859,11 +858,6 @@ class CodeGenEigen(CodeGen):
         f_info.content = "{}.transpose()".format(f_info.content)
         return f_info
 
-    def visit_pseudoinverse(self, node, **kwargs):
-        f_info = self.visit(node.f, **kwargs)
-        f_info.content = "{}.completeOrthogonalDecomposition().pseudoInverse()".format(f_info.content)
-        return f_info
-        
     def visit_squareroot(self, node, **kwargs):
         f_info = self.visit(node.value, **kwargs)
         f_info.content = "sqrt({})".format(f_info.content)

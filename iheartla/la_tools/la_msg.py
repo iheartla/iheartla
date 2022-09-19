@@ -64,7 +64,6 @@ class LaMsg(object):
                 "cross_product_in_matrix_operator": "cross product",
                 "kronecker_product_in_matrix_operator": "kronecker product",
                 "trans_in_matrix_operator": "transpose",
-                "pseudoinverse_in_matrix_operator": "pseudoinverse",
                 "sqrt_in_matrix_operator": "squareroot",
                 "sum_in_matrix_operator": "sum",
                 "power_in_matrix_operator": "power",

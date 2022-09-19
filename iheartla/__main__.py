@@ -15,8 +15,8 @@ def IHLA(content, ret=None, mapping={}):
     :param mapping: variable mapping for parameters in iheartla code
     :return: the value for symbol ret or the entire instance
     """
-    code_dict, var_data = compile_la_content(content, parser_type=ParserTypeEnum.NUMPY, struct=True, get_vars=True)
-    code_frame = code_dict[ParserTypeEnum.NUMPY]
+    code_list, var_data = compile_la_content(content, parser_type=ParserTypeEnum.NUMPY, struct=True, get_vars=True)
+    code_frame = code_list[0]
     loc = {}
     for param in var_data.params:
         cur_param = param
@@ -56,7 +56,7 @@ if __name__ == '__main__':
             show_gui()
         elif args.input:
             # output all defaults (unless outputs present)
-            parser_type = ParserTypeEnumDefaults
+            parser_type = ParserTypeEnum.DEFAULT
             out_dict = {"numpy": ParserTypeEnum.NUMPY, "eigen": ParserTypeEnum.EIGEN, "latex": ParserTypeEnum.LATEX, "mathjax": ParserTypeEnum.MATHJAX, "matlab": ParserTypeEnum.MATLAB}
             if args.output:
                 # when output args are present _only_ output those

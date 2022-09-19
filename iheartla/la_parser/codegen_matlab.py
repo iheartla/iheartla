@@ -801,11 +801,6 @@ class CodeGenMatlab(CodeGen):
         f_info.content = "{}'".format(f_info.content)
         return f_info
 
-    def visit_pseudoinverse(self, node, **kwargs):
-        f_info = self.visit(node.f, **kwargs)
-        f_info.content = "pinv({})".format(f_info.content)
-        return f_info
-
     def visit_squareroot(self, node, **kwargs):
         f_info = self.visit(node.value, **kwargs)
         f_info.content = "sqrt({})".format(f_info.content)

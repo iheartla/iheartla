@@ -669,9 +669,6 @@ class CodeGenLatex(CodeGen):
     def visit_transpose(self, node, **kwargs):
         return "{{{}}}^T".format(self.visit(node.f, **kwargs))
 
-    def visit_pseudoinverse(self, node, **kwargs):
-        return "{{{}}}^+".format(self.visit(node.f, **kwargs))
-
     def visit_squareroot(self, node, **kwargs):
         if node.value.node_type == IRNodeType.Factor and node.value.sub:  # sub expression
             content = self.visit(node.value.sub.value, **kwargs)

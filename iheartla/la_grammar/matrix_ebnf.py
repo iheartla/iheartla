@@ -11,7 +11,7 @@ vector::Vector
     
 multi_cond_expr::MultiCondExpr
     = '{' {hspace} ifs:multi_if_conditions
-    [{separator_with_space}+ {hspace} other:expression {hspace} OTHERWISE ]
+    {{separator_with_space}+ {hspace} other:expression {hspace} OTHERWISE }
     ;
     
 multi_if_conditions::MultiIfs
@@ -20,8 +20,8 @@ multi_if_conditions::MultiIfs
     ;
 
 single_if_condition::SingleIf
-    = stat:expression {hspace} IF {hspace} cond:if_condition
-    | cond:if_condition  {hspace} ':' {hspace} stat:expression
+    = stat:statement {hspace} IF {hspace} cond:if_condition
+    | cond:if_condition  {hspace} ':' {hspace} stat:statement
     ;
 
 rows::MatrixRows
@@ -41,7 +41,7 @@ row::MatrixRow
 row_with_commas::MatrixRowCommas
     =
     | value:row_with_commas {hspace} exp:expr_in_matrix ({hspace} ',' | {hspace}+)
-    | {hspace} exp:expr_in_matrix ({hspace} ',' | {hspace}+)
+    | {hspace} exp:expr_in_matrix {hspace}+
     ;
 
 expr_in_matrix::ExpInMatrix
@@ -77,7 +77,7 @@ multiplication_in_matrix::Multiply
 
 division_in_matrix::Divide
     =
-    left:term_in_matrix  op:('/'|'÷') right:factor_in_matrix
+    left:term_in_matrix  '/' right:factor_in_matrix
     ;
 
 number_matrix::NumMatrix
@@ -116,7 +116,6 @@ operations_in_matrix
     | sqrt_in_matrix_operator
     | function_operator
     | builtin_operators
-    | pseudoinverse_in_matrix_operator
     ;
 
 power_in_matrix_operator::Power
@@ -146,10 +145,6 @@ kronecker_product_in_matrix_operator::KroneckerProduct
 trans_in_matrix_operator::Transpose
     = f:factor_in_matrix /ᵀ/
     ;
-
-pseudoinverse_in_matrix_operator::PseudoInverse
-    = f:factor_in_matrix /⁺/
-    ;
     
 sqrt_in_matrix_operator::Squareroot
     = /√/ f:factor_in_matrix;
@@ -160,8 +155,8 @@ solver_in_matrix_operator::Solver
     ;
 
 sum_in_matrix_operator::Summation
-    = SUM '_' sub:identifier_alone &'(' {hspace} exp:term_in_matrix
-    | SUM '_(' {hspace} id:identifier_alone {hspace} 'for' {hspace} cond:if_condition {hspace} ')' exp:term_in_matrix
-    | SUM '_(' {hspace} enum+:identifier_alone {{hspace} ',' {hspace} enum+:identifier_alone} {hspace} IN {hspace} range:(function_operator | identifier_alone) {hspace} ')' exp:term
+    = SUM '_' sub:identifier_alone {hspace}+ exp:term_in_matrix
+    | SUM '_' sub:identifier_alone &'(' {hspace} exp:term_in_matrix
+    | SUM '_(' {hspace} id:identifier_alone {hspace} 'for' {hspace} cond:if_condition {hspace} ')' {hspace}+ exp:term_in_matrix
     ;
 """

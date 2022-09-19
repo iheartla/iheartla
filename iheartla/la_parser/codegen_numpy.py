@@ -524,11 +524,10 @@ class CodeGenNumpy(CodeGen):
         main_content.append("    func_value = {}({})".format(self.func_name, ', '.join(self.parameters)))
         if self.ret_symbol in self.symtable and self.get_sym_type(self.ret_symbol) is not None:
             main_content.append('    print("return value: ", func_value.{})'.format(self.ret_symbol))
+        self.code_frame.main = self.trim_content('\n'.join(main_content))
+        self.code_frame.rand_data = self.trim_content('\n'.join(test_function))
         self.code_frame.struct = self.trim_content(content)
-        if not self.class_only:
-            self.code_frame.main = self.trim_content('\n'.join(main_content))
-            self.code_frame.rand_data = self.trim_content('\n'.join(test_function))
-            content += '\n\n' + '\n'.join(test_function) + '\n\n\n' + '\n'.join(main_content)
+        content += '\n\n' + '\n'.join(test_function) + '\n\n\n' + '\n'.join(main_content)
         # convert special string in identifiers
         content = self.trim_content(content)
         return content
@@ -771,14 +770,6 @@ class CodeGenNumpy(CodeGen):
             f_info.content = "{}.T.reshape(1, {})".format(f_info.content, node.f.la_type.rows)
         else:
             f_info.content = "{}.T".format(f_info.content)
-        return f_info
-
-    def visit_pseudoinverse(self, node, **kwargs):
-        f_info = self.visit(node.f, **kwargs)
-        if node.f.la_type.is_vector():
-            f_info.content = "{}.T.reshape(1, {}) / ({}.dot({})) ".format(f_info.content, node.f.la_type.rows)
-        else:
-            f_info.content = "np.linalg.pinv({})".format(f_info.content)
         return f_info
 
     def visit_squareroot(self, node, **kwargs):

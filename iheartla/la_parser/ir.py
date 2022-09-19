@@ -55,7 +55,6 @@ class IRNodeType(Enum):
     KroneckerProduct = 219
     DotProduct = 220
     Squareroot = 221
-    PseudoInverse = 222
     # matrix
     Matrix = 300
     MatrixRows = 301
@@ -735,10 +734,6 @@ class TransposeNode(ExprNode):
         super().__init__(IRNodeType.Transpose, parse_info=parse_info, raw_text=raw_text)
         self.f = None
 
-class PseudoInverseNode(ExprNode):
-    def __init__(self, parse_info=None, raw_text=None):
-        super().__init__(IRNodeType.PseudoInverse, parse_info=parse_info, raw_text=raw_text)
-        self.f = None
 
 class SquarerootNode(ExprNode):
     def __init__(self, parse_info=None, raw_text=None):
