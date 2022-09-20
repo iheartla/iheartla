@@ -782,7 +782,7 @@ class CodeGenNumpy(CodeGen):
         else:
             f_info.content = "{}.T".format(f_info.content)
         return f_info
-        
+
     def visit_pseudoinverse(self, node, **kwargs):
         f_info = self.visit(node.f, **kwargs)
         if node.f.la_type.is_vector():

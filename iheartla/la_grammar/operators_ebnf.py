@@ -153,7 +153,7 @@ trans_operator::Transpose
 pseudoinverse_operator::PseudoInverse
     = f:factor /⁺/
     ;
-
+    
 sqrt_operator::Squareroot
     = /√/ f:factor;
 

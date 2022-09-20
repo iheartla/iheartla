@@ -163,9 +163,6 @@ class IRBaseVisitor(object):
 
     def visit_transpose(self, node, **kwargs):
         pass
-        
-    def visit_pseudoinverse(self, node, **kwargs):
-        pass
 
     def visit_squareroot(self, node, **kwargs):
         pass

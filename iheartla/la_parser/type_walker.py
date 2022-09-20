@@ -2119,7 +2119,7 @@ class TypeWalker(NodeWalker):
         node_info.ir = ir_node
         node_info.la_type = node_type
         return node_info
-        
+
     def walk_PseudoInverse(self, node, **kwargs):
         ir_node = PseudoInverseNode(parse_info=node.parseinfo)
         f_info = self.walk(node.f, **kwargs)

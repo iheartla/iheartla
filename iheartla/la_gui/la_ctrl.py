@@ -43,8 +43,8 @@ class LaTextControl(bc.BaseTextControl):
                              'heart': '❤️', 'iheartla': 'I❤️LA',
                              'le':'≤', 'ge':'≥', 'ne': '≠', 'notin':'∉', 'div':'÷', 'nplus': '±', 'subset': '⊂',
                              'linner': '⟨', 'rinner':'⟩', 'num1': '𝟙', 'd':'𝕕',
-                             'hat': '\u0302', 'bar': '\u0304', 'dag': '†', '^+': '⁺', 's+': '⁺'
                              'uddot': '\u0308', 'udot': '\u0307',
+                             'hat': '\u0302', 'bar': '\u0304', 'dag': '†', '^+': '⁺', 's+': '⁺'
                              }
         self.StyleSetSpec(self.STC_STYLE_LA_DEFAULT, "fore:#A9B7C6,back:{}".format(bc.BACKGROUND_COLOR))
         self.StyleSetSpec(self.STC_STYLE_LA_KW, "fore:#94558D,bold,back:{}".format(bc.BACKGROUND_COLOR))
