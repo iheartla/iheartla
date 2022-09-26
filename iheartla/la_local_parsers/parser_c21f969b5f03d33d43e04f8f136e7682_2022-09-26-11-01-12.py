@@ -1142,23 +1142,26 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     def block17():
                         self._hspace_()
                     self._closure(block17)
-                    self._token(',')
 
                     def block18():
-                        self._hspace_()
+                        self._token(',')
                     self._closure(block18)
+
+                    def block19():
+                        self._hspace_()
+                    self._closure(block19)
                     self._identifier_alone_()
                     self.add_last_node_to_name('enum')
                 self._closure(block16)
 
-                def block20():
-                    self._hspace_()
-                self._closure(block20)
-                self._IN_()
-
                 def block21():
                     self._hspace_()
                 self._closure(block21)
+                self._IN_()
+
+                def block22():
+                    self._hspace_()
+                self._closure(block22)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -1168,14 +1171,14 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._error('no available options')
                 self.name_last_node('range')
 
-                def block24():
-                    self._hspace_()
-                self._closure(block24)
-                self._token(')')
-
                 def block25():
                     self._hspace_()
-                self._positive_closure(block25)
+                self._closure(block25)
+                self._token(')')
+
+                def block26():
+                    self._hspace_()
+                self._positive_closure(block26)
                 self._term_()
                 self.name_last_node('exp')
             self._error('no available options')
