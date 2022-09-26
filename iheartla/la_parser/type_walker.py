@@ -1932,6 +1932,7 @@ class TypeWalker(NodeWalker):
         assert right_info.la_type.is_matrix() or right_info.la_type.is_vector(), get_err_msg_info(left_info.ir.parse_info, "Parameter {} must be a matrix or vector".format(node.right.text))
         node_type = None
         if left_info.la_type.is_matrix():
+            assert is_same_expr(left_info.la_type.rows, left_info.la_type.cols), get_err_msg_info(left_info.ir.parse_info, "Inverse matrix error. The rows should be the same as the columns")
             assert is_same_expr(left_info.la_type.rows, right_info.la_type.rows), get_err_msg_info(left_info.ir.parse_info, "Parameters {} and {} should have the same rows".format(node.left.text, node.right.text))
             if right_info.la_type.is_matrix():
                 node_type = MatrixType(rows=left_info.la_type.cols, cols=right_info.la_type.cols, sparse=left_info.la_type.sparse and right_info.la_type.sparse)
