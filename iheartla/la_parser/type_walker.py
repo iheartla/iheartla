@@ -1688,18 +1688,20 @@ class TypeWalker(NodeWalker):
         ir_node.symbols = ret_info.symbols
         ir_node.symbol = ret_info.symbol
         ir_node.content = ret_info.content
-        for i in range(len(subs_list)):
-            self.sum_subs.pop()
-            cur_sym_dict = self.sum_sym_list.pop()
-            self.assert_expr(len(cur_sym_dict) > 0, get_err_msg_info(sub_parse_info, "Subscript hasn't been used in summation"))
-            # self.check_sum_subs(subs, cur_sym_dict)
-            ir_node.sym_dict = cur_sym_dict
+        if node.enum is None:
+            for i in range(len(subs_list)):
+                self.sum_subs.pop()
+                cur_sym_dict = self.sum_sym_list.pop()
+                self.assert_expr(len(cur_sym_dict) > 0, get_err_msg_info(sub_parse_info, "Subscript hasn't been used in summation"))
+                # self.check_sum_subs(subs, cur_sym_dict)
+                ir_node.sym_dict = cur_sym_dict
         self.sum_conds.pop()
         ret_info.ir = ir_node
-        for subs in subs_list:
-            self.assert_expr(self.check_sum_subs(subs, cur_sym_dict), get_err_msg_info(sub_parse_info, "Subscript has inconsistent dimensions"))
-            del self.symtable[subs]   # remove subscript from symbol table
-        self.logger.debug("cur_sym_dict: {}".format(cur_sym_dict))
+        if node.enum is None:
+            for subs in subs_list:
+                self.assert_expr(self.check_sum_subs(subs, cur_sym_dict), get_err_msg_info(sub_parse_info, "Subscript has inconsistent dimensions"))
+                del self.symtable[subs]   # remove subscript from symbol table
+            self.logger.debug("cur_sym_dict: {}".format(cur_sym_dict))
         self.logger.debug("summation, symbols: {}".format(ir_node.symbols))
         return ret_info
 

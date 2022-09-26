@@ -722,7 +722,7 @@ class SummationNode(ExprNode):
         self.symbols = None
         self.symbol = None
         self.content = None
-        self.sym_dict = None  # identifiers containing sub, used for type checking only
+        self.sym_dict = {}  # identifiers containing sub, used for type checking only
         self.enum_list = None
         self.range = None
 
