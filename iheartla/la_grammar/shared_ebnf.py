@@ -80,6 +80,10 @@ assignment::Assignment
     | {SOLVE '_(' {hspace} v+:where_condition_terse {hspace} {',' {hspace} v+:where_condition_terse {hspace}} ')' {hspace}} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression 
     {{hspace} ';' {hspace} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression }
     ;
+    
+general_assignment::GeneralAssignment
+    = left+:expression {{hspace} ',' {hspace} left+:expression} {hspace} op:'=' {hspace} right+:right_hand_side {{hspace} ',' {hspace} right+:expression}
+    ;
    
 de_solver::DeSolver
     =

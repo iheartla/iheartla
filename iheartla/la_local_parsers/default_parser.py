@@ -1075,119 +1075,146 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('Summation')
     def _sum_operator_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._SUM_()
-                self._token('_')
-                self._identifier_alone_()
-                self.name_last_node('sub')
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._SUM_()
+                    self._token('_')
+                    self._identifier_alone_()
+                    self.name_last_node('sub')
 
-                def block1():
-                    self._hspace_()
-                self._positive_closure(block1)
-                self._term_()
-                self.name_last_node('exp')
-            with self._option():
-                self._SUM_()
-                self._token('_')
-                self._identifier_alone_()
-                self.name_last_node('sub')
-                with self._if():
-                    self._token('(')
-
-                def block4():
-                    self._hspace_()
-                self._closure(block4)
-                self._term_()
-                self.name_last_node('exp')
-            with self._option():
-                self._SUM_()
-                self._token('_(')
-
-                def block6():
-                    self._hspace_()
-                self._closure(block6)
-                self._identifier_alone_()
-                self.name_last_node('id')
-
-                def block8():
-                    self._hspace_()
-                self._closure(block8)
-                self._token('for')
-
-                def block9():
-                    self._hspace_()
-                self._closure(block9)
-                self._if_condition_()
-                self.name_last_node('cond')
-
-                def block11():
-                    self._hspace_()
-                self._closure(block11)
-                self._token(')')
-
-                def block12():
-                    self._hspace_()
-                self._positive_closure(block12)
-                self._term_()
-                self.name_last_node('exp')
-            with self._option():
-                self._SUM_()
-                self._token('_(')
-
-                def block14():
-                    self._hspace_()
-                self._closure(block14)
-                self._identifier_alone_()
-                self.add_last_node_to_name('enum')
-
-                def block16():
-
-                    def block17():
+                    def block1():
                         self._hspace_()
-                    self._closure(block17)
+                    self._positive_closure(block1)
+                    self._term_()
+                    self.name_last_node('exp')
+                with self._option():
+                    self._SUM_()
+                    self._token('_')
+                    self._identifier_alone_()
+                    self.name_last_node('sub')
+                    with self._if():
+                        self._token('(')
 
-                    def block18():
-                        self._token(',')
-                    self._closure(block18)
-
-                    def block19():
+                    def block4():
                         self._hspace_()
-                    self._closure(block19)
+                    self._closure(block4)
+                    self._term_()
+                    self.name_last_node('exp')
+                with self._option():
+                    self._SUM_()
+                    self._token('_(')
+
+                    def block6():
+                        self._hspace_()
+                    self._closure(block6)
+                    self._identifier_alone_()
+                    self.name_last_node('id')
+
+                    def block8():
+                        self._hspace_()
+                    self._closure(block8)
+                    self._token('for')
+
+                    def block9():
+                        self._hspace_()
+                    self._closure(block9)
+                    self._if_condition_()
+                    self.name_last_node('cond')
+
+                    def block11():
+                        self._hspace_()
+                    self._closure(block11)
+                    self._token(')')
+
+                    def block12():
+                        self._hspace_()
+                    self._positive_closure(block12)
+                    self._term_()
+                    self.name_last_node('exp')
+                with self._option():
+                    self._SUM_()
+                    self._token('_(')
+
+                    def block14():
+                        self._hspace_()
+                    self._closure(block14)
                     self._identifier_alone_()
                     self.add_last_node_to_name('enum')
-                self._closure(block16)
 
-                def block21():
-                    self._hspace_()
-                self._closure(block21)
-                self._IN_()
+                    def block16():
 
-                def block22():
-                    self._hspace_()
-                self._closure(block22)
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            self._function_operator_()
-                        with self._option():
-                            self._identifier_alone_()
-                        self._error('no available options')
-                self.name_last_node('range')
+                        def block17():
+                            self._hspace_()
+                        self._closure(block17)
 
-                def block25():
-                    self._hspace_()
-                self._closure(block25)
-                self._token(')')
+                        def block18():
+                            self._token(',')
+                        self._closure(block18)
 
-                def block26():
+                        def block19():
+                            self._hspace_()
+                        self._closure(block19)
+                        self._identifier_alone_()
+                        self.add_last_node_to_name('enum')
+                    self._closure(block16)
+
+                    def block21():
+                        self._hspace_()
+                    self._closure(block21)
+                    self._IN_()
+
+                    def block22():
+                        self._hspace_()
+                    self._closure(block22)
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._function_operator_()
+                            with self._option():
+                                self._identifier_alone_()
+                            self._error('no available options')
+                    self.name_last_node('range')
+
+                    def block25():
+                        self._hspace_()
+                    self._closure(block25)
+                    self._token(')')
+
+                    def block26():
+                        self._hspace_()
+                    self._positive_closure(block26)
+                    self._term_()
+                    self.name_last_node('exp')
+                self._error('no available options')
+
+        def block29():
+            with self._optional():
+
+                def block30():
                     self._hspace_()
-                self._positive_closure(block26)
-                self._term_()
-                self.name_last_node('exp')
-            self._error('no available options')
+                self._closure(block30)
+                self._line_()
+
+            def block31():
+                self._hspace_()
+            self._closure(block31)
+            with self._group():
+                with self._choice():
+                    with self._option():
+                        self._WHERE_()
+                    with self._option():
+                        self._WITH_()
+                    self._error('no available options')
+
+            def block33():
+                self._hspace_()
+            self._closure(block33)
+            self._general_assignment_()
+            self.name_last_node('extra')
+        self._closure(block29)
         self.ast._define(
-            ['cond', 'exp', 'id', 'range', 'sub'],
+            ['cond', 'exp', 'extra', 'id', 'range', 'sub'],
             ['enum']
         )
 
@@ -4404,6 +4431,55 @@ class grammardefaultParser(Parser):
             ['left', 'lexpr', 'rexpr', 'right', 'v']
         )
 
+    @tatsumasu('GeneralAssignment')
+    def _general_assignment_(self):  # noqa
+        self._expression_()
+        self.add_last_node_to_name('left')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._token(',')
+
+            def block3():
+                self._hspace_()
+            self._closure(block3)
+            self._expression_()
+            self.add_last_node_to_name('left')
+        self._closure(block1)
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._token('=')
+        self.name_last_node('op')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
+        self._right_hand_side_()
+        self.add_last_node_to_name('right')
+
+        def block9():
+
+            def block10():
+                self._hspace_()
+            self._closure(block10)
+            self._token(',')
+
+            def block11():
+                self._hspace_()
+            self._closure(block11)
+            self._expression_()
+            self.add_last_node_to_name('right')
+        self._closure(block9)
+        self.ast._define(
+            ['op'],
+            ['left', 'right']
+        )
+
     @tatsumasu('DeSolver')
     def _de_solver_(self):  # noqa
         self._SOLVE_()
@@ -6699,6 +6775,9 @@ class grammardefaultSemantics(object):
     def assignment(self, ast):  # noqa
         return ast
 
+    def general_assignment(self, ast):  # noqa
+        return ast
+
     def de_solver(self, ast):  # noqa
         return ast
 
@@ -6999,6 +7078,7 @@ class Summation(ModelBase):
     cond = None
     enum = None
     exp = None
+    extra = None
     id = None
     range = None
     sub = None
@@ -7353,6 +7433,12 @@ class Assignment(ModelBase):
     rexpr = None
     right = None
     v = None
+
+
+class GeneralAssignment(ModelBase):
+    left = None
+    op = None
+    right = None
 
 
 class DeSolver(ModelBase):
