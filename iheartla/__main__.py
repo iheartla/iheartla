@@ -1,7 +1,7 @@
 import iheartla.la_tools.la_helper as la_helper
 from iheartla.la_tools.la_helper import DEBUG_MODE
 from iheartla.la_tools.la_logger import LaLogger
-from iheartla.la_parser.parser import compile_la_content, ParserTypeEnum
+from iheartla.la_parser.parser import compile_la_content, ParserTypeEnumDefaults
 import inspect
 import logging
 import argparse
