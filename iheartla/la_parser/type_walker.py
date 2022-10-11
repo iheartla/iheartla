@@ -1428,7 +1428,7 @@ class TypeWalker(NodeWalker):
 
     def walk_Assignment(self, node, **kwargs):
         # ir
-        if node.lexpr:
+        if hasattr(node, 'lexpr') and node.lexpr:
             return self.get_eq_node_info(node, **kwargs)
         assign_node = AssignNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
         if type(node.right[0]).__name__ == 'MultiCondExpr':
@@ -1622,6 +1622,20 @@ class TypeWalker(NodeWalker):
         self.visiting_solver_eq = False
         return NodeInfo(None, ir=assign_node, symbols=assign_node.symbols)
 
+    def walk_GeneralAssignment(self, node, **kwargs):
+        if len(node.right) > 1:
+            self.assert_expr(len(node.left) == len(node.right), get_err_msg_info(node.parseinfo, "unmatched assignment"))
+        else:
+            not_all_id = False
+            for lhs in node.left:
+                if type(lhs).__name__ != 'IdentifierAlone':
+                    not_all_id = True
+            if not not_all_id:
+                # treat as normal assignment
+                return self.walk_Assignment(node, **kwargs)
+            rhs_info = self.walk(node.right[0], **kwargs)
+            pass
+
     def walk_DeSolver(self, node, **kwargs):
         # print(node)
         pass
@@ -1676,6 +1690,10 @@ class TypeWalker(NodeWalker):
                 self.symtable[subs] = ScalarType(index_type=False, is_int=True)  # add subscript to symbol table temporarily
                 subs_list.append(subs)
         self.logger.debug("new sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
+        # extra exprs
+        if node.extra:
+            extra_info = self.walk(node.extra, **kwargs)
+        #
         new_id = self.generate_var_name("sum")
         ret_info = self.walk(node.exp, **kwargs)
         ir_node.exp = ret_info.ir

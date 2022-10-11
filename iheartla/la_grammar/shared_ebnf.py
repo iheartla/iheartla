@@ -82,7 +82,7 @@ assignment::Assignment
     ;
     
 general_assignment::GeneralAssignment
-    = left+:expression {{hspace} ',' {hspace} left+:expression} {hspace} op:'=' {hspace} right+:right_hand_side {{hspace} ',' {hspace} right+:expression}
+    = left+:left_hand_side {{hspace} ',' {hspace} left+:left_hand_side} {hspace} op:'=' {hspace} right+:right_hand_side {{hspace} ',' {hspace} right+:expression}
     ;
    
 de_solver::DeSolver
@@ -105,6 +105,12 @@ right_hand_side
     | expression
     | optimize_operator
     | multi_cond_expr
+    ;
+    
+left_hand_side
+    = identifier
+    | vector
+    | matrix
     ;
 
 term

@@ -4419,7 +4419,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu('GeneralAssignment')
     def _general_assignment_(self):  # noqa
-        self._expression_()
+        self._left_hand_side_()
         self.add_last_node_to_name('left')
 
         def block1():
@@ -4432,7 +4432,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             def block3():
                 self._hspace_()
             self._closure(block3)
-            self._expression_()
+            self._left_hand_side_()
             self.add_last_node_to_name('left')
         self._closure(block1)
 
@@ -4732,6 +4732,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._optimize_operator_()
             with self._option():
                 self._multi_cond_expr_()
+            self._error('no available options')
+
+    @tatsumasu()
+    def _left_hand_side_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._identifier_()
+            with self._option():
+                self._vector_()
+            with self._option():
+                self._matrix_()
             self._error('no available options')
 
     @tatsumasu()
@@ -6703,6 +6714,9 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
         return ast
 
     def right_hand_side(self, ast):  # noqa
+        return ast
+
+    def left_hand_side(self, ast):  # noqa
         return ast
 
     def term(self, ast):  # noqa
