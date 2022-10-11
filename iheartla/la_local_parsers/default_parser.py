@@ -2851,7 +2851,7 @@ class grammardefaultParser(Parser):
         with self._group():
             with self._choice():
                 with self._option():
-                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
+                    self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                     self.name_last_node('value')
                 with self._option():
                     self._token('`')
@@ -3833,6 +3833,26 @@ class grammardefaultParser(Parser):
     @tatsumasu('InvFunc')
     def _inv_func_(self):  # noqa
         self._INV_()
+        self._token('(')
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._token(')')
+        self.ast._define(
+            ['param'],
+            []
+        )
+
+    @tatsumasu('FacesOfEdgeFunc')
+    def _faces_of_edge_func_(self):  # noqa
+        self._pattern('faces_of_edge')
         self._token('(')
 
         def block0():
@@ -6741,6 +6761,9 @@ class grammardefaultSemantics(object):
     def inv_func(self, ast):  # noqa
         return ast
 
+    def faces_of_edge_func(self, ast):  # noqa
+        return ast
+
     def Directive(self, ast):  # noqa
         return ast
 
@@ -7392,6 +7415,10 @@ class OrthFunc(ModelBase):
 
 
 class InvFunc(ModelBase):
+    param = None
+
+
+class FacesOfEdgeFunc(ModelBase):
     param = None
 
 

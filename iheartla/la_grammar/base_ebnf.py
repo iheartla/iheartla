@@ -36,7 +36,7 @@ keyword_str
     ;
     
 multi_str::IdentifierAlone
-    = (  value:/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*/ | '`' id:/[^`]*/ '`')
+    = (  value:/[A-Za-z_\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z_\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*/ | '`' id:/[^`]*/ '`')
     ;
 
 description

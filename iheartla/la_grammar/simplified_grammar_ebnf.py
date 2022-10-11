@@ -8,8 +8,9 @@ from .shared_ebnf import SHARED
 from .LA_ebnf import START
 from .arithmetic_ebnf import ARITHMETIC
 from ..la_grammar.types_ebnf import TYPES
+from .geometry_ebnf import GEOMETRY
 
-SIMPLIFIED = START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + SHARED + ARITHMETIC + TYPES
+SIMPLIFIED = START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + GEOMETRY + SHARED + ARITHMETIC + TYPES
 #include :: "keywords.ebnf"
 #include :: "number.ebnf"
 #include :: "operators.ebnf"
