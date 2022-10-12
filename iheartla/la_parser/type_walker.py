@@ -3216,6 +3216,21 @@ class TypeWalker(NodeWalker):
         node_info.ir = tri_node
         return node_info
 
+    def create_gp_node_info(self, func_type, param_info, remains=[]):
+        # geometry processing node
+        param = param_info.ir
+        ret_type = copy.deepcopy(param.la_type)
+        symbols = param_info.symbols
+        remain_list = []
+        if func_type == GPType.FacesOfEdge:
+            self.assert_expr(param.la_type.is_matrix() and param.la_type.rows == param.la_type.cols, get_err_msg_info(param.parse_info, "Parameter must be valid matrix type"))
+            ret_type = MatrixType(rows=param.la_type.rows, cols=param.la_type.cols)
+        tri_node = GPFuncNode(param, func_type, remain_list)
+        node_info = NodeInfo(ret_type, symbols=symbols)
+        tri_node.la_type = ret_type
+        node_info.ir = tri_node
+        return node_info
+
     def create_trig_node_info(self, func_type, param_info, power):
         symbols = param_info.symbols
         param = param_info.ir
@@ -3334,6 +3349,11 @@ class TypeWalker(NodeWalker):
 
     def walk_InvFunc(self, node, **kwargs):
         return self.create_math_node_info(MathFuncType.MathFuncInv, self.walk(node.param, **kwargs))
+    ###################################################################
+    def walk_FacesOfEdgeFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.FacesOfEdge, self.walk(node.param, **kwargs))
+    def walk_FacesOfEdgeFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.Dihedral, self.walk(node.param, **kwargs))
     ###################################################################
     def walk_ArithExpression(self, node, **kwargs):
         value_info = self.walk(node.value, **kwargs)

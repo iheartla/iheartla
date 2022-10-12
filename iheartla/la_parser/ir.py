@@ -64,6 +64,7 @@ class IRNodeType(Enum):
     Size = 227
     Module = 228
     Geometry = 229
+    GPFunction = 230
     # matrix
     Matrix = 300
     MatrixRows = 301
@@ -386,6 +387,9 @@ class AssignNode(StmtNode):
         self.cur_type = cur_type
         self.unknown_id = None
 
+    def get_lhs_list(self):
+        # get all new symbols
+        return [lhs.get_main_id() for lhs in self.left]
 
 class EqTypeEnum(IntFlag):
     INVALID = 0
@@ -1203,6 +1207,12 @@ class MathFuncType(IntEnum):
     MathFuncOrth = 28
     MathFuncInv = 29
 
+class GPType(IntEnum):
+    # Geometry processing
+    Invalid = -1
+    FacesOfEdge = 0
+    Dihedral = 1
+
 
 class MathFuncNode(ExprNode):
     def __init__(self, param=None, func_type=MathFuncType.MathFuncInvalid, remain_params=[], func_name=None, separator=None, la_type=None, parse_info=None, raw_text=None):
@@ -1215,6 +1225,16 @@ class MathFuncNode(ExprNode):
         if param is not None:
             self.parse_info = param.parse_info
 
+class GPFuncNode(ExprNode):
+    def __init__(self, param=None, func_type=GPType.Invalid, remain_params=[], func_name=None, separator=None, la_type=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.GPFunction, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        self.param = param   # first param
+        self.remain_params = remain_params  # remain params
+        self.func_type = func_type
+        self.func_name = func_name
+        self.separator = separator
+        if param is not None:
+            self.parse_info = param.parse_info
 
 class FactorNode(ExprNode):
     def __init__(self, la_type=None, parse_info=None, raw_text=None):
