@@ -232,7 +232,7 @@ class TypeWalker(NodeWalker):
                                           'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh', 'cot',
                                           'sec', 'csc', 'e'],
                          'linearalgebra': ['trace', 'tr', 'diag', 'vec', 'det', 'rank', 'null', 'orth', 'inv'],
-                         'triangle_mesh': ['faces_of_edge']}
+                         'triangle_mesh': ['faces_of_edge', 'face_normal']}
         self.constants = ['π']
         self.pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*")
         self.multi_lhs_list = []
@@ -3216,16 +3216,22 @@ class TypeWalker(NodeWalker):
         node_info.ir = tri_node
         return node_info
 
-    def create_gp_node_info(self, func_type, param_info, remains=[]):
+    def create_gp_node_info(self, func_type, node, **kwargs):
         # geometry processing node
-        param = param_info.ir
-        ret_type = copy.deepcopy(param.la_type)
-        symbols = param_info.symbols
-        remain_list = []
+        param_list = []
+        symbols = set()
+        for param in node.params:
+            param_info = self.walk(param, **kwargs)
+            param_list.append(param_info.ir)
+            symbols = symbols.union(param_info.symbols)
+        ret_type = ScalarType()
         if func_type == GPType.FacesOfEdge:
-            self.assert_expr(param.la_type.is_matrix() and param.la_type.rows == param.la_type.cols, get_err_msg_info(param.parse_info, "Parameter must be valid matrix type"))
-            ret_type = MatrixType(rows=param.la_type.rows, cols=param.la_type.cols)
-        tri_node = GPFuncNode(param, func_type, remain_list)
+            ret_type = ScalarType()
+        elif func_type == GPType.Dihedral:
+            ret_type = ScalarType()
+        elif func_type == GPType.FaceNormal:
+            ret_type = ScalarType()
+        tri_node = GPFuncNode(param_list, func_type, node.name)
         node_info = NodeInfo(ret_type, symbols=symbols)
         tri_node.la_type = ret_type
         node_info.ir = tri_node
@@ -3351,9 +3357,11 @@ class TypeWalker(NodeWalker):
         return self.create_math_node_info(MathFuncType.MathFuncInv, self.walk(node.param, **kwargs))
     ###################################################################
     def walk_FacesOfEdgeFunc(self, node, **kwargs):
-        return self.create_gp_node_info(GPType.FacesOfEdge, self.walk(node.param, **kwargs))
+        return self.create_gp_node_info(GPType.FacesOfEdge, node, **kwargs)
     def walk_FacesOfEdgeFunc(self, node, **kwargs):
-        return self.create_gp_node_info(GPType.Dihedral, self.walk(node.param, **kwargs))
+        return self.create_gp_node_info(GPType.Dihedral, node, **kwargs)
+    def walk_FaceNormalFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.FaceNormal, node, **kwargs)
     ###################################################################
     def walk_ArithExpression(self, node, **kwargs):
         value_info = self.walk(node.value, **kwargs)

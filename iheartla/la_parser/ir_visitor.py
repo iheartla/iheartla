@@ -49,6 +49,7 @@ class IRBaseVisitor(object):
             IRNodeType.Solver: "visit_solver",
             IRNodeType.Derivative: "visit_derivative",
             IRNodeType.MathFunc: "visit_math_func",
+            IRNodeType.GPFunction: "visit_gp_func",
             IRNodeType.Optimize: "visit_optimize",
             IRNodeType.Domain: "visit_domain",
             IRNodeType.Integral: "visit_integral",

@@ -315,7 +315,7 @@ class ImportNode(StmtNode):
         name_list = []
         for name in self.names:
             raw = name.get_name()
-            if raw in self.r_dict:
+            if raw in self.r_dict and raw != self.r_dict[raw]:
                 name_list.append("{} as {}".format(raw, self.r_dict[raw]))
             else:
                 name_list.append(raw)
@@ -1212,6 +1212,7 @@ class GPType(IntEnum):
     Invalid = -1
     FacesOfEdge = 0
     Dihedral = 1
+    FaceNormal = 1
 
 
 class MathFuncNode(ExprNode):
@@ -1226,15 +1227,12 @@ class MathFuncNode(ExprNode):
             self.parse_info = param.parse_info
 
 class GPFuncNode(ExprNode):
-    def __init__(self, param=None, func_type=GPType.Invalid, remain_params=[], func_name=None, separator=None, la_type=None, parse_info=None, raw_text=None):
+    def __init__(self, params=None, func_type=GPType.Invalid, func_name=None, separator=None, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.GPFunction, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
-        self.param = param   # first param
-        self.remain_params = remain_params  # remain params
+        self.params = params
         self.func_type = func_type
         self.func_name = func_name
         self.separator = separator
-        if param is not None:
-            self.parse_info = param.parse_info
 
 class FactorNode(ExprNode):
     def __init__(self, la_type=None, parse_info=None, raw_text=None):

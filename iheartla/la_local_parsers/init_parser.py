@@ -3849,76 +3849,117 @@ class grammarinitParser(Parser):
     @tatsumasu('FacesOfEdgeFunc')
     def _faces_of_edge_func_(self):  # noqa
         self._pattern('faces_of_edge')
+        self.name_last_node('name')
         self._token('(')
 
-        def block0():
+        def block1():
 
-            def block1():
+            def block2():
                 self._hspace_()
-            self._closure(block1)
+            self._closure(block2)
             self._expression_()
             self.add_last_node_to_name('params')
 
-            def block3():
+            def block4():
 
-                def block4():
+                def block5():
                     self._hspace_()
-                self._closure(block4)
+                self._closure(block5)
                 self._params_separator_()
                 self.add_last_node_to_name('separators')
 
-                def block6():
+                def block7():
                     self._hspace_()
-                self._closure(block6)
+                self._closure(block7)
                 self._expression_()
                 self.add_last_node_to_name('params')
-            self._closure(block3)
-        self._closure(block0)
+            self._closure(block4)
+        self._closure(block1)
 
-        def block8():
+        def block9():
             self._hspace_()
-        self._closure(block8)
+        self._closure(block9)
         self._token(')')
         self.ast._define(
-            [],
+            ['name'],
             ['params', 'separators']
         )
 
     @tatsumasu('FacesOfEdgeFunc')
     def _dihedral_func_(self):  # noqa
         self._pattern('dihedral')
+        self.name_last_node('name')
         self._token('(')
 
-        def block0():
+        def block1():
 
-            def block1():
+            def block2():
                 self._hspace_()
-            self._closure(block1)
+            self._closure(block2)
             self._expression_()
             self.add_last_node_to_name('params')
 
-            def block3():
+            def block4():
 
-                def block4():
+                def block5():
                     self._hspace_()
-                self._closure(block4)
+                self._closure(block5)
                 self._params_separator_()
                 self.add_last_node_to_name('separators')
 
-                def block6():
+                def block7():
                     self._hspace_()
-                self._closure(block6)
+                self._closure(block7)
                 self._expression_()
                 self.add_last_node_to_name('params')
-            self._closure(block3)
-        self._closure(block0)
+            self._closure(block4)
+        self._closure(block1)
 
-        def block8():
+        def block9():
             self._hspace_()
-        self._closure(block8)
+        self._closure(block9)
         self._token(')')
         self.ast._define(
-            [],
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('FaceNormalFunc')
+    def _face_normal_func_(self):  # noqa
+        self._pattern('face_normal')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
             ['params', 'separators']
         )
 
@@ -6738,6 +6779,9 @@ class grammarinitSemantics(object):
     def dihedral_func(self, ast):  # noqa
         return ast
 
+    def face_normal_func(self, ast):  # noqa
+        return ast
+
     def Directive(self, ast):  # noqa
         return ast
 
@@ -7392,6 +7436,13 @@ class InvFunc(ModelBase):
 
 
 class FacesOfEdgeFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class FaceNormalFunc(ModelBase):
+    name = None
     params = None
     separators = None
 

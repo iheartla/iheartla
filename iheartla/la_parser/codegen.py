@@ -157,3 +157,14 @@ class CodeGen(IRPrinter):
         if node.sign:
             exp_info.content = '-' + exp_info.content
         return exp_info
+
+    def visit_gp_func(self, node, **kwargs):
+        params_content_list = []
+        pre_list = []
+        for param in node.params:
+            param_info = self.visit(param, **kwargs)
+            pre_list += param_info.pre_list
+            params_content_list.append(param_info.content)
+        content = node.func_name
+        content = "{}({})".format(content, ', '.join(params_content_list))
+        return CodeNodeInfo(content, pre_list=pre_list)

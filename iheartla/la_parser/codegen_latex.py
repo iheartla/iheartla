@@ -915,3 +915,12 @@ class CodeGenLatex(CodeGen):
         elif node.func_type == MathFuncType.MathFuncInv:
             content = ' \mathop{\\text{inv}}'
         return "{}\\left( {} \\right)".format(content, param_info)
+
+    def visit_gp_func(self, node, **kwargs):
+        params_content_list = []
+        for param in node.params:
+            param_info = self.visit(param, **kwargs)
+            params_content_list.append(param_info)
+        content = node.func_name.replace('_', '\_')
+        content = "{}({})".format(content, ', '.join(params_content_list))
+        return content

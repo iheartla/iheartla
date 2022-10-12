@@ -25,7 +25,7 @@ from tatsu.util import re, generic_main  # noqa
 KEYWORDS = {}  # type: ignore
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
+class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
     def __init__(
         self,
         text,
@@ -37,7 +37,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
         namechars='',
         **kwargs
     ):
-        super(grammarc21f969b5f03d33d43e04f8f136e7682Buffer, self).__init__(
+        super(grammare37f0136aa3ffaf149b351f6a4c948e9Buffer, self).__init__(
             text,
             whitespace=whitespace,
             nameguard=nameguard,
@@ -49,7 +49,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
         )
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
+class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def __init__(
         self,
         whitespace=re.compile('(?!.*)'),
@@ -61,12 +61,12 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         parseinfo=True,
         keywords=None,
         namechars='',
-        buffer_class=grammarc21f969b5f03d33d43e04f8f136e7682Buffer,
+        buffer_class=grammare37f0136aa3ffaf149b351f6a4c948e9Buffer,
         **kwargs
     ):
         if keywords is None:
             keywords = KEYWORDS
-        super(grammarc21f969b5f03d33d43e04f8f136e7682Parser, self).__init__(
+        super(grammare37f0136aa3ffaf149b351f6a4c948e9Parser, self).__init__(
             whitespace=whitespace,
             nameguard=nameguard,
             comments_re=comments_re,
@@ -3849,76 +3849,117 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
     @tatsumasu('FacesOfEdgeFunc')
     def _faces_of_edge_func_(self):  # noqa
         self._pattern('faces_of_edge')
+        self.name_last_node('name')
         self._token('(')
 
-        def block0():
+        def block1():
 
-            def block1():
+            def block2():
                 self._hspace_()
-            self._closure(block1)
+            self._closure(block2)
             self._expression_()
             self.add_last_node_to_name('params')
 
-            def block3():
+            def block4():
 
-                def block4():
+                def block5():
                     self._hspace_()
-                self._closure(block4)
+                self._closure(block5)
                 self._params_separator_()
                 self.add_last_node_to_name('separators')
 
-                def block6():
+                def block7():
                     self._hspace_()
-                self._closure(block6)
+                self._closure(block7)
                 self._expression_()
                 self.add_last_node_to_name('params')
-            self._closure(block3)
-        self._closure(block0)
+            self._closure(block4)
+        self._closure(block1)
 
-        def block8():
+        def block9():
             self._hspace_()
-        self._closure(block8)
+        self._closure(block9)
         self._token(')')
         self.ast._define(
-            [],
+            ['name'],
             ['params', 'separators']
         )
 
     @tatsumasu('FacesOfEdgeFunc')
     def _dihedral_func_(self):  # noqa
         self._pattern('dihedral')
+        self.name_last_node('name')
         self._token('(')
 
-        def block0():
+        def block1():
 
-            def block1():
+            def block2():
                 self._hspace_()
-            self._closure(block1)
+            self._closure(block2)
             self._expression_()
             self.add_last_node_to_name('params')
 
-            def block3():
+            def block4():
 
-                def block4():
+                def block5():
                     self._hspace_()
-                self._closure(block4)
+                self._closure(block5)
                 self._params_separator_()
                 self.add_last_node_to_name('separators')
 
-                def block6():
+                def block7():
                     self._hspace_()
-                self._closure(block6)
+                self._closure(block7)
                 self._expression_()
                 self.add_last_node_to_name('params')
-            self._closure(block3)
-        self._closure(block0)
+            self._closure(block4)
+        self._closure(block1)
 
-        def block8():
+        def block9():
             self._hspace_()
-        self._closure(block8)
+        self._closure(block9)
         self._token(')')
         self.ast._define(
-            [],
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('FaceNormalFunc')
+    def _face_normal_func_(self):  # noqa
+        self._pattern('face_normal')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
             ['params', 'separators']
         )
 
@@ -6031,7 +6072,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu()
     def _func_id_(self):  # noqa
-        self._token('!!!')
+        self._identifier_alone_()
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
@@ -6043,9 +6084,9 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     with self._group():
                         with self._choice():
                             with self._option():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*')
+                                self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*)*')
                             with self._option():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
+                                self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
                             self._error('no available options')
                     self.name_last_node('value')
                 with self._option():
@@ -6153,40 +6194,37 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._func_id_()
                 self.name_last_node('name')
+                self._token('(')
+                self.name_last_node('p')
 
-                def block30():
-                    self._token('(')
-                    self.name_last_node('p')
+                def block31():
 
                     def block32():
+                        self._hspace_()
+                    self._closure(block32)
+                    self._expression_()
+                    self.add_last_node_to_name('params')
 
-                        def block33():
-                            self._hspace_()
-                        self._closure(block33)
-                        self._expression_()
-                        self.add_last_node_to_name('params')
+                    def block34():
 
                         def block35():
-
-                            def block36():
-                                self._hspace_()
-                            self._closure(block36)
-                            self._params_separator_()
-                            self.add_last_node_to_name('separators')
-
-                            def block38():
-                                self._hspace_()
-                            self._closure(block38)
-                            self._expression_()
-                            self.add_last_node_to_name('params')
+                            self._hspace_()
                         self._closure(block35)
-                    self._closure(block32)
+                        self._params_separator_()
+                        self.add_last_node_to_name('separators')
 
-                    def block40():
-                        self._hspace_()
-                    self._closure(block40)
-                    self._token(')')
-                self._closure(block30)
+                        def block37():
+                            self._hspace_()
+                        self._closure(block37)
+                        self._expression_()
+                        self.add_last_node_to_name('params')
+                    self._closure(block34)
+                self._closure(block31)
+
+                def block39():
+                    self._hspace_()
+                self._closure(block39)
+                self._token(')')
             self._error('no available options')
         self.ast._define(
             ['d', 'name', 'p', 's'],
@@ -6194,7 +6232,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         )
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
+class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
     def start(self, ast):  # noqa
         return ast
 
@@ -6741,6 +6779,9 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
     def dihedral_func(self, ast):  # noqa
         return ast
 
+    def face_normal_func(self, ast):  # noqa
+        return ast
+
     def Directive(self, ast):  # noqa
         return ast
 
@@ -6936,7 +6977,7 @@ def main(filename, start=None, **kwargs):
     else:
         with open(filename) as f:
             text = f.read()
-    parser = grammarc21f969b5f03d33d43e04f8f136e7682Parser()
+    parser = grammare37f0136aa3ffaf149b351f6a4c948e9Parser()
     return parser.parse(text, rule_name=start, filename=filename, **kwargs)
 
 
@@ -6944,7 +6985,7 @@ if __name__ == '__main__':
     import json
     from tatsu.util import asjson
 
-    ast = generic_main(main, grammarc21f969b5f03d33d43e04f8f136e7682Parser, name='grammarc21f969b5f03d33d43e04f8f136e7682')
+    ast = generic_main(main, grammare37f0136aa3ffaf149b351f6a4c948e9Parser, name='grammare37f0136aa3ffaf149b351f6a4c948e9')
     print('AST:')
     print(ast)
     print()
@@ -6973,13 +7014,13 @@ class ModelBase(Node):
     pass
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics(ModelBuilderSemantics):
+class grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics(ModelBuilderSemantics):
     def __init__(self, context=None, types=None):
         types = [
             t for t in globals().values()
             if type(t) is type and issubclass(t, ModelBase)
         ] + (types or [])
-        super(grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics, self).__init__(context=context, types=types)
+        super(grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics, self).__init__(context=context, types=types)
 
 
 class Start(ModelBase):
@@ -7395,6 +7436,13 @@ class InvFunc(ModelBase):
 
 
 class FacesOfEdgeFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class FaceNormalFunc(ModelBase):
+    name = None
     params = None
     separators = None
 
