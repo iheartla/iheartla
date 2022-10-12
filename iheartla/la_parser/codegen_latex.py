@@ -147,8 +147,12 @@ class CodeGenLatex(CodeGen):
         return value
 
     def visit_import(self, node, **kwargs):
+        name_list = []
+        # convert _ in names
+        for name in node.get_name_raw_list():
+            name_list.append(name.replace('_', '\_'))
         if node.package:
-            content = "\\text{{ {} from {} }}\\\\\n".format(", ".join(node.get_name_raw_list()), node.package.get_name())
+            content = "\\text{{ {} from {} }}\\\\\n".format(", ".join(name_list), node.package.get_name().replace('_', '\_'))
         else:
             if len(node.params) > 0:
                 params_str = ''
@@ -157,9 +161,9 @@ class CodeGenLatex(CodeGen):
                     if index < len(node.params) - 1:
                         params_str += node.separators[index] + ''
                 params_str = params_str.replace('\\mathit{', '\\textit{')
-                content = "\\text{{ {} from {}({}) }}\\\\\n".format(", ".join(node.get_name_raw_list()), node.module.get_name(), params_str)
+                content = "\\text{{ {} from {}({}) }}\\\\\n".format(", ".join(name_list), node.module.get_name().replace('_', '\_'), params_str)
             else:
-                content = "\\text{{ {} from {}() }}\\\\\n".format(", ".join(node.get_name_raw_list()), node.module.get_name())
+                content = "\\text{{ {} from {}() }}\\\\\n".format(", ".join(name_list), node.module.get_name().replace('_', '\_'))
         return content
 
     def visit_start(self, node, **kwargs):
