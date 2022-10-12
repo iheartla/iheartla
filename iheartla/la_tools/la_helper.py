@@ -1,4 +1,5 @@
 import base64
+import os
 import time
 from enum import Enum, Flag
 from tatsu._version import __version__
@@ -7,6 +8,7 @@ from textwrap import dedent
 import keyword
 from sympy import *
 import regex as re
+from pathlib import Path
 from .la_logger import *
 
 
@@ -145,6 +147,12 @@ def read_from_file(file_name):
         print("IO Error!:{}".format(e))
     return content
 
+
+def delete_ast_files():
+    # delete visualized files
+    if DEBUG_MODE:
+        for f in Path('.').glob('AST*'):
+            os.remove(f)
 
 def contains_sub_symbol(identifier):
     # Check whether a raw string contains _

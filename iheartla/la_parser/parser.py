@@ -637,6 +637,7 @@ def parse_in_background(content, frame, parse_type, path_name=None):
     """
     used for the GUI
     """
+    delete_ast_files()  # delete previous visualized pdfs
     func_name = None
     if path_name is not None:
         func_name = get_file_name(path_name)
