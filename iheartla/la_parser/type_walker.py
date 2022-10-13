@@ -1694,6 +1694,7 @@ class TypeWalker(NodeWalker):
         # extra exprs
         if node.extra:
             extra_info = self.walk(node.extra, **kwargs)
+            ir_node.extra = extra_info.ir
         #
         new_id = self.generate_var_name("sum")
         ret_info = self.walk(node.exp, **kwargs)
