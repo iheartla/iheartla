@@ -3885,7 +3885,7 @@ class grammarinitParser(Parser):
             ['params', 'separators']
         )
 
-    @tatsumasu('FacesOfEdgeFunc')
+    @tatsumasu('DihedralFunc')
     def _dihedral_func_(self):  # noqa
         self._pattern('dihedral')
         self.name_last_node('name')
@@ -7436,6 +7436,12 @@ class InvFunc(ModelBase):
 
 
 class FacesOfEdgeFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class DihedralFunc(ModelBase):
     name = None
     params = None
     separators = None

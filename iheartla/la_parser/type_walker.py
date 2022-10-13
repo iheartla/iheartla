@@ -232,7 +232,7 @@ class TypeWalker(NodeWalker):
                                           'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh', 'cot',
                                           'sec', 'csc', 'e'],
                          'linearalgebra': ['trace', 'tr', 'diag', 'vec', 'det', 'rank', 'null', 'orth', 'inv'],
-                         'triangle_mesh': ['faces_of_edge', 'face_normal']}
+                         'triangle_mesh': ['faces_of_edge', 'face_normal', 'dihedral']}
         self.constants = ['π']
         self.pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*")
         self.multi_lhs_list = []
@@ -1440,9 +1440,12 @@ class TypeWalker(NodeWalker):
         elif type(node.right[0].value).__name__ == 'Factor' and node.right[0].value.op and type(node.right[0].value.op).__name__ == 'Function':
             pass
         else:
-            self.assert_expr(len(node.left) == len(node.right), get_err_msg_info(node.left[0].parseinfo, "Invalid assignment: {} lhs and {} rhs".format(len(node.left), len(node.right))))
+            self.assert_expr(len(node.right) == 1, get_err_msg_info(node.right[0].parseinfo, "Invalid multiple rhs"))
+            # self.assert_expr(len(node.left) == len(node.right), get_err_msg_info(node.left[0].parseinfo, "Invalid assignment: {} lhs and {} rhs".format(len(node.left), len(node.right))))
         parse_remain_lhs_directly = False   #  multiple lhs for argmin, argmax
         la_list = []
+        right_info = self.walk(node.right[0], **kwargs)
+        rhs_type_list = right_info.la_type if isinstance(right_info.la_type, list) else [right_info.la_type]
         for cur_index in range(len(node.left)):
             self.visiting_lhs = True
             id0_info = self.walk(node.left[cur_index], **kwargs)
@@ -1473,8 +1476,7 @@ class TypeWalker(NodeWalker):
             if parse_remain_lhs_directly:
                 self.symtable[self.get_main_id(id0)] = la_list[cur_index]
                 break
-            right_info = self.walk(node.right[cur_index], **kwargs)
-            right_type = right_info.la_type
+            right_type = rhs_type_list[cur_index]
             if len(self.lhs_subs) > 0:
                 for cur_index in range(len(self.lhs_subs)):
                     cur_sym_dict = self.lhs_sym_list[cur_index]
@@ -1524,9 +1526,9 @@ class TypeWalker(NodeWalker):
                         self.assert_expr(sequence not in self.parameters, get_err_msg_info(id0_info.ir.parse_info, "{} is a parameter, can not be assigned".format(sequence)))
                     if not (right_type.is_matrix() and right_type.sparse):
                         self.assert_expr(right_type.is_scalar(), get_err_msg_info(right_info.ir.parse_info, "RHS has to be scalar"))
-                    if right_info.la_type is not None and right_info.la_type.is_matrix():
+                    if right_type is not None and right_type.is_matrix():
                         # sparse mat assign
-                        if right_info.la_type.sparse:
+                        if right_type.sparse:
                             self.symtable[sequence] = right_type
                     if sequence not in self.symtable:
                         sparse = False
@@ -1633,6 +1635,9 @@ class TypeWalker(NodeWalker):
                     not_all_id = True
             if not not_all_id:
                 # treat as normal assignment
+                if len(node.right) < len(node.left):
+                    # multiple return value
+                    pass
                 return self.walk_Assignment(node, **kwargs)
             rhs_info = self.walk(node.right[0], **kwargs)
             pass
@@ -3227,11 +3232,11 @@ class TypeWalker(NodeWalker):
             symbols = symbols.union(param_info.symbols)
         ret_type = ScalarType()
         if func_type == GPType.FacesOfEdge:
-            ret_type = ScalarType()
+            ret_type = [ScalarType(), ScalarType()]
         elif func_type == GPType.Dihedral:
             ret_type = ScalarType()
         elif func_type == GPType.FaceNormal:
-            ret_type = ScalarType()
+            ret_type = [ScalarType(), ScalarType()]
         tri_node = GPFuncNode(param_list, func_type, node.name)
         node_info = NodeInfo(ret_type, symbols=symbols)
         tri_node.la_type = ret_type
@@ -3359,7 +3364,7 @@ class TypeWalker(NodeWalker):
     ###################################################################
     def walk_FacesOfEdgeFunc(self, node, **kwargs):
         return self.create_gp_node_info(GPType.FacesOfEdge, node, **kwargs)
-    def walk_FacesOfEdgeFunc(self, node, **kwargs):
+    def walk_DihedralFunc(self, node, **kwargs):
         return self.create_gp_node_info(GPType.Dihedral, node, **kwargs)
     def walk_FaceNormalFunc(self, node, **kwargs):
         return self.create_gp_node_info(GPType.FaceNormal, node, **kwargs)

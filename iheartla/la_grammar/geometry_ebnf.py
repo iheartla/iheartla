@@ -5,7 +5,7 @@ GEOMETRY = r"""
 faces_of_edge_func::FacesOfEdgeFunc
     = name:/faces_of_edge/'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
     ;
-dihedral_func::FacesOfEdgeFunc
+dihedral_func::DihedralFunc
     = name:/dihedral/'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
     ;
 face_normal_func::FaceNormalFunc
