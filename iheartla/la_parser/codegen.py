@@ -17,16 +17,16 @@ class CodeFrame(object):
         self.post_str = ''
         self.pre_block = ''
         self.extra_include = ''     # gp modules
-        self.extra_funcs = ''       # builtin gp functions
+        self.extra_funcs = []       # builtin gp functions
 
     def get_code(self):
         content = ''
         if self.parse_type == ParserTypeEnum.EIGEN:
-            content = self.desc + self.include + self.extra_include + self.extra_funcs + self.struct + '\n\n' + self.rand_data + '\n\n\n' + self.main
+            content = self.desc + self.include + self.extra_include + self.get_extra_func_impl() + self.struct + '\n\n' + self.rand_data + '\n\n\n' + self.main
         elif self.parse_type == ParserTypeEnum.NUMPY:
-            content = self.desc + self.include + self.extra_include + self.extra_funcs + self.struct + '\n\n' + self.rand_data + '\n\n\n' + self.main
+            content = self.desc + self.include + self.extra_include + self.get_extra_func_impl() + self.struct + '\n\n' + self.rand_data + '\n\n\n' + self.main
         elif self.parse_type == ParserTypeEnum.MATLAB:
-            content = self.extra_include + self.extra_funcs + self.struct  # struct already contains everything
+            content = self.extra_include + self.get_extra_func_impl() + self.struct  # struct already contains everything
         elif self.parse_type == ParserTypeEnum.LATEX:
             content = self.main
         elif self.parse_type == ParserTypeEnum.MATHJAX:
@@ -36,6 +36,10 @@ class CodeFrame(object):
         elif self.parse_type == ParserTypeEnum.MATHML:
             content = self.main
         return content
+
+    def get_extra_func_impl(self):
+        return ''.join([get_gp_func_impl(func, la_type=self.parse_type) for func in self.extra_funcs])
+
 
     def get_mathjax_content(self):
         return self.pre_str + self.expr + self.post_str
@@ -50,6 +54,8 @@ class CodeFrame(object):
         self.pre_str = ''
         self.post_str = ''
         self.expr_dict.clear()
+        self.extra_include = ''
+        self.extra_funcs.clear()
 
 
 class CodeModule(object):
@@ -162,7 +168,8 @@ class CodeGen(IRPrinter):
         return exp_info
 
     def visit_gp_func(self, node, **kwargs):
-        self.code_frame.extra_funcs += get_gp_func_impl(node.func_name, la_type=self.parse_type)
+        if node.func_name not in self.code_frame.extra_funcs:
+            self.code_frame.extra_funcs.append(node.func_name)
         params_content_list = []
         pre_list = []
         for param in node.params:
