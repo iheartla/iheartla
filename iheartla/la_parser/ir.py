@@ -729,7 +729,7 @@ class SummationNode(ExprNode):
         self.sym_dict = {}  # identifiers containing sub, used for type checking only
         self.enum_list = None
         self.range = None
-        self.extra = None
+        self.extra_list = []
 
 
 class OptimizeType(Enum):

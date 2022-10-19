@@ -1211,11 +1211,25 @@ class grammardefaultParser(Parser):
                 self._hspace_()
             self._closure(block33)
             self._general_assignment_()
-            self.name_last_node('extra')
+            self.add_last_node_to_name('extra')
+
+            def block35():
+
+                def block36():
+                    self._hspace_()
+                self._closure(block36)
+                self._token(';')
+
+                def block37():
+                    self._hspace_()
+                self._closure(block37)
+                self._general_assignment_()
+                self.add_last_node_to_name('extra')
+            self._closure(block35)
         self._closure(block29)
         self.ast._define(
-            ['cond', 'exp', 'extra', 'id', 'range', 'sub'],
-            ['enum']
+            ['cond', 'exp', 'id', 'range', 'sub'],
+            ['enum', 'extra']
         )
 
     @tatsumasu('Optimize')

@@ -672,9 +672,10 @@ class CodeGenMatlab(CodeGen):
                         exp_pre_list.append(list_content[index] + '\n')
             content += exp_pre_list
             # exp_str
-            if node.extra:
-                extra_info = self.visit(node.extra, **kwargs)
-                content += [self.update_prelist_str([extra_info.content], '    ')]
+            if len(node.extra_list) > 0:
+                for et in node.extra_list:
+                    extra_info = self.visit(et, **kwargs)
+                    content += [self.update_prelist_str([extra_info.content], '    ')]
             content.append(str("    " + assign_id + " += " + exp_str + ';\n'))
             content[0] = "    " + content[0]
             self.del_name_conventions(name_convention)
@@ -711,9 +712,10 @@ class CodeGenMatlab(CodeGen):
                 if index != len(list_content)-1:
                     content.append(list_content[index] + '\n')
         # exp_str
-        if node.extra:
-            extra_info = self.visit(node.extra, **kwargs)
-            content += [self.update_prelist_str([extra_info.content], '    ')]
+        if len(node.extra_list) > 0:
+            for et in node.extra_list:
+                extra_info = self.visit(et, **kwargs)
+                content += [self.update_prelist_str([extra_info.content], '    ')]
         # only one sub for now
         indent = str("    ")
         if node.cond:
