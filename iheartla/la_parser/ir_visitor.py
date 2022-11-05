@@ -77,6 +77,7 @@ class IRBaseVisitor(object):
             IRNodeType.SparseOther: "visit_sparse_other",
             IRNodeType.NumMatrix: "visit_num_matrix",
             IRNodeType.Vector: "visit_vector",
+            IRNodeType.Set: "visit_set",
             IRNodeType.ToMatrix: "visit_to_matrix",
             #
             IRNodeType.MatrixIndex: "visit_matrix_index",
@@ -242,6 +243,8 @@ class IRBaseVisitor(object):
             return self.visit(node.m, **kwargs)
         elif node.v:
             return self.visit(node.v, **kwargs)
+        elif node.s:
+            return self.visit(node.s, **kwargs)
         elif node.nm:
             return self.visit(node.nm, **kwargs)
         elif node.op:

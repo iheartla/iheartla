@@ -2747,6 +2747,9 @@ class TypeWalker(NodeWalker):
         elif node.v:
             node_info = self.walk(node.v, **kwargs)
             ir_node.v = node_info.ir
+        elif node.s:
+            node_info = self.walk(node.s, **kwargs)
+            ir_node.s = node_info.ir
         elif node.nm:
             node_info = self.walk(node.nm, **kwargs)
             ir_node.nm = node_info.ir
@@ -2996,11 +2999,39 @@ class TypeWalker(NodeWalker):
             new_id = self.generate_var_name(lhs)
             self.symtable[new_id] = ir_node.la_type
             ir_node.symbol = new_id
-        elif self.local_func_parsing:
+        # elif self.local_func_parsing:
+        else:
             new_id = self.generate_var_name(self.local_func_name)
             self.get_cur_param_data().symtable[new_id] = ir_node.la_type
             ir_node.symbol = new_id
 
+        return node_info
+
+    def walk_Set(self, node, **kwargs):
+        symbols = set()
+        ir_node = SetNode(parse_info=node.parseinfo, raw_text=node.text)
+        dim_list = []
+        for exp in node.exp:
+            exp_info = self.walk(exp, **kwargs)
+            self.assert_expr(exp_info.la_type.is_scalar() or exp_info.la_type.is_vector(), get_err_msg_info(node.parseinfo, "Item in vector must be scalar or vector"))
+            ir_node.items.append(exp_info.ir)
+            if exp_info.la_type.is_vector():
+                dim_list.append(exp_info.la_type.rows)
+            else:
+                dim_list.append(1)
+            symbols = symbols.union(exp_info.symbols)
+        # rows = self.get_sum_value(dim_list)
+        ir_node.la_type = SetType(size=1, int_list=[True], element_type=ScalarType())
+        node_info = NodeInfo(ir=ir_node, la_type=ir_node.la_type, symbols=symbols)
+        if LHS in kwargs:
+            lhs = kwargs[LHS]
+            new_id = self.generate_var_name(lhs)
+            self.symtable[new_id] = ir_node.la_type
+            ir_node.symbol = new_id
+        else:
+            new_id = self.generate_var_name(self.local_func_name)
+            self.get_cur_param_data().symtable[new_id] = ir_node.la_type
+            ir_node.symbol = new_id
         return node_info
 
     def walk_Matrix(self, node, **kwargs):

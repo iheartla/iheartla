@@ -1990,6 +1990,39 @@ class grammardefaultParser(Parser):
             ['exp']
         )
 
+    @tatsumasu('Set')
+    def _set_(self):  # noqa
+        self._token('{')
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._expression_()
+        self.add_last_node_to_name('exp')
+
+        def block2():
+
+            def block3():
+                self._hspace_()
+            self._closure(block3)
+            self._token(',')
+
+            def block4():
+                self._hspace_()
+            self._closure(block4)
+            self._expression_()
+            self.add_last_node_to_name('exp')
+        self._positive_closure(block2)
+
+        def block6():
+            self._hspace_()
+        self._closure(block6)
+        self._token('}')
+        self.ast._define(
+            [],
+            ['exp']
+        )
+
     @tatsumasu('MultiCondExpr')
     def _multi_cond_expr_(self):  # noqa
         self._token('{')
@@ -2447,11 +2480,14 @@ class grammardefaultParser(Parser):
                 self._vector_()
                 self.name_last_node('v')
             with self._option():
+                self._set_()
+                self.name_last_node('s')
+            with self._option():
                 self._constant_()
                 self.name_last_node('c')
             self._error('no available options')
         self.ast._define(
-            ['c', 'id0', 'm', 'nm', 'num', 'op', 'sub', 'v'],
+            ['c', 'id0', 'm', 'nm', 'num', 'op', 's', 'sub', 'v'],
             []
         )
 
@@ -5162,11 +5198,14 @@ class grammardefaultParser(Parser):
                 self._vector_()
                 self.name_last_node('v')
             with self._option():
+                self._set_()
+                self.name_last_node('s')
+            with self._option():
                 self._constant_()
                 self.name_last_node('c')
             self._error('no available options')
         self.ast._define(
-            ['c', 'id0', 'm', 'nm', 'num', 'op', 'sub', 'v'],
+            ['c', 'id0', 'm', 'nm', 'num', 'op', 's', 'sub', 'v'],
             []
         )
 
@@ -6890,6 +6929,9 @@ class grammardefaultSemantics(object):
     def vector(self, ast):  # noqa
         return ast
 
+    def set(self, ast):  # noqa
+        return ast
+
     def multi_cond_expr(self, ast):  # noqa
         return ast
 
@@ -7591,6 +7633,10 @@ class Vector(ModelBase):
     exp = None
 
 
+class Set(ModelBase):
+    exp = None
+
+
 class MultiCondExpr(ModelBase):
     ifs = None
     other = None
@@ -7640,6 +7686,7 @@ class Factor(ModelBase):
     nm = None
     num = None
     op = None
+    s = None
     sub = None
     v = None
 

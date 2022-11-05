@@ -79,6 +79,7 @@ class IRNodeType(Enum):
     Vector = 310
     ToMatrix = 311
     MultiConds = 312
+    Set = 313
     #
     MatrixIndex = 320
     VectorIndex = 321
@@ -685,6 +686,13 @@ class MatrixNode(ExprNode):
 class VectorNode(ExprNode):
     def __init__(self, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Vector, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        self.items = []
+        self.symbol = None
+
+
+class SetNode(ExprNode):
+    def __init__(self, la_type=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Set, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.items = []
         self.symbol = None
 

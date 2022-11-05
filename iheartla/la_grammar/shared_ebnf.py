@@ -130,6 +130,7 @@ factor::Factor
     | num:number
     | m:matrix
     | v:vector
+    | s:set
     | c:constant
     ;
     

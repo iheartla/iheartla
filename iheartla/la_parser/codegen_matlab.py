@@ -1018,6 +1018,17 @@ class CodeGenMatlab(CodeGen):
         content = '[{}]'.format("; ".join(ret))
         return CodeNodeInfo(content, pre_list=pre_list)
 
+    def visit_set(self, node, **kwargs):
+        cur_m_id = node.symbol
+        ret = []
+        pre_list = []
+        for item in node.items:
+            item_info = self.visit(item, **kwargs)
+            ret.append(item_info.content)
+            pre_list += item_info.pre_list
+        content = '[{}]'.format("; ".join(ret))
+        return CodeNodeInfo(content, pre_list=pre_list)
+
     def visit_to_matrix(self, node, **kwargs):
         node_info = self.visit(node.item, **kwargs)
         node_info.content = "reshape({}, [{}, 1])".format(node_info.content, node.item.la_type.rows)

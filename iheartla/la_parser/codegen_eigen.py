@@ -1101,6 +1101,18 @@ class CodeGenEigen(CodeGen):
         pre_list.append(content)
         return CodeNodeInfo(cur_m_id, pre_list=pre_list)
 
+    def visit_set(self, node, **kwargs):
+        cur_m_id = node.symbol
+        ret = []
+        pre_list = []
+        for item in node.items:
+            item_info = self.visit(item, **kwargs)
+            ret.append(item_info.content)
+            pre_list += item_info.pre_list
+        content = '    std::set<{} > {}({});\n'.format("int", cur_m_id, ", ".join(ret))
+        pre_list.append(content)
+        return CodeNodeInfo(cur_m_id, pre_list=pre_list)
+
     def visit_matrix(self, node, **kwargs):
         content = "    "
         # lhs = kwargs[LHS]

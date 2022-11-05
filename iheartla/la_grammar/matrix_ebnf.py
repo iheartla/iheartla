@@ -8,6 +8,10 @@ matrix::Matrix
 vector::Vector            
     = '(' {hspace} exp+:expression {{hspace} ',' {hspace} exp+:expression}+ {hspace} ')'
     ;
+
+set::Set            
+    = '{' {hspace} exp+:expression {{hspace} ',' {hspace} exp+:expression}+ {hspace} '}'
+    ;
     
 multi_cond_expr::MultiCondExpr
     = '{' {hspace} ifs:multi_if_conditions
@@ -97,6 +101,7 @@ factor_in_matrix::Factor
     | num:number
     | m:matrix
     | v:vector
+    | s:set
     | c:constant
     ;
 
