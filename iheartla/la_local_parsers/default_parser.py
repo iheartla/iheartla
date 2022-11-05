@@ -3981,6 +3981,240 @@ class grammardefaultParser(Parser):
             ['params', 'separators']
         )
 
+    @tatsumasu('StarFunc')
+    def _star_func_(self):  # noqa
+        self._pattern('star')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('ClosureFunc')
+    def _closure_func_(self):  # noqa
+        self._pattern('closure')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('LinkFunc')
+    def _link_func_(self):  # noqa
+        self._pattern('link')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('BoundaryFunc')
+    def _boundary_func_(self):  # noqa
+        self._pattern('boundary')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('IsComplexFunc')
+    def _isComplex_func_(self):  # noqa
+        self._pattern('isComplex')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('IsPureComplexFunc')
+    def _isPureComplex_func_(self):  # noqa
+        self._pattern('isPureComplex')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
     @tatsumasu()
     def _Directive_(self):  # noqa
         self._import_()
@@ -6881,6 +7115,24 @@ class grammardefaultSemantics(object):
     def face_normal_func(self, ast):  # noqa
         return ast
 
+    def star_func(self, ast):  # noqa
+        return ast
+
+    def closure_func(self, ast):  # noqa
+        return ast
+
+    def link_func(self, ast):  # noqa
+        return ast
+
+    def boundary_func(self, ast):  # noqa
+        return ast
+
+    def isComplex_func(self, ast):  # noqa
+        return ast
+
+    def isPureComplex_func(self, ast):  # noqa
+        return ast
+
     def Directive(self, ast):  # noqa
         return ast
 
@@ -7548,6 +7800,42 @@ class DihedralFunc(ModelBase):
 
 
 class FaceNormalFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class StarFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class ClosureFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class LinkFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class BoundaryFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class IsComplexFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class IsPureComplexFunc(ModelBase):
     name = None
     params = None
     separators = None

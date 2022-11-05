@@ -16,5 +16,6 @@ def get_gp_func_impl(name, gp_type=GeometryType.TRIANGLE, la_type=ParserTypeEnum
     impl = ''
     if gp_type == GeometryType.TRIANGLE:
         if la_type == ParserTypeEnum.EIGEN:
-            impl = MESH_EIGEN_DICT[name]
+            if name in MESH_EIGEN_DICT:
+                impl = MESH_EIGEN_DICT[name]
     return impl

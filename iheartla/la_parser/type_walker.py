@@ -232,7 +232,8 @@ class TypeWalker(NodeWalker):
                                           'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh', 'cot',
                                           'sec', 'csc', 'e'],
                          'linearalgebra': ['trace', 'tr', 'diag', 'vec', 'det', 'rank', 'null', 'orth', 'inv'],
-                         'triangle_mesh': ['faces_of_edge', 'face_normal', 'dihedral']}
+                         'triangle_mesh': ['faces_of_edge', 'face_normal', 'dihedral'],
+                         'dec': ['star', 'closure', 'link', 'boundary', 'isComplex', 'isPureComplex']}
         self.constants = ['π']
         self.pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*")
         self.multi_lhs_list = []
@@ -3369,6 +3370,19 @@ class TypeWalker(NodeWalker):
         return self.create_gp_node_info(GPType.Dihedral, node, **kwargs)
     def walk_FaceNormalFunc(self, node, **kwargs):
         return self.create_gp_node_info(GPType.FaceNormal, node, **kwargs)
+    ###################################################################
+    def walk_StarFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.Star, node, **kwargs)
+    def walk_ClosureFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.Closure, node, **kwargs)
+    def walk_LinkFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.Link, node, **kwargs)
+    def walk_BoundaryFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.Boundary, node, **kwargs)
+    def walk_IsComplexFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.IsComplex, node, **kwargs)
+    def walk_IsPureComplexFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.IsPureComplex, node, **kwargs)
     ###################################################################
     def walk_ArithExpression(self, node, **kwargs):
         value_info = self.walk(node.value, **kwargs)

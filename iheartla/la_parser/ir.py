@@ -1213,7 +1213,15 @@ class GPType(IntEnum):
     Invalid = -1
     FacesOfEdge = 0
     Dihedral = 1
-    FaceNormal = 1
+    FaceNormal = 2
+    # dec
+    Star = 100
+    Closure = 101
+    Link = 102
+    Boundary = 103
+    IsComplex = 104
+    IsPureComplex = 105
+
 
 
 class MathFuncNode(ExprNode):
