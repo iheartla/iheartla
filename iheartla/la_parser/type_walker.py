@@ -1098,9 +1098,11 @@ class TypeWalker(NodeWalker):
                 int_list = [False] * cnt
                 type_list = [ScalarType()] * cnt
         elif node.sub_types:
+            ir_node.sub_types = []
             for sub_type in node.sub_types:
                 type_info = self.walk(sub_type, **kwargs)
                 type_list.append(type_info.la_type)
+                ir_node.sub_types.append(type_info)
             cnt = len(type_list)
         ir_node.la_type = SetType(size=cnt, int_list=int_list, type_list=type_list, element_type=ScalarType())
         return ir_node

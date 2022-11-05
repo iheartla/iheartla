@@ -294,6 +294,8 @@ class CodeGenLatex(CodeGen):
                 content += '\\mathbb{{Z}}^{{ {} }}'.format(cnt)
             else:
                 content += '\\mathbb{{R}}^{{ {} }}'.format(cnt)
+        elif node.sub_types:
+            content = "\\times".join([self.visit(sub_type) for sub_type in node.sub_types])
         content = '\\{' + content + '\\}'
         if node.la_type.index_type:
             content += " ,\\text{ index}"

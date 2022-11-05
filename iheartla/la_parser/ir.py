@@ -255,6 +255,7 @@ class SetTypeNode(ExprNode):
         self.type1 = None
         self.type2 = None
         self.cnt = None
+        self.sub_types = None
 
 
 class MatrixTypeNode(ExprNode):
