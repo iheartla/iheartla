@@ -133,6 +133,42 @@ class CodeGenMatlab(CodeGen):
         # #     anon_str += self.get_rand_test_str(func_type.ret, rand_int_max)+";"
         # test_content.append(anon_str)
         return test_content
+    def get_type_test_in_set(self, ele_type, rand_int_max):
+        test_content = []
+        if ele_type.is_matrix():
+            element_type = ele_type.element_type
+            if isinstance(element_type, LaVarType):
+                if ele_type.sparse:
+                    if element_type.is_scalar() and element_type.is_int:
+                        test_content.append('sparse.random({}, {}, dtype=np.integer, density=0.25)'.format(ele_type.rows, ele_type.cols))
+                    else:
+                        test_content.append('sparse.random({}, {}, dtype=np.float64, density=0.25)'.format(ele_type.rows, ele_type.cols))
+                else:
+                    # dense
+                    if element_type.is_scalar() and element_type.is_int:
+                        test_content.append('randi({}, {}, {})'.format(rand_int_max, ele_type.rows, ele_type.cols))
+                    else:
+                        test_content.append('randn({}, {})'.format(ele_type.rows, ele_type.cols))
+            else:
+                if ele_type.sparse:
+                    test_content.append('sparse.random({}, {}, dtype=np.float64, density=0.25)'.format(ele_type.rows, ele_type.cols))
+                else:
+                    test_content.append('randi({}, {})'.format(ele_type.rows, ele_type.cols))
+        elif ele_type.is_vector():
+            element_type = ele_type.element_type
+            if isinstance(element_type, LaVarType):
+                if element_type.is_scalar() and element_type.is_int:
+                    test_content.append('randi({}, {})'.format(rand_int_max, ele_type.rows))
+                else:
+                    test_content.append('randn({}, 1)'.format(ele_type.rows))
+            else:
+                    test_content.append('randn({}, 1)'.format(ele_type.rows))
+        elif ele_type.is_scalar():
+            if ele_type.is_int:
+                test_content.append('randi({})'.format(rand_int_max))
+            else:
+                test_content.append('randn()')
+        return ','.join(test_content)
 
     def get_set_test_list(self, parameter, dim_name, ind_name, la_type, rand_int_max, test_indent='    '):
         test_content = []
@@ -141,10 +177,13 @@ class CodeGenMatlab(CodeGen):
         test_content.append('for {} = 1:{} '.format(ind_name, dim_name))
         gen_list = []
         for i in range(la_type.size):
-            if la_type.int_list[i]:
-                gen_list.append('randi({})'.format(rand_int_max))
+            if la_type.type_list[i].is_set():
+                # sub element is also a set
+                new_set_name = parameter+"_"+str(i)
+                gen_list.append(new_set_name)
+                test_content += self.get_set_test_list(new_set_name, dim_name+"_"+str(i), ind_name+"_"+str(i), la_type.type_list[i], rand_int_max, pre)
             else:
-                gen_list.append('randn()')
+                gen_list.append(self.get_type_test_in_set(la_type.type_list[i], rand_int_max))
         test_content.append('    {} = [{};'.format(parameter, parameter) + ', '.join(gen_list) + '];')
         test_content.append('end')
         test_content = ['{}{}'.format(test_indent, line) for line in test_content]
