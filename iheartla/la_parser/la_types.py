@@ -272,10 +272,11 @@ class VectorType(LaVarType):
 
 
 class SetType(LaVarType):
-    def __init__(self, size=0, desc=None, element_type=None, symbol=None, int_list=None, dynamic=DynamicTypeEnum.DYN_INVALID):
+    def __init__(self, size=0, desc=None, element_type=None, symbol=None, int_list=None, type_list=None, dynamic=DynamicTypeEnum.DYN_INVALID):
         LaVarType.__init__(self, VarTypeEnum.SET, desc, element_type, symbol, dynamic=dynamic)
         self.size = size
         self.int_list = int_list     # whether the element is real number or integer
+        self.type_list = type_list   # subtypes in a set
 
     def get_signature(self):
         return 'set'

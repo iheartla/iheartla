@@ -1061,6 +1061,7 @@ class TypeWalker(NodeWalker):
     def walk_SetType(self, node, **kwargs):
         ir_node = SetTypeNode(parse_info=node.parseinfo, raw_text=node.text)
         int_list = []
+        type_list = []
         cnt = 1
         if node.type:
             ir_node.type = node.type
@@ -1068,8 +1069,10 @@ class TypeWalker(NodeWalker):
             for t in node.type:
                 if t == 'ℤ':
                     int_list.append(True)
+                    type_list.append(ScalarType(is_int=True))
                 else:
                     int_list.append(False)
+                    type_list.append(ScalarType())
         elif node.type1:
             ir_node.type1 = node.type1
             cnt_info = self.walk(node.cnt, **kwargs)
@@ -1078,8 +1081,10 @@ class TypeWalker(NodeWalker):
                 ir_node.cnt = cnt
             if node.type1 == 'ℤ':
                 int_list = [True] * cnt
+                type_list = [ScalarType(is_int=True)] * cnt
             else:
                 int_list = [False] * cnt
+                type_list = [ScalarType()] * cnt
         elif node.type2:
             ir_node.type2 = node.type2
             if node.cnt:
@@ -1088,9 +1093,16 @@ class TypeWalker(NodeWalker):
                 ir_node.cnt = cnt
             if node.type2 == 'ℤ':
                 int_list = [True] * cnt
+                type_list = [ScalarType(is_int=True)] * cnt
             else:
                 int_list = [False] * cnt
-        ir_node.la_type = SetType(size=cnt, int_list=int_list, element_type = ScalarType())
+                type_list = [ScalarType()] * cnt
+        elif node.sub_types:
+            for sub_type in node.sub_types:
+                type_info = self.walk(sub_type, **kwargs)
+                type_list.append(type_info.la_type)
+            cnt = len(type_list)
+        ir_node.la_type = SetType(size=cnt, int_list=int_list, type_list=type_list, element_type=ScalarType())
         return ir_node
 
     def walk_FunctionType(self, node, **kwargs):

@@ -25,6 +25,7 @@ set_type::SetType
     = '{' {hspace} type+:/[ℝℤ]/ {hspace} {'×' {hspace} type+:/[ℝℤ]/ {hspace} }'}'
     | '{' {hspace} type1:/[ℝℤ]/ {hspace} '^' {hspace} cnt:(integer) {hspace} '}'
     | '{' {hspace} type2:/[ℝℤ]/ cnt:[sup_integer] {hspace} '}' 
+    | '{' {hspace} sub_types+:params_type {hspace} {'×' {hspace} sub_types+:params_type {hspace} } '}' 
     ;
 
 dimension

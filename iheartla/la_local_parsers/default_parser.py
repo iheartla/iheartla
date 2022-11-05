@@ -6097,10 +6097,37 @@ class grammardefaultParser(Parser):
                     self._hspace_()
                 self._closure(block16)
                 self._token('}')
+            with self._option():
+                self._token('{')
+
+                def block17():
+                    self._hspace_()
+                self._closure(block17)
+                self._params_type_()
+                self.add_last_node_to_name('sub_types')
+
+                def block19():
+                    self._hspace_()
+                self._closure(block19)
+
+                def block20():
+                    self._token('×')
+
+                    def block21():
+                        self._hspace_()
+                    self._closure(block21)
+                    self._params_type_()
+                    self.add_last_node_to_name('sub_types')
+
+                    def block23():
+                        self._hspace_()
+                    self._closure(block23)
+                self._closure(block20)
+                self._token('}')
             self._error('no available options')
         self.ast._define(
             ['cnt', 'type1', 'type2'],
-            ['type']
+            ['sub_types', 'type']
         )
 
     @tatsumasu()
@@ -8090,6 +8117,7 @@ class ScalarType(ModelBase):
 
 class SetType(ModelBase):
     cnt = None
+    sub_types = None
     type = None
     type1 = None
     type2 = None
