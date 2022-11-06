@@ -608,6 +608,9 @@ class IRVisitor(IRBaseVisitor):
     def reset_scope(self):
         self.cur_scope = 'global'
 
+    def is_main_scope(self):
+        return self.cur_scope == 'global'
+
     def is_keyword(self, name):
         return is_keyword(name, parser_type=self.parse_type)
 

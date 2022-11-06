@@ -308,7 +308,7 @@ class TypeWalker(NodeWalker):
                 return self.opt_dict[self.opt_key]
             else:
                 self.assert_expr(True, "error")
-        elif self.cur_scope != 'global':
+        elif not self.is_main_scope():
             return self.func_data_dict[self.cur_scope].params_data
         self.main_param.symtable = self.symtable
         return self.main_param
@@ -478,7 +478,7 @@ class TypeWalker(NodeWalker):
             if self.local_func_name in self.local_func_dict and sym in self.local_func_dict[self.local_func_name]:
                 node_type = self.local_func_dict[self.local_func_name][sym]
                 resolved = True
-        elif self.cur_scope != 'global':
+        elif not self.is_main_scope():
             if sym in self.func_data_dict[self.cur_scope].params_data.symtable:
                 node_type = self.func_data_dict[self.cur_scope].params_data.symtable[sym]
                 resolved = True
@@ -492,7 +492,7 @@ class TypeWalker(NodeWalker):
         if self.local_func_parsing:
             if self.local_func_name in self.local_func_dict and sym in self.local_func_dict[self.local_func_name]:
                 existed = True
-        elif self.cur_scope != 'global':
+        elif not self.is_main_scope():
             if sym in self.func_data_dict[self.cur_scope].params_data.symtable:
                 existed = True
         if not existed:
@@ -516,6 +516,9 @@ class TypeWalker(NodeWalker):
             if self.visiting_opt:
                 if self.opt_key in self.opt_dict and sym in self.opt_dict[self.opt_key].symtable:
                     resolved = True
+            if not self.is_main_scope():
+                if sym in self.func_data_dict[self.cur_scope].params_data.symtable:
+                    resolved = True
             if not resolved:
                 self.assert_expr(self.symtable.get(sym) is not None, msg)
         else:
@@ -528,6 +531,9 @@ class TypeWalker(NodeWalker):
                 return
             if self.visiting_opt:
                 if self.opt_key in self.opt_dict and sym in self.opt_dict[self.opt_key].symtable:
+                    resolved = True
+            if not self.is_main_scope():
+                if sym in self.func_data_dict[self.cur_scope].params_data.symtable:
                     resolved = True
             if not resolved:
                 self.assert_expr(self.symtable.get(sym) is None, msg)
@@ -1583,7 +1589,7 @@ class TypeWalker(NodeWalker):
                                         dim = self.symtable[cur_node.get_main_id()].cols
                                 break
                             dim_list.append(dim)
-                        self.symtable[sequence] = MatrixType(rows=dim_list[0], cols=dim_list[1], element_type=right_type, sparse=sparse, diagonal=sparse, index_var=index_var, value_var=value_var)
+                        self.get_cur_param_data().symtable[sequence] = MatrixType(rows=dim_list[0], cols=dim_list[1], element_type=right_type, sparse=sparse, diagonal=sparse, index_var=index_var, value_var=value_var)
                 elif len(left_subs) == 1:  # sequence or vector
                     cur_sub = left_subs[0]
                     sequence_type = True   # default type: sequence
@@ -1609,7 +1615,7 @@ class TypeWalker(NodeWalker):
                     elif right_type.is_scalar():
                         sequence_type = False
                     if sequence_type:
-                        self.symtable[sequence] = SequenceType(size=dim, element_type=right_type)
+                        self.get_cur_param_data().symtable[sequence] = SequenceType(size=dim, element_type=right_type)
                         seq_index_node = SequenceIndexNode()
                         seq_index_node.main = self.walk(node.left[0].left, **kwargs).ir
                         seq_index_node.main_index = self.walk(node.left[0].right[0], **kwargs).ir
@@ -1618,7 +1624,7 @@ class TypeWalker(NodeWalker):
                         assign_node.left[cur_index] = seq_index_node
                     else:
                         # vector
-                        self.symtable[sequence] = VectorType(rows=dim)
+                        self.get_cur_param_data().symtable[sequence] = VectorType(rows=dim)
                         vector_index_node = VectorIndexNode()
                         vector_index_node.main = self.walk(node.left[0].left, **kwargs).ir
                         vector_index_node.row_index = self.walk(node.left[0].right[0], **kwargs).ir
@@ -1644,7 +1650,7 @@ class TypeWalker(NodeWalker):
                         if id0 in self.parameters:
                             err_msg = "{} is a parameter, can not be assigned".format(id0)
                         self.assert_expr(False, get_err_msg_info(id0_info.ir.parse_info, err_msg))
-                    self.symtable[id0] = right_type
+                    self.get_cur_param_data().symtable[id0] = right_type
             assign_node.symbols = assign_node.symbols.union(right_info.symbols)
             self.expr_dict[id0_info.ir.get_main_id()] = list(right_info.symbols) + [id0_info.ir.get_main_id()]
         self.visiting_solver_eq = False
@@ -3911,6 +3917,9 @@ class TypeWalker(NodeWalker):
 
     def reset_scope(self):
         self.cur_scope = 'global'
+
+    def is_main_scope(self):
+        return self.cur_scope == 'global'
 
     def get_main_id(self, identifier):
         if identifier in self.get_cur_param_data().ids_dict:
