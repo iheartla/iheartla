@@ -45,7 +45,7 @@ class CodeGenEigen(CodeGen):
 
     def get_tuple_str(self, tuple_type):
         type_list = []
-        for index in range(tuple_type.type_list):
+        for index in range(len(tuple_type.type_list)):
             cur_type = self.get_ctype(tuple_type.type_list[index])
             type_list.append(cur_type)
         return "std::tuple< {} >".format(", ".join(type_list)) if len(type_list) > 1 else type_list[0]
@@ -687,6 +687,7 @@ class CodeGenEigen(CodeGen):
 
     def visit_summation(self, node, **kwargs):
         target_var = []
+        self.cur_scope = node.symbol
         def set_name_conventions(sub):
             # name convention
             name_convention = {}
@@ -745,11 +746,14 @@ class CodeGenEigen(CodeGen):
             range_info = self.visit(node.range, **kwargs)
             content.append('for({} tuple : {}){{\n'.format(self.get_set_item_str(node.range.la_type), range_info.content))
             extra_content = ''
-            for i in range(len(node.enum_list)):
-                if node.range.la_type.index_type:
-                    content.append('    int {} = std::get<{}>(tuple){} + 1;\n'.format(node.enum_list[i], i, extra_content))
-                else:
-                    content.append('    int {} = std::get<{}>(tuple){};\n'.format(node.enum_list[i], i, extra_content))
+            if node.use_tuple:
+                content.append('    {} {} = tuple;\n'.format(self.get_ctype(self.get_sym_type(node.enum_list[0])), node.enum_list[0]))
+            else:
+                for i in range(len(node.enum_list)):
+                    if node.range.la_type.index_type:
+                        content.append('    int {} = std::get<{}>(tuple){} + 1;\n'.format(node.enum_list[i], i, extra_content))
+                    else:
+                        content.append('    int {} = std::get<{}>(tuple){};\n'.format(node.enum_list[i], i, extra_content))
             exp_pre_list = []
             if exp_info.pre_list:  # catch pre_list
                 list_content = "".join(exp_info.pre_list)
@@ -822,6 +826,7 @@ class CodeGenEigen(CodeGen):
 
         content.append("}\n")
         self.del_name_conventions(name_convention)
+        self.reset_scope()
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
     def visit_function(self, node, **kwargs):

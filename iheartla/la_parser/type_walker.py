@@ -266,6 +266,7 @@ class TypeWalker(NodeWalker):
         self.local_func_name = ''  # function name when visiting expressions
         self.local_func_dict = {}  # local function name -> parameter dict
         self.visiting_opt = False  # optimization
+        self.cur_scope = 'global'
         self.opt_cur_init_list = [] # initialized vars
         self.opt_key = ''
         self.opt_dict = {}
@@ -307,6 +308,8 @@ class TypeWalker(NodeWalker):
                 return self.opt_dict[self.opt_key]
             else:
                 self.assert_expr(True, "error")
+        elif self.cur_scope != 'global':
+            return self.func_data_dict[self.cur_scope].params_data
         self.main_param.symtable = self.symtable
         return self.main_param
 
@@ -475,6 +478,10 @@ class TypeWalker(NodeWalker):
             if self.local_func_name in self.local_func_dict and sym in self.local_func_dict[self.local_func_name]:
                 node_type = self.local_func_dict[self.local_func_name][sym]
                 resolved = True
+        elif self.cur_scope != 'global':
+            if sym in self.func_data_dict[self.cur_scope].params_data.symtable:
+                node_type = self.func_data_dict[self.cur_scope].params_data.symtable[sym]
+                resolved = True
         if not resolved:
             if sym in self.symtable:
                 node_type = self.symtable[sym]
@@ -484,6 +491,9 @@ class TypeWalker(NodeWalker):
         existed = False
         if self.local_func_parsing:
             if self.local_func_name in self.local_func_dict and sym in self.local_func_dict[self.local_func_name]:
+                existed = True
+        elif self.cur_scope != 'global':
+            if sym in self.func_data_dict[self.cur_scope].params_data.symtable:
                 existed = True
         if not existed:
             if sym in self.symtable:
@@ -1662,6 +1672,11 @@ class TypeWalker(NodeWalker):
         pass
 
     def walk_Summation(self, node, **kwargs):
+        #
+        new_id = self.generate_var_name("sum")
+        self.cur_scope = new_id
+        if new_id not in self.func_data_dict:
+            self.func_data_dict[new_id] = LocalFuncData(name=new_id)
         self.logger.debug("cur sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         kwargs[INSIDE_SUMMATION] = True
         subs_list = []
@@ -1682,6 +1697,7 @@ class TypeWalker(NodeWalker):
             sub_parse_info = node.id.parseinfo
             self.assert_expr(subs not in self.symtable, get_err_msg_info(sub_parse_info, "Subscript has been defined"))
             self.symtable[subs] = ScalarType(index_type=False, is_int=True)  # add subscript to symbol table temporarily
+            self.func_data_dict[self.cur_scope].params_data.symtable[subs] = ScalarType(index_type=False, is_int=True)
             subs_list.append(subs)
             ir_node.cond = self.walk(node.cond, **kwargs).ir
         else:
@@ -1695,6 +1711,7 @@ class TypeWalker(NodeWalker):
                         subs_list.append(enum.content)
                         self.assert_expr(enum.content not in self.symtable, get_err_msg_info(cur_id_raw.parseinfo, "Subscript has been defined"))
                         self.symtable[enum.content] = ScalarType(index_type=False, is_int=True)  # add subscript to symbol table temporarily
+                        self.func_data_dict[self.cur_scope].params_data.symtable[enum.content] = ScalarType(index_type=False, is_int=True)
                         self.sum_subs.append(enum.content)
                 else:
                     # (e ∈ E)
@@ -1705,7 +1722,9 @@ class TypeWalker(NodeWalker):
                     subs_list.append(enum.content)
                     self.assert_expr(enum.content not in self.symtable, get_err_msg_info(cur_id_raw.parseinfo, "Subscript has been defined"))
                     self.symtable[enum.content] = TupleType(type_list=range_info.la_type.type_list)  # add subscript to symbol table temporarily
+                    self.func_data_dict[self.cur_scope].params_data.symtable[enum.content] = TupleType(type_list=range_info.la_type.type_list)
                     self.sum_subs.append(enum.content)
+                    ir_node.use_tuple = True
                 self.sum_conds.append(False)
                 ir_node.enum_list = subs_list
                 ir_node.range = range_info.ir
@@ -1721,6 +1740,7 @@ class TypeWalker(NodeWalker):
                 sub_parse_info = node.sub.parseinfo
                 self.assert_expr(subs not in self.symtable, get_err_msg_info(sub_parse_info, "Subscript has been defined"))
                 self.symtable[subs] = ScalarType(index_type=False, is_int=True)  # add subscript to symbol table temporarily
+                self.func_data_dict[self.cur_scope].params_data.symtable[subs] = ScalarType(index_type=False, is_int=True)
                 subs_list.append(subs)
         self.logger.debug("new sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         # extra exprs
@@ -1728,8 +1748,6 @@ class TypeWalker(NodeWalker):
             for et in node.extra:
                 extra_info = self.walk(et, **kwargs)
                 ir_node.extra_list.append(extra_info.ir)
-        #
-        new_id = self.generate_var_name("sum")
         ret_info = self.walk(node.exp, **kwargs)
         ir_node.exp = ret_info.ir
         ret_info.ir.set_parent(ir_node)
@@ -1756,6 +1774,7 @@ class TypeWalker(NodeWalker):
                 del self.symtable[subs]   # remove subscript from symbol table
             self.logger.debug("cur_sym_dict: {}".format(cur_sym_dict))
         self.logger.debug("summation, symbols: {}".format(ir_node.symbols))
+        self.reset_scope()
         return ret_info
 
     def check_sum_subs(self, subs, sym_dict):
@@ -3889,6 +3908,9 @@ class TypeWalker(NodeWalker):
         for index in range(len(res[1])):
             subs.append(res[1][index])
         return [res[0], subs]
+
+    def reset_scope(self):
+        self.cur_scope = 'global'
 
     def get_main_id(self, identifier):
         if identifier in self.get_cur_param_data().ids_dict:

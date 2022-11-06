@@ -299,6 +299,7 @@ class IRVisitor(IRBaseVisitor):
         self.tmp_symtable = {}
         self.def_dict = {}
         self.local_func_parsing = False
+        self.cur_scope = 'global'
         self.local_func_name = ''  # function name when visiting expressions
         # self.parameters = set()
         # self.subscripts = {}
@@ -473,6 +474,9 @@ class IRVisitor(IRBaseVisitor):
             if self.local_func_name in self.func_data_dict:
                 if sym in self.func_data_dict[self.local_func_name].params_data.symtable:
                     return self.func_data_dict[self.local_func_name].params_data.symtable[sym]
+        elif self.cur_scope != "global":
+            if sym in self.func_data_dict[self.cur_scope].params_data.symtable:
+                return self.func_data_dict[self.cur_scope].params_data.symtable[sym]
         ty = None
         if sym in self.main_param.symtable:
             ty = self.main_param.symtable[sym]
@@ -600,6 +604,9 @@ class IRVisitor(IRBaseVisitor):
         else:
             content = str(node.value)
         return CodeNodeInfo(content)
+
+    def reset_scope(self):
+        self.cur_scope = 'global'
 
     def is_keyword(self, name):
         return is_keyword(name, parser_type=self.parse_type)

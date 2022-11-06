@@ -740,6 +740,7 @@ class SummationNode(ExprNode):
         self.enum_list = None
         self.range = None
         self.extra_list = []
+        self.use_tuple = False
 
 
 class OptimizeType(Enum):
