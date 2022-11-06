@@ -84,6 +84,7 @@ class IRBaseVisitor(object):
             IRNodeType.VectorIndex: "visit_vector_index",
             IRNodeType.SequenceIndex: "visit_sequence_index",
             IRNodeType.SeqDimIndex: "visit_seq_dim_index",
+            IRNodeType.TupleIndex: "visit_tuple_index",
             # where block
             IRNodeType.ParamsBlock: "visit_params_block",
             IRNodeType.WhereConditions: "visit_where_conditions",

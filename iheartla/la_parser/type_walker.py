@@ -1686,15 +1686,27 @@ class TypeWalker(NodeWalker):
             ir_node.cond = self.walk(node.cond, **kwargs).ir
         else:
             if node.enum:
-                for cur_id_raw in node.enum:
+                range_info = self.walk(node.range, **kwargs)
+                if range_info.la_type.size == len(node.enum):
+                    # (i,j ∈ E)
+                    for cur_id_raw in node.enum:
+                        self.sum_sym_list.append({})
+                        enum = self.walk(cur_id_raw)
+                        subs_list.append(enum.content)
+                        self.assert_expr(enum.content not in self.symtable, get_err_msg_info(cur_id_raw.parseinfo, "Subscript has been defined"))
+                        self.symtable[enum.content] = ScalarType(index_type=False, is_int=True)  # add subscript to symbol table temporarily
+                        self.sum_subs.append(enum.content)
+                else:
+                    # (e ∈ E)
+                    self.assert_expr(range_info.la_type.size > 1 and len(node.enum) == 1, get_err_msg_info(node.parseinfo, "Invalid size"))
+                    cur_id_raw = node.enum[0]
                     self.sum_sym_list.append({})
                     enum = self.walk(cur_id_raw)
                     subs_list.append(enum.content)
                     self.assert_expr(enum.content not in self.symtable, get_err_msg_info(cur_id_raw.parseinfo, "Subscript has been defined"))
-                    self.symtable[enum.content] = ScalarType(index_type=False, is_int=True)  # add subscript to symbol table temporarily
+                    self.symtable[enum.content] = TupleType(type_list=range_info.la_type.type_list)  # add subscript to symbol table temporarily
                     self.sum_subs.append(enum.content)
                 self.sum_conds.append(False)
-                range_info = self.walk(node.range, **kwargs)
                 ir_node.enum_list = subs_list
                 ir_node.range = range_info.ir
             else:
@@ -2674,6 +2686,24 @@ class TypeWalker(NodeWalker):
                     ir_node.main = left_info.ir
                     ir_node.row_index = index_info.ir
                     ir_node.la_type = self.get_sym_type(left_info.content).element_type
+                    ir_node.process_subs_dict(self.lhs_sub_dict)
+                    node_info = NodeInfo(self.get_sym_type(left_info.content).element_type, content_symbol, {node.text}, ir_node)
+                    return node_info
+                elif self.get_sym_type(left_info.content).is_tuple():
+                    self.assert_expr(len(node.right) == 1, get_err_msg_info(left_info.ir.parse_info,
+                                                                                        "Only one subscript is allowed"))
+                    self.assert_expr(node.right[0] != '*', get_err_msg(get_line_info(node.parseinfo),
+                                                                  get_line_info(node.parseinfo).text.find('*'),
+                                                                  "Subscript can't be *"))
+                    index_info = self.walk(node.right[0])
+                    self.assert_expr(index_info.la_type.is_scalar(), get_err_msg_info(index_info.ir.parse_info,
+                                                                                        "Subscript must be scalar"))
+                    ir_node = TupleIndexNode(parse_info=node.parseinfo, raw_text=node.text)
+                    ir_node.main = left_info.ir
+                    ir_node.row_index = index_info.ir
+                    self.assert_expr(isinstance(ir_node.row_index.value, int), get_err_msg_info(index_info.ir.parse_info,
+                                                                                        "Subscript has to be int value when indexing tuple"))
+                    ir_node.la_type = self.get_sym_type(left_info.content).type_list[ir_node.row_index.value-1]
                     ir_node.process_subs_dict(self.lhs_sub_dict)
                     node_info = NodeInfo(self.get_sym_type(left_info.content).element_type, content_symbol, {node.text}, ir_node)
                     return node_info

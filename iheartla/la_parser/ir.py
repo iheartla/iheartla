@@ -85,6 +85,7 @@ class IRNodeType(Enum):
     VectorIndex = 321
     SequenceIndex = 322
     SeqDimIndex = 323
+    TupleIndex = 324
     # where block
     ParamsBlock = 399
     WhereConditions = 400
@@ -1025,6 +1026,27 @@ class MatrixIndexNode(IndexNode):
 class VectorIndexNode(IndexNode):
     def __init__(self, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.VectorIndex, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        self.main = None
+        self.row_index = None
+
+    def contain_subscript(self):
+        return True
+
+    def get_all_ids(self):
+        return [self.main.get_main_id(), [self.row_index.get_main_id()]]
+
+    def get_main_id(self):
+        return self.main.get_main_id()
+
+    def contain_sub_sym(self, sym):
+        if self.row_index and self.row_index.node_type == IRNodeType.Id and self.row_index.get_main_id() == sym:
+            return True
+        return False
+
+
+class TupleIndexNode(IndexNode):
+    def __init__(self, la_type=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.TupleIndex, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.main = None
         self.row_index = None
 

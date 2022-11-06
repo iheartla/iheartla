@@ -43,6 +43,13 @@ class CodeGenEigen(CodeGen):
             type_list.append(cur_type)
         return "std::tuple< {} >".format(", ".join(type_list)) if len(type_list) > 1 else type_list[0]
 
+    def get_tuple_str(self, tuple_type):
+        type_list = []
+        for index in range(tuple_type.type_list):
+            cur_type = self.get_ctype(tuple_type.type_list[index])
+            type_list.append(cur_type)
+        return "std::tuple< {} >".format(", ".join(type_list)) if len(type_list) > 1 else type_list[0]
+
     def get_func_params_str(self, la_type, name_required=False):
         param_list = []
         for index in range(len(la_type.params)):
@@ -109,6 +116,8 @@ class CodeGenEigen(CodeGen):
                 type_str = "double"
         elif la_type.is_set():
             type_str = "std::set<{} >".format(self.get_set_item_str(la_type))
+        elif la_type.is_tuple():
+            type_str = self.get_tuple_str(la_type)
         elif la_type.is_function():
             type_str = "std::function<{}({})>".format(self.get_ctype(la_type.ret[0]), self.get_func_params_str(la_type))
         return type_str
@@ -1349,6 +1358,14 @@ class CodeGenEigen(CodeGen):
             return CodeNodeInfo("{}[{}]".format(main_info.content, index_info.content))
         else:
             return CodeNodeInfo("{}[{}-1]".format(main_info.content, index_info.content))
+
+    def visit_tuple_index(self, node, **kwargs):
+        main_info = self.visit(node.main, **kwargs)
+        index_info = self.visit(node.row_index, **kwargs)
+        if node.row_index.la_type.index_type:
+            return CodeNodeInfo("std::get<{}>({})".format(index_info.content, main_info.content))
+        else:
+            return CodeNodeInfo("std::get<{}-1>({})".format(index_info.content, main_info.content))
 
     def visit_sequence_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)

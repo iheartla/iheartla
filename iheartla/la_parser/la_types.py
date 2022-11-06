@@ -13,6 +13,7 @@ class VarTypeEnum(Enum):
     FUNCTION = 6
     INDEX = 7
     MAPPING = 8
+    TUPLE = 9
 
 
 class DynamicTypeEnum(IntFlag):
@@ -127,6 +128,9 @@ class LaVarType(object):
 
     def is_set(self):
         return self.var_type == VarTypeEnum.SET
+
+    def is_tuple(self):
+        return self.var_type == VarTypeEnum.TUPLE
 
     def is_function(self):
         return self.var_type == VarTypeEnum.FUNCTION
@@ -307,6 +311,15 @@ class SetType(LaVarType):
             return "{{ ℤ^{} }}".format(self.size)
         return "{{ {} }}".format('×'.join(content_list))
 
+
+class TupleType(LaVarType):
+    def __init__(self, desc=None, element_type=None, symbol=None, type_list=None, dynamic=DynamicTypeEnum.DYN_INVALID):
+        LaVarType.__init__(self, VarTypeEnum.TUPLE, desc, element_type, symbol, dynamic=dynamic)
+        self.type_list = type_list   # subtypes in a set
+        self.size = 0 if type_list is None else len(type_list)
+
+    def get_signature(self):
+        return 'tuple'
 
 class IndexType(LaVarType):
     def __init__(self, desc=None, symbol=None):
