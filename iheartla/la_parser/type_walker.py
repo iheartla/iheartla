@@ -2730,7 +2730,7 @@ class TypeWalker(NodeWalker):
                                                                                         "Subscript has to be int value when indexing tuple"))
                     ir_node.la_type = self.get_sym_type(left_info.content).type_list[ir_node.row_index.value-1]
                     ir_node.process_subs_dict(self.lhs_sub_dict)
-                    node_info = NodeInfo(self.get_sym_type(left_info.content).element_type, content_symbol, {node.text}, ir_node)
+                    node_info = NodeInfo(ir_node.la_type, content_symbol, {node.text}, ir_node)
                     return node_info
         #
         for value in node.right:

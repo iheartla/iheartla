@@ -774,6 +774,7 @@ class CodeGenEigen(CodeGen):
             content[0] = "    " + content[0]
             content.append("}\n")
             self.del_name_conventions(name_convention)
+            self.reset_scope()
             return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
         sym_info = node.sym_dict[target_var[0]]
         if self.get_sym_type(target_var[0]).is_matrix():  # todo
@@ -1606,7 +1607,10 @@ class CodeGenEigen(CodeGen):
                         op = ' = '
                         if node.op == '+=':
                             op = ' += '
-                        type_def = ""
+                        if self.is_main_scope():
+                            type_def = ""
+                        else:
+                            type_def = self.get_ctype(self.get_sym_type(node.left[cur_index].get_main_id())) + ' '
                         if node.left[cur_index].get_main_id() in self.def_dict and not self.def_dict[node.left[0].get_main_id()]:
                             # type_def = self.get_ctype(self.get_sym_type(node.left.get_main_id())) + ' '
                             self.def_dict[node.left[cur_index].get_main_id()] = True
