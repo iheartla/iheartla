@@ -167,6 +167,8 @@ class CodeGen(IRPrinter):
             exp_info.content = '-' + exp_info.content
         return exp_info
 
+    def get_func_prefix(self):
+        return ''
     def visit_gp_func(self, node, **kwargs):
         if node.func_name not in self.code_frame.extra_funcs:
             self.code_frame.extra_funcs.append(node.func_name)
@@ -177,5 +179,5 @@ class CodeGen(IRPrinter):
             pre_list += param_info.pre_list
             params_content_list.append(param_info.content)
         content = node.func_name
-        content = "{}({})".format(content, ', '.join(params_content_list))
+        content = "{}.{}({})".format(self.get_func_prefix(), content, ', '.join(params_content_list))
         return CodeNodeInfo(content, pre_list=pre_list)

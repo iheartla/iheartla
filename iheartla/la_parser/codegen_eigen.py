@@ -2078,6 +2078,9 @@ class CodeGenEigen(CodeGen):
                 content = "({}).inverse()".format(params_content)
         return CodeNodeInfo(content, pre_list=pre_list)
 
+    def get_func_prefix(self):
+        return self.builtin_module_dict[TRIANGLE_MESH].instance_name
+
     def visit_fraction(self, node, **kwargs):
         return CodeNodeInfo("({}/double({}))".format(node.numerator, node.denominator))
 

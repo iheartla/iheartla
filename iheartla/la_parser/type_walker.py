@@ -8,7 +8,6 @@ from ..la_tools.la_helper import *
 import regex as re
 from ..la_tools.la_helper import filter_subscript
 from .light_walker import SolverParamWalker
-TRIANGLE_MESH = 'triangle_mesh'
 ## Make the visualizer
 try: from ..la_tools.la_visualizer import LaVisualizer
 except ImportError:
@@ -248,8 +247,8 @@ class TypeWalker(NodeWalker):
                                            'get_adjacent_vertices_v', 'get_incident_edges_v', 'get_incident_faces_v',
                                            'get_incident_vertices_e', 'get_incident_faces_e', 'get_diamond_vertices_e',
                                            'get_incident_vertices_f', 'get_incident_edges_f', 'get_adjacent_faces_f',
-                                           'build_vertex_vector', 'build_edge_vector', 'build_face_vector'],
-                         'dec': ['star', 'closure', 'link', 'boundary', 'isComplex', 'isPureComplex']}
+                                           'build_vertex_vector', 'build_edge_vector', 'build_face_vector',
+                                         'star', 'closure', 'link', 'boundary', 'isComplex', 'isPureComplex']}
         self.constants = ['π']
         self.pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*")
         self.multi_lhs_list = []
