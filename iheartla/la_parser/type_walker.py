@@ -232,7 +232,11 @@ class TypeWalker(NodeWalker):
                                           'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh', 'cot',
                                           'sec', 'csc', 'e'],
                          'linearalgebra': ['trace', 'tr', 'diag', 'vec', 'det', 'rank', 'null', 'orth', 'inv'],
-                         'triangle_mesh': ['faces_of_edge', 'face_normal', 'dihedral'],
+                         'triangle_mesh': ['faces_of_edge', 'face_normal', 'dihedral',
+                                           'get_adjacent_vertices_v', 'get_incident_edges_v', 'get_incident_faces_v',
+                                           'get_incident_vertices_e', 'get_incident_faces_e', 'get_diamond_vertices_e',
+                                           'get_incident_vertices_f', 'get_incident_edges_f', 'get_adjacent_faces_f',
+                                           'build_vertex_vector', 'build_edge_vector', 'build_face_vector'],
                          'dec': ['star', 'closure', 'link', 'boundary', 'isComplex', 'isPureComplex']}
         self.constants = ['π']
         self.pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*")
@@ -3470,6 +3474,30 @@ class TypeWalker(NodeWalker):
         return self.create_gp_node_info(GPType.Dihedral, node, **kwargs)
     def walk_FaceNormalFunc(self, node, **kwargs):
         return self.create_gp_node_info(GPType.FaceNormal, node, **kwargs)
+    def walk_GetAdjacentVerticesVFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.AdjacentVerticesV, node, **kwargs)
+    def walk_GetIncidentEdgesVFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.IncidentEdgesV, node, **kwargs)
+    def walk_GetIncidentFacesVFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.IncidentFacesV, node, **kwargs)
+    def walk_GetIncidentVerticesEFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.IncidentVerticesE, node, **kwargs)
+    def walk_GetIncidentFacesEFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.IncidentFacesE, node, **kwargs)
+    def walk_GetDiamondVerticesEFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.DiamondVerticesE, node, **kwargs)
+    def walk_GetIncidentVerticesFFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.IncidentVerticesF, node, **kwargs)
+    def walk_GetIncidentEdgesFFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.IncidentEdgesF, node, **kwargs)
+    def walk_GetAdjacentFacesFFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.AdjacentFacesF, node, **kwargs)
+    def walk_BuildVertexVectorFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.BuildVertexVector, node, **kwargs)
+    def walk_BuildEdgeVectorFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.BuildEdgeVector, node, **kwargs)
+    def walk_BuildFaceVectorFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.BuildFaceVector, node, **kwargs)
     ###################################################################
     def walk_StarFunc(self, node, **kwargs):
         return self.create_gp_node_info(GPType.Star, node, **kwargs)

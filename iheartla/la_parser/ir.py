@@ -1246,6 +1246,18 @@ class GPType(IntEnum):
     FacesOfEdge = 0
     Dihedral = 1
     FaceNormal = 2
+    AdjacentVerticesV = 3
+    IncidentEdgesV = 4
+    IncidentFacesV = 5
+    IncidentVerticesE = 6
+    IncidentFacesE = 7
+    DiamondVerticesE = 8
+    IncidentVerticesF = 9
+    IncidentEdgesF = 10
+    AdjacentFacesF = 11
+    BuildVertexVector = 12
+    BuildEdgeVector = 13
+    BuildFaceVector = 14
     # dec
     Star = 100
     Closure = 101
