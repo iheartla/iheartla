@@ -283,6 +283,9 @@ class CodeGenEigen(CodeGen):
                     else:
                         init_var += "        {} = _{}.{};\n".format(module.r_syms[cur_index], module.name, sym)
             init_struct += ',\n'.join(init_struct_list) + '\n'
+        if len(self.builtin_module_dict) > 0: # builtin module initialization
+            for key, module_data in self.builtin_module_dict.items():
+                init_var += "        {} {}({});\n".format(key, module_data.instance_name, ','.join(module_data.params_list))
         content = ["struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),
                    init_content,

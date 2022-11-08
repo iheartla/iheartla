@@ -208,6 +208,9 @@ class CodeGenNumpy(CodeGen):
                 for cur_index in range(len(module.syms)):
                     sym = module.syms[cur_index]
                     init_var += "        self.{} = _{}.{}\n".format(module.r_syms[cur_index], module.name, sym)
+        if len(self.builtin_module_dict) > 0: # builtin module initialization
+            for key, module_data in self.builtin_module_dict.items():
+                init_var += "        self.{} = {}({})\n".format(module_data.instance_name, key, ','.join(module_data.params_list))
         content = ["class {}:".format(self.get_result_type()),
                    "    def __init__(self,{}".format(def_str[3:]),
                    self.get_used_params_content(),

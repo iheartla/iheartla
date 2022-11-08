@@ -337,6 +337,7 @@ class IRVisitor(IRBaseVisitor):
         self.lhs_list = []
         self.module_list = []
         self.module_syms = {}
+        self.builtin_module_dict = {}
         self.pattern = re.compile("[A-Za-z]+")
         self.la_content = ''
         self.new_id_prefix = ''  # _
@@ -575,6 +576,7 @@ class IRVisitor(IRBaseVisitor):
         self.local_func_dict = type_walker.local_func_dict
         self.opt_dict = type_walker.opt_dict
         self.used_params = type_walker.used_params
+        self.builtin_module_dict = type_walker.builtin_module_dict
         self.opt_syms = type_walker.opt_syms
         if func_name is not None:
             self.func_name = func_name.replace(' ','')
