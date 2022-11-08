@@ -1168,6 +1168,8 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             with self._option():
                                 self._function_operator_()
                             with self._option():
+                                self._builtin_operators_()
+                            with self._option():
                                 self._identifier_alone_()
                             self._error('no available options')
                     self.name_last_node('range')

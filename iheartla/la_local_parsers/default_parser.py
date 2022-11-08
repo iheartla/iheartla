@@ -1172,6 +1172,8 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 self._function_operator_()
                             with self._option():
+                                self._builtin_operators_()
+                            with self._option():
                                 self._identifier_alone_()
                             self._error('no available options')
                     self.name_last_node('range')

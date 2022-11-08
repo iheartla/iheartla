@@ -89,7 +89,7 @@ sum_operator::Summation
     = (SUM '_' sub:identifier_alone {hspace}+ exp:term
     | SUM '_' sub:identifier_alone &'(' {hspace} exp:term
     | SUM '_(' {hspace} id:identifier_alone {hspace} 'for' {hspace} cond:if_condition {hspace} ')' {hspace}+ exp:term
-    | SUM '_(' {hspace} enum+:identifier_alone {{hspace} {','} {hspace} enum+:identifier_alone} {hspace} IN {hspace} range:(function_operator | identifier_alone) {hspace} ')' {hspace}+ exp:term
+    | SUM '_(' {hspace} enum+:identifier_alone {{hspace} {','} {hspace} enum+:identifier_alone} {hspace} IN {hspace} range:(function_operator | builtin_operators | identifier_alone) {hspace} ')' {hspace}+ exp:term
     ) {[{hspace} line] {hspace} (WHERE | WITH ) {hspace} extra+:general_assignment {{hspace} ';' {hspace} extra+:general_assignment}}
     ;
 
