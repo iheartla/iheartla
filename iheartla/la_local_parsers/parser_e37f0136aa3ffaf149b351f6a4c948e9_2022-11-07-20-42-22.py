@@ -4013,6 +4013,474 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             ['params', 'separators']
         )
 
+    @tatsumasu('GetAdjacentVerticesVFunc')
+    def _get_adjacent_vertices_v_func_(self):  # noqa
+        self._pattern('get_adjacent_vertices_v')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('GetIncidentEdgesVFunc')
+    def _get_incident_edges_v_func_(self):  # noqa
+        self._pattern('get_incident_edges_v')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('GetIncidentFacesVFunc')
+    def _get_incident_faces_v_func_(self):  # noqa
+        self._pattern('get_incident_faces_v')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('GetIncidentVerticesEFunc')
+    def _get_incident_vertices_e_func_(self):  # noqa
+        self._pattern('get_incident_vertices_e')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('GetIncidentFacesEFunc')
+    def _get_incident_faces_e_func_(self):  # noqa
+        self._pattern('get_incident_faces_e')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('GetDiamondVerticesEFunc')
+    def _get_diamond_vertices_e_func_(self):  # noqa
+        self._pattern('get_diamond_vertices_e')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('GetIncidentVerticesFFunc')
+    def _get_incident_vertices_f_func_(self):  # noqa
+        self._pattern('get_incident_vertices_f')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('GetIncidentEdgesFFunc')
+    def _get_incident_edges_f_func_(self):  # noqa
+        self._pattern('get_incident_edges_f')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('GetAdjacentFacesFFunc')
+    def _get_adjacent_faces_f_func_(self):  # noqa
+        self._pattern('get_adjacent_faces_f')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('BuildVertexVectorFunc')
+    def _build_vertex_vector_func_(self):  # noqa
+        self._pattern('build_vertex_vector')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('BuildEdgeVectorFunc')
+    def _build_edge_vector_func_(self):  # noqa
+        self._pattern('build_edge_vector')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('BuildFaceVectorFunc')
+    def _build_face_vector_func_(self):  # noqa
+        self._pattern('build_face_vector')
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
     @tatsumasu('StarFunc')
     def _star_func_(self):  # noqa
         self._pattern('star')
@@ -7099,6 +7567,42 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
     def face_normal_func(self, ast):  # noqa
         return ast
 
+    def get_adjacent_vertices_v_func(self, ast):  # noqa
+        return ast
+
+    def get_incident_edges_v_func(self, ast):  # noqa
+        return ast
+
+    def get_incident_faces_v_func(self, ast):  # noqa
+        return ast
+
+    def get_incident_vertices_e_func(self, ast):  # noqa
+        return ast
+
+    def get_incident_faces_e_func(self, ast):  # noqa
+        return ast
+
+    def get_diamond_vertices_e_func(self, ast):  # noqa
+        return ast
+
+    def get_incident_vertices_f_func(self, ast):  # noqa
+        return ast
+
+    def get_incident_edges_f_func(self, ast):  # noqa
+        return ast
+
+    def get_adjacent_faces_f_func(self, ast):  # noqa
+        return ast
+
+    def build_vertex_vector_func(self, ast):  # noqa
+        return ast
+
+    def build_edge_vector_func(self, ast):  # noqa
+        return ast
+
+    def build_face_vector_func(self, ast):  # noqa
+        return ast
+
     def star_func(self, ast):  # noqa
         return ast
 
@@ -7788,6 +8292,78 @@ class DihedralFunc(ModelBase):
 
 
 class FaceNormalFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class GetAdjacentVerticesVFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class GetIncidentEdgesVFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class GetIncidentFacesVFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class GetIncidentVerticesEFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class GetIncidentFacesEFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class GetDiamondVerticesEFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class GetIncidentVerticesFFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class GetIncidentEdgesFFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class GetAdjacentFacesFFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class BuildVertexVectorFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class BuildEdgeVectorFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class BuildFaceVectorFunc(ModelBase):
     name = None
     params = None
     separators = None
