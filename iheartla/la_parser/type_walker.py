@@ -3343,6 +3343,12 @@ class TypeWalker(NodeWalker):
             ret_type = ScalarType()
         elif func_type == GPType.FaceNormal:
             ret_type = [ScalarType(), ScalarType()]
+        elif GPType.AdjacentVerticesV <= func_type <= GPType.AdjacentFacesF:
+            self.assert_expr(len(node.params) == 1 and param_list[0].la_type.is_scalar(), 'Parameter should be scalar')
+            ret_type = SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True)])
+        elif GPType.BuildVertexVector <= func_type <= GPType.BuildFaceVector:
+            self.assert_expr(len(node.params) == 1 and param_list[0].la_type.is_scalar(), 'Parameter should be scalar')
+            ret_type = VectorType()
         tri_node = GPFuncNode(param_list, func_type, node.name)
         node_info = NodeInfo(ret_type, symbols=symbols)
         tri_node.la_type = ret_type
