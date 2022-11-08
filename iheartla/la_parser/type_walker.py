@@ -8,7 +8,7 @@ from ..la_tools.la_helper import *
 import regex as re
 from ..la_tools.la_helper import filter_subscript
 from .light_walker import SolverParamWalker
-
+TRIANGLE_MESH = 'triangle_mesh'
 ## Make the visualizer
 try: from ..la_tools.la_visualizer import LaVisualizer
 except ImportError:
@@ -32,6 +32,18 @@ class DependenceData(object):
         self.name_list = name_list
         self.initialized_list = initialized_list
 
+class BuiltinModuleData(object):
+    def __init__(self, module='', instance_name='', params_list=None, name_list=None):
+        self.module = module   # triangle_mesh
+        self.instance_name = instance_name  #
+        self.name_list = name_list
+        self.params_list = params_list
+
+class TriangleMeshModuleData(BuiltinModuleData):
+    def __init__(self, module='', instance_name='', params_list=None, name_list=None):
+        super().__init__(module, instance_name, params_list, name_list)
+        self.v = params_list[0]
+        self.f = params_list[1]
 
 class EquationData(object):
     def __init__(self, name='', parameters=[], definition=[], dependence=[], symtable={}, desc_dict={}, la_content='', func_data_dict={}, expr_dict={}, opt_syms=[]):
@@ -232,7 +244,7 @@ class TypeWalker(NodeWalker):
                                           'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh', 'cot',
                                           'sec', 'csc', 'e'],
                          'linearalgebra': ['trace', 'tr', 'diag', 'vec', 'det', 'rank', 'null', 'orth', 'inv'],
-                         'triangle_mesh': ['faces_of_edge', 'face_normal', 'dihedral',
+                         TRIANGLE_MESH: ['faces_of_edge', 'face_normal', 'dihedral',
                                            'get_adjacent_vertices_v', 'get_incident_edges_v', 'get_incident_faces_v',
                                            'get_incident_vertices_e', 'get_incident_faces_e', 'get_diamond_vertices_e',
                                            'get_incident_vertices_f', 'get_incident_edges_f', 'get_adjacent_faces_f',
@@ -278,6 +290,7 @@ class TypeWalker(NodeWalker):
         #
         self.desc_dict = {}        # comment for parameters
         self.import_module_list = []
+        self.builtin_module_dict = {}
         self.main_param = ParamsData()
         self.used_params = []
         self.opt_syms = []
@@ -387,6 +400,7 @@ class TypeWalker(NodeWalker):
         self.func_data_dict.clear()
         self.desc_dict.clear()
         self.import_module_list.clear()
+        self.builtin_module_dict.clear()
         self.main_param.reset()
         self.used_params.clear()
         self.opt_syms.clear()
@@ -1222,7 +1236,13 @@ class TypeWalker(NodeWalker):
         if node.r:
             rname = self.walk(node.r, **kwargs).ir
         return NodeInfo(ir=ImportVarNode(self.walk(node.name, **kwargs).ir, rname))
-
+    def add_builtin_module_data(self, module, params_list=[], name_list=[]):
+        if module not in self.builtin_module_dict:
+            if module == TRIANGLE_MESH:
+                self.builtin_module_dict[module] = TriangleMeshModuleData(module, self.generate_var_name(module),params_list=params_list,name_list=name_list)
+            else:
+                self.builtin_module_dict[module] = BuiltinModuleData(module, self.generate_var_name(module),params_list=params_list,name_list=name_list)
+        return self.builtin_module_dict[module]
     def walk_Import(self, node, **kwargs):
         params = []
         params_list = []
@@ -1245,13 +1265,16 @@ class TypeWalker(NodeWalker):
                 r_dict[name_ir.get_name()] = name_ir.get_name()
             name_ir_list.append(name_ir)
             name_list.append(name_ir.get_name())
-        if package_info.ir.get_name() in self.packages:
+        pkg_name = package_info.ir.get_name()
+        if pkg_name in self.packages:
             package = package_info.ir
             func_list = self.packages[package_info.ir.get_name()]
             for name in name_list:
                 self.assert_expr(name in func_list, get_err_msg(get_line_info(node.parseinfo),
                                                            get_line_info(node.parseinfo).text.find(name),
                                                            "Function {} not exist".format(name)))
+            if not self.pre_walk:
+                self.add_builtin_module_data(pkg_name, params_list, name_list)
         else:
             module = package_info.ir
             self.import_module_list.append(DependenceData(module.get_name(), params_list, name_list))
@@ -3348,7 +3371,12 @@ class TypeWalker(NodeWalker):
             ret_type = SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True)])
         elif GPType.BuildVertexVector <= func_type <= GPType.BuildFaceVector:
             self.assert_expr(len(node.params) == 1 and param_list[0].la_type.is_scalar(), 'Parameter should be scalar')
-            ret_type = VectorType()
+            if GPType.BuildVertexVector == func_type:
+                ret_type = VectorType(rows=self.symtable[self.builtin_module_dict[TRIANGLE_MESH].v].rows)
+            elif GPType.BuildFaceVector == func_type:
+                ret_type = VectorType(rows=self.symtable[self.builtin_module_dict[TRIANGLE_MESH].f].rows)
+            else:
+                ret_type = VectorType()
         tri_node = GPFuncNode(param_list, func_type, node.name)
         node_info = NodeInfo(ret_type, symbols=symbols)
         tri_node.la_type = ret_type
