@@ -5146,142 +5146,114 @@ class grammarinitParser(Parser):
                 self._closure(block8)
                 self._right_hand_side_()
                 self.add_last_node_to_name('right')
-
-                def block10():
-
-                    def block11():
-                        self._hspace_()
-                    self._closure(block11)
-                    self._token(',')
-
-                    def block12():
-                        self._hspace_()
-                    self._closure(block12)
-                    self._expression_()
-                    self.add_last_node_to_name('right')
-                self._closure(block10)
             with self._option():
                 self._identifier_()
                 self.add_last_node_to_name('left')
 
-                def block15():
+                def block11():
 
-                    def block16():
+                    def block12():
                         self._hspace_()
-                    self._closure(block16)
+                    self._closure(block12)
                     self._token(',')
 
-                    def block17():
+                    def block13():
                         self._hspace_()
-                    self._closure(block17)
+                    self._closure(block13)
                     self._identifier_()
                     self.add_last_node_to_name('left')
-                self._closure(block15)
+                self._closure(block11)
 
-                def block19():
+                def block15():
                     self._hspace_()
-                self._closure(block19)
+                self._closure(block15)
                 self._token('+=')
                 self.name_last_node('op')
 
-                def block21():
+                def block17():
                     self._hspace_()
-                self._closure(block21)
+                self._closure(block17)
 
-                def block22():
+                def block18():
                     self._separator_with_space_()
-                self._closure(block22)
+                self._closure(block18)
                 self._right_hand_side_()
                 self.add_last_node_to_name('right')
-
-                def block24():
-
-                    def block25():
-                        self._hspace_()
-                    self._closure(block25)
-                    self._token(',')
-
-                    def block26():
-                        self._hspace_()
-                    self._closure(block26)
-                    self._expression_()
-                    self.add_last_node_to_name('right')
-                self._closure(block24)
             with self._option():
 
-                def block28():
+                def block20():
                     self._SOLVE_()
                     self._token('_(')
 
-                    def block29():
+                    def block21():
                         self._hspace_()
-                    self._closure(block29)
+                    self._closure(block21)
                     self._where_condition_terse_()
                     self.add_last_node_to_name('v')
 
-                    def block31():
+                    def block23():
                         self._hspace_()
-                    self._closure(block31)
+                    self._closure(block23)
 
-                    def block32():
+                    def block24():
                         self._token(',')
 
-                        def block33():
+                        def block25():
                             self._hspace_()
-                        self._closure(block33)
+                        self._closure(block25)
                         self._where_condition_terse_()
                         self.add_last_node_to_name('v')
 
-                        def block35():
+                        def block27():
                             self._hspace_()
-                        self._closure(block35)
-                    self._closure(block32)
+                        self._closure(block27)
+                    self._closure(block24)
                     self._token(')')
+
+                    def block28():
+                        self._hspace_()
+                    self._closure(block28)
+                self._closure(block20)
+                self._expression_()
+                self.add_last_node_to_name('lexpr')
+
+                def block30():
+                    self._hspace_()
+                self._closure(block30)
+                self._token('=')
+                self.name_last_node('op')
+
+                def block32():
+                    self._hspace_()
+                self._closure(block32)
+                self._expression_()
+                self.add_last_node_to_name('rexpr')
+
+                def block34():
+
+                    def block35():
+                        self._hspace_()
+                    self._closure(block35)
+                    self._token(';')
 
                     def block36():
                         self._hspace_()
                     self._closure(block36)
-                self._closure(block28)
-                self._expression_()
-                self.add_last_node_to_name('lexpr')
-
-                def block38():
-                    self._hspace_()
-                self._closure(block38)
-                self._token('=')
-                self.name_last_node('op')
-
-                def block40():
-                    self._hspace_()
-                self._closure(block40)
-                self._expression_()
-                self.add_last_node_to_name('rexpr')
-
-                def block42():
-
-                    def block43():
-                        self._hspace_()
-                    self._closure(block43)
-                    self._token(';')
-
-                    def block44():
-                        self._hspace_()
-                    self._closure(block44)
                     self._expression_()
                     self.add_last_node_to_name('lexpr')
 
-                    def block46():
+                    def block38():
                         self._hspace_()
-                    self._closure(block46)
+                    self._closure(block38)
                     self._token('=')
                     self.name_last_node('op')
 
-                    def block48():
+                    def block40():
                         self._hspace_()
-                    self._closure(block48)
+                    self._closure(block40)
                     self._expression_()
                     self.add_last_node_to_name('rexpr')
-                self._closure(block42)
+                self._closure(block34)
             self._error('no available options')
         self.ast._define(
             ['op'],
@@ -5318,20 +5290,6 @@ class grammarinitParser(Parser):
         self._closure(block7)
         self._right_hand_side_()
         self.add_last_node_to_name('right')
-
-        def block9():
-
-            def block10():
-                self._hspace_()
-            self._closure(block10)
-            self._token(',')
-
-            def block11():
-                self._hspace_()
-            self._closure(block11)
-            self._expression_()
-            self.add_last_node_to_name('right')
-        self._closure(block9)
         self.ast._define(
             ['op'],
             ['left', 'right']

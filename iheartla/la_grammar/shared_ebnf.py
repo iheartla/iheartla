@@ -75,14 +75,14 @@ expression::Expression
 
 assignment::Assignment
     =
-    left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'=' {hspace} {separator_with_space} right+:right_hand_side {{hspace} ',' {hspace} right+:expression}
-    | left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'+=' {hspace} {separator_with_space} right+:right_hand_side {{hspace} ',' {hspace} right+:expression}
+    left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'=' {hspace} {separator_with_space} right+:right_hand_side
+    | left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'+=' {hspace} {separator_with_space} right+:right_hand_side 
     | {SOLVE '_(' {hspace} v+:where_condition_terse {hspace} {',' {hspace} v+:where_condition_terse {hspace}} ')' {hspace}} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression 
     {{hspace} ';' {hspace} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression }
     ;
     
 general_assignment::GeneralAssignment
-    = left+:left_hand_side {{hspace} ',' {hspace} left+:left_hand_side} {hspace} op:'=' {hspace} right+:right_hand_side {{hspace} ',' {hspace} right+:expression}
+    = left+:left_hand_side {{hspace} ',' {hspace} left+:left_hand_side} {hspace} op:'=' {hspace} right+:right_hand_side
     ;
    
 de_solver::DeSolver

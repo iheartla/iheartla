@@ -25,7 +25,7 @@ from tatsu.util import re, generic_main  # noqa
 KEYWORDS = {}  # type: ignore
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
+class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
     def __init__(
         self,
         text,
@@ -37,7 +37,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
         namechars='',
         **kwargs
     ):
-        super(grammarc21f969b5f03d33d43e04f8f136e7682Buffer, self).__init__(
+        super(grammare37f0136aa3ffaf149b351f6a4c948e9Buffer, self).__init__(
             text,
             whitespace=whitespace,
             nameguard=nameguard,
@@ -49,7 +49,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
         )
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
+class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def __init__(
         self,
         whitespace=re.compile('(?!.*)'),
@@ -61,12 +61,12 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         parseinfo=True,
         keywords=None,
         namechars='',
-        buffer_class=grammarc21f969b5f03d33d43e04f8f136e7682Buffer,
+        buffer_class=grammare37f0136aa3ffaf149b351f6a4c948e9Buffer,
         **kwargs
     ):
         if keywords is None:
             keywords = KEYWORDS
-        super(grammarc21f969b5f03d33d43e04f8f136e7682Parser, self).__init__(
+        super(grammare37f0136aa3ffaf149b351f6a4c948e9Parser, self).__init__(
             whitespace=whitespace,
             nameguard=nameguard,
             comments_re=comments_re,
@@ -5146,142 +5146,114 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._closure(block8)
                 self._right_hand_side_()
                 self.add_last_node_to_name('right')
-
-                def block10():
-
-                    def block11():
-                        self._hspace_()
-                    self._closure(block11)
-                    self._token(',')
-
-                    def block12():
-                        self._hspace_()
-                    self._closure(block12)
-                    self._expression_()
-                    self.add_last_node_to_name('right')
-                self._closure(block10)
             with self._option():
                 self._identifier_()
                 self.add_last_node_to_name('left')
 
-                def block15():
+                def block11():
 
-                    def block16():
+                    def block12():
                         self._hspace_()
-                    self._closure(block16)
+                    self._closure(block12)
                     self._token(',')
 
-                    def block17():
+                    def block13():
                         self._hspace_()
-                    self._closure(block17)
+                    self._closure(block13)
                     self._identifier_()
                     self.add_last_node_to_name('left')
-                self._closure(block15)
+                self._closure(block11)
 
-                def block19():
+                def block15():
                     self._hspace_()
-                self._closure(block19)
+                self._closure(block15)
                 self._token('+=')
                 self.name_last_node('op')
 
-                def block21():
+                def block17():
                     self._hspace_()
-                self._closure(block21)
+                self._closure(block17)
 
-                def block22():
+                def block18():
                     self._separator_with_space_()
-                self._closure(block22)
+                self._closure(block18)
                 self._right_hand_side_()
                 self.add_last_node_to_name('right')
-
-                def block24():
-
-                    def block25():
-                        self._hspace_()
-                    self._closure(block25)
-                    self._token(',')
-
-                    def block26():
-                        self._hspace_()
-                    self._closure(block26)
-                    self._expression_()
-                    self.add_last_node_to_name('right')
-                self._closure(block24)
             with self._option():
 
-                def block28():
+                def block20():
                     self._SOLVE_()
                     self._token('_(')
 
-                    def block29():
+                    def block21():
                         self._hspace_()
-                    self._closure(block29)
+                    self._closure(block21)
                     self._where_condition_terse_()
                     self.add_last_node_to_name('v')
 
-                    def block31():
+                    def block23():
                         self._hspace_()
-                    self._closure(block31)
+                    self._closure(block23)
 
-                    def block32():
+                    def block24():
                         self._token(',')
 
-                        def block33():
+                        def block25():
                             self._hspace_()
-                        self._closure(block33)
+                        self._closure(block25)
                         self._where_condition_terse_()
                         self.add_last_node_to_name('v')
 
-                        def block35():
+                        def block27():
                             self._hspace_()
-                        self._closure(block35)
-                    self._closure(block32)
+                        self._closure(block27)
+                    self._closure(block24)
                     self._token(')')
+
+                    def block28():
+                        self._hspace_()
+                    self._closure(block28)
+                self._closure(block20)
+                self._expression_()
+                self.add_last_node_to_name('lexpr')
+
+                def block30():
+                    self._hspace_()
+                self._closure(block30)
+                self._token('=')
+                self.name_last_node('op')
+
+                def block32():
+                    self._hspace_()
+                self._closure(block32)
+                self._expression_()
+                self.add_last_node_to_name('rexpr')
+
+                def block34():
+
+                    def block35():
+                        self._hspace_()
+                    self._closure(block35)
+                    self._token(';')
 
                     def block36():
                         self._hspace_()
                     self._closure(block36)
-                self._closure(block28)
-                self._expression_()
-                self.add_last_node_to_name('lexpr')
-
-                def block38():
-                    self._hspace_()
-                self._closure(block38)
-                self._token('=')
-                self.name_last_node('op')
-
-                def block40():
-                    self._hspace_()
-                self._closure(block40)
-                self._expression_()
-                self.add_last_node_to_name('rexpr')
-
-                def block42():
-
-                    def block43():
-                        self._hspace_()
-                    self._closure(block43)
-                    self._token(';')
-
-                    def block44():
-                        self._hspace_()
-                    self._closure(block44)
                     self._expression_()
                     self.add_last_node_to_name('lexpr')
 
-                    def block46():
+                    def block38():
                         self._hspace_()
-                    self._closure(block46)
+                    self._closure(block38)
                     self._token('=')
                     self.name_last_node('op')
 
-                    def block48():
+                    def block40():
                         self._hspace_()
-                    self._closure(block48)
+                    self._closure(block40)
                     self._expression_()
                     self.add_last_node_to_name('rexpr')
-                self._closure(block42)
+                self._closure(block34)
             self._error('no available options')
         self.ast._define(
             ['op'],
@@ -5318,20 +5290,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block7)
         self._right_hand_side_()
         self.add_last_node_to_name('right')
-
-        def block9():
-
-            def block10():
-                self._hspace_()
-            self._closure(block10)
-            self._token(',')
-
-            def block11():
-                self._hspace_()
-            self._closure(block11)
-            self._expression_()
-            self.add_last_node_to_name('right')
-        self._closure(block9)
         self.ast._define(
             ['op'],
             ['left', 'right']
@@ -6856,7 +6814,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu()
     def _func_id_(self):  # noqa
-        self._token('!!!')
+        self._identifier_alone_()
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
@@ -6868,9 +6826,9 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     with self._group():
                         with self._choice():
                             with self._option():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*')
+                                self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*)*')
                             with self._option():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
+                                self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
                             self._error('no available options')
                     self.name_last_node('value')
                 with self._option():
@@ -6978,40 +6936,37 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._func_id_()
                 self.name_last_node('name')
+                self._token('(')
+                self.name_last_node('p')
 
-                def block30():
-                    self._token('(')
-                    self.name_last_node('p')
+                def block31():
 
                     def block32():
+                        self._hspace_()
+                    self._closure(block32)
+                    self._expression_()
+                    self.add_last_node_to_name('params')
 
-                        def block33():
-                            self._hspace_()
-                        self._closure(block33)
-                        self._expression_()
-                        self.add_last_node_to_name('params')
+                    def block34():
 
                         def block35():
-
-                            def block36():
-                                self._hspace_()
-                            self._closure(block36)
-                            self._params_separator_()
-                            self.add_last_node_to_name('separators')
-
-                            def block38():
-                                self._hspace_()
-                            self._closure(block38)
-                            self._expression_()
-                            self.add_last_node_to_name('params')
+                            self._hspace_()
                         self._closure(block35)
-                    self._closure(block32)
+                        self._params_separator_()
+                        self.add_last_node_to_name('separators')
 
-                    def block40():
-                        self._hspace_()
-                    self._closure(block40)
-                    self._token(')')
-                self._closure(block30)
+                        def block37():
+                            self._hspace_()
+                        self._closure(block37)
+                        self._expression_()
+                        self.add_last_node_to_name('params')
+                    self._closure(block34)
+                self._closure(block31)
+
+                def block39():
+                    self._hspace_()
+                self._closure(block39)
+                self._token(')')
             self._error('no available options')
         self.ast._define(
             ['d', 'name', 'p', 's'],
@@ -7019,7 +6974,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         )
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
+class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
     def start(self, ast):  # noqa
         return ast
 
@@ -7821,7 +7776,7 @@ def main(filename, start=None, **kwargs):
     else:
         with open(filename) as f:
             text = f.read()
-    parser = grammarc21f969b5f03d33d43e04f8f136e7682Parser()
+    parser = grammare37f0136aa3ffaf149b351f6a4c948e9Parser()
     return parser.parse(text, rule_name=start, filename=filename, **kwargs)
 
 
@@ -7829,7 +7784,7 @@ if __name__ == '__main__':
     import json
     from tatsu.util import asjson
 
-    ast = generic_main(main, grammarc21f969b5f03d33d43e04f8f136e7682Parser, name='grammarc21f969b5f03d33d43e04f8f136e7682')
+    ast = generic_main(main, grammare37f0136aa3ffaf149b351f6a4c948e9Parser, name='grammare37f0136aa3ffaf149b351f6a4c948e9')
     print('AST:')
     print(ast)
     print()
@@ -7858,13 +7813,13 @@ class ModelBase(Node):
     pass
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics(ModelBuilderSemantics):
+class grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics(ModelBuilderSemantics):
     def __init__(self, context=None, types=None):
         types = [
             t for t in globals().values()
             if type(t) is type and issubclass(t, ModelBase)
         ] + (types or [])
-        super(grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics, self).__init__(context=context, types=types)
+        super(grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics, self).__init__(context=context, types=types)
 
 
 class Start(ModelBase):
