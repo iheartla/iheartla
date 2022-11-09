@@ -2799,6 +2799,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self._positive_closure(block0)
 
     @tatsumasu()
+    @nomemo
     def _identifier_(self):  # noqa
         with self._choice():
             with self._option():
@@ -2808,6 +2809,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             self._error('no available options')
 
     @tatsumasu('IdentifierSubscript')
+    @nomemo
     def _identifier_with_subscript_(self):  # noqa
         with self._choice():
             with self._option():
@@ -4820,6 +4822,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         )
 
     @tatsumasu('WhereConditions')
+    @nomemo
     def _where_conditions_(self):  # noqa
 
         def block0():
@@ -4842,6 +4845,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         )
 
     @tatsumasu()
+    @nomemo
     def _where_condition_(self):  # noqa
         with self._choice():
             with self._option():
@@ -4851,6 +4855,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             self._error('no available options')
 
     @tatsumasu('WhereCondition')
+    @nomemo
     def _la_where_condition_(self):  # noqa
         self._identifier_()
         self.add_last_node_to_name('id')
@@ -5033,6 +5038,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             self._error('no available options')
 
     @tatsumasu('ParamsBlock')
+    @nomemo
     def _params_block_(self):  # noqa
 
         def block0():
@@ -6817,26 +6823,36 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self._identifier_alone_()
 
     @tatsumasu('IdentifierAlone')
+    @leftrec
     def _identifier_alone_(self):  # noqa
-        with self._ifnot():
-            self._KEYWORDS_()
-        with self._group():
-            with self._choice():
-                with self._option():
-                    with self._group():
-                        with self._choice():
-                            with self._option():
-                                self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*)*')
-                            with self._option():
-                                self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
-                            self._error('no available options')
-                    self.name_last_node('value')
-                with self._option():
-                    self._token('`')
-                    self._pattern('[^`]*')
-                    self.name_last_node('id')
-                    self._token('`')
-                self._error('no available options')
+        with self._choice():
+            with self._option():
+                with self._group():
+                    self._identifier_alone_()
+                    self._token('_')
+                    self._identifier_alone_()
+                self.name_last_node('value')
+            with self._option():
+                with self._ifnot():
+                    self._KEYWORDS_()
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            with self._group():
+                                with self._choice():
+                                    with self._option():
+                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*)*')
+                                    with self._option():
+                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
+                                    self._error('no available options')
+                            self.name_last_node('value')
+                        with self._option():
+                            self._token('`')
+                            self._pattern('[^`]*')
+                            self.name_last_node('id')
+                            self._token('`')
+                        self._error('no available options')
+            self._error('no available options')
         self.ast._define(
             ['id', 'value'],
             []
