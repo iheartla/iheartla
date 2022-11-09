@@ -1277,7 +1277,7 @@ class TypeWalker(NodeWalker):
                 self.add_builtin_module_data(pkg_name, params_list, name_list)
                 if pkg_name == TRIANGLE_MESH:
                     if EDGES in name_list:
-                        self.symtable[EDGES] = VectorType(rows=self.generate_var_name("edim"))
+                        self.symtable[EDGES] = MatrixType(rows=self.generate_var_name("edim"), cols=2)
         else:
             module = package_info.ir
             self.import_module_list.append(DependenceData(module.get_name(), params_list, name_list))
@@ -1737,7 +1737,7 @@ class TypeWalker(NodeWalker):
             subs_list.append(subs)
             ir_node.cond = self.walk(node.cond, **kwargs).ir
         else:
-            if node.enum:
+            if node.enum and len(node.enum) > 0:
                 range_info = self.walk(node.range, **kwargs)
                 if range_info.la_type.size == len(node.enum):
                     # (i,j ∈ E)
@@ -1780,7 +1780,7 @@ class TypeWalker(NodeWalker):
                 subs_list.append(subs)
         self.logger.debug("new sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         # extra exprs
-        if node.extra:
+        if node.extra and len(node.extra) > 0:
             for et in node.extra:
                 extra_info = self.walk(et, **kwargs)
                 ir_node.extra_list.append(extra_info.ir)
@@ -1795,7 +1795,7 @@ class TypeWalker(NodeWalker):
         ir_node.symbols = ret_info.symbols
         ir_node.symbol = ret_info.symbol
         ir_node.content = ret_info.content
-        if node.enum is None:
+        if node.enum is None or len(node.enum) == 0:
             for i in range(len(subs_list)):
                 self.sum_subs.pop()
                 cur_sym_dict = self.sum_sym_list.pop()
@@ -1804,7 +1804,7 @@ class TypeWalker(NodeWalker):
                 ir_node.sym_dict = cur_sym_dict
         self.sum_conds.pop()
         ret_info.ir = ir_node
-        if node.enum is None:
+        if node.enum is None or len(node.enum) == 0:
             for subs in subs_list:
                 self.assert_expr(self.check_sum_subs(subs, cur_sym_dict), get_err_msg_info(sub_parse_info, "Subscript has inconsistent dimensions"))
                 del self.symtable[subs]   # remove subscript from symbol table
@@ -3370,8 +3370,13 @@ class TypeWalker(NodeWalker):
         elif func_type == GPType.FaceNormal:
             ret_type = [ScalarType(), ScalarType()]
         elif GPType.AdjacentVerticesV <= func_type <= GPType.AdjacentFacesF:
-            self.assert_expr(len(node.params) == 1 and param_list[0].la_type.is_scalar(), 'Parameter should be scalar')
-            ret_type = SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True)])
+            if func_type == GPType.DiamondVerticesE:
+                self.assert_expr(len(node.params) == 2 and param_list[0].la_type.is_scalar(),
+                                 'Parameter should be scalar')
+                ret_type = [ScalarType(is_int=True), ScalarType(is_int=True)]
+            else:
+                self.assert_expr(len(node.params) == 1 and param_list[0].la_type.is_scalar(), 'Parameter should be scalar')
+                ret_type = SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True)])
         elif GPType.BuildVertexVector <= func_type <= GPType.BuildFaceVector:
             self.assert_expr(len(node.params) == 1 and param_list[0].la_type.is_scalar(), 'Parameter should be scalar')
             if GPType.BuildVertexVector == func_type:
