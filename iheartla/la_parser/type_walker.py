@@ -2377,7 +2377,7 @@ class TypeWalker(NodeWalker):
             # else:
             #     la_type = FunctionType(cur_type=FuncType.FuncDynamic)
             # self.get_cur_param_data().symtable[ir_node.name.get_main_id()] = la_type
-            assert False, "Not a function"
+            assert False, "Not a function: {}".format(node.name)
             node_info = NodeInfo(la_type, ir=ir_node)
             return node_info
             # assert len(node.params) == 1, "Not a function"  # never reach

@@ -58,7 +58,7 @@ class LaVisualizer(object):
                 self.index += 1
             self.ps.edge(str(cur_index), str(node_index))
         else:
-            self.ps.node(name=str(self.index), label=k + ":" + child)
+            self.ps.node(name=str(self.index), label=str(k) + ":" + str(child))
             self.ps.edge(str(cur_index), str(self.index))
             self.index += 1
 
