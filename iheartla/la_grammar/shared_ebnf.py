@@ -94,9 +94,9 @@ de_solver::DeSolver
 #### name:(func_id | identifier)
 local_func::LocalFunc
     = name:identifier def_p:'(' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')' {hspace} 
-    op:'=' {hspace} expr+:right_hand_side {{hspace} ',' {hspace} expr+:right_hand_side} [{hspace} line] {hspace} (WHERE | GIVEN ) {hspace} defs+:where_condition {{hspace} ',' {hspace} defs+:where_condition}
+    op:'=' {hspace} expr+:right_hand_side [{hspace} line] {hspace} (WHERE | GIVEN ) {hspace} defs+:where_condition {{hspace} ',' {hspace} defs+:where_condition}
     | name:identifier '[' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']' {hspace}
-     op:'=' {hspace} expr+:right_hand_side {{hspace} ',' {hspace} expr+:right_hand_side} [{hspace} line] {hspace} (WHERE | GIVEN ) {hspace} defs+:where_condition {{hspace} ',' {hspace} defs+:where_condition}
+     op:'=' {hspace} expr+:right_hand_side [{hspace} line] {hspace} (WHERE | GIVEN ) {hspace} defs+:where_condition {{hspace} ',' {hspace} defs+:where_condition}
      ;
 
 

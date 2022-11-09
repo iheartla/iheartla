@@ -189,6 +189,15 @@ class grammarconfigParser(Parser):
             self._error('no available options')
 
     @tatsumasu()
+    def _identifier_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._identifier_with_subscript_()
+            with self._option():
+                self._identifier_alone_()
+            self._error('no available options')
+
+    @tatsumasu()
     def _TRACE_(self):  # noqa
         self._pattern('trace')
 
@@ -495,15 +504,6 @@ class grammarconfigParser(Parser):
         def block0():
             self._line_()
         self._positive_closure(block0)
-
-    @tatsumasu()
-    def _identifier_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._identifier_with_subscript_()
-            with self._option():
-                self._identifier_alone_()
-            self._error('no available options')
 
     @tatsumasu('IdentifierSubscript')
     def _identifier_with_subscript_(self):  # noqa
@@ -2012,6 +2012,9 @@ class grammarconfigSemantics(object):
     def CONF_KEYWORDS(self, ast):  # noqa
         return ast
 
+    def identifier(self, ast):  # noqa
+        return ast
+
     def TRACE(self, ast):  # noqa
         return ast
 
@@ -2217,9 +2220,6 @@ class grammarconfigSemantics(object):
         return ast
 
     def lines(self, ast):  # noqa
-        return ast
-
-    def identifier(self, ast):  # noqa
         return ast
 
     def identifier_with_subscript(self, ast):  # noqa

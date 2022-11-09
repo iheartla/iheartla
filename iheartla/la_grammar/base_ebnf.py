@@ -12,11 +12,6 @@ lines
     = {line}+
     ;
 
-identifier
-    = identifier_with_subscript
-    | identifier_alone
-    ;
-
 identifier_with_subscript::IdentifierSubscript
     = (left:identifier_alone '_' right+:(integer | '*' | identifier_alone) {
     (',' right+:'*')

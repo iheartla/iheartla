@@ -37,6 +37,11 @@ CONF_KEYWORDS
     | DELTA | NABLA | /∇⋅/
     | POUND
     ;
+
+identifier
+    = identifier_with_subscript
+    | identifier_alone
+    ;
 """
 CONFIG = START + KEYS + BASE + ARITHMETIC + TYPES + NUMBER
 

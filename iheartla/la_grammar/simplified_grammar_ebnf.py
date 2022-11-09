@@ -20,12 +20,28 @@ SIMPLIFIED = START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETR
 #include :: "shared.ebnf"
 
 SIMPLIFIED += r"""
-func_id=identifier_alone;
+func_id=identifier_alone {'_' identifier_alone};
 
 identifier_alone::IdentifierAlone
-    = value:(identifier_alone '_' identifier_alone)
-    | !KEYWORDS(  value:(/[A-Za-z\p{Ll}\p{Lu}\p{Lo}](?![\u0308\u0307])\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}](?![\u0308\u0307])\p{M}*)*/|/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?=[\u0308\u0307])([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?=[\u0308\u0307]))*/) | '`' id:/[^`]*/ '`')
+    = !KEYWORDS(  value:(/[A-Za-z\p{Ll}\p{Lu}\p{Lo}](?![\u0308\u0307])\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}](?![\u0308\u0307])\p{M}*)*/|/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?=[\u0308\u0307])([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?=[\u0308\u0307]))*/) | '`' id:/[^`]*/ '`')
     ;
+
+identifier
+    = identifier_with_multi_subscript
+    | identifier_with_subscript
+    | identifier_alone
+    ;
+    
+# handle _ in identifier
+identifier_with_multi_subscript::IdentifierSubscript
+    = left:identifier_alone {'_' right+:identifier_alone }+ ({
+    (',' right+:'*')
+    | ({','} right+:(integer | identifier_alone)) }
+    |
+    {
+    (',' right+:'*')
+    | ({','} right+:(sub_integer)) }
+    ); 
     
 function_operator::Function
     = name:func_id {order+:PRIME}+ {p:'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'}
