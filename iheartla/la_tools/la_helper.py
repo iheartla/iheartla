@@ -22,6 +22,7 @@ INPUT_HISTORY = "input_history"
 OUTPUT_CODE = "output_code"
 IMG_CODE = "."
 TRIANGLE_MESH = 'triangle_mesh'
+EDGES = "edges"
 class ParserTypeEnum(Flag):
     INVALID = 0
     # DEFAULT = 15

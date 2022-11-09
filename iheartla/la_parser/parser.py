@@ -233,6 +233,7 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
     """
     extra_dict = {}
     parse_key = _default_key
+    multi_list = []
     # deal with packages
     dependent_modules = []
     if len(start_node.directives) > 0:
@@ -250,6 +251,10 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
                 name_list.remove('e')
                 parse_key += 'e;'
                 package_name_list.append('e')
+            if package == TRIANGLE_MESH:
+                if EDGES in name_list:
+                    name_list.remove(EDGES)
+                    multi_list.append(EDGES)
             for name in name_list:
                 key_names.append("{}_func".format(name))
         package_name_list += key_names
@@ -264,7 +269,6 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
     # get new parser
     # parser = get_compiled_parser(current_content, parse_key, extra_dict)
     # model = parser.parse(content, parseinfo=True)
-    multi_list = []
     for parameter in type_walker.parameters:
         if parameter is None:
             continue

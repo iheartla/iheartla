@@ -248,7 +248,8 @@ class TypeWalker(NodeWalker):
                                            'get_incident_vertices_e', 'get_incident_faces_e', 'get_diamond_vertices_e',
                                            'get_incident_vertices_f', 'get_incident_edges_f', 'get_adjacent_faces_f',
                                            'build_vertex_vector', 'build_edge_vector', 'build_face_vector',
-                                         'star', 'closure', 'link', 'boundary', 'isComplex', 'isPureComplex']}
+                                         'star', 'closure', 'link', 'boundary', 'isComplex', 'isPureComplex',
+                                         EDGES]}
         self.constants = ['π']
         self.pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*")
         self.multi_lhs_list = []
@@ -1267,13 +1268,16 @@ class TypeWalker(NodeWalker):
         pkg_name = package_info.ir.get_name()
         if pkg_name in self.packages:
             package = package_info.ir
-            func_list = self.packages[package_info.ir.get_name()]
+            func_list = self.packages[pkg_name]
             for name in name_list:
                 self.assert_expr(name in func_list, get_err_msg(get_line_info(node.parseinfo),
                                                            get_line_info(node.parseinfo).text.find(name),
                                                            "Function {} not exist".format(name)))
             if not self.pre_walk:
                 self.add_builtin_module_data(pkg_name, params_list, name_list)
+                if pkg_name == TRIANGLE_MESH:
+                    if EDGES in name_list:
+                        self.symtable[EDGES] = VectorType(rows=self.generate_var_name("edim"))
         else:
             module = package_info.ir
             self.import_module_list.append(DependenceData(module.get_name(), params_list, name_list))
