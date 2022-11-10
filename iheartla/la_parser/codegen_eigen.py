@@ -95,8 +95,16 @@ class CodeGenEigen(CodeGen):
                     else:
                         if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                             type_str = "Eigen::MatrixXi"
+                            if isinstance(la_type.rows, int):
+                                type_str = "Eigen::Matrix<int, {}, Eigen::Dynamic>".format(la_type.rows)
+                            elif isinstance(la_type.cols, int):
+                                type_str = "Eigen::Matrix<int, Eigen::Dynamic, {}>".format(la_type.cols)
                         else:
                             type_str = "Eigen::MatrixXd"
+                            if isinstance(la_type.rows, int):
+                                type_str = "Eigen::Matrix<double, {}, Eigen::Dynamic>".format(la_type.rows)
+                            elif isinstance(la_type.cols, int):
+                                type_str = "Eigen::Matrix<double, Eigen::Dynamic, {}>".format(la_type.cols)
         elif la_type.is_vector():
             if la_type.is_dynamic():
                 if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
