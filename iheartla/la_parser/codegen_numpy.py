@@ -12,7 +12,7 @@ class CodeGenNumpy(CodeGen):
         self.pre_str = '''import numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\n'''
         self.pre_str += "from scipy.integrate import quad, solve_ivp\n"
         self.pre_str += "from scipy.optimize import minimize\n"
-        self.pre_str += "\n\n"
+        # self.pre_str += "\n\n"
         self.post_str = ''''''
         self.code_frame.desc = '''"""\n{}\n"""\n'''.format(self.la_content)
         self.code_frame.include = self.pre_str
@@ -210,7 +210,12 @@ class CodeGenNumpy(CodeGen):
                     init_var += "        self.{} = _{}.{}\n".format(module.r_syms[cur_index], module.name, sym)
         if len(self.builtin_module_dict) > 0: # builtin module initialization
             for key, module_data in self.builtin_module_dict.items():
-                init_var += "        self.{} = {}({})\n".format(module_data.instance_name, key, ','.join(module_data.params_list))
+                if key in CLASS_PACKAGES:
+                    class_name = key
+                    if key == TRIANGLE_MESH:
+                        self.code_frame.include += 'from TriangleMesh import *\n'
+                        class_name = "TriangleMesh"
+                    init_var += "        self.{} = {}({})\n".format(module_data.instance_name, class_name, ','.join(module_data.params_list))
         content = ["class {}:".format(self.get_result_type()),
                    "    def __init__(self,{}".format(def_str[3:]),
                    self.get_used_params_content(),
@@ -573,6 +578,7 @@ class CodeGenNumpy(CodeGen):
         main_content.append("    func_value = {}({})".format(self.func_name, ', '.join(self.parameters)))
         if self.ret_symbol in self.symtable and self.get_sym_type(self.ret_symbol) is not None:
             main_content.append('    print("return value: ", func_value.{})'.format(self.ret_symbol))
+        self.code_frame.include += '\n\n'
         self.code_frame.struct = self.trim_content(content)
         if not self.class_only:
             self.code_frame.main = self.trim_content('\n'.join(main_content))
@@ -1812,6 +1818,9 @@ class CodeGenNumpy(CodeGen):
         elif node.func_type == MathFuncType.MathFuncInv:
             content = 'scipy.linalg.inv'
         return CodeNodeInfo("{}({})".format(content, params_content), pre_list=pre_list)
+
+    def get_func_prefix(self):
+        return "self.{}".format(self.builtin_module_dict[TRIANGLE_MESH].instance_name)
 
     def visit_constant(self, node, **kwargs):
         content = ''

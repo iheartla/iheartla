@@ -23,6 +23,19 @@ OUTPUT_CODE = "output_code"
 IMG_CODE = "."
 TRIANGLE_MESH = 'triangle_mesh'
 EDGES = "edges"
+PACKAGES_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', 'arccos', 'tan', 'atan', 'arctan', 'atan2',
+                                  'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh',
+                                  'cot',
+                                  'sec', 'csc', 'e'],
+                 'linearalgebra': ['trace', 'tr', 'diag', 'vec', 'det', 'rank', 'null', 'orth', 'inv'],
+                 TRIANGLE_MESH: ['faces_of_edge', 'face_normal', 'dihedral',
+                                 'get_adjacent_vertices_v', 'get_incident_edges_v', 'get_incident_faces_v',
+                                 'get_incident_vertices_e', 'get_incident_faces_e', 'get_diamond_vertices_e',
+                                 'get_incident_vertices_f', 'get_incident_edges_f', 'get_adjacent_faces_f',
+                                 'build_vertex_vector', 'build_edge_vector', 'build_face_vector',
+                                 'star', 'closure', 'link', 'boundary', 'isComplex', 'isPureComplex',
+                                 EDGES]}
+CLASS_PACKAGES = [TRIANGLE_MESH]
 class ParserTypeEnum(Flag):
     INVALID = 0
     # DEFAULT = 15

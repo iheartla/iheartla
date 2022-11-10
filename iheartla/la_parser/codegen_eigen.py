@@ -18,7 +18,6 @@ class CodeGenEigen(CodeGen):
         if self.need_mutator:
             self.pre_str += '#include <boost/numeric/odeint.hpp>\n'
             self.pre_str += 'using namespace boost::numeric::odeint;\n'
-        self.pre_str += '\n'
         self.code_frame.desc = '/*\n{}\n*/\n'''.format(self.la_content)
         self.code_frame.include = self.pre_str
 
@@ -285,7 +284,12 @@ class CodeGenEigen(CodeGen):
             init_struct += ',\n'.join(init_struct_list) + '\n'
         if len(self.builtin_module_dict) > 0: # builtin module initialization
             for key, module_data in self.builtin_module_dict.items():
-                init_var += "        {} {}({});\n".format(key, module_data.instance_name, ','.join(module_data.params_list))
+                if key in CLASS_PACKAGES:
+                    class_name = key
+                    if key == TRIANGLE_MESH:
+                        self.code_frame.include += '#include "TriangleMesh.h"\n'
+                        class_name = "TriangleMesh"
+                    init_var += "        {} {}({});\n".format(class_name, module_data.instance_name, ', '.join(module_data.params_list))
         content = ["struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),
                    init_content,
@@ -681,6 +685,7 @@ class CodeGenEigen(CodeGen):
         main_content += self.get_ret_display()
         main_content.append('    return 0;')
         main_content.append('}')
+        self.code_frame.include += '\n'
         self.code_frame.struct = self.trim_content(content)
         if not self.class_only:
             self.code_frame.main = self.trim_content('\n'.join(main_content))

@@ -239,17 +239,6 @@ class TypeWalker(NodeWalker):
         self.la_msg = LaMsg.getInstance()
         self.ret_symbol = None
         self.is_generate_ret = False
-        self.packages = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', 'arccos', 'tan', 'atan', 'arctan', 'atan2',
-                                          'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh', 'cot',
-                                          'sec', 'csc', 'e'],
-                         'linearalgebra': ['trace', 'tr', 'diag', 'vec', 'det', 'rank', 'null', 'orth', 'inv'],
-                         TRIANGLE_MESH: ['faces_of_edge', 'face_normal', 'dihedral',
-                                           'get_adjacent_vertices_v', 'get_incident_edges_v', 'get_incident_faces_v',
-                                           'get_incident_vertices_e', 'get_incident_faces_e', 'get_diamond_vertices_e',
-                                           'get_incident_vertices_f', 'get_incident_edges_f', 'get_adjacent_faces_f',
-                                           'build_vertex_vector', 'build_edge_vector', 'build_face_vector',
-                                         'star', 'closure', 'link', 'boundary', 'isComplex', 'isPureComplex',
-                                         EDGES]}
         self.constants = ['π']
         self.pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*")
         self.multi_lhs_list = []
@@ -691,6 +680,7 @@ class TypeWalker(NodeWalker):
         return ir_node
 
     def push_environment(self):
+        self.logger.debug("push_environment: {}".format(self.symtable))
         # save variable changes when parsing *expressions*
         self.saved_symtable = copy.deepcopy(self.symtable)
         self.saved_sum_subs = copy.deepcopy(self.sum_subs)
@@ -707,6 +697,7 @@ class TypeWalker(NodeWalker):
         self.saved_opt_dict = copy.deepcopy(self.opt_dict)
 
     def pop_environment(self):
+        self.logger.debug("pop_environment: {}".format(self.saved_symtable))
         self.symtable = self.saved_symtable
         self.sum_subs = self.saved_sum_subs
         self.sum_sym_list = self.saved_sum_sym_list
@@ -1266,9 +1257,9 @@ class TypeWalker(NodeWalker):
             name_ir_list.append(name_ir)
             name_list.append(name_ir.get_name())
         pkg_name = package_info.ir.get_name()
-        if pkg_name in self.packages:
+        if pkg_name in PACKAGES_DICT:
             package = package_info.ir
-            func_list = self.packages[pkg_name]
+            func_list = PACKAGES_DICT[pkg_name]
             for name in name_list:
                 self.assert_expr(name in func_list, get_err_msg(get_line_info(node.parseinfo),
                                                            get_line_info(node.parseinfo).text.find(name),
