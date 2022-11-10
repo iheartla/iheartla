@@ -342,7 +342,10 @@ class CodeGenLatex(CodeGen):
             rhs_list = []
             for cur_index in range(len(node.right)):
                 rhs_list.append(self.visit(node.right[cur_index], **kwargs))
-            content = ','.join(lhs_list) + " & = " + ','.join(rhs_list)
+            if self.is_main_scope():
+                content = ','.join(lhs_list) + " & = " + ','.join(rhs_list)
+            else:
+                content = ','.join(lhs_list) + " = " + ','.join(rhs_list)
         self.code_frame.expr += content +'\n'
         self.code_frame.expr_dict[node.raw_text] = content
         return content
@@ -389,6 +392,7 @@ class CodeGenLatex(CodeGen):
             return self.visit(node.left, **kwargs) + "÷" + self.visit(node.right, **kwargs)
 
     def visit_summation(self, node, **kwargs):
+        self.cur_scope = node.symbol
         if node.cond:
             sub = '{' + self.visit(node.cond, **kwargs) + '}'
         else:
@@ -402,7 +406,14 @@ class CodeGenLatex(CodeGen):
                 kwargs['is_sub'] = True
                 sub = self.visit(node.id, **kwargs)
                 del kwargs['is_sub']
-        return "\\sum_{" + sub + "} " + self.visit(node.exp, **kwargs)
+        content = "\\sum_{" + sub + "} " + self.visit(node.exp, **kwargs)
+        if len(node.extra_list) > 0:
+            extra_list = []
+            for et in node.extra_list:
+                extra_list.append(self.visit(et, **kwargs))
+            content += ' \\text{{ where }}  ' + '; '.join(extra_list)
+        self.reset_scope()
+        return content
 
     def visit_function(self, node, **kwargs):
         params = []
