@@ -122,6 +122,7 @@ class LightWalker(NodeWalker):
         else:
             for cur_index in range(len(node.left)):
                 self.walk(node.left[cur_index], **kwargs)
+            for cur_index in range(len(node.right)):
                 self.walk(node.right[cur_index], **kwargs)
         return node.text
 

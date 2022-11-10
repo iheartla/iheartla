@@ -1297,6 +1297,20 @@ class CodeGenNumpy(CodeGen):
                 content += "".join(right_info.pre_list)
             content += "    {} = {}".format(', '.join(lhs_list), right_info.content)
         else:
+            if len(node.left) > 1 and len(node.right) == 1:
+                # only accept direct assignment, without subscript
+                rhs_node = node.right[0]
+                tuple_name = self.generate_var_name("tuple")
+                right_info = self.visit(rhs_node, **kwargs)
+                if right_info.pre_list:
+                    content += self.update_prelist_str(right_info.pre_list, "    ")
+                content += "    {} = {}\n".format(tuple_name, right_info.content)
+                for cur_index in range(len(node.left)):
+                    left_info = self.visit(node.left[cur_index], **kwargs)
+                    content += "    {} = {}[{}]\n".format(left_info.content, tuple_name, cur_index)
+                    self.declared_symbols.add(node.left[cur_index].get_main_id())
+                la_remove_key(LHS, **kwargs)
+                return CodeNodeInfo(content)
             for cur_index in range(len(node.left)):
                 left_info = self.visit(node.left[cur_index], **kwargs)
                 left_id = left_info.content

@@ -1474,6 +1474,27 @@ class CodeGenEigen(CodeGen):
         if node.optimize_param:
             pass
         else:
+            if len(node.left) > 1 and len(node.right) == 1:
+                # only accept direct assignment, without subscript
+                ltype_list = []
+                rhs_node = node.right[0]
+                tuple_name = self.generate_var_name("tuple")
+                if isinstance(rhs_node.la_type, list):
+                    ltype_list = rhs_node.la_type
+                    tuple_decl = "std::tuple< {} >".format(", ".join([self.get_ctype(t) for t in ltype_list]))
+                elif rhs_node.la_type.is_tuple():
+                    ltype_list = rhs_node.la_type.type_list
+                    tuple_decl = self.get_ctype(rhs_node.la_type)
+                right_info = self.visit(rhs_node, **kwargs)
+                if right_info.pre_list:
+                    content += self.update_prelist_str(right_info.pre_list, "    ")
+                content += "    {} {} = {};\n".format(tuple_decl, tuple_name, right_info.content)
+                for cur_index in range(len(node.left)):
+                    left_info = self.visit(node.left[cur_index], **kwargs)
+                    content += "    {} {} = std::get<{}>({});\n".format(self.get_ctype(ltype_list[cur_index]), left_info.content, cur_index, tuple_name)
+                    self.declared_symbols.add(node.left[cur_index].get_main_id())
+                la_remove_key(LHS, **kwargs)
+                return CodeNodeInfo(content)
             for cur_index in range(len(node.left)):
                 left_info = self.visit(node.left[cur_index], **kwargs)
                 left_id = left_info.content

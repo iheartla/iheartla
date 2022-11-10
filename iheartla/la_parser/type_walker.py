@@ -1555,7 +1555,9 @@ class TypeWalker(NodeWalker):
                     assign_node.optimize_param = True
                     right_type = right_info.la_type[0]
             # ir
-            assign_node.right.append(right_info.ir)
+            if cur_index == 0:
+                # right list only has one expr
+                assign_node.right.append(right_info.ir)
             right_info.ir.set_parent(assign_node)
             id0_info.ir.set_parent(assign_node)
             # y_i = stat
