@@ -3102,26 +3102,25 @@ class TypeWalker(NodeWalker):
     def walk_Set(self, node, **kwargs):
         symbols = set()
         ir_node = SetNode(parse_info=node.parseinfo, raw_text=node.text)
-        dim_list = []
-        for exp in node.exp:
-            exp_info = self.walk(exp, **kwargs)
-            self.assert_expr(exp_info.la_type.is_scalar() or exp_info.la_type.is_vector(), get_err_msg_info(node.parseinfo, "Item in vector must be scalar or vector"))
-            ir_node.items.append(exp_info.ir)
-            if exp_info.la_type.is_vector():
-                dim_list.append(exp_info.la_type.rows)
+        self.assert_expr(len(node.exp) > 0, get_err_msg_info(node.parseinfo, "Empty set is not allowed."))
+        f_type = None
+        for c_index in range(len(node.exp)):
+            exp_info = self.walk(node.exp[c_index], **kwargs)
+            if c_index == 0:
+                f_type = exp_info.la_type
             else:
-                dim_list.append(1)
+                self.assert_expr(f_type.is_same_type(exp_info.la_type), get_err_msg_info(node.parseinfo, "Different element types."))
+            ir_node.items.append(exp_info.ir)
             symbols = symbols.union(exp_info.symbols)
-        # rows = self.get_sum_value(dim_list)
-        ir_node.la_type = SetType(size=1, int_list=[True], element_type=ScalarType())
+        ir_node.la_type = SetType(size=1, int_list=[True], type_list=[f_type], element_type=f_type)
         node_info = NodeInfo(ir=ir_node, la_type=ir_node.la_type, symbols=symbols)
         if LHS in kwargs:
             lhs = kwargs[LHS]
-            new_id = self.generate_var_name(lhs)
+            new_id = self.generate_var_name(lhs+"set")
             self.symtable[new_id] = ir_node.la_type
             ir_node.symbol = new_id
         else:
-            new_id = self.generate_var_name(self.local_func_name)
+            new_id = self.generate_var_name(self.local_func_name+"set")
             self.get_cur_param_data().symtable[new_id] = ir_node.la_type
             ir_node.symbol = new_id
         return node_info

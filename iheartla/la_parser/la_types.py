@@ -136,6 +136,7 @@ class LaVarType(object):
         return self.var_type == VarTypeEnum.FUNCTION
 
     def is_same_type(self, other, omit_size=False):
+        # not consider whether the element is int or not
         same = False
         if self.var_type == other.var_type:
             if self.var_type == VarTypeEnum.SEQUENCE:

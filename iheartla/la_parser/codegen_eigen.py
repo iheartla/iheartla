@@ -37,9 +37,15 @@ class CodeGenEigen(CodeGen):
 
     def get_set_item_str(self, set_type):
         type_list = []
-        for index in range(set_type.size):
-            cur_type = self.get_ctype(set_type.type_list[index])
-            type_list.append(cur_type)
+        if set_type.type_list and len(set_type.type_list) > 0:
+            for index in range(len(set_type.type_list)):
+                cur_type = self.get_ctype(set_type.type_list[index])
+                type_list.append(cur_type)
+        else:
+            # old set version
+            for index in range(set_type.size):
+                cur_type = self.get_ctype(set_type.type_list[index])
+                type_list.append(cur_type)
         return "std::tuple< {} >".format(", ".join(type_list)) if len(type_list) > 1 else type_list[0]
 
     def get_tuple_str(self, tuple_type):
@@ -1182,7 +1188,7 @@ class CodeGenEigen(CodeGen):
             item_info = self.visit(item, **kwargs)
             ret.append(item_info.content)
             pre_list += item_info.pre_list
-        content = '    std::set<{} > {}({});\n'.format("int", cur_m_id, ", ".join(ret))
+        content = '    {} {}({});\n'.format(self.get_ctype(node.la_type), cur_m_id, ", ".join(ret))
         pre_list.append(content)
         return CodeNodeInfo(cur_m_id, pre_list=pre_list)
 
