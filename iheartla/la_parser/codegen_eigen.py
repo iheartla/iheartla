@@ -232,9 +232,24 @@ class CodeGenEigen(CodeGen):
         test_content = ['{}{}'.format(pre, line) for line in test_content]
         return test_content
 
+    def is_triangle_property(self, name):
+        is_property = false
+        new_name = name
+        if len(self.builtin_module_dict) > 0: # builtin module initialization
+            for key, module_data in self.builtin_module_dict.items():
+                if key in CLASS_PACKAGES:
+                    if key == TRIANGLE_MESH:
+                        if name in [EDGES]:
+                            is_property = true
+                            new_name = "{}.{}".format(module_data.instance_name, name)
+        return is_property, new_name
+
     def visit_id(self, node, **kwargs):
         content = node.get_name()
         content = self.filter_symbol(content)
+        [is_property, new_name] = self.is_triangle_property(content)
+        if is_property:
+            content = new_name
         if content in self.name_convention_dict:
             content = self.name_convention_dict[content]
         if self.convert_matrix and node.contain_subscript():
@@ -786,10 +801,11 @@ class CodeGenEigen(CodeGen):
             return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
         sym_info = node.sym_dict[target_var[0]]
         if self.get_sym_type(target_var[0]).is_matrix():  # todo
+            [is_property, new_name] = self.is_triangle_property(target_var[0])
             if sub == sym_info[0]:
-                content.append("for(int {}=1; {}<={}.rows(); {}++){{\n".format(sub, sub, target_var[0], sub))
+                content.append("for(int {}=1; {}<={}.rows(); {}++){{\n".format(sub, sub, new_name, sub))
             else:
-                content.append("for(int {}=1; {}<={}.cols(); {}++){{\n".format(sub, sub, target_var[0], sub))
+                content.append("for(int {}=1; {}<={}.cols(); {}++){{\n".format(sub, sub, new_name, sub))
         elif self.get_sym_type(target_var[0]).is_sequence():
             sym_list = node.sym_dict[target_var[0]]
             sub_index = sym_list.index(sub)
@@ -1353,7 +1369,7 @@ class CodeGenEigen(CodeGen):
                     col_content = col_info.content
                 else:
                     col_content = "{}-1".format(col_info.content)
-                if self.get_sym_type(main_info.content).sparse:
+                if node.main.la_type.sparse:
                     content = "{}.coeff({}, {})".format(main_info.content, row_content, col_content)
                 else:
                     content = "{}({}, {})".format(main_info.content, row_content, col_content)
