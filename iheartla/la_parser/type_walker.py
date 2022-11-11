@@ -1520,7 +1520,7 @@ class TypeWalker(NodeWalker):
                     if sub_sym in pre_subs:
                         continue
                     pre_subs.append(sub_sym)
-                    self.assert_expr(sub_sym not in self.symtable, get_err_msg_info(node.left[0].right[sub_index].parseinfo, "Subscript has been defined"))
+                    self.assert_expr(sub_sym not in self.symtable, get_err_msg_info(node.left[0].right[sub_index].parseinfo, "Subscript {} has been defined".format(sub_sym)))
                     self.symtable[sub_sym] = ScalarType(index_type=False, is_int=True)
                     self.lhs_sub_dict[sub_sym] = []  # init empty list
             la_remove_key(LHS, **kwargs)
@@ -2580,7 +2580,7 @@ class TypeWalker(NodeWalker):
                     r_content = self.walk(right).content
                     right_list.append(r_content)
                     if not self.visiting_lhs and not isinstance(r_content, int):
-                        self.assert_expr(self.is_sym_existed(r_content), get_err_msg_info(right.parseinfo, "Subscript has not been defined"))
+                        self.assert_expr(self.is_sym_existed(r_content), get_err_msg_info(right.parseinfo, "Subscript {} has not been defined".format(r_content)))
                 else:
                     right_list.append(right)
             return right_list
@@ -3366,10 +3366,10 @@ class TypeWalker(NodeWalker):
             if func_type == GPType.DiamondVerticesE:
                 self.assert_expr(len(node.params) == 2 and param_list[0].la_type.is_scalar(),
                                  'Parameter should be scalar')
-                ret_type = [ScalarType(is_int=True), ScalarType(is_int=True)]
+                ret_type = [ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True)]
             else:
                 self.assert_expr(len(node.params) == 1 and param_list[0].la_type.is_scalar(), 'Parameter should be scalar')
-                ret_type = SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True)])
+                ret_type = SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
         elif GPType.BuildVertexVector <= func_type <= GPType.BuildFaceVector:
             self.assert_expr(len(node.params) == 1 and param_list[0].la_type.is_scalar(), 'Parameter should be scalar')
             if GPType.BuildVertexVector == func_type:
