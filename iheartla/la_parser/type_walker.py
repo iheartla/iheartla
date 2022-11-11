@@ -1268,7 +1268,7 @@ class TypeWalker(NodeWalker):
                 self.add_builtin_module_data(pkg_name, params_list, name_list)
                 if pkg_name == TRIANGLE_MESH:
                     if EDGES in name_list:
-                        self.symtable[EDGES] = MatrixType(rows=self.generate_var_name("edim"), cols=2)
+                        self.symtable[EDGES] = MatrixType(rows=self.generate_var_name("edim"), cols=2, element_type=ScalarType(is_int=True, index_type=True))
         else:
             module = package_info.ir
             self.import_module_list.append(DependenceData(module.get_name(), params_list, name_list))

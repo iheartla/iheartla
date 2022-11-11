@@ -205,8 +205,8 @@ class SequenceType(LaVarType):
 
 
 class MatrixType(LaVarType):
-    def __init__(self, rows=0, cols=0, desc=None, element_type=ScalarType(), symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=None, list_dim=None, index_var=None, value_var=None, item_types=None, dynamic=DynamicTypeEnum.DYN_INVALID,rows_ir=None,cols_ir=None):
-        LaVarType.__init__(self, VarTypeEnum.MATRIX, desc, element_type, symbol, dynamic=dynamic)
+    def __init__(self, rows=0, cols=0, desc=None, element_type=ScalarType(), symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=None, list_dim=None, index_var=None, value_var=None, item_types=None, index_type=False,dynamic=DynamicTypeEnum.DYN_INVALID,rows_ir=None,cols_ir=None):
+        LaVarType.__init__(self, VarTypeEnum.MATRIX, desc, element_type, symbol,index_type=index_type, dynamic=dynamic)
         self.rows = rows
         self.cols = cols
         self.rows_ir = rows_ir
