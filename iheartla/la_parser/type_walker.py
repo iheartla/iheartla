@@ -1523,8 +1523,6 @@ class TypeWalker(NodeWalker):
             # self.assert_expr(len(node.left) == len(node.right), get_err_msg_info(node.left[0].parseinfo, "Invalid assignment: {} lhs and {} rhs".format(len(node.left), len(node.right))))
         parse_remain_lhs_directly = False   #  multiple lhs for argmin, argmax
         la_list = []
-        right_info = self.walk(node.right[0], **kwargs)
-        rhs_type_list = right_info.la_type if isinstance(right_info.la_type, list) else [right_info.la_type]
         for cur_index in range(len(node.left)):
             self.visiting_lhs = True
             id0_info = self.walk(node.left[cur_index], **kwargs)
@@ -1555,6 +1553,10 @@ class TypeWalker(NodeWalker):
             if parse_remain_lhs_directly:
                 self.symtable[self.get_main_id(id0)] = la_list[cur_index]
                 break
+            if cur_index == 0:
+                # only one rhs, order matters: parse lhs first, then rhs
+                right_info = self.walk(node.right[cur_index], **kwargs)
+                rhs_type_list = right_info.la_type if isinstance(right_info.la_type, list) else [right_info.la_type]
             right_type = rhs_type_list[cur_index]
             if len(self.lhs_subs) > 0:
                 for cur_index in range(len(self.lhs_subs)):
