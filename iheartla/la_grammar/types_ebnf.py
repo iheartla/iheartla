@@ -26,6 +26,11 @@ set_type::SetType
     | '{' {hspace} type1:/[ℝℤ]/ {hspace} '^' {hspace} cnt:(integer) {hspace} '}'
     | '{' {hspace} type2:/[ℝℤ]/ cnt:[sup_integer] {hspace} '}' 
     | '{' {hspace} sub_types+:params_type {hspace} {'×' {hspace} sub_types+:params_type {hspace} } '}' 
+    | '{' {hspace} homogeneous_types+:params_type {hspace} {'∨' {hspace} homogeneous_types+:params_type {hspace} }+ '}'
+    ;
+    
+tuple_type::TupleType
+    = sub_types+:params_type {hspace} {'×' {hspace} sub_types+:params_type {hspace} }+
     ;
 
 dimension
@@ -40,6 +45,7 @@ la_type
     | matrix_type
     | vector_type
     | set_type
+    | tuple_type
     | scalar_type
     ;
 
@@ -48,6 +54,7 @@ params_type
     | vector_type
     | scalar_type
     | set_type
+    | tuple_type
     ;
 
 function_type::FunctionType

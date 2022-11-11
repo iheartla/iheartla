@@ -95,6 +95,7 @@ class IRBaseVisitor(object):
             IRNodeType.ScalarType: "visit_scalar_type",
             IRNodeType.FunctionType: "visit_function_type",
             IRNodeType.MappingType: "visit_mapping_type",
+            IRNodeType.TupleType: "visit_tuple_type",
             # derivatives
             IRNodeType.Import: "visit_import",
             # differential equations

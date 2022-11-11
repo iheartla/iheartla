@@ -96,6 +96,7 @@ class IRNodeType(Enum):
     ScalarType = 405
     FunctionType = 406
     MappingType = 407
+    TupleType = 408
     # Derivatives
     Import = 500
     ImportVar = 501
@@ -256,6 +257,13 @@ class SetTypeNode(ExprNode):
         self.type1 = None
         self.type2 = None
         self.cnt = None
+        self.sub_types = None
+        self.homogeneous_types = None
+
+
+class TupleTypeNode(ExprNode):
+    def __init__(self, la_type=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.TupleType, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.sub_types = None
 
 

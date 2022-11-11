@@ -296,7 +296,15 @@ class CodeGenLatex(CodeGen):
                 content += '\\mathbb{{R}}^{{ {} }}'.format(cnt)
         elif node.sub_types:
             content = "\\times".join([self.visit(sub_type) for sub_type in node.sub_types])
+        elif node.homogeneous_types:
+            content = "∨ ".join([self.visit(h_type) for h_type in node.homogeneous_types])
         content = '\\{' + content + '\\}'
+        if node.la_type.index_type:
+            content += " ,\\text{ index}"
+        return content
+
+    def visit_tuple_type(self, node, **kwargs):
+        content = "\\times".join([self.visit(sub_type) for sub_type in node.sub_types])
         if node.la_type.index_type:
             content += " ,\\text{ index}"
         return content

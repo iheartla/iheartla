@@ -6515,10 +6515,65 @@ class grammardefaultParser(Parser):
                     self._closure(block23)
                 self._closure(block20)
                 self._token('}')
+            with self._option():
+                self._token('{')
+
+                def block24():
+                    self._hspace_()
+                self._closure(block24)
+                self._params_type_()
+                self.add_last_node_to_name('homogeneous_types')
+
+                def block26():
+                    self._hspace_()
+                self._closure(block26)
+
+                def block27():
+                    self._token('∨')
+
+                    def block28():
+                        self._hspace_()
+                    self._closure(block28)
+                    self._params_type_()
+                    self.add_last_node_to_name('homogeneous_types')
+
+                    def block30():
+                        self._hspace_()
+                    self._closure(block30)
+                self._positive_closure(block27)
+                self._token('}')
             self._error('no available options')
         self.ast._define(
             ['cnt', 'type1', 'type2'],
-            ['sub_types', 'type']
+            ['homogeneous_types', 'sub_types', 'type']
+        )
+
+    @tatsumasu('TupleType')
+    @leftrec
+    def _tuple_type_(self):  # noqa
+        self._params_type_()
+        self.add_last_node_to_name('sub_types')
+
+        def block1():
+            self._hspace_()
+        self._closure(block1)
+
+        def block2():
+            self._token('×')
+
+            def block3():
+                self._hspace_()
+            self._closure(block3)
+            self._params_type_()
+            self.add_last_node_to_name('sub_types')
+
+            def block5():
+                self._hspace_()
+            self._closure(block5)
+        self._positive_closure(block2)
+        self.ast._define(
+            [],
+            ['sub_types']
         )
 
     @tatsumasu()
@@ -6539,10 +6594,13 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._set_type_()
             with self._option():
+                self._tuple_type_()
+            with self._option():
                 self._scalar_type_()
             self._error('no available options')
 
     @tatsumasu()
+    @nomemo
     def _params_type_(self):  # noqa
         with self._choice():
             with self._option():
@@ -6553,6 +6611,8 @@ class grammardefaultParser(Parser):
                 self._scalar_type_()
             with self._option():
                 self._set_type_()
+            with self._option():
+                self._tuple_type_()
             self._error('no available options')
 
     @tatsumasu('FunctionType')
@@ -7785,6 +7845,9 @@ class grammardefaultSemantics(object):
     def set_type(self, ast):  # noqa
         return ast
 
+    def tuple_type(self, ast):  # noqa
+        return ast
+
     def dimension(self, ast):  # noqa
         return ast
 
@@ -8625,10 +8688,15 @@ class ScalarType(ModelBase):
 
 class SetType(ModelBase):
     cnt = None
+    homogeneous_types = None
     sub_types = None
     type = None
     type1 = None
     type2 = None
+
+
+class TupleType(ModelBase):
+    sub_types = None
 
 
 class FunctionType(ModelBase):

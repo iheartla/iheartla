@@ -1138,7 +1138,25 @@ class TypeWalker(NodeWalker):
                 type_list.append(type_info.la_type)
                 ir_node.sub_types.append(type_info)
             cnt = len(type_list)
+        elif node.homogeneous_types:
+            ir_node.homogeneous_types = []
+            for h_type in node.homogeneous_types:
+                type_info = self.walk(h_type, **kwargs)
+                type_list.append(type_info.la_type)
+                ir_node.homogeneous_types.append(type_info)
+            cnt = len(type_list)
         ir_node.la_type = SetType(size=cnt, int_list=int_list, type_list=type_list, element_type=ScalarType())
+        return ir_node
+
+    def walk_TupleType(self, node, **kwargs):
+        ir_node = TupleTypeNode(parse_info=node.parseinfo, raw_text=node.text)
+        type_list = []
+        ir_node.sub_types = []
+        for sub_type in node.sub_types:
+            type_info = self.walk(sub_type, **kwargs)
+            type_list.append(type_info.la_type)
+            ir_node.sub_types.append(type_info)
+        ir_node.la_type = TupleType(type_list=type_list)
         return ir_node
 
     def walk_FunctionType(self, node, **kwargs):
