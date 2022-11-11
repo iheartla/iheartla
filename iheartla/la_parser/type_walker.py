@@ -1559,12 +1559,12 @@ class TypeWalker(NodeWalker):
                 rhs_type_list = right_info.la_type if isinstance(right_info.la_type, list) else [right_info.la_type]
             right_type = rhs_type_list[cur_index]
             if len(self.lhs_subs) > 0:
-                for cur_index in range(len(self.lhs_subs)):
-                    cur_sym_dict = self.lhs_sym_list[cur_index]
+                for cur_s_index in range(len(self.lhs_subs)):
+                    cur_sym_dict = self.lhs_sym_list[cur_s_index]
                     if self.get_main_id(id0) not in self.symtable:
-                        self.assert_expr(len(cur_sym_dict) > 0, get_err_msg_info(node.left[0].right[cur_index].parseinfo, "Subscript hasn't been used on rhs"))
+                        self.assert_expr(len(cur_sym_dict) > 0, get_err_msg_info(node.left[0].right[cur_s_index].parseinfo, "Subscript hasn't been used on rhs"))
                     # self.check_sum_subs(self.lhs_subs[cur_index], cur_sym_dict)
-                    self.assert_expr(self.check_sum_subs(self.lhs_subs[cur_index], cur_sym_dict), get_err_msg_info(node.left[0].right[cur_index].parseinfo,
+                    self.assert_expr(self.check_sum_subs(self.lhs_subs[cur_s_index], cur_sym_dict), get_err_msg_info(node.left[0].right[cur_s_index].parseinfo,
                                                                                           "Subscript has inconsistent dimensions"))
             self.lhs_sym_list.clear()
             self.lhs_subs.clear()

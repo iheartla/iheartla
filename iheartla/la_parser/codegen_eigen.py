@@ -1531,7 +1531,7 @@ class CodeGenEigen(CodeGen):
                 kwargs[LHS] = left_id
                 kwargs[ASSIGN_TYPE] = node.op
                 # self left-hand-side symbol
-                right_info = self.visit(node.right[cur_index], **kwargs)
+                right_info = self.visit(node.right[0], **kwargs)
                 right_exp = ""
                 # y_i = stat
                 if node.left[cur_index].contain_subscript():
