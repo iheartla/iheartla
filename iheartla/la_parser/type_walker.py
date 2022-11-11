@@ -576,6 +576,29 @@ class TypeWalker(NodeWalker):
         param_ir_list = self.extract_all_params(raw_param_list)
         #
         param_ir_index = 0
+        def handle_assignment(assign_node):
+            for cur_index in range(len(assign_node.left)):
+                if type(assign_node.left[cur_index]).__name__ == 'IdentifierSubscript':
+                    lhs_sym = self.walk(assign_node.left[cur_index].left).ir.get_main_id()
+                else:
+                    lhs_sym = self.walk(assign_node.left[cur_index]).ir.get_main_id()
+                if lhs_sym not in self.lhs_list:
+                    self.lhs_list.append(lhs_sym)
+                if len(lhs_sym) > 1:
+                    multi_lhs_list.append(lhs_sym)
+                for cur_expr in assign_node.right:
+                    self.rhs_raw_str_list.append(cur_expr.text)
+            if self.pre_walk and hasattr(assign_node, 'v') and assign_node.v:
+                # solver
+                self.visiting_solver_eq = True
+                for cur_v in assign_node.v:
+                    v_info = self.walk(cur_v)
+                    v_id = v_info.id[0].get_main_id()
+                    if v_info.type.is_node(IRNodeType.FunctionType):
+                        self.solved_func.append(v_id)
+                    self.lhs_list.append(v_id)
+                    if len(v_id) > 1:
+                        multi_lhs_list.append(v_id)
         for vblock in node.vblock:
             if type(vblock).__name__ == 'ParamsBlock':
                 vblock_info = param_ir_list[param_ir_index]
@@ -590,28 +613,13 @@ class TypeWalker(NodeWalker):
             vblock_list.append(vblock_info)
             if isinstance(vblock_info, list) and len(vblock_info) > 0:  # statement list with single statement
                 if type(vblock_info[0]).__name__ == 'Assignment':
-                    for cur_index in range(len(vblock_info[0].left)):
-                        if type(vblock_info[0].left[cur_index]).__name__ == 'IdentifierSubscript':
-                            lhs_sym = self.walk(vblock_info[0].left[cur_index].left).ir.get_main_id()
-                        else:
-                            lhs_sym = self.walk(vblock_info[0].left[cur_index]).ir.get_main_id()
-                        if lhs_sym not in self.lhs_list:
-                            self.lhs_list.append(lhs_sym)
-                        if len(lhs_sym) > 1:
-                            multi_lhs_list.append(lhs_sym)
-                        for cur_expr in vblock_info[0].right:
-                            self.rhs_raw_str_list.append(cur_expr.text)
-                    if self.pre_walk and vblock_info[0].v:
-                        # solver
-                        self.visiting_solver_eq = True
-                        for cur_v in vblock_info[0].v:
-                            v_info = self.walk(cur_v)
-                            v_id = v_info.id[0].get_main_id()
-                            if v_info.type.is_node(IRNodeType.FunctionType):
-                                self.solved_func.append(v_id)
-                            self.lhs_list.append(v_id)
-                            if len(v_id) > 1:
-                                multi_lhs_list.append(v_id)
+                    handle_assignment(vblock_info[0])
+                    # assignment inside summation, e.g.: a = sum_* ***
+                    for cur_index in range(len(vblock_info[0].right)):
+                        c_rhs = vblock_info[0].right[cur_index]
+                        if type(c_rhs).__name__ == 'Expression' and type(c_rhs.value).__name__ == 'Factor' and c_rhs.value.op and type(c_rhs.value.op).__name__ == 'Summation':
+                            for extra in c_rhs.value.op.extra:
+                                handle_assignment(extra)
                 elif type(vblock_info[0]).__name__ == 'LocalFunc':
                     if isinstance(vblock_info[0].name, str):
                         func_sym = vblock_info[0].name
