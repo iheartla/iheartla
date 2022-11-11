@@ -401,6 +401,7 @@ class TypeWalker(NodeWalker):
         self.need_mutator = False
         self.opt_key = ''
         self.omit_assert = False
+        self.reset_scope()
 
     def get_func_symbols(self):
         ret = {}
