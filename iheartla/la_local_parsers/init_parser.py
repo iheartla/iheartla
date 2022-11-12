@@ -6838,11 +6838,30 @@ class grammarinitParser(Parser):
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
-        with self._ifnot():
-            self._KEYWORDS_()
-        with self._group():
-            with self._choice():
-                with self._option():
+        with self._choice():
+            with self._option():
+                with self._ifnot():
+                    self._KEYWORDS_()
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            with self._group():
+                                with self._choice():
+                                    with self._option():
+                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*)*')
+                                    with self._option():
+                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
+                                    self._error('no available options')
+                            self.name_last_node('value')
+                        with self._option():
+                            self._token('`')
+                            self._pattern('[^`]*')
+                            self.name_last_node('id')
+                            self._token('`')
+                        self._error('no available options')
+            with self._option():
+                with self._group():
+                    self._KEYWORDS_()
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -6850,13 +6869,8 @@ class grammarinitParser(Parser):
                             with self._option():
                                 self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
                             self._error('no available options')
-                    self.name_last_node('value')
-                with self._option():
-                    self._token('`')
-                    self._pattern('[^`]*')
-                    self.name_last_node('id')
-                    self._token('`')
-                self._error('no available options')
+                self.name_last_node('value')
+            self._error('no available options')
         self.ast._define(
             ['id', 'value'],
             []

@@ -6882,18 +6882,18 @@ class grammardefaultParser(Parser):
                             self._error('no available options')
                     self.name_last_node('const')
                 with self._option():
+                    with self._ifnot():
+                        with self._group():
+                            with self._choice():
+                                with self._option():
+                                    self._KEYWORDS_()
+                                for new_id in self.new_id_list:
+                                    with self._option():
+                                        self._pattern(new_id)
+                                self._error('no available options')
                     with self._group():
                         with self._choice():
                             with self._option():
-                                with self._ifnot():
-                                    with self._group():
-                                        with self._choice():
-                                            with self._option():
-                                                self._KEYWORDS_()
-                                            for new_id in self.new_id_list:
-                                                with self._option():
-                                                    self._pattern(new_id)
-                                            self._error('no available options')
                                 with self._group():
                                     with self._choice():
                                         with self._option():
@@ -6908,18 +6908,15 @@ class grammardefaultParser(Parser):
                                 self.name_last_node('id')
                                 self._token('`')
                             self._error('no available options')
-                self._error('no available options')
-            self.ast._define(
-                ['const', 'id', 'value'],
-                []
-            )
-        else:
-            # default
-            with self._ifnot():
-                self._KEYWORDS_()
-            with self._group():
-                with self._choice():
-                    with self._option():
+                with self._option():
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._KEYWORDS_()
+                            for new_id in self.new_id_list:
+                                with self._option():
+                                    self._pattern(new_id)
+                            self._error('no available options')
                         with self._group():
                             with self._choice():
                                 with self._option():
@@ -6927,13 +6924,47 @@ class grammardefaultParser(Parser):
                                 with self._option():
                                     self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
                                 self._error('no available options')
-                        self.name_last_node('value')
-                    with self._option():
-                        self._token('`')
-                        self._pattern('[^`]*')
-                        self.name_last_node('id')
-                        self._token('`')
-                    self._error('no available options')
+                    self.name_last_node('value')
+                self._error('no available options')
+            self.ast._define(
+                ['const', 'id', 'value'],
+                []
+            )
+        else:
+            # default
+            with self._choice():
+                with self._option():
+                    with self._ifnot():
+                        self._KEYWORDS_()
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                with self._group():
+                                    with self._choice():
+                                        with self._option():
+                                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*')
+                                        with self._option():
+                                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
+                                        self._error('no available options')
+                                self.name_last_node('value')
+                            with self._option():
+                                self._token('`')
+                                self._pattern('[^`]*')
+                                self.name_last_node('id')
+                                self._token('`')
+                            self._error('no available options')
+                with self._option():
+                    with self._group():
+                        self._KEYWORDS_()
+                        with self._group():
+                            with self._choice():
+                                with self._option():
+                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*')
+                                with self._option():
+                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
+                                self._error('no available options')
+                    self.name_last_node('value')
+                self._error('no available options')
             self.ast._define(
                 ['id', 'value'],
                 []
