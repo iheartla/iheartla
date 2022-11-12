@@ -4796,12 +4796,12 @@ class grammarinitParser(Parser):
 
             def block2():
                 self._hspace_()
-            self._closure(block2)
+            self._positive_closure(block2)
             self._AS_()
 
             def block3():
                 self._hspace_()
-            self._closure(block3)
+            self._positive_closure(block3)
             self._multi_str_()
             self.name_last_node('r')
         self._closure(block1)

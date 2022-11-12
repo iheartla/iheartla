@@ -9,7 +9,7 @@ import::Import
     ;
     
 import_var::ImportVar
-    = name:multi_str {{hspace} AS {hspace} r:multi_str}
+    = name:multi_str {{hspace}+ AS {hspace}+ r:multi_str}
     ;
 
 where_conditions::WhereConditions
