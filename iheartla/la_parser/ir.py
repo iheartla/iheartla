@@ -996,6 +996,15 @@ class IndexNode(ExprNode):
                 subs_dict[key].append(self)
                 # break
 
+    def get_node_content(self, node):
+        if node is None:
+            content = '*'
+        elif node.node_type == IRNodeType.Id:
+            content = node.get_main_id()
+        elif node.node_type == IRNodeType.Integer:
+            content = node.value
+        return content
+
 
 class MatrixIndexNode(IndexNode):
     def __init__(self, la_type=None, parse_info=None, raw_text=None):
@@ -1009,7 +1018,7 @@ class MatrixIndexNode(IndexNode):
         return True
 
     def get_all_ids(self):
-        return [self.main.get_main_id(), [self.row_index.get_main_id(), self.col_index.get_main_id()]]
+        return [self.main.get_main_id(), [self.get_node_content(self.row_index), self.get_node_content(self.col_index)]]
 
     def get_main_id(self):
         return self.main.get_main_id()
@@ -1042,7 +1051,7 @@ class VectorIndexNode(IndexNode):
         return True
 
     def get_all_ids(self):
-        return [self.main.get_main_id(), [self.row_index.get_main_id()]]
+        return [self.main.get_main_id(), [self.get_node_content(self.row_index)]]
 
     def get_main_id(self):
         return self.main.get_main_id()
@@ -1088,9 +1097,9 @@ class SequenceIndexNode(IndexNode):
 
     def get_all_ids(self):
         if self.row_index:
-            return [self.main.get_main_id(), [self.main_index.get_main_id(), self.row_index.get_main_id(), self.col_index.get_main_id()]]
+            return [self.main.get_main_id(), [self.get_node_content(self.main_index), self.get_node_content(self.row_index), self.get_node_content(self.col_index)]]
         else:
-            return [self.main.get_main_id(), [self.main_index.get_main_id()]]
+            return [self.main.get_main_id(), [self.get_node_content(self.main_index)]]
 
     def get_main_id(self):
         return self.main.get_main_id()
