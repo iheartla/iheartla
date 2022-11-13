@@ -1530,7 +1530,8 @@ class TypeWalker(NodeWalker):
             self.visiting_lhs = False
             id0 = id0_info.content
             if SET_RET_SYMBOL in kwargs:
-                self.ret_symbol = self.get_main_id(id0)
+                if self.is_main_scope():
+                    self.ret_symbol = self.get_main_id(id0)
             kwargs[LHS] = id0
             kwargs[ASSIGN_OP] = node.op
             if id0_info.ir.contain_subscript():
