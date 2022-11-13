@@ -1534,20 +1534,25 @@ class TypeWalker(NodeWalker):
                     self.ret_symbol = self.get_main_id(id0)
             kwargs[LHS] = id0
             kwargs[ASSIGN_OP] = node.op
+            known_subscript = True   # whether subscripts are already defined
             if id0_info.ir.contain_subscript():
                 left_ids = self.get_all_ids(id0)
                 left_subs = left_ids[1]
                 pre_subs = []
                 for sub_index in range(len(left_subs)):
                     sub_sym = left_subs[sub_index]
-                    self.lhs_subs.append(sub_sym)
-                    self.lhs_sym_list.append({})
-                    if sub_sym in pre_subs:
-                        continue
-                    pre_subs.append(sub_sym)
-                    self.assert_expr(sub_sym not in self.symtable, get_err_msg_info(node.left[0].right[sub_index].parseinfo, "Subscript {} has been defined".format(sub_sym)))
-                    self.symtable[sub_sym] = ScalarType(index_type=False, is_int=True)
-                    self.lhs_sub_dict[sub_sym] = []  # init empty list
+                    if isinstance(sub_sym, str) and not sub_sym.isnumeric():
+                        if sub_sym not in self.symtable:
+                            known_subscript = False
+                        self.lhs_subs.append(sub_sym)
+                        self.lhs_sym_list.append({})
+                        if sub_sym in pre_subs:
+                            continue
+                        pre_subs.append(sub_sym)
+                        self.assert_expr(sub_sym not in self.symtable, get_err_msg_info(node.left[0].right[sub_index].parseinfo, "Subscript {} has been defined".format(sub_sym)))
+                        # assign types to subscripts
+                        self.symtable[sub_sym] = ScalarType(index_type=False, is_int=True)
+                        self.lhs_sub_dict[sub_sym] = []  # init empty list
             la_remove_key(LHS, **kwargs)
             la_remove_key(ASSIGN_OP, **kwargs)
             #
@@ -1591,7 +1596,16 @@ class TypeWalker(NodeWalker):
             right_info.ir.set_parent(assign_node)
             id0_info.ir.set_parent(assign_node)
             # y_i = stat
-            if self.contain_subscript(id0):
+            if self.contain_subscript(id0) and known_subscript:
+                assign_node.change_ele_only = True
+                # change an element for a predefined symbol
+                left_ids = self.get_all_ids(id0)
+                left_subs = left_ids[1]
+                sequence = left_ids[0]  # y
+                self.assert_expr(right_type.is_same_type(self.symtable[sequence].element_type), get_err_msg_info(id0_info.ir.parse_info,
+                                                                                   "{} is assigned to different type".format(
+                                                                                       sequence)))
+            elif self.contain_subscript(id0):
                 left_ids = self.get_all_ids(id0)
                 left_subs = left_ids[1]
                 sequence = left_ids[0]    #y
@@ -1695,6 +1709,7 @@ class TypeWalker(NodeWalker):
                 else:
                     self.lhs_sub_dict.clear()
             else:
+                # without subscripts
                 if node.op != '=':
                     self.assert_expr(id0 in self.symtable, get_err_msg_info(id0_info.ir.parse_info, "{} hasn't been defined".format(id0)))
                 else:

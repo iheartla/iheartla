@@ -397,6 +397,7 @@ class AssignNode(StmtNode):
         self.optimize_param = False
         self.cur_type = cur_type
         self.unknown_id = None
+        self.change_ele_only = False   # change an element inside a matrix/vector/sequence
 
     def get_lhs_list(self):
         # get all new symbols

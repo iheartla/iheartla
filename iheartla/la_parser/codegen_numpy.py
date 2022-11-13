@@ -1322,7 +1322,11 @@ class CodeGenNumpy(CodeGen):
                 # if right_info.pre_list:
                 #     content += "".join(right_info.pre_list)
                 # y_i = stat
-                if node.left[cur_index].contain_subscript():
+                if node.left[cur_index].contain_subscript() and node.change_ele_only:
+                    if right_info.pre_list:
+                        content = "".join(right_info.pre_list) + content
+                    content += "    {} = {}\n".format(left_info.content, right_info.content)
+                elif node.left[cur_index].contain_subscript():
                     left_ids = node.left[cur_index].get_all_ids()
                     left_subs = left_ids[1]
                     if len(left_subs) == 2: # matrix only
