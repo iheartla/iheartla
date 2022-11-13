@@ -2384,7 +2384,7 @@ class TypeWalker(NodeWalker):
                     else:
                         ret_type.cols = cur_type.cols
                 elif cur_type.is_set():
-                    ret_type = SetType(size=ret_type.size, int_list=ret_type.int_list)
+                    ret_type = SetType(size=ret_type.size, int_list=ret_type.int_list, type_list=ret_type.type_list)
                 ret_list.append(ret_type)
             ret_type = ret_list[0] if len(ret_list)==1 else ret_list # single ret type or list
             symbols.add(ir_node.name.get_name())
