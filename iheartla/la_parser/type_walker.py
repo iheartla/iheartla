@@ -32,15 +32,21 @@ class DependenceData(object):
         self.initialized_list = initialized_list
 
 class BuiltinModuleData(object):
-    def __init__(self, module='', instance_name='', params_list=None, name_list=None):
+    def __init__(self, module='', instance_name='', params_list=None, name_list=None, r_dict=None):
         self.module = module   # triangle_mesh
         self.instance_name = instance_name  #
         self.name_list = name_list
         self.params_list = params_list
+        self.r_dict = r_dict
+        self.inverse_dict = {}
+        if self.r_dict:
+            for k,v in self.r_dict.items():
+                self.inverse_dict[v] = k
+
 
 class TriangleMeshModuleData(BuiltinModuleData):
-    def __init__(self, module='', instance_name='', params_list=None, name_list=None):
-        super().__init__(module, instance_name, params_list, name_list)
+    def __init__(self, module='', instance_name='', params_list=None, name_list=None, r_dict=None):
+        super().__init__(module, instance_name, params_list, name_list, r_dict=r_dict)
         self.v = params_list[0]
         self.f = params_list[1]
 
@@ -1254,12 +1260,12 @@ class TypeWalker(NodeWalker):
         if node.r:
             rname = self.walk(node.r, **kwargs).ir
         return NodeInfo(ir=ImportVarNode(self.walk(node.name, **kwargs).ir, rname))
-    def add_builtin_module_data(self, module, params_list=[], name_list=[]):
+    def add_builtin_module_data(self, module, params_list=[], name_list=[], r_dict=None):
         if module not in self.builtin_module_dict:
             if module == TRIANGLE_MESH:
-                self.builtin_module_dict[module] = TriangleMeshModuleData(module, self.generate_var_name(module),params_list=params_list,name_list=name_list)
+                self.builtin_module_dict[module] = TriangleMeshModuleData(module, self.generate_var_name(module),params_list=params_list,name_list=name_list,r_dict=r_dict)
             else:
-                self.builtin_module_dict[module] = BuiltinModuleData(module, self.generate_var_name(module),params_list=params_list,name_list=name_list)
+                self.builtin_module_dict[module] = BuiltinModuleData(module, self.generate_var_name(module),params_list=params_list,name_list=name_list,r_dict=r_dict)
         return self.builtin_module_dict[module]
     def walk_Import(self, node, **kwargs):
         params = []
@@ -1292,10 +1298,10 @@ class TypeWalker(NodeWalker):
                                                            get_line_info(node.parseinfo).text.find(name),
                                                            "Function {} not exist".format(name)))
             if not self.pre_walk:
-                self.add_builtin_module_data(pkg_name, params_list, name_list)
+                self.add_builtin_module_data(pkg_name, params_list, name_list, r_dict)
                 if pkg_name == TRIANGLE_MESH:
                     if EDGES in name_list:
-                        self.symtable[EDGES] = MatrixType(rows=self.generate_var_name("edim"), cols=2, element_type=ScalarType(is_int=True, index_type=True))
+                        self.symtable[r_dict[EDGES]] = MatrixType(rows=self.generate_var_name("edim"), cols=2, element_type=ScalarType(is_int=True, index_type=True))
         else:
             module = package_info.ir
             self.import_module_list.append(DependenceData(module.get_name(), params_list, name_list))
