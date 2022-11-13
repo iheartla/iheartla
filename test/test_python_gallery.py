@@ -414,8 +414,8 @@ class TestGallery(BasePythonTest):
         `kᵣ` = r̄⋅(`C̄ₐ`-V̄)
         `kₛ` = s̄⋅(`C̄ₐ`-V̄)
         `kₙ` = n̄⋅(`C̄ₐ`-V̄)
-        `x(θ,v)` =  (r̄⋅`D_A`(θ, v)+`kᵣ`δ(θ, v))/(n̄⋅`D_A`(θ, v)+`kₙ`δ(θ, v))
-        `y(θ,v)` =  (s̄⋅`D_A`(θ, v)+`kₛ`δ(θ, v))/(n̄⋅`D_A`(θ, v)+`kₙ`δ(θ, v))
+        `x(θ,v)` =  (r̄⋅`D_A`(θ, v)+`kᵣ`delta(θ, v))/(n̄⋅`D_A`(θ, v)+`kₙ`delta(θ, v))
+        `y(θ,v)` =  (s̄⋅`D_A`(θ, v)+`kₛ`delta(θ, v))/(n̄⋅`D_A`(θ, v)+`kₙ`delta(θ, v))
         where
         v̄: ℝ^3
         ō: ℝ^3
@@ -425,7 +425,7 @@ class TestGallery(BasePythonTest):
         θ: ℝ
         v: ℝ
         `D_A`: ℝ,ℝ->ℝ^3
-        `δ`: ℝ,ℝ->ℝ """
+        `delta`: ℝ,ℝ->ℝ """
         func_info = self.gen_func_info(la_str)
         v̄ = np.array([1, 2, 3])
         ō = np.array([2, 2, 4])
