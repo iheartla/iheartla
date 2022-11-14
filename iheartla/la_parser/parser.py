@@ -238,12 +238,14 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
     dependent_modules = []
     if len(start_node.directives) > 0:
         dependent_modules = start_node.get_module_directives()
-        # include directives
+        # include directives (builtin modules)
         package_name_dict = start_node.get_package_dict()
+        package_rdict = start_node.get_package_rdict()
         package_name_list = []
-        key_names = []
+        key_names = []    # imported builtin function names
         for package in package_name_dict:
             name_list = package_name_dict[package]
+            r_dict = package_rdict[package]
             if 'e' in name_list:
                 if DEBUG_PARSER:
                     current_content = current_content.replace("pi;", "pi|e;")
@@ -251,12 +253,15 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
                 name_list.remove('e')
                 parse_key += 'e;'
                 package_name_list.append('e')
-            if package == TRIANGLE_MESH:
-                if EDGES in name_list:
-                    name_list.remove(EDGES)
-                    multi_list.append(EDGES)
             for name in name_list:
-                key_names.append("{}_func".format(name))
+                if not _id_pattern.fullmatch(r_dict[name]):
+                    # multi-letter imported syms
+                    multi_list.append(r_dict[name])
+                if package == TRIANGLE_MESH:
+                    if name in [EDGES]:
+                        continue
+                # add func names only
+                key_names.append("{}_func".format(name)) # add correct imported syms
         package_name_list += key_names
         if len(key_names) > 0:
             # add new rules

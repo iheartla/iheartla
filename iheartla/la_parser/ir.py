@@ -205,7 +205,16 @@ class StartNode(StmtNode):
                 package_func_dict[directive.package.get_name()].sort()
         return package_func_dict
 
+    def get_package_rdict(self):
+        package_rdict = {}
+        for directive in self.directives:
+            if directive.package is not None:
+                if directive.package.get_name() not in package_rdict:
+                    package_rdict[directive.package.get_name()] = directive.r_dict
+        return package_rdict
+
     def get_module_pars_list(self):
+        # to get multi-letter syms
         module_pars_list = []
         for directive in self.directives:
             if directive.module is not None:
@@ -319,9 +328,17 @@ class ImportNode(StmtNode):
         self.r_dict = r_dict   # A as B from XXX
 
     def get_name_list(self):
+        # original imported names
         name_list = []
         for name in self.names:
             name_list.append(name.get_name())
+        return name_list
+
+    def get_rname_list(self):
+        # converted imported names
+        name_list = []
+        for name in self.names:
+            name_list.append(self.r_dict[name.get_name()])
         return name_list
 
     def get_name_raw_list(self):
