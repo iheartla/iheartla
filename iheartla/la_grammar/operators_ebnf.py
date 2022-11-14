@@ -15,6 +15,7 @@ operations
     | hadamard_product_operator
     | cross_product_operator
     | kronecker_product_operator
+    | set_operators
     | sum_operator
     | integral_operator
     | trans_operator

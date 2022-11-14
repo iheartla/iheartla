@@ -590,6 +590,8 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             with self._option():
                 self._kronecker_product_operator_()
             with self._option():
+                self._set_operators_()
+            with self._option():
                 self._sum_operator_()
             with self._option():
                 self._integral_operator_()
@@ -6828,6 +6830,58 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self._pattern('\\d')
 
     @tatsumasu()
+    @nomemo
+    def _set_operators_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._union_operator_()
+            with self._option():
+                self._intersect_operator_()
+            self._error('no available options')
+
+    @tatsumasu('Union')
+    @nomemo
+    def _union_operator_(self):  # noqa
+        self._factor_()
+        self.name_last_node('left')
+
+        def block1():
+            self._hspace_()
+        self._closure(block1)
+        self._token('∪')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._factor_()
+        self.name_last_node('right')
+        self.ast._define(
+            ['left', 'right'],
+            []
+        )
+
+    @tatsumasu('Intersection')
+    @nomemo
+    def _intersect_operator_(self):  # noqa
+        self._factor_()
+        self.name_last_node('left')
+
+        def block1():
+            self._hspace_()
+        self._closure(block1)
+        self._token('∩')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._factor_()
+        self.name_last_node('right')
+        self.ast._define(
+            ['left', 'right'],
+            []
+        )
+
+    @tatsumasu()
     def _func_id_(self):  # noqa
         self._identifier_alone_()
 
@@ -7866,6 +7920,15 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
     def digit(self, ast):  # noqa
         return ast
 
+    def set_operators(self, ast):  # noqa
+        return ast
+
+    def union_operator(self, ast):  # noqa
+        return ast
+
+    def intersect_operator(self, ast):  # noqa
+        return ast
+
     def func_id(self, ast):  # noqa
         return ast
 
@@ -8719,6 +8782,16 @@ class SupInteger(ModelBase):
 
 class SubInteger(ModelBase):
     value = None
+
+
+class Union(ModelBase):
+    left = None
+    right = None
+
+
+class Intersection(ModelBase):
+    left = None
+    right = None
 
 
 class Function(ModelBase):

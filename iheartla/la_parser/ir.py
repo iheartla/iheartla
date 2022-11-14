@@ -65,6 +65,8 @@ class IRNodeType(Enum):
     Module = 228
     Geometry = 229
     GPFunction = 230
+    Union = 231
+    Intersection = 232
     # matrix
     Matrix = 300
     MatrixRows = 301
@@ -632,6 +634,17 @@ class SubNode(ExprNode):
                 child_node = self.right.get_child(node_type)
         return child_node
 
+class UnionNode(ExprNode):
+    def __init__(self, left=None, right=None, la_type=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Union, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        self.left = left
+        self.right = right
+
+class IntersectionNode(ExprNode):
+    def __init__(self, left=None, right=None, la_type=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Intersection, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        self.left = left
+        self.right = right
 
 class AddSubNode(ExprNode):
     def __init__(self, left=None, right=None, la_type=None, parse_info=None, raw_text=None, op='+-'):

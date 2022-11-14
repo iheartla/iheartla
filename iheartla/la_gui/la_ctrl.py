@@ -43,6 +43,7 @@ class LaTextControl(bc.BaseTextControl):
                              'heart': '❤️', 'iheartla': 'I❤️LA',
                              'le':'≤', 'ge':'≥', 'ne': '≠', 'notin':'∉', 'div':'÷', 'nplus': '±', 'subset': '⊂',
                              'linner': '⟨', 'rinner':'⟩', 'num1': '𝟙', 'd':'𝕕',
+                             'cap':'∩', 'cup':'∪',  
                              'uddot': '\u0308', 'udot': '\u0307',
                              'hat': '\u0302', 'bar': '\u0304', 'dag': '†', '^+': '⁺', 's+': '⁺'
                              }

@@ -1365,6 +1365,28 @@ class TypeWalker(NodeWalker):
         ret_info.ir = ir_node
         return ret_info
 
+    def walk_Union(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        ret_info = NodeInfo(left_info.la_type, symbols=left_info.symbols.union(right_info.symbols))
+        ir_node = UnionNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, raw_text=node.text)
+        ir_node.la_type = left_info.la_type
+        left_info.ir.set_parent(ir_node)
+        right_info.ir.set_parent(ir_node)
+        ret_info.ir = ir_node
+        return ret_info
+
+    def walk_Intersection(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        right_info = self.walk(node.right, **kwargs)
+        ret_info = NodeInfo(left_info.la_type, symbols=left_info.symbols.union(right_info.symbols))
+        ir_node = IntersectionNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, raw_text=node.text)
+        ir_node.la_type = left_info.la_type
+        left_info.ir.set_parent(ir_node)
+        right_info.ir.set_parent(ir_node)
+        ret_info.ir = ir_node
+        return ret_info
+
     def walk_Multiply(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)

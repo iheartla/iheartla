@@ -399,6 +399,12 @@ class CodeGenLatex(CodeGen):
         else:
             return self.visit(node.left, **kwargs) + "÷" + self.visit(node.right, **kwargs)
 
+    def visit_union(self, node, **kwargs):
+        return self.visit(node.left, **kwargs) + "\\cup" + self.visit(node.right, **kwargs)
+
+    def visit_intersection(self, node, **kwargs):
+        return self.visit(node.left, **kwargs) + "\\cap" + self.visit(node.right, **kwargs)
+
     def visit_summation(self, node, **kwargs):
         self.cur_scope = node.symbol
         if node.cond:

@@ -9,8 +9,9 @@ from .LA_ebnf import START
 from .arithmetic_ebnf import ARITHMETIC
 from ..la_grammar.types_ebnf import TYPES
 from .geometry_ebnf import GEOMETRY
+from .set_ebnf import SET_OPERATORS
 
-SIMPLIFIED = START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + GEOMETRY + SHARED + ARITHMETIC + TYPES
+SIMPLIFIED = START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + GEOMETRY + SHARED + ARITHMETIC + TYPES + SET_OPERATORS
 #include :: "keywords.ebnf"
 #include :: "number.ebnf"
 #include :: "operators.ebnf"

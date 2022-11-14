@@ -1199,7 +1199,7 @@ class CodeGenEigen(CodeGen):
             item_info = self.visit(item, **kwargs)
             ret.append(item_info.content)
             pre_list += item_info.pre_list
-        content = '    {} {}({});\n'.format(self.get_ctype(node.la_type), cur_m_id, ", ".join(ret))
+        content = '    {} {}({{{}}});\n'.format(self.get_ctype(node.la_type), cur_m_id, ", ".join(ret))
         pre_list.append(content)
         return CodeNodeInfo(cur_m_id, pre_list=pre_list)
 
@@ -1484,6 +1484,28 @@ class CodeGenEigen(CodeGen):
         right_info = self.visit(node.right, **kwargs)
         left_info.content = "{} / double({})".format(left_info.content, right_info.content)
         left_info.pre_list += right_info.pre_list
+        return left_info
+
+    def visit_union(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        name = self.generate_var_name('uni')
+        left_info.pre_list += right_info.pre_list
+        left_info.pre_list.append("    {} {};\n".format(self.get_ctype(node.left.la_type), name))
+        left_info.pre_list.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::inserter({}, {}.begin()));\n".format(
+            left_info.content, left_info.content, right_info.content, right_info.content, name, name))
+        left_info.content = name
+        return left_info
+
+    def visit_intersection(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        name = self.generate_var_name('intsect')
+        left_info.pre_list += right_info.pre_list
+        left_info.pre_list.append("    {} {};\n".format(self.get_ctype(node.left.la_type), name))
+        left_info.pre_list.append("    std::set_intersection({}.begin(), {}.end(), {}.begin(), {}.end(), std::inserter({}, {}.begin()));\n".format(
+            left_info.content, left_info.content, right_info.content, right_info.content, name, name))
+        left_info.content = name
         return left_info
 
     def visit_cast(self, node, **kwargs):
