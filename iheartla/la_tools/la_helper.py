@@ -33,7 +33,7 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                  'get_incident_vertices_e', 'get_incident_faces_e', 'get_diamond_vertices_e',
                                  'get_incident_vertices_f', 'get_incident_edges_f', 'get_adjacent_faces_f',
                                  'build_vertex_vector', 'build_edge_vector', 'build_face_vector',
-                                 'star', 'closure', 'link', 'boundary', 'isComplex', 'isPureComplex']}
+                                 'star', 'closure', 'link', 'boundary', 'is_complex', 'is_pure_complex']}
 PACKAGES_SYM_DICT = {'trigonometry': ['e'],
                  TRIANGLE_MESH: [EDGES]}
 def merge_dict(dict1, dict2):

@@ -82,6 +82,7 @@ class grammardefaultParser(Parser):
         self.new_id_list = []
         self.new_func_list = []
         self.builtin_list = []
+        self.conversion_dict = {}
         self.const_e = False
 
     @tatsumasu('Start')
@@ -116,39 +117,66 @@ class grammardefaultParser(Parser):
 
     @tatsumasu()
     def _TRACE_(self):  # noqa
-        self._pattern('trace')
+        if 'trace' in self.conversion_dict:
+            self._pattern(self.conversion_dict['trace'])
+        else:
+            self._pattern('trace')
 
     @tatsumasu()
     def _TR_(self):  # noqa
-        self._pattern('tr')
+        if 'tr' in self.conversion_dict:
+            self._pattern(self.conversion_dict['tr'])
+        else:
+            self._pattern('tr')
 
     @tatsumasu()
     def _VEC_(self):  # noqa
-        self._pattern('vec')
+        if 'vec' in self.conversion_dict:
+            self._pattern(self.conversion_dict['vec'])
+        else:
+            self._pattern('vec')
 
     @tatsumasu()
     def _DIAG_(self):  # noqa
-        self._pattern('diag')
+        if 'diag' in self.conversion_dict:
+            self._pattern(self.conversion_dict['diag'])
+        else:
+            self._pattern('diag')
 
     @tatsumasu()
     def _INV_(self):  # noqa
-        self._pattern('inv')
+        if 'inv' in self.conversion_dict:
+            self._pattern(self.conversion_dict['inv'])
+        else:
+            self._pattern('inv')
 
     @tatsumasu()
     def _DET_(self):  # noqa
-        self._pattern('det')
+        if 'det' in self.conversion_dict:
+            self._pattern(self.conversion_dict['det'])
+        else:
+            self._pattern('det')
 
     @tatsumasu()
     def _RANK_(self):  # noqa
-        self._pattern('rank')
+        if 'rank' in self.conversion_dict:
+            self._pattern(self.conversion_dict['rank'])
+        else:
+            self._pattern('rank')
 
     @tatsumasu()
     def _NULL_(self):  # noqa
-        self._pattern('null')
+        if 'null' in self.conversion_dict:
+            self._pattern(self.conversion_dict['null'])
+        else:
+            self._pattern('null')
 
     @tatsumasu()
     def _ORTH_(self):  # noqa
-        self._pattern('orth')
+        if 'orth' in self.conversion_dict:
+            self._pattern(self.conversion_dict['orth'])
+        else:
+            self._pattern('orth')
 
     @tatsumasu()
     def _QR_(self):  # noqa
@@ -217,91 +245,157 @@ class grammardefaultParser(Parser):
 
     @tatsumasu()
     def _SIN_(self):  # noqa
-        self._pattern('sin')
+        if 'sin' in self.conversion_dict:
+            self._pattern(self.conversion_dict['sin'])
+        else:
+            self._pattern('sin')
 
     @tatsumasu()
     def _ASIN_(self):  # noqa
-        self._pattern('asin')
+        if 'asin' in self.conversion_dict:
+            self._pattern(self.conversion_dict['asin'])
+        else:
+            self._pattern('asin')
 
     @tatsumasu()
     def _ARCSIN_(self):  # noqa
-        self._pattern('arcsin')
+        if 'arcsin' in self.conversion_dict:
+            self._pattern(self.conversion_dict['arcsin'])
+        else:
+            self._pattern('arcsin')
 
     @tatsumasu()
     def _COS_(self):  # noqa
-        self._pattern('cos')
+        if 'cos' in self.conversion_dict:
+            self._pattern(self.conversion_dict['cos'])
+        else:
+            self._pattern('cos')
 
     @tatsumasu()
     def _ACOS_(self):  # noqa
-        self._pattern('acos')
+        if 'acos' in self.conversion_dict:
+            self._pattern(self.conversion_dict['acos'])
+        else:
+            self._pattern('acos')
 
     @tatsumasu()
     def _ARCCOS_(self):  # noqa
-        self._pattern('arccos')
+        if 'arccos' in self.conversion_dict:
+            self._pattern(self.conversion_dict['arccos'])
+        else:
+            self._pattern('arccos')
 
     @tatsumasu()
     def _TAN_(self):  # noqa
-        self._pattern('tan')
+        if 'tan' in self.conversion_dict:
+            self._pattern(self.conversion_dict['tan'])
+        else:
+            self._pattern('tan')
 
     @tatsumasu()
     def _ATAN_(self):  # noqa
-        self._pattern('atan')
+        if 'atan' in self.conversion_dict:
+            self._pattern(self.conversion_dict['atan'])
+        else:
+            self._pattern('atan')
 
     @tatsumasu()
     def _ARCTAN_(self):  # noqa
-        self._pattern('arctan')
+        if 'arctan' in self.conversion_dict:
+            self._pattern(self.conversion_dict['arctan'])
+        else:
+            self._pattern('arctan')
 
     @tatsumasu()
     def _SINH_(self):  # noqa
-        self._pattern('sinh')
+        if 'sinh' in self.conversion_dict:
+            self._pattern(self.conversion_dict['sinh'])
+        else:
+            self._pattern('sinh')
 
     @tatsumasu()
     def _ASINH_(self):  # noqa
-        self._pattern('asinh')
+        if 'asinh' in self.conversion_dict:
+            self._pattern(self.conversion_dict['asinh'])
+        else:
+            self._pattern('asinh')
 
     @tatsumasu()
     def _ARSINH_(self):  # noqa
-        self._pattern('arsinh')
+        if 'arsinh' in self.conversion_dict:
+            self._pattern(self.conversion_dict['arsinh'])
+        else:
+            self._pattern('arsinh')
 
     @tatsumasu()
     def _COSH_(self):  # noqa
-        self._pattern('cosh')
+        if 'cosh' in self.conversion_dict:
+            self._pattern(self.conversion_dict['cosh'])
+        else:
+            self._pattern('cosh')
 
     @tatsumasu()
     def _ACOSH_(self):  # noqa
-        self._pattern('acosh')
+        if 'acosh' in self.conversion_dict:
+            self._pattern(self.conversion_dict['acosh'])
+        else:
+            self._pattern('acosh')
 
     @tatsumasu()
     def _ARCOSH_(self):  # noqa
-        self._pattern('arcosh')
+        if 'arcosh' in self.conversion_dict:
+            self._pattern(self.conversion_dict['arcosh'])
+        else:
+            self._pattern('arcosh')
 
     @tatsumasu()
     def _TANH_(self):  # noqa
-        self._pattern('tanh')
+        if 'tanh' in self.conversion_dict:
+            self._pattern(self.conversion_dict['tanh'])
+        else:
+            self._pattern('tanh')
 
     @tatsumasu()
     def _ATANH_(self):  # noqa
-        self._pattern('atanh')
+        if 'atanh' in self.conversion_dict:
+            self._pattern(self.conversion_dict['atanh'])
+        else:
+            self._pattern('atanh')
 
     @tatsumasu()
     def _ARTANH_(self):  # noqa
-        self._pattern('artanh')
+        if 'artanh' in self.conversion_dict:
+            self._pattern(self.conversion_dict['artanh'])
+        else:
+            self._pattern('artanh')
 
     @tatsumasu()
     def _COT_(self):  # noqa
-        self._pattern('cot')
+        if 'cot' in self.conversion_dict:
+            self._pattern(self.conversion_dict['cot'])
+        else:
+            self._pattern('cot')
 
     @tatsumasu()
     def _SEC_(self):  # noqa
-        self._pattern('sec')
+        if 'sec' in self.conversion_dict:
+            self._pattern(self.conversion_dict['sec'])
+        else:
+            self._pattern('sec')
 
     @tatsumasu()
     def _CSC_(self):  # noqa
-        self._pattern('csc')
+        if 'csc' in self.conversion_dict:
+            self._pattern(self.conversion_dict['csc'])
+        else:
+            self._pattern('csc')
 
     @tatsumasu()
     def _ATAN2_(self):  # noqa
-        self._pattern('atan2')
+        if 'atan2' in self.conversion_dict:
+            self._pattern(self.conversion_dict['atan2'])
+        else:
+            self._pattern('atan2')
 
     @tatsumasu()
     def _EXP_(self):  # noqa
@@ -3895,9 +3989,156 @@ class grammardefaultParser(Parser):
             []
         )
 
+    @tatsumasu()
+    def _FACES_OF_EDGE_(self):  # noqa
+        if 'faces_of_edge' in self.conversion_dict:
+            self._pattern(self.conversion_dict['faces_of_edge'])
+        else:
+            self._pattern('faces_of_edge')
+
+    @tatsumasu()
+    def _DIHEDRAL_(self):  # noqa
+        if 'dihedral' in self.conversion_dict:
+            self._pattern(self.conversion_dict['dihedral'])
+        else:
+            self._pattern('dihedral')
+
+    @tatsumasu()
+    def _FACE_NORMAL_(self):  # noqa
+        if 'face_normal' in self.conversion_dict:
+            self._pattern(self.conversion_dict['face_normal'])
+        else:
+            self._pattern('face_normal')
+
+    @tatsumasu()
+    def _GET_ADJACENT_VERTICES_V_(self):  # noqa
+        if 'get_adjacent_vertices_v' in self.conversion_dict:
+            self._pattern(self.conversion_dict['get_adjacent_vertices_v'])
+        else:
+            self._pattern('get_adjacent_vertices_v')
+
+    @tatsumasu()
+    def _GET_INCIDENT_EDGES_V_(self):  # noqa
+        if 'get_incident_edges_v' in self.conversion_dict:
+            self._pattern(self.conversion_dict['get_incident_edges_v'])
+        else:
+            self._pattern('get_incident_edges_v')
+
+    @tatsumasu()
+    def _GET_INCIDENT_FACES_V_(self):  # noqa
+        if 'get_incident_faces_v' in self.conversion_dict:
+            self._pattern(self.conversion_dict['get_incident_faces_v'])
+        else:
+            self._pattern('get_incident_faces_v')
+
+    @tatsumasu()
+    def _GET_INCIDENT_VERTICES_E_(self):  # noqa
+        if 'get_incident_vertices_e' in self.conversion_dict:
+            self._pattern(self.conversion_dict['get_incident_vertices_e'])
+        else:
+            self._pattern('get_incident_vertices_e')
+
+    @tatsumasu()
+    def _GET_INCIDENT_FACES_E_(self):  # noqa
+        if 'get_incident_faces_e' in self.conversion_dict:
+            self._pattern(self.conversion_dict['get_incident_faces_e'])
+        else:
+            self._pattern('get_incident_faces_e')
+
+    @tatsumasu()
+    def _GET_DIAMOND_VERTICES_E_(self):  # noqa
+        if 'get_diamond_vertices_e' in self.conversion_dict:
+            self._pattern(self.conversion_dict['get_diamond_vertices_e'])
+        else:
+            self._pattern('get_diamond_vertices_e')
+
+    @tatsumasu()
+    def _GET_INCIDENT_VERTICES_F_(self):  # noqa
+        if 'get_incident_vertices_f' in self.conversion_dict:
+            self._pattern(self.conversion_dict['get_incident_vertices_f'])
+        else:
+            self._pattern('get_incident_vertices_f')
+
+    @tatsumasu()
+    def _GET_INCIDENT_EDGES_F_(self):  # noqa
+        if 'get_incident_edges_f' in self.conversion_dict:
+            self._pattern(self.conversion_dict['get_incident_edges_f'])
+        else:
+            self._pattern('get_incident_edges_f')
+
+    @tatsumasu()
+    def _GET_ADJACENT_FACES_F_(self):  # noqa
+        if 'get_adjacent_faces_f' in self.conversion_dict:
+            self._pattern(self.conversion_dict['get_adjacent_faces_f'])
+        else:
+            self._pattern('get_adjacent_faces_f')
+
+    @tatsumasu()
+    def _BUILD_VERTEX_VECTOR_(self):  # noqa
+        if 'build_vertex_vector' in self.conversion_dict:
+            self._pattern(self.conversion_dict['build_vertex_vector'])
+        else:
+            self._pattern('build_vertex_vector')
+
+    @tatsumasu()
+    def _BUILD_EDGE_VECTOR_(self):  # noqa
+        if 'build_edge_vector' in self.conversion_dict:
+            self._pattern(self.conversion_dict['build_edge_vector'])
+        else:
+            self._pattern('build_edge_vector')
+
+    @tatsumasu()
+    def _BUILD_FACE_VECTOR_(self):  # noqa
+        if 'build_face_vector' in self.conversion_dict:
+            self._pattern(self.conversion_dict['build_face_vector'])
+        else:
+            self._pattern('build_face_vector')
+
+    @tatsumasu()
+    def _STAR_(self):  # noqa
+        if 'star' in self.conversion_dict:
+            self._pattern(self.conversion_dict['star'])
+        else:
+            self._pattern('star')
+
+    @tatsumasu()
+    def _CLOSURE_(self):  # noqa
+        if 'closure' in self.conversion_dict:
+            self._pattern(self.conversion_dict['closure'])
+        else:
+            self._pattern('closure')
+
+    @tatsumasu()
+    def _LINK_(self):  # noqa
+        if 'link' in self.conversion_dict:
+            self._pattern(self.conversion_dict['link'])
+        else:
+            self._pattern('link')
+
+    @tatsumasu()
+    def _BOUNDARY_(self):  # noqa
+        if 'boundary' in self.conversion_dict:
+            self._pattern(self.conversion_dict['boundary'])
+        else:
+            self._pattern('boundary')
+
+    @tatsumasu()
+    def _IS_COMPLEX_(self):  # noqa
+        if 'is_complex' in self.conversion_dict:
+            self._pattern(self.conversion_dict['is_complex'])
+        else:
+            self._pattern('is_complex')
+
+    @tatsumasu()
+    def _IS_PURE_COMPLEX_(self):  # noqa
+        if 'is_pure_complex' in self.conversion_dict:
+            self._pattern(self.conversion_dict['is_pure_complex'])
+        else:
+            self._pattern('is_pure_complex')
+
     @tatsumasu('FacesOfEdgeFunc')
     def _faces_of_edge_func_(self):  # noqa
-        self._pattern('faces_of_edge')
+        self._FACES_OF_EDGE_()
         self.name_last_node('name')
         self._token('(')
 
@@ -3936,7 +4177,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('DihedralFunc')
     def _dihedral_func_(self):  # noqa
-        self._pattern('dihedral')
+        self._DIHEDRAL_()
         self.name_last_node('name')
         self._token('(')
 
@@ -3975,7 +4216,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('FaceNormalFunc')
     def _face_normal_func_(self):  # noqa
-        self._pattern('face_normal')
+        self._FACE_NORMAL_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4014,7 +4255,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('GetAdjacentVerticesVFunc')
     def _get_adjacent_vertices_v_func_(self):  # noqa
-        self._pattern('get_adjacent_vertices_v')
+        self._GET_ADJACENT_VERTICES_V_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4053,7 +4294,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('GetIncidentEdgesVFunc')
     def _get_incident_edges_v_func_(self):  # noqa
-        self._pattern('get_incident_edges_v')
+        self._GET_INCIDENT_EDGES_V_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4092,7 +4333,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('GetIncidentFacesVFunc')
     def _get_incident_faces_v_func_(self):  # noqa
-        self._pattern('get_incident_faces_v')
+        self._GET_INCIDENT_FACES_V_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4131,7 +4372,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('GetIncidentVerticesEFunc')
     def _get_incident_vertices_e_func_(self):  # noqa
-        self._pattern('get_incident_vertices_e')
+        self._GET_INCIDENT_VERTICES_E_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4170,7 +4411,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('GetIncidentFacesEFunc')
     def _get_incident_faces_e_func_(self):  # noqa
-        self._pattern('get_incident_faces_e')
+        self._GET_INCIDENT_FACES_E_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4209,7 +4450,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('GetDiamondVerticesEFunc')
     def _get_diamond_vertices_e_func_(self):  # noqa
-        self._pattern('get_diamond_vertices_e')
+        self._GET_DIAMOND_VERTICES_E_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4248,7 +4489,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('GetIncidentVerticesFFunc')
     def _get_incident_vertices_f_func_(self):  # noqa
-        self._pattern('get_incident_vertices_f')
+        self._GET_INCIDENT_VERTICES_F_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4287,7 +4528,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('GetIncidentEdgesFFunc')
     def _get_incident_edges_f_func_(self):  # noqa
-        self._pattern('get_incident_edges_f')
+        self._GET_INCIDENT_EDGES_F_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4326,7 +4567,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('GetAdjacentFacesFFunc')
     def _get_adjacent_faces_f_func_(self):  # noqa
-        self._pattern('get_adjacent_faces_f')
+        self._GET_ADJACENT_FACES_F_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4365,7 +4606,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('BuildVertexVectorFunc')
     def _build_vertex_vector_func_(self):  # noqa
-        self._pattern('build_vertex_vector')
+        self._BUILD_VERTEX_VECTOR_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4404,7 +4645,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('BuildEdgeVectorFunc')
     def _build_edge_vector_func_(self):  # noqa
-        self._pattern('build_edge_vector')
+        self._BUILD_EDGE_VECTOR_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4443,7 +4684,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('BuildFaceVectorFunc')
     def _build_face_vector_func_(self):  # noqa
-        self._pattern('build_face_vector')
+        self._BUILD_FACE_VECTOR_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4482,7 +4723,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('StarFunc')
     def _star_func_(self):  # noqa
-        self._pattern('star')
+        self._STAR_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4521,7 +4762,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('ClosureFunc')
     def _closure_func_(self):  # noqa
-        self._pattern('closure')
+        self._CLOSURE_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4560,7 +4801,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('LinkFunc')
     def _link_func_(self):  # noqa
-        self._pattern('link')
+        self._LINK_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4599,7 +4840,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('BoundaryFunc')
     def _boundary_func_(self):  # noqa
-        self._pattern('boundary')
+        self._BOUNDARY_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4638,7 +4879,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('IsComplexFunc')
     def _isComplex_func_(self):  # noqa
-        self._pattern('isComplex')
+        self._IS_COMPLEX_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4677,7 +4918,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('IsPureComplexFunc')
     def _isPureComplex_func_(self):  # noqa
-        self._pattern('isPureComplex')
+        self._IS_PURE_COMPLEX_()
         self.name_last_node('name')
         self._token('(')
 
@@ -7707,6 +7948,69 @@ class grammardefaultSemantics(object):
         return ast
 
     def inv_func(self, ast):  # noqa
+        return ast
+
+    def FACES_OF_EDGE(self, ast):  # noqa
+        return ast
+
+    def DIHEDRAL(self, ast):  # noqa
+        return ast
+
+    def FACE_NORMAL(self, ast):  # noqa
+        return ast
+
+    def GET_ADJACENT_VERTICES_V(self, ast):  # noqa
+        return ast
+
+    def GET_INCIDENT_EDGES_V(self, ast):  # noqa
+        return ast
+
+    def GET_INCIDENT_FACES_V(self, ast):  # noqa
+        return ast
+
+    def GET_INCIDENT_VERTICES_E(self, ast):  # noqa
+        return ast
+
+    def GET_INCIDENT_FACES_E(self, ast):  # noqa
+        return ast
+
+    def GET_DIAMOND_VERTICES_E(self, ast):  # noqa
+        return ast
+
+    def GET_INCIDENT_VERTICES_F(self, ast):  # noqa
+        return ast
+
+    def GET_INCIDENT_EDGES_F(self, ast):  # noqa
+        return ast
+
+    def GET_ADJACENT_FACES_F(self, ast):  # noqa
+        return ast
+
+    def BUILD_VERTEX_VECTOR(self, ast):  # noqa
+        return ast
+
+    def BUILD_EDGE_VECTOR(self, ast):  # noqa
+        return ast
+
+    def BUILD_FACE_VECTOR(self, ast):  # noqa
+        return ast
+
+    def STAR(self, ast):  # noqa
+        return ast
+
+    def CLOSURE(self, ast):  # noqa
+        return ast
+
+    def LINK(self, ast):  # noqa
+        return ast
+
+    def BOUNDARY(self, ast):  # noqa
+        return ast
+
+    def IS_COMPLEX(self, ast):  # noqa
+        return ast
+
+    def IS_PURE_COMPLEX(self, ast):  # noqa
         return ast
 
     def faces_of_edge_func(self, ast):  # noqa

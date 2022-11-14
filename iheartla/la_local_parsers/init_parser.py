@@ -3891,9 +3891,93 @@ class grammarinitParser(Parser):
             []
         )
 
+    @tatsumasu()
+    def _FACES_OF_EDGE_(self):  # noqa
+        self._pattern('faces_of_edge')
+
+    @tatsumasu()
+    def _DIHEDRAL_(self):  # noqa
+        self._pattern('dihedral')
+
+    @tatsumasu()
+    def _FACE_NORMAL_(self):  # noqa
+        self._pattern('face_normal')
+
+    @tatsumasu()
+    def _GET_ADJACENT_VERTICES_V_(self):  # noqa
+        self._pattern('get_adjacent_vertices_v')
+
+    @tatsumasu()
+    def _GET_INCIDENT_EDGES_V_(self):  # noqa
+        self._pattern('get_incident_edges_v')
+
+    @tatsumasu()
+    def _GET_INCIDENT_FACES_V_(self):  # noqa
+        self._pattern('get_incident_faces_v')
+
+    @tatsumasu()
+    def _GET_INCIDENT_VERTICES_E_(self):  # noqa
+        self._pattern('get_incident_vertices_e')
+
+    @tatsumasu()
+    def _GET_INCIDENT_FACES_E_(self):  # noqa
+        self._pattern('get_incident_faces_e')
+
+    @tatsumasu()
+    def _GET_DIAMOND_VERTICES_E_(self):  # noqa
+        self._pattern('get_diamond_vertices_e')
+
+    @tatsumasu()
+    def _GET_INCIDENT_VERTICES_F_(self):  # noqa
+        self._pattern('get_incident_vertices_f')
+
+    @tatsumasu()
+    def _GET_INCIDENT_EDGES_F_(self):  # noqa
+        self._pattern('get_incident_edges_f')
+
+    @tatsumasu()
+    def _GET_ADJACENT_FACES_F_(self):  # noqa
+        self._pattern('get_adjacent_faces_f')
+
+    @tatsumasu()
+    def _BUILD_VERTEX_VECTOR_(self):  # noqa
+        self._pattern('build_vertex_vector')
+
+    @tatsumasu()
+    def _BUILD_EDGE_VECTOR_(self):  # noqa
+        self._pattern('build_edge_vector')
+
+    @tatsumasu()
+    def _BUILD_FACE_VECTOR_(self):  # noqa
+        self._pattern('build_face_vector')
+
+    @tatsumasu()
+    def _STAR_(self):  # noqa
+        self._pattern('star')
+
+    @tatsumasu()
+    def _CLOSURE_(self):  # noqa
+        self._pattern('closure')
+
+    @tatsumasu()
+    def _LINK_(self):  # noqa
+        self._pattern('link')
+
+    @tatsumasu()
+    def _BOUNDARY_(self):  # noqa
+        self._pattern('boundary')
+
+    @tatsumasu()
+    def _IS_COMPLEX_(self):  # noqa
+        self._pattern('is_complex')
+
+    @tatsumasu()
+    def _IS_PURE_COMPLEX_(self):  # noqa
+        self._pattern('is_pure_complex')
+
     @tatsumasu('FacesOfEdgeFunc')
     def _faces_of_edge_func_(self):  # noqa
-        self._pattern('faces_of_edge')
+        self._FACES_OF_EDGE_()
         self.name_last_node('name')
         self._token('(')
 
@@ -3932,7 +4016,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('DihedralFunc')
     def _dihedral_func_(self):  # noqa
-        self._pattern('dihedral')
+        self._DIHEDRAL_()
         self.name_last_node('name')
         self._token('(')
 
@@ -3971,7 +4055,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('FaceNormalFunc')
     def _face_normal_func_(self):  # noqa
-        self._pattern('face_normal')
+        self._FACE_NORMAL_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4010,7 +4094,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('GetAdjacentVerticesVFunc')
     def _get_adjacent_vertices_v_func_(self):  # noqa
-        self._pattern('get_adjacent_vertices_v')
+        self._GET_ADJACENT_VERTICES_V_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4049,7 +4133,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('GetIncidentEdgesVFunc')
     def _get_incident_edges_v_func_(self):  # noqa
-        self._pattern('get_incident_edges_v')
+        self._GET_INCIDENT_EDGES_V_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4088,7 +4172,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('GetIncidentFacesVFunc')
     def _get_incident_faces_v_func_(self):  # noqa
-        self._pattern('get_incident_faces_v')
+        self._GET_INCIDENT_FACES_V_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4127,7 +4211,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('GetIncidentVerticesEFunc')
     def _get_incident_vertices_e_func_(self):  # noqa
-        self._pattern('get_incident_vertices_e')
+        self._GET_INCIDENT_VERTICES_E_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4166,7 +4250,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('GetIncidentFacesEFunc')
     def _get_incident_faces_e_func_(self):  # noqa
-        self._pattern('get_incident_faces_e')
+        self._GET_INCIDENT_FACES_E_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4205,7 +4289,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('GetDiamondVerticesEFunc')
     def _get_diamond_vertices_e_func_(self):  # noqa
-        self._pattern('get_diamond_vertices_e')
+        self._GET_DIAMOND_VERTICES_E_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4244,7 +4328,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('GetIncidentVerticesFFunc')
     def _get_incident_vertices_f_func_(self):  # noqa
-        self._pattern('get_incident_vertices_f')
+        self._GET_INCIDENT_VERTICES_F_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4283,7 +4367,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('GetIncidentEdgesFFunc')
     def _get_incident_edges_f_func_(self):  # noqa
-        self._pattern('get_incident_edges_f')
+        self._GET_INCIDENT_EDGES_F_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4322,7 +4406,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('GetAdjacentFacesFFunc')
     def _get_adjacent_faces_f_func_(self):  # noqa
-        self._pattern('get_adjacent_faces_f')
+        self._GET_ADJACENT_FACES_F_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4361,7 +4445,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('BuildVertexVectorFunc')
     def _build_vertex_vector_func_(self):  # noqa
-        self._pattern('build_vertex_vector')
+        self._BUILD_VERTEX_VECTOR_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4400,7 +4484,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('BuildEdgeVectorFunc')
     def _build_edge_vector_func_(self):  # noqa
-        self._pattern('build_edge_vector')
+        self._BUILD_EDGE_VECTOR_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4439,7 +4523,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('BuildFaceVectorFunc')
     def _build_face_vector_func_(self):  # noqa
-        self._pattern('build_face_vector')
+        self._BUILD_FACE_VECTOR_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4478,7 +4562,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('StarFunc')
     def _star_func_(self):  # noqa
-        self._pattern('star')
+        self._STAR_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4517,7 +4601,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('ClosureFunc')
     def _closure_func_(self):  # noqa
-        self._pattern('closure')
+        self._CLOSURE_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4556,7 +4640,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('LinkFunc')
     def _link_func_(self):  # noqa
-        self._pattern('link')
+        self._LINK_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4595,7 +4679,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('BoundaryFunc')
     def _boundary_func_(self):  # noqa
-        self._pattern('boundary')
+        self._BOUNDARY_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4634,7 +4718,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('IsComplexFunc')
     def _isComplex_func_(self):  # noqa
-        self._pattern('isComplex')
+        self._IS_COMPLEX_()
         self.name_last_node('name')
         self._token('(')
 
@@ -4673,7 +4757,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('IsPureComplexFunc')
     def _isPureComplex_func_(self):  # noqa
-        self._pattern('isPureComplex')
+        self._IS_PURE_COMPLEX_()
         self.name_last_node('name')
         self._token('(')
 
@@ -7675,6 +7759,69 @@ class grammarinitSemantics(object):
         return ast
 
     def inv_func(self, ast):  # noqa
+        return ast
+
+    def FACES_OF_EDGE(self, ast):  # noqa
+        return ast
+
+    def DIHEDRAL(self, ast):  # noqa
+        return ast
+
+    def FACE_NORMAL(self, ast):  # noqa
+        return ast
+
+    def GET_ADJACENT_VERTICES_V(self, ast):  # noqa
+        return ast
+
+    def GET_INCIDENT_EDGES_V(self, ast):  # noqa
+        return ast
+
+    def GET_INCIDENT_FACES_V(self, ast):  # noqa
+        return ast
+
+    def GET_INCIDENT_VERTICES_E(self, ast):  # noqa
+        return ast
+
+    def GET_INCIDENT_FACES_E(self, ast):  # noqa
+        return ast
+
+    def GET_DIAMOND_VERTICES_E(self, ast):  # noqa
+        return ast
+
+    def GET_INCIDENT_VERTICES_F(self, ast):  # noqa
+        return ast
+
+    def GET_INCIDENT_EDGES_F(self, ast):  # noqa
+        return ast
+
+    def GET_ADJACENT_FACES_F(self, ast):  # noqa
+        return ast
+
+    def BUILD_VERTEX_VECTOR(self, ast):  # noqa
+        return ast
+
+    def BUILD_EDGE_VECTOR(self, ast):  # noqa
+        return ast
+
+    def BUILD_FACE_VECTOR(self, ast):  # noqa
+        return ast
+
+    def STAR(self, ast):  # noqa
+        return ast
+
+    def CLOSURE(self, ast):  # noqa
+        return ast
+
+    def LINK(self, ast):  # noqa
+        return ast
+
+    def BOUNDARY(self, ast):  # noqa
+        return ast
+
+    def IS_COMPLEX(self, ast):  # noqa
+        return ast
+
+    def IS_PURE_COMPLEX(self, ast):  # noqa
         return ast
 
     def faces_of_edge_func(self, ast):  # noqa
