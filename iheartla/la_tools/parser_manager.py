@@ -18,7 +18,6 @@ import shutil
 import regex as re
 from datetime import datetime
 
-
 class ParserManager(object):
     __instance = None
     @staticmethod
@@ -70,6 +69,7 @@ class ParserManager(object):
         self.default_parser.new_id_list = []
         self.default_parser.new_func_list = []
         self.default_parser.builtin_list = []
+        self.default_parser.conversion_dict = {}
         self.default_parser.const_e = False
         if "ids" in extra_dict:
             self.default_parser.new_id_list = extra_dict["ids"]
@@ -81,6 +81,8 @@ class ParserManager(object):
                 self.default_parser.const_e = True
                 funcs_list.remove('e')
             self.default_parser.builtin_list = funcs_list
+        if 'rename' in extra_dict:
+            self.default_parser.conversion_dict = extra_dict["rename"]
 
 
 class ParserFileManager(object):
@@ -443,6 +445,7 @@ class ParserFileManager(object):
         self.new_id_list = []
         self.new_func_list = []
         self.builtin_list = []
+        self.conversion_dict = {}
         self.const_e = False"""
                 def_parser = def_parser.replace(original_class, new_class)
                 # ids
@@ -679,6 +682,18 @@ class ParserFileManager(object):
                 with self._option():
                     self._pattern(new_id)"""
                 # def_parser = def_parser.replace(builtin_keys, builtin_keys_new)
+                for builtin_func_list in PACKAGES_FUNC_DICT.values():
+                    for builtin_func in builtin_func_list:
+                        builtin_func_name_key = r"""@tatsumasu()
+    def _{}_(self):  # noqa
+        self._pattern('{}')""".format(builtin_func.upper(), builtin_func)
+                        builtin_func_name_key_new = r"""@tatsumasu()
+    def _{}_(self):  # noqa
+        if '{}' in self.conversion_dict:
+            self._pattern(self.conversion_dict['{}'])
+        else:
+            self._pattern('{}')""".format(builtin_func.upper(), builtin_func, builtin_func, builtin_func)
+                        def_parser = def_parser.replace(builtin_func_name_key, builtin_func_name_key_new)
                 #
                 save_to_file(def_parser, os.path.join(la_local_parsers, 'default_parser.py'))
 

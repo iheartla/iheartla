@@ -236,6 +236,7 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
     multi_list = []
     # deal with packages
     dependent_modules = []
+    builtin_func_rdict = {}
     if len(start_node.directives) > 0:
         dependent_modules = start_node.get_module_directives()
         # include directives (builtin modules)
@@ -262,6 +263,9 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
                         continue
                 # add func names only
                 key_names.append("{}_func".format(name)) # add correct imported syms
+            for key, value in r_dict.items():
+                if key != value:
+                    builtin_func_rdict[key] = value
         package_name_list += key_names
         if len(key_names) > 0:
             # add new rules
@@ -271,6 +275,7 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
                                                                                                 keyword_index:]
             parse_key += ';'.join(key_names)
         extra_dict['pkg'] = package_name_list
+        extra_dict['rename'] = builtin_func_rdict
     # get new parser
     # parser = get_compiled_parser(current_content, parse_key, extra_dict)
     # model = parser.parse(content, parseinfo=True)
