@@ -786,17 +786,21 @@ class CodeGenEigen(CodeGen):
             content.append("double {} = 0;\n".format(assign_id))
         if node.enum_list:
             range_info = self.visit(node.range, **kwargs)
-            tuple_name = self.generate_var_name("tuple")
-            content.append('for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), tuple_name, range_info.content))
-            extra_content = ''
-            if node.use_tuple:
-                content.append('    {} {} = {};\n'.format(self.get_ctype(self.get_sym_type(node.enum_list[0])), node.enum_list[0], tuple_name))
+            if len(node.enum_list) == 1:
+                content.append('for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), node.enum_list[0],
+                                                           range_info.content))
             else:
-                for i in range(len(node.enum_list)):
-                    if node.range.la_type.index_type:
-                        content.append('    int {} = std::get<{}>({}){} + 1;\n'.format(node.enum_list[i], i, tuple_name, extra_content))
-                    else:
-                        content.append('    int {} = std::get<{}>({}){};\n'.format(node.enum_list[i], i, tuple_name, extra_content))
+                tuple_name = self.generate_var_name("tuple")
+                content.append('for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), tuple_name, range_info.content))
+                extra_content = ''
+                if node.use_tuple:
+                    content.append('    {} {} = {};\n'.format(self.get_ctype(self.get_sym_type(node.enum_list[0])), node.enum_list[0], tuple_name))
+                else:
+                    for i in range(len(node.enum_list)):
+                        if node.range.la_type.index_type:
+                            content.append('    int {} = std::get<{}>({}){} + 1;\n'.format(node.enum_list[i], i, tuple_name, extra_content))
+                        else:
+                            content.append('    int {} = std::get<{}>({}){};\n'.format(node.enum_list[i], i, tuple_name, extra_content))
             exp_pre_list = []
             if exp_info.pre_list:  # catch pre_list
                 list_content = "".join(exp_info.pre_list)
