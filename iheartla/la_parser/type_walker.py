@@ -710,6 +710,7 @@ class TypeWalker(NodeWalker):
         self.saved_used_params = copy.deepcopy(self.used_params)
         self.saved_opt_syms = copy.deepcopy(self.opt_syms)
         self.saved_opt_dict = copy.deepcopy(self.opt_dict)
+        self.saved_scope = self.cur_scope
 
     def pop_environment(self):
         self.logger.debug("pop_environment: {}".format(self.saved_symtable))
@@ -727,6 +728,7 @@ class TypeWalker(NodeWalker):
         self.local_func_parsing = False
         self.is_param_block = False
         self.visiting_solver_eq = False
+        self.cur_scope = self.saved_scope
 
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
         block_node = BlockNode()
@@ -3004,7 +3006,7 @@ class TypeWalker(NodeWalker):
     def walk_Fraction(self, node, **kwargs):
         frac_list = get_unicode_fraction(node.value)
         node_info = NodeInfo(ScalarType(), content=node.text)
-        ir_node = FractionNode(node.parseinfo, node.value, frac_list[0], frac_list[1], raw_text=node.text)
+        ir_node = FractionNode(parse_info=node.parseinfo, numerator=frac_list[0], denominator=frac_list[1], raw_text=node.text)
         ir_node.la_type = node_info.la_type
         node_info.ir = ir_node
         return node_info
