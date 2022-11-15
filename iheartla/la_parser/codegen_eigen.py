@@ -256,7 +256,7 @@ class CodeGenEigen(CodeGen):
                         c_name = name
                         if c_name in module_data.inverse_dict:
                             c_name = module_data.inverse_dict[c_name]
-                        if c_name in [EDGES]:
+                        if c_name in PACKAGES_SYM_DICT[key]:
                             is_property = true
                             new_name = "{}.{}".format(module_data.instance_name, c_name)
         return is_property, new_name

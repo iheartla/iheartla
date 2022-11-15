@@ -259,7 +259,8 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
                     # multi-letter imported syms
                     multi_list.append(r_dict[name])
                 if package == TRIANGLE_MESH:
-                    if name in [EDGES]:
+                    # check property, not func
+                    if name in PACKAGES_SYM_DICT[package]:
                         continue
                 # add func names only
                 key_names.append("{}_func".format(name)) # add correct imported syms
