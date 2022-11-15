@@ -3975,6 +3975,18 @@ class grammarinitParser(Parser):
     def _IS_PURE_COMPLEX_(self):  # noqa
         self._pattern('is_pure_complex')
 
+    @tatsumasu()
+    def _GET_VERTICES_E_(self):  # noqa
+        self._pattern('get_vertices_e')
+
+    @tatsumasu()
+    def _GET_VERTICES_F_(self):  # noqa
+        self._pattern('get_vertices_f')
+
+    @tatsumasu()
+    def _GET_EDGES_F_(self):  # noqa
+        self._pattern('get_edges_f')
+
     @tatsumasu('FacesOfEdgeFunc')
     def _faces_of_edge_func_(self):  # noqa
         self._FACES_OF_EDGE_()
@@ -4758,6 +4770,123 @@ class grammarinitParser(Parser):
     @tatsumasu('IsPureComplexFunc')
     def _isPureComplex_func_(self):  # noqa
         self._IS_PURE_COMPLEX_()
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('GetVerticesEFunc')
+    def _get_vertices_e_func_(self):  # noqa
+        self._GET_VERTICES_E_()
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('GetVerticesFFunc')
+    def _get_vertices_f_func_(self):  # noqa
+        self._GET_VERTICES_F_()
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('GetEdgesFFunc')
+    def _get_edges_f_func_(self):  # noqa
+        self._GET_EDGES_F_()
         self.name_last_node('name')
         self._token('(')
 
@@ -7824,6 +7953,15 @@ class grammarinitSemantics(object):
     def IS_PURE_COMPLEX(self, ast):  # noqa
         return ast
 
+    def GET_VERTICES_E(self, ast):  # noqa
+        return ast
+
+    def GET_VERTICES_F(self, ast):  # noqa
+        return ast
+
+    def GET_EDGES_F(self, ast):  # noqa
+        return ast
+
     def faces_of_edge_func(self, ast):  # noqa
         return ast
 
@@ -7885,6 +8023,15 @@ class grammarinitSemantics(object):
         return ast
 
     def isPureComplex_func(self, ast):  # noqa
+        return ast
+
+    def get_vertices_e_func(self, ast):  # noqa
+        return ast
+
+    def get_vertices_f_func(self, ast):  # noqa
+        return ast
+
+    def get_edges_f_func(self, ast):  # noqa
         return ast
 
     def Directive(self, ast):  # noqa
@@ -8684,6 +8831,24 @@ class IsComplexFunc(ModelBase):
 
 
 class IsPureComplexFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class GetVerticesEFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class GetVerticesFFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class GetEdgesFFunc(ModelBase):
     name = None
     params = None
     separators = None

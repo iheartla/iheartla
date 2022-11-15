@@ -1306,6 +1306,9 @@ class GPType(IntEnum):
     BuildVertexVector = 12
     BuildEdgeVector = 13
     BuildFaceVector = 14
+    GetVerticesE = 15
+    GetVerticesF = 16
+    GetEdgesF = 17
     # dec
     Star = 100
     Closure = 101

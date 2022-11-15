@@ -25,7 +25,7 @@ from tatsu.util import re, generic_main  # noqa
 KEYWORDS = {}  # type: ignore
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
+class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
     def __init__(
         self,
         text,
@@ -37,7 +37,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
         namechars='',
         **kwargs
     ):
-        super(grammare37f0136aa3ffaf149b351f6a4c948e9Buffer, self).__init__(
+        super(grammarc21f969b5f03d33d43e04f8f136e7682Buffer, self).__init__(
             text,
             whitespace=whitespace,
             nameguard=nameguard,
@@ -49,7 +49,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
         )
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
+class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
     def __init__(
         self,
         whitespace=re.compile('(?!.*)'),
@@ -61,12 +61,12 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         parseinfo=True,
         keywords=None,
         namechars='',
-        buffer_class=grammare37f0136aa3ffaf149b351f6a4c948e9Buffer,
+        buffer_class=grammarc21f969b5f03d33d43e04f8f136e7682Buffer,
         **kwargs
     ):
         if keywords is None:
             keywords = KEYWORDS
-        super(grammare37f0136aa3ffaf149b351f6a4c948e9Parser, self).__init__(
+        super(grammarc21f969b5f03d33d43e04f8f136e7682Parser, self).__init__(
             whitespace=whitespace,
             nameguard=nameguard,
             comments_re=comments_re,
@@ -3975,6 +3975,18 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def _IS_PURE_COMPLEX_(self):  # noqa
         self._pattern('is_pure_complex')
 
+    @tatsumasu()
+    def _GET_VERTICES_E_(self):  # noqa
+        self._pattern('get_vertices_e')
+
+    @tatsumasu()
+    def _GET_VERTICES_F_(self):  # noqa
+        self._pattern('get_vertices_f')
+
+    @tatsumasu()
+    def _GET_EDGES_F_(self):  # noqa
+        self._pattern('get_edges_f')
+
     @tatsumasu('FacesOfEdgeFunc')
     def _faces_of_edge_func_(self):  # noqa
         self._FACES_OF_EDGE_()
@@ -4758,6 +4770,123 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     @tatsumasu('IsPureComplexFunc')
     def _isPureComplex_func_(self):  # noqa
         self._IS_PURE_COMPLEX_()
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('GetVerticesEFunc')
+    def _get_vertices_e_func_(self):  # noqa
+        self._GET_VERTICES_E_()
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('GetVerticesFFunc')
+    def _get_vertices_f_func_(self):  # noqa
+        self._GET_VERTICES_F_()
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('GetEdgesFFunc')
+    def _get_edges_f_func_(self):  # noqa
+        self._GET_EDGES_F_()
         self.name_last_node('name')
         self._token('(')
 
@@ -6967,12 +7096,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
 
     @tatsumasu()
     def _func_id_(self):  # noqa
-        self._identifier_alone_()
-
-        def block0():
-            self._token('_')
-            self._identifier_alone_()
-        self._closure(block0)
+        self._token('!!!')
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
@@ -6986,9 +7110,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                             with self._group():
                                 with self._choice():
                                     with self._option():
-                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*)*')
+                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*')
                                     with self._option():
-                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
+                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
                                     self._error('no available options')
                             self.name_last_node('value')
                         with self._option():
@@ -7003,9 +7127,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                     with self._group():
                         with self._choice():
                             with self._option():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*)*')
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*')
                             with self._option():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
                             self._error('no available options')
                 self.name_last_node('value')
             self._error('no available options')
@@ -7018,75 +7142,10 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def _identifier_(self):  # noqa
         with self._choice():
             with self._option():
-                self._identifier_with_multi_subscript_()
-            with self._option():
                 self._identifier_with_subscript_()
             with self._option():
                 self._identifier_alone_()
             self._error('no available options')
-
-    @tatsumasu('IdentifierSubscript')
-    def _identifier_with_multi_subscript_(self):  # noqa
-        self._identifier_alone_()
-        self.name_last_node('left')
-
-        def block1():
-            self._token('_')
-            self._identifier_alone_()
-            self.add_last_node_to_name('right')
-        self._positive_closure(block1)
-        with self._group():
-            with self._choice():
-                with self._option():
-
-                    def block3():
-                        with self._choice():
-                            with self._option():
-                                with self._group():
-                                    self._token(',')
-                                    self._token('*')
-                                    self.add_last_node_to_name('right')
-                            with self._option():
-                                with self._group():
-
-                                    def block5():
-                                        self._token(',')
-                                    self._closure(block5)
-                                    with self._group():
-                                        with self._choice():
-                                            with self._option():
-                                                self._integer_()
-                                            with self._option():
-                                                self._identifier_alone_()
-                                            self._error('no available options')
-                                    self.add_last_node_to_name('right')
-                            self._error('no available options')
-                    self._closure(block3)
-                with self._option():
-
-                    def block9():
-                        with self._choice():
-                            with self._option():
-                                with self._group():
-                                    self._token(',')
-                                    self._token('*')
-                                    self.add_last_node_to_name('right')
-                            with self._option():
-                                with self._group():
-
-                                    def block11():
-                                        self._token(',')
-                                    self._closure(block11)
-                                    with self._group():
-                                        self._sub_integer_()
-                                    self.add_last_node_to_name('right')
-                            self._error('no available options')
-                    self._closure(block9)
-                self._error('no available options')
-        self.ast._define(
-            ['left'],
-            ['right']
-        )
 
     @tatsumasu('Function')
     def _function_operator_(self):  # noqa
@@ -7182,37 +7241,40 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             with self._option():
                 self._func_id_()
                 self.name_last_node('name')
-                self._token('(')
-                self.name_last_node('p')
 
-                def block31():
+                def block30():
+                    self._token('(')
+                    self.name_last_node('p')
 
                     def block32():
-                        self._hspace_()
-                    self._closure(block32)
-                    self._expression_()
-                    self.add_last_node_to_name('params')
 
-                    def block34():
-
-                        def block35():
+                        def block33():
                             self._hspace_()
-                        self._closure(block35)
-                        self._params_separator_()
-                        self.add_last_node_to_name('separators')
-
-                        def block37():
-                            self._hspace_()
-                        self._closure(block37)
+                        self._closure(block33)
                         self._expression_()
                         self.add_last_node_to_name('params')
-                    self._closure(block34)
-                self._closure(block31)
 
-                def block39():
-                    self._hspace_()
-                self._closure(block39)
-                self._token(')')
+                        def block35():
+
+                            def block36():
+                                self._hspace_()
+                            self._closure(block36)
+                            self._params_separator_()
+                            self.add_last_node_to_name('separators')
+
+                            def block38():
+                                self._hspace_()
+                            self._closure(block38)
+                            self._expression_()
+                            self.add_last_node_to_name('params')
+                        self._closure(block35)
+                    self._closure(block32)
+
+                    def block40():
+                        self._hspace_()
+                    self._closure(block40)
+                    self._token(')')
+                self._closure(block30)
             self._error('no available options')
         self.ast._define(
             ['d', 'name', 'p', 's'],
@@ -7220,7 +7282,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         )
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
+class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
     def start(self, ast):  # noqa
         return ast
 
@@ -7824,6 +7886,15 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
     def IS_PURE_COMPLEX(self, ast):  # noqa
         return ast
 
+    def GET_VERTICES_E(self, ast):  # noqa
+        return ast
+
+    def GET_VERTICES_F(self, ast):  # noqa
+        return ast
+
+    def GET_EDGES_F(self, ast):  # noqa
+        return ast
+
     def faces_of_edge_func(self, ast):  # noqa
         return ast
 
@@ -7885,6 +7956,15 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
         return ast
 
     def isPureComplex_func(self, ast):  # noqa
+        return ast
+
+    def get_vertices_e_func(self, ast):  # noqa
+        return ast
+
+    def get_vertices_f_func(self, ast):  # noqa
+        return ast
+
+    def get_edges_f_func(self, ast):  # noqa
         return ast
 
     def Directive(self, ast):  # noqa
@@ -8085,9 +8165,6 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics(object):
     def identifier(self, ast):  # noqa
         return ast
 
-    def identifier_with_multi_subscript(self, ast):  # noqa
-        return ast
-
     def function_operator(self, ast):  # noqa
         return ast
 
@@ -8100,7 +8177,7 @@ def main(filename, start=None, **kwargs):
     else:
         with open(filename) as f:
             text = f.read()
-    parser = grammare37f0136aa3ffaf149b351f6a4c948e9Parser()
+    parser = grammarc21f969b5f03d33d43e04f8f136e7682Parser()
     return parser.parse(text, rule_name=start, filename=filename, **kwargs)
 
 
@@ -8108,7 +8185,7 @@ if __name__ == '__main__':
     import json
     from tatsu.util import asjson
 
-    ast = generic_main(main, grammare37f0136aa3ffaf149b351f6a4c948e9Parser, name='grammare37f0136aa3ffaf149b351f6a4c948e9')
+    ast = generic_main(main, grammarc21f969b5f03d33d43e04f8f136e7682Parser, name='grammarc21f969b5f03d33d43e04f8f136e7682')
     print('AST:')
     print(ast)
     print()
@@ -8137,13 +8214,13 @@ class ModelBase(Node):
     pass
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics(ModelBuilderSemantics):
+class grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics(ModelBuilderSemantics):
     def __init__(self, context=None, types=None):
         types = [
             t for t in globals().values()
             if type(t) is type and issubclass(t, ModelBase)
         ] + (types or [])
-        super(grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics, self).__init__(context=context, types=types)
+        super(grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics, self).__init__(context=context, types=types)
 
 
 class Start(ModelBase):
@@ -8684,6 +8761,24 @@ class IsComplexFunc(ModelBase):
 
 
 class IsPureComplexFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class GetVerticesEFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class GetVerticesFFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class GetEdgesFFunc(ModelBase):
     name = None
     params = None
     separators = None

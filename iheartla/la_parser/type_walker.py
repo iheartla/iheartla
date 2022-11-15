@@ -1302,6 +1302,12 @@ class TypeWalker(NodeWalker):
                 if pkg_name == TRIANGLE_MESH:
                     if EDGES in name_list:
                         self.symtable[r_dict[EDGES]] = MatrixType(rows=self.generate_var_name("edim"), cols=2, element_type=ScalarType(is_int=True, index_type=True))
+                    if VI in name_list:
+                        self.symtable[r_dict[VI]] = SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
+                    if FI in name_list:
+                        self.symtable[r_dict[FI]] = SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
+                    if EI in name_list:
+                        self.symtable[r_dict[EI]] = SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
         else:
             module = package_info.ir
             self.import_module_list.append(DependenceData(module.get_name(), params_list, name_list))
@@ -3443,13 +3449,19 @@ class TypeWalker(NodeWalker):
                 self.assert_expr(len(node.params) == 1 and param_list[0].la_type.is_scalar(), 'Parameter should be scalar')
                 ret_type = SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
         elif GPType.BuildVertexVector <= func_type <= GPType.BuildFaceVector:
-            self.assert_expr(len(node.params) == 1 and param_list[0].la_type.is_scalar(), 'Parameter should be scalar')
+            self.assert_expr(len(node.params) == 1 and param_list[0].la_type.is_set(), 'Parameter should be set')
             if GPType.BuildVertexVector == func_type:
-                ret_type = VectorType(rows=self.symtable[self.builtin_module_dict[TRIANGLE_MESH].v].rows)
+                ret_type = VectorType(rows=self.symtable[self.builtin_module_dict[TRIANGLE_MESH].v].rows, element_type=ScalarType(is_int=True, index_type=True))
             elif GPType.BuildFaceVector == func_type:
-                ret_type = VectorType(rows=self.symtable[self.builtin_module_dict[TRIANGLE_MESH].f].rows)
+                ret_type = VectorType(rows=self.symtable[self.builtin_module_dict[TRIANGLE_MESH].f].rows, element_type=ScalarType(is_int=True, index_type=True))
             else:
-                ret_type = VectorType()
+                ret_type = VectorType(element_type=ScalarType(is_int=True, index_type=True))
+        elif func_type == GPType.GetVerticesE:
+            ret_type = [ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True)]
+        elif func_type == GPType.GetVerticesF:
+            ret_type = [ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True)]
+        elif func_type == GPType.GetEdgesF:
+            ret_type = [ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True)]
         tri_node = GPFuncNode(param_list, func_type, node.name)
         node_info = NodeInfo(ret_type, symbols=symbols)
         tri_node.la_type = ret_type
@@ -3605,6 +3617,12 @@ class TypeWalker(NodeWalker):
         return self.create_gp_node_info(GPType.BuildEdgeVector, node, **kwargs)
     def walk_BuildFaceVectorFunc(self, node, **kwargs):
         return self.create_gp_node_info(GPType.BuildFaceVector, node, **kwargs)
+    def walk_GetVerticesEFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.GetVerticesE, node, **kwargs)
+    def walk_GetVerticesFFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.GetVerticesF, node, **kwargs)
+    def walk_GetEdgesFFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.GetEdgesF, node, **kwargs)
     ###################################################################
     def walk_StarFunc(self, node, **kwargs):
         return self.create_gp_node_info(GPType.Star, node, **kwargs)

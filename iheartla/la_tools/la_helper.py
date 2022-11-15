@@ -24,6 +24,9 @@ OUTPUT_CODE = "output_code"
 IMG_CODE = "."
 TRIANGLE_MESH = 'triangle_mesh'
 EDGES = "edges"
+VI = 'Vi'
+EI = 'Ei'
+FI = 'Fi'
 PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', 'arccos', 'tan', 'atan', 'arctan', 'atan2',
                                   'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh',
                                   'cot', 'sec', 'csc'],
@@ -33,9 +36,10 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                  'get_incident_vertices_e', 'get_incident_faces_e', 'get_diamond_vertices_e',
                                  'get_incident_vertices_f', 'get_incident_edges_f', 'get_adjacent_faces_f',
                                  'build_vertex_vector', 'build_edge_vector', 'build_face_vector',
+                                 'get_vertices_e', 'get_edges_f','get_vertices_f',
                                  'star', 'closure', 'link', 'boundary', 'is_complex', 'is_pure_complex']}
 PACKAGES_SYM_DICT = {'trigonometry': ['e'],
-                 TRIANGLE_MESH: [EDGES]}
+                 TRIANGLE_MESH: [EDGES, VI, EI, FI]}
 def merge_dict(dict1, dict2):
     # key:[value,]
     res = copy.deepcopy(dict1)

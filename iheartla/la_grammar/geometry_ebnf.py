@@ -22,6 +22,9 @@ LINK = /link/;
 BOUNDARY = /boundary/;
 IS_COMPLEX = /is_complex/;
 IS_PURE_COMPLEX = /is_pure_complex/;
+GET_VERTICES_E = /get_vertices_e/;
+GET_VERTICES_F = /get_vertices_f/;
+GET_EDGES_F = /get_edges_f/;
 
 faces_of_edge_func::FacesOfEdgeFunc
     = name:FACES_OF_EDGE'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
@@ -99,6 +102,15 @@ isComplex_func::IsComplexFunc
     ;
 isPureComplex_func::IsPureComplexFunc
     = name:IS_PURE_COMPLEX'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
+    ;
+get_vertices_e_func::GetVerticesEFunc
+    = name:GET_VERTICES_E'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
+    ;
+get_vertices_f_func::GetVerticesFFunc
+    = name:GET_VERTICES_F'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
+    ;
+get_edges_f_func::GetEdgesFFunc
+    = name:GET_EDGES_F'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
     ;
 
 """
