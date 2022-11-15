@@ -169,6 +169,14 @@ class CodeGen(IRPrinter):
 
     def get_func_prefix(self):
         return ''
+    def get_builtin_func_name(self, name):
+        res = name
+        for key, module_data in self.builtin_module_dict.items():
+            if key in CLASS_PACKAGES:
+                if key == TRIANGLE_MESH:
+                    if name in module_data.inverse_dict:
+                        res = module_data.inverse_dict[name]
+        return res
     def visit_gp_func(self, node, **kwargs):
         if node.func_name not in self.code_frame.extra_funcs:
             self.code_frame.extra_funcs.append(node.func_name)
@@ -179,5 +187,5 @@ class CodeGen(IRPrinter):
             pre_list += param_info.pre_list
             params_content_list.append(param_info.content)
         content = node.func_name
-        content = "{}.{}({})".format(self.get_func_prefix(), content, ', '.join(params_content_list))
+        content = "{}.{}({})".format(self.get_func_prefix(), self.get_builtin_func_name(content), ', '.join(params_content_list))
         return CodeNodeInfo(content, pre_list=pre_list)
