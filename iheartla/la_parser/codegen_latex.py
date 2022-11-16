@@ -350,7 +350,7 @@ class CodeGenLatex(CodeGen):
             rhs_list = []
             for cur_index in range(len(node.right)):
                 rhs_list.append(self.visit(node.right[cur_index], **kwargs))
-            if self.is_main_scope():
+            if self.is_main_scope() and not self.local_func_parsing:
                 content = ','.join(lhs_list) + " & = " + ','.join(rhs_list)
             else:
                 content = ','.join(lhs_list) + " = " + ','.join(rhs_list)
@@ -454,6 +454,7 @@ class CodeGenLatex(CodeGen):
         return content
 
     def visit_local_func(self, node, **kwargs):
+        self.local_func_parsing = True
         params_str = ''
         if len(node.params) > 0:
             for index in range(len(node.params)):
@@ -471,13 +472,17 @@ class CodeGenLatex(CodeGen):
         self.code_frame.expr += content + '\n'
         self.code_frame.expr_dict[node.raw_text] = content
         if len(node.defs) > 0:
-            self.local_func_parsing = True
             par_list = []
             for par in node.defs:
                 par_list.append(self.visit(par, **kwargs))
             # content += "\\intertext{{{}}} ".format('where') + ', '.join(par_list)
             content += ' \\text{{ where }}  ' + ', '.join(par_list)
-            self.local_func_parsing = False
+        if len(node.extra_list) > 0:
+            extra_list = []
+            for et in node.extra_list:
+                extra_list.append(self.visit(et, **kwargs))
+            content += '; ' + '; '.join(extra_list)
+        self.local_func_parsing = False
         return content
 
     def visit_if(self, node, **kwargs):
