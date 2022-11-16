@@ -2012,7 +2012,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             self._closure(block4)
             self._expression_()
             self.add_last_node_to_name('exp')
-        self._positive_closure(block2)
+        self._closure(block2)
 
         def block6():
             self._hspace_()

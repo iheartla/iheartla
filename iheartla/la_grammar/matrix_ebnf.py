@@ -10,7 +10,7 @@ vector::Vector
     ;
 
 set::Set            
-    = '{' {hspace} exp+:expression {{hspace} ',' {hspace} exp+:expression}+ {hspace} '}'
+    = '{' {hspace} exp+:expression {{hspace} ',' {hspace} exp+:expression} {hspace} '}'
     ;
     
 multi_cond_expr::MultiCondExpr
