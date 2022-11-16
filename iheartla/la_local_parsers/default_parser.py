@@ -4053,6 +4053,13 @@ class grammardefaultParser(Parser):
             self._pattern('get_diamond_vertices_e')
 
     @tatsumasu()
+    def _GET_DIAMOND_FACES_E_(self):  # noqa
+        if 'get_diamond_faces_e' in self.conversion_dict:
+            self._pattern(self.conversion_dict['get_diamond_faces_e'])
+        else:
+            self._pattern('get_diamond_faces_e')
+
+    @tatsumasu()
     def _GET_INCIDENT_VERTICES_F_(self):  # noqa
         if 'get_incident_vertices_f' in self.conversion_dict:
             self._pattern(self.conversion_dict['get_incident_vertices_f'])
@@ -4156,6 +4163,41 @@ class grammardefaultParser(Parser):
             self._pattern(self.conversion_dict['get_edges_f'])
         else:
             self._pattern('get_edges_f')
+
+    @tatsumasu()
+    def _VERTICES_(self):  # noqa
+        if 'vertices' in self.conversion_dict:
+            self._pattern(self.conversion_dict['vertices'])
+        else:
+            self._pattern('vertices')
+
+    @tatsumasu()
+    def _EDGES_(self):  # noqa
+        if 'edges' in self.conversion_dict:
+            self._pattern(self.conversion_dict['edges'])
+        else:
+            self._pattern('edges')
+
+    @tatsumasu()
+    def _FACES_(self):  # noqa
+        if 'faces' in self.conversion_dict:
+            self._pattern(self.conversion_dict['faces'])
+        else:
+            self._pattern('faces')
+
+    @tatsumasu()
+    def _TETS_(self):  # noqa
+        if 'tets' in self.conversion_dict:
+            self._pattern(self.conversion_dict['tets'])
+        else:
+            self._pattern('tets')
+
+    @tatsumasu()
+    def _DIAMOND_(self):  # noqa
+        if 'diamond' in self.conversion_dict:
+            self._pattern(self.conversion_dict['diamond'])
+        else:
+            self._pattern('diamond')
 
     @tatsumasu('FacesOfEdgeFunc')
     def _faces_of_edge_func_(self):  # noqa
@@ -4472,6 +4514,45 @@ class grammardefaultParser(Parser):
     @tatsumasu('GetDiamondVerticesEFunc')
     def _get_diamond_vertices_e_func_(self):  # noqa
         self._GET_DIAMOND_VERTICES_E_()
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('GetDiamondFacesEFunc')
+    def _get_diamond_faces_e_func_(self):  # noqa
+        self._GET_DIAMOND_FACES_E_()
         self.name_last_node('name')
         self._token('(')
 
@@ -5057,6 +5138,201 @@ class grammardefaultParser(Parser):
     @tatsumasu('GetEdgesFFunc')
     def _get_edges_f_func_(self):  # noqa
         self._GET_EDGES_F_()
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('VerticesFunc')
+    def _vertices_func_(self):  # noqa
+        self._VERTICES_()
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('EdgesFunc')
+    def _edges_func_(self):  # noqa
+        self._EDGES_()
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('FacesFunc')
+    def _faces_func_(self):  # noqa
+        self._FACES_()
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('TetsFunc')
+    def _tets_func_(self):  # noqa
+        self._TETS_()
+        self.name_last_node('name')
+        self._token('(')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block4():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block4)
+        self._closure(block1)
+
+        def block9():
+            self._hspace_()
+        self._closure(block9)
+        self._token(')')
+        self.ast._define(
+            ['name'],
+            ['params', 'separators']
+        )
+
+    @tatsumasu('DiamondFunc')
+    def _diamond_func_(self):  # noqa
+        self._DIAMOND_()
         self.name_last_node('name')
         self._token('(')
 
@@ -8143,6 +8419,9 @@ class grammardefaultSemantics(object):
     def GET_DIAMOND_VERTICES_E(self, ast):  # noqa
         return ast
 
+    def GET_DIAMOND_FACES_E(self, ast):  # noqa
+        return ast
+
     def GET_INCIDENT_VERTICES_F(self, ast):  # noqa
         return ast
 
@@ -8188,6 +8467,21 @@ class grammardefaultSemantics(object):
     def GET_EDGES_F(self, ast):  # noqa
         return ast
 
+    def VERTICES(self, ast):  # noqa
+        return ast
+
+    def EDGES(self, ast):  # noqa
+        return ast
+
+    def FACES(self, ast):  # noqa
+        return ast
+
+    def TETS(self, ast):  # noqa
+        return ast
+
+    def DIAMOND(self, ast):  # noqa
+        return ast
+
     def faces_of_edge_func(self, ast):  # noqa
         return ast
 
@@ -8213,6 +8507,9 @@ class grammardefaultSemantics(object):
         return ast
 
     def get_diamond_vertices_e_func(self, ast):  # noqa
+        return ast
+
+    def get_diamond_faces_e_func(self, ast):  # noqa
         return ast
 
     def get_incident_vertices_f_func(self, ast):  # noqa
@@ -8258,6 +8555,21 @@ class grammardefaultSemantics(object):
         return ast
 
     def get_edges_f_func(self, ast):  # noqa
+        return ast
+
+    def vertices_func(self, ast):  # noqa
+        return ast
+
+    def edges_func(self, ast):  # noqa
+        return ast
+
+    def faces_func(self, ast):  # noqa
+        return ast
+
+    def tets_func(self, ast):  # noqa
+        return ast
+
+    def diamond_func(self, ast):  # noqa
         return ast
 
     def Directive(self, ast):  # noqa
@@ -8988,6 +9300,12 @@ class GetDiamondVerticesEFunc(ModelBase):
     separators = None
 
 
+class GetDiamondFacesEFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
 class GetIncidentVerticesFFunc(ModelBase):
     name = None
     params = None
@@ -9073,6 +9391,36 @@ class GetVerticesFFunc(ModelBase):
 
 
 class GetEdgesFFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class VerticesFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class EdgesFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class FacesFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class TetsFunc(ModelBase):
+    name = None
+    params = None
+    separators = None
+
+
+class DiamondFunc(ModelBase):
     name = None
     params = None
     separators = None

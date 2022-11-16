@@ -3471,6 +3471,18 @@ class TypeWalker(NodeWalker):
             ret_type = [ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True)]
         elif GPType.Star <= func_type <= GPType.Boundary:
             ret_type = simplicial_set_type()
+        elif GPType.Vertices == func_type:
+            ret_type = vertice_set_type()
+        elif GPType.Edges == func_type:
+            ret_type = edge_set_type()
+        elif GPType.Faces == func_type:
+            ret_type = face_set_type()
+        elif GPType.Tets == func_type:
+            ret_type = tet_set_type()
+        elif GPType.Diamond == func_type:
+            ret_type = simplicial_set_type()
+        elif GPType.DiamondFacesE == func_type:
+            ret_type = [ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True)]
         tri_node = GPFuncNode(param_list, func_type, node.name)
         node_info = NodeInfo(ret_type, symbols=symbols)
         tri_node.la_type = ret_type
@@ -3614,6 +3626,8 @@ class TypeWalker(NodeWalker):
         return self.create_gp_node_info(GPType.IncidentFacesE, node, **kwargs)
     def walk_GetDiamondVerticesEFunc(self, node, **kwargs):
         return self.create_gp_node_info(GPType.DiamondVerticesE, node, **kwargs)
+    def walk_GetDiamondFacesEFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.DiamondFacesE, node, **kwargs)
     def walk_GetIncidentVerticesFFunc(self, node, **kwargs):
         return self.create_gp_node_info(GPType.IncidentVerticesF, node, **kwargs)
     def walk_GetIncidentEdgesFFunc(self, node, **kwargs):
@@ -3645,6 +3659,16 @@ class TypeWalker(NodeWalker):
         return self.create_gp_node_info(GPType.IsComplex, node, **kwargs)
     def walk_IsPureComplexFunc(self, node, **kwargs):
         return self.create_gp_node_info(GPType.IsPureComplex, node, **kwargs)
+    def walk_VerticesFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.Vertices, node, **kwargs)
+    def walk_EdgesFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.Edges, node, **kwargs)
+    def walk_FacesFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.Faces, node, **kwargs)
+    def walk_TetsFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.Tets, node, **kwargs)
+    def walk_DiamondFunc(self, node, **kwargs):
+        return self.create_gp_node_info(GPType.Diamond, node, **kwargs)
     ###################################################################
     def walk_ArithExpression(self, node, **kwargs):
         value_info = self.walk(node.value, **kwargs)

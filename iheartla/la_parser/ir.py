@@ -1310,6 +1310,12 @@ class GPType(IntEnum):
     GetVerticesE = 15
     GetVerticesF = 16
     GetEdgesF = 17
+    Vertices = 18
+    Edges = 19
+    Faces = 20
+    Tets = 21
+    Diamond = 22
+    DiamondFacesE = 23
     # dec
     Star = 100
     Closure = 101

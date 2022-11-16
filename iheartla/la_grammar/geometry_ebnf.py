@@ -10,6 +10,7 @@ GET_INCIDENT_FACES_V = /get_incident_faces_v/;
 GET_INCIDENT_VERTICES_E = /get_incident_vertices_e/;
 GET_INCIDENT_FACES_E = /get_incident_faces_e/;
 GET_DIAMOND_VERTICES_E = /get_diamond_vertices_e/;
+GET_DIAMOND_FACES_E = /get_diamond_faces_e/;
 GET_INCIDENT_VERTICES_F = /get_incident_vertices_f/;
 GET_INCIDENT_EDGES_F = /get_incident_edges_f/;
 GET_ADJACENT_FACES_F = /get_adjacent_faces_f/;
@@ -25,6 +26,11 @@ IS_PURE_COMPLEX = /is_pure_complex/;
 GET_VERTICES_E = /get_vertices_e/;
 GET_VERTICES_F = /get_vertices_f/;
 GET_EDGES_F = /get_edges_f/;
+VERTICES = /vertices/;
+EDGES = /edges/;
+FACES = /faces/;
+TETS = /tets/;
+DIAMOND = /diamond/;
 
 faces_of_edge_func::FacesOfEdgeFunc
     = name:FACES_OF_EDGE'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
@@ -58,6 +64,10 @@ get_incident_faces_e_func::GetIncidentFacesEFunc
     
 get_diamond_vertices_e_func::GetDiamondVerticesEFunc
     = name:GET_DIAMOND_VERTICES_E'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
+    ;
+    
+get_diamond_faces_e_func::GetDiamondFacesEFunc
+    = name:GET_DIAMOND_FACES_E'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
     ;
     
 get_incident_vertices_f_func::GetIncidentVerticesFFunc
@@ -111,6 +121,21 @@ get_vertices_f_func::GetVerticesFFunc
     ;
 get_edges_f_func::GetEdgesFFunc
     = name:GET_EDGES_F'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
+    ;
+vertices_func::VerticesFunc
+    = name:VERTICES'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
+    ;
+edges_func::EdgesFunc
+    = name:EDGES'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
+    ;
+faces_func::FacesFunc
+    = name:FACES'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
+    ;
+tets_func::TetsFunc
+    = name:TETS'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
+    ;
+diamond_func::DiamondFunc
+    = name:DIAMOND'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
     ;
 
 """
