@@ -27,6 +27,7 @@ EDGES = "nonboundary_edges"
 VI = 'Vi'
 EI = 'Ei'
 FI = 'Fi'
+NEI = 'nEi'
 PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', 'arccos', 'tan', 'atan', 'arctan', 'atan2',
                                   'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh',
                                   'cot', 'sec', 'csc'],
@@ -40,7 +41,7 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                  'star', 'closure', 'link', 'boundary', 'is_complex', 'is_pure_complex',
                                  'vertices', 'edges', 'faces', 'tets', 'diamond']}
 PACKAGES_SYM_DICT = {'trigonometry': ['e'],
-                 TRIANGLE_MESH: [EDGES, VI, EI, FI]}
+                 TRIANGLE_MESH: [EDGES, VI, EI, FI, NEI]}
 def merge_dict(dict1, dict2):
     # key:[value,]
     res = copy.deepcopy(dict1)

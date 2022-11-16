@@ -437,7 +437,7 @@ class grammarconfigParser(Parser):
 
     @tatsumasu()
     def _DELTA_(self):  # noqa
-        self._pattern('[Δδ𝛿]')
+        self._pattern('[Δ]')
 
     @tatsumasu()
     def _NABLA_(self):  # noqa

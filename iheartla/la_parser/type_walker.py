@@ -1310,6 +1310,9 @@ class TypeWalker(NodeWalker):
                         self.symtable[r_dict[FI]] = SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
                     if EI in name_list:
                         self.symtable[r_dict[EI]] = SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
+                    if NEI in name_list:
+                        self.symtable[r_dict[NEI]] = SetType(size=1, int_list=[True],
+                                                            type_list=[ScalarType(is_int=True, index_type=True)])
         else:
             module = package_info.ir
             self.import_module_list.append(DependenceData(module.get_name(), params_list, name_list))
