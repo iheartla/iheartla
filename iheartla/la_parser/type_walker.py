@@ -3469,6 +3469,8 @@ class TypeWalker(NodeWalker):
             ret_type = [ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True)]
         elif func_type == GPType.GetEdgesF:
             ret_type = [ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True)]
+        elif GPType.Star <= func_type <= GPType.Boundary:
+            ret_type = simplicial_set_type()
         tri_node = GPFuncNode(param_list, func_type, node.name)
         node_info = NodeInfo(ret_type, symbols=symbols)
         tri_node.la_type = ret_type

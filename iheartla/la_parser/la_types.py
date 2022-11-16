@@ -579,3 +579,18 @@ def get_derived_type(op, left_type, right_type):
         # assert left_type.var_type == right_type.var_type
         ret_type = copy.deepcopy(left_type)
     return ret_type
+
+
+def simplicial_set_type():
+    return TupleType(type_list=[SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)]),
+                                SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)]),
+                                SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)]),
+                                SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])])
+def vertice_set_type():
+    return SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
+def edge_set_type():
+    return SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
+def face_set_type():
+    return SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
+def tet_set_type():
+    return SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
