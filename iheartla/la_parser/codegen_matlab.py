@@ -814,6 +814,15 @@ class CodeGenMatlab(CodeGen):
         if len(type_checks) > 0:
             type_checks = self.update_prelist_str(type_checks, '    ')
             content += type_checks + '\n'
+        extra_expr = ''
+        # exp_str
+        if len(node.extra_list) > 0:
+            extra_list = []
+            for et in node.extra_list:
+                extra_info = self.visit(et, **kwargs)
+                extra_list += [self.update_prelist_str([extra_info.content], '    ')]
+            extra_expr += '\n'.join(extra_list)
+        content += extra_expr
         name_list = []
         for cur_index in range(len(node.expr)):
             cur_ret_name = self.generate_var_name('ret')

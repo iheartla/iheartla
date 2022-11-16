@@ -784,6 +784,14 @@ class CodeGenNumpy(CodeGen):
         if len(type_checks) > 0:
             type_checks = self.update_prelist_str(type_checks, '    ')
             content += type_checks + '\n'
+        extra_expr = ''
+        # exp_str
+        if len(node.extra_list) > 0:
+            extra_list = []
+            for et in node.extra_list:
+                extra_info = self.visit(et, **kwargs)
+                extra_list += [self.update_prelist_str([extra_info.content], '    ')]
+            extra_expr += '\n'.join(extra_list)
         ret_list = []
         for cur_index in range(len(node.expr)):
             expr_info = self.visit(node.expr[cur_index], **kwargs)
@@ -793,7 +801,7 @@ class CodeGenNumpy(CodeGen):
                 ret_list.append('{}_ret'.format(name_info.content))
             else:
                 ret_list.append(expr_info.content)
-        content += '        return {}\n'.format(', '.join(ret_list))
+        content += extra_expr + '        return {}\n'.format(', '.join(ret_list))
         if self.local_func_def != '':
             self.local_func_def += '\n'
         self.local_func_def += content

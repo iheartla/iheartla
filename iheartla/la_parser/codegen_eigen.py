@@ -928,15 +928,26 @@ class CodeGenEigen(CodeGen):
             type_checks = self.update_prelist_str(type_checks, '    ')
             content += type_checks + '\n'
         expr_info = self.visit(node.expr[0], **kwargs)
+        extra_expr = ''
+        # exp_str
+        if len(node.extra_list) > 0:
+            extra_list = []
+            for et in node.extra_list:
+                extra_info = self.visit(et, **kwargs)
+                # type declarations
+                for lhs in et.left:
+                    extra_list.append('        {} {};'.format(self.get_ctype(self.get_sym_type(lhs.get_main_id())), lhs.get_main_id()))
+                extra_list += [self.update_prelist_str([extra_info.content], '    ')]
+            extra_expr += '\n'.join(extra_list)
         if node.expr[0].is_node(IRNodeType.MultiConds):
             content += '        {} {}_ret;\n'.format(self.get_ctype(node.expr[0].la_type), name_info.content)
             if len(expr_info.pre_list) > 0:
                 content += self.update_prelist_str(expr_info.pre_list, "    ")
-            content += '        return {}_ret;'.format(name_info.content)
+            content += extra_expr + '        return {}_ret;'.format(name_info.content)
         else:
             if len(expr_info.pre_list) > 0:
                 content += self.update_prelist_str(expr_info.pre_list, "    ")
-            content += '        return ' + expr_info.content + ';'
+            content += extra_expr + '        return ' + expr_info.content + ';'
         content += '    \n    }\n'
         self.local_func_def += content
         self.local_func_parsing = False

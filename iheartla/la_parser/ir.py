@@ -397,6 +397,7 @@ class LocalFuncNode(StmtNode):
         self.params = []
         self.separators = []
         self.defs = defs
+        self.extra_list = []  # extra assignments
 
 
 class AssignType(IntEnum):
