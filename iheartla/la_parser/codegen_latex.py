@@ -151,16 +151,20 @@ class CodeGenLatex(CodeGen):
         # convert _ in names
         for name in node.get_name_raw_list():
             name_list.append(name.replace('_', '\_'))
+        params_str = ''
+        if len(node.params) > 0:
+            for index in range(len(node.params)):
+                params_str += self.visit(node.params[index], **kwargs)
+                if index < len(node.params) - 1:
+                    params_str += node.separators[index] + ''
+            params_str = params_str.replace('\\mathit{', '\\textit{')
         if node.package:
-            content = "\\text{{ {} from {} }}\\\\\n".format(", ".join(name_list), node.package.get_name().replace('_', '\_'))
+            if params_str == '':
+                content = "\\text{{ {} from {} }}\\\\\n".format(", ".join(name_list), node.package.get_name().replace('_', '\_'))
+            else:
+                content = "\\text{{ {} from {}({}) }}\\\\\n".format(", ".join(name_list), node.package.get_name().replace('_', '\_'), params_str)
         else:
-            if len(node.params) > 0:
-                params_str = ''
-                for index in range(len(node.params)):
-                    params_str += self.visit(node.params[index], **kwargs)
-                    if index < len(node.params) - 1:
-                        params_str += node.separators[index] + ''
-                params_str = params_str.replace('\\mathit{', '\\textit{')
+            if params_str != '':
                 content = "\\text{{ {} from {}({}) }}\\\\\n".format(", ".join(name_list), node.module.get_name().replace('_', '\_'), params_str)
             else:
                 content = "\\text{{ {} from {}() }}\\\\\n".format(", ".join(name_list), node.module.get_name().replace('_', '\_'))
