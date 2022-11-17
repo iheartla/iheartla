@@ -1402,7 +1402,7 @@ class TypeWalker(NodeWalker):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
         op_type = MulOpType.MulOpInvalid
-        if node.op and node.op == '⋅':
+        if hasattr(node, 'op') and node.op and node.op == '⋅':
             op_type = MulOpType.MulOpDot
             if left_info.la_type.is_vector() and right_info.la_type.is_vector() and is_same_expr(left_info.la_type.rows, right_info.la_type.rows):
                 return self.walk_DotProduct(node, **kwargs)
@@ -2276,6 +2276,16 @@ class TypeWalker(NodeWalker):
     def walk_Solver(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
+        if left_info.la_type.is_scalar():
+            ir_node = PowerNode(parse_info=node.parseinfo, raw_text=node.text)
+            ir_node.base = left_info.ir
+            symbols = left_info.symbols
+            ir_node.r = node.p
+            ir_node.la_type = ScalarType()
+            node_info = NodeInfo(ir_node.la_type, symbols=symbols)
+            node_info.ir = ir_node
+            op_type = MulOpType.MulOpInvalid
+            return self.make_mul_info(node_info, right_info, op_type, parse_info=node.parseinfo, raw_text=node.text)
         ir_node = SolverNode(parse_info=node.parseinfo, raw_text=node.text)
         ir_node.pow = node.p
         ir_node.left = left_info.ir
