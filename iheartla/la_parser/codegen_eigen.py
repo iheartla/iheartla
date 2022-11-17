@@ -935,8 +935,8 @@ class CodeGenEigen(CodeGen):
             for et in node.extra_list:
                 extra_info = self.visit(et, **kwargs)
                 # type declarations
-                for lhs in et.left:
-                    extra_list.append('        {} {};'.format(self.get_ctype(self.get_sym_type(lhs.get_main_id())), lhs.get_main_id()))
+                # for lhs in et.left:
+                #     extra_list.append('        {} {};'.format(self.get_ctype(self.get_sym_type(lhs.get_main_id())), lhs.get_main_id()))
                 extra_list += [self.update_prelist_str([extra_info.content], '    ')]
             extra_expr += '\n'.join(extra_list)
         if node.expr[0].is_node(IRNodeType.MultiConds):
@@ -1562,7 +1562,10 @@ class CodeGenEigen(CodeGen):
                 content += "    {} {} = {};\n".format(tuple_decl, tuple_name, right_info.content)
                 for cur_index in range(len(node.left)):
                     left_info = self.visit(node.left[cur_index], **kwargs)
-                    content += "    {} {} = std::get<{}>({});\n".format(self.get_ctype(ltype_list[cur_index]), left_info.content, cur_index, tuple_name)
+                    if self.local_func_parsing:
+                        content += "    {} {} = std::get<{}>({});\n".format(self.get_ctype(ltype_list[cur_index]), left_info.content, cur_index, tuple_name)
+                    else:
+                        content += "    {} = std::get<{}>({});\n".format(left_info.content, cur_index, tuple_name)
                     self.declared_symbols.add(node.left[cur_index].get_main_id())
                 la_remove_key(LHS, **kwargs)
                 return CodeNodeInfo(content)
