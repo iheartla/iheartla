@@ -321,7 +321,8 @@ class CodeGenEigen(CodeGen):
                     if key == TRIANGLE_MESH:
                         self.code_frame.include += '#include "TriangleMesh.h"\n'
                         class_name = "TriangleMesh"
-                    init_var += "        {} {}({});\n".format(class_name, module_data.instance_name, ', '.join(module_data.params_list))
+                    item_list.append("    {} {};\n".format(class_name, module_data.instance_name))
+                    init_var += "        {}.initialize({});\n".format(module_data.instance_name, ', '.join(module_data.params_list))
         content = ["struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),
                    init_content,
