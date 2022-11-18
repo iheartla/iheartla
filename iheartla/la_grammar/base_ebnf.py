@@ -17,9 +17,14 @@ identifier_with_subscript::IdentifierSubscript
     (',' right+:'*')
     | ({','} right+:(integer | identifier_alone)) } )
     |
-    ( left:identifier_alone right+:sub_integer {
+    ( left:identifier_alone right+:(sub_integer|unicode_subscript) {
     (',' right+:'*')
-    | ({','} right+:(sub_integer)) } )
+    | ({','} right+:(sub_integer|unicode_subscript)) } )
+    ;
+    
+# /ₐₑₒₓₕₖₗₘₙₚₛₜ/
+unicode_subscript::IdentifierAlone
+    = value:/[\u2090-\u209C]/
     ;
 
 size_op::SizeOp

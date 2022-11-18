@@ -283,3 +283,7 @@ def get_unicode_fraction(unicode):
                    '⅕':[1,5],'⅖':[2,5],'⅗':[3,5],'⅘':[4,5],'⅙':[1,6],'⅚':[5,6],'⅛':[1,8],'⅜':[3,8],'⅝':[5,8],
                    '⅞':[7,8]}
     return fraction_dict[unicode]
+
+def get_unicode_subscript(unicode):
+    subscript_dict = {'ₐ':'a', 'ₑ':'e', 'ₒ':'o', 'ₓ':'x', 'ₕ':'h', 'ₖ':'k', 'ₗ':'l', 'ₘ':'m', 'ₙ':'n', 'ₚ':'p', 'ₛ':'s', 'ₜ':'t'}
+    return subscript_dict[unicode] if unicode in subscript_dict else unicode

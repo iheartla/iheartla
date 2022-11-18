@@ -2934,10 +2934,16 @@ class grammardefaultParser(Parser):
                 with self._group():
                     self._identifier_alone_()
                     self.name_last_node('left')
-                    self._sub_integer_()
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._sub_integer_()
+                            with self._option():
+                                self._unicode_subscript_()
+                            self._error('no available options')
                     self.add_last_node_to_name('right')
 
-                    def block11():
+                    def block12():
                         with self._choice():
                             with self._option():
                                 with self._group():
@@ -2947,18 +2953,32 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 with self._group():
 
-                                    def block13():
+                                    def block14():
                                         self._token(',')
-                                    self._closure(block13)
+                                    self._closure(block14)
                                     with self._group():
-                                        self._sub_integer_()
+                                        with self._choice():
+                                            with self._option():
+                                                self._sub_integer_()
+                                            with self._option():
+                                                self._unicode_subscript_()
+                                            self._error('no available options')
                                     self.add_last_node_to_name('right')
                             self._error('no available options')
-                    self._closure(block11)
+                    self._closure(block12)
             self._error('no available options')
         self.ast._define(
             ['left'],
             ['right']
+        )
+
+    @tatsumasu('IdentifierAlone')
+    def _unicode_subscript_(self):  # noqa
+        self._pattern('[\\u2090-\\u209C]')
+        self.name_last_node('value')
+        self.ast._define(
+            ['value'],
+            []
         )
 
     @tatsumasu('SizeOp')
@@ -8140,6 +8160,9 @@ class grammardefaultSemantics(object):
     def identifier_with_subscript(self, ast):  # noqa
         return ast
 
+    def unicode_subscript(self, ast):  # noqa
+        return ast
+
     def size_op(self, ast):  # noqa
         return ast
 
@@ -8982,14 +9005,12 @@ class IdentifierSubscript(ModelBase):
     right = None
 
 
+class IdentifierAlone(ModelBase):
+    value = None
+
+
 class SizeOp(ModelBase):
     i = None
-
-
-class IdentifierAlone(ModelBase):
-    id = None
-    value = None
-    const = None
 
 
 class Pi(ModelBase):
