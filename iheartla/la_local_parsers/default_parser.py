@@ -662,16 +662,6 @@ class grammardefaultParser(Parser):
     def _operations_(self):  # noqa
         with self._choice():
             with self._option():
-                self._derivative_()
-            with self._option():
-                self._partial_()
-            with self._option():
-                self._divergence_()
-            with self._option():
-                self._gradient_()
-            with self._option():
-                self._laplacian_()
-            with self._option():
                 self._solver_operator_()
             with self._option():
                 self._norm_operator_()
@@ -5741,8 +5731,6 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._assignment_()
             with self._option():
-                self._de_solver_()
-            with self._option():
                 self._right_hand_side_()
             self._error('no available options')
 
@@ -7632,12 +7620,7 @@ class grammardefaultParser(Parser):
                         with self._choice():
                             with self._option():
                                 with self._group():
-                                    with self._choice():
-                                        with self._option():
-                                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*')
-                                        with self._option():
-                                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
-                                        self._error('no available options')
+                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                                 self.name_last_node('value')
                             with self._option():
                                 self._token('`')
@@ -7655,12 +7638,7 @@ class grammardefaultParser(Parser):
                                     self._pattern(new_id)
                             self._error('no available options')
                         with self._group():
-                            with self._choice():
-                                with self._option():
-                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*')
-                                with self._option():
-                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
-                                self._error('no available options')
+                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
                 self._error('no available options')
             self.ast._define(
@@ -7677,12 +7655,7 @@ class grammardefaultParser(Parser):
                         with self._choice():
                             with self._option():
                                 with self._group():
-                                    with self._choice():
-                                        with self._option():
-                                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*')
-                                        with self._option():
-                                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
-                                        self._error('no available options')
+                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                                 self.name_last_node('value')
                             with self._option():
                                 self._token('`')
@@ -7694,12 +7667,7 @@ class grammardefaultParser(Parser):
                     with self._group():
                         self._KEYWORDS_()
                         with self._group():
-                            with self._choice():
-                                with self._option():
-                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*')
-                                with self._option():
-                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
-                                self._error('no available options')
+                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
                 self._error('no available options')
             self.ast._define(
@@ -7718,136 +7686,45 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('Function')
     def _function_operator_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._func_id_()
-                self.name_last_node('name')
+        self._func_id_()
+        self.name_last_node('name')
 
-                def block1():
-                    self._PRIME_()
-                    self.add_last_node_to_name('order')
-                self._positive_closure(block1)
+        def block1():
+            self._token('(')
+            self.name_last_node('p')
 
-                def block3():
-                    self._token('(')
-                    self.name_last_node('p')
+            def block3():
 
-                    def block5():
+                def block4():
+                    self._hspace_()
+                self._closure(block4)
+                self._expression_()
+                self.add_last_node_to_name('params')
 
-                        def block6():
-                            self._hspace_()
-                        self._closure(block6)
-                        self._expression_()
-                        self.add_last_node_to_name('params')
+                def block6():
 
-                        def block8():
-
-                            def block9():
-                                self._hspace_()
-                            self._closure(block9)
-                            self._params_separator_()
-                            self.add_last_node_to_name('separators')
-
-                            def block11():
-                                self._hspace_()
-                            self._closure(block11)
-                            self._expression_()
-                            self.add_last_node_to_name('params')
-                        self._closure(block8)
-                    self._closure(block5)
-
-                    def block13():
+                    def block7():
                         self._hspace_()
-                    self._closure(block13)
-                    self._token(')')
-                self._closure(block3)
-            with self._option():
-                self._func_id_()
-                self.name_last_node('name')
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            self._UDDOT_()
-                            self.name_last_node('d')
-                        with self._option():
-                            self._UDOT_()
-                            self.name_last_node('s')
-                        self._error('no available options')
+                    self._closure(block7)
+                    self._params_separator_()
+                    self.add_last_node_to_name('separators')
 
-                def block18():
-                    self._token('(')
-                    self.name_last_node('p')
-
-                    def block20():
-
-                        def block21():
-                            self._hspace_()
-                        self._closure(block21)
-                        self._expression_()
-                        self.add_last_node_to_name('params')
-
-                        def block23():
-
-                            def block24():
-                                self._hspace_()
-                            self._closure(block24)
-                            self._params_separator_()
-                            self.add_last_node_to_name('separators')
-
-                            def block26():
-                                self._hspace_()
-                            self._closure(block26)
-                            self._expression_()
-                            self.add_last_node_to_name('params')
-                        self._closure(block23)
-                    self._closure(block20)
-
-                    def block28():
+                    def block9():
                         self._hspace_()
-                    self._closure(block28)
-                    self._token(')')
-                self._closure(block18)
-            with self._option():
-                self._func_id_()
-                self.name_last_node('name')
+                    self._closure(block9)
+                    self._expression_()
+                    self.add_last_node_to_name('params')
+                self._closure(block6)
+            self._closure(block3)
 
-                def block30():
-                    self._token('(')
-                    self.name_last_node('p')
-
-                    def block32():
-
-                        def block33():
-                            self._hspace_()
-                        self._closure(block33)
-                        self._expression_()
-                        self.add_last_node_to_name('params')
-
-                        def block35():
-
-                            def block36():
-                                self._hspace_()
-                            self._closure(block36)
-                            self._params_separator_()
-                            self.add_last_node_to_name('separators')
-
-                            def block38():
-                                self._hspace_()
-                            self._closure(block38)
-                            self._expression_()
-                            self.add_last_node_to_name('params')
-                        self._closure(block35)
-                    self._closure(block32)
-
-                    def block40():
-                        self._hspace_()
-                    self._closure(block40)
-                    self._token(')')
-                self._closure(block30)
-            self._error('no available options')
+            def block11():
+                self._hspace_()
+            self._closure(block11)
+            self._token(')')
+        self._closure(block1)
         self.ast._define(
-            ['d', 'name', 'p', 's'],
-            ['order', 'params', 'separators']
+            ['name', 'p'],
+            ['params', 'separators']
         )
 
 
@@ -9680,10 +9557,7 @@ class Intersection(ModelBase):
 
 
 class Function(ModelBase):
-    d = None
     name = None
-    order = None
     p = None
     params = None
-    s = None
     separators = None

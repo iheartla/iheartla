@@ -2384,17 +2384,17 @@ class TypeWalker(NodeWalker):
         name_type = name_info.ir.la_type
         ir_node = FunctionNode(parse_info=node.parseinfo, mode=FuncFormat.FuncNormal if node.p else FuncFormat.FuncShort, raw_text=node.text)
         ir_node.name = name_info.ir
-        if node.order:
-            ir_node.order = len(node.order)
-            self.cur_eq_type |= EqTypeEnum.ODE
-        elif node.d:
-            ir_node.order = 2
-            ir_node.order_mode = OrderFormat.OrderDot
-            self.cur_eq_type |= EqTypeEnum.ODE
-        elif node.s:
-            ir_node.order = 1
-            ir_node.order_mode = OrderFormat.OrderDot
-            self.cur_eq_type |= EqTypeEnum.ODE
+        # if node.order:
+        #     ir_node.order = len(node.order)
+        #     self.cur_eq_type |= EqTypeEnum.ODE
+        # elif node.d:
+        #     ir_node.order = 2
+        #     ir_node.order_mode = OrderFormat.OrderDot
+        #     self.cur_eq_type |= EqTypeEnum.ODE
+        # elif node.s:
+        #     ir_node.order = 1
+        #     ir_node.order_mode = OrderFormat.OrderDot
+        #     self.cur_eq_type |= EqTypeEnum.ODE
         if name_type.is_function():
             # function type is already specified in where block
             convertion_dict = {}   # template -> instance

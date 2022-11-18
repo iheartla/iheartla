@@ -2,11 +2,11 @@ OPERATORS = r"""
 # operators
 operations
     =
-    | derivative
-    | partial
-    | divergence
-    | gradient
-    | laplacian
+    #| derivative
+    #| partial
+    #| divergence
+    #| gradient
+    #| laplacian
     | solver_operator
     | norm_operator
     | power_operator

@@ -60,7 +60,7 @@ statement
     =
     | local_func
     | assignment
-    | de_solver
+    #| de_solver
     | right_hand_side
     ;
 
