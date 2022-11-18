@@ -22,6 +22,13 @@ class DynamicTypeEnum(IntFlag):
     DYN_COL = 2
     DYN_DIM = 4
 
+class SetTypeEnum(Enum):
+    DEFAULT = 0
+    # LA types
+    VERTEX = 1
+    EDGE = 2
+    FACE = 3
+    TET = 4
 
 class LaVarType(object):
     def __init__(self, var_type, desc=None, element_type=None, symbol=None, index_type=False, dynamic=DynamicTypeEnum.DYN_INVALID):
@@ -277,11 +284,12 @@ class VectorType(LaVarType):
 
 
 class SetType(LaVarType):
-    def __init__(self, size=0, desc=None, element_type=None, symbol=None, int_list=None, type_list=None, dynamic=DynamicTypeEnum.DYN_INVALID):
+    def __init__(self, size=0, desc=None, element_type=None, symbol=None, int_list=None, type_list=None, dynamic=DynamicTypeEnum.DYN_INVALID, cur_type=SetTypeEnum.DEFAULT):
         LaVarType.__init__(self, VarTypeEnum.SET, desc, element_type, symbol, dynamic=dynamic)
         self.size = size
         self.int_list = int_list     # whether the element is real number or integer
         self.type_list = type_list   # subtypes in a set
+        self.cur_type = cur_type
 
     def get_signature(self):
         return 'set'
@@ -313,6 +321,23 @@ class SetType(LaVarType):
         return "{{ {} }}".format('×'.join(content_list))
 
 
+class VertexSetType(SetType):
+    def __init__(self):
+        SetType.__init__(self, size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)], cur_type=SetTypeEnum.VERTEX)
+
+class EdgeSetType(SetType):
+    def __init__(self):
+        SetType.__init__(self, size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)], cur_type=SetTypeEnum.EDGE)
+
+class FaceSetType(SetType):
+    def __init__(self):
+        SetType.__init__(self, size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)], cur_type=SetTypeEnum.FACE)
+
+class TetSetType(SetType):
+    def __init__(self):
+        SetType.__init__(self, size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)], cur_type=SetTypeEnum.TET)
+
+
 class TupleType(LaVarType):
     def __init__(self, desc=None, element_type=None, symbol=None, type_list=None, dynamic=DynamicTypeEnum.DYN_INVALID):
         LaVarType.__init__(self, VarTypeEnum.TUPLE, desc, element_type, symbol, dynamic=dynamic)
@@ -321,6 +346,11 @@ class TupleType(LaVarType):
 
     def get_signature(self):
         return 'tuple'
+
+class SimplicialSetType(TupleType):
+    def __init__(self, desc=None):
+        TupleType.__init__(self, desc=desc, type_list=[VertexSetType(), EdgeSetType(), FaceSetType(), TetSetType()])
+
 
 class IndexType(LaVarType):
     def __init__(self, desc=None, symbol=None):
@@ -579,18 +609,3 @@ def get_derived_type(op, left_type, right_type):
         # assert left_type.var_type == right_type.var_type
         ret_type = copy.deepcopy(left_type)
     return ret_type
-
-
-def simplicial_set_type():
-    return TupleType(type_list=[SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)]),
-                                SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)]),
-                                SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)]),
-                                SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])])
-def vertice_set_type():
-    return SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
-def edge_set_type():
-    return SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
-def face_set_type():
-    return SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
-def tet_set_type():
-    return SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])

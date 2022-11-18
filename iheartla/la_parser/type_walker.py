@@ -3483,17 +3483,17 @@ class TypeWalker(NodeWalker):
         elif func_type == GPType.GetEdgesF:
             ret_type = [ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True)]
         elif GPType.Star <= func_type <= GPType.Boundary:
-            ret_type = simplicial_set_type()
+            ret_type = SimplicialSetType()
         elif GPType.Vertices == func_type:
-            ret_type = vertice_set_type()
+            ret_type = VertexSetType()
         elif GPType.Edges == func_type:
-            ret_type = edge_set_type()
+            ret_type = EdgeSetType()
         elif GPType.Faces == func_type:
-            ret_type = face_set_type()
+            ret_type = FaceSetType()
         elif GPType.Tets == func_type:
-            ret_type = tet_set_type()
+            ret_type = TetSetType()
         elif GPType.Diamond == func_type:
-            ret_type = simplicial_set_type()
+            ret_type = SimplicialSetType()
         elif GPType.DiamondFacesE == func_type:
             ret_type = [ScalarType(is_int=True, index_type=True), ScalarType(is_int=True, index_type=True)]
         tri_node = GPFuncNode(param_list, func_type, node.name)
