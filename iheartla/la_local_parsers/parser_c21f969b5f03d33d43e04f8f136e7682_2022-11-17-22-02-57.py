@@ -7415,40 +7415,37 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
     def _function_operator_(self):  # noqa
         self._func_id_()
         self.name_last_node('name')
+        self._token('(')
+        self.name_last_node('p')
 
-        def block1():
-            self._token('(')
-            self.name_last_node('p')
+        def block2():
 
             def block3():
+                self._hspace_()
+            self._closure(block3)
+            self._expression_()
+            self.add_last_node_to_name('params')
 
-                def block4():
-                    self._hspace_()
-                self._closure(block4)
-                self._expression_()
-                self.add_last_node_to_name('params')
+            def block5():
 
                 def block6():
-
-                    def block7():
-                        self._hspace_()
-                    self._closure(block7)
-                    self._params_separator_()
-                    self.add_last_node_to_name('separators')
-
-                    def block9():
-                        self._hspace_()
-                    self._closure(block9)
-                    self._expression_()
-                    self.add_last_node_to_name('params')
+                    self._hspace_()
                 self._closure(block6)
-            self._closure(block3)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
 
-            def block11():
-                self._hspace_()
-            self._closure(block11)
-            self._token(')')
-        self._closure(block1)
+                def block8():
+                    self._hspace_()
+                self._closure(block8)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block5)
+        self._closure(block2)
+
+        def block10():
+            self._hspace_()
+        self._closure(block10)
+        self._token(')')
         self.ast._define(
             ['name', 'p'],
             ['params', 'separators']
