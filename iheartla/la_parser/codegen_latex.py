@@ -439,12 +439,17 @@ class CodeGenLatex(CodeGen):
             for param in node.params:
                 params.append(self.visit(param, **kwargs))
         params_str = ''
-        if len(node.params) > 0:
-            for index in range(len(node.params)):
-                params_str += self.visit(node.params[index], **kwargs)
-                if index < len(node.params)-1:
+        if len(node.params) - node.n_subs > 0:
+            for index in range(len(node.params) - node.n_subs):
+                params_str += self.visit(node.params[index + node.n_subs], **kwargs)
+                if index < len(node.params) - node.n_subs - 1:
                     params_str += node.separators[index] + ''
         content = self.visit(node.name, **kwargs)
+        if node.n_subs > 0:
+            sub_list = []
+            for index in range(node.n_subs):
+                sub_list.append(self.visit(node.params[index], **kwargs))
+            content = "{}_{{{}}}".format(content, ','.join(sub_list))
         if node.order:
             if node.order_mode == OrderFormat.OrderPrime:
                 content += "".join(["'"] * node.order)

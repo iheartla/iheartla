@@ -2403,6 +2403,8 @@ class TypeWalker(NodeWalker):
         name_type = name_info.ir.la_type
         ir_node = FunctionNode(parse_info=node.parseinfo, mode=FuncFormat.FuncNormal if node.p else FuncFormat.FuncShort, raw_text=node.text)
         ir_node.name = name_info.ir
+        if node.p:
+            ir_node.def_type = def_type=LocalFuncDefType.LocalFuncDefParenthesis
         # if node.order:
         #     ir_node.order = len(node.order)
         #     self.cur_eq_type |= EqTypeEnum.ODE
@@ -2420,8 +2422,14 @@ class TypeWalker(NodeWalker):
             param_list = []
             self.assert_expr(len(node.params) == len(name_type.params) or len(node.params) == 0, get_err_msg_info(node.parseinfo, "Function error. Parameters count mismatch"))
             symbols = set()
+            param_node_list = []
+            for index in range(len(node.subs)):
+                param_node_list.append(self.walk(node.subs[index], **kwargs))
+            ir_node.n_subs = len(node.subs)
             for index in range(len(node.params)):
-                param_info = self.walk(node.params[index], **kwargs)
+                param_node_list.append(self.walk(node.params[index], **kwargs))
+            for index in range(len(param_node_list)):
+                param_info = param_node_list[index]
                 symbols = symbols.union(param_info.symbols)
                 param_list.append(param_info.ir)
                 if len(name_type.template_symbols) == 0:
