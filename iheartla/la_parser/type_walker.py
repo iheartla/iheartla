@@ -1505,6 +1505,7 @@ class TypeWalker(NodeWalker):
             # param_tps.append(param_node.la_type)
             param_tps.append(par_dict[param_node.get_name()])
             par_names.append(param_node.get_name())
+        ir_node.n_subs = len(node.subs)
         for index in range(len(node.params)):
             param_node = self.walk(node.params[index], **kwargs).ir
             # assert param_node.get_name() in self.parameters, get_err_msg_info(param_node.parse_info, "Parameter {} hasn't been defined".format(param_node.get_name()))
@@ -1513,6 +1514,9 @@ class TypeWalker(NodeWalker):
             # param_tps.append(param_node.la_type)
             param_tps.append(par_dict[param_node.get_name()])
             par_names.append(param_node.get_name())
+        # self.assert_expr(len(par_names) == len(par_defs), get_err_msg(get_line_info(node.parseinfo), 0,
+        #                                                                    "Function {} needs {} parameters but {} defined".format(
+        #                                                                        local_func_name, len(par_names), len(par_defs))))
         self.func_data_dict[local_func_name].params_data.parameters = par_names
         ir_node.separators = node.separators
         ir_node.la_type = FunctionType(params=param_tps, ret=ret_list)

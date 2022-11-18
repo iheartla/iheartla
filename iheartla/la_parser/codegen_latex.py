@@ -460,19 +460,26 @@ class CodeGenLatex(CodeGen):
     def visit_local_func(self, node, **kwargs):
         self.local_func_parsing = True
         params_str = ''
-        if len(node.params) > 0:
-            for index in range(len(node.params)):
-                params_str += self.visit(node.params[index], **kwargs)
-                if index < len(node.params)-1:
+        def_params = ''
+        if len(node.params)-node.n_subs > 0:
+            for index in range(len(node.params)-node.n_subs):
+                params_str += self.visit(node.params[index+node.n_subs], **kwargs)
+                if index < len(node.params)-node.n_subs-1:
                     params_str += node.separators[index] + ''
         if node.def_type == LocalFuncDefType.LocalFuncDefParenthesis:
             def_params = '\\left( ' + params_str + ' \\right)'
-        else:
+        elif node.def_type == LocalFuncDefType.LocalFuncDefBracket:
             def_params = '\\left[ ' + params_str + ' \\right]'
         expr_list = []
         for cur_index in range(len(node.expr)):
             expr_list.append(self.visit(node.expr[cur_index], **kwargs))
-        content = self.visit(node.name, **kwargs) + def_params + " & = " + ', '.join(expr_list)
+        f_name = self.visit(node.name, **kwargs)
+        if node.n_subs > 0:
+            sub_list = []
+            for index in range(node.n_subs):
+                sub_list.append(self.visit(node.params[index], **kwargs))
+            f_name = "{}_{{{}}}".format(f_name, ','.join(sub_list))
+        content = f_name + def_params + " & = " + ', '.join(expr_list)
         self.code_frame.expr += content + '\n'
         self.code_frame.expr_dict[node.raw_text] = content
         if len(node.defs) > 0:

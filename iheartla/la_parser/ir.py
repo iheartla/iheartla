@@ -397,6 +397,7 @@ class LocalFuncNode(StmtNode):
         self.params = []
         self.separators = []
         self.defs = defs
+        self.n_subs = 0   # number of subscripts
         self.extra_list = []  # extra assignments
 
 
