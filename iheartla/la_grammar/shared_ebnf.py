@@ -94,10 +94,13 @@ de_solver::DeSolver
  
 #### name:(func_id | identifier)
 local_func::LocalFunc
-    = name:identifier def_p:'(' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')' {hspace} 
-    op:'=' {hspace} expr+:right_hand_side [{hspace} line] {hspace} (WHERE | GIVEN ) {hspace} defs+:where_condition {{hspace} ',' {hspace} defs+:where_condition} {{hspace} ';' {hspace} extra+:general_assignment}
-    | name:identifier '[' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']' {hspace}
-     op:'=' {hspace} expr+:right_hand_side [{hspace} line] {hspace} (WHERE | GIVEN ) {hspace} defs+:where_condition {{hspace} ',' {hspace} defs+:where_condition} {{hspace} ';' {hspace} extra+:general_assignment}
+    = (
+    name:identifier_alone {'_' subs+:identifier_alone {{','} subs+:identifier_alone}} {def_p:'(' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'} 
+    | name:identifier_alone {subs+:unicode_subscript {{','} subs+:unicode_subscript}} {def_p:'(' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'}
+    | name:identifier_alone {'_' subs+:identifier_alone {{','} subs+:identifier_alone}} {def_s:'[' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']'} 
+    | name:identifier_alone {subs+:unicode_subscript {{','} subs+:unicode_subscript}} {def_s:'[' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']'}
+    ) 
+    {hspace} op:'=' {hspace} expr+:right_hand_side {hspace} (WHERE | GIVEN ) {hspace} defs+:where_condition {{hspace} ',' {hspace} defs+:where_condition} {{hspace} ';' {hspace} extra+:general_assignment}
      ;
 
 
