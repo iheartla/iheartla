@@ -35,8 +35,10 @@ keyword_str
     = /[A-Za-z][A-Za-z0-9]*/
     ;
     
+    
 multi_str::IdentifierAlone
-    = (  value:/[A-Za-z_\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z_\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*/ | '`' id:/[^`]*/ '`')
+    = !KEYWORDS(  value:(/[A-Za-z_\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z_\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*/) | '`' id:/[^`]*/ '`')
+    | value:(KEYWORDS (/[A-Za-z_\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z_\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*/))
     ;
 
 description
