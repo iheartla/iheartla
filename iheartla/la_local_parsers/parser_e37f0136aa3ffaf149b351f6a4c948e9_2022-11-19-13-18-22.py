@@ -7464,8 +7464,13 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         self._identifier_alone_()
 
         def block0():
-            self._token('_')
-            self._identifier_alone_()
+            with self._choice():
+                with self._option():
+                    self._token('_')
+                    self._identifier_alone_()
+                with self._option():
+                    self._unicode_subscript_()
+                self._error('no available options')
         self._closure(block0)
 
     @tatsumasu('IdentifierAlone')

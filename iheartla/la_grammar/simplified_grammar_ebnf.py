@@ -21,7 +21,7 @@ SIMPLIFIED = START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETR
 #include :: "shared.ebnf"
 
 SIMPLIFIED += r"""
-func_id=identifier_alone {'_' identifier_alone};
+func_id=identifier_alone {'_' identifier_alone | unicode_subscript};
 
 identifier_alone::IdentifierAlone
     = !KEYWORDS(  value:(/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*/) | '`' id:/[^`]*/ '`')

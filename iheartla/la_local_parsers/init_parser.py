@@ -7464,8 +7464,13 @@ class grammarinitParser(Parser):
         self._identifier_alone_()
 
         def block0():
-            self._token('_')
-            self._identifier_alone_()
+            with self._choice():
+                with self._option():
+                    self._token('_')
+                    self._identifier_alone_()
+                with self._option():
+                    self._unicode_subscript_()
+                self._error('no available options')
         self._closure(block0)
 
     @tatsumasu('IdentifierAlone')
