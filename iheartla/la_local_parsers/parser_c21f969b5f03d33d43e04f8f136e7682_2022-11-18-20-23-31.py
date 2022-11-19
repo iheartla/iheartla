@@ -7504,102 +7504,163 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu('Function')
     def _function_operator_(self):  # noqa
-        with self._group():
-            with self._choice():
-                with self._option():
-                    self._func_id_()
-                    self.name_last_node('name')
+        with self._choice():
+            with self._option():
+                self._func_id_()
+                self.name_last_node('name')
+                self._token('_')
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._integer_()
+                        with self._option():
+                            self._identifier_alone_()
+                        self._error('no available options')
+                self.add_last_node_to_name('subs')
 
-                    def block1():
-                        self._token('_')
-                        with self._group():
-                            with self._choice():
-                                with self._option():
-                                    self._integer_()
-                                with self._option():
-                                    self._identifier_alone_()
-                                self._error('no available options')
-                        self.add_last_node_to_name('subs')
+                def block3():
 
-                        def block4():
+                    def block4():
+                        self._token(',')
+                    self._closure(block4)
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._integer_()
+                            with self._option():
+                                self._identifier_alone_()
+                            self._error('no available options')
+                    self.add_last_node_to_name('subs')
+                self._closure(block3)
 
-                            def block5():
-                                self._token(',')
-                            self._closure(block5)
-                            with self._group():
-                                with self._choice():
-                                    with self._option():
-                                        self._integer_()
-                                    with self._option():
-                                        self._identifier_alone_()
-                                    self._error('no available options')
-                            self.add_last_node_to_name('subs')
-                        self._closure(block4)
-                    self._closure(block1)
-                with self._option():
-                    self._func_id_()
-                    self.name_last_node('name')
+                def block7():
+                    self._token('(')
+                    self.name_last_node('p')
 
                     def block9():
-                        with self._group():
-                            with self._choice():
-                                with self._option():
-                                    self._sub_integer_()
-                                with self._option():
-                                    self._unicode_subscript_()
-                                self._error('no available options')
-                        self.add_last_node_to_name('subs')
+
+                        def block10():
+                            self._hspace_()
+                        self._closure(block10)
+                        self._expression_()
+                        self.add_last_node_to_name('params')
 
                         def block12():
 
                             def block13():
-                                self._token(',')
+                                self._hspace_()
                             self._closure(block13)
-                            with self._group():
-                                with self._choice():
-                                    with self._option():
-                                        self._sub_integer_()
-                                    with self._option():
-                                        self._unicode_subscript_()
-                                    self._error('no available options')
-                            self.add_last_node_to_name('subs')
+                            self._params_separator_()
+                            self.add_last_node_to_name('separators')
+
+                            def block15():
+                                self._hspace_()
+                            self._closure(block15)
+                            self._expression_()
+                            self.add_last_node_to_name('params')
                         self._closure(block12)
                     self._closure(block9)
-                self._error('no available options')
 
-        def block17():
-            self._token('(')
-            self.name_last_node('p')
-
-            def block19():
+                    def block17():
+                        self._hspace_()
+                    self._closure(block17)
+                    self._token(')')
+                self._closure(block7)
+            with self._option():
+                self._func_id_()
+                self.name_last_node('name')
+                self._token('(')
+                self.name_last_node('p')
 
                 def block20():
-                    self._hspace_()
-                self._closure(block20)
-                self._expression_()
-                self.add_last_node_to_name('params')
 
-                def block22():
-
-                    def block23():
+                    def block21():
                         self._hspace_()
-                    self._closure(block23)
-                    self._params_separator_()
-                    self.add_last_node_to_name('separators')
-
-                    def block25():
-                        self._hspace_()
-                    self._closure(block25)
+                    self._closure(block21)
                     self._expression_()
                     self.add_last_node_to_name('params')
-                self._closure(block22)
-            self._closure(block19)
 
-            def block27():
-                self._hspace_()
-            self._closure(block27)
-            self._token(')')
-        self._closure(block17)
+                    def block23():
+
+                        def block24():
+                            self._hspace_()
+                        self._closure(block24)
+                        self._params_separator_()
+                        self.add_last_node_to_name('separators')
+
+                        def block26():
+                            self._hspace_()
+                        self._closure(block26)
+                        self._expression_()
+                        self.add_last_node_to_name('params')
+                    self._closure(block23)
+                self._closure(block20)
+
+                def block28():
+                    self._hspace_()
+                self._closure(block28)
+                self._token(')')
+            with self._option():
+                self._func_id_()
+                self.name_last_node('name')
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._sub_integer_()
+                        with self._option():
+                            self._unicode_subscript_()
+                        self._error('no available options')
+                self.add_last_node_to_name('subs')
+
+                def block32():
+
+                    def block33():
+                        self._token(',')
+                    self._closure(block33)
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._sub_integer_()
+                            with self._option():
+                                self._unicode_subscript_()
+                            self._error('no available options')
+                    self.add_last_node_to_name('subs')
+                self._closure(block32)
+
+                def block36():
+                    self._token('(')
+                    self.name_last_node('p')
+
+                    def block38():
+
+                        def block39():
+                            self._hspace_()
+                        self._closure(block39)
+                        self._expression_()
+                        self.add_last_node_to_name('params')
+
+                        def block41():
+
+                            def block42():
+                                self._hspace_()
+                            self._closure(block42)
+                            self._params_separator_()
+                            self.add_last_node_to_name('separators')
+
+                            def block44():
+                                self._hspace_()
+                            self._closure(block44)
+                            self._expression_()
+                            self.add_last_node_to_name('params')
+                        self._closure(block41)
+                    self._closure(block38)
+
+                    def block46():
+                        self._hspace_()
+                    self._closure(block46)
+                    self._token(')')
+                self._closure(block36)
+            self._error('no available options')
         self.ast._define(
             ['name', 'p'],
             ['params', 'separators', 'subs']
