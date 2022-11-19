@@ -2906,7 +2906,11 @@ class TypeWalker(NodeWalker):
     def walk_IdentifierAlone(self, node, **kwargs):
         node_type = LaVarType(VarTypeEnum.INVALID)
         if node.value:
-            value = get_unicode_subscript(node.value)
+            value = node.value
+            if isinstance(node.value, list):
+                # prefix is a keyword
+                value = ''.join(node.value)
+            value = get_unicode_subscript(value)
         elif node.id:
             value = '`' + node.id + '`'
         else:
