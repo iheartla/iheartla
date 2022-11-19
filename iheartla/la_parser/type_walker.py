@@ -2420,7 +2420,6 @@ class TypeWalker(NodeWalker):
             # function type is already specified in where block
             convertion_dict = {}   # template -> instance
             param_list = []
-            self.assert_expr(len(node.params) == len(name_type.params) or len(node.params) == 0, get_err_msg_info(node.parseinfo, "Function error. Parameters count mismatch"))
             symbols = set()
             param_node_list = []
             for index in range(len(node.subs)):
@@ -2428,6 +2427,8 @@ class TypeWalker(NodeWalker):
             ir_node.n_subs = len(node.subs)
             for index in range(len(node.params)):
                 param_node_list.append(self.walk(node.params[index], **kwargs))
+            self.assert_expr(len(param_node_list) == len(name_type.params) or len(node.params) == 0,
+                             get_err_msg_info(node.parseinfo, "Function error. Parameters count mismatch"))
             for index in range(len(param_node_list)):
                 param_info = param_node_list[index]
                 symbols = symbols.union(param_info.symbols)
