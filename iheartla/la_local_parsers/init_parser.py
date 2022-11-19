@@ -7562,7 +7562,12 @@ class grammarinitParser(Parser):
                                         self._token(',')
                                     self._closure(block11)
                                     with self._group():
-                                        self._sub_integer_()
+                                        with self._choice():
+                                            with self._option():
+                                                self._sub_integer_()
+                                            with self._option():
+                                                self._unicode_subscript_()
+                                            self._error('no available options')
                                     self.add_last_node_to_name('right')
                             self._error('no available options')
                     self._closure(block9)
@@ -7574,42 +7579,166 @@ class grammarinitParser(Parser):
 
     @tatsumasu('Function')
     def _function_operator_(self):  # noqa
-        self._func_id_()
-        self.name_last_node('name')
-        self._token('(')
-        self.name_last_node('p')
+        with self._choice():
+            with self._option():
+                self._func_id_()
+                self.name_last_node('name')
+                self._token('_')
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._integer_()
+                        with self._option():
+                            self._identifier_alone_()
+                        self._error('no available options')
+                self.add_last_node_to_name('subs')
 
-        def block2():
+                def block3():
 
-            def block3():
-                self._hspace_()
-            self._closure(block3)
-            self._expression_()
-            self.add_last_node_to_name('params')
+                    def block4():
+                        self._token(',')
+                    self._closure(block4)
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._integer_()
+                            with self._option():
+                                self._identifier_alone_()
+                            self._error('no available options')
+                    self.add_last_node_to_name('subs')
+                self._closure(block3)
 
-            def block5():
+                def block7():
+                    self._token('(')
+                    self.name_last_node('p')
 
-                def block6():
+                    def block9():
+
+                        def block10():
+                            self._hspace_()
+                        self._closure(block10)
+                        self._expression_()
+                        self.add_last_node_to_name('params')
+
+                        def block12():
+
+                            def block13():
+                                self._hspace_()
+                            self._closure(block13)
+                            self._params_separator_()
+                            self.add_last_node_to_name('separators')
+
+                            def block15():
+                                self._hspace_()
+                            self._closure(block15)
+                            self._expression_()
+                            self.add_last_node_to_name('params')
+                        self._closure(block12)
+                    self._closure(block9)
+
+                    def block17():
+                        self._hspace_()
+                    self._closure(block17)
+                    self._token(')')
+                self._closure(block7)
+            with self._option():
+                self._func_id_()
+                self.name_last_node('name')
+                self._token('(')
+                self.name_last_node('p')
+
+                def block20():
+
+                    def block21():
+                        self._hspace_()
+                    self._closure(block21)
+                    self._expression_()
+                    self.add_last_node_to_name('params')
+
+                    def block23():
+
+                        def block24():
+                            self._hspace_()
+                        self._closure(block24)
+                        self._params_separator_()
+                        self.add_last_node_to_name('separators')
+
+                        def block26():
+                            self._hspace_()
+                        self._closure(block26)
+                        self._expression_()
+                        self.add_last_node_to_name('params')
+                    self._closure(block23)
+                self._closure(block20)
+
+                def block28():
                     self._hspace_()
-                self._closure(block6)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
+                self._closure(block28)
+                self._token(')')
+            with self._option():
+                self._func_id_()
+                self.name_last_node('name')
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._sub_integer_()
+                        with self._option():
+                            self._unicode_subscript_()
+                        self._error('no available options')
+                self.add_last_node_to_name('subs')
 
-                def block8():
-                    self._hspace_()
-                self._closure(block8)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block5)
-        self._closure(block2)
+                def block32():
 
-        def block10():
-            self._hspace_()
-        self._closure(block10)
-        self._token(')')
+                    def block33():
+                        self._token(',')
+                    self._closure(block33)
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._sub_integer_()
+                            with self._option():
+                                self._unicode_subscript_()
+                            self._error('no available options')
+                    self.add_last_node_to_name('subs')
+                self._closure(block32)
+
+                def block36():
+                    self._token('(')
+                    self.name_last_node('p')
+
+                    def block38():
+
+                        def block39():
+                            self._hspace_()
+                        self._closure(block39)
+                        self._expression_()
+                        self.add_last_node_to_name('params')
+
+                        def block41():
+
+                            def block42():
+                                self._hspace_()
+                            self._closure(block42)
+                            self._params_separator_()
+                            self.add_last_node_to_name('separators')
+
+                            def block44():
+                                self._hspace_()
+                            self._closure(block44)
+                            self._expression_()
+                            self.add_last_node_to_name('params')
+                        self._closure(block41)
+                    self._closure(block38)
+
+                    def block46():
+                        self._hspace_()
+                    self._closure(block46)
+                    self._token(')')
+                self._closure(block36)
+            self._error('no available options')
         self.ast._define(
             ['name', 'p'],
-            ['params', 'separators']
+            ['params', 'separators', 'subs']
         )
 
 
@@ -9452,3 +9581,4 @@ class Function(ModelBase):
     p = None
     params = None
     separators = None
+    subs = None
