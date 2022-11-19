@@ -73,16 +73,20 @@ class ParserManager(object):
         self.default_parser.const_e = False
         if "ids" in extra_dict:
             self.default_parser.new_id_list = extra_dict["ids"]
+            la_debug("Modify default parser, ids:{}".format(extra_dict["ids"]))
         if 'funcs' in extra_dict:
             self.default_parser.new_func_list = extra_dict["funcs"]
+            la_debug("Modify default parser, funcs:{}".format(extra_dict["funcs"]))
         if 'pkg' in extra_dict:
             funcs_list = extra_dict["pkg"]
             if 'e' in funcs_list:
                 self.default_parser.const_e = True
                 funcs_list.remove('e')
             self.default_parser.builtin_list = funcs_list
+            la_debug("Modify default parser, pkg:{}".format(extra_dict["pkg"]))
         if 'rename' in extra_dict:
             self.default_parser.conversion_dict = extra_dict["rename"]
+            la_debug("Modify default parser, rename:{}".format(extra_dict["rename"]))
 
 
 class ParserFileManager(object):
