@@ -1495,17 +1495,29 @@ class TypeWalker(NodeWalker):
         ir_node.expr = expr_list
         param_tps = []
         par_names = []
-        for index in range(len(node.subs)):
-            param_node = self.walk(node.subs[index], **kwargs).ir
-            # assert param_node.get_name() in self.parameters, get_err_msg_info(param_node.parse_info, "Parameter {} hasn't been defined".format(param_node.get_name()))
-            self.assert_expr(param_node.get_name() in par_dict, get_err_msg_info(param_node.parse_info,
-                                                                                 "Parameter {} hasn't been defined".format(
-                                                                                     param_node.get_name())))
-            ir_node.params.append(param_node)
-            # param_tps.append(param_node.la_type)
-            param_tps.append(par_dict[param_node.get_name()])
-            par_names.append(param_node.get_name())
-        ir_node.n_subs = len(node.subs)
+        if type(node.name).__name__ == 'IdentifierSubscript':
+            for index in range(len(node.name.right)):
+                param_node = self.walk(node.name.right[index], **kwargs).ir
+                self.assert_expr(param_node.get_name() in par_dict, get_err_msg_info(param_node.parse_info,
+                                                                                     "Parameter {} hasn't been defined".format(
+                                                                                         param_node.get_name())))
+                ir_node.params.append(param_node)
+                # param_tps.append(param_node.la_type)
+                param_tps.append(par_dict[param_node.get_name()])
+                par_names.append(param_node.get_name())
+                ir_node.n_subs = len(node.name.right)
+        else:
+            for index in range(len(node.subs)):
+                param_node = self.walk(node.subs[index], **kwargs).ir
+                # assert param_node.get_name() in self.parameters, get_err_msg_info(param_node.parse_info, "Parameter {} hasn't been defined".format(param_node.get_name()))
+                self.assert_expr(param_node.get_name() in par_dict, get_err_msg_info(param_node.parse_info,
+                                                                                     "Parameter {} hasn't been defined".format(
+                                                                                         param_node.get_name())))
+                ir_node.params.append(param_node)
+                # param_tps.append(param_node.la_type)
+                param_tps.append(par_dict[param_node.get_name()])
+                par_names.append(param_node.get_name())
+            ir_node.n_subs = len(node.subs)
         for index in range(len(node.params)):
             param_node = self.walk(node.params[index], **kwargs).ir
             # assert param_node.get_name() in self.parameters, get_err_msg_info(param_node.parse_info, "Parameter {} hasn't been defined".format(param_node.get_name()))
