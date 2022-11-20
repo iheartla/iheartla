@@ -14,6 +14,7 @@ class VarTypeEnum(Enum):
     INDEX = 7
     MAPPING = 8
     TUPLE = 9
+    OVERLOADINGFUNCTION = 10
 
 
 class DynamicTypeEnum(IntFlag):
@@ -140,7 +141,10 @@ class LaVarType(object):
         return self.var_type == VarTypeEnum.TUPLE
 
     def is_function(self):
-        return self.var_type == VarTypeEnum.FUNCTION
+        return self.var_type == VarTypeEnum.FUNCTION or self.var_type == VarTypeEnum.OVERLOADINGFUNCTION
+
+    def is_overloaded(self):
+        return self.var_type == VarTypeEnum.OVERLOADINGFUNCTION
 
     def is_same_type(self, other, omit_size=False):
         # not consider whether the element is int or not
@@ -386,6 +390,9 @@ class FunctionType(LaVarType):
             signature += cur_ret.get_signature() + ';'
         return signature
 
+    def get_param_signature(self):
+        return get_list_signature(self.params)
+
     def ret_template(self):
         return len(self.ret_symbols) > 0
 
@@ -398,6 +405,27 @@ class FunctionType(LaVarType):
             ret_list.append(cur_ret.get_json_content())
         return """{{"type": "function", "params":[{}], "ret":[{}]}}""".format(','.join(param_list), ','.join(ret_list))
 
+    def same_as(self, target):
+        return target.is_function() and self.get_signature() == target.get_signature()
+
+
+class OverloadingFunctionType(LaVarType):
+    def __init__(self, desc=None, symbol=None, func_list=None):
+        LaVarType.__init__(self, VarTypeEnum.OVERLOADINGFUNCTION, desc, symbol)
+        self.func_list = func_list
+
+    def get_correct_ftype(self, param_list):
+        # given param list, get the correct function type
+        param_sig = get_list_signature(param_list)
+        for cur_func in self.func_list:
+            if param_sig == cur_func.get_param_signature():
+                return cur_func
+        return None
+
+    def add_new_type(self, f_type):
+        found = self.get_correct_ftype(f_type)
+        if not found:
+            self.func_list.append(f_type)
 
 class MappingType(LaVarType):
     def __init__(self, desc=None, symbol=None, params=None, ret=None, template_symbols=None, ret_symbols=None, cur_type=FuncType.FuncDetermined):
@@ -473,6 +501,10 @@ def get_op_desc(op):
     elif op == TypeInferenceEnum.INF_MATRIX_ROW:
         desc = "place"
     return desc
+
+
+def get_list_signature(param_list):
+    return ';'.join(param.get_signature() for param in param_list)
 
 
 def get_type_desc(la_type):
