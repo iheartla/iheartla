@@ -47,4 +47,17 @@ function_operator::Function
     | name:func_id p:'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
     | name:func_id  subs+:(sub_integer|unicode_subscript) {{','} subs+:(sub_integer|unicode_subscript)} {p:'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'}
     ;
+    
+# It's so weird that the commented rules below won't work, I guess identifier_alone and unicode_subscript must be combined
+local_func::LocalFunc
+    = (
+    name:identifier_with_unicode_subscript {def_p:/\(/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'}
+    | name:identifier_with_unicode_subscript {def_s:/\[/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']'}
+    | name:identifier_alone {'_' subs+:identifier_alone {{','} subs+:identifier_alone}} {def_p:/\(/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'} 
+    #| name:identifier_alone {subs+:unicode_subscript {{','} subs+:unicode_subscript}} {def_p:/\(/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'}
+    | name:identifier_alone {'_' subs+:identifier_alone {{','} subs+:identifier_alone}} {def_s:/\[/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']'} 
+    #| name:identifier_alone {subs+:unicode_subscript {{','} subs+:unicode_subscript}} {def_s:/\[/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']'}
+    ) 
+    {hspace} op:'=' {hspace} expr+:right_hand_side {hspace} (WHERE | GIVEN ) {hspace} defs+:where_condition {{hspace} ',' {hspace} defs+:where_condition} {{hspace} ';' {hspace} extra+:general_assignment}
+     ;
 """

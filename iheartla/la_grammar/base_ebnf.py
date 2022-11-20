@@ -1,7 +1,7 @@
 BASE = r"""
 #base
 hspace
-    = ' ' | '\t'
+    = /[ \t]/
     ;
 
 line
@@ -20,6 +20,12 @@ identifier_with_subscript::IdentifierSubscript
     ( left:identifier_alone right+:(sub_integer|unicode_subscript) {
     (',' right+:'*')
     | ({','} right+:(sub_integer|unicode_subscript)) } )
+    ;
+    
+identifier_with_unicode_subscript::IdentifierSubscript
+    = left:identifier_alone right+:(sub_integer|unicode_subscript) {
+    (',' right+:'*')
+    | ({','} right+:(sub_integer|unicode_subscript)) }
     ;
     
 # /ₐₑₒₓₕₖₗₘₙₚₛₜ/
@@ -63,8 +69,10 @@ blank
     = {(hspace | separator)}
     ;
 
+
+# ×
 params_separator
-    = ','|';'|'x'|'×'
+    = /[,;x\u00D7]/
     ;
 
 pi::Pi
