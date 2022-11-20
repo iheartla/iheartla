@@ -5594,7 +5594,6 @@ class grammarinitParser(Parser):
         )
 
     @tatsumasu('Assignment')
-    @nomemo
     def _assignment_(self):  # noqa
         with self._choice():
             with self._option():
@@ -5655,85 +5654,10 @@ class grammarinitParser(Parser):
                 self._closure(block16)
                 self._right_hand_side_()
                 self.add_last_node_to_name('right')
-            with self._option():
-
-                def block18():
-                    self._SOLVE_()
-                    self._token('_(')
-
-                    def block19():
-                        self._hspace_()
-                    self._closure(block19)
-                    self._where_condition_terse_()
-                    self.add_last_node_to_name('v')
-
-                    def block21():
-                        self._hspace_()
-                    self._closure(block21)
-
-                    def block22():
-                        self._token(',')
-
-                        def block23():
-                            self._hspace_()
-                        self._closure(block23)
-                        self._where_condition_terse_()
-                        self.add_last_node_to_name('v')
-
-                        def block25():
-                            self._hspace_()
-                        self._closure(block25)
-                    self._closure(block22)
-                    self._token(')')
-
-                    def block26():
-                        self._hspace_()
-                    self._closure(block26)
-                self._closure(block18)
-                self._expression_()
-                self.add_last_node_to_name('lexpr')
-
-                def block28():
-                    self._hspace_()
-                self._closure(block28)
-                self._token('=')
-                self.name_last_node('op')
-
-                def block30():
-                    self._hspace_()
-                self._closure(block30)
-                self._expression_()
-                self.add_last_node_to_name('rexpr')
-
-                def block32():
-
-                    def block33():
-                        self._hspace_()
-                    self._closure(block33)
-                    self._token(';')
-
-                    def block34():
-                        self._hspace_()
-                    self._closure(block34)
-                    self._expression_()
-                    self.add_last_node_to_name('lexpr')
-
-                    def block36():
-                        self._hspace_()
-                    self._closure(block36)
-                    self._token('=')
-                    self.name_last_node('op')
-
-                    def block38():
-                        self._hspace_()
-                    self._closure(block38)
-                    self._expression_()
-                    self.add_last_node_to_name('rexpr')
-                self._closure(block32)
             self._error('no available options')
         self.ast._define(
             ['op'],
-            ['left', 'lexpr', 'rexpr', 'right', 'v']
+            ['left', 'right']
         )
 
     @tatsumasu('GeneralAssignment')
@@ -6100,6 +6024,7 @@ class grammarinitParser(Parser):
         )
 
     @tatsumasu()
+    @nomemo
     def _right_hand_side_(self):  # noqa
         with self._choice():
             with self._option():
@@ -9385,11 +9310,8 @@ class Expression(ModelBase):
 
 class Assignment(ModelBase):
     left = None
-    lexpr = None
     op = None
-    rexpr = None
     right = None
-    v = None
 
 
 class GeneralAssignment(ModelBase):
