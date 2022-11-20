@@ -5972,7 +5972,7 @@ class grammardefaultParser(Parser):
                     self._closure(block1)
 
                     def block6():
-                        self._token('(')
+                        self._pattern('\\(')
                         self.name_last_node('def_p')
 
                         def block8():
@@ -6023,7 +6023,7 @@ class grammardefaultParser(Parser):
                     self._closure(block18)
 
                     def block23():
-                        self._token('(')
+                        self._pattern('\\(')
                         self.name_last_node('def_p')
 
                         def block25():
@@ -6075,7 +6075,7 @@ class grammardefaultParser(Parser):
                     self._closure(block35)
 
                     def block40():
-                        self._token('[')
+                        self._pattern('\\[')
                         self.name_last_node('def_s')
 
                         def block42():
@@ -6126,7 +6126,7 @@ class grammardefaultParser(Parser):
                     self._closure(block52)
 
                     def block57():
-                        self._token('[')
+                        self._pattern('\\[')
                         self.name_last_node('def_s')
 
                         def block59():
