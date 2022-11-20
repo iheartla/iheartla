@@ -292,7 +292,7 @@ class SetType(LaVarType):
         self.cur_type = cur_type
 
     def get_signature(self):
-        return 'set'
+        return 'set:' + ','.join([c_type.get_signature() for c_type in self.type_list])
 
     def is_integer_element(self):
         for value in self.int_list:
@@ -324,19 +324,23 @@ class SetType(LaVarType):
 class VertexSetType(SetType):
     def __init__(self):
         SetType.__init__(self, size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)], cur_type=SetTypeEnum.VERTEX)
-
+    def get_signature(self):
+        return 'vertexset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
 class EdgeSetType(SetType):
     def __init__(self):
         SetType.__init__(self, size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)], cur_type=SetTypeEnum.EDGE)
-
+    def get_signature(self):
+        return 'edgeset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
 class FaceSetType(SetType):
     def __init__(self):
         SetType.__init__(self, size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)], cur_type=SetTypeEnum.FACE)
-
+    def get_signature(self):
+        return 'faceset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
 class TetSetType(SetType):
     def __init__(self):
         SetType.__init__(self, size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)], cur_type=SetTypeEnum.TET)
-
+    def get_signature(self):
+        return 'tetset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
 
 class TupleType(LaVarType):
     def __init__(self, desc=None, element_type=None, symbol=None, type_list=None, dynamic=DynamicTypeEnum.DYN_INVALID):
@@ -345,7 +349,7 @@ class TupleType(LaVarType):
         self.size = 0 if type_list is None else len(type_list)
 
     def get_signature(self):
-        return 'tuple'
+        return 'tuple:' + ','.join([c_type.get_signature() for c_type in self.type_list])
 
 class SimplicialSetType(TupleType):
     def __init__(self, desc=None):
