@@ -480,6 +480,23 @@ class TypeWalker(NodeWalker):
             raw_text += '\n'
         return "{}{}".format(raw_text, self.la_msg.get_pos_marker(line_info.col))
 
+    def add_sym_type(self, sym, c_type, error_msg='', is_main=False):
+        target_symtable = self.get_cur_param_data().symtable
+        if is_main:
+            target_symtable = self.symtable
+        if sym not in target_symtable:
+            target_symtable[sym] = c_type
+        elif target_symtable[sym].is_function():
+            if target_symtable[sym].is_overloaded():
+                target_symtable.add_new_type(c_type)
+            else:
+                if not target_symtable[sym].same_as(c_type):
+                    target_symtable[sym] = OverloadingFunctionType(func_list=[target_symtable[sym], c_type])
+                else:
+                    self.assert_expr(False, error_msg)
+        else:
+            self.assert_expr(False, error_msg)
+
     def get_sym_type(self, sym):
         """
         get la type by considering local function
@@ -1474,7 +1491,7 @@ class TypeWalker(NodeWalker):
             # self.func_data_dict[local_func_name].symtable = par_dict
             self.local_func_dict[local_func_name] = self.func_data_dict[local_func_name].params_data.symtable
             par_dict = self.local_func_dict[local_func_name]
-        self.assert_expr(local_func_name not in self.symtable, get_err_msg(get_line_info(node.parseinfo),0,"Symbol {} has been defined".format(local_func_name)))
+        # self.assert_expr(local_func_name not in self.symtable, get_err_msg(get_line_info(node.parseinfo),0,"Symbol {} has been defined".format(local_func_name)))
         ir_node = LocalFuncNode(name=IdNode(local_func_name, parse_info=node.parseinfo), expr=[],
                                 parse_info=node.parseinfo, raw_text=node.text, defs=par_defs,
                                 def_type=def_type)
@@ -1532,8 +1549,9 @@ class TypeWalker(NodeWalker):
         self.func_data_dict[local_func_name].params_data.parameters = par_names
         ir_node.separators = node.separators
         ir_node.la_type = FunctionType(params=param_tps, ret=ret_list)
+        self.add_sym_type(local_func_name, ir_node.la_type, get_err_msg(get_line_info(node.parseinfo),0,"Symbol {} has been defined".format(local_func_name)), is_main=True)
         ir_node.symbols = cur_symbols.union(set(par_names))
-        self.symtable[local_func_name] = ir_node.la_type
+        # self.symtable[local_func_name] = ir_node.la_type
         self.local_func_parsing = False
         self.expr_dict[local_func_name] = list(ir_node.symbols) + [local_func_name]
         return NodeInfo(ir=ir_node)
@@ -2416,7 +2434,7 @@ class TypeWalker(NodeWalker):
         ir_node = FunctionNode(parse_info=node.parseinfo, mode=FuncFormat.FuncNormal if node.p else FuncFormat.FuncShort, raw_text=node.text)
         ir_node.name = name_info.ir
         if node.p:
-            ir_node.def_type = def_type=LocalFuncDefType.LocalFuncDefParenthesis
+            ir_node.def_type =LocalFuncDefType.LocalFuncDefParenthesis
         # if node.order:
         #     ir_node.order = len(node.order)
         #     self.cur_eq_type |= EqTypeEnum.ODE
@@ -2434,11 +2452,19 @@ class TypeWalker(NodeWalker):
             param_list = []
             symbols = set()
             param_node_list = []
+            param_type_list = []
             for index in range(len(node.subs)):
-                param_node_list.append(self.walk(node.subs[index], **kwargs))
+                c_node = self.walk(node.subs[index], **kwargs)
+                param_node_list.append(c_node)
+                param_type_list.append(c_node.la_type)
             ir_node.n_subs = len(node.subs)
             for index in range(len(node.params)):
-                param_node_list.append(self.walk(node.params[index], **kwargs))
+                c_node = self.walk(node.params[index], **kwargs)
+                param_node_list.append(c_node)
+                param_type_list.append(c_node.la_type)
+            if name_type.is_overloaded():
+                # get correct type for current parameters
+                name_type = name_type.get_correct_ftype(param_type_list)
             self.assert_expr(len(param_node_list) == len(name_type.params) or len(node.params) == 0,
                              get_err_msg_info(node.parseinfo, "Function error. Parameters count mismatch"))
             for index in range(len(param_node_list)):
@@ -4234,5 +4260,6 @@ class TypeWalker(NodeWalker):
             self.get_cur_param_data().symtable[arr[0]] = SequenceType(size=new_var_name, element_type=id_type, desc=id_type.desc, symbol=arr[0])
         else:
             id_type.symbol = identifier
-            self.check_sym_existence(identifier, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier)), False)
-            self.get_cur_param_data().symtable[identifier] = id_type
+            self.add_sym_type(identifier, id_type, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier)))
+            # self.check_sym_existence(identifier, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier)), False)
+            # self.get_cur_param_data().symtable[identifier] = id_type

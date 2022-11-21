@@ -418,7 +418,8 @@ class OverloadingFunctionType(LaVarType):
         # given param list, get the correct function type
         param_sig = get_list_signature(param_list)
         for cur_func in self.func_list:
-            if param_sig == cur_func.get_param_signature():
+            cur_sig = cur_func.get_param_signature()
+            if param_sig == cur_sig:
                 return cur_func
         return None
 
