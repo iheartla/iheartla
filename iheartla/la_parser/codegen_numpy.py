@@ -737,6 +737,9 @@ class CodeGenNumpy(CodeGen):
 
     def visit_function(self, node, **kwargs):
         name_info = self.visit(node.name, **kwargs)
+        func_name = name_info.content
+        if node.identity_name:
+            func_name = node.identity_name
         pre_list = []
         params = []
         if node.params:
@@ -748,10 +751,8 @@ class CodeGenNumpy(CodeGen):
             if self.visiting_diff_init:
                 return CodeNodeInfo(','.join(params), pre_list)
             return name_info
-        if name_info.content in self.local_func_def and not name_info.content.startswith("self."):
-            func_name = 'self.' + name_info.content
-        else:
-            func_name = name_info.content
+        if func_name in self.local_func_def and not func_name.startswith("self."):
+            func_name = 'self.' + func_name
         content = "{}({})".format(func_name, ', '.join(params))
         return CodeNodeInfo(content, pre_list)
 
@@ -763,7 +764,7 @@ class CodeGenNumpy(CodeGen):
         for parameter in node.params:
             param_info = self.visit(parameter, **kwargs)
             param_list.append(param_info.content)
-        content = "    def {}(self, {}):\n".format(name_info.content, ", ".join(param_list))
+        content = "    def {}(self, {}):\n".format(node.identity_name, ", ".join(param_list))
         # get dimension content
         dim_defined_dict, test_content, dim_content = self.gen_dim_content()
         # Handle sequences first

@@ -769,6 +769,9 @@ class CodeGenMatlab(CodeGen):
 
     def visit_function(self, node, **kwargs):
         name_info = self.visit(node.name, **kwargs)
+        func_name = name_info.content
+        if node.identity_name:
+            func_name = node.identity_name
         pre_list = []
         params = []
         if node.params:
@@ -780,7 +783,7 @@ class CodeGenMatlab(CodeGen):
             if self.visiting_diff_init:
                 return CodeNodeInfo(','.join(params), pre_list)
             return name_info
-        content = "{}({})".format(name_info.content, ', '.join(params))
+        content = "{}({})".format(func_name, ', '.join(params))
         return CodeNodeInfo(content, pre_list)
 
     def visit_local_func(self, node, **kwargs):
@@ -833,7 +836,7 @@ class CodeGenMatlab(CodeGen):
             if not node.expr[0].is_node(IRNodeType.MultiConds):
                 content += '        {} = {};\n'.format(cur_ret_name, expr_info.content)
         content += '    end\n\n'
-        self.local_func_def += "    function [{}] = {}({})\n".format(', '.join(name_list), name_info.content, ", ".join(param_list)) + content
+        self.local_func_def += "    function [{}] = {}({})\n".format(', '.join(name_list), node.identity_name, ", ".join(param_list)) + content
         self.local_func_parsing = False
         return CodeNodeInfo()
 

@@ -507,6 +507,8 @@ def get_op_desc(op):
 def get_list_signature(param_list):
     return ';'.join(param.get_signature() for param in param_list)
 
+def get_func_signature(name, la_type):
+    return name + la_type.get_signature()
 
 def get_type_desc(la_type):
     desc = "NoneType"

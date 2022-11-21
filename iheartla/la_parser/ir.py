@@ -1392,7 +1392,7 @@ class OrderFormat(IntEnum):
     OrderDot = 1
 
 class FunctionNode(ExprNode):
-    def __init__(self, la_type=None, parse_info=None, raw_text=None, mode=FuncFormat.FuncNormal, order_mode=OrderFormat.OrderPrime, def_type=LocalFuncDefType.LocalFuncDefInvalid):
+    def __init__(self, la_type=None, parse_info=None, raw_text=None, mode=FuncFormat.FuncNormal, order_mode=OrderFormat.OrderPrime, def_type=LocalFuncDefType.LocalFuncDefInvalid, identity_name=None):
         super().__init__(IRNodeType.Function, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.mode = mode
         self.params = []
@@ -1403,6 +1403,7 @@ class FunctionNode(ExprNode):
         self.order_mode = order_mode
         self.n_subs = 0   # number of subscripts
         self.def_type = def_type
+        self.identity_name = identity_name
 
     def get_signature(self, extra=None):
         if extra is None:

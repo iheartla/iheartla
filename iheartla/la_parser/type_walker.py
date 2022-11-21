@@ -283,6 +283,7 @@ class TypeWalker(NodeWalker):
         self.opt_dict = {}
         self.func_data_dict = {}   # local function name -> LocalFuncData
         self.func_name_dict = {}   # local function node -> local function name
+        self.func_sig_dict = {}    # function signature -> identity local function name
         #
         self.desc_dict = {}        # comment for parameters
         self.import_module_list = []
@@ -1557,6 +1558,7 @@ class TypeWalker(NodeWalker):
         ir_node.separators = node.separators
         ir_node.la_type = FunctionType(params=param_tps, ret=ret_list)
         self.add_sym_type(original_local_func_name, ir_node.la_type, get_err_msg(get_line_info(node.parseinfo),0,"Symbol {} has been defined".format(local_func_name)), is_main=True)
+        self.func_sig_dict[get_func_signature(original_local_func_name, ir_node.la_type)]  = local_func_name
         ir_node.symbols = cur_symbols.union(set(par_names))
         # self.symtable[local_func_name] = ir_node.la_type
         self.local_func_parsing = False
@@ -2410,6 +2412,7 @@ class TypeWalker(NodeWalker):
 
     def walk_Function(self, node, **kwargs):
         if isinstance(node.name, str):
+            func_name = node.name
             if self.local_func_parsing and node.name in self.parameters and node.name not in self.used_params:
                 self.used_params.append(node.name)
             if self.visiting_opt and node.name in self.parameters and node.name not in self.used_params:
@@ -2437,6 +2440,7 @@ class TypeWalker(NodeWalker):
             name_info = NodeInfo(ir_node.la_type, ir=ir_node)
         else:
             name_info = self.walk(node.name, **kwargs)
+            func_name = name_info.ir.get_main_id()
         name_type = name_info.ir.la_type
         ir_node = FunctionNode(parse_info=node.parseinfo, mode=FuncFormat.FuncNormal if node.p else FuncFormat.FuncShort, raw_text=node.text)
         ir_node.name = name_info.ir
@@ -2472,6 +2476,9 @@ class TypeWalker(NodeWalker):
             if name_type.is_overloaded():
                 # get correct type for current parameters
                 name_type = name_type.get_correct_ftype(param_type_list)
+                ir_node.identity_name = self.func_sig_dict[get_func_signature(func_name, name_type)]
+            else:
+                ir_node.identity_name = func_name
             self.assert_expr(len(param_node_list) == len(name_type.params) or len(node.params) == 0,
                              get_err_msg_info(node.parseinfo, "Function error. Parameters count mismatch"))
             for index in range(len(param_node_list)):
