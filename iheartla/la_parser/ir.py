@@ -387,9 +387,10 @@ class LocalFuncDefType(IntEnum):
 
 
 class LocalFuncNode(StmtNode):
-    def __init__(self, name=None, expr=None, la_type=None, parse_info=None, raw_text=None, defs=[], def_type=LocalFuncDefType.LocalFuncDefParenthesis):
+    def __init__(self, name=None, expr=None, la_type=None, parse_info=None, raw_text=None, defs=[], def_type=LocalFuncDefType.LocalFuncDefParenthesis, identity_name=None):
         super().__init__(IRNodeType.LocalFunc, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
-        self.name = name
+        self.name = name  # original name in source code
+        self.identity_name = identity_name if identity_name else name   # unique name in output
         self.expr = expr
         self.op = None
         self.symbols = None

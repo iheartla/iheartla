@@ -196,6 +196,7 @@ def generate_latex_code(type_walker, node_info, frame):
     ## and avoids a race condition other running instances of iheartla.
     ## We will pass UpdateTexPanel a file-like object containing the bytes of the PDF.
     with tempfile.TemporaryDirectory() as tmpdir:
+        tmpdir = "/Users/pressure/Downloads/tmp_pdf"
         if DEBUG_MODE:
             tex_content, show_pdf = get_pdf(tmpdir)
             wx.CallAfter(frame.UpdateTexPanel, tex_content, show_pdf)

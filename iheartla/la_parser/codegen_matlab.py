@@ -786,7 +786,7 @@ class CodeGenMatlab(CodeGen):
     def visit_local_func(self, node, **kwargs):
         self.local_func_parsing = True
         name_info = self.visit(node.name, **kwargs)
-        self.local_func_name = name_info.content  # function name when visiting expressions
+        self.local_func_name = node.identity_name  # function name when visiting expressions
         param_list = []
         for parameter in node.params:
             param_info = self.visit(parameter, **kwargs)

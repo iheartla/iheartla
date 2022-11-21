@@ -282,6 +282,7 @@ class TypeWalker(NodeWalker):
         self.opt_key = ''
         self.opt_dict = {}
         self.func_data_dict = {}   # local function name -> LocalFuncData
+        self.func_name_dict = {}   # local function node -> local function name
         #
         self.desc_dict = {}        # comment for parameters
         self.import_module_list = []
@@ -648,8 +649,13 @@ class TypeWalker(NodeWalker):
                         func_sym = vblock_info[0].name
                     else:
                         func_sym = self.walk(vblock_info[0].name).ir.get_main_id()
+                    if func_sym in self.func_data_dict:
+                        func_sym = self.generate_var_name(func_sym)
+                        self.func_data_dict[func_sym] = LocalFuncData(name=func_sym)
+                    else:
+                        self.func_data_dict[func_sym] = LocalFuncData(name=func_sym)
                     self.local_func_dict[func_sym] = {}
-                    self.func_data_dict[func_sym] = LocalFuncData(name=func_sym)
+                    self.func_name_dict[vblock_info[0]] = func_sym   # save mapping
                     self.local_func_syms.append(func_sym)
                     if self.pre_walk:
                         self.local_func_parsing = True
@@ -1474,9 +1480,10 @@ class TypeWalker(NodeWalker):
         elif node.def_s:
             def_type = LocalFuncDefType.LocalFuncDefBracket
         if isinstance(node.name, str):
-            local_func_name = node.name
+            original_local_func_name = node.name
         else:
-            local_func_name = self.walk(node.name).ir.get_main_id()
+            original_local_func_name = self.walk(node.name).ir.get_main_id()
+        local_func_name = self.func_name_dict[node]
         par_defs = []
         par_dict = {}
         self.local_func_name = local_func_name
@@ -1492,9 +1499,9 @@ class TypeWalker(NodeWalker):
             self.local_func_dict[local_func_name] = self.func_data_dict[local_func_name].params_data.symtable
             par_dict = self.local_func_dict[local_func_name]
         # self.assert_expr(local_func_name not in self.symtable, get_err_msg(get_line_info(node.parseinfo),0,"Symbol {} has been defined".format(local_func_name)))
-        ir_node = LocalFuncNode(name=IdNode(local_func_name, parse_info=node.parseinfo), expr=[],
+        ir_node = LocalFuncNode(name=IdNode(original_local_func_name, parse_info=node.parseinfo), expr=[],
                                 parse_info=node.parseinfo, raw_text=node.text, defs=par_defs,
-                                def_type=def_type)
+                                def_type=def_type, identity_name=local_func_name)
         # extra exprs
         if node.extra and len(node.extra) > 0:
             for et in node.extra:
@@ -1549,7 +1556,7 @@ class TypeWalker(NodeWalker):
         self.func_data_dict[local_func_name].params_data.parameters = par_names
         ir_node.separators = node.separators
         ir_node.la_type = FunctionType(params=param_tps, ret=ret_list)
-        self.add_sym_type(local_func_name, ir_node.la_type, get_err_msg(get_line_info(node.parseinfo),0,"Symbol {} has been defined".format(local_func_name)), is_main=True)
+        self.add_sym_type(original_local_func_name, ir_node.la_type, get_err_msg(get_line_info(node.parseinfo),0,"Symbol {} has been defined".format(local_func_name)), is_main=True)
         ir_node.symbols = cur_symbols.union(set(par_names))
         # self.symtable[local_func_name] = ir_node.la_type
         self.local_func_parsing = False
