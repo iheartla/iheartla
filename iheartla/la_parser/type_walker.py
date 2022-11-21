@@ -306,8 +306,9 @@ class TypeWalker(NodeWalker):
         #     print("msg: {}".format(msg))
         # if not self.visiting_solver_eq:
         #     assert cond, msg
-        if not self.omit_assert:
-            assert cond, msg
+        if not self.pre_walk:
+            if not self.omit_assert:
+                assert cond, msg
 
     def get_cur_param_data(self):
         # either main where/given block or local function block
@@ -649,7 +650,9 @@ class TypeWalker(NodeWalker):
                     if isinstance(vblock_info[0].name, str):
                         func_sym = vblock_info[0].name
                     else:
+                        self.visiting_lhs = True
                         func_sym = self.walk(vblock_info[0].name).ir.get_main_id()
+                        self.visiting_lhs = False
                     if func_sym in self.func_data_dict:
                         func_sym = self.generate_var_name(func_sym)
                         self.func_data_dict[func_sym] = LocalFuncData(name=func_sym)
@@ -1558,7 +1561,7 @@ class TypeWalker(NodeWalker):
         ir_node.separators = node.separators
         ir_node.la_type = FunctionType(params=param_tps, ret=ret_list)
         self.add_sym_type(original_local_func_name, ir_node.la_type, get_err_msg(get_line_info(node.parseinfo),0,"Symbol {} has been defined".format(local_func_name)), is_main=True)
-        self.func_sig_dict[get_func_signature(original_local_func_name, ir_node.la_type)]  = local_func_name
+        self.func_sig_dict[get_func_signature(original_local_func_name, ir_node.la_type)] = local_func_name
         ir_node.symbols = cur_symbols.union(set(par_names))
         # self.symtable[local_func_name] = ir_node.la_type
         self.local_func_parsing = False
