@@ -28,9 +28,9 @@ identifier_with_unicode_subscript::IdentifierSubscript
     | ({','} right+:(sub_integer|unicode_subscript)) }
     ;
     
-# /ₐₑₒₓₕₖₗₘₙₚₛₜ/
+# /ₐₑₒₓₕₖₗₘₙₚₛₜ/ \u1D62(ᵢ) \u2C7C(ⱼ)
 unicode_subscript::IdentifierAlone
-    = value:/[\u2090-\u209C]/
+    = value:/[\u2090-\u209C\u1D62\u2C7C]/
     ;
 
 size_op::SizeOp

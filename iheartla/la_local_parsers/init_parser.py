@@ -2912,7 +2912,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu('IdentifierAlone')
     def _unicode_subscript_(self):  # noqa
-        self._pattern('[\\u2090-\\u209C]')
+        self._pattern('[\\u2090-\\u209C\\u1D62\\u2C7C]')
         self.name_last_node('value')
         self.ast._define(
             ['value'],

@@ -285,5 +285,5 @@ def get_unicode_fraction(unicode):
     return fraction_dict[unicode]
 
 def get_unicode_subscript(unicode):
-    subscript_dict = {'ₐ':'a', 'ₑ':'e', 'ₒ':'o', 'ₓ':'x', 'ₕ':'h', 'ₖ':'k', 'ₗ':'l', 'ₘ':'m', 'ₙ':'n', 'ₚ':'p', 'ₛ':'s', 'ₜ':'t'}
+    subscript_dict = {'ₐ':'a', 'ₑ':'e', 'ₒ':'o', 'ₓ':'x', 'ₕ':'h', 'ₖ':'k', 'ₗ':'l', 'ₘ':'m', 'ₙ':'n', 'ₚ':'p', 'ₛ':'s', 'ₜ':'t', 'ᵢ':'i', 'ⱼ':'j'}
     return subscript_dict[unicode] if unicode in subscript_dict else unicode
