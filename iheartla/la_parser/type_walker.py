@@ -703,8 +703,8 @@ class TypeWalker(NodeWalker):
                     if self.pre_walk:
                         self.local_func_parsing = True
                         self.local_func_name = func_sym
-                        if len(func_sym) > 1:
-                            multi_lhs_list.append(func_sym)
+                        if len(self.func_mapping_dict[func_sym]) > 1:
+                            multi_lhs_list.append(self.func_mapping_dict[func_sym])
                         self.is_param_block = True
                         for par_def in vblock_info[0].defs:
                             par_type = self.walk(par_def, **kwargs)
