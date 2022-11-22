@@ -396,6 +396,7 @@ class TypeWalker(NodeWalker):
         self.local_func_name = ''
         self.local_func_dict.clear()
         self.extra_symtable.clear()
+        self.func_sig_dict.clear()
         self.opt_dict.clear()
         self.func_data_dict.clear()
         self.desc_dict.clear()
@@ -486,15 +487,22 @@ class TypeWalker(NodeWalker):
             raw_text += '\n'
         return "{}{}".format(raw_text, self.la_msg.get_pos_marker(line_info.col))
 
-    def add_sym_type(self, sym, c_type, error_msg='', is_main=False):
+    def add_sym_type(self, sym, c_type, error_msg='', is_main=False, need_check=True):
+        """
+        :param sym: new symbol
+        :param c_type: la type
+        :param error_msg:
+        :param is_main: whether add the symbol to main symtable
+        :param need_check: whether we need to check function overloading,
+        func_sig_dict
+        :return:
+        """
         target_symtable = self.get_cur_param_data().symtable
-        check = False
         if is_main:
             target_symtable = self.symtable
+        check = False  # automatically infer check tag
+        if not (self.local_func_parsing or self.visiting_opt or not self.is_main_scope()):
             check = True
-        if not check:
-            if not (self.local_func_parsing or self.visiting_opt or not self.is_main_scope()):
-                check = True
         if sym not in target_symtable:
             target_symtable[sym] = c_type
         elif target_symtable[sym].is_function():
@@ -507,7 +515,7 @@ class TypeWalker(NodeWalker):
                     self.assert_expr(False, error_msg)
         else:
             self.assert_expr(False, error_msg)
-        if check:
+        if need_check and check:
             # it's safe here since the above assertion is not triggered
             if c_type.is_function():
                 sig = get_func_signature(sym, c_type)
@@ -761,7 +769,7 @@ class TypeWalker(NodeWalker):
 
 
     def push_environment(self):
-        self.logger.debug("push_environment: {}".format(self.symtable))
+        # self.logger.debug("push_environment: {}".format(self.symtable))
         # save variable changes when parsing *expressions*
         self.saved_symtable = copy.deepcopy(self.symtable)
         self.saved_sum_subs = copy.deepcopy(self.sum_subs)
@@ -780,7 +788,7 @@ class TypeWalker(NodeWalker):
         self.saved_scope = self.cur_scope
 
     def pop_environment(self):
-        self.logger.debug("pop_environment: {}".format(self.saved_symtable))
+        # self.logger.debug("pop_environment: {}".format(self.saved_symtable))
         self.symtable = self.saved_symtable
         self.sum_subs = self.saved_sum_subs
         self.sum_sym_list = self.saved_sum_sym_list
@@ -810,7 +818,7 @@ class TypeWalker(NodeWalker):
                 for cur_index in range(len(stat_list)):
                     if order_list[cur_index] == -1 and not visited_list[cur_index]:
                         cur_stat = stat_list[cur_index]
-                        self.logger.debug("tried stat:{}, retries:{}".format(cur_stat.text, retries))
+                        # self.logger.debug("tried stat:{}, retries:{}".format(cur_stat.text, retries))
                         # try to parse
                         self.push_environment()
                         try:
@@ -834,11 +842,11 @@ class TypeWalker(NodeWalker):
                             order_list[cur_index] = cnt
                             cnt += 1
                             retries = 0
-                            self.logger.debug("expr index:{}, stat:{}".format(cnt, cur_stat.text))
+                            # self.logger.debug("expr index:{}, stat:{}".format(cnt, cur_stat.text))
                             break
                         # except AssertionError as e:
                         except Exception as e:
-                            self.logger.debug("failed stat:{}, e:{}".format(cur_stat.text, e))
+                            # self.logger.debug("failed stat:{}, e:{}".format(cur_stat.text, e))
                             retries += 1
                             visited_list[cur_index] = True
                             if retries > len(stat_list):
