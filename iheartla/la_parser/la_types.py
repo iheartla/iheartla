@@ -428,6 +428,11 @@ class OverloadingFunctionType(LaVarType):
         if not found:
             self.func_list.append(f_type)
 
+    def get_signature(self):
+        signature = "overloadingfunc,size:{},\n".format(len(self.func_list))
+        sig_list = [func.get_signature() for func in self.func_list]
+        return signature + '\n'.join(sig_list)
+
 class MappingType(LaVarType):
     def __init__(self, desc=None, symbol=None, params=None, ret=None, template_symbols=None, ret_symbols=None, cur_type=FuncType.FuncDetermined):
         LaVarType.__init__(self, VarTypeEnum.MAPPING, desc, symbol)

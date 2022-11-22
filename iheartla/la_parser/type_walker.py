@@ -467,6 +467,7 @@ class TypeWalker(NodeWalker):
                 valid = True
             index += 1
         self.name_cnt_dict[base] = index - 1
+        la_debug("generate_var_name: {}".format(ret))
         return ret
 
     def get_line_desc(self, node):
@@ -514,6 +515,7 @@ class TypeWalker(NodeWalker):
                     n_name = self.generate_var_name(sym)
                     self.func_sig_dict[sig] = n_name
                     self.extra_symtable[n_name] = c_type
+                    la_debug("n_name:{}".format(n_name))
                 if not self.pre_walk:
                     la_debug("sym:{}, sig:{}".format(sym, c_type.get_signature()))
                     la_debug("self.func_sig_dict:{}".format(self.func_sig_dict))
@@ -601,6 +603,7 @@ class TypeWalker(NodeWalker):
         raise Exception('Unexpected type %s walked', type(o).__name__)
 
     def walk_Start(self, node, **kwargs):
+        la_debug("TypeWalker begin ==================================================================================================================")
         self.main_param.symtable = self.symtable
         self.pre_walk = True if 'pre_walk' in kwargs else False
         # self.symtable.clear()
@@ -676,6 +679,7 @@ class TypeWalker(NodeWalker):
                         self.func_data_dict[func_sym] = LocalFuncData(name=func_sym)
                     else:
                         self.func_data_dict[func_sym] = LocalFuncData(name=func_sym)
+                    la_debug("func_sym:{}".format(func_sym))
                     self.local_func_dict[func_sym] = {}
                     self.func_name_dict[vblock_info[0].text] = func_sym   # save mapping
                     self.local_func_syms.append(func_sym)
@@ -737,7 +741,24 @@ class TypeWalker(NodeWalker):
         # set properties
         self.main_param.parameters = self.parameters
         self.main_param.symtable = self.symtable
+        self.print_all()
         return ir_node
+
+    def print_all(self):
+        la_debug("TypeWalker end ==================================================================================================================")
+        la_debug("func_sig_dict:")
+        for k,v in self.func_sig_dict.items():
+            la_debug("{} : {}".format(v, k))
+        self.logger.info("symtable:")
+        for k,v in self.symtable.items():
+            la_debug("{} : {}".format(k, v.get_signature()))
+        self.logger.info("extra_symtable:".format())
+        for k, v in self.extra_symtable.items():
+            self.logger.info("{} : {}".format(k, v.get_signature()))
+        self.logger.info("func_name_dict:".format())
+        for k, v in self.func_name_dict.items():
+            self.logger.info("{} : {}".format(k, v))
+
 
     def push_environment(self):
         self.logger.debug("push_environment: {}".format(self.symtable))

@@ -520,6 +520,7 @@ class IRVisitor(IRBaseVisitor):
         return ret
 
     def print_symbols(self):
+        la_debug("CodeGen ==================================================================================================================")
         self.logger.info("symtable:")
         def get_type_desc(v):
             extra = ''
@@ -552,7 +553,9 @@ class IRVisitor(IRBaseVisitor):
             if isinstance(param_data, LocalFuncData):
                 self.logger.info("local function name:" + str(param_data.name))
                 param_data = param_data.params_data
-            self.logger.info("symtable: {}".format(param_data.symtable, hex(id(param_data.symtable))))
+            self.logger.info("symtable:")
+            for k, v in self.symtable.items():
+                self.logger.info("{} : {}".format(k, v.get_signature()))
             self.logger.info("parameters: {}".format(param_data.parameters, hex(id(param_data.parameters))))
             self.logger.info("subscripts: {}".format(param_data.subscripts, hex(id(param_data.subscripts))))
             self.logger.info("dim_dict: {}".format(param_data.dim_dict, hex(id(param_data.dim_dict))))
@@ -562,7 +565,6 @@ class IRVisitor(IRBaseVisitor):
             self.logger.info("sub_name_dict: {}\n".format(param_data.sub_name_dict, hex(id(param_data.sub_name_dict))))
         self.logger.info("used params:{}".format(self.used_params))
         self.logger.info("optimized variables:{}".format(self.opt_syms))
-        self.logger.info("extra_symtable: {}\n".format(self.extra_symtable))
 
     def init_type(self, type_walker, func_name):
         # self.symtable = type_walker.symtable
