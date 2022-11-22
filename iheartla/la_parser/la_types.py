@@ -180,9 +180,10 @@ class ScalarType(LaVarType):
         self.is_constant = is_constant  # constant number
 
     def get_signature(self):
-        if self.is_int:
-            return 'scalar:integer'
-        return 'scalar:double'
+        # if self.is_int:
+        #     return 'scalar:integer'
+        # return 'scalar:double'
+        return self.get_raw_text()
 
     def is_integer_element(self):
         return self.is_int
@@ -191,7 +192,7 @@ class ScalarType(LaVarType):
         return """{{"type": "scalar", "is_int":"{}"}}""".format(self.is_integer_element())
 
     def get_raw_text(self):
-        return 'ℝ' if self.is_int else 'ℤ'
+        return 'ℤ' if self.is_int else 'ℝ'
 
 
 class SequenceType(LaVarType):
@@ -200,7 +201,7 @@ class SequenceType(LaVarType):
         self.size = size
 
     def get_signature(self):
-        return "sequence,ele_type:{}".format(self.element_type.get_signature())
+        return "sequence of {}".format(self.element_type.get_signature())
 
     def is_integer_element(self):
         return self.element_type.is_integer_element()
@@ -236,10 +237,11 @@ class MatrixType(LaVarType):
         self.value_var = value_var    # used by sparse mat
 
     def get_signature(self):
-        if self.element_type:
-            return "matrix,rows:{},cols:{},ele_type:{}".format(self.rows, self.cols, self.element_type.get_signature())
-        else:
-            return "matrix,rows:{},cols:{}".format(self.rows, self.cols)
+        # if self.element_type:
+        #     return "matrix,rows:{},cols:{},ele_type:{}".format(self.rows, self.cols, self.element_type.get_signature())
+        # else:
+        #     return "matrix,rows:{},cols:{}".format(self.rows, self.cols)
+        return self.get_raw_text()
 
     def is_integer_element(self):
         return self.element_type.is_integer_element()
@@ -267,10 +269,11 @@ class VectorType(LaVarType):
         self.sparse = False
 
     def get_signature(self):
-        if self.element_type:
-            return "vector,rows:{},ele_type:{}".format(self.rows, self.element_type.get_signature())
-        else:
-            return "vector,rows:{}".format(self.rows)
+        # if self.element_type:
+        #     return "vector,rows:{},ele_type:{}".format(self.rows, self.element_type.get_signature())
+        # else:
+        #     return "vector,rows:{}".format(self.rows)
+        return self.get_raw_text()
 
     def is_integer_element(self):
         return self.element_type.is_integer_element()
@@ -283,7 +286,7 @@ class VectorType(LaVarType):
         return """{{"type": "vector", "is_int":"{}", "element":{}, "rows":"{}"}}""".format(self.is_integer_element(), self.element_type.get_json_content(), self.rows)
 
     def get_raw_text(self):
-        e_type = 'ℝ' if self.element_type.is_int else 'ℤ'
+        e_type = 'ℤ' if self.element_type.is_int else 'ℝ'
         return "{}^{}".format(e_type, self.rows)
 
 
@@ -296,7 +299,8 @@ class SetType(LaVarType):
         self.cur_type = cur_type
 
     def get_signature(self):
-        return 'set:' + ','.join([c_type.get_signature() for c_type in self.type_list])
+        # return 'set:' + ','.join([c_type.get_signature() for c_type in self.type_list])
+        return self.get_raw_text()
 
     def is_integer_element(self):
         for value in self.int_list:
@@ -382,20 +386,14 @@ class FunctionType(LaVarType):
         self.cur_type = cur_type
 
     def get_signature(self):
-        signature = 'func,params:'
-        for param in self.params:
-            signature += param.get_signature() + ';'
-        signature += 'ret:'
+        signature = get_list_signature(self.params) + ' → '
+        ret_list = []
         for cur_ret in self.ret:
-            signature += cur_ret.get_signature() + ';'
-        return signature
+            ret_list.append(cur_ret.get_signature())
+        return signature + ','.join(ret_list)
 
     def get_overloading_signature(self):
-        # only consider parameters for overloading
-        signature = 'func,params:'
-        for param in self.params:
-            signature += param.get_signature() + ';'
-        return signature
+        return self.get_param_signature()
 
     def get_param_signature(self):
         return get_list_signature(self.params)
@@ -435,6 +433,7 @@ class OverloadingFunctionType(LaVarType):
     def add_new_type(self, f_type):
         success = True
         found = self.get_correct_ftype(f_type.params)
+        la_debug("add_new_type, current:{}, sig:{}".format(len(self.func_list), f_type.get_signature()))
         if found is None:
             self.func_list.append(f_type)
         else:
@@ -523,11 +522,11 @@ def get_op_desc(op):
 
 def get_list_signature(param_list):
     # get the signatures of function parameters
-    return ';'.join(param.get_signature() for param in param_list)
+    return ','.join(param.get_signature() for param in param_list)
 
 def get_func_signature(name, la_type):
     # only consider parameters
-    return name + la_type.get_overloading_signature()
+    return "{} = {}".format(name, la_type.get_overloading_signature())
 
 def get_type_desc(la_type):
     desc = "NoneType"

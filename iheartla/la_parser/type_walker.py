@@ -517,10 +517,10 @@ class TypeWalker(NodeWalker):
                 if not success:
                     self.assert_expr(False, 'Multiple functions with same signature')
             else:
-                if not target_symtable[sym].same_as(c_type):
+                if target_symtable[sym].get_overloading_signature() != c_type.get_overloading_signature():
                     target_symtable[sym] = OverloadingFunctionType(func_list=[target_symtable[sym], c_type])
                 else:
-                    self.assert_expr(False, error_msg)
+                    self.assert_expr(False, 'Multiple functions with same signature')
         else:
             self.assert_expr(False, error_msg)
         if need_check and check:
