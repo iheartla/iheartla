@@ -390,6 +390,13 @@ class FunctionType(LaVarType):
             signature += cur_ret.get_signature() + ';'
         return signature
 
+    def get_overloading_signature(self):
+        # only consider parameters for overloading
+        signature = 'func,params:'
+        for param in self.params:
+            signature += param.get_signature() + ';'
+        return signature
+
     def get_param_signature(self):
         return get_list_signature(self.params)
 
@@ -417,17 +424,22 @@ class OverloadingFunctionType(LaVarType):
     def get_correct_ftype(self, param_list):
         # given param list, get the correct function type
         param_sig = get_list_signature(param_list)
+        la_debug("param_sig:{}".format(param_sig))
         for cur_func in self.func_list:
             cur_sig = cur_func.get_param_signature()
+            la_debug("cur_sig:{}".format(cur_sig))
             if param_sig == cur_sig:
                 return cur_func
         return None
 
     def add_new_type(self, f_type):
+        success = True
         found = self.get_correct_ftype(f_type.params)
-        if not found:
+        if found is None:
             self.func_list.append(f_type)
-
+        else:
+            success = False
+        return success
     def get_signature(self):
         signature = "overloadingfunc,size:{},\n".format(len(self.func_list))
         sig_list = [func.get_signature() for func in self.func_list]
@@ -510,10 +522,12 @@ def get_op_desc(op):
 
 
 def get_list_signature(param_list):
+    # get the signatures of function parameters
     return ';'.join(param.get_signature() for param in param_list)
 
 def get_func_signature(name, la_type):
-    return name + la_type.get_signature()
+    # only consider parameters
+    return name + la_type.get_overloading_signature()
 
 def get_type_desc(la_type):
     desc = "NoneType"

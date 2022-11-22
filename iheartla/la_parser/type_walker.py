@@ -512,7 +512,10 @@ class TypeWalker(NodeWalker):
             target_symtable[sym] = c_type
         elif target_symtable[sym].is_function():
             if target_symtable[sym].is_overloaded():
-                target_symtable[sym].add_new_type(c_type)
+                # append new type
+                success = target_symtable[sym].add_new_type(c_type)
+                if not success:
+                    self.assert_expr(False, 'Multiple functions with same signature')
             else:
                 if not target_symtable[sym].same_as(c_type):
                     target_symtable[sym] = OverloadingFunctionType(func_list=[target_symtable[sym], c_type])
@@ -828,7 +831,7 @@ class TypeWalker(NodeWalker):
                 for cur_index in range(len(stat_list)):
                     if order_list[cur_index] == -1 and not visited_list[cur_index]:
                         cur_stat = stat_list[cur_index]
-                        # self.logger.debug("tried stat:{}, retries:{}".format(cur_stat.text, retries))
+                        self.logger.debug("tried stat:{}, retries:{}".format(cur_stat.text, retries))
                         # try to parse
                         self.push_environment()
                         try:
@@ -856,7 +859,7 @@ class TypeWalker(NodeWalker):
                             break
                         # except AssertionError as e:
                         except Exception as e:
-                            # self.logger.debug("failed stat:{}, e:{}".format(cur_stat.text, e))
+                            self.logger.debug("failed stat:{}, e:{}".format(cur_stat.text, e))
                             retries += 1
                             visited_list[cur_index] = True
                             if retries > len(stat_list):
