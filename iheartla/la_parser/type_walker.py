@@ -282,6 +282,7 @@ class TypeWalker(NodeWalker):
         self.opt_key = ''
         self.opt_dict = {}
         self.func_data_dict = {}   # local function name -> LocalFuncData
+        self.func_mapping_dict = {}# key in func_data_dict -> func name in source code
         self.func_name_dict = {}   # local function node -> local function name
         self.func_sig_dict = {}    # function signature -> identity local function name
         self.extra_symtable = {}   # symtable for overloaded functions (due to renaming)
@@ -399,6 +400,7 @@ class TypeWalker(NodeWalker):
         self.func_sig_dict.clear()
         self.opt_dict.clear()
         self.func_data_dict.clear()
+        self.func_mapping_dict.clear()
         self.desc_dict.clear()
         self.import_module_list.clear()
         self.builtin_module_dict.clear()
@@ -447,7 +449,10 @@ class TypeWalker(NodeWalker):
             for match in results:
                 ret[match] = sig + match
         for sym in self.local_func_syms:
-            ret[sym] = "localF;" + sym
+            c_sym = sym
+            if sym in self.func_mapping_dict:
+                c_sym = self.func_mapping_dict[sym]   # renamed overloading func name -> real name
+            ret[c_sym] = "localF;" + c_sym
         for sym in tmp_sym_dict:
             ret[sym] = "localFP;" + sym
         for sym in self.solved_func:
@@ -523,6 +528,7 @@ class TypeWalker(NodeWalker):
                     n_name = self.generate_var_name(sym)
                     self.func_sig_dict[sig] = n_name
                     self.extra_symtable[n_name] = c_type
+                    self.func_mapping_dict[n_name] = sym
                     la_debug("n_name:{}".format(n_name))
                 if not self.pre_walk:
                     la_debug("sym:{}, sig:{}".format(sym, c_type.get_signature()))
@@ -683,10 +689,13 @@ class TypeWalker(NodeWalker):
                         func_sym = self.walk(vblock_info[0].name).ir.get_main_id()
                         self.visiting_lhs = False
                     if func_sym in self.func_data_dict:
-                        func_sym = self.generate_var_name(func_sym)
-                        self.func_data_dict[func_sym] = LocalFuncData(name=func_sym)
+                        new_sym = self.generate_var_name(func_sym)
+                        self.func_data_dict[new_sym] = LocalFuncData(name=new_sym)
+                        self.func_mapping_dict[new_sym] = func_sym
+                        func_sym = new_sym
                     else:
                         self.func_data_dict[func_sym] = LocalFuncData(name=func_sym)
+                        self.func_mapping_dict[func_sym] = func_sym
                     la_debug("func_sym:{}".format(func_sym))
                     self.local_func_dict[func_sym] = {}
                     self.func_name_dict[vblock_info[0].text] = func_sym   # save mapping
@@ -763,6 +772,7 @@ class TypeWalker(NodeWalker):
         self.logger.info("extra_symtable:".format())
         for k, v in self.extra_symtable.items():
             self.logger.info("{} : {}".format(k, v.get_signature()))
+        self.logger.info("func_mapping_dict:{}".format(self.func_mapping_dict))
         self.logger.info("func_name_dict:".format())
         for k, v in self.func_name_dict.items():
             self.logger.info("{} : {}".format(k, v))
