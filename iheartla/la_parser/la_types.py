@@ -424,7 +424,7 @@ class OverloadingFunctionType(LaVarType):
         return None
 
     def add_new_type(self, f_type):
-        found = self.get_correct_ftype(f_type)
+        found = self.get_correct_ftype(f_type.params)
         if not found:
             self.func_list.append(f_type)
 

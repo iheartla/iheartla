@@ -485,13 +485,18 @@ class TypeWalker(NodeWalker):
 
     def add_sym_type(self, sym, c_type, error_msg='', is_main=False):
         target_symtable = self.get_cur_param_data().symtable
+        check = False
         if is_main:
             target_symtable = self.symtable
+            check = True
+        if not check:
+            if not (self.local_func_parsing or self.visiting_opt or not self.is_main_scope()):
+                check = True
         if sym not in target_symtable:
             target_symtable[sym] = c_type
         elif target_symtable[sym].is_function():
             if target_symtable[sym].is_overloaded():
-                target_symtable.add_new_type(c_type)
+                target_symtable[sym].add_new_type(c_type)
             else:
                 if not target_symtable[sym].same_as(c_type):
                     target_symtable[sym] = OverloadingFunctionType(func_list=[target_symtable[sym], c_type])
@@ -499,6 +504,15 @@ class TypeWalker(NodeWalker):
                     self.assert_expr(False, error_msg)
         else:
             self.assert_expr(False, error_msg)
+        if check:
+            # it's safe here since the above assertion is not triggered
+            if c_type.is_function():
+                sig = get_func_signature(sym, c_type)
+                if sig not in self.func_sig_dict:
+                    self.func_sig_dict[sig] = self.generate_var_name(sym)
+                if not self.pre_walk:
+                    la_debug("sym:{}, sig:{}".format(sym, c_type.get_signature()))
+                    la_debug("self.func_sig_dict:{}".format(self.func_sig_dict))
 
     def get_sym_type(self, sym):
         """
@@ -659,7 +673,7 @@ class TypeWalker(NodeWalker):
                     else:
                         self.func_data_dict[func_sym] = LocalFuncData(name=func_sym)
                     self.local_func_dict[func_sym] = {}
-                    self.func_name_dict[vblock_info[0]] = func_sym   # save mapping
+                    self.func_name_dict[vblock_info[0].text] = func_sym   # save mapping
                     self.local_func_syms.append(func_sym)
                     if self.pre_walk:
                         self.local_func_parsing = True
@@ -1487,7 +1501,7 @@ class TypeWalker(NodeWalker):
             original_local_func_name = node.name
         else:
             original_local_func_name = self.walk(node.name).ir.get_main_id()
-        local_func_name = self.func_name_dict[node]
+        local_func_name = self.func_name_dict[node.text]
         par_defs = []
         par_dict = {}
         self.local_func_name = local_func_name
@@ -2479,6 +2493,7 @@ class TypeWalker(NodeWalker):
             if name_type.is_overloaded():
                 # get correct type for current parameters
                 name_type = name_type.get_correct_ftype(param_type_list)
+                self.assert_expr(name_type is not None, get_err_msg_info(node.parseinfo, "Function error. Can't find function with current parameter types."))
                 ir_node.identity_name = self.func_sig_dict[get_func_signature(func_name, name_type)]
             else:
                 ir_node.identity_name = func_name
