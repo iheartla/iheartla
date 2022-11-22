@@ -1552,7 +1552,9 @@ class TypeWalker(NodeWalker):
         if isinstance(node.name, str):
             original_local_func_name = node.name
         else:
+            self.visiting_lhs = True
             original_local_func_name = self.walk(node.name).ir.get_main_id()
+            self.visiting_lhs = False
         local_func_name = self.func_name_dict[node.text]
         par_defs = []
         par_dict = {}
@@ -2545,7 +2547,10 @@ class TypeWalker(NodeWalker):
                 param_type_list.append(c_node.la_type)
             if name_type.is_overloaded():
                 # get correct type for current parameters
-                name_type = name_type.get_correct_ftype(param_type_list)
+                correct_type = name_type.get_correct_ftype(param_type_list)
+                if correct_type is None:
+                    la_debug("name_type:{}".format(name_type.get_signature()))
+                name_type = correct_type
                 self.assert_expr(name_type is not None, get_err_msg_info(node.parseinfo, "Function error. Can't find function with current parameter types."))
                 ir_node.identity_name = self.func_sig_dict[get_func_signature(func_name, name_type)]
             else:
