@@ -322,6 +322,7 @@ class IRVisitor(IRBaseVisitor):
         self.local_func_def = ''
         self.local_func_syms = []
         self.local_func_dict = {}
+        self.extra_symtable = {}
         self.visiting_opt = False  # optimization
         self.opt_key = ''
         self.opt_dict = {}
@@ -486,6 +487,8 @@ class IRVisitor(IRBaseVisitor):
             ty = self.main_param.symtable[sym]
         elif self.enable_tmp_sym and sym in self.tmp_symtable:
             ty = self.tmp_symtable[sym]
+        elif sym in self.extra_symtable:
+            ty = self.extra_symtable[sym]
         return ty
 
     def get_cur_param_data(self, func_name=''):
@@ -559,6 +562,7 @@ class IRVisitor(IRBaseVisitor):
             self.logger.info("sub_name_dict: {}\n".format(param_data.sub_name_dict, hex(id(param_data.sub_name_dict))))
         self.logger.info("used params:{}".format(self.used_params))
         self.logger.info("optimized variables:{}".format(self.opt_syms))
+        self.logger.info("extra_symtable: {}\n".format(self.extra_symtable))
 
     def init_type(self, type_walker, func_name):
         # self.symtable = type_walker.symtable
@@ -577,6 +581,7 @@ class IRVisitor(IRBaseVisitor):
         self.la_content = type_walker.la_content
         self.local_func_syms = type_walker.local_func_syms
         self.local_func_dict = type_walker.local_func_dict
+        self.extra_symtable = type_walker.extra_symtable
         self.opt_dict = type_walker.opt_dict
         self.used_params = type_walker.used_params
         self.builtin_module_dict = type_walker.builtin_module_dict

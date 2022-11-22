@@ -284,6 +284,7 @@ class TypeWalker(NodeWalker):
         self.func_data_dict = {}   # local function name -> LocalFuncData
         self.func_name_dict = {}   # local function node -> local function name
         self.func_sig_dict = {}    # function signature -> identity local function name
+        self.extra_symtable = {}   # symtable for overloaded functions (due to renaming)
         #
         self.desc_dict = {}        # comment for parameters
         self.import_module_list = []
@@ -394,6 +395,7 @@ class TypeWalker(NodeWalker):
         self.local_func_parsing = False
         self.local_func_name = ''
         self.local_func_dict.clear()
+        self.extra_symtable.clear()
         self.opt_dict.clear()
         self.func_data_dict.clear()
         self.desc_dict.clear()
@@ -509,7 +511,9 @@ class TypeWalker(NodeWalker):
             if c_type.is_function():
                 sig = get_func_signature(sym, c_type)
                 if sig not in self.func_sig_dict:
-                    self.func_sig_dict[sig] = self.generate_var_name(sym)
+                    n_name = self.generate_var_name(sym)
+                    self.func_sig_dict[sig] = n_name
+                    self.extra_symtable[n_name] = c_type
                 if not self.pre_walk:
                     la_debug("sym:{}, sig:{}".format(sym, c_type.get_signature()))
                     la_debug("self.func_sig_dict:{}".format(self.func_sig_dict))
@@ -748,6 +752,7 @@ class TypeWalker(NodeWalker):
         #
         self.saved_func_data_dict = copy.deepcopy(self.func_data_dict)
         self.saved_local_func_dict = copy.deepcopy(self.local_func_dict)
+        self.saved_extra_symtable = copy.deepcopy(self.extra_symtable)
         self.saved_used_params = copy.deepcopy(self.used_params)
         self.saved_opt_syms = copy.deepcopy(self.opt_syms)
         self.saved_opt_dict = copy.deepcopy(self.opt_dict)
@@ -763,6 +768,7 @@ class TypeWalker(NodeWalker):
         self.lhs_sub_dict = self.saved_lhs_sub_dict
         self.local_func_dict = self.saved_local_func_dict
         self.func_data_dict = self.saved_func_data_dict
+        self.extra_symtable = self.saved_extra_symtable
         self.opt_dict = self.saved_opt_dict
         self.used_params = self.saved_used_params
         self.opt_syms = self.saved_opt_syms
@@ -989,7 +995,14 @@ class TypeWalker(NodeWalker):
                 # self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
                 if not self.local_func_parsing and not self.visiting_opt and not self.visiting_solver_eq:
                     # main params: due to multiple blocks
-                    self.update_parameters(id0, kwargs[PARAM_INDEX]+id_index)
+                    if type_node.la_type.is_function():
+                        sig = get_func_signature(id0, type_node.la_type)
+                        if sig in self.func_sig_dict:
+                            self.update_parameters(self.func_sig_dict[sig], kwargs[PARAM_INDEX]+id_index)
+                        else:
+                            self.update_parameters(id0, kwargs[PARAM_INDEX] + id_index)
+                    else:
+                        self.update_parameters(id0, kwargs[PARAM_INDEX]+id_index)
                 if type_node.la_type.is_matrix():
                     id1 = type_node.la_type.rows
                     id2 = type_node.la_type.cols
@@ -1574,6 +1587,7 @@ class TypeWalker(NodeWalker):
         self.func_data_dict[local_func_name].params_data.parameters = par_names
         ir_node.separators = node.separators
         ir_node.la_type = FunctionType(params=param_tps, ret=ret_list)
+        self.extra_symtable[local_func_name] = ir_node.la_type
         self.add_sym_type(original_local_func_name, ir_node.la_type, get_err_msg(get_line_info(node.parseinfo),0,"Symbol {} has been defined".format(local_func_name)), is_main=True)
         self.func_sig_dict[get_func_signature(original_local_func_name, ir_node.la_type)] = local_func_name
         ir_node.symbols = cur_symbols.union(set(par_names))
