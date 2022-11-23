@@ -10,7 +10,7 @@ from ..la_grammar.types_ebnf import TYPES
 from .geometry_ebnf import GEOMETRY
 from .set_ebnf import SET_OPERATORS
 GRAMMAR = r"""
-@@grammar::grammarc21f969b5f03d33d43e04f8f136e7682
+@@grammar::LA
 """
 START = r"""
 @@whitespace :: /(?!.*)/     #parse whitespace manually

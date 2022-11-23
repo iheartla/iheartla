@@ -11,7 +11,7 @@ from ..la_grammar.types_ebnf import TYPES
 from .geometry_ebnf import GEOMETRY
 from .set_ebnf import SET_OPERATORS
 GRAMMAR = r"""
-@@grammar::grammare37f0136aa3ffaf149b351f6a4c948e9
+@@grammar::LA
 """
 SIMPLIFIED = GRAMMAR + START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + GEOMETRY + SHARED + ARITHMETIC + TYPES + SET_OPERATORS
 #include :: "keywords.ebnf"

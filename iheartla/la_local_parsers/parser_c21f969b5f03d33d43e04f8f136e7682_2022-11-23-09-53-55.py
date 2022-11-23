@@ -17,6 +17,7 @@ from tatsu.buffering import Buffer
 from tatsu.parsing import Parser
 from tatsu.parsing import tatsumasu
 from tatsu.parsing import leftrec, nomemo, isname # noqa
+from tatsu.infos import ParserConfig
 from tatsu.util import re, generic_main  # noqa
 
 
@@ -24,59 +25,38 @@ KEYWORDS = {}  # type: ignore
 
 
 class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
-    def __init__(
-        self,
-        text,
-        whitespace=re.compile('(?!.*)'),
-        nameguard=None,
-        comments_re=None,
-        eol_comments_re=None,
-        ignorecase=None,
-        namechars='',
-        **kwargs
-    ):
-        super().__init__(
-            text,
-            whitespace=whitespace,
-            nameguard=nameguard,
-            comments_re=comments_re,
-            eol_comments_re=eol_comments_re,
-            ignorecase=ignorecase,
-            namechars=namechars,
-            **kwargs
+    def __init__(self, text, /, config: ParserConfig = None, **settings):
+        base_config = ParserConfig.new(
+            owner=self,
+            whitespace=re.compile('(?!.*)'),
+            nameguard=None,
+            comments_re=None,
+            eol_comments_re=None,
+            ignorecase=False,
+            namechars='',
+            parseinfo=False,
         )
+        config = base_config.replace_config(config)
+        config = config.merge(**settings)
+        super().__init__(text, config=config)
 
 
 class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
-    def __init__(
-        self,
-        whitespace=re.compile('(?!.*)'),
-        nameguard=None,
-        comments_re=None,
-        eol_comments_re=None,
-        ignorecase=None,
-        left_recursion=True,
-        parseinfo=True,
-        keywords=None,
-        namechars='',
-        tokenizercls=grammarc21f969b5f03d33d43e04f8f136e7682Buffer,
-        **kwargs
-    ):
-        if keywords is None:
-            keywords = KEYWORDS
-        super().__init__(
-            whitespace=whitespace,
-            nameguard=nameguard,
-            comments_re=comments_re,
-            eol_comments_re=eol_comments_re,
-            ignorecase=ignorecase,
-            left_recursion=left_recursion,
-            parseinfo=parseinfo,
-            keywords=keywords,
-            namechars=namechars,
-            tokenizercls=tokenizercls,
-            **kwargs
+    def __init__(self, config: ParserConfig = None, **settings):
+        base_config = ParserConfig.new(
+            owner=self,
+            whitespace=re.compile('(?!.*)'),
+            nameguard=None,
+            comments_re=None,
+            eol_comments_re=None,
+            ignorecase=False,
+            namechars='',
+            parseinfo=False,
+            keywords=KEYWORDS,
         )
+        config = base_config.replace_config(config)
+        config = config.merge(**settings)
+        super().__init__(config=config)
 
     @tatsumasu('Start')
     @nomemo
@@ -506,24 +486,32 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 with self._group():
 
-                    def block1():
+                    def block2():
                         self._digit_()
-                    self._closure(block1)
+                    self._closure(block2)
                     self.name_last_node('d')
                     self._token('.')
 
-                    def block3():
+                    def block4():
                         self._digit_()
-                    self._positive_closure(block3)
+                    self._positive_closure(block4)
                     self.name_last_node('f')
+                self._define(
+                    ['d', 'f'],
+                    []
+                )
             with self._option():
                 with self._group():
 
-                    def block5():
+                    def block6():
                         self._digit_()
-                    self._positive_closure(block5)
+                    self._positive_closure(block6)
                     self.name_last_node('d')
                     self._token('.')
+                self._define(
+                    ['d'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 "'.' \\d <digit>"
@@ -541,7 +529,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             self._exponent_()
         self.name_last_node('e')
         self._define(
-            ['e', 'm'],
+            ['m', 'e'],
             []
         )
 
@@ -553,16 +541,24 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self.name_last_node('i')
                 self._exponent_()
                 self.name_last_node('exp')
+                self._define(
+                    ['i', 'exp'],
+                    []
+                )
             with self._option():
                 self._floating_point_()
                 self.name_last_node('f')
+                self._define(
+                    ['f'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 "<digit> <integer> '.' <mantissa> \\d"
                 '<floating_point>'
             )
         self._define(
-            ['exp', 'f', 'i'],
+            ['i', 'exp', 'f'],
             []
         )
 
@@ -731,26 +727,34 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._term_()
                 self.name_last_node('left')
 
-                def block1():
+                def block2():
                     self._hspace_()
-                self._closure(block1)
+                self._closure(block2)
                 self._token('⋅')
                 self.name_last_node('op')
 
-                def block3():
+                def block4():
                     self._hspace_()
-                self._closure(block3)
+                self._closure(block4)
                 self._factor_()
                 self.name_last_node('right')
+                self._define(
+                    ['left', 'op', 'right'],
+                    []
+                )
             with self._option():
                 self._term_()
                 self.name_last_node('left')
 
-                def block6():
+                def block7():
                     self._hspace_()
-                self._closure(block6)
+                self._closure(block7)
                 self._factor_()
                 self.name_last_node('right')
+                self._define(
+                    ['left', 'right'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<term> <multiplication> <division>'
@@ -802,6 +806,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         with self._option():
                             self._sup_integer_()
                             self.name_last_node('uorder')
+                            self._define(
+                                ['uorder'],
+                                []
+                            )
                         with self._option():
                             self._token('^')
                             with self._group():
@@ -815,6 +823,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                         '<identifier> <number>'
                                     )
                             self.name_last_node('uorder')
+                            self._define(
+                                ['uorder'],
+                                []
+                            )
                         self._error(
                             'expecting one of: '
                             "<sup_integer> '^'"
@@ -831,6 +843,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         with self._option():
                             self._sup_integer_()
                             self.name_last_node('lorder')
+                            self._define(
+                                ['lorder'],
+                                []
+                            )
                         with self._option():
                             self._token('^')
                             with self._group():
@@ -844,10 +860,18 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                         '<identifier> <number>'
                                     )
                             self.name_last_node('lorder')
+                            self._define(
+                                ['lorder'],
+                                []
+                            )
                         self._error(
                             'expecting one of: '
                             "<sup_integer> '^'"
                         )
+                self._define(
+                    ['uorder', 'upper', 'f', 'lower', 'lorder'],
+                    []
+                )
             with self._option():
                 self._DERIVATIVE_()
                 with self._optional():
@@ -855,6 +879,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         with self._option():
                             self._sup_integer_()
                             self.name_last_node('uorder')
+                            self._define(
+                                ['uorder'],
+                                []
+                            )
                         with self._option():
                             self._token('^')
                             with self._group():
@@ -868,6 +896,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                         '<identifier> <number>'
                                     )
                             self.name_last_node('uorder')
+                            self._define(
+                                ['uorder'],
+                                []
+                            )
                         self._error(
                             'expecting one of: '
                             "<sup_integer> '^'"
@@ -882,6 +914,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         with self._option():
                             self._sup_integer_()
                             self.name_last_node('lorder')
+                            self._define(
+                                ['lorder'],
+                                []
+                            )
                         with self._option():
                             self._token('^')
                             with self._group():
@@ -895,22 +931,30 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                         '<identifier> <number>'
                                     )
                             self.name_last_node('lorder')
+                            self._define(
+                                ['lorder'],
+                                []
+                            )
                         self._error(
                             'expecting one of: '
                             "<sup_integer> '^'"
                         )
 
-                def block21():
+                def block22():
                     self._hspace_()
-                self._positive_closure(block21)
+                self._positive_closure(block22)
                 self._factor_()
                 self.name_last_node('upper')
+                self._define(
+                    ['uorder', 's', 'lower', 'lorder', 'upper'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '𝕕 <DERIVATIVE>'
             )
         self._define(
-            ['f', 'lorder', 'lower', 's', 'uorder', 'upper'],
+            ['uorder', 'upper', 'f', 'lower', 'lorder', 's'],
             []
         )
 
@@ -924,6 +968,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         with self._option():
                             self._sup_integer_()
                             self.name_last_node('uorder')
+                            self._define(
+                                ['uorder'],
+                                []
+                            )
                         with self._option():
                             self._token('^')
                             with self._group():
@@ -937,6 +985,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                         '<identifier> <number>'
                                     )
                             self.name_last_node('uorder')
+                            self._define(
+                                ['uorder'],
+                                []
+                            )
                         self._error(
                             'expecting one of: '
                             "<sup_integer> '^'"
@@ -946,7 +998,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._token('/')
                 self.name_last_node('f')
 
-                def block7():
+                def block8():
                     self._PARTIAL_()
                     self._identifier_()
                     self.add_last_node_to_name('lower')
@@ -955,6 +1007,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             with self._option():
                                 self._sup_integer_()
                                 self.add_last_node_to_name('lorder')
+                                self._define(
+                                    [],
+                                    ['lorder']
+                                )
                             with self._option():
                                 self._token('^')
                                 with self._group():
@@ -968,12 +1024,20 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                             '<identifier> <number>'
                                         )
                                 self.add_last_node_to_name('lorder')
+                                self._define(
+                                    [],
+                                    ['lorder']
+                                )
                             self._error(
                                 'expecting one of: '
                                 "<sup_integer> '^'"
                             )
-                self._positive_closure(block7)
+                self._positive_closure(block8)
                 self.name_last_node('l')
+                self._define(
+                    ['uorder', 'upper', 'f', 'l'],
+                    ['lower', 'lorder']
+                )
             with self._option():
                 self._PARTIAL_()
                 with self._optional():
@@ -981,6 +1045,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         with self._option():
                             self._sup_integer_()
                             self.name_last_node('uorder')
+                            self._define(
+                                ['uorder'],
+                                []
+                            )
                         with self._option():
                             self._token('^')
                             with self._group():
@@ -994,6 +1062,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                         '<identifier> <number>'
                                     )
                             self.name_last_node('uorder')
+                            self._define(
+                                ['uorder'],
+                                []
+                            )
                         self._error(
                             'expecting one of: '
                             "<sup_integer> '^'"
@@ -1001,7 +1073,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._token('/')
                 self.name_last_node('s')
 
-                def block19():
+                def block20():
                     self._PARTIAL_()
                     self._identifier_()
                     self.add_last_node_to_name('lower')
@@ -1010,6 +1082,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             with self._option():
                                 self._sup_integer_()
                                 self.add_last_node_to_name('lorder')
+                                self._define(
+                                    [],
+                                    ['lorder']
+                                )
                             with self._option():
                                 self._token('^')
                                 with self._group():
@@ -1023,25 +1099,33 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                             '<identifier> <number>'
                                         )
                                 self.add_last_node_to_name('lorder')
+                                self._define(
+                                    [],
+                                    ['lorder']
+                                )
                             self._error(
                                 'expecting one of: '
                                 "<sup_integer> '^'"
                             )
-                self._positive_closure(block19)
+                self._positive_closure(block20)
                 self.name_last_node('l')
 
-                def block25():
+                def block26():
                     self._hspace_()
-                self._positive_closure(block25)
+                self._positive_closure(block26)
                 self._factor_()
                 self.name_last_node('upper')
+                self._define(
+                    ['uorder', 's', 'l', 'upper'],
+                    ['lower', 'lorder']
+                )
             self._error(
                 'expecting one of: '
                 '∂ <PARTIAL>'
             )
         self._define(
-            ['f', 'l', 's', 'uorder', 'upper'],
-            ['lorder', 'lower']
+            ['uorder', 'upper', 'f', 'l', 's'],
+            ['lower', 'lorder']
         )
 
     @tatsumasu('Divergence')
@@ -1103,6 +1187,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self.name_last_node('base')
                 self._token('^T')
                 self.name_last_node('t')
+                self._define(
+                    ['base', 't'],
+                    []
+                )
             with self._option():
                 self._factor_()
                 self.name_last_node('base')
@@ -1117,17 +1205,29 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             "'^(-1)' '⁻¹'"
                         )
                 self.name_last_node('r')
+                self._define(
+                    ['base', 'r'],
+                    []
+                )
             with self._option():
                 self._factor_()
                 self.name_last_node('base')
                 self._token('^')
                 self._factor_()
                 self.name_last_node('power')
+                self._define(
+                    ['base', 'power'],
+                    []
+                )
             with self._option():
                 self._factor_()
                 self.name_last_node('base')
                 self._sup_integer_()
                 self.name_last_node('power')
+                self._define(
+                    ['base', 'power'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<solver_operator> <norm_operator>'
@@ -1150,7 +1250,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 "<vector> '{' <set> <constant> <factor>"
             )
         self._define(
-            ['base', 'power', 'r', 't'],
+            ['base', 't', 'r', 'power'],
             []
         )
 
@@ -1162,23 +1262,27 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._factor_()
                 self.name_last_node('left')
 
-                def block1():
-                    self._hspace_()
-                self._closure(block1)
-                self._token('\\')
-
                 def block2():
                     self._hspace_()
                 self._closure(block2)
+                self._token('\\')
+
+                def block3():
+                    self._hspace_()
+                self._closure(block3)
                 self._factor_()
                 self.name_last_node('right')
+                self._define(
+                    ['left', 'right'],
+                    []
+                )
             with self._option():
                 self._factor_()
                 self.name_last_node('left')
 
-                def block5():
+                def block6():
                     self._hspace_()
-                self._closure(block5)
+                self._closure(block6)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -1191,11 +1295,15 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         )
                 self.name_last_node('p')
 
-                def block8():
+                def block9():
                     self._hspace_()
-                self._closure(block8)
+                self._closure(block9)
                 self._factor_()
                 self.name_last_node('right')
+                self._define(
+                    ['left', 'p', 'right'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<solver_operator> <norm_operator>'
@@ -1218,7 +1326,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 "<vector> '{' <set> <constant> <factor>"
             )
         self._define(
-            ['left', 'p', 'right'],
+            ['left', 'right', 'p'],
             []
         )
 
@@ -1232,11 +1340,15 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     self._identifier_alone_()
                     self.name_last_node('sub')
 
-                    def block1():
+                    def block2():
                         self._hspace_()
-                    self._positive_closure(block1)
+                    self._positive_closure(block2)
                     self._term_()
                     self.name_last_node('exp')
+                    self._define(
+                        ['sub', 'exp'],
+                        []
+                    )
                 with self._option():
                     self._SUM_()
                     self._token('_')
@@ -1245,77 +1357,85 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     with self._if():
                         self._token('(')
 
-                    def block4():
+                    def block5():
                         self._hspace_()
-                    self._closure(block4)
+                    self._closure(block5)
                     self._term_()
                     self.name_last_node('exp')
+                    self._define(
+                        ['sub', 'exp'],
+                        []
+                    )
                 with self._option():
                     self._SUM_()
                     self._token('_(')
 
-                    def block6():
+                    def block7():
                         self._hspace_()
-                    self._closure(block6)
+                    self._closure(block7)
                     self._identifier_alone_()
                     self.name_last_node('id')
-
-                    def block8():
-                        self._hspace_()
-                    self._closure(block8)
-                    self._token('for')
 
                     def block9():
                         self._hspace_()
                     self._closure(block9)
+                    self._token('for')
+
+                    def block10():
+                        self._hspace_()
+                    self._closure(block10)
                     self._if_condition_()
                     self.name_last_node('cond')
 
-                    def block11():
-                        self._hspace_()
-                    self._closure(block11)
-                    self._token(')')
-
                     def block12():
                         self._hspace_()
-                    self._positive_closure(block12)
+                    self._closure(block12)
+                    self._token(')')
+
+                    def block13():
+                        self._hspace_()
+                    self._positive_closure(block13)
                     self._term_()
                     self.name_last_node('exp')
+                    self._define(
+                        ['id', 'cond', 'exp'],
+                        []
+                    )
                 with self._option():
                     self._SUM_()
                     self._token('_(')
 
-                    def block14():
+                    def block15():
                         self._hspace_()
-                    self._closure(block14)
+                    self._closure(block15)
                     self._identifier_alone_()
                     self.add_last_node_to_name('enum')
 
-                    def block16():
-
-                        def block17():
-                            self._hspace_()
-                        self._closure(block17)
+                    def block17():
 
                         def block18():
-                            self._token(',')
+                            self._hspace_()
                         self._closure(block18)
 
                         def block19():
-                            self._hspace_()
+                            self._token(',')
                         self._closure(block19)
+
+                        def block20():
+                            self._hspace_()
+                        self._closure(block20)
                         self._identifier_alone_()
                         self.add_last_node_to_name('enum')
-                    self._closure(block16)
-
-                    def block21():
-                        self._hspace_()
-                    self._closure(block21)
-                    self._IN_()
+                    self._closure(block17)
 
                     def block22():
                         self._hspace_()
                     self._closure(block22)
+                    self._IN_()
+
+                    def block23():
+                        self._hspace_()
+                    self._closure(block23)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -1331,16 +1451,20 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             )
                     self.name_last_node('range')
 
-                    def block25():
-                        self._hspace_()
-                    self._closure(block25)
-                    self._token(')')
-
                     def block26():
                         self._hspace_()
-                    self._positive_closure(block26)
+                    self._closure(block26)
+                    self._token(')')
+
+                    def block27():
+                        self._hspace_()
+                    self._positive_closure(block27)
                     self._term_()
                     self.name_last_node('exp')
+                    self._define(
+                        ['range', 'exp'],
+                        ['enum']
+                    )
                 self._error(
                     'expecting one of: '
                     '<SUM>'
@@ -1389,7 +1513,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             self._closure(block35)
         self._closure(block29)
         self._define(
-            ['cond', 'exp', 'id', 'range', 'sub'],
+            ['sub', 'exp', 'id', 'cond', 'range'],
             ['enum', 'extra']
         )
 
@@ -1434,15 +1558,31 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 with self._option():
                     self._MIN_()
                     self.name_last_node('min')
+                    self._define(
+                        ['min'],
+                        []
+                    )
                 with self._option():
                     self._MAX_()
                     self.name_last_node('max')
+                    self._define(
+                        ['max'],
+                        []
+                    )
                 with self._option():
                     self._ARGMIN_()
                     self.name_last_node('amin')
+                    self._define(
+                        ['amin'],
+                        []
+                    )
                 with self._option():
                     self._ARGMAX_()
                     self.name_last_node('amax')
+                    self._define(
+                        ['amax'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     '<MIN> <MAX> <ARGMIN> <ARGMAX>'
@@ -1510,8 +1650,8 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             self.name_last_node('cond')
         self._closure(block23)
         self._define(
-            ['amax', 'amin', 'cond', 'exp', 'max', 'min'],
-            ['defs', 'init']
+            ['min', 'max', 'amin', 'amax', 'exp', 'cond'],
+            ['init', 'defs']
         )
 
     @tatsumasu('MultiCond')
@@ -1520,29 +1660,37 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         with self._choice():
             with self._option():
 
-                def block0():
+                def block1():
                     self._hspace_()
-                self._closure(block0)
+                self._closure(block1)
                 self._multi_cond_()
                 self.name_last_node('m_cond')
                 self._separator_with_space_()
                 self._atom_condition_()
                 self.name_last_node('cond')
 
-                def block3():
-                    self._hspace_()
-                self._closure(block3)
-            with self._option():
-
                 def block4():
                     self._hspace_()
                 self._closure(block4)
+                self._define(
+                    ['m_cond', 'cond'],
+                    []
+                )
+            with self._option():
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
                 self._atom_condition_()
                 self.name_last_node('cond')
 
-                def block6():
+                def block7():
                     self._hspace_()
-                self._closure(block6)
+                self._closure(block7)
+                self._define(
+                    ['cond'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<multi_cond> <hspace> <atom_condition> ['
@@ -1551,7 +1699,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<less> <less_equal>'
             )
         self._define(
-            ['cond', 'm_cond'],
+            ['m_cond', 'cond'],
             []
         )
 
@@ -1573,21 +1721,29 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 with self._option():
                     self._domain_()
                     self.name_last_node('d')
+                    self._define(
+                        ['d'],
+                        []
+                    )
                 with self._option():
                     with self._group():
                         self._sub_factor_()
                         self.name_last_node('lower')
 
-                        def block3():
-                            self._hspace_()
-                        self._closure(block3)
-                        self._token('^')
-
                         def block4():
                             self._hspace_()
                         self._closure(block4)
+                        self._token('^')
+
+                        def block5():
+                            self._hspace_()
+                        self._closure(block5)
                         self._sub_factor_()
                         self.name_last_node('upper')
+                    self._define(
+                        ['lower', 'upper'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     '<domain> <sub_factor>'
@@ -1606,7 +1762,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._identifier_alone_()
         self.name_last_node('id')
         self._define(
-            ['d', 'exp', 'id', 'lower', 'upper'],
+            ['d', 'lower', 'upper', 'exp', 'id'],
             []
         )
 
@@ -1644,44 +1800,56 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     self._token('||')
                     self.name_last_node('double')
 
-                    def block1():
+                    def block2():
                         self._hspace_()
-                    self._closure(block1)
+                    self._closure(block2)
                     self._expression_()
                     self.name_last_node('value')
 
-                    def block3():
+                    def block4():
                         self._hspace_()
-                    self._closure(block3)
+                    self._closure(block4)
                     self._token('||')
+                    self._define(
+                        ['double', 'value'],
+                        []
+                    )
                 with self._option():
                     self._token('‖')
                     self.name_last_node('double')
 
-                    def block5():
+                    def block6():
                         self._hspace_()
-                    self._closure(block5)
+                    self._closure(block6)
                     self._expression_()
                     self.name_last_node('value')
 
-                    def block7():
+                    def block8():
                         self._hspace_()
-                    self._closure(block7)
+                    self._closure(block8)
                     self._token('‖')
+                    self._define(
+                        ['double', 'value'],
+                        []
+                    )
                 with self._option():
                     self._token('|')
                     self.name_last_node('single')
 
-                    def block9():
+                    def block10():
                         self._hspace_()
-                    self._closure(block9)
+                    self._closure(block10)
                     self._expression_()
                     self.name_last_node('value')
 
-                    def block11():
+                    def block12():
                         self._hspace_()
-                    self._closure(block11)
+                    self._closure(block12)
                     self._token('|')
+                    self._define(
+                        ['single', 'value'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'||' '‖' '|'"
@@ -1709,9 +1877,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                                 "<integer> '*' '∞' <identifier_alone>"
                                             )
                                     self.name_last_node('sub')
+                                    self._define(
+                                        ['sub'],
+                                        []
+                                    )
                                 with self._option():
                                     self._sub_integer_()
                                     self.name_last_node('sub')
+                                    self._define(
+                                        ['sub'],
+                                        []
+                                    )
                                 self._error(
                                     'expecting one of: '
                                     "'_' <sub_integer>"
@@ -1722,13 +1898,25 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                     self._token('^')
                                     self._factor_()
                                     self.name_last_node('power')
+                                    self._define(
+                                        ['power'],
+                                        []
+                                    )
                                 with self._option():
                                     self._sup_integer_()
                                     self.name_last_node('power')
+                                    self._define(
+                                        ['power'],
+                                        []
+                                    )
                                 self._error(
                                     'expecting one of: '
                                     "'^' <sup_integer>"
                                 )
+                    self._define(
+                        ['sub', 'power'],
+                        []
+                    )
                 with self._option():
                     with self._group():
                         self._token('_(')
@@ -1754,13 +1942,25 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                     self._token('^')
                                     self._factor_()
                                     self.name_last_node('power')
+                                    self._define(
+                                        ['power'],
+                                        []
+                                    )
                                 with self._option():
                                     self._sup_integer_()
                                     self.name_last_node('power')
+                                    self._define(
+                                        ['power'],
+                                        []
+                                    )
                                 self._error(
                                     'expecting one of: '
                                     "'^' <sup_integer>"
                                 )
+                    self._define(
+                        ['sub', 'power'],
+                        []
+                    )
                 with self._option():
                     with self._group():
                         with self._group():
@@ -1769,9 +1969,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                     self._token('^')
                                     self._factor_()
                                     self.name_last_node('power')
+                                    self._define(
+                                        ['power'],
+                                        []
+                                    )
                                 with self._option():
                                     self._sup_integer_()
                                     self.name_last_node('power')
+                                    self._define(
+                                        ['power'],
+                                        []
+                                    )
                                 self._error(
                                     'expecting one of: '
                                     "'^' <sup_integer>"
@@ -1795,19 +2003,31 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                                 "<integer> '*' '∞' <identifier_alone>"
                                             )
                                     self.name_last_node('sub')
+                                    self._define(
+                                        ['sub'],
+                                        []
+                                    )
                                 with self._option():
                                     self._sub_integer_()
                                     self.name_last_node('sub')
+                                    self._define(
+                                        ['sub'],
+                                        []
+                                    )
                                 self._error(
                                     'expecting one of: '
                                     "'_' <sub_integer>"
                                 )
+                    self._define(
+                        ['power', 'sub'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'_' <sub_integer> '_(' '^' <sup_integer>"
                 )
         self._define(
-            ['double', 'power', 'single', 'sub', 'value'],
+            ['double', 'value', 'single', 'sub', 'power'],
             []
         )
 
@@ -1819,52 +2039,60 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     with self._group():
                         self._token('<')
 
-                        def block0():
+                        def block1():
                             self._hspace_()
-                        self._closure(block0)
+                        self._closure(block1)
                         self._expression_()
                         self.name_last_node('left')
-
-                        def block2():
-                            self._hspace_()
-                        self._closure(block2)
-                        self._token(',')
 
                         def block3():
                             self._hspace_()
                         self._closure(block3)
+                        self._token(',')
+
+                        def block4():
+                            self._hspace_()
+                        self._closure(block4)
                         self._expression_()
                         self.name_last_node('right')
-
-                        def block5():
-                            self._hspace_()
-                        self._closure(block5)
-                        self._token('>')
-                with self._option():
-                    with self._group():
-                        self._token('⟨')
 
                         def block6():
                             self._hspace_()
                         self._closure(block6)
+                        self._token('>')
+                    self._define(
+                        ['left', 'right'],
+                        []
+                    )
+                with self._option():
+                    with self._group():
+                        self._token('⟨')
+
+                        def block7():
+                            self._hspace_()
+                        self._closure(block7)
                         self._expression_()
                         self.name_last_node('left')
-
-                        def block8():
-                            self._hspace_()
-                        self._closure(block8)
-                        self._token(',')
 
                         def block9():
                             self._hspace_()
                         self._closure(block9)
+                        self._token(',')
+
+                        def block10():
+                            self._hspace_()
+                        self._closure(block10)
                         self._expression_()
                         self.name_last_node('right')
 
-                        def block11():
+                        def block12():
                             self._hspace_()
-                        self._closure(block11)
+                        self._closure(block12)
                         self._token('⟩')
+                    self._define(
+                        ['left', 'right'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'<' '⟨'"
@@ -2045,25 +2273,37 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             with self._option():
                                 self._pattern('log[\\u2082]')
                                 self.name_last_node('f')
+                                self._define(
+                                    ['f'],
+                                    []
+                                )
                             with self._option():
                                 self._pattern('log[\\u2081][\\u2080]')
                                 self.name_last_node('s')
+                                self._define(
+                                    ['s'],
+                                    []
+                                )
                             self._error(
                                 'expecting one of: '
                                 'log[\\u2082] log[\\u2081][\\u2080]'
                             )
                     self._token('(')
 
-                    def block3():
+                    def block4():
                         self._hspace_()
-                    self._closure(block3)
+                    self._closure(block4)
                     self._expression_()
                     self.name_last_node('param')
 
-                    def block5():
+                    def block6():
                         self._hspace_()
-                    self._closure(block5)
+                    self._closure(block6)
                     self._token(')')
+                self._define(
+                    ['f', 's', 'param'],
+                    []
+                )
             with self._option():
                 with self._group():
                     self._LOG_()
@@ -2072,32 +2312,44 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             with self._option():
                                 self._token('_2')
                                 self.name_last_node('f')
+                                self._define(
+                                    ['f'],
+                                    []
+                                )
                             with self._option():
                                 self._token('_10')
                                 self.name_last_node('s')
+                                self._define(
+                                    ['s'],
+                                    []
+                                )
                             self._error(
                                 'expecting one of: '
                                 "'_2' '_10'"
                             )
                     self._token('(')
 
-                    def block9():
+                    def block10():
                         self._hspace_()
-                    self._closure(block9)
+                    self._closure(block10)
                     self._expression_()
                     self.name_last_node('param')
 
-                    def block11():
+                    def block12():
                         self._hspace_()
-                    self._closure(block11)
+                    self._closure(block12)
                     self._token(')')
+                self._define(
+                    ['f', 's', 'param'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 'log[\\u2082] log[\\u2081][\\u2080] log'
                 '<LOG>'
             )
         self._define(
-            ['f', 'param', 's'],
+            ['f', 's', 'param'],
             []
         )
 
@@ -2147,29 +2399,37 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._token('[')
 
-                def block0():
+                def block1():
                     self._hspace_()
-                self._closure(block0)
+                self._closure(block1)
                 self._rows_()
                 self.name_last_node('value')
-
-                def block2():
-                    self._hspace_()
-                self._closure(block2)
-                self._token(']')
-            with self._option():
-                self._token('⎡')
 
                 def block3():
                     self._hspace_()
                 self._closure(block3)
+                self._token(']')
+                self._define(
+                    ['value'],
+                    []
+                )
+            with self._option():
+                self._token('⎡')
+
+                def block4():
+                    self._hspace_()
+                self._closure(block4)
                 self._rows_()
                 self.name_last_node('value')
 
-                def block5():
+                def block6():
                     self._hspace_()
-                self._closure(block5)
+                self._closure(block6)
                 self._token('⎦')
+                self._define(
+                    ['value'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 "'[' '⎡'"
@@ -2283,14 +2543,22 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._multi_if_conditions_()
                 self.name_last_node('ifs')
 
-                def block1():
+                def block2():
                     self._separator_with_space_()
-                self._positive_closure(block1)
+                self._positive_closure(block2)
                 self._single_if_condition_()
                 self.name_last_node('value')
+                self._define(
+                    ['ifs', 'value'],
+                    []
+                )
             with self._option():
                 self._single_if_condition_()
                 self.name_last_node('value')
+                self._define(
+                    ['value'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<multi_if_conditions>'
@@ -2310,30 +2578,38 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._expression_()
                 self.name_last_node('stat')
 
-                def block1():
-                    self._hspace_()
-                self._closure(block1)
-                self._IF_()
-
                 def block2():
                     self._hspace_()
                 self._closure(block2)
+                self._IF_()
+
+                def block3():
+                    self._hspace_()
+                self._closure(block3)
                 self._if_condition_()
                 self.name_last_node('cond')
+                self._define(
+                    ['stat', 'cond'],
+                    []
+                )
             with self._option():
                 self._if_condition_()
                 self.name_last_node('cond')
 
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._token(':')
-
                 def block6():
                     self._hspace_()
                 self._closure(block6)
+                self._token(':')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
                 self._expression_()
                 self.name_last_node('stat')
+                self._define(
+                    ['cond', 'stat'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<expression> <addition> <subtraction>'
@@ -2341,7 +2617,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<if_condition> <and_condition>'
             )
         self._define(
-            ['cond', 'stat'],
+            ['stat', 'cond'],
             []
         )
 
@@ -2353,36 +2629,48 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._rows_()
                 self.name_last_node('rs')
 
-                def block1():
+                def block2():
                     self._separator_with_space_()
-                self._positive_closure(block1)
+                self._positive_closure(block2)
                 self._row_()
                 self.name_last_node('r')
 
-                def block3():
+                def block4():
                     self._hspace_()
-                self._closure(block3)
+                self._closure(block4)
+                self._define(
+                    ['rs', 'r'],
+                    []
+                )
             with self._option():
                 self._rows_()
                 self.name_last_node('rs')
 
-                def block5():
+                def block6():
                     self._separator_with_space_()
-                self._positive_closure(block5)
+                self._positive_closure(block6)
+                self._define(
+                    ['rs'],
+                    []
+                )
             with self._option():
                 self._row_()
                 self.name_last_node('r')
 
-                def block7():
+                def block8():
                     self._hspace_()
-                self._closure(block7)
+                self._closure(block8)
+                self._define(
+                    ['r'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 "<rows> <row> '|' <row_with_commas>"
                 '<expr_in_matrix>'
             )
         self._define(
-            ['r', 'rs'],
+            ['rs', 'r'],
             []
         )
 
@@ -2393,31 +2681,47 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._token('|')
 
-                def block0():
+                def block1():
                     self._hspace_()
-                self._closure(block0)
+                self._closure(block1)
                 self._row_()
                 self.add_last_node_to_name('value')
 
-                def block2():
+                def block3():
                     self._hspace_()
-                self._closure(block2)
+                self._closure(block3)
                 self._token('|')
+                self._define(
+                    [],
+                    ['value']
+                )
             with self._option():
                 self._row_with_commas_()
                 self.name_last_node('rc')
 
-                def block4():
+                def block5():
                     self._hspace_()
-                self._closure(block4)
+                self._closure(block5)
                 self._expr_in_matrix_()
                 self.name_last_node('exp')
+                self._define(
+                    ['rc', 'exp'],
+                    []
+                )
             with self._option():
                 self._row_with_commas_()
                 self.name_last_node('rc')
+                self._define(
+                    ['rc'],
+                    []
+                )
             with self._option():
                 self._expr_in_matrix_()
                 self.name_last_node('exp')
+                self._define(
+                    ['exp'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 "'|' <row_with_commas> <expr_in_matrix>"
@@ -2426,7 +2730,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 "'-'"
             )
         self._define(
-            ['exp', 'rc'],
+            ['rc', 'exp'],
             ['value']
         )
 
@@ -2438,52 +2742,60 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._row_with_commas_()
                 self.name_last_node('value')
 
-                def block1():
+                def block2():
                     self._hspace_()
-                self._closure(block1)
+                self._closure(block2)
                 self._expr_in_matrix_()
                 self.name_last_node('exp')
                 with self._group():
                     with self._choice():
                         with self._option():
 
-                            def block3():
+                            def block5():
                                 self._hspace_()
-                            self._closure(block3)
+                            self._closure(block5)
                             self._token(',')
                         with self._option():
 
-                            def block4():
+                            def block6():
                                 self._hspace_()
-                            self._positive_closure(block4)
+                            self._positive_closure(block6)
                         self._error(
                             'expecting one of: '
                             "',' <hspace>"
                         )
+                self._define(
+                    ['value', 'exp'],
+                    []
+                )
             with self._option():
 
-                def block6():
+                def block7():
                     self._hspace_()
-                self._closure(block6)
+                self._closure(block7)
                 self._expr_in_matrix_()
                 self.name_last_node('exp')
                 with self._group():
                     with self._choice():
                         with self._option():
 
-                            def block8():
+                            def block10():
                                 self._hspace_()
-                            self._closure(block8)
+                            self._closure(block10)
                             self._token(',')
                         with self._option():
 
-                            def block9():
+                            def block11():
                                 self._hspace_()
-                            self._positive_closure(block9)
+                            self._positive_closure(block11)
                         self._error(
                             'expecting one of: '
                             "',' <hspace>"
                         )
+                self._define(
+                    ['exp'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<row_with_commas> <expr_in_matrix>'
@@ -2492,7 +2804,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 "'-' [ \\t]"
             )
         self._define(
-            ['exp', 'value'],
+            ['value', 'exp'],
             []
         )
 
@@ -2503,15 +2815,27 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._addition_in_matrix_()
                 self.name_last_node('value')
+                self._define(
+                    ['value'],
+                    []
+                )
             with self._option():
                 self._subtraction_in_matrix_()
                 self.name_last_node('value')
+                self._define(
+                    ['value'],
+                    []
+                )
             with self._option():
                 with self._optional():
                     self._token('-')
                 self.name_last_node('sign')
                 self._term_in_matrix_()
                 self.name_last_node('value')
+                self._define(
+                    ['sign', 'value'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<addition_in_matrix>'
@@ -2521,7 +2845,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<division_in_matrix> <factor_in_matrix>'
             )
         self._define(
-            ['sign', 'value'],
+            ['value', 'sign'],
             []
         )
 
@@ -2587,11 +2911,19 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self.name_last_node('op')
                 self._factor_in_matrix_()
                 self.name_last_node('right')
+                self._define(
+                    ['left', 'op', 'right'],
+                    []
+                )
             with self._option():
                 self._term_in_matrix_()
                 self.name_last_node('left')
                 self._factor_in_matrix_()
                 self.name_last_node('right')
+                self._define(
+                    ['left', 'right'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<multiplication_in_matrix>'
@@ -2662,7 +2994,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         )
                 self.name_last_node('id1')
 
-                def block4():
+                def block5():
                     self._token(',')
                     with self._group():
                         with self._choice():
@@ -2675,18 +3007,26 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                 '<integer> <identifier>'
                             )
                     self.name_last_node('id2')
-                self._closure(block4)
+                self._closure(block5)
+                self._define(
+                    ['left', 'id1', 'id2'],
+                    []
+                )
             with self._option():
                 self._pattern('[01\\u1D7D9]')
                 self.name_last_node('left')
                 self._sub_integer_()
                 self.name_last_node('id1')
 
-                def block9():
+                def block10():
                     self._token(',')
                     self._sub_integer_()
                     self.name_last_node('id2')
-                self._closure(block9)
+                self._closure(block10)
+                self._define(
+                    ['left', 'id1', 'id2'],
+                    []
+                )
             with self._option():
                 with self._group():
                     with self._choice():
@@ -2704,9 +3044,9 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._token('_')
                 self._token('(')
 
-                def block13():
+                def block14():
                     self._hspace_()
-                self._closure(block13)
+                self._closure(block14)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -2719,11 +3059,11 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         )
                 self.name_last_node('id1')
 
-                def block16():
+                def block17():
 
-                    def block17():
+                    def block18():
                         self._hspace_()
-                    self._closure(block17)
+                    self._closure(block18)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -2735,9 +3075,9 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                 "',' '×'"
                             )
 
-                    def block19():
+                    def block20():
                         self._hspace_()
-                    self._closure(block19)
+                    self._closure(block20)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -2749,18 +3089,22 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                 '<integer> <identifier>'
                             )
                     self.name_last_node('id2')
-                self._closure(block16)
+                self._closure(block17)
 
-                def block22():
+                def block23():
                     self._hspace_()
-                self._closure(block22)
+                self._closure(block23)
                 self._token(')')
+                self._define(
+                    ['left', 'id1', 'id2'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 "'0' '1' '𝟙' [01\\u1D7D9]"
             )
         self._define(
-            ['id1', 'id2', 'left'],
+            ['left', 'id1', 'id2'],
             []
         )
 
@@ -2771,30 +3115,66 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._operations_in_matrix_()
                 self.name_last_node('op')
+                self._define(
+                    ['op'],
+                    []
+                )
             with self._option():
                 self._subexpression_()
                 self.name_last_node('sub')
+                self._define(
+                    ['sub'],
+                    []
+                )
             with self._option():
                 self._number_matrix_()
                 self.name_last_node('nm')
+                self._define(
+                    ['nm'],
+                    []
+                )
             with self._option():
                 self._identifier_()
                 self.name_last_node('id0')
+                self._define(
+                    ['id0'],
+                    []
+                )
             with self._option():
                 self._number_()
                 self.name_last_node('num')
+                self._define(
+                    ['num'],
+                    []
+                )
             with self._option():
                 self._matrix_()
                 self.name_last_node('m')
+                self._define(
+                    ['m'],
+                    []
+                )
             with self._option():
                 self._vector_()
                 self.name_last_node('v')
+                self._define(
+                    ['v'],
+                    []
+                )
             with self._option():
                 self._set_()
                 self.name_last_node('s')
+                self._define(
+                    ['s'],
+                    []
+                )
             with self._option():
                 self._constant_()
                 self.name_last_node('c')
+                self._define(
+                    ['c'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 "<solver_in_matrix_operator> '||' '‖' '|'"
@@ -2831,10 +3211,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<digit> <mantissa> <floating_point>'
                 '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
                 "<fraction> \\d <number> '[' '⎡' <matrix>"
-                "<vector> '{' <set> π <pi> <constant>"
+                "<vector> '{' <set> <pi> <constant>"
             )
         self._define(
-            ['c', 'id0', 'm', 'nm', 'num', 'op', 's', 'sub', 'v'],
+            ['op', 'sub', 'nm', 'id0', 'num', 'm', 'v', 's', 'c'],
             []
         )
 
@@ -2909,6 +3289,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self.name_last_node('base')
                 self._token('^T')
                 self.name_last_node('t')
+                self._define(
+                    ['base', 't'],
+                    []
+                )
             with self._option():
                 self._factor_in_matrix_()
                 self.name_last_node('base')
@@ -2923,17 +3307,29 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             "'^(-1)' '⁻¹'"
                         )
                 self.name_last_node('r')
+                self._define(
+                    ['base', 'r'],
+                    []
+                )
             with self._option():
                 self._factor_in_matrix_()
                 self.name_last_node('base')
                 self._token('^')
                 self._factor_in_matrix_()
                 self.name_last_node('power')
+                self._define(
+                    ['base', 'power'],
+                    []
+                )
             with self._option():
                 self._factor_in_matrix_()
                 self.name_last_node('base')
                 self._sup_integer_()
                 self.name_last_node('power')
+                self._define(
+                    ['base', 'power'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<operations_in_matrix> <subexpression>'
@@ -2971,10 +3367,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<DERIVATIVE> ∂ <PARTIAL> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
                 '<AS> # <POUND> <BUILTIN_KEYWORDS>'
-                '<KEYWORDS> \\d π <pi> <factor_in_matrix>'
+                '<KEYWORDS> \\d <pi> <factor_in_matrix>'
             )
         self._define(
-            ['base', 'power', 'r', 't'],
+            ['base', 't', 'r', 'power'],
             []
         )
 
@@ -3072,6 +3468,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._token('\\')
                 self._factor_in_matrix_()
                 self.name_last_node('right')
+                self._define(
+                    ['left', 'right'],
+                    []
+                )
             with self._option():
                 self._factor_in_matrix_()
                 self.name_last_node('left')
@@ -3088,6 +3488,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self.name_last_node('p')
                 self._factor_in_matrix_()
                 self.name_last_node('right')
+                self._define(
+                    ['left', 'p', 'right'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<operations_in_matrix> <subexpression>'
@@ -3125,10 +3529,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<DERIVATIVE> ∂ <PARTIAL> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
                 '<AS> # <POUND> <BUILTIN_KEYWORDS>'
-                '<KEYWORDS> \\d π <pi> <factor_in_matrix>'
+                '<KEYWORDS> \\d <pi> <factor_in_matrix>'
             )
         self._define(
-            ['left', 'p', 'right'],
+            ['left', 'right', 'p'],
             []
         )
 
@@ -3143,70 +3547,78 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 with self._if():
                     self._token('(')
 
-                def block1():
+                def block2():
                     self._hspace_()
-                self._closure(block1)
+                self._closure(block2)
                 self._term_in_matrix_()
                 self.name_last_node('exp')
+                self._define(
+                    ['sub', 'exp'],
+                    []
+                )
             with self._option():
                 self._SUM_()
                 self._token('_(')
 
-                def block3():
+                def block4():
                     self._hspace_()
-                self._closure(block3)
+                self._closure(block4)
                 self._identifier_alone_()
                 self.name_last_node('id')
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._token('for')
 
                 def block6():
                     self._hspace_()
                 self._closure(block6)
+                self._token('for')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
                 self._if_condition_()
                 self.name_last_node('cond')
 
-                def block8():
+                def block9():
                     self._hspace_()
-                self._closure(block8)
+                self._closure(block9)
                 self._token(')')
                 self._term_in_matrix_()
                 self.name_last_node('exp')
+                self._define(
+                    ['id', 'cond', 'exp'],
+                    []
+                )
             with self._option():
                 self._SUM_()
                 self._token('_(')
 
-                def block10():
+                def block11():
                     self._hspace_()
-                self._closure(block10)
+                self._closure(block11)
                 self._identifier_alone_()
                 self.add_last_node_to_name('enum')
 
-                def block12():
-
-                    def block13():
-                        self._hspace_()
-                    self._closure(block13)
-                    self._token(',')
+                def block13():
 
                     def block14():
                         self._hspace_()
                     self._closure(block14)
+                    self._token(',')
+
+                    def block15():
+                        self._hspace_()
+                    self._closure(block15)
                     self._identifier_alone_()
                     self.add_last_node_to_name('enum')
-                self._closure(block12)
-
-                def block16():
-                    self._hspace_()
-                self._closure(block16)
-                self._IN_()
+                self._closure(block13)
 
                 def block17():
                     self._hspace_()
                 self._closure(block17)
+                self._IN_()
+
+                def block18():
+                    self._hspace_()
+                self._closure(block18)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -3219,18 +3631,22 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         )
                 self.name_last_node('range')
 
-                def block20():
+                def block21():
                     self._hspace_()
-                self._closure(block20)
+                self._closure(block21)
                 self._token(')')
                 self._term_()
                 self.name_last_node('exp')
+                self._define(
+                    ['range', 'exp'],
+                    ['enum']
+                )
             self._error(
                 'expecting one of: '
                 'sum ∑ <SUM>'
             )
         self._define(
-            ['cond', 'exp', 'id', 'range', 'sub'],
+            ['sub', 'exp', 'id', 'cond', 'range'],
             ['enum']
         )
 
@@ -3281,19 +3697,23 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             )
                     self.add_last_node_to_name('right')
 
-                    def block3():
+                    def block4():
                         with self._choice():
                             with self._option():
                                 with self._group():
                                     self._token(',')
                                     self._token('*')
                                     self.add_last_node_to_name('right')
+                                self._define(
+                                    [],
+                                    ['right']
+                                )
                             with self._option():
                                 with self._group():
 
-                                    def block5():
+                                    def block7():
                                         self._token(',')
-                                    self._closure(block5)
+                                    self._closure(block7)
                                     with self._group():
                                         with self._choice():
                                             with self._option():
@@ -3305,11 +3725,19 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                                 '<integer> <identifier_alone>'
                                             )
                                     self.add_last_node_to_name('right')
+                                self._define(
+                                    [],
+                                    ['right']
+                                )
                             self._error(
                                 'expecting one of: '
                                 "',' <integer> <identifier_alone>"
                             )
-                    self._closure(block3)
+                    self._closure(block4)
+                self._define(
+                    ['left'],
+                    ['right']
+                )
             with self._option():
                 with self._group():
                     self._identifier_alone_()
@@ -3326,19 +3754,23 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             )
                     self.add_last_node_to_name('right')
 
-                    def block12():
+                    def block13():
                         with self._choice():
                             with self._option():
                                 with self._group():
                                     self._token(',')
                                     self._token('*')
                                     self.add_last_node_to_name('right')
+                                self._define(
+                                    [],
+                                    ['right']
+                                )
                             with self._option():
                                 with self._group():
 
-                                    def block14():
+                                    def block16():
                                         self._token(',')
-                                    self._closure(block14)
+                                    self._closure(block16)
                                     with self._group():
                                         with self._choice():
                                             with self._option():
@@ -3350,11 +3782,19 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                                 '<sub_integer> <unicode_subscript>'
                                             )
                                     self.add_last_node_to_name('right')
+                                self._define(
+                                    [],
+                                    ['right']
+                                )
                             self._error(
                                 'expecting one of: '
                                 "',' <sub_integer> <unicode_subscript>"
                             )
-                    self._closure(block12)
+                    self._closure(block13)
+                self._define(
+                    ['left'],
+                    ['right']
+                )
             self._error(
                 'expecting one of: '
                 "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
@@ -3400,12 +3840,16 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token(',')
                         self._token('*')
                         self.add_last_node_to_name('right')
+                    self._define(
+                        [],
+                        ['right']
+                    )
                 with self._option():
                     with self._group():
 
-                        def block5():
+                        def block6():
                             self._token(',')
-                        self._closure(block5)
+                        self._closure(block6)
                         with self._group():
                             with self._choice():
                                 with self._option():
@@ -3417,6 +3861,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                     '<sub_integer> <unicode_subscript>'
                                 )
                         self.add_last_node_to_name('right')
+                    self._define(
+                        [],
+                        ['right']
+                    )
                 self._error(
                     'expecting one of: '
                     "',' <sub_integer> <unicode_subscript>"
@@ -3462,22 +3910,38 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             with self._group():
                                 self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                             self.name_last_node('value')
+                            self._define(
+                                ['value'],
+                                []
+                            )
                         with self._option():
                             self._token('`')
                             self._pattern('[^`]*')
                             self.name_last_node('id')
                             self._token('`')
+                            self._define(
+                                ['id'],
+                                []
+                            )
                         self._error(
                             'expecting one of: '
                             '[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
                             "9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                         )
+                self._define(
+                    ['value', 'id'],
+                    []
+                )
             with self._option():
                 with self._group():
                     self._KEYWORDS_()
                     with self._group():
                         self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                 self.name_last_node('value')
+                self._define(
+                    ['value'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
@@ -3496,7 +3960,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
-            ['id', 'value'],
+            ['value', 'id'],
             []
         )
 
@@ -3575,9 +4039,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -3596,7 +4068,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block6)
         self._token(')')
         self._define(
-            ['param', 'power'],
+            ['power', 'param'],
             []
         )
 
@@ -3612,9 +4084,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -3633,7 +4113,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block7)
         self._token(')')
         self._define(
-            ['name', 'param', 'power'],
+            ['name', 'power', 'param'],
             []
         )
 
@@ -3649,9 +4129,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -3670,7 +4158,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block7)
         self._token(')')
         self._define(
-            ['name', 'param', 'power'],
+            ['name', 'power', 'param'],
             []
         )
 
@@ -3685,9 +4173,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -3706,7 +4202,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block6)
         self._token(')')
         self._define(
-            ['param', 'power'],
+            ['power', 'param'],
             []
         )
 
@@ -3722,9 +4218,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -3743,7 +4247,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block7)
         self._token(')')
         self._define(
-            ['name', 'param', 'power'],
+            ['name', 'power', 'param'],
             []
         )
 
@@ -3759,9 +4263,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -3780,7 +4292,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block7)
         self._token(')')
         self._define(
-            ['name', 'param', 'power'],
+            ['name', 'power', 'param'],
             []
         )
 
@@ -3795,9 +4307,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -3816,7 +4336,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block6)
         self._token(')')
         self._define(
-            ['param', 'power'],
+            ['power', 'param'],
             []
         )
 
@@ -3832,9 +4352,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -3853,7 +4381,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block7)
         self._token(')')
         self._define(
-            ['name', 'param', 'power'],
+            ['name', 'power', 'param'],
             []
         )
 
@@ -3869,9 +4397,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -3890,7 +4426,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block7)
         self._token(')')
         self._define(
-            ['name', 'param', 'power'],
+            ['name', 'power', 'param'],
             []
         )
 
@@ -3905,9 +4441,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -3926,7 +4470,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block6)
         self._token(')')
         self._define(
-            ['param', 'power'],
+            ['power', 'param'],
             []
         )
 
@@ -3942,9 +4486,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -3963,7 +4515,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block7)
         self._token(')')
         self._define(
-            ['name', 'param', 'power'],
+            ['name', 'power', 'param'],
             []
         )
 
@@ -3979,9 +4531,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -4000,7 +4560,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block7)
         self._token(')')
         self._define(
-            ['name', 'param', 'power'],
+            ['name', 'power', 'param'],
             []
         )
 
@@ -4015,9 +4575,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -4036,7 +4604,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block6)
         self._token(')')
         self._define(
-            ['param', 'power'],
+            ['power', 'param'],
             []
         )
 
@@ -4052,9 +4620,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -4073,7 +4649,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block7)
         self._token(')')
         self._define(
-            ['name', 'param', 'power'],
+            ['name', 'power', 'param'],
             []
         )
 
@@ -4089,9 +4665,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -4110,7 +4694,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block7)
         self._token(')')
         self._define(
-            ['name', 'param', 'power'],
+            ['name', 'power', 'param'],
             []
         )
 
@@ -4125,9 +4709,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -4146,7 +4738,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block6)
         self._token(')')
         self._define(
-            ['param', 'power'],
+            ['power', 'param'],
             []
         )
 
@@ -4162,9 +4754,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -4183,7 +4783,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block7)
         self._token(')')
         self._define(
-            ['name', 'param', 'power'],
+            ['name', 'power', 'param'],
             []
         )
 
@@ -4199,9 +4799,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -4220,7 +4828,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block7)
         self._token(')')
         self._define(
-            ['name', 'param', 'power'],
+            ['name', 'power', 'param'],
             []
         )
 
@@ -4235,9 +4843,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -4256,7 +4872,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block6)
         self._token(')')
         self._define(
-            ['param', 'power'],
+            ['power', 'param'],
             []
         )
 
@@ -4271,9 +4887,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -4292,7 +4916,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block6)
         self._token(')')
         self._define(
-            ['param', 'power'],
+            ['power', 'param'],
             []
         )
 
@@ -4307,9 +4931,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
+                    self._define(
+                        ['power'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -4328,7 +4960,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block6)
         self._token(')')
         self._define(
-            ['param', 'power'],
+            ['power', 'param'],
             []
         )
 
@@ -4360,7 +4992,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block6)
         self._token(')')
         self._define(
-            ['param', 'second', 'separator'],
+            ['param', 'separator', 'second'],
             []
         )
 
@@ -6035,7 +6667,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             self.name_last_node('desc')
         self._closure(block12)
         self._define(
-            ['desc', 'index', 'type'],
+            ['type', 'index', 'desc'],
             ['id']
         )
 
@@ -6093,7 +6725,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             self.name_last_node('desc')
         self._closure(block12)
         self._define(
-            ['desc', 'index', 'subset', 'type'],
+            ['subset', 'type', 'index', 'desc'],
             ['id']
         )
 
@@ -6145,7 +6777,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             self.name_last_node('index')
         self._closure(block9)
         self._define(
-            ['index', 'type'],
+            ['type', 'index'],
             ['id']
         )
 
@@ -6250,18 +6882,34 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._addition_()
                 self.name_last_node('value')
+                self._define(
+                    ['value'],
+                    []
+                )
             with self._option():
                 self._subtraction_()
                 self.name_last_node('value')
+                self._define(
+                    ['value'],
+                    []
+                )
             with self._option():
                 self._add_sub_operator_()
                 self.name_last_node('value')
+                self._define(
+                    ['value'],
+                    []
+                )
             with self._option():
                 with self._optional():
                     self._token('-')
                 self.name_last_node('sign')
                 self._term_()
                 self.name_last_node('value')
+                self._define(
+                    ['sign', 'value'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<expression> <addition> <subtraction>'
@@ -6269,7 +6917,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<multiplication> <division> <factor>'
             )
         self._define(
-            ['sign', 'value'],
+            ['value', 'sign'],
             []
         )
 
@@ -6280,60 +6928,68 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._identifier_()
                 self.add_last_node_to_name('left')
 
-                def block1():
-
-                    def block2():
-                        self._hspace_()
-                    self._closure(block2)
-                    self._token(',')
+                def block2():
 
                     def block3():
                         self._hspace_()
                     self._closure(block3)
+                    self._token(',')
+
+                    def block4():
+                        self._hspace_()
+                    self._closure(block4)
                     self._identifier_()
                     self.add_last_node_to_name('left')
-                self._closure(block1)
+                self._closure(block2)
 
-                def block5():
+                def block6():
                     self._hspace_()
-                self._closure(block5)
+                self._closure(block6)
                 self._token('=')
                 self.name_last_node('op')
 
-                def block7():
+                def block8():
                     self._hspace_()
-                self._closure(block7)
+                self._closure(block8)
                 self._right_hand_side_()
                 self.add_last_node_to_name('right')
+                self._define(
+                    ['op'],
+                    ['left', 'right']
+                )
             with self._option():
                 self._identifier_()
                 self.add_last_node_to_name('left')
 
-                def block10():
-
-                    def block11():
-                        self._hspace_()
-                    self._closure(block11)
-                    self._token(',')
+                def block11():
 
                     def block12():
                         self._hspace_()
                     self._closure(block12)
+                    self._token(',')
+
+                    def block13():
+                        self._hspace_()
+                    self._closure(block13)
                     self._identifier_()
                     self.add_last_node_to_name('left')
-                self._closure(block10)
+                self._closure(block11)
 
-                def block14():
+                def block15():
                     self._hspace_()
-                self._closure(block14)
+                self._closure(block15)
                 self._token('+=')
                 self.name_last_node('op')
 
-                def block16():
+                def block17():
                     self._hspace_()
-                self._closure(block16)
+                self._closure(block17)
                 self._right_hand_side_()
                 self.add_last_node_to_name('right')
+                self._define(
+                    ['op'],
+                    ['left', 'right']
+                )
             self._error(
                 'expecting one of: '
                 '<identifier_alone>'
@@ -6444,7 +7100,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             self.add_last_node_to_name('rexpr')
         self._closure(block7)
         self._define(
-            ['op', 'u'],
+            ['u', 'op'],
             ['lexpr', 'rexpr']
         )
 
@@ -6538,30 +7194,66 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._operations_()
                 self.name_last_node('op')
+                self._define(
+                    ['op'],
+                    []
+                )
             with self._option():
                 self._subexpression_()
                 self.name_last_node('sub')
+                self._define(
+                    ['sub'],
+                    []
+                )
             with self._option():
                 self._number_matrix_()
                 self.name_last_node('nm')
+                self._define(
+                    ['nm'],
+                    []
+                )
             with self._option():
                 self._identifier_()
                 self.name_last_node('id0')
+                self._define(
+                    ['id0'],
+                    []
+                )
             with self._option():
                 self._number_()
                 self.name_last_node('num')
+                self._define(
+                    ['num'],
+                    []
+                )
             with self._option():
                 self._matrix_()
                 self.name_last_node('m')
+                self._define(
+                    ['m'],
+                    []
+                )
             with self._option():
                 self._vector_()
                 self.name_last_node('v')
+                self._define(
+                    ['v'],
+                    []
+                )
             with self._option():
                 self._set_()
                 self.name_last_node('s')
+                self._define(
+                    ['s'],
+                    []
+                )
             with self._option():
                 self._constant_()
                 self.name_last_node('c')
+                self._define(
+                    ['c'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<solver_operator> <norm_operator>'
@@ -6601,10 +7293,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<mantissa> <floating_point> <double>'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
                 "\\d <number> '[' '⎡' <matrix> <vector>"
-                "'{' <set> π <pi> <constant>"
+                "'{' <set> <pi> <constant>"
             )
         self._define(
-            ['c', 'id0', 'm', 'nm', 'num', 'op', 's', 'sub', 'v'],
+            ['op', 'sub', 'nm', 'id0', 'num', 'm', 'v', 's', 'c'],
             []
         )
 
@@ -6638,7 +7330,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 "<identifier_alone> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
-                '\\d <number> π <pi> <constant>'
+                '\\d <number> <pi> <constant>'
             )
 
     @tatsumasu()
@@ -6676,26 +7368,34 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._if_condition_()
                 self.name_last_node('se')
 
-                def block1():
-                    self._hspace_()
-                self._closure(block1)
-                self._OR_()
-
                 def block2():
                     self._hspace_()
                 self._closure(block2)
+                self._OR_()
+
+                def block3():
+                    self._hspace_()
+                self._closure(block3)
                 self._and_condition_()
                 self.name_last_node('other')
+                self._define(
+                    ['se', 'other'],
+                    []
+                )
             with self._option():
                 self._and_condition_()
                 self.name_last_node('single')
+                self._define(
+                    ['single'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<if_condition> <and_condition>'
                 '<atom_condition>'
             )
         self._define(
-            ['other', 'se', 'single'],
+            ['se', 'other', 'single'],
             []
         )
 
@@ -6707,19 +7407,27 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._and_condition_()
                 self.name_last_node('se')
 
-                def block1():
-                    self._hspace_()
-                self._closure(block1)
-                self._AND_()
-
                 def block2():
                     self._hspace_()
                 self._closure(block2)
+                self._AND_()
+
+                def block3():
+                    self._hspace_()
+                self._closure(block3)
                 self._atom_condition_()
                 self.name_last_node('other')
+                self._define(
+                    ['se', 'other'],
+                    []
+                )
             with self._option():
                 self._atom_condition_()
                 self.name_last_node('atom')
+                self._define(
+                    ['atom'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 "<and_condition> <atom_condition> '('"
@@ -6728,7 +7436,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<less_equal>'
             )
         self._define(
-            ['atom', 'other', 'se'],
+            ['se', 'other', 'atom'],
             []
         )
 
@@ -6738,40 +7446,76 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._token('(')
 
-                def block0():
+                def block1():
                     self._hspace_()
-                self._closure(block0)
+                self._closure(block1)
                 self._if_condition_()
                 self.name_last_node('p')
 
-                def block2():
+                def block3():
                     self._hspace_()
-                self._closure(block2)
+                self._closure(block3)
                 self._token(')')
+                self._define(
+                    ['p'],
+                    []
+                )
             with self._option():
                 self._not_equal_()
                 self.name_last_node('cond')
+                self._define(
+                    ['cond'],
+                    []
+                )
             with self._option():
                 self._equal_()
                 self.name_last_node('cond')
+                self._define(
+                    ['cond'],
+                    []
+                )
             with self._option():
                 self._in_()
                 self.name_last_node('cond')
+                self._define(
+                    ['cond'],
+                    []
+                )
             with self._option():
                 self._not_in_()
                 self.name_last_node('cond')
+                self._define(
+                    ['cond'],
+                    []
+                )
             with self._option():
                 self._greater_()
                 self.name_last_node('cond')
+                self._define(
+                    ['cond'],
+                    []
+                )
             with self._option():
                 self._greater_equal_()
                 self.name_last_node('cond')
+                self._define(
+                    ['cond'],
+                    []
+                )
             with self._option():
                 self._less_()
                 self.name_last_node('cond')
+                self._define(
+                    ['cond'],
+                    []
+                )
             with self._option():
                 self._less_equal_()
                 self.name_last_node('cond')
+                self._define(
+                    ['cond'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 "'(' <expression> <addition>"
@@ -6781,7 +7525,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<less_equal>'
             )
         self._define(
-            ['cond', 'p'],
+            ['p', 'cond'],
             []
         )
 
@@ -6791,39 +7535,39 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._token('(')
 
-                def block0():
+                def block1():
                     self._hspace_()
-                self._closure(block0)
+                self._closure(block1)
                 self._expression_()
                 self.add_last_node_to_name('left')
 
-                def block2():
-                    self._hspace_()
-                self._closure(block2)
-
                 def block3():
+                    self._hspace_()
+                self._closure(block3)
+
+                def block4():
                     self._token(',')
 
-                    def block4():
+                    def block5():
                         self._hspace_()
-                    self._closure(block4)
+                    self._closure(block5)
                     self._expression_()
                     self.add_last_node_to_name('left')
 
-                    def block6():
+                    def block7():
                         self._hspace_()
-                    self._closure(block6)
-                self._closure(block3)
+                    self._closure(block7)
+                self._closure(block4)
                 self._token(')')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._IN_()
 
                 def block8():
                     self._hspace_()
                 self._closure(block8)
+                self._IN_()
+
+                def block9():
+                    self._hspace_()
+                self._closure(block9)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -6835,18 +7579,22 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             '<function_operator> <identifier>'
                         )
                 self.name_last_node('right')
+                self._define(
+                    ['right'],
+                    ['left']
+                )
             with self._option():
                 self._expression_()
                 self.add_last_node_to_name('left')
 
-                def block12():
-                    self._hspace_()
-                self._closure(block12)
-                self._IN_()
-
                 def block13():
                     self._hspace_()
                 self._closure(block13)
+                self._IN_()
+
+                def block14():
+                    self._hspace_()
+                self._closure(block14)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -6858,6 +7606,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             '<function_operator> <identifier>'
                         )
                 self.name_last_node('right')
+                self._define(
+                    ['right'],
+                    ['left']
+                )
             self._error(
                 'expecting one of: '
                 "'(' <expression> <addition>"
@@ -6875,39 +7627,39 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._token('(')
 
-                def block0():
+                def block1():
                     self._hspace_()
-                self._closure(block0)
+                self._closure(block1)
                 self._expression_()
                 self.add_last_node_to_name('left')
 
-                def block2():
-                    self._hspace_()
-                self._closure(block2)
-
                 def block3():
+                    self._hspace_()
+                self._closure(block3)
+
+                def block4():
                     self._token(',')
 
-                    def block4():
+                    def block5():
                         self._hspace_()
-                    self._closure(block4)
+                    self._closure(block5)
                     self._expression_()
                     self.add_last_node_to_name('left')
 
-                    def block6():
+                    def block7():
                         self._hspace_()
-                    self._closure(block6)
-                self._closure(block3)
+                    self._closure(block7)
+                self._closure(block4)
                 self._token(')')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._token('∉')
 
                 def block8():
                     self._hspace_()
                 self._closure(block8)
+                self._token('∉')
+
+                def block9():
+                    self._hspace_()
+                self._closure(block9)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -6919,18 +7671,22 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             '<function_operator> <identifier>'
                         )
                 self.name_last_node('right')
+                self._define(
+                    ['right'],
+                    ['left']
+                )
             with self._option():
                 self._expression_()
                 self.add_last_node_to_name('left')
 
-                def block12():
-                    self._hspace_()
-                self._closure(block12)
-                self._token('∉')
-
                 def block13():
                     self._hspace_()
                 self._closure(block13)
+                self._token('∉')
+
+                def block14():
+                    self._hspace_()
+                self._closure(block14)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -6942,6 +7698,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             '<function_operator> <identifier>'
                         )
                 self.name_last_node('right')
+                self._define(
+                    ['right'],
+                    ['left']
+                )
             self._error(
                 'expecting one of: '
                 "'(' <expression> <addition>"
@@ -7126,15 +7886,27 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._arithmetic_addition_()
                 self.name_last_node('value')
+                self._define(
+                    ['value'],
+                    []
+                )
             with self._option():
                 self._arithmetic_subtraction_()
                 self.name_last_node('value')
+                self._define(
+                    ['value'],
+                    []
+                )
             with self._option():
                 with self._optional():
                     self._token('-')
                 self.name_last_node('sign')
                 self._arithmetic_term_()
                 self.name_last_node('value')
+                self._define(
+                    ['sign', 'value'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<arithmetic_addition>'
@@ -7146,7 +7918,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<arithmetic_factor>'
             )
         self._define(
-            ['sign', 'value'],
+            ['value', 'sign'],
             []
         )
 
@@ -7224,26 +7996,34 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._arithmetic_term_()
                 self.name_last_node('left')
 
-                def block1():
+                def block2():
                     self._hspace_()
-                self._closure(block1)
+                self._closure(block2)
                 self._token('⋅')
                 self.name_last_node('op')
 
-                def block3():
+                def block4():
                     self._hspace_()
-                self._closure(block3)
+                self._closure(block4)
                 self._arithmetic_factor_()
                 self.name_last_node('right')
+                self._define(
+                    ['left', 'op', 'right'],
+                    []
+                )
             with self._option():
                 self._arithmetic_term_()
                 self.name_last_node('left')
 
-                def block6():
+                def block7():
                     self._hspace_()
-                self._closure(block6)
+                self._closure(block7)
                 self._arithmetic_factor_()
                 self.name_last_node('right')
+                self._define(
+                    ['left', 'right'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 '<arithmetic_multiplication>'
@@ -7297,15 +8077,31 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._arithmetic_subexpression_()
                 self.name_last_node('sub')
+                self._define(
+                    ['sub'],
+                    []
+                )
             with self._option():
                 self._size_op_()
                 self.name_last_node('size')
+                self._define(
+                    ['size'],
+                    []
+                )
             with self._option():
                 self._identifier_()
                 self.name_last_node('id0')
+                self._define(
+                    ['id0'],
+                    []
+                )
             with self._option():
                 self._number_()
                 self.name_last_node('num')
+                self._define(
+                    ['num'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 "'(' <arithmetic_subexpression> # <POUND>"
@@ -7329,7 +8125,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<fraction> \\d <number>'
             )
         self._define(
-            ['id0', 'num', 'size', 'sub'],
+            ['sub', 'size', 'id0', 'num'],
             []
         )
 
@@ -7358,85 +8154,93 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._pattern('matrix')
 
-                def block0():
-                    self._hspace_()
-                self._closure(block0)
-                self._token('(')
-
                 def block1():
                     self._hspace_()
                 self._closure(block1)
+                self._token('(')
+
+                def block2():
+                    self._hspace_()
+                self._closure(block2)
                 self._dimension_()
                 self.name_last_node('id1')
-
-                def block3():
-                    self._hspace_()
-                self._closure(block3)
-                self._token(',')
 
                 def block4():
                     self._hspace_()
                 self._closure(block4)
+                self._token(',')
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
                 self._dimension_()
                 self.name_last_node('id2')
 
-                def block6():
+                def block7():
                     self._hspace_()
-                self._closure(block6)
+                self._closure(block7)
                 self._token(')')
 
-                def block7():
+                def block8():
 
-                    def block8():
+                    def block9():
                         self._hspace_()
-                    self._positive_closure(block8)
+                    self._positive_closure(block9)
                     self._matrix_attribute_()
                     self.add_last_node_to_name('attr')
-                self._closure(block7)
+                self._closure(block8)
+                self._define(
+                    ['id1', 'id2'],
+                    ['attr']
+                )
             with self._option():
                 self._pattern('[ℝℤ]')
                 self.name_last_node('type')
 
-                def block11():
-                    self._hspace_()
-                self._closure(block11)
-                self._token('^')
-
                 def block12():
                     self._hspace_()
                 self._closure(block12)
-                self._token('(')
+                self._token('^')
 
                 def block13():
                     self._hspace_()
                 self._closure(block13)
+                self._token('(')
+
+                def block14():
+                    self._hspace_()
+                self._closure(block14)
                 self._dimension_()
                 self.name_last_node('id1')
-
-                def block15():
-                    self._hspace_()
-                self._closure(block15)
-                self._token('×')
 
                 def block16():
                     self._hspace_()
                 self._closure(block16)
+                self._token('×')
+
+                def block17():
+                    self._hspace_()
+                self._closure(block17)
                 self._dimension_()
                 self.name_last_node('id2')
 
-                def block18():
+                def block19():
                     self._hspace_()
-                self._closure(block18)
+                self._closure(block19)
                 self._token(')')
 
-                def block19():
+                def block20():
 
-                    def block20():
+                    def block21():
                         self._hspace_()
-                    self._positive_closure(block20)
+                    self._positive_closure(block21)
                     self._matrix_attribute_()
                     self.add_last_node_to_name('attr')
-                self._closure(block19)
+                self._closure(block20)
+                self._define(
+                    ['type', 'id1', 'id2'],
+                    ['attr']
+                )
             self._error(
                 'expecting one of: '
                 'matrix [ℝℤ]'
@@ -7456,67 +8260,83 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._pattern('vector')
 
-                def block0():
-                    self._hspace_()
-                self._closure(block0)
-                self._token('(')
-
                 def block1():
                     self._hspace_()
                 self._closure(block1)
+                self._token('(')
+
+                def block2():
+                    self._hspace_()
+                self._closure(block2)
                 self._dimension_()
                 self.name_last_node('id1')
 
-                def block3():
+                def block4():
                     self._hspace_()
-                self._closure(block3)
+                self._closure(block4)
                 self._token(')')
+                self._define(
+                    ['id1'],
+                    []
+                )
             with self._option():
                 self._pattern('[ℝℤ]')
                 self.name_last_node('type')
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._token('^')
 
                 def block6():
                     self._hspace_()
                 self._closure(block6)
-                self._token('(')
+                self._token('^')
 
                 def block7():
                     self._hspace_()
                 self._closure(block7)
+                self._token('(')
+
+                def block8():
+                    self._hspace_()
+                self._closure(block8)
                 self._dimension_()
                 self.name_last_node('id1')
 
-                def block9():
+                def block10():
                     self._hspace_()
-                self._closure(block9)
+                self._closure(block10)
                 self._token(')')
+                self._define(
+                    ['type', 'id1'],
+                    []
+                )
             with self._option():
                 self._pattern('[ℝℤ]')
                 self.name_last_node('type')
 
-                def block11():
-                    self._hspace_()
-                self._closure(block11)
-                self._token('^')
-
                 def block12():
                     self._hspace_()
                 self._closure(block12)
+                self._token('^')
+
+                def block13():
+                    self._hspace_()
+                self._closure(block13)
                 self._dimension_()
                 self.name_last_node('id1')
+                self._define(
+                    ['type', 'id1'],
+                    []
+                )
             with self._option():
                 self._pattern('[ℝℤ]')
                 self.name_last_node('type')
                 self._sup_integer_()
                 self.name_last_node('id1')
+                self._define(
+                    ['type', 'id1'],
+                    []
+                )
             self._error(
                 'expecting one of: '
-                'vector [ℝℤ] [ℝℤ] [ℝℤ]'
+                'vector [ℝℤ]'
             )
         self._define(
             ['id1', 'type'],
@@ -7533,6 +8353,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._pattern('ℤ')
                 self.name_last_node('z')
+                self._define(
+                    ['z'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 'scalar ℝ ℤ'
@@ -7548,132 +8372,152 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._token('{')
 
-                def block0():
+                def block1():
                     self._hspace_()
-                self._closure(block0)
+                self._closure(block1)
                 self._pattern('[ℝℤ]')
                 self.add_last_node_to_name('type')
 
-                def block2():
-                    self._hspace_()
-                self._closure(block2)
-
                 def block3():
+                    self._hspace_()
+                self._closure(block3)
+
+                def block4():
                     self._token('×')
 
-                    def block4():
+                    def block5():
                         self._hspace_()
-                    self._closure(block4)
+                    self._closure(block5)
                     self._pattern('[ℝℤ]')
                     self.add_last_node_to_name('type')
 
-                    def block6():
+                    def block7():
                         self._hspace_()
-                    self._closure(block6)
-                self._closure(block3)
+                    self._closure(block7)
+                self._closure(block4)
                 self._token('}')
+                self._define(
+                    [],
+                    ['type']
+                )
             with self._option():
                 self._token('{')
 
-                def block7():
+                def block8():
                     self._hspace_()
-                self._closure(block7)
+                self._closure(block8)
                 self._pattern('[ℝℤ]')
                 self.name_last_node('type1')
-
-                def block9():
-                    self._hspace_()
-                self._closure(block9)
-                self._token('^')
 
                 def block10():
                     self._hspace_()
                 self._closure(block10)
+                self._token('^')
+
+                def block11():
+                    self._hspace_()
+                self._closure(block11)
                 with self._group():
                     self._integer_()
                 self.name_last_node('cnt')
 
-                def block12():
-                    self._hspace_()
-                self._closure(block12)
-                self._token('}')
-            with self._option():
-                self._token('{')
-
                 def block13():
                     self._hspace_()
                 self._closure(block13)
+                self._token('}')
+                self._define(
+                    ['type1', 'cnt'],
+                    []
+                )
+            with self._option():
+                self._token('{')
+
+                def block14():
+                    self._hspace_()
+                self._closure(block14)
                 self._pattern('[ℝℤ]')
                 self.name_last_node('type2')
                 with self._optional():
                     self._sup_integer_()
                 self.name_last_node('cnt')
 
-                def block16():
-                    self._hspace_()
-                self._closure(block16)
-                self._token('}')
-            with self._option():
-                self._token('{')
-
                 def block17():
                     self._hspace_()
                 self._closure(block17)
-                self._params_type_()
-                self.add_last_node_to_name('sub_types')
-
-                def block19():
-                    self._hspace_()
-                self._closure(block19)
-
-                def block20():
-                    self._token('×')
-
-                    def block21():
-                        self._hspace_()
-                    self._closure(block21)
-                    self._params_type_()
-                    self.add_last_node_to_name('sub_types')
-
-                    def block23():
-                        self._hspace_()
-                    self._closure(block23)
-                self._closure(block20)
                 self._token('}')
+                self._define(
+                    ['type2', 'cnt'],
+                    []
+                )
             with self._option():
                 self._token('{')
 
-                def block24():
+                def block18():
                     self._hspace_()
-                self._closure(block24)
+                self._closure(block18)
+                self._params_type_()
+                self.add_last_node_to_name('sub_types')
+
+                def block20():
+                    self._hspace_()
+                self._closure(block20)
+
+                def block21():
+                    self._token('×')
+
+                    def block22():
+                        self._hspace_()
+                    self._closure(block22)
+                    self._params_type_()
+                    self.add_last_node_to_name('sub_types')
+
+                    def block24():
+                        self._hspace_()
+                    self._closure(block24)
+                self._closure(block21)
+                self._token('}')
+                self._define(
+                    [],
+                    ['sub_types']
+                )
+            with self._option():
+                self._token('{')
+
+                def block25():
+                    self._hspace_()
+                self._closure(block25)
                 self._params_type_()
                 self.add_last_node_to_name('homogeneous_types')
 
-                def block26():
-                    self._hspace_()
-                self._closure(block26)
-
                 def block27():
+                    self._hspace_()
+                self._closure(block27)
+
+                def block28():
                     self._token('∨')
 
-                    def block28():
+                    def block29():
                         self._hspace_()
-                    self._closure(block28)
+                    self._closure(block29)
                     self._params_type_()
                     self.add_last_node_to_name('homogeneous_types')
 
-                    def block30():
+                    def block31():
                         self._hspace_()
-                    self._closure(block30)
-                self._positive_closure(block27)
+                    self._closure(block31)
+                self._positive_closure(block28)
                 self._token('}')
+                self._define(
+                    [],
+                    ['homogeneous_types']
+                )
             self._error(
                 'expecting one of: '
                 "'{'"
             )
         self._define(
-            ['cnt', 'type1', 'type2'],
-            ['homogeneous_types', 'sub_types', 'type']
+            ['type1', 'cnt', 'type2'],
+            ['type', 'sub_types', 'homogeneous_types']
         )
 
     @tatsumasu('TupleType')
@@ -7727,12 +8571,11 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._scalar_type_()
             self._error(
                 'expecting one of: '
-                'matrix [ℝℤ] <matrix_type> vector [ℝℤ]'
-                '[ℝℤ] [ℝℤ] <vector_type> scalar ℝ ℤ'
-                "<scalar_type> '{' <set_type>"
-                "<params_type> <tuple_type> '∅'"
-                '<function_type> <identifier>'
-                '<mapping_type>'
+                'matrix [ℝℤ] <matrix_type> vector'
+                '<vector_type> scalar ℝ ℤ <scalar_type>'
+                "'{' <set_type> <params_type>"
+                "<tuple_type> '∅' <function_type>"
+                '<identifier> <mapping_type>'
             )
 
     @tatsumasu()
@@ -7751,10 +8594,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._tuple_type_()
             self._error(
                 'expecting one of: '
-                'matrix [ℝℤ] <matrix_type> vector [ℝℤ]'
-                '[ℝℤ] [ℝℤ] <vector_type> scalar ℝ ℤ'
-                "<scalar_type> '{' <set_type>"
-                '<params_type> <tuple_type>'
+                'matrix [ℝℤ] <matrix_type> vector'
+                '<vector_type> scalar ℝ ℤ <scalar_type>'
+                "'{' <set_type> <params_type>"
+                '<tuple_type>'
             )
 
     @tatsumasu('FunctionType')
@@ -7766,29 +8609,37 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         self._params_type_()
                         self.add_last_node_to_name('params')
 
-                        def block1():
+                        def block2():
 
-                            def block2():
+                            def block3():
                                 self._hspace_()
-                            self._closure(block2)
+                            self._closure(block3)
                             self._params_separator_()
                             self.add_last_node_to_name('separators')
 
-                            def block4():
+                            def block5():
                                 self._hspace_()
-                            self._closure(block4)
+                            self._closure(block5)
                             self._params_type_()
                             self.add_last_node_to_name('params')
-                        self._closure(block1)
+                        self._closure(block2)
+                    self._define(
+                        [],
+                        ['params', 'separators']
+                    )
                 with self._option():
                     self._token('∅')
                     self.name_last_node('empty')
+                    self._define(
+                        ['empty'],
+                        []
+                    )
                 with self._option():
                     self._token('{')
 
-                    def block7():
+                    def block8():
                         self._hspace_()
-                    self._closure(block7)
+                    self._closure(block8)
                     self._token('}')
                 self._error(
                     'expecting one of: '
@@ -7831,7 +8682,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._closure(block13)
         self._define(
             ['empty'],
-            ['params', 'ret', 'ret_separators', 'separators']
+            ['params', 'separators', 'ret', 'ret_separators']
         )
 
     @tatsumasu('MappingType')
@@ -7845,38 +8696,46 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                 self._identifier_()
                                 self.add_last_node_to_name('params')
 
-                                def block1():
-
-                                    def block2():
-                                        self._hspace_()
-                                    self._closure(block2)
-                                    self._params_separator_()
-                                    self.add_last_node_to_name('separators')
+                                def block3():
 
                                     def block4():
                                         self._hspace_()
                                     self._closure(block4)
+                                    self._params_separator_()
+                                    self.add_last_node_to_name('separators')
+
+                                    def block6():
+                                        self._hspace_()
+                                    self._closure(block6)
                                     self._identifier_()
                                     self.add_last_node_to_name('params')
-                                self._closure(block1)
+                                self._closure(block3)
+                            self._define(
+                                [],
+                                ['params', 'separators']
+                            )
                         with self._option():
                             self._token('∅')
                             self.name_last_node('empty')
+                            self._define(
+                                ['empty'],
+                                []
+                            )
                         with self._option():
                             self._token('{')
 
-                            def block7():
+                            def block9():
                                 self._hspace_()
-                            self._closure(block7)
+                            self._closure(block9)
                             self._token('}')
                         self._error(
                             'expecting one of: '
                             "<identifier> '∅' '{'"
                         )
 
-                def block9():
+                def block10():
                     self._hspace_()
-                self._closure(block9)
+                self._closure(block10)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -7888,26 +8747,30 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             "'→' '->'"
                         )
 
-                def block11():
+                def block12():
                     self._hspace_()
-                self._closure(block11)
+                self._closure(block12)
                 self._params_type_()
                 self.add_last_node_to_name('ret_type')
 
-                def block13():
+                def block14():
 
-                    def block14():
+                    def block15():
                         self._hspace_()
-                    self._closure(block14)
+                    self._closure(block15)
                     self._params_separator_()
                     self.add_last_node_to_name('ret_separators')
 
-                    def block16():
+                    def block17():
                         self._hspace_()
-                    self._closure(block16)
+                    self._closure(block17)
                     self._params_type_()
                     self.add_last_node_to_name('ret_type')
-                self._closure(block13)
+                self._closure(block14)
+                self._define(
+                    ['empty'],
+                    ['params', 'separators', 'ret_type', 'ret_separators']
+                )
             with self._option():
                 with self._group():
                     with self._choice():
@@ -7916,38 +8779,46 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                 self._identifier_()
                                 self.add_last_node_to_name('params')
 
-                                def block19():
-
-                                    def block20():
-                                        self._hspace_()
-                                    self._closure(block20)
-                                    self._params_separator_()
-                                    self.add_last_node_to_name('separators')
+                                def block21():
 
                                     def block22():
                                         self._hspace_()
                                     self._closure(block22)
+                                    self._params_separator_()
+                                    self.add_last_node_to_name('separators')
+
+                                    def block24():
+                                        self._hspace_()
+                                    self._closure(block24)
                                     self._identifier_()
                                     self.add_last_node_to_name('params')
-                                self._closure(block19)
+                                self._closure(block21)
+                            self._define(
+                                [],
+                                ['params', 'separators']
+                            )
                         with self._option():
                             self._token('∅')
                             self.name_last_node('empty')
+                            self._define(
+                                ['empty'],
+                                []
+                            )
                         with self._option():
                             self._token('{')
 
-                            def block25():
+                            def block27():
                                 self._hspace_()
-                            self._closure(block25)
+                            self._closure(block27)
                             self._token('}')
                         self._error(
                             'expecting one of: '
                             "<identifier> '∅' '{'"
                         )
 
-                def block27():
+                def block28():
                     self._hspace_()
-                self._closure(block27)
+                self._closure(block28)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -7959,26 +8830,30 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             "'→' '->'"
                         )
 
-                def block29():
+                def block30():
                     self._hspace_()
-                self._closure(block29)
+                self._closure(block30)
                 self._identifier_()
                 self.add_last_node_to_name('ret')
 
-                def block31():
+                def block32():
 
-                    def block32():
+                    def block33():
                         self._hspace_()
-                    self._closure(block32)
+                    self._closure(block33)
                     self._params_separator_()
                     self.add_last_node_to_name('ret_separators')
 
-                    def block34():
+                    def block35():
                         self._hspace_()
-                    self._closure(block34)
+                    self._closure(block35)
                     self._identifier_()
                     self.add_last_node_to_name('ret')
-                self._closure(block31)
+                self._closure(block32)
+                self._define(
+                    ['empty'],
+                    ['params', 'separators', 'ret', 'ret_separators']
+                )
             self._error(
                 'expecting one of: '
                 '<identifier_alone>'
@@ -8000,7 +8875,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             )
         self._define(
             ['empty'],
-            ['params', 'ret', 'ret_separators', 'ret_type', 'separators']
+            ['params', 'separators', 'ret_type', 'ret_separators', 'ret']
         )
 
     @tatsumasu('Integer')
@@ -8132,21 +9007,37 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             with self._group():
                                 self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                             self.name_last_node('value')
+                            self._define(
+                                ['value'],
+                                []
+                            )
                         with self._option():
                             self._token('`')
                             self._pattern('[^`]*')
                             self.name_last_node('id')
                             self._token('`')
+                            self._define(
+                                ['id'],
+                                []
+                            )
                         self._error(
                             'expecting one of: '
                             "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                         )
+                self._define(
+                    ['value', 'id'],
+                    []
+                )
             with self._option():
                 with self._group():
                     self._KEYWORDS_()
                     with self._group():
                         self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                 self.name_last_node('value')
+                self._define(
+                    ['value'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
@@ -8164,7 +9055,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
-            ['id', 'value'],
+            ['value', 'id'],
             []
         )
 
@@ -8213,11 +9104,11 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         )
                 self.add_last_node_to_name('subs')
 
-                def block3():
+                def block4():
 
-                    def block4():
+                    def block5():
                         self._token(',')
-                    self._closure(block4)
+                    self._closure(block5)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -8229,75 +9120,83 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                 '<integer> <identifier_alone>'
                             )
                     self.add_last_node_to_name('subs')
-                self._closure(block3)
+                self._closure(block4)
 
-                def block7():
+                def block8():
                     self._token('(')
                     self.name_last_node('p')
 
-                    def block9():
+                    def block10():
 
-                        def block10():
+                        def block11():
                             self._hspace_()
-                        self._closure(block10)
+                        self._closure(block11)
                         self._expression_()
                         self.add_last_node_to_name('params')
 
-                        def block12():
+                        def block13():
 
-                            def block13():
+                            def block14():
                                 self._hspace_()
-                            self._closure(block13)
+                            self._closure(block14)
                             self._params_separator_()
                             self.add_last_node_to_name('separators')
 
-                            def block15():
+                            def block16():
                                 self._hspace_()
-                            self._closure(block15)
+                            self._closure(block16)
                             self._expression_()
                             self.add_last_node_to_name('params')
-                        self._closure(block12)
-                    self._closure(block9)
+                        self._closure(block13)
+                    self._closure(block10)
 
-                    def block17():
+                    def block18():
                         self._hspace_()
-                    self._closure(block17)
+                    self._closure(block18)
                     self._token(')')
-                self._closure(block7)
+                self._closure(block8)
+                self._define(
+                    ['name', 'p'],
+                    ['subs', 'params', 'separators']
+                )
             with self._option():
                 self._func_id_()
                 self.name_last_node('name')
                 self._token('(')
                 self.name_last_node('p')
 
-                def block20():
+                def block21():
 
-                    def block21():
+                    def block22():
                         self._hspace_()
-                    self._closure(block21)
+                    self._closure(block22)
                     self._expression_()
                     self.add_last_node_to_name('params')
 
-                    def block23():
+                    def block24():
 
-                        def block24():
+                        def block25():
                             self._hspace_()
-                        self._closure(block24)
+                        self._closure(block25)
                         self._params_separator_()
                         self.add_last_node_to_name('separators')
 
-                        def block26():
+                        def block27():
                             self._hspace_()
-                        self._closure(block26)
+                        self._closure(block27)
                         self._expression_()
                         self.add_last_node_to_name('params')
-                    self._closure(block23)
-                self._closure(block20)
+                    self._closure(block24)
+                self._closure(block21)
 
-                def block28():
+                def block29():
                     self._hspace_()
-                self._closure(block28)
+                self._closure(block29)
                 self._token(')')
+                self._define(
+                    ['name', 'p'],
+                    ['params', 'separators']
+                )
             with self._option():
                 self._func_id_()
                 self.name_last_node('name')
@@ -8313,11 +9212,11 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         )
                 self.add_last_node_to_name('subs')
 
-                def block32():
+                def block33():
 
-                    def block33():
+                    def block34():
                         self._token(',')
-                    self._closure(block33)
+                    self._closure(block34)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -8329,48 +9228,52 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                 '<sub_integer> <unicode_subscript>'
                             )
                     self.add_last_node_to_name('subs')
-                self._closure(block32)
+                self._closure(block33)
 
-                def block36():
+                def block37():
                     self._token('(')
                     self.name_last_node('p')
 
-                    def block38():
+                    def block39():
 
-                        def block39():
+                        def block40():
                             self._hspace_()
-                        self._closure(block39)
+                        self._closure(block40)
                         self._expression_()
                         self.add_last_node_to_name('params')
 
-                        def block41():
+                        def block42():
 
-                            def block42():
+                            def block43():
                                 self._hspace_()
-                            self._closure(block42)
+                            self._closure(block43)
                             self._params_separator_()
                             self.add_last_node_to_name('separators')
 
-                            def block44():
+                            def block45():
                                 self._hspace_()
-                            self._closure(block44)
+                            self._closure(block45)
                             self._expression_()
                             self.add_last_node_to_name('params')
-                        self._closure(block41)
-                    self._closure(block38)
+                        self._closure(block42)
+                    self._closure(block39)
 
-                    def block46():
+                    def block47():
                         self._hspace_()
-                    self._closure(block46)
+                    self._closure(block47)
                     self._token(')')
-                self._closure(block36)
+                self._closure(block37)
+                self._define(
+                    ['name', 'p'],
+                    ['subs', 'params', 'separators']
+                )
             self._error(
                 'expecting one of: '
                 "'!!!' <func_id>"
             )
         self._define(
             ['name', 'p'],
-            ['params', 'separators', 'subs']
+            ['subs', 'params', 'separators']
         )
 
     @tatsumasu('LocalFunc')
@@ -8381,180 +9284,196 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     self._identifier_with_unicode_subscript_()
                     self.name_last_node('name')
 
-                    def block1():
+                    def block2():
                         self._pattern('\\(')
                         self.name_last_node('def_p')
 
-                        def block3():
+                        def block4():
 
-                            def block4():
+                            def block5():
                                 self._hspace_()
-                            self._closure(block4)
+                            self._closure(block5)
                             self._identifier_alone_()
                             self.add_last_node_to_name('params')
 
-                            def block6():
+                            def block7():
 
-                                def block7():
+                                def block8():
                                     self._hspace_()
-                                self._closure(block7)
+                                self._closure(block8)
                                 self._params_separator_()
                                 self.add_last_node_to_name('separators')
 
-                                def block9():
+                                def block10():
                                     self._hspace_()
-                                self._closure(block9)
+                                self._closure(block10)
                                 self._identifier_alone_()
                                 self.add_last_node_to_name('params')
-                            self._closure(block6)
-                        self._closure(block3)
+                            self._closure(block7)
+                        self._closure(block4)
 
-                        def block11():
+                        def block12():
                             self._hspace_()
-                        self._closure(block11)
+                        self._closure(block12)
                         self._token(')')
-                    self._closure(block1)
+                    self._closure(block2)
+                    self._define(
+                        ['name', 'def_p'],
+                        ['params', 'separators']
+                    )
                 with self._option():
                     self._identifier_with_unicode_subscript_()
                     self.name_last_node('name')
 
-                    def block13():
+                    def block14():
                         self._pattern('\\[')
                         self.name_last_node('def_s')
 
-                        def block15():
+                        def block16():
 
-                            def block16():
+                            def block17():
                                 self._hspace_()
-                            self._closure(block16)
+                            self._closure(block17)
                             self._identifier_alone_()
                             self.add_last_node_to_name('params')
 
-                            def block18():
+                            def block19():
 
-                                def block19():
+                                def block20():
                                     self._hspace_()
-                                self._closure(block19)
+                                self._closure(block20)
                                 self._params_separator_()
                                 self.add_last_node_to_name('separators')
 
-                                def block21():
+                                def block22():
                                     self._hspace_()
-                                self._closure(block21)
+                                self._closure(block22)
                                 self._identifier_alone_()
                                 self.add_last_node_to_name('params')
-                            self._closure(block18)
-                        self._closure(block15)
+                            self._closure(block19)
+                        self._closure(block16)
 
-                        def block23():
+                        def block24():
                             self._hspace_()
-                        self._closure(block23)
+                        self._closure(block24)
                         self._token(']')
-                    self._closure(block13)
+                    self._closure(block14)
+                    self._define(
+                        ['name', 'def_s'],
+                        ['params', 'separators']
+                    )
                 with self._option():
                     self._identifier_alone_()
                     self.name_last_node('name')
 
-                    def block25():
+                    def block26():
                         self._token('_')
                         self._identifier_alone_()
                         self.add_last_node_to_name('subs')
 
-                        def block27():
+                        def block28():
 
-                            def block28():
+                            def block29():
                                 self._token(',')
-                            self._closure(block28)
+                            self._closure(block29)
                             self._identifier_alone_()
                             self.add_last_node_to_name('subs')
-                        self._closure(block27)
-                    self._closure(block25)
+                        self._closure(block28)
+                    self._closure(block26)
 
-                    def block30():
+                    def block31():
                         self._pattern('\\(')
                         self.name_last_node('def_p')
 
-                        def block32():
+                        def block33():
 
-                            def block33():
+                            def block34():
                                 self._hspace_()
-                            self._closure(block33)
+                            self._closure(block34)
                             self._identifier_alone_()
                             self.add_last_node_to_name('params')
 
-                            def block35():
+                            def block36():
 
-                                def block36():
+                                def block37():
                                     self._hspace_()
-                                self._closure(block36)
+                                self._closure(block37)
                                 self._params_separator_()
                                 self.add_last_node_to_name('separators')
 
-                                def block38():
+                                def block39():
                                     self._hspace_()
-                                self._closure(block38)
+                                self._closure(block39)
                                 self._identifier_alone_()
                                 self.add_last_node_to_name('params')
-                            self._closure(block35)
-                        self._closure(block32)
+                            self._closure(block36)
+                        self._closure(block33)
 
-                        def block40():
+                        def block41():
                             self._hspace_()
-                        self._closure(block40)
+                        self._closure(block41)
                         self._token(')')
-                    self._closure(block30)
+                    self._closure(block31)
+                    self._define(
+                        ['name', 'def_p'],
+                        ['subs', 'params', 'separators']
+                    )
                 with self._option():
                     self._identifier_alone_()
                     self.name_last_node('name')
 
-                    def block42():
+                    def block43():
                         self._token('_')
                         self._identifier_alone_()
                         self.add_last_node_to_name('subs')
 
-                        def block44():
+                        def block45():
 
-                            def block45():
+                            def block46():
                                 self._token(',')
-                            self._closure(block45)
+                            self._closure(block46)
                             self._identifier_alone_()
                             self.add_last_node_to_name('subs')
-                        self._closure(block44)
-                    self._closure(block42)
+                        self._closure(block45)
+                    self._closure(block43)
 
-                    def block47():
+                    def block48():
                         self._pattern('\\[')
                         self.name_last_node('def_s')
 
-                        def block49():
+                        def block50():
 
-                            def block50():
+                            def block51():
                                 self._hspace_()
-                            self._closure(block50)
+                            self._closure(block51)
                             self._identifier_alone_()
                             self.add_last_node_to_name('params')
 
-                            def block52():
+                            def block53():
 
-                                def block53():
+                                def block54():
                                     self._hspace_()
-                                self._closure(block53)
+                                self._closure(block54)
                                 self._params_separator_()
                                 self.add_last_node_to_name('separators')
 
-                                def block55():
+                                def block56():
                                     self._hspace_()
-                                self._closure(block55)
+                                self._closure(block56)
                                 self._identifier_alone_()
                                 self.add_last_node_to_name('params')
-                            self._closure(block52)
-                        self._closure(block49)
+                            self._closure(block53)
+                        self._closure(block50)
 
-                        def block57():
+                        def block58():
                             self._hspace_()
-                        self._closure(block57)
+                        self._closure(block58)
                         self._token(']')
-                    self._closure(block47)
+                    self._closure(block48)
+                    self._define(
+                        ['name', 'def_s'],
+                        ['subs', 'params', 'separators']
+                    )
                 self._error(
                     'expecting one of: '
                     '<identifier_with_unicode_subscript>'
@@ -8621,12 +9540,12 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             self.add_last_node_to_name('extra')
         self._closure(block71)
         self._define(
-            ['def_p', 'def_s', 'name', 'op'],
-            ['defs', 'expr', 'extra', 'params', 'separators', 'subs']
+            ['name', 'def_p', 'def_s', 'op'],
+            ['params', 'separators', 'subs', 'expr', 'defs', 'extra']
         )
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682Semantics(object):
+class grammarc21f969b5f03d33d43e04f8f136e7682Semantics:
     def start(self, ast):  # noqa
         return ast
 
@@ -9592,10 +10511,14 @@ if __name__ == '__main__':
 
 
 
+from typing import Any
+from dataclasses import dataclass
+
 from tatsu.objectmodel import Node
 from tatsu.semantics import ModelBuilderSemantics
 
 
+@dataclass(eq=False)
 class ModelBase(Node):
     pass
 
@@ -9609,857 +10532,1008 @@ class grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics(ModelBuilderS
         super(grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics, self).__init__(context=context, types=types)
 
 
+@dataclass(eq=False)
 class Start(ModelBase):
-    vblock = None
+    vblock: Any = None
 
 
+@dataclass(eq=False)
 class Exponent(ModelBase):
-    exp = None
-    pow = None
+    exp: Any = None
+    pow: Any = None
 
 
+@dataclass(eq=False)
 class Mantissa(ModelBase):
-    d = None
-    f = None
+    d: Any = None
+    f: Any = None
 
 
+@dataclass(eq=False)
 class Float(ModelBase):
-    e = None
-    m = None
+    e: Any = None
+    m: Any = None
 
 
+@dataclass(eq=False)
 class Double(ModelBase):
-    exp = None
-    f = None
-    i = None
+    exp: Any = None
+    f: Any = None
+    i: Any = None
 
 
+@dataclass(eq=False)
 class Fraction(ModelBase):
-    value = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class Add(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class Subtract(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class AddSub(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class Multiply(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class Divide(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class Derivative(ModelBase):
-    f = None
-    lorder = None
-    lower = None
-    s = None
-    uorder = None
-    upper = None
+    f: Any = None
+    lorder: Any = None
+    lower: Any = None
+    s: Any = None
+    uorder: Any = None
+    upper: Any = None
 
 
+@dataclass(eq=False)
 class Partial(ModelBase):
-    f = None
-    l = None
-    lorder = None
-    lower = None
-    s = None
-    uorder = None
-    upper = None
+    f: Any = None
+    l: Any = None
+    lorder: Any = None
+    lower: Any = None
+    s: Any = None
+    uorder: Any = None
+    upper: Any = None
 
 
+@dataclass(eq=False)
 class Divergence(ModelBase):
-    name = None
-    value = None
+    name: Any = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class Gradient(ModelBase):
-    name = None
-    value = None
+    name: Any = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class Laplace(ModelBase):
-    name = None
-    value = None
+    name: Any = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class Power(ModelBase):
-    base = None
-    power = None
-    r = None
-    t = None
+    base: Any = None
+    power: Any = None
+    r: Any = None
+    t: Any = None
 
 
+@dataclass(eq=False)
 class Solver(ModelBase):
-    left = None
-    p = None
-    right = None
+    left: Any = None
+    p: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class Summation(ModelBase):
-    cond = None
-    enum = None
-    exp = None
-    extra = None
-    id = None
-    range = None
-    sub = None
+    cond: Any = None
+    enum: Any = None
+    exp: Any = None
+    extra: Any = None
+    id: Any = None
+    range: Any = None
+    sub: Any = None
 
 
+@dataclass(eq=False)
 class Optimize(ModelBase):
-    amax = None
-    amin = None
-    cond = None
-    defs = None
-    exp = None
-    init = None
-    max = None
-    min = None
+    amax: Any = None
+    amin: Any = None
+    cond: Any = None
+    defs: Any = None
+    exp: Any = None
+    init: Any = None
+    max: Any = None
+    min: Any = None
 
 
+@dataclass(eq=False)
 class MultiCond(ModelBase):
-    cond = None
-    m_cond = None
+    cond: Any = None
+    m_cond: Any = None
 
 
+@dataclass(eq=False)
 class Integral(ModelBase):
-    d = None
-    exp = None
-    id = None
-    lower = None
-    upper = None
+    d: Any = None
+    exp: Any = None
+    id: Any = None
+    lower: Any = None
+    upper: Any = None
 
 
+@dataclass(eq=False)
 class Domain(ModelBase):
-    lower = None
-    upper = None
+    lower: Any = None
+    upper: Any = None
 
 
+@dataclass(eq=False)
 class Norm(ModelBase):
-    double = None
-    power = None
-    single = None
-    sub = None
-    value = None
+    double: Any = None
+    power: Any = None
+    single: Any = None
+    sub: Any = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class InnerProduct(ModelBase):
-    left = None
-    right = None
-    sub = None
+    left: Any = None
+    right: Any = None
+    sub: Any = None
 
 
+@dataclass(eq=False)
 class FroProduct(ModelBase):
-    left = None
-    right = None
+    left: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class HadamardProduct(ModelBase):
-    left = None
-    right = None
+    left: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class CrossProduct(ModelBase):
-    left = None
-    right = None
+    left: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class KroneckerProduct(ModelBase):
-    left = None
-    right = None
+    left: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class Transpose(ModelBase):
-    f = None
+    f: Any = None
 
 
+@dataclass(eq=False)
 class PseudoInverse(ModelBase):
-    f = None
+    f: Any = None
 
 
+@dataclass(eq=False)
 class Squareroot(ModelBase):
-    f = None
+    f: Any = None
 
 
+@dataclass(eq=False)
 class ExpFunc(ModelBase):
-    param = None
+    param: Any = None
 
 
+@dataclass(eq=False)
 class LogFunc(ModelBase):
-    f = None
-    param = None
-    s = None
+    f: Any = None
+    param: Any = None
+    s: Any = None
 
 
+@dataclass(eq=False)
 class LnFunc(ModelBase):
-    param = None
+    param: Any = None
 
 
+@dataclass(eq=False)
 class SqrtFunc(ModelBase):
-    param = None
+    param: Any = None
 
 
+@dataclass(eq=False)
 class Matrix(ModelBase):
-    value = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class Vector(ModelBase):
-    exp = None
+    exp: Any = None
 
 
+@dataclass(eq=False)
 class Set(ModelBase):
-    exp = None
+    exp: Any = None
 
 
+@dataclass(eq=False)
 class MultiCondExpr(ModelBase):
-    ifs = None
-    other = None
+    ifs: Any = None
+    other: Any = None
 
 
+@dataclass(eq=False)
 class MultiIfs(ModelBase):
-    ifs = None
-    value = None
+    ifs: Any = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class SingleIf(ModelBase):
-    cond = None
-    stat = None
+    cond: Any = None
+    stat: Any = None
 
 
+@dataclass(eq=False)
 class MatrixRows(ModelBase):
-    r = None
-    rs = None
+    r: Any = None
+    rs: Any = None
 
 
+@dataclass(eq=False)
 class MatrixRow(ModelBase):
-    exp = None
-    rc = None
-    value = None
+    exp: Any = None
+    rc: Any = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class MatrixRowCommas(ModelBase):
-    exp = None
-    value = None
+    exp: Any = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class ExpInMatrix(ModelBase):
-    sign = None
-    value = None
+    sign: Any = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class NumMatrix(ModelBase):
-    id1 = None
-    id2 = None
-    left = None
+    id1: Any = None
+    id2: Any = None
+    left: Any = None
 
 
+@dataclass(eq=False)
 class Factor(ModelBase):
-    c = None
-    id0 = None
-    m = None
-    nm = None
-    num = None
-    op = None
-    s = None
-    sub = None
-    v = None
+    c: Any = None
+    id0: Any = None
+    m: Any = None
+    nm: Any = None
+    num: Any = None
+    op: Any = None
+    s: Any = None
+    sub: Any = None
+    v: Any = None
 
 
+@dataclass(eq=False)
 class IdentifierSubscript(ModelBase):
-    left = None
-    right = None
+    left: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class IdentifierAlone(ModelBase):
-    value = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class SizeOp(ModelBase):
-    i = None
+    i: Any = None
 
 
+@dataclass(eq=False)
 class Pi(ModelBase):
     pass
 
 
+@dataclass(eq=False)
 class E(ModelBase):
     pass
 
 
+@dataclass(eq=False)
 class SinFunc(ModelBase):
-    param = None
-    power = None
+    param: Any = None
+    power: Any = None
 
 
+@dataclass(eq=False)
 class AsinFunc(ModelBase):
-    name = None
-    param = None
-    power = None
+    name: Any = None
+    param: Any = None
+    power: Any = None
 
 
+@dataclass(eq=False)
 class CosFunc(ModelBase):
-    param = None
-    power = None
+    param: Any = None
+    power: Any = None
 
 
+@dataclass(eq=False)
 class AcosFunc(ModelBase):
-    name = None
-    param = None
-    power = None
+    name: Any = None
+    param: Any = None
+    power: Any = None
 
 
+@dataclass(eq=False)
 class TanFunc(ModelBase):
-    param = None
-    power = None
+    param: Any = None
+    power: Any = None
 
 
+@dataclass(eq=False)
 class AtanFunc(ModelBase):
-    name = None
-    param = None
-    power = None
+    name: Any = None
+    param: Any = None
+    power: Any = None
 
 
+@dataclass(eq=False)
 class SinhFunc(ModelBase):
-    param = None
-    power = None
+    param: Any = None
+    power: Any = None
 
 
+@dataclass(eq=False)
 class AsinhFunc(ModelBase):
-    name = None
-    param = None
-    power = None
+    name: Any = None
+    param: Any = None
+    power: Any = None
 
 
+@dataclass(eq=False)
 class CoshFunc(ModelBase):
-    param = None
-    power = None
+    param: Any = None
+    power: Any = None
 
 
+@dataclass(eq=False)
 class AcoshFunc(ModelBase):
-    name = None
-    param = None
-    power = None
+    name: Any = None
+    param: Any = None
+    power: Any = None
 
 
+@dataclass(eq=False)
 class TanhFunc(ModelBase):
-    param = None
-    power = None
+    param: Any = None
+    power: Any = None
 
 
+@dataclass(eq=False)
 class AtanhFunc(ModelBase):
-    name = None
-    param = None
-    power = None
+    name: Any = None
+    param: Any = None
+    power: Any = None
 
 
+@dataclass(eq=False)
 class CotFunc(ModelBase):
-    param = None
-    power = None
+    param: Any = None
+    power: Any = None
 
 
+@dataclass(eq=False)
 class SecFunc(ModelBase):
-    param = None
-    power = None
+    param: Any = None
+    power: Any = None
 
 
+@dataclass(eq=False)
 class CscFunc(ModelBase):
-    param = None
-    power = None
+    param: Any = None
+    power: Any = None
 
 
+@dataclass(eq=False)
 class Atan2Func(ModelBase):
-    param = None
-    second = None
-    separator = None
+    param: Any = None
+    second: Any = None
+    separator: Any = None
 
 
+@dataclass(eq=False)
 class TraceFunc(ModelBase):
-    name = None
-    param = None
+    name: Any = None
+    param: Any = None
 
 
+@dataclass(eq=False)
 class DiagFunc(ModelBase):
-    param = None
+    param: Any = None
 
 
+@dataclass(eq=False)
 class VecFunc(ModelBase):
-    param = None
+    param: Any = None
 
 
+@dataclass(eq=False)
 class DetFunc(ModelBase):
-    param = None
+    param: Any = None
 
 
+@dataclass(eq=False)
 class RankFunc(ModelBase):
-    param = None
+    param: Any = None
 
 
+@dataclass(eq=False)
 class NullFunc(ModelBase):
-    param = None
+    param: Any = None
 
 
+@dataclass(eq=False)
 class OrthFunc(ModelBase):
-    param = None
+    param: Any = None
 
 
+@dataclass(eq=False)
 class InvFunc(ModelBase):
-    param = None
+    param: Any = None
 
 
+@dataclass(eq=False)
 class FacesOfEdgeFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class DihedralFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class FaceNormalFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class GetAdjacentVerticesVFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class GetIncidentEdgesVFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class GetIncidentFacesVFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class GetIncidentVerticesEFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class GetIncidentFacesEFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class GetDiamondVerticesEFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class GetDiamondFacesEFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class GetIncidentVerticesFFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class GetIncidentEdgesFFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class GetAdjacentFacesFFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class BuildVertexVectorFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class BuildEdgeVectorFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class BuildFaceVectorFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class StarFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class ClosureFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class LinkFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class BoundaryFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class IsComplexFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class IsPureComplexFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class GetVerticesEFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class GetVerticesFFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class GetEdgesFFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class VerticesFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class EdgesFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class FacesFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class TetsFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class DiamondFunc(ModelBase):
-    name = None
-    params = None
-    separators = None
+    name: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class Import(ModelBase):
-    names = None
-    package = None
-    params = None
-    separators = None
+    names: Any = None
+    package: Any = None
+    params: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class ImportVar(ModelBase):
-    name = None
-    r = None
+    name: Any = None
+    r: Any = None
 
 
+@dataclass(eq=False)
 class WhereConditions(ModelBase):
-    value = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class WhereCondition(ModelBase):
-    desc = None
-    id = None
-    index = None
-    type = None
+    desc: Any = None
+    id: Any = None
+    index: Any = None
+    type: Any = None
 
 
+@dataclass(eq=False)
 class DeWhereCondition(ModelBase):
-    desc = None
-    id = None
-    index = None
-    subset = None
-    type = None
+    desc: Any = None
+    id: Any = None
+    index: Any = None
+    subset: Any = None
+    type: Any = None
 
 
+@dataclass(eq=False)
 class ParamsBlock(ModelBase):
-    annotation = None
-    conds = None
+    annotation: Any = None
+    conds: Any = None
 
 
+@dataclass(eq=False)
 class Statements(ModelBase):
-    stat = None
+    stat: Any = None
 
 
+@dataclass(eq=False)
 class Expression(ModelBase):
-    sign = None
-    value = None
+    sign: Any = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class Assignment(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class GeneralAssignment(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class DeSolver(ModelBase):
-    lexpr = None
-    op = None
-    rexpr = None
-    u = None
+    lexpr: Any = None
+    op: Any = None
+    rexpr: Any = None
+    u: Any = None
 
 
+@dataclass(eq=False)
 class Subexpression(ModelBase):
-    value = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class IfCondition(ModelBase):
-    other = None
-    se = None
-    single = None
+    other: Any = None
+    se: Any = None
+    single: Any = None
 
 
+@dataclass(eq=False)
 class AndCondition(ModelBase):
-    atom = None
-    other = None
-    se = None
+    atom: Any = None
+    other: Any = None
+    se: Any = None
 
 
+@dataclass(eq=False)
 class AtomCondition(ModelBase):
-    cond = None
-    p = None
+    cond: Any = None
+    p: Any = None
 
 
+@dataclass(eq=False)
 class InCondition(ModelBase):
-    left = None
-    right = None
+    left: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class NotInCondition(ModelBase):
-    left = None
-    right = None
+    left: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class NeCondition(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class EqCondition(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class GreaterCondition(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class GreaterEqualCondition(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class LessCondition(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class LessEqualCondition(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class ArithExpression(ModelBase):
-    sign = None
-    value = None
+    sign: Any = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class ArithAdd(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class ArithSubtract(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class ArithMultiply(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class ArithDivide(ModelBase):
-    left = None
-    op = None
-    right = None
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class ArithFactor(ModelBase):
-    id0 = None
-    num = None
-    size = None
-    sub = None
+    id0: Any = None
+    num: Any = None
+    size: Any = None
+    sub: Any = None
 
 
+@dataclass(eq=False)
 class ArithSubexpression(ModelBase):
-    value = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class MatrixType(ModelBase):
-    attr = None
-    id1 = None
-    id2 = None
-    type = None
+    attr: Any = None
+    id1: Any = None
+    id2: Any = None
+    type: Any = None
 
 
+@dataclass(eq=False)
 class VectorType(ModelBase):
-    id1 = None
-    type = None
+    id1: Any = None
+    type: Any = None
 
 
+@dataclass(eq=False)
 class ScalarType(ModelBase):
-    z = None
+    z: Any = None
 
 
+@dataclass(eq=False)
 class SetType(ModelBase):
-    cnt = None
-    homogeneous_types = None
-    sub_types = None
-    type = None
-    type1 = None
-    type2 = None
+    cnt: Any = None
+    homogeneous_types: Any = None
+    sub_types: Any = None
+    type: Any = None
+    type1: Any = None
+    type2: Any = None
 
 
+@dataclass(eq=False)
 class TupleType(ModelBase):
-    sub_types = None
+    sub_types: Any = None
 
 
+@dataclass(eq=False)
 class FunctionType(ModelBase):
-    empty = None
-    params = None
-    ret = None
-    ret_separators = None
-    separators = None
+    empty: Any = None
+    params: Any = None
+    ret: Any = None
+    ret_separators: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class MappingType(ModelBase):
-    empty = None
-    params = None
-    ret = None
-    ret_separators = None
-    ret_type = None
-    separators = None
+    empty: Any = None
+    params: Any = None
+    ret: Any = None
+    ret_separators: Any = None
+    ret_type: Any = None
+    separators: Any = None
 
 
+@dataclass(eq=False)
 class Integer(ModelBase):
-    value = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class SupInteger(ModelBase):
-    value = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class SubInteger(ModelBase):
-    value = None
+    value: Any = None
 
 
+@dataclass(eq=False)
 class Union(ModelBase):
-    left = None
-    right = None
+    left: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class Intersection(ModelBase):
-    left = None
-    right = None
+    left: Any = None
+    right: Any = None
 
 
+@dataclass(eq=False)
 class Function(ModelBase):
-    name = None
-    p = None
-    params = None
-    separators = None
-    subs = None
+    name: Any = None
+    p: Any = None
+    params: Any = None
+    separators: Any = None
+    subs: Any = None
 
 
+@dataclass(eq=False)
 class LocalFunc(ModelBase):
-    def_p = None
-    def_s = None
-    defs = None
-    expr = None
-    extra = None
-    name = None
-    op = None
-    params = None
-    separators = None
-    subs = None
+    def_p: Any = None
+    def_s: Any = None
+    defs: Any = None
+    expr: Any = None
+    extra: Any = None
+    name: Any = None
+    op: Any = None
+    params: Any = None
+    separators: Any = None
+    subs: Any = None
