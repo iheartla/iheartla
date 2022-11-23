@@ -58,9 +58,9 @@ You can also run as a command-line compiler:
 
 You can find releases on the GitHub [release page](https://github.com/iheartla/iheartla/releases). The following instructions are for running from source.
 
-I❤️LA depends on Python 3.x and several modules. You can install the modules via `pip`:
+I❤️LA depends on Python 3.x (>= Python 3.10) and several modules. You can install the modules via `pip`:
 
-    pip3 install tatsu==4.4 regex wxpython PyMuPDF==1.18.7 sympy
+    pip3 install tatsu==5.7.3 regex wxpython PyMuPDF==1.18.7 sympy
     ## For development, also install:
     pip3 install graphviz cppyy numpy scipy pyinstaller
 
@@ -81,6 +81,7 @@ To update an already created environment if the `environment.yml` file changes o
 
 If you are developing I❤️LA, the test suite needs a working C++ compiler and, optionally, the Graphviz graph visualization software (`brew install graphviz` if you're not using conda).
 
+In wxPython 4.2.0, the pdf viewer has a bug, and it won't work. You need to manually change `line 358/360` to make sure `self.Ypagepixels` is assigned as `int` in the source code (`python3.10/site-packages/wx/lib/pdfviewer/viewer.py`)
 ### Output Dependencies
 
 To use the code output for the various backends, you will need:
