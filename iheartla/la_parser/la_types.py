@@ -32,7 +32,7 @@ class SetTypeEnum(Enum):
     TET = 4
 
 class LaVarType(object):
-    def __init__(self, var_type, desc=None, element_type=None, symbol=None, index_type=False, dynamic=DynamicTypeEnum.DYN_INVALID):
+    def __init__(self, var_type=VarTypeEnum.INVALID, desc=None, element_type=None, symbol=None, index_type=False, dynamic=DynamicTypeEnum.DYN_INVALID):
         super().__init__()
         self.var_type = var_type if var_type else VarTypeEnum.INVALID
         self.desc = desc   # only parameters need description
@@ -194,6 +194,12 @@ class ScalarType(LaVarType):
     def get_raw_text(self):
         return 'ℤ' if self.is_int else 'ℝ'
 
+class IntType(ScalarType):
+    def __init__(self):
+        ScalarType.__init__(self, is_int=True)
+
+    def get_raw_text(self):
+        return 'ℤ'
 
 class SequenceType(LaVarType):
     def __init__(self, size=0, desc=None, element_type=None, symbol=None, dynamic=False):
@@ -666,3 +672,6 @@ def get_derived_type(op, left_type, right_type):
         # assert left_type.var_type == right_type.var_type
         ret_type = copy.deepcopy(left_type)
     return ret_type
+
+def make_function_type(params=None, ret=None):
+    return FunctionType(params=params, ret=ret)

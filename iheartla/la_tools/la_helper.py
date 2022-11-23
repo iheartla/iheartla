@@ -22,37 +22,6 @@ start_time = None
 INPUT_HISTORY = "input_history"
 OUTPUT_CODE = "output_code"
 IMG_CODE = "."
-TRIANGLE_MESH = 'triangle_mesh'
-EDGES = "nonboundary_edges"
-VI = 'Vi'
-EI = 'Ei'
-FI = 'Fi'
-NEI = 'nEi'
-PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', 'arccos', 'tan', 'atan', 'arctan', 'atan2',
-                                  'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh',
-                                  'cot', 'sec', 'csc'],
-                 'linearalgebra': ['trace', 'tr', 'diag', 'vec', 'det', 'rank', 'null', 'orth', 'inv'],
-                 TRIANGLE_MESH: ['faces_of_edge', 'face_normal', 'dihedral',
-                                 'get_adjacent_vertices_v', 'get_incident_edges_v', 'get_incident_faces_v',
-                                 'get_incident_vertices_e', 'get_incident_faces_e', 'get_diamond_vertices_e', 'get_diamond_faces_e',
-                                 'get_incident_vertices_f', 'get_incident_edges_f', 'get_adjacent_faces_f',
-                                 'build_vertex_vector', 'build_edge_vector', 'build_face_vector',
-                                 'get_vertices_e', 'get_edges_f', 'get_vertices_f',
-                                 'star', 'closure', 'link', 'boundary', 'is_complex', 'is_pure_complex',
-                                 'vertices', 'edges', 'faces', 'tets', 'diamond']}
-PACKAGES_SYM_DICT = {'trigonometry': ['e'],
-                 TRIANGLE_MESH: [EDGES, VI, EI, FI, NEI]}
-def merge_dict(dict1, dict2):
-    # key:[value,]
-    res = copy.deepcopy(dict1)
-    for key, value in dict2.items():
-        if key in res:
-            res[key] += value
-        else:
-            res[key] = value
-    return res
-PACKAGES_DICT = merge_dict(PACKAGES_FUNC_DICT, PACKAGES_SYM_DICT)
-CLASS_PACKAGES = [TRIANGLE_MESH]
 class ParserTypeEnum(Flag):
     INVALID = 0
     # DEFAULT = 15

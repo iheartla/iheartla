@@ -5,6 +5,7 @@ from .la_types import *
 from ..la_tools.la_logger import *
 from ..la_tools.la_msg import *
 from ..la_tools.la_helper import *
+from ..la_tools.la_package import *
 import regex as re
 from ..la_tools.la_helper import filter_subscript
 from .light_walker import SolverParamWalker
@@ -1397,18 +1398,9 @@ class TypeWalker(NodeWalker):
                                                            "Function {} not exist".format(name)))
             if not self.pre_walk:
                 self.add_builtin_module_data(pkg_name, params_list, name_list, r_dict)
-                if pkg_name == TRIANGLE_MESH:
-                    if EDGES in name_list:
-                        self.symtable[r_dict[EDGES]] = MatrixType(rows=self.generate_var_name("edim"), cols=2, element_type=ScalarType(is_int=True, index_type=True))
-                    if VI in name_list:
-                        self.symtable[r_dict[VI]] = SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
-                    if FI in name_list:
-                        self.symtable[r_dict[FI]] = SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
-                    if EI in name_list:
-                        self.symtable[r_dict[EI]] = SetType(size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)])
-                    if NEI in name_list:
-                        self.symtable[r_dict[NEI]] = SetType(size=1, int_list=[True],
-                                                            type_list=[ScalarType(is_int=True, index_type=True)])
+            if pkg_name == TRIANGLE_MESH:
+                for name in name_list:
+                    self.symtable[r_dict[name]] = get_sym_type_from_pkg(name, pkg_name)
         else:
             module = package_info.ir
             self.import_module_list.append(DependenceData(module.get_name(), params_list, name_list))
