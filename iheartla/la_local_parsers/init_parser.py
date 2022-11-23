@@ -1309,35 +1309,29 @@ class grammarinitParser(Parser):
         def block23():
 
             def block24():
-
-                def block25():
-                    self._hspace_()
-                self._closure(block25)
-
-                def block26():
-                    self._separator_()
-                self._closure(block26)
-
-                def block27():
-                    self._hspace_()
-                self._closure(block27)
+                self._hspace_()
             self._closure(block24)
+
+            def block25():
+                self._separator_()
+            self._closure(block25)
+
+            def block26():
+                self._hspace_()
+            self._closure(block26)
             self._SUBJECT_TO_()
 
+            def block27():
+                self._hspace_()
+            self._closure(block27)
+
             def block28():
-
-                def block29():
-                    self._hspace_()
-                self._closure(block29)
-
-                def block30():
-                    self._separator_()
-                self._closure(block30)
-
-                def block31():
-                    self._hspace_()
-                self._closure(block31)
+                self._separator_()
             self._closure(block28)
+
+            def block29():
+                self._hspace_()
+            self._closure(block29)
             self._multi_cond_()
             self.name_last_node('cond')
         self._closure(block23)

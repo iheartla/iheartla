@@ -99,7 +99,7 @@ optimize_operator::Optimize
     {'with' {hspace} 'initial' {hspace} init+:statement {{hspace} ';' {hspace} init+:statement} {hspace} '\n'}
     (min:MIN|max:MAX|amin:ARGMIN|amax:ARGMAX) '_(' {hspace} defs+:where_condition_terse {{hspace} ',' {hspace} defs+:where_condition_terse} {hspace}
     ')' {hspace} exp:expression 
-    {{{hspace} {separator} {hspace}} SUBJECT_TO {{hspace} {separator} {hspace}} cond:multi_cond}
+    {{hspace} {separator} {hspace} SUBJECT_TO {hspace} {separator} {hspace} cond:multi_cond}
     ;
 
 multi_cond::MultiCond
