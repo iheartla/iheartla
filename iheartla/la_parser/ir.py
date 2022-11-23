@@ -1,4 +1,5 @@
 from .la_types import *
+from ..la_tools.la_package import *
 import weakref
 
 
@@ -1290,42 +1291,6 @@ class MathFuncType(IntEnum):
     MathFuncNull = 27
     MathFuncOrth = 28
     MathFuncInv = 29
-
-class GPType(IntEnum):
-    # Geometry processing
-    Invalid = -1
-    FacesOfEdge = 0
-    Dihedral = 1
-    FaceNormal = 2
-    AdjacentVerticesV = 3
-    IncidentEdgesV = 4
-    IncidentFacesV = 5
-    IncidentVerticesE = 6
-    IncidentFacesE = 7
-    DiamondVerticesE = 8
-    IncidentVerticesF = 9
-    IncidentEdgesF = 10
-    AdjacentFacesF = 11
-    BuildVertexVector = 12
-    BuildEdgeVector = 13
-    BuildFaceVector = 14
-    GetVerticesE = 15
-    GetVerticesF = 16
-    GetEdgesF = 17
-    Vertices = 18
-    Edges = 19
-    Faces = 20
-    Tets = 21
-    Diamond = 22
-    DiamondFacesE = 23
-    # dec
-    Star = 100
-    Closure = 101
-    Link = 102
-    Boundary = 103
-    IsComplex = 104
-    IsPureComplex = 105
-
 
 
 class MathFuncNode(ExprNode):

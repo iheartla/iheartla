@@ -1,5 +1,39 @@
 import copy
 from ..la_parser.la_types import *
+class GPType(IntEnum):
+    # Geometry processing
+    Invalid = -1
+    FacesOfEdge = 0
+    Dihedral = 1
+    FaceNormal = 2
+    AdjacentVerticesV = 3
+    IncidentEdgesV = 4
+    IncidentFacesV = 5
+    IncidentVerticesE = 6
+    IncidentFacesE = 7
+    DiamondVerticesE = 8
+    IncidentVerticesF = 9
+    IncidentEdgesF = 10
+    AdjacentFacesF = 11
+    BuildVertexVector = 12
+    BuildEdgeVector = 13
+    BuildFaceVector = 14
+    GetVerticesE = 15
+    GetVerticesF = 16
+    GetEdgesF = 17
+    Vertices = 18
+    Edges = 19
+    Faces = 20
+    Tets = 21
+    Diamond = 22
+    DiamondFacesE = 23
+    # dec
+    Star = 100
+    Closure = 101
+    Link = 102
+    Boundary = 103
+    IsComplex = 104
+    IsPureComplex = 105
 
 TRIANGLE_MESH = 'triangle_mesh'
 # triangle_mesh function
@@ -52,6 +86,41 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                  VERTICES, EDGES, FACES, TETS, DIAMOND]}
 PACKAGES_SYM_DICT = {'trigonometry': ['e'],
                  TRIANGLE_MESH: [EDGES, VI, EI, FI, NEI]}
+TRIANGLE_MESH_FUNC_MAPPING = {
+FACES_OF_EDGE: GPType.FacesOfEdge,
+FACE_NORMAL: GPType.FaceNormal,
+DIHEDRAL: GPType.Dihedral,
+GET_ADJACENT_VERTICES_V: GPType.AdjacentVerticesV,  #
+GET_INCIDENT_EDGES_V: GPType.IncidentEdgesV,  #
+GET_INCIDENT_FACES_V: GPType.IncidentFacesV,  #
+#
+GET_INCIDENT_VERTICES_E: GPType.IncidentVerticesE,
+GET_INCIDENT_FACES_E: GPType.IncidentFacesE,
+GET_DIAMOND_VERTICES_E: GPType.DiamondVerticesE,
+GET_DIAMOND_FACES_E: GPType.DiamondFacesE,
+#
+GET_INCIDENT_VERTICES_F: GPType.IncidentVerticesF,
+GET_INCIDENT_EDGES_F: GPType.IncidentEdgesF,
+GET_ADJACENT_FACES_F: GPType.AdjacentFacesF,
+#
+BUILD_VERTEX_VECTOR: GPType.BuildVertexVector,
+BUILD_EDGE_VECTOR: GPType.BuildEdgeVector,
+BUILD_FACE_VECTOR: GPType.BuildFaceVector,
+GET_VERTICES_E: GPType.GetVerticesE,
+GET_EDGES_F: GPType.GetEdgesF,
+GET_VERTICES_F: GPType.GetVerticesF,
+STAR: GPType.Star,
+CLOSURE: GPType.Closure,
+LINK: GPType.Link,
+BOUNDARY: GPType.Boundary,
+IS_COMPLEX: GPType.IsComplex,
+IS_PURE_COMPLEX: GPType.IsPureComplex,
+VERTICES: GPType.Vertices,
+EDGES: GPType.Edges,
+FACES: GPType.Faces,
+TETS: GPType.Tets,
+DIAMOND:GPType.Diamond,
+}
 TRIANGLE_MESH_SYM_TYPE = {
 # functions
 FACES_OF_EDGE: make_function_type([IntType()], FaceSetType()),

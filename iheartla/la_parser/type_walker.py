@@ -2612,6 +2612,13 @@ class TypeWalker(NodeWalker):
             node_info = NodeInfo(ret_type, symbols=symbols)
             ir_node.la_type = ret_type
             node_info.ir = ir_node
+            # Builtin function call
+            if func_name in TRIANGLE_MESH_FUNC_MAPPING:
+                tri_node = GPFuncNode(param_list, TRIANGLE_MESH_FUNC_MAPPING[func_name], func_name)
+                node_info = NodeInfo(ret_type, symbols=symbols)
+                tri_node.la_type = ret_type
+                node_info.ir = tri_node
+                return node_info
             return node_info
         else:
             # not in symtable now
