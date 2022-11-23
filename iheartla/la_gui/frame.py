@@ -119,20 +119,20 @@ class MainWindow(wx.Frame):
         self.mgr = aui.AuiManager(self)
         self.mgr.SetManagedWindow(self)
         self.aui_info1 = aui.framemanager.AuiPaneInfo().CaptionVisible(False).PaneBorder(False).CloseButton(False).Left()
-        self.aui_info1.BestSize(wx.Size(self.GetSize().width/3, self.GetSize().height))
+        self.aui_info1.BestSize(wx.Size(int(self.GetSize().width/3), self.GetSize().height))
         self.mgr.AddPane(self.control, self.aui_info1)
 
         self.aui_info2 = aui.framemanager.AuiPaneInfo().CaptionVisible(False).PaneBorder(False).CloseButton(False).Center()
-        self.aui_info2.BestSize(wx.Size(self.GetSize().width/3, self.GetSize().height))
+        self.aui_info2.BestSize(wx.Size(int(self.GetSize().width/3), self.GetSize().height))
         self.mgr.AddPane(self.midPanel, self.aui_info2)
 
         self.aui_info3 = aui.framemanager.AuiPaneInfo().CaptionVisible(False).PaneBorder(False).CloseButton(False).Right()
-        self.aui_info3.BestSize(wx.Size(self.GetSize().width/3, self.GetSize().height))
+        self.aui_info3.BestSize(wx.Size(int(self.GetSize().width/3), self.GetSize().height))
         self.mgr.AddPane(self.latexPanel, self.aui_info3)
         #
         self.aui_info4 = aui.framemanager.AuiPaneInfo().CaptionVisible(False).PaneBorder(False).CloseButton(
             False).Bottom()
-        self.aui_info4.BestSize(wx.Size(self.GetSize().width, self.GetSize().height/6))
+        self.aui_info4.BestSize(wx.Size(self.GetSize().width, int(self.GetSize().height/6)))
         self.mgr.AddPane(self.msgPanel, self.aui_info4)
 
         self.mgr.Update()
