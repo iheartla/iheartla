@@ -240,7 +240,8 @@ class ParserFileManager(object):
         self.check_parser_cnt()
         code = tatsu.to_python_sourcecode(grammar, name="grammar{}".format(hash_value), filename=os.path.join('la_grammar', 'here'))
         code_model = tatsu.to_python_model(grammar, name="grammar{}".format(hash_value), filename=os.path.join('la_grammar', 'here'))
-        code_model = code_model.replace("from __future__ import print_function, division, absolute_import, unicode_literals", "")
+        # code_model = code_model.replace("from __future__ import print_function, division, absolute_import, unicode_literals", "")
+        code_model = code_model.replace("from __future__ import annotations", "")
         code += code_model
         save_to_file(code, os.path.join(self.cache_dir, "{}_{}_{}.py".format(self.prefix, hash_value, datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))))
 
@@ -420,7 +421,7 @@ class ParserFileManager(object):
                 def_parser = read_from_file(la_local_parsers / f)
                 def_parser = def_parser.replace(self.default_hash_value, 'default')
                 # extra elements
-                original_class = r"""super(grammardefaultParser, self).__init__(
+                original_class = r"""super().__init__(
             whitespace=whitespace,
             nameguard=nameguard,
             comments_re=comments_re,
@@ -430,10 +431,10 @@ class ParserFileManager(object):
             parseinfo=parseinfo,
             keywords=keywords,
             namechars=namechars,
-            buffer_class=buffer_class,
+            tokenizercls=tokenizercls,
             **kwargs
         )"""
-                new_class = r"""super(grammardefaultParser, self).__init__(
+                new_class = r"""super().__init__(
             whitespace=whitespace,
             nameguard=nameguard,
             comments_re=comments_re,
@@ -443,7 +444,7 @@ class ParserFileManager(object):
             parseinfo=parseinfo,
             keywords=keywords,
             namechars=namechars,
-            buffer_class=buffer_class,
+            tokenizercls=tokenizercls,
             **kwargs
         )
         self.new_id_list = []
@@ -479,15 +480,33 @@ class ParserFileManager(object):
                             self._pattern('[^`]*')
                             self.name_last_node('id')
                             self._token('`')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                        )
             with self._option():
                 with self._group():
                     self._KEYWORDS_()
                     with self._group():
                         self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                 self.name_last_node('value')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                'min <MIN> max <MAX> argmin <ARGMIN>'
+                'argmax <ARGMAX> int <INT> if <IF>'
+                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                '<SUBSET> as <AS> # <POUND>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+            )
+        self._define(
             ['id', 'value'],
             []
         )"""
@@ -524,7 +543,10 @@ class ParserFileManager(object):
                                 self._pattern('[^`]*')
                                 self.name_last_node('id')
                                 self._token('`')
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                            )
                 with self._option():
                     with self._group():
                         with self._choice():
@@ -537,7 +559,22 @@ class ParserFileManager(object):
                         with self._group():
                             self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                    'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                    'min <MIN> max <MAX> argmin <ARGMIN>'
+                    'argmax <ARGMAX> int <INT> if <IF>'
+                    'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                    'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                    'subject to <SUBJECT_TO> from <FROM> π'
+                    "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
+                    '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                    '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                    "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                    '<SUBSET> as <AS> # <POUND>'
+                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                )
             self.ast._define(
                 ['const', 'id', 'value'],
                 []
@@ -559,15 +596,33 @@ class ParserFileManager(object):
                                 self._pattern('[^`]*')
                                 self.name_last_node('id')
                                 self._token('`')
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                            )
                 with self._option():
                     with self._group():
                         self._KEYWORDS_()
                         with self._group():
                             self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
-                self._error('no available options')
-            self.ast._define(
+                self._error(
+                    'expecting one of: '
+                    "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                    'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                    'min <MIN> max <MAX> argmin <ARGMIN>'
+                    'argmax <ARGMAX> int <INT> if <IF>'
+                    'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                    'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                    'subject to <SUBJECT_TO> from <FROM> π'
+                    "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
+                    '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                    '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                    "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                    '<SUBSET> as <AS> # <POUND>'
+                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                )
+            self._define(
                 ['id', 'value'],
                 []
             )"""

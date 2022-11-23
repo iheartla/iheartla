@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 # CAVEAT UTILITOR
 #
@@ -10,15 +9,14 @@
 # Any changes you make to it will be overwritten the next time
 # the file is generated.
 
-
-from __future__ import print_function, division, absolute_import, unicode_literals
+from __future__ import annotations
 
 import sys
 
 from tatsu.buffering import Buffer
 from tatsu.parsing import Parser
-from tatsu.parsing import tatsumasu, leftrec, nomemo
-from tatsu.parsing import leftrec, nomemo  # noqa
+from tatsu.parsing import tatsumasu
+from tatsu.parsing import leftrec, nomemo, isname # noqa
 from tatsu.util import re, generic_main  # noqa
 
 
@@ -37,7 +35,7 @@ class grammardefaultBuffer(Buffer):
         namechars='',
         **kwargs
     ):
-        super(grammardefaultBuffer, self).__init__(
+        super().__init__(
             text,
             whitespace=whitespace,
             nameguard=nameguard,
@@ -61,12 +59,12 @@ class grammardefaultParser(Parser):
         parseinfo=True,
         keywords=None,
         namechars='',
-        buffer_class=grammardefaultBuffer,
+        tokenizercls=grammardefaultBuffer,
         **kwargs
     ):
         if keywords is None:
             keywords = KEYWORDS
-        super(grammardefaultParser, self).__init__(
+        super().__init__(
             whitespace=whitespace,
             nameguard=nameguard,
             comments_re=comments_re,
@@ -76,7 +74,7 @@ class grammardefaultParser(Parser):
             parseinfo=parseinfo,
             keywords=keywords,
             namechars=namechars,
-            buffer_class=buffer_class,
+            tokenizercls=tokenizercls,
             **kwargs
         )
         self.new_id_list = []
@@ -110,7 +108,7 @@ class grammardefaultParser(Parser):
             self._blank_()
         self._closure(block5)
         self._check_eof()
-        self.ast._define(
+        self._define(
             [],
             ['vblock']
         )
@@ -205,7 +203,10 @@ class grammardefaultParser(Parser):
                 self._pattern('sum')
             with self._option():
                 self._pattern('∑')
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                'sum ∑'
+            )
 
     @tatsumasu()
     def _MIN_(self):  # noqa
@@ -420,7 +421,10 @@ class grammardefaultParser(Parser):
                 self._pattern('s.t.')
             with self._option():
                 self._pattern('subject to')
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                's.t. subject to'
+            )
 
     @tatsumasu()
     def _FROM_(self):  # noqa
@@ -475,7 +479,10 @@ class grammardefaultParser(Parser):
                 self._pattern('Solve')
             with self._option():
                 self._pattern('SOLVE')
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                'solve Solve SOLVE'
+            )
 
     @tatsumasu()
     def _SUBSET_(self):  # noqa
@@ -562,7 +569,20 @@ class grammardefaultParser(Parser):
                 self._AS_()
             with self._option():
                 self._POUND_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                'min <MIN> max <MAX> argmin <ARGMIN>'
+                'argmax <ARGMAX> int <INT> if <IF>'
+                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                '<SUBSET> as <AS> # <POUND>'
+            )
 
     @tatsumasu('Exponent')
     def _exponent_(self):  # noqa
@@ -573,7 +593,7 @@ class grammardefaultParser(Parser):
             self._digit_()
         self._positive_closure(block2)
         self.name_last_node('pow')
-        self.ast._define(
+        self._define(
             ['exp', 'pow'],
             []
         )
@@ -602,8 +622,11 @@ class grammardefaultParser(Parser):
                     self._positive_closure(block5)
                     self.name_last_node('d')
                     self._token('.')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "'.' \\d <digit>"
+            )
+        self._define(
             ['d', 'f'],
             []
         )
@@ -615,7 +638,7 @@ class grammardefaultParser(Parser):
         with self._optional():
             self._exponent_()
         self.name_last_node('e')
-        self.ast._define(
+        self._define(
             ['e', 'm'],
             []
         )
@@ -631,8 +654,12 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._floating_point_()
                 self.name_last_node('f')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "<digit> <integer> '.' <mantissa> \\d"
+                '<floating_point>'
+            )
+        self._define(
             ['exp', 'f', 'i'],
             []
         )
@@ -641,7 +668,7 @@ class grammardefaultParser(Parser):
     def _fraction_(self):  # noqa
         self._pattern('[\\u00BC-\\u00BE\\u2150-\\u215E]')
         self.name_last_node('value')
-        self.ast._define(
+        self._define(
             ['value'],
             []
         )
@@ -655,7 +682,12 @@ class grammardefaultParser(Parser):
                 self._fraction_()
             with self._option():
                 self._integer_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                "<integer> '.' <digit> <mantissa>"
+                '<floating_point> \\d <double>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+            )
 
     @tatsumasu()
     @nomemo
@@ -693,7 +725,26 @@ class grammardefaultParser(Parser):
                 self._builtin_operators_()
             with self._option():
                 self._pseudoinverse_operator_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                "<factor> <solver_operator> '||' '‖' '|'"
+                "<norm_operator> <power_operator> '<' '⟨'"
+                '<inner_product_operator>'
+                '<frobenius_product_operator>'
+                '<hadamard_product_operator>'
+                '<cross_product_operator>'
+                '<kronecker_product_operator>'
+                '<union_operator> <intersect_operator>'
+                '<set_operators> sum ∑ <SUM>'
+                "<sum_operator> int <INT> '∫'"
+                '<integral_operator> <trans_operator> √'
+                "<sqrt_operator> '!!!' <func_id>"
+                '<function_operator> <exp_func>'
+                '<log_func> <ln_func> <sqrt_func>'
+                '<predefined_built_operators>'
+                '<builtin_operators>'
+                '<pseudoinverse_operator>'
+            )
 
     @tatsumasu('Add')
     @nomemo
@@ -712,7 +763,7 @@ class grammardefaultParser(Parser):
         self._closure(block3)
         self._term_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -734,7 +785,7 @@ class grammardefaultParser(Parser):
         self._closure(block3)
         self._term_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -754,7 +805,10 @@ class grammardefaultParser(Parser):
                     self._token('+-')
                 with self._option():
                     self._token('±')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'+-' '±'"
+                )
         self.name_last_node('op')
 
         def block4():
@@ -762,7 +816,7 @@ class grammardefaultParser(Parser):
         self._closure(block4)
         self._term_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -795,8 +849,12 @@ class grammardefaultParser(Parser):
                 self._closure(block6)
                 self._factor_()
                 self.name_last_node('right')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<term> <multiplication> <division>'
+                '<factor>'
+            )
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -816,7 +874,10 @@ class grammardefaultParser(Parser):
                     self._token('/')
                 with self._option():
                     self._token('÷')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'/' '÷'"
+                )
         self.name_last_node('op')
 
         def block4():
@@ -824,7 +885,7 @@ class grammardefaultParser(Parser):
         self._closure(block4)
         self._factor_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -847,9 +908,15 @@ class grammardefaultParser(Parser):
                                         self._identifier_()
                                     with self._option():
                                         self._number_()
-                                    self._error('no available options')
+                                    self._error(
+                                        'expecting one of: '
+                                        '<identifier> <number>'
+                                    )
                             self.name_last_node('uorder')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "<sup_integer> '^'"
+                        )
                 self._factor_()
                 self.name_last_node('upper')
                 self._token('/')
@@ -870,9 +937,15 @@ class grammardefaultParser(Parser):
                                         self._identifier_()
                                     with self._option():
                                         self._number_()
-                                    self._error('no available options')
+                                    self._error(
+                                        'expecting one of: '
+                                        '<identifier> <number>'
+                                    )
                             self.name_last_node('lorder')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "<sup_integer> '^'"
+                        )
             with self._option():
                 self._DERIVATIVE_()
                 with self._optional():
@@ -888,9 +961,15 @@ class grammardefaultParser(Parser):
                                         self._identifier_()
                                     with self._option():
                                         self._number_()
-                                    self._error('no available options')
+                                    self._error(
+                                        'expecting one of: '
+                                        '<identifier> <number>'
+                                    )
                             self.name_last_node('uorder')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "<sup_integer> '^'"
+                        )
                 self._token('/')
                 self.name_last_node('s')
                 self._DERIVATIVE_()
@@ -909,17 +988,26 @@ class grammardefaultParser(Parser):
                                         self._identifier_()
                                     with self._option():
                                         self._number_()
-                                    self._error('no available options')
+                                    self._error(
+                                        'expecting one of: '
+                                        '<identifier> <number>'
+                                    )
                             self.name_last_node('lorder')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "<sup_integer> '^'"
+                        )
 
                 def block21():
                     self._hspace_()
                 self._positive_closure(block21)
                 self._factor_()
                 self.name_last_node('upper')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '𝕕 <DERIVATIVE>'
+            )
+        self._define(
             ['f', 'lorder', 'lower', 's', 'uorder', 'upper'],
             []
         )
@@ -942,9 +1030,15 @@ class grammardefaultParser(Parser):
                                         self._identifier_()
                                     with self._option():
                                         self._number_()
-                                    self._error('no available options')
+                                    self._error(
+                                        'expecting one of: '
+                                        '<identifier> <number>'
+                                    )
                             self.name_last_node('uorder')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "<sup_integer> '^'"
+                        )
                 self._factor_()
                 self.name_last_node('upper')
                 self._token('/')
@@ -967,9 +1061,15 @@ class grammardefaultParser(Parser):
                                             self._identifier_()
                                         with self._option():
                                             self._number_()
-                                        self._error('no available options')
+                                        self._error(
+                                            'expecting one of: '
+                                            '<identifier> <number>'
+                                        )
                                 self.add_last_node_to_name('lorder')
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                "<sup_integer> '^'"
+                            )
                 self._positive_closure(block7)
                 self.name_last_node('l')
             with self._option():
@@ -987,9 +1087,15 @@ class grammardefaultParser(Parser):
                                         self._identifier_()
                                     with self._option():
                                         self._number_()
-                                    self._error('no available options')
+                                    self._error(
+                                        'expecting one of: '
+                                        '<identifier> <number>'
+                                    )
                             self.name_last_node('uorder')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "<sup_integer> '^'"
+                        )
                 self._token('/')
                 self.name_last_node('s')
 
@@ -1010,9 +1116,15 @@ class grammardefaultParser(Parser):
                                             self._identifier_()
                                         with self._option():
                                             self._number_()
-                                        self._error('no available options')
+                                        self._error(
+                                            'expecting one of: '
+                                            '<identifier> <number>'
+                                        )
                                 self.add_last_node_to_name('lorder')
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                "<sup_integer> '^'"
+                            )
                 self._positive_closure(block19)
                 self.name_last_node('l')
 
@@ -1021,8 +1133,11 @@ class grammardefaultParser(Parser):
                 self._positive_closure(block25)
                 self._factor_()
                 self.name_last_node('upper')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '∂ <PARTIAL>'
+            )
+        self._define(
             ['f', 'l', 's', 'uorder', 'upper'],
             ['lorder', 'lower']
         )
@@ -1042,7 +1157,7 @@ class grammardefaultParser(Parser):
         self._closure(block2)
         self._factor_()
         self.name_last_node('value')
-        self.ast._define(
+        self._define(
             ['name', 'value'],
             []
         )
@@ -1057,7 +1172,7 @@ class grammardefaultParser(Parser):
         self._closure(block1)
         self._factor_()
         self.name_last_node('value')
-        self.ast._define(
+        self._define(
             ['name', 'value'],
             []
         )
@@ -1072,7 +1187,7 @@ class grammardefaultParser(Parser):
         self._closure(block1)
         self._factor_()
         self.name_last_node('value')
-        self.ast._define(
+        self._define(
             ['name', 'value'],
             []
         )
@@ -1095,7 +1210,10 @@ class grammardefaultParser(Parser):
                             self._token('^(-1)')
                         with self._option():
                             self._token('⁻¹')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "'^(-1)' '⁻¹'"
+                        )
                 self.name_last_node('r')
             with self._option():
                 self._factor_()
@@ -1108,8 +1226,28 @@ class grammardefaultParser(Parser):
                 self.name_last_node('base')
                 self._sup_integer_()
                 self.name_last_node('power')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<solver_operator> <norm_operator>'
+                '<power_operator>'
+                '<inner_product_operator>'
+                '<frobenius_product_operator>'
+                '<hadamard_product_operator>'
+                '<cross_product_operator>'
+                '<kronecker_product_operator>'
+                '<set_operators> <sum_operator>'
+                '<integral_operator> <trans_operator>'
+                '<sqrt_operator> <function_operator>'
+                '<builtin_operators>'
+                '<pseudoinverse_operator> <operations>'
+                "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
+                '<number_matrix> <identifier> <integer>'
+                "'.' <digit> <mantissa> <floating_point>"
+                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
+                "<fraction> <number> '[' '⎡' <matrix> '('"
+                "<vector> '{' <set> <constant> <factor>"
+            )
+        self._define(
             ['base', 'power', 'r', 't'],
             []
         )
@@ -1145,7 +1283,10 @@ class grammardefaultParser(Parser):
                             self._token('^(-1)')
                         with self._option():
                             self._token('⁻¹')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "'^(-1)' '⁻¹'"
+                        )
                 self.name_last_node('p')
 
                 def block8():
@@ -1153,8 +1294,28 @@ class grammardefaultParser(Parser):
                 self._closure(block8)
                 self._factor_()
                 self.name_last_node('right')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<solver_operator> <norm_operator>'
+                '<power_operator>'
+                '<inner_product_operator>'
+                '<frobenius_product_operator>'
+                '<hadamard_product_operator>'
+                '<cross_product_operator>'
+                '<kronecker_product_operator>'
+                '<set_operators> <sum_operator>'
+                '<integral_operator> <trans_operator>'
+                '<sqrt_operator> <function_operator>'
+                '<builtin_operators>'
+                '<pseudoinverse_operator> <operations>'
+                "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
+                '<number_matrix> <identifier> <integer>'
+                "'.' <digit> <mantissa> <floating_point>"
+                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
+                "<fraction> <number> '[' '⎡' <matrix> '('"
+                "<vector> '{' <set> <constant> <factor>"
+            )
+        self._define(
             ['left', 'p', 'right'],
             []
         )
@@ -1261,7 +1422,11 @@ class grammardefaultParser(Parser):
                                 self._builtin_operators_()
                             with self._option():
                                 self._identifier_alone_()
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                '<function_operator> <builtin_operators>'
+                                '<identifier_alone>'
+                            )
                     self.name_last_node('range')
 
                     def block25():
@@ -1274,7 +1439,10 @@ class grammardefaultParser(Parser):
                     self._positive_closure(block26)
                     self._term_()
                     self.name_last_node('exp')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    '<SUM>'
+                )
 
         def block29():
             with self._optional():
@@ -1293,7 +1461,10 @@ class grammardefaultParser(Parser):
                         self._WHERE_()
                     with self._option():
                         self._WITH_()
-                    self._error('no available options')
+                    self._error(
+                        'expecting one of: '
+                        '<WHERE> <WITH>'
+                    )
 
             def block33():
                 self._hspace_()
@@ -1315,7 +1486,7 @@ class grammardefaultParser(Parser):
                 self.add_last_node_to_name('extra')
             self._closure(block35)
         self._closure(block29)
-        self.ast._define(
+        self._define(
             ['cond', 'exp', 'id', 'range', 'sub'],
             ['enum', 'extra']
         )
@@ -1370,7 +1541,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._ARGMAX_()
                     self.name_last_node('amax')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    '<MIN> <MAX> <ARGMIN> <ARGMAX>'
+                )
         self._token('_(')
 
         def block14():
@@ -1433,7 +1607,7 @@ class grammardefaultParser(Parser):
             self._multi_cond_()
             self.name_last_node('cond')
         self._closure(block23)
-        self.ast._define(
+        self._define(
             ['amax', 'amin', 'cond', 'exp', 'max', 'min'],
             ['defs', 'init']
         )
@@ -1467,8 +1641,14 @@ class grammardefaultParser(Parser):
                 def block6():
                     self._hspace_()
                 self._closure(block6)
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<multi_cond> <hspace> <atom_condition> ['
+                "\\t] '(' <not_equal> <equal> <in>"
+                '<not_in> <greater> <greater_equal>'
+                '<less> <less_equal>'
+            )
+        self._define(
             ['cond', 'm_cond'],
             []
         )
@@ -1481,7 +1661,10 @@ class grammardefaultParser(Parser):
                     self._INT_()
                 with self._option():
                     self._token('∫')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "<INT> '∫'"
+                )
         self._token('_')
         with self._group():
             with self._choice():
@@ -1503,7 +1686,10 @@ class grammardefaultParser(Parser):
                         self._closure(block4)
                         self._sub_factor_()
                         self.name_last_node('upper')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    '<domain> <sub_factor>'
+                )
 
         def block7():
             self._hspace_()
@@ -1517,7 +1703,7 @@ class grammardefaultParser(Parser):
         self._PARTIAL_()
         self._identifier_alone_()
         self.name_last_node('id')
-        self.ast._define(
+        self._define(
             ['d', 'exp', 'id', 'lower', 'upper'],
             []
         )
@@ -1543,7 +1729,7 @@ class grammardefaultParser(Parser):
         self._expression_()
         self.name_last_node('upper')
         self._token(']')
-        self.ast._define(
+        self._define(
             ['lower', 'upper'],
             []
         )
@@ -1594,7 +1780,10 @@ class grammardefaultParser(Parser):
                         self._hspace_()
                     self._closure(block11)
                     self._token('|')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'||' '‖' '|'"
+                )
         with self._optional():
             with self._choice():
                 with self._option():
@@ -1613,12 +1802,18 @@ class grammardefaultParser(Parser):
                                                 self._token('∞')
                                             with self._option():
                                                 self._identifier_alone_()
-                                            self._error('no available options')
+                                            self._error(
+                                                'expecting one of: '
+                                                "<integer> '*' '∞' <identifier_alone>"
+                                            )
                                     self.name_last_node('sub')
                                 with self._option():
                                     self._sub_integer_()
                                     self.name_last_node('sub')
-                                self._error('no available options')
+                                self._error(
+                                    'expecting one of: '
+                                    "'_' <sub_integer>"
+                                )
                         with self._optional():
                             with self._choice():
                                 with self._option():
@@ -1628,7 +1823,10 @@ class grammardefaultParser(Parser):
                                 with self._option():
                                     self._sup_integer_()
                                     self.name_last_node('power')
-                                self._error('no available options')
+                                self._error(
+                                    'expecting one of: '
+                                    "'^' <sup_integer>"
+                                )
                 with self._option():
                     with self._group():
                         self._token('_(')
@@ -1642,7 +1840,10 @@ class grammardefaultParser(Parser):
                                     self._token('∞')
                                 with self._option():
                                     self._identifier_()
-                                self._error('no available options')
+                                self._error(
+                                    'expecting one of: '
+                                    "<integer> '*' '∞' <identifier>"
+                                )
                         self.name_last_node('sub')
                         self._token(')')
                         with self._optional():
@@ -1654,7 +1855,10 @@ class grammardefaultParser(Parser):
                                 with self._option():
                                     self._sup_integer_()
                                     self.name_last_node('power')
-                                self._error('no available options')
+                                self._error(
+                                    'expecting one of: '
+                                    "'^' <sup_integer>"
+                                )
                 with self._option():
                     with self._group():
                         with self._group():
@@ -1666,7 +1870,10 @@ class grammardefaultParser(Parser):
                                 with self._option():
                                     self._sup_integer_()
                                     self.name_last_node('power')
-                                self._error('no available options')
+                                self._error(
+                                    'expecting one of: '
+                                    "'^' <sup_integer>"
+                                )
                         with self._optional():
                             with self._choice():
                                 with self._option():
@@ -1681,14 +1888,23 @@ class grammardefaultParser(Parser):
                                                 self._token('∞')
                                             with self._option():
                                                 self._identifier_alone_()
-                                            self._error('no available options')
+                                            self._error(
+                                                'expecting one of: '
+                                                "<integer> '*' '∞' <identifier_alone>"
+                                            )
                                     self.name_last_node('sub')
                                 with self._option():
                                     self._sub_integer_()
                                     self.name_last_node('sub')
-                                self._error('no available options')
-                self._error('no available options')
-        self.ast._define(
+                                self._error(
+                                    'expecting one of: '
+                                    "'_' <sub_integer>"
+                                )
+                self._error(
+                    'expecting one of: '
+                    "'_' <sub_integer> '_(' '^' <sup_integer>"
+                )
+        self._define(
             ['double', 'power', 'single', 'sub', 'value'],
             []
         )
@@ -1747,14 +1963,17 @@ class grammardefaultParser(Parser):
                             self._hspace_()
                         self._closure(block11)
                         self._token('⟩')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'<' '⟨'"
+                )
 
         def block13():
             self._token('_')
             self._identifier_()
             self.name_last_node('sub')
         self._closure(block13)
-        self.ast._define(
+        self._define(
             ['left', 'right', 'sub'],
             []
         )
@@ -1775,7 +1994,7 @@ class grammardefaultParser(Parser):
         self._closure(block2)
         self._factor_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'right'],
             []
         )
@@ -1796,7 +2015,7 @@ class grammardefaultParser(Parser):
         self._closure(block2)
         self._factor_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'right'],
             []
         )
@@ -1817,7 +2036,7 @@ class grammardefaultParser(Parser):
         self._closure(block2)
         self._factor_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'right'],
             []
         )
@@ -1838,7 +2057,7 @@ class grammardefaultParser(Parser):
         self._closure(block2)
         self._factor_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'right'],
             []
         )
@@ -1849,7 +2068,7 @@ class grammardefaultParser(Parser):
         self._factor_()
         self.name_last_node('f')
         self._pattern('ᵀ')
-        self.ast._define(
+        self._define(
             ['f'],
             []
         )
@@ -1860,7 +2079,7 @@ class grammardefaultParser(Parser):
         self._factor_()
         self.name_last_node('f')
         self._pattern('⁺')
-        self.ast._define(
+        self._define(
             ['f'],
             []
         )
@@ -1870,7 +2089,7 @@ class grammardefaultParser(Parser):
         self._pattern('√')
         self._factor_()
         self.name_last_node('f')
-        self.ast._define(
+        self._define(
             ['f'],
             []
         )
@@ -1886,7 +2105,13 @@ class grammardefaultParser(Parser):
                 self._ln_func_()
             with self._option():
                 self._sqrt_func_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                'exp <EXP> <exp_func> log[\\u2082]'
+                'log[\\u2081][\\u2080] log <LOG> <log_func>'
+                'ln <LN> <ln_func> sqrt <SQRT>'
+                '<sqrt_func>'
+            )
 
     @tatsumasu('ExpFunc')
     def _exp_func_(self):  # noqa
@@ -1903,7 +2128,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param'],
             []
         )
@@ -1921,7 +2146,10 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 self._pattern('log[\\u2081][\\u2080]')
                                 self.name_last_node('s')
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                'log[\\u2082] log[\\u2081][\\u2080]'
+                            )
                     self._token('(')
 
                     def block3():
@@ -1945,7 +2173,10 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 self._token('_10')
                                 self.name_last_node('s')
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                "'_2' '_10'"
+                            )
                     self._token('(')
 
                     def block9():
@@ -1958,8 +2189,12 @@ class grammardefaultParser(Parser):
                         self._hspace_()
                     self._closure(block11)
                     self._token(')')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                'log[\\u2082] log[\\u2081][\\u2080] log'
+                '<LOG>'
+            )
+        self._define(
             ['f', 'param', 's'],
             []
         )
@@ -1979,7 +2214,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param'],
             []
         )
@@ -1999,7 +2234,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param'],
             []
         )
@@ -2033,8 +2268,11 @@ class grammardefaultParser(Parser):
                     self._hspace_()
                 self._closure(block5)
                 self._token('⎦')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "'[' '⎡'"
+            )
+        self._define(
             ['value'],
             []
         )
@@ -2067,7 +2305,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
-        self.ast._define(
+        self._define(
             [],
             ['exp']
         )
@@ -2100,7 +2338,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token('}')
-        self.ast._define(
+        self._define(
             [],
             ['exp']
         )
@@ -2130,7 +2368,7 @@ class grammardefaultParser(Parser):
                 self._hspace_()
             self._closure(block5)
             self._OTHERWISE_()
-        self.ast._define(
+        self._define(
             ['ifs', 'other'],
             []
         )
@@ -2151,8 +2389,13 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._single_if_condition_()
                 self.name_last_node('value')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<multi_if_conditions>'
+                '<single_if_condition> <expression>'
+                '<if_condition>'
+            )
+        self._define(
             ['ifs', 'value'],
             []
         )
@@ -2189,8 +2432,13 @@ class grammardefaultParser(Parser):
                 self._closure(block6)
                 self._expression_()
                 self.name_last_node('stat')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<expression> <addition> <subtraction>'
+                "<add_sub_operator> <term> '-'"
+                '<if_condition> <and_condition>'
+            )
+        self._define(
             ['cond', 'stat'],
             []
         )
@@ -2226,8 +2474,12 @@ class grammardefaultParser(Parser):
                 def block7():
                     self._hspace_()
                 self._closure(block7)
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "<rows> <row> '|' <row_with_commas>"
+                '<expr_in_matrix>'
+            )
+        self._define(
             ['r', 'rs'],
             []
         )
@@ -2264,8 +2516,14 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._expr_in_matrix_()
                 self.name_last_node('exp')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "'|' <row_with_commas> <expr_in_matrix>"
+                '<hspace> <addition_in_matrix>'
+                '<subtraction_in_matrix> <term_in_matrix>'
+                "'-'"
+            )
+        self._define(
             ['exp', 'rc'],
             ['value']
         )
@@ -2296,7 +2554,10 @@ class grammardefaultParser(Parser):
                             def block4():
                                 self._hspace_()
                             self._positive_closure(block4)
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "',' <hspace>"
+                        )
             with self._option():
 
                 def block6():
@@ -2317,9 +2578,18 @@ class grammardefaultParser(Parser):
                             def block9():
                                 self._hspace_()
                             self._positive_closure(block9)
-                        self._error('no available options')
-            self._error('no available options')
-        self.ast._define(
+                        self._error(
+                            'expecting one of: '
+                            "',' <hspace>"
+                        )
+            self._error(
+                'expecting one of: '
+                '<row_with_commas> <expr_in_matrix>'
+                '<hspace> <addition_in_matrix>'
+                '<subtraction_in_matrix> <term_in_matrix>'
+                "'-' [ \\t]"
+            )
+        self._define(
             ['exp', 'value'],
             []
         )
@@ -2340,8 +2610,15 @@ class grammardefaultParser(Parser):
                 self.name_last_node('sign')
                 self._term_in_matrix_()
                 self.name_last_node('value')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<addition_in_matrix>'
+                '<subtraction_in_matrix> <term_in_matrix>'
+                "'-' <expr_in_matrix>"
+                '<multiplication_in_matrix>'
+                '<division_in_matrix> <factor_in_matrix>'
+            )
+        self._define(
             ['sign', 'value'],
             []
         )
@@ -2355,7 +2632,7 @@ class grammardefaultParser(Parser):
         self.name_last_node('op')
         self._term_in_matrix_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -2369,7 +2646,7 @@ class grammardefaultParser(Parser):
         self.name_last_node('op')
         self._term_in_matrix_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -2384,7 +2661,18 @@ class grammardefaultParser(Parser):
                 self._division_in_matrix_()
             with self._option():
                 self._factor_in_matrix_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                '<multiplication_in_matrix>'
+                '<division_in_matrix> <factor_in_matrix>'
+                '<term_in_matrix> <operations_in_matrix>'
+                "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
+                '<number_matrix> <identifier> <integer>'
+                "'.' <digit> <mantissa> <floating_point>"
+                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
+                "<fraction> <number> '[' '⎡' <matrix> '('"
+                "<vector> '{' <set> <constant>"
+            )
 
     @tatsumasu('Multiply')
     @nomemo
@@ -2402,8 +2690,19 @@ class grammardefaultParser(Parser):
                 self.name_last_node('left')
                 self._factor_in_matrix_()
                 self.name_last_node('right')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<multiplication_in_matrix>'
+                '<division_in_matrix> <factor_in_matrix>'
+                '<term_in_matrix> <operations_in_matrix>'
+                "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
+                '<number_matrix> <identifier> <integer>'
+                "'.' <digit> <mantissa> <floating_point>"
+                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
+                "<fraction> <number> '[' '⎡' <matrix> '('"
+                "<vector> '{' <set> <constant>"
+            )
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -2419,11 +2718,14 @@ class grammardefaultParser(Parser):
                     self._token('/')
                 with self._option():
                     self._token('÷')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'/' '÷'"
+                )
         self.name_last_node('op')
         self._factor_in_matrix_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -2440,7 +2742,10 @@ class grammardefaultParser(Parser):
                             self._token('1')
                         with self._option():
                             self._token('𝟙')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "'0' '1' '𝟙'"
+                        )
                 self.name_last_node('left')
                 self._token('_')
                 with self._group():
@@ -2449,7 +2754,10 @@ class grammardefaultParser(Parser):
                             self._integer_()
                         with self._option():
                             self._identifier_()
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            '<integer> <identifier>'
+                        )
                 self.name_last_node('id1')
 
                 def block4():
@@ -2460,7 +2768,10 @@ class grammardefaultParser(Parser):
                                 self._integer_()
                             with self._option():
                                 self._identifier_()
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                '<integer> <identifier>'
+                            )
                     self.name_last_node('id2')
                 self._closure(block4)
             with self._option():
@@ -2483,7 +2794,10 @@ class grammardefaultParser(Parser):
                             self._token('1')
                         with self._option():
                             self._token('𝟙')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "'0' '1' '𝟙'"
+                        )
                 self.name_last_node('left')
                 self._token('_')
                 self._token('(')
@@ -2497,7 +2811,10 @@ class grammardefaultParser(Parser):
                             self._integer_()
                         with self._option():
                             self._identifier_()
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            '<integer> <identifier>'
+                        )
                 self.name_last_node('id1')
 
                 def block16():
@@ -2511,7 +2828,10 @@ class grammardefaultParser(Parser):
                                 self._token(',')
                             with self._option():
                                 self._token('×')
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                "',' '×'"
+                            )
 
                     def block19():
                         self._hspace_()
@@ -2522,7 +2842,10 @@ class grammardefaultParser(Parser):
                                 self._integer_()
                             with self._option():
                                 self._identifier_()
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                '<integer> <identifier>'
+                            )
                     self.name_last_node('id2')
                 self._closure(block16)
 
@@ -2530,8 +2853,11 @@ class grammardefaultParser(Parser):
                     self._hspace_()
                 self._closure(block22)
                 self._token(')')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "'0' '1' '𝟙' [01\\u1D7D9]"
+            )
+        self._define(
             ['id1', 'id2', 'left'],
             []
         )
@@ -2567,8 +2893,45 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._constant_()
                 self.name_last_node('c')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "<solver_in_matrix_operator> '||' '‖' '|'"
+                '<norm_operator>'
+                "<power_in_matrix_operator> '<' '⟨'"
+                '<inner_product_operator>'
+                '<frobenius_product_in_matrix_operator>'
+                '<hadamard_product_in_matrix_operator>'
+                '<cross_product_in_matrix_operator>'
+                '<kronecker_product_in_matrix_operator>'
+                "<sum_in_matrix_operator> int <INT> '∫'"
+                '<integral_operator>'
+                '<trans_in_matrix_operator>'
+                '<sqrt_in_matrix_operator>'
+                '<function_operator> <builtin_operators>'
+                '<pseudoinverse_in_matrix_operator>'
+                "<operations_in_matrix> '('"
+                "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
+                '<number_matrix> <identifier_alone>'
+                '<identifier_with_subscript>'
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                'min <MIN> max <MAX> argmin <ARGMIN>'
+                'argmax <ARGMAX> if <IF> otherwise'
+                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
+                'ln <LN> sqrt <SQRT> s.t. subject to'
+                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ ᵀ'
+                'with <WITH> initial <INITIAL> and <AND>'
+                'or <OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
+                '<DERIVATIVE> ∂ <PARTIAL> solve Solve'
+                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
+                '<AS> # <POUND> <BUILTIN_KEYWORDS>'
+                "<KEYWORDS> <identifier> <integer> '.'"
+                '<digit> <mantissa> <floating_point>'
+                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
+                "<fraction> \\d <number> '[' '⎡' <matrix>"
+                "<vector> '{' <set> π <pi> <constant>"
+            )
+        self._define(
             ['c', 'id0', 'm', 'nm', 'num', 'op', 's', 'sub', 'v'],
             []
         )
@@ -2607,7 +2970,33 @@ class grammardefaultParser(Parser):
                 self._builtin_operators_()
             with self._option():
                 self._pseudoinverse_in_matrix_operator_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                '<operations_in_matrix> <subexpression>'
+                "'0' '1' '𝟙' [01\\u1D7D9] <number_matrix>"
+                "<identifier> <integer> '.' <digit>"
+                '<mantissa> <floating_point> <double>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+                "<number> '[' '⎡' <matrix> '(' <vector>"
+                "'{' <set> <constant> <factor_in_matrix>"
+                "<solver_in_matrix_operator> '||' '‖' '|'"
+                '<norm_operator>'
+                "<power_in_matrix_operator> '<' '⟨'"
+                '<inner_product_operator>'
+                '<frobenius_product_in_matrix_operator>'
+                '<hadamard_product_in_matrix_operator>'
+                '<cross_product_in_matrix_operator>'
+                '<kronecker_product_in_matrix_operator>'
+                'sum ∑ <SUM> <sum_in_matrix_operator> int'
+                "<INT> '∫' <integral_operator>"
+                '<trans_in_matrix_operator> √'
+                "<sqrt_in_matrix_operator> '!!!'"
+                '<func_id> <function_operator> <exp_func>'
+                '<log_func> <ln_func> <sqrt_func>'
+                '<predefined_built_operators>'
+                '<builtin_operators>'
+                '<pseudoinverse_in_matrix_operator>'
+            )
 
     @tatsumasu('Power')
     @nomemo
@@ -2627,7 +3016,10 @@ class grammardefaultParser(Parser):
                             self._token('^(-1)')
                         with self._option():
                             self._token('⁻¹')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "'^(-1)' '⁻¹'"
+                        )
                 self.name_last_node('r')
             with self._option():
                 self._factor_in_matrix_()
@@ -2640,8 +3032,46 @@ class grammardefaultParser(Parser):
                 self.name_last_node('base')
                 self._sup_integer_()
                 self.name_last_node('power')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<operations_in_matrix> <subexpression>'
+                "'0' '1' '𝟙' [01\\u1D7D9] <number_matrix>"
+                "<identifier> <integer> '.' <digit>"
+                '<mantissa> <floating_point> <double>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+                "<number> '[' '⎡' <matrix> '(' <vector>"
+                "'{' <set> <constant>"
+                "<solver_in_matrix_operator> '||' '‖' '|'"
+                '<norm_operator>'
+                "<power_in_matrix_operator> '<' '⟨'"
+                '<inner_product_operator>'
+                '<frobenius_product_in_matrix_operator>'
+                '<hadamard_product_in_matrix_operator>'
+                '<cross_product_in_matrix_operator>'
+                '<kronecker_product_in_matrix_operator>'
+                "<sum_in_matrix_operator> int <INT> '∫'"
+                '<integral_operator>'
+                '<trans_in_matrix_operator>'
+                '<sqrt_in_matrix_operator>'
+                '<function_operator> <builtin_operators>'
+                '<pseudoinverse_in_matrix_operator>'
+                '<identifier_alone>'
+                '<identifier_with_subscript>'
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                'min <MIN> max <MAX> argmin <ARGMIN>'
+                'argmax <ARGMAX> if <IF> otherwise'
+                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
+                'ln <LN> sqrt <SQRT> s.t. subject to'
+                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ ᵀ'
+                'with <WITH> initial <INITIAL> and <AND>'
+                'or <OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
+                '<DERIVATIVE> ∂ <PARTIAL> solve Solve'
+                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
+                '<AS> # <POUND> <BUILTIN_KEYWORDS>'
+                '<KEYWORDS> \\d π <pi> <factor_in_matrix>'
+            )
+        self._define(
             ['base', 'power', 'r', 't'],
             []
         )
@@ -2654,7 +3084,7 @@ class grammardefaultParser(Parser):
         self._token(':')
         self._factor_in_matrix_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'right'],
             []
         )
@@ -2667,7 +3097,7 @@ class grammardefaultParser(Parser):
         self._token('∘')
         self._factor_in_matrix_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'right'],
             []
         )
@@ -2680,7 +3110,7 @@ class grammardefaultParser(Parser):
         self._token('×')
         self._factor_in_matrix_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'right'],
             []
         )
@@ -2693,7 +3123,7 @@ class grammardefaultParser(Parser):
         self._token('⊗')
         self._factor_in_matrix_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'right'],
             []
         )
@@ -2704,7 +3134,7 @@ class grammardefaultParser(Parser):
         self._factor_in_matrix_()
         self.name_last_node('f')
         self._pattern('ᵀ')
-        self.ast._define(
+        self._define(
             ['f'],
             []
         )
@@ -2715,7 +3145,7 @@ class grammardefaultParser(Parser):
         self._factor_in_matrix_()
         self.name_last_node('f')
         self._pattern('⁺')
-        self.ast._define(
+        self._define(
             ['f'],
             []
         )
@@ -2725,7 +3155,7 @@ class grammardefaultParser(Parser):
         self._pattern('√')
         self._factor_in_matrix_()
         self.name_last_node('f')
-        self.ast._define(
+        self._define(
             ['f'],
             []
         )
@@ -2749,12 +3179,53 @@ class grammardefaultParser(Parser):
                             self._token('^(-1)')
                         with self._option():
                             self._token('⁻¹')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "'^(-1)' '⁻¹'"
+                        )
                 self.name_last_node('p')
                 self._factor_in_matrix_()
                 self.name_last_node('right')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<operations_in_matrix> <subexpression>'
+                "'0' '1' '𝟙' [01\\u1D7D9] <number_matrix>"
+                "<identifier> <integer> '.' <digit>"
+                '<mantissa> <floating_point> <double>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+                "<number> '[' '⎡' <matrix> '(' <vector>"
+                "'{' <set> <constant>"
+                "<solver_in_matrix_operator> '||' '‖' '|'"
+                '<norm_operator>'
+                "<power_in_matrix_operator> '<' '⟨'"
+                '<inner_product_operator>'
+                '<frobenius_product_in_matrix_operator>'
+                '<hadamard_product_in_matrix_operator>'
+                '<cross_product_in_matrix_operator>'
+                '<kronecker_product_in_matrix_operator>'
+                "<sum_in_matrix_operator> int <INT> '∫'"
+                '<integral_operator>'
+                '<trans_in_matrix_operator>'
+                '<sqrt_in_matrix_operator>'
+                '<function_operator> <builtin_operators>'
+                '<pseudoinverse_in_matrix_operator>'
+                '<identifier_alone>'
+                '<identifier_with_subscript>'
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                'min <MIN> max <MAX> argmin <ARGMIN>'
+                'argmax <ARGMAX> if <IF> otherwise'
+                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
+                'ln <LN> sqrt <SQRT> s.t. subject to'
+                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ ᵀ'
+                'with <WITH> initial <INITIAL> and <AND>'
+                'or <OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
+                '<DERIVATIVE> ∂ <PARTIAL> solve Solve'
+                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
+                '<AS> # <POUND> <BUILTIN_KEYWORDS>'
+                '<KEYWORDS> \\d π <pi> <factor_in_matrix>'
+            )
+        self._define(
             ['left', 'p', 'right'],
             []
         )
@@ -2840,7 +3311,10 @@ class grammardefaultParser(Parser):
                             self._function_operator_()
                         with self._option():
                             self._identifier_alone_()
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            '<function_operator> <identifier_alone>'
+                        )
                 self.name_last_node('range')
 
                 def block20():
@@ -2849,8 +3323,11 @@ class grammardefaultParser(Parser):
                 self._token(')')
                 self._term_()
                 self.name_last_node('exp')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                'sum ∑ <SUM>'
+            )
+        self._define(
             ['cond', 'exp', 'id', 'range', 'sub'],
             ['enum']
         )
@@ -2868,7 +3345,10 @@ class grammardefaultParser(Parser):
                 self._token('\r')
             with self._option():
                 self._token('\x0c')
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                "'\\n' '\\r' '\\x0c'"
+            )
 
     @tatsumasu()
     def _lines_(self):  # noqa
@@ -2893,7 +3373,10 @@ class grammardefaultParser(Parser):
                                 self._token('*')
                             with self._option():
                                 self._identifier_alone_()
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                "<integer> '*' <identifier_alone>"
+                            )
                     self.add_last_node_to_name('right')
 
                     def block3():
@@ -2915,9 +3398,15 @@ class grammardefaultParser(Parser):
                                                 self._integer_()
                                             with self._option():
                                                 self._identifier_alone_()
-                                            self._error('no available options')
+                                            self._error(
+                                                'expecting one of: '
+                                                '<integer> <identifier_alone>'
+                                            )
                                     self.add_last_node_to_name('right')
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                "',' <integer> <identifier_alone>"
+                            )
                     self._closure(block3)
             with self._option():
                 with self._group():
@@ -2929,7 +3418,10 @@ class grammardefaultParser(Parser):
                                 self._sub_integer_()
                             with self._option():
                                 self._unicode_subscript_()
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                '<sub_integer> <unicode_subscript>'
+                            )
                     self.add_last_node_to_name('right')
 
                     def block12():
@@ -2951,12 +3443,34 @@ class grammardefaultParser(Parser):
                                                 self._sub_integer_()
                                             with self._option():
                                                 self._unicode_subscript_()
-                                            self._error('no available options')
+                                            self._error(
+                                                'expecting one of: '
+                                                '<sub_integer> <unicode_subscript>'
+                                            )
                                     self.add_last_node_to_name('right')
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                "',' <sub_integer> <unicode_subscript>"
+                            )
                     self._closure(block12)
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                'min <MIN> max <MAX> argmin <ARGMIN>'
+                'argmax <ARGMAX> int <INT> if <IF>'
+                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                '<SUBSET> as <AS> # <POUND>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<identifier_alone>'
+            )
+        self._define(
             ['left'],
             ['right']
         )
@@ -2971,7 +3485,10 @@ class grammardefaultParser(Parser):
                     self._sub_integer_()
                 with self._option():
                     self._unicode_subscript_()
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    '<sub_integer> <unicode_subscript>'
+                )
         self.add_last_node_to_name('right')
 
         def block3():
@@ -2993,11 +3510,17 @@ class grammardefaultParser(Parser):
                                     self._sub_integer_()
                                 with self._option():
                                     self._unicode_subscript_()
-                                self._error('no available options')
+                                self._error(
+                                    'expecting one of: '
+                                    '<sub_integer> <unicode_subscript>'
+                                )
                         self.add_last_node_to_name('right')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "',' <sub_integer> <unicode_subscript>"
+                )
         self._closure(block3)
-        self.ast._define(
+        self._define(
             ['left'],
             ['right']
         )
@@ -3006,7 +3529,7 @@ class grammardefaultParser(Parser):
     def _unicode_subscript_(self):  # noqa
         self._pattern('[\\u2090-\\u209C\\u1D62\\u2C7C]')
         self.name_last_node('value')
-        self.ast._define(
+        self._define(
             ['value'],
             []
         )
@@ -3016,7 +3539,7 @@ class grammardefaultParser(Parser):
         self._POUND_()
         self._identifier_()
         self.name_last_node('i')
-        self.ast._define(
+        self._define(
             ['i'],
             []
         )
@@ -3042,15 +3565,35 @@ class grammardefaultParser(Parser):
                             self._pattern('[^`]*')
                             self.name_last_node('id')
                             self._token('`')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            '[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
+                            "9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
+                        )
             with self._option():
                 with self._group():
                     self._KEYWORDS_()
                     with self._group():
                         self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                 self.name_last_node('value')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
+                "9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
+                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                'min <MIN> max <MAX> argmin <ARGMIN>'
+                'argmax <ARGMAX> int <INT> if <IF>'
+                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                '<SUBSET> as <AS> # <POUND>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+            )
+        self._define(
             ['id', 'value'],
             []
         )
@@ -3074,7 +3617,10 @@ class grammardefaultParser(Parser):
                 self._line_()
             with self._option():
                 self._token(';')
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                "'\\n' '\\r' '\\x0c' <line> ';'"
+            )
 
     @tatsumasu()
     def _separator_with_space_(self):  # noqa
@@ -3098,7 +3644,10 @@ class grammardefaultParser(Parser):
                         self._hspace_()
                     with self._option():
                         self._separator_()
-                    self._error('no available options')
+                    self._error(
+                        'expecting one of: '
+                        '<hspace> <separator>'
+                    )
         self._closure(block0)
 
     @tatsumasu()
@@ -3127,7 +3676,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block0)
         self._token('(')
 
@@ -3141,7 +3693,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param', 'power'],
             []
         )
@@ -3161,7 +3713,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block1)
         self._token('(')
 
@@ -3175,7 +3730,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name', 'param', 'power'],
             []
         )
@@ -3195,7 +3750,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block1)
         self._token('(')
 
@@ -3209,7 +3767,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name', 'param', 'power'],
             []
         )
@@ -3228,7 +3786,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block0)
         self._token('(')
 
@@ -3242,7 +3803,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param', 'power'],
             []
         )
@@ -3262,7 +3823,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block1)
         self._token('(')
 
@@ -3276,7 +3840,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name', 'param', 'power'],
             []
         )
@@ -3296,7 +3860,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block1)
         self._token('(')
 
@@ -3310,7 +3877,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name', 'param', 'power'],
             []
         )
@@ -3329,7 +3896,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block0)
         self._token('(')
 
@@ -3343,7 +3913,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param', 'power'],
             []
         )
@@ -3363,7 +3933,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block1)
         self._token('(')
 
@@ -3377,7 +3950,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name', 'param', 'power'],
             []
         )
@@ -3397,7 +3970,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block1)
         self._token('(')
 
@@ -3411,7 +3987,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name', 'param', 'power'],
             []
         )
@@ -3430,7 +4006,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block0)
         self._token('(')
 
@@ -3444,7 +4023,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param', 'power'],
             []
         )
@@ -3464,7 +4043,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block1)
         self._token('(')
 
@@ -3478,7 +4060,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name', 'param', 'power'],
             []
         )
@@ -3498,7 +4080,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block1)
         self._token('(')
 
@@ -3512,7 +4097,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name', 'param', 'power'],
             []
         )
@@ -3531,7 +4116,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block0)
         self._token('(')
 
@@ -3545,7 +4133,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param', 'power'],
             []
         )
@@ -3565,7 +4153,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block1)
         self._token('(')
 
@@ -3579,7 +4170,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name', 'param', 'power'],
             []
         )
@@ -3599,7 +4190,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block1)
         self._token('(')
 
@@ -3613,7 +4207,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name', 'param', 'power'],
             []
         )
@@ -3632,7 +4226,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block0)
         self._token('(')
 
@@ -3646,7 +4243,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param', 'power'],
             []
         )
@@ -3666,7 +4263,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block1)
         self._token('(')
 
@@ -3680,7 +4280,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name', 'param', 'power'],
             []
         )
@@ -3700,7 +4300,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block1)
         self._token('(')
 
@@ -3714,7 +4317,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name', 'param', 'power'],
             []
         )
@@ -3733,7 +4336,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block0)
         self._token('(')
 
@@ -3747,7 +4353,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param', 'power'],
             []
         )
@@ -3766,7 +4372,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block0)
         self._token('(')
 
@@ -3780,7 +4389,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param', 'power'],
             []
         )
@@ -3799,7 +4408,10 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'^' <sup_integer>"
+                )
         self._closure(block0)
         self._token('(')
 
@@ -3813,7 +4425,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param', 'power'],
             []
         )
@@ -3845,7 +4457,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param', 'second', 'separator'],
             []
         )
@@ -3866,7 +4478,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block3)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name', 'param'],
             []
         )
@@ -3887,7 +4499,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block3)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name', 'param'],
             []
         )
@@ -3907,7 +4519,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param'],
             []
         )
@@ -3927,7 +4539,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param'],
             []
         )
@@ -3947,7 +4559,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param'],
             []
         )
@@ -3967,7 +4579,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param'],
             []
         )
@@ -3987,7 +4599,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param'],
             []
         )
@@ -4007,7 +4619,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param'],
             []
         )
@@ -4027,7 +4639,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['param'],
             []
         )
@@ -4276,7 +4888,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4315,7 +4927,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4354,7 +4966,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4393,7 +5005,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4432,7 +5044,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4471,7 +5083,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4510,7 +5122,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4549,7 +5161,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4588,7 +5200,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4627,7 +5239,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4666,7 +5278,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4705,7 +5317,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4744,7 +5356,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4783,7 +5395,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4822,7 +5434,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4861,7 +5473,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4900,7 +5512,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4939,7 +5551,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -4978,7 +5590,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -5017,7 +5629,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -5056,7 +5668,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -5095,7 +5707,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -5134,7 +5746,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -5173,7 +5785,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -5212,7 +5824,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -5251,7 +5863,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -5290,7 +5902,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -5329,7 +5941,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -5368,7 +5980,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -5407,7 +6019,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block9)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['name'],
             ['params', 'separators']
         )
@@ -5486,7 +6098,7 @@ class grammardefaultParser(Parser):
         def block19():
             self._hspace_()
         self._closure(block19)
-        self.ast._define(
+        self._define(
             ['package'],
             ['names', 'params', 'separators']
         )
@@ -5509,7 +6121,7 @@ class grammardefaultParser(Parser):
             self._multi_str_()
             self.name_last_node('r')
         self._closure(block1)
-        self.ast._define(
+        self._define(
             ['name', 'r'],
             []
         )
@@ -5531,7 +6143,7 @@ class grammardefaultParser(Parser):
             self._where_condition_()
             self.add_last_node_to_name('value')
         self._closure(block2)
-        self.ast._define(
+        self._define(
             [],
             ['value']
         )
@@ -5543,7 +6155,11 @@ class grammardefaultParser(Parser):
                 self._la_where_condition_()
             with self._option():
                 self._de_where_condition_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                '<identifier> <la_where_condition>'
+                '<de_where_condition>'
+            )
 
     @tatsumasu('WhereCondition')
     def _la_where_condition_(self):  # noqa
@@ -5573,7 +6189,10 @@ class grammardefaultParser(Parser):
                     self._token(':')
                 with self._option():
                     self._IN_()
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "':' <IN>"
+                )
 
         def block7():
             self._hspace_()
@@ -5603,7 +6222,7 @@ class grammardefaultParser(Parser):
             self._description_()
             self.name_last_node('desc')
         self._closure(block12)
-        self.ast._define(
+        self._define(
             ['desc', 'index', 'type'],
             ['id']
         )
@@ -5661,7 +6280,7 @@ class grammardefaultParser(Parser):
             self._description_()
             self.name_last_node('desc')
         self._closure(block12)
-        self.ast._define(
+        self._define(
             ['desc', 'index', 'subset', 'type'],
             ['id']
         )
@@ -5694,7 +6313,10 @@ class grammardefaultParser(Parser):
                     self._token(':')
                 with self._option():
                     self._IN_()
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "':' <IN>"
+                )
 
         def block7():
             self._hspace_()
@@ -5710,7 +6332,7 @@ class grammardefaultParser(Parser):
             self._token('index')
             self.name_last_node('index')
         self._closure(block9)
-        self.ast._define(
+        self._define(
             ['index', 'type'],
             ['id']
         )
@@ -5725,7 +6347,14 @@ class grammardefaultParser(Parser):
                 self._params_block_()
             with self._option():
                 self._statements_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                '<import> <import_var> <Directive>'
+                '<where_condition> [ \\t] <hspace>'
+                '<where_conditions> where <WHERE> given'
+                '<GIVEN> <params_block> <statement>'
+                '<statements>'
+            )
 
     @tatsumasu('ParamsBlock')
     def _params_block_(self):  # noqa
@@ -5737,7 +6366,10 @@ class grammardefaultParser(Parser):
                         self._WHERE_()
                     with self._option():
                         self._GIVEN_()
-                    self._error('no available options')
+                    self._error(
+                        'expecting one of: '
+                        '<WHERE> <GIVEN>'
+                    )
             self.name_last_node('annotation')
 
             def block3():
@@ -5746,7 +6378,7 @@ class grammardefaultParser(Parser):
         self._closure(block0)
         self._where_conditions_()
         self.name_last_node('conds')
-        self.ast._define(
+        self._define(
             ['annotation', 'conds'],
             []
         )
@@ -5770,7 +6402,7 @@ class grammardefaultParser(Parser):
     def _statements_(self):  # noqa
         self._statement_()
         self.name_last_node('stat')
-        self.ast._define(
+        self._define(
             ['stat'],
             []
         )
@@ -5785,7 +6417,29 @@ class grammardefaultParser(Parser):
                 self._assignment_()
             with self._option():
                 self._right_hand_side_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                '<identifier_alone>'
+                '<identifier_with_unicode_subscript>'
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                'min <MIN> max <MAX> argmin <ARGMIN>'
+                'argmax <ARGMAX> int <INT> if <IF>'
+                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                '<SUBSET> as <AS> # <POUND>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<local_func> <identifier> <assignment>'
+                '<expression> <addition> <subtraction>'
+                "<add_sub_operator> <term> '-' 'with'"
+                "<optimize_operator> '{'"
+                '<multi_cond_expr> <right_hand_side>'
+            )
 
     @tatsumasu('Expression')
     @leftrec
@@ -5806,8 +6460,13 @@ class grammardefaultParser(Parser):
                 self.name_last_node('sign')
                 self._term_()
                 self.name_last_node('value')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<expression> <addition> <subtraction>'
+                "<add_sub_operator> <term> '-'"
+                '<multiplication> <division> <factor>'
+            )
+        self._define(
             ['sign', 'value'],
             []
         )
@@ -5873,8 +6532,26 @@ class grammardefaultParser(Parser):
                 self._closure(block16)
                 self._right_hand_side_()
                 self.add_last_node_to_name('right')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<identifier_alone>'
+                '<identifier_with_subscript>'
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                'min <MIN> max <MAX> argmin <ARGMIN>'
+                'argmax <ARGMAX> int <INT> if <IF>'
+                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                '<SUBSET> as <AS> # <POUND>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<identifier>'
+            )
+        self._define(
             ['op'],
             ['left', 'right']
         )
@@ -5909,7 +6586,7 @@ class grammardefaultParser(Parser):
         self._closure(block7)
         self._right_hand_side_()
         self.add_last_node_to_name('right')
-        self.ast._define(
+        self._define(
             ['op'],
             ['left', 'right']
         )
@@ -5964,7 +6641,7 @@ class grammardefaultParser(Parser):
             self._expression_()
             self.add_last_node_to_name('rexpr')
         self._closure(block7)
-        self.ast._define(
+        self._define(
             ['op', 'u'],
             ['lexpr', 'rexpr']
         )
@@ -5979,7 +6656,15 @@ class grammardefaultParser(Parser):
                 self._optimize_operator_()
             with self._option():
                 self._multi_cond_expr_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                '<expression> <addition> <subtraction>'
+                "<add_sub_operator> <term> '-'"
+                '<multiplication> <division> <factor> min'
+                '<MIN> max <MAX> argmin <ARGMIN> argmax'
+                "<ARGMAX> 'with' <optimize_operator> '{'"
+                '<multi_cond_expr>'
+            )
 
     @tatsumasu()
     def _left_hand_side_(self):  # noqa
@@ -5990,7 +6675,26 @@ class grammardefaultParser(Parser):
                 self._vector_()
             with self._option():
                 self._matrix_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                '<identifier_alone>'
+                '<identifier_with_subscript>'
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                'min <MIN> max <MAX> argmin <ARGMIN>'
+                'argmax <ARGMAX> int <INT> if <IF>'
+                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                '<SUBSET> as <AS> # <POUND>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                "<identifier> '(' <vector> '[' '⎡'"
+                '<matrix>'
+            )
 
     @tatsumasu()
     @leftrec
@@ -6002,7 +6706,28 @@ class grammardefaultParser(Parser):
                 self._division_()
             with self._option():
                 self._factor_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                '<term> <multiplication> <division>'
+                '<factor> <solver_operator>'
+                '<norm_operator> <power_operator>'
+                '<inner_product_operator>'
+                '<frobenius_product_operator>'
+                '<hadamard_product_operator>'
+                '<cross_product_operator>'
+                '<kronecker_product_operator>'
+                '<set_operators> <sum_operator>'
+                '<integral_operator> <trans_operator>'
+                '<sqrt_operator> <function_operator>'
+                '<builtin_operators>'
+                '<pseudoinverse_operator> <operations>'
+                "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
+                '<number_matrix> <identifier> <integer>'
+                "'.' <digit> <mantissa> <floating_point>"
+                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
+                "<fraction> <number> '[' '⎡' <matrix> '('"
+                "<vector> '{' <set> <constant>"
+            )
 
     @tatsumasu('Factor')
     @leftrec
@@ -6035,8 +6760,48 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._constant_()
                 self.name_last_node('c')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<solver_operator> <norm_operator>'
+                '<power_operator>'
+                '<inner_product_operator>'
+                '<frobenius_product_operator>'
+                '<hadamard_product_operator>'
+                '<cross_product_operator>'
+                '<kronecker_product_operator>'
+                '<set_operators> <sum_operator>'
+                '<integral_operator> <trans_operator>'
+                '<sqrt_operator> <function_operator>'
+                '<builtin_operators>'
+                "<pseudoinverse_operator> <factor> '||'"
+                "'‖' '|' '<' '⟨' <union_operator>"
+                '<intersect_operator> sum ∑ <SUM> int'
+                "<INT> '∫' √ '!!!' <func_id> <exp_func>"
+                '<log_func> <ln_func> <sqrt_func>'
+                '<predefined_built_operators>'
+                "<operations> '(' <subexpression> '0' '1'"
+                "'𝟙' [01\\u1D7D9] <number_matrix>"
+                '<identifier_alone>'
+                '<identifier_with_subscript>'
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                'where <WHERE> given <GIVEN> min <MIN>'
+                'max <MAX> argmin <ARGMIN> argmax'
+                '<ARGMAX> if <IF> otherwise <OTHERWISE> ∈'
+                '<IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ ᵀ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                '<SUBSET> as <AS> # <POUND>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                "<identifier> <integer> '.' <digit>"
+                '<mantissa> <floating_point> <double>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+                "\\d <number> '[' '⎡' <matrix> <vector>"
+                "'{' <set> π <pi> <constant>"
+            )
+        self._define(
             ['c', 'id0', 'm', 'nm', 'num', 'op', 's', 'sub', 'v'],
             []
         )
@@ -6052,7 +6817,27 @@ class grammardefaultParser(Parser):
                 self._number_()
             with self._option():
                 self._constant_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                "'(' <subexpression>"
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                'min <MIN> max <MAX> argmin <ARGMIN>'
+                'argmax <ARGMAX> int <INT> if <IF>'
+                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                '<SUBSET> as <AS> # <POUND>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                "<identifier_alone> <integer> '.' <digit>"
+                '<mantissa> <floating_point> <double>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+                '\\d <number> π <pi> <constant>'
+            )
 
     @tatsumasu()
     def _constant_(self):  # noqa
@@ -6092,7 +6877,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['value'],
             []
         )
@@ -6118,8 +6903,12 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._and_condition_()
                 self.name_last_node('single')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<if_condition> <and_condition>'
+                '<atom_condition>'
+            )
+        self._define(
             ['other', 'se', 'single'],
             []
         )
@@ -6145,8 +6934,14 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._atom_condition_()
                 self.name_last_node('atom')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "<and_condition> <atom_condition> '('"
+                '<not_equal> <equal> <in> <not_in>'
+                '<greater> <greater_equal> <less>'
+                '<less_equal>'
+            )
+        self._define(
             ['atom', 'other', 'se'],
             []
         )
@@ -6191,8 +6986,15 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._less_equal_()
                 self.name_last_node('cond')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "'(' <expression> <addition>"
+                '<subtraction> <add_sub_operator> <term>'
+                "'-' <not_equal> <equal> <in> <not_in>"
+                '<greater> <greater_equal> <less>'
+                '<less_equal>'
+            )
+        self._define(
             ['cond', 'p'],
             []
         )
@@ -6242,7 +7044,10 @@ class grammardefaultParser(Parser):
                             self._function_operator_()
                         with self._option():
                             self._identifier_()
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            '<function_operator> <identifier>'
+                        )
                 self.name_last_node('right')
             with self._option():
                 self._expression_()
@@ -6262,10 +7067,18 @@ class grammardefaultParser(Parser):
                             self._function_operator_()
                         with self._option():
                             self._identifier_()
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            '<function_operator> <identifier>'
+                        )
                 self.name_last_node('right')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "'(' <expression> <addition>"
+                '<subtraction> <add_sub_operator> <term>'
+                "'-' <multiplication> <division> <factor>"
+            )
+        self._define(
             ['right'],
             ['left']
         )
@@ -6315,7 +7128,10 @@ class grammardefaultParser(Parser):
                             self._function_operator_()
                         with self._option():
                             self._identifier_()
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            '<function_operator> <identifier>'
+                        )
                 self.name_last_node('right')
             with self._option():
                 self._expression_()
@@ -6335,10 +7151,18 @@ class grammardefaultParser(Parser):
                             self._function_operator_()
                         with self._option():
                             self._identifier_()
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            '<function_operator> <identifier>'
+                        )
                 self.name_last_node('right')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "'(' <expression> <addition>"
+                '<subtraction> <add_sub_operator> <term>'
+                "'-' <multiplication> <division> <factor>"
+            )
+        self._define(
             ['right'],
             ['left']
         )
@@ -6357,7 +7181,10 @@ class grammardefaultParser(Parser):
                     self._token('≠')
                 with self._option():
                     self._token('!=')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'≠' '!='"
+                )
         self.name_last_node('op')
 
         def block4():
@@ -6365,7 +7192,7 @@ class grammardefaultParser(Parser):
         self._closure(block4)
         self._expression_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -6384,7 +7211,10 @@ class grammardefaultParser(Parser):
                     self._token('==')
                 with self._option():
                     self._token('=')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'==' '='"
+                )
         self.name_last_node('op')
 
         def block4():
@@ -6392,7 +7222,7 @@ class grammardefaultParser(Parser):
         self._closure(block4)
         self._expression_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -6413,7 +7243,7 @@ class grammardefaultParser(Parser):
         self._closure(block3)
         self._expression_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -6434,7 +7264,10 @@ class grammardefaultParser(Parser):
                     self._token('≥')
                 with self._option():
                     self._token('⩾')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'>=' '≥' '⩾'"
+                )
         self.name_last_node('op')
 
         def block4():
@@ -6442,7 +7275,7 @@ class grammardefaultParser(Parser):
         self._closure(block4)
         self._expression_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -6463,7 +7296,7 @@ class grammardefaultParser(Parser):
         self._closure(block3)
         self._expression_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -6484,7 +7317,10 @@ class grammardefaultParser(Parser):
                     self._token('≤')
                 with self._option():
                     self._token('⩽')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'<=' '≤' '⩽'"
+                )
         self.name_last_node('op')
 
         def block4():
@@ -6492,7 +7328,7 @@ class grammardefaultParser(Parser):
         self._closure(block4)
         self._expression_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -6513,8 +7349,17 @@ class grammardefaultParser(Parser):
                 self.name_last_node('sign')
                 self._arithmetic_term_()
                 self.name_last_node('value')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<arithmetic_addition>'
+                '<arithmetic_subtraction>'
+                "<arithmetic_term> '-'"
+                '<arithmetic_expression>'
+                '<arithmetic_multiplication>'
+                '<arithmetic_division>'
+                '<arithmetic_factor>'
+            )
+        self._define(
             ['sign', 'value'],
             []
         )
@@ -6536,7 +7381,7 @@ class grammardefaultParser(Parser):
         self._closure(block3)
         self._arithmetic_term_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -6558,7 +7403,7 @@ class grammardefaultParser(Parser):
         self._closure(block3)
         self._arithmetic_term_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -6573,7 +7418,17 @@ class grammardefaultParser(Parser):
                 self._arithmetic_division_()
             with self._option():
                 self._arithmetic_factor_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                '<arithmetic_multiplication>'
+                '<arithmetic_division>'
+                '<arithmetic_factor> <arithmetic_term>'
+                '<arithmetic_subexpression> # <POUND>'
+                "<size_op> <identifier> <integer> '.'"
+                '<digit> <mantissa> <floating_point>'
+                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
+                '<fraction> <number>'
+            )
 
     @tatsumasu('ArithMultiply')
     @nomemo
@@ -6603,8 +7458,18 @@ class grammardefaultParser(Parser):
                 self._closure(block6)
                 self._arithmetic_factor_()
                 self.name_last_node('right')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<arithmetic_multiplication>'
+                '<arithmetic_division>'
+                '<arithmetic_factor> <arithmetic_term>'
+                '<arithmetic_subexpression> # <POUND>'
+                "<size_op> <identifier> <integer> '.'"
+                '<digit> <mantissa> <floating_point>'
+                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
+                '<fraction> <number>'
+            )
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -6624,7 +7489,10 @@ class grammardefaultParser(Parser):
                     self._token('/')
                 with self._option():
                     self._token('÷')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'/' '÷'"
+                )
         self.name_last_node('op')
 
         def block4():
@@ -6632,7 +7500,7 @@ class grammardefaultParser(Parser):
         self._closure(block4)
         self._arithmetic_factor_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'op', 'right'],
             []
         )
@@ -6652,8 +7520,29 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._number_()
                 self.name_last_node('num')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "'(' <arithmetic_subexpression> # <POUND>"
+                '<size_op> <identifier_alone>'
+                '<identifier_with_subscript>'
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                'min <MIN> max <MAX> argmin <ARGMIN>'
+                'argmax <ARGMAX> int <INT> if <IF>'
+                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                '<SUBSET> as <AS> <BUILTIN_KEYWORDS>'
+                "<KEYWORDS> <identifier> <integer> '.'"
+                '<digit> <mantissa> <floating_point>'
+                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
+                '<fraction> \\d <number>'
+            )
+        self._define(
             ['id0', 'num', 'size', 'sub'],
             []
         )
@@ -6672,7 +7561,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
-        self.ast._define(
+        self._define(
             ['value'],
             []
         )
@@ -6762,8 +7651,11 @@ class grammardefaultParser(Parser):
                     self._matrix_attribute_()
                     self.add_last_node_to_name('attr')
                 self._closure(block19)
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                'matrix [ℝℤ]'
+            )
+        self._define(
             ['id1', 'id2', 'type'],
             ['attr']
         )
@@ -6836,8 +7728,11 @@ class grammardefaultParser(Parser):
                 self.name_last_node('type')
                 self._sup_integer_()
                 self.name_last_node('id1')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                'vector [ℝℤ] [ℝℤ] [ℝℤ]'
+            )
+        self._define(
             ['id1', 'type'],
             []
         )
@@ -6852,8 +7747,11 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._pattern('ℤ')
                 self.name_last_node('z')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                'scalar ℝ ℤ'
+            )
+        self._define(
             ['z'],
             []
         )
@@ -6983,8 +7881,11 @@ class grammardefaultParser(Parser):
                     self._closure(block30)
                 self._positive_closure(block27)
                 self._token('}')
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "'{'"
+            )
+        self._define(
             ['cnt', 'type1', 'type2'],
             ['homogeneous_types', 'sub_types', 'type']
         )
@@ -7012,7 +7913,7 @@ class grammardefaultParser(Parser):
                 self._hspace_()
             self._closure(block5)
         self._positive_closure(block2)
-        self.ast._define(
+        self._define(
             [],
             ['sub_types']
         )
@@ -7038,7 +7939,15 @@ class grammardefaultParser(Parser):
                 self._tuple_type_()
             with self._option():
                 self._scalar_type_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                'matrix [ℝℤ] <matrix_type> vector [ℝℤ]'
+                '[ℝℤ] [ℝℤ] <vector_type> scalar ℝ ℤ'
+                "<scalar_type> '{' <set_type>"
+                "<params_type> <tuple_type> '∅'"
+                '<function_type> <identifier>'
+                '<mapping_type>'
+            )
 
     @tatsumasu()
     @nomemo
@@ -7054,7 +7963,13 @@ class grammardefaultParser(Parser):
                 self._set_type_()
             with self._option():
                 self._tuple_type_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                'matrix [ℝℤ] <matrix_type> vector [ℝℤ]'
+                '[ℝℤ] [ℝℤ] <vector_type> scalar ℝ ℤ'
+                "<scalar_type> '{' <set_type>"
+                '<params_type> <tuple_type>'
+            )
 
     @tatsumasu('FunctionType')
     def _function_type_(self):  # noqa
@@ -7089,7 +8004,10 @@ class grammardefaultParser(Parser):
                         self._hspace_()
                     self._closure(block7)
                     self._token('}')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "<params_type> '∅' '{'"
+                )
 
         def block9():
             self._hspace_()
@@ -7100,7 +8018,10 @@ class grammardefaultParser(Parser):
                     self._token('→')
                 with self._option():
                     self._token('->')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "'→' '->'"
+                )
 
         def block11():
             self._hspace_()
@@ -7122,7 +8043,7 @@ class grammardefaultParser(Parser):
             self._params_type_()
             self.add_last_node_to_name('ret')
         self._closure(block13)
-        self.ast._define(
+        self._define(
             ['empty'],
             ['params', 'ret', 'ret_separators', 'separators']
         )
@@ -7162,7 +8083,10 @@ class grammardefaultParser(Parser):
                                 self._hspace_()
                             self._closure(block7)
                             self._token('}')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "<identifier> '∅' '{'"
+                        )
 
                 def block9():
                     self._hspace_()
@@ -7173,7 +8097,10 @@ class grammardefaultParser(Parser):
                             self._token('→')
                         with self._option():
                             self._token('->')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "'→' '->'"
+                        )
 
                 def block11():
                     self._hspace_()
@@ -7227,7 +8154,10 @@ class grammardefaultParser(Parser):
                                 self._hspace_()
                             self._closure(block25)
                             self._token('}')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "<identifier> '∅' '{'"
+                        )
 
                 def block27():
                     self._hspace_()
@@ -7238,7 +8168,10 @@ class grammardefaultParser(Parser):
                             self._token('→')
                         with self._option():
                             self._token('->')
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            "'→' '->'"
+                        )
 
                 def block29():
                     self._hspace_()
@@ -7260,8 +8193,26 @@ class grammardefaultParser(Parser):
                     self._identifier_()
                     self.add_last_node_to_name('ret')
                 self._closure(block31)
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                '<identifier_alone>'
+                '<identifier_with_subscript>'
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                'min <MIN> max <MAX> argmin <ARGMIN>'
+                'argmax <ARGMAX> int <INT> if <IF>'
+                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                '<SUBSET> as <AS> # <POUND>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                "<identifier> '∅' '{'"
+            )
+        self._define(
             ['empty'],
             ['params', 'ret', 'ret_separators', 'ret_type', 'separators']
         )
@@ -7273,7 +8224,7 @@ class grammardefaultParser(Parser):
             self._digit_()
         self._positive_closure(block1)
         self.name_last_node('value')
-        self.ast._define(
+        self._define(
             ['value'],
             []
         )
@@ -7285,7 +8236,7 @@ class grammardefaultParser(Parser):
             self._pattern('[\\u2070\\u00B9\\u00B2\\u00B3\\u2074-\\u2079]')
         self._positive_closure(block1)
         self.name_last_node('value')
-        self.ast._define(
+        self._define(
             ['value'],
             []
         )
@@ -7297,7 +8248,7 @@ class grammardefaultParser(Parser):
             self._pattern('[\\u2080-\\u2089]')
         self._positive_closure(block1)
         self.name_last_node('value')
-        self.ast._define(
+        self._define(
             ['value'],
             []
         )
@@ -7314,7 +8265,28 @@ class grammardefaultParser(Parser):
                 self._union_operator_()
             with self._option():
                 self._intersect_operator_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                '<solver_operator> <norm_operator>'
+                '<power_operator>'
+                '<inner_product_operator>'
+                '<frobenius_product_operator>'
+                '<hadamard_product_operator>'
+                '<cross_product_operator>'
+                '<kronecker_product_operator>'
+                '<set_operators> <sum_operator>'
+                '<integral_operator> <trans_operator>'
+                '<sqrt_operator> <function_operator>'
+                '<builtin_operators>'
+                '<pseudoinverse_operator> <operations>'
+                "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
+                '<number_matrix> <identifier> <integer>'
+                "'.' <digit> <mantissa> <floating_point>"
+                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
+                "<fraction> <number> '[' '⎡' <matrix> '('"
+                "<vector> '{' <set> <constant> <factor>"
+                '<union_operator> <intersect_operator>'
+            )
 
     @tatsumasu('Union')
     @nomemo
@@ -7332,7 +8304,7 @@ class grammardefaultParser(Parser):
         self._closure(block2)
         self._factor_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'right'],
             []
         )
@@ -7353,7 +8325,7 @@ class grammardefaultParser(Parser):
         self._closure(block2)
         self._factor_()
         self.name_last_node('right')
-        self.ast._define(
+        self._define(
             ['left', 'right'],
             []
         )
@@ -7403,7 +8375,10 @@ class grammardefaultParser(Parser):
                                 self._pattern('[^`]*')
                                 self.name_last_node('id')
                                 self._token('`')
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                            )
                 with self._option():
                     with self._group():
                         with self._choice():
@@ -7416,7 +8391,22 @@ class grammardefaultParser(Parser):
                         with self._group():
                             self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                    'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                    'min <MIN> max <MAX> argmin <ARGMIN>'
+                    'argmax <ARGMAX> int <INT> if <IF>'
+                    'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                    'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                    'subject to <SUBJECT_TO> from <FROM> π'
+                    "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
+                    '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                    '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                    "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                    '<SUBSET> as <AS> # <POUND>'
+                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                )
             self.ast._define(
                 ['const', 'id', 'value'],
                 []
@@ -7438,15 +8428,33 @@ class grammardefaultParser(Parser):
                                 self._pattern('[^`]*')
                                 self.name_last_node('id')
                                 self._token('`')
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                            )
                 with self._option():
                     with self._group():
                         self._KEYWORDS_()
                         with self._group():
                             self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
-                self._error('no available options')
-            self.ast._define(
+                self._error(
+                    'expecting one of: '
+                    "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                    'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                    'min <MIN> max <MAX> argmin <ARGMIN>'
+                    'argmax <ARGMAX> int <INT> if <IF>'
+                    'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                    'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                    'subject to <SUBJECT_TO> from <FROM> π'
+                    "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
+                    '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                    '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                    "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                    '<SUBSET> as <AS> # <POUND>'
+                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                )
+            self._define(
                 ['id', 'value'],
                 []
             )
@@ -7458,7 +8466,24 @@ class grammardefaultParser(Parser):
                 self._identifier_with_subscript_()
             with self._option():
                 self._identifier_alone_()
-            self._error('no available options')
+            self._error(
+                'expecting one of: '
+                '<identifier_alone>'
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
+                'min <MIN> max <MAX> argmin <ARGMIN>'
+                'argmax <ARGMAX> int <INT> if <IF>'
+                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
+                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
+                '<SUBSET> as <AS> # <POUND>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<identifier_with_subscript>'
+            )
 
     @tatsumasu('Function')
     def _function_operator_(self):  # noqa
@@ -7473,7 +8498,10 @@ class grammardefaultParser(Parser):
                             self._integer_()
                         with self._option():
                             self._identifier_alone_()
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            '<integer> <identifier_alone>'
+                        )
                 self.add_last_node_to_name('subs')
 
                 def block3():
@@ -7487,7 +8515,10 @@ class grammardefaultParser(Parser):
                                 self._integer_()
                             with self._option():
                                 self._identifier_alone_()
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                '<integer> <identifier_alone>'
+                            )
                     self.add_last_node_to_name('subs')
                 self._closure(block3)
 
@@ -7567,7 +8598,10 @@ class grammardefaultParser(Parser):
                             self._sub_integer_()
                         with self._option():
                             self._unicode_subscript_()
-                        self._error('no available options')
+                        self._error(
+                            'expecting one of: '
+                            '<sub_integer> <unicode_subscript>'
+                        )
                 self.add_last_node_to_name('subs')
 
                 def block32():
@@ -7581,7 +8615,10 @@ class grammardefaultParser(Parser):
                                 self._sub_integer_()
                             with self._option():
                                 self._unicode_subscript_()
-                            self._error('no available options')
+                            self._error(
+                                'expecting one of: '
+                                '<sub_integer> <unicode_subscript>'
+                            )
                     self.add_last_node_to_name('subs')
                 self._closure(block32)
 
@@ -7618,8 +8655,11 @@ class grammardefaultParser(Parser):
                     self._closure(block46)
                     self._token(')')
                 self._closure(block36)
-            self._error('no available options')
-        self.ast._define(
+            self._error(
+                'expecting one of: '
+                "'!!!' <func_id>"
+            )
+        self._define(
             ['name', 'p'],
             ['params', 'separators', 'subs']
         )
@@ -7806,7 +8846,11 @@ class grammardefaultParser(Parser):
                         self._closure(block57)
                         self._token(']')
                     self._closure(block47)
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    '<identifier_with_unicode_subscript>'
+                    '<identifier_alone>'
+                )
 
         def block59():
             self._hspace_()
@@ -7829,7 +8873,10 @@ class grammardefaultParser(Parser):
                     self._WHERE_()
                 with self._option():
                     self._GIVEN_()
-                self._error('no available options')
+                self._error(
+                    'expecting one of: '
+                    '<WHERE> <GIVEN>'
+                )
 
         def block65():
             self._hspace_()
@@ -7864,7 +8911,7 @@ class grammardefaultParser(Parser):
             self._general_assignment_()
             self.add_last_node_to_name('extra')
         self._closure(block71)
-        self.ast._define(
+        self._define(
             ['def_p', 'def_s', 'name', 'op'],
             ['defs', 'expr', 'extra', 'params', 'separators', 'subs']
         )
@@ -8808,7 +9855,12 @@ def main(filename, start=None, **kwargs):
         with open(filename) as f:
             text = f.read()
     parser = grammardefaultParser()
-    return parser.parse(text, rule_name=start, filename=filename, **kwargs)
+    return parser.parse(
+        text,
+        rule_name=start,
+        filename=filename,
+        **kwargs
+    )
 
 
 if __name__ == '__main__':
@@ -8816,14 +9868,9 @@ if __name__ == '__main__':
     from tatsu.util import asjson
 
     ast = generic_main(main, grammardefaultParser, name='grammardefault')
-    print('AST:')
-    print(ast)
-    print()
-    print('JSON:')
-    print(json.dumps(asjson(ast), indent=2))
-    print()
+    data = asjson(ast)
+    print(json.dumps(data, indent=2))
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 # CAVEAT UTILITOR
 #

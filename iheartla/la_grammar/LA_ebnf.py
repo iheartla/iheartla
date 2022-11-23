@@ -9,8 +9,10 @@ from .arithmetic_ebnf import ARITHMETIC
 from ..la_grammar.types_ebnf import TYPES
 from .geometry_ebnf import GEOMETRY
 from .set_ebnf import SET_OPERATORS
+GRAMMAR = r"""
+@@grammar::grammarc21f969b5f03d33d43e04f8f136e7682
+"""
 START = r"""
-@@grammar::LA
 @@whitespace :: /(?!.*)/     #parse whitespace manually
 @@left_recursion::True
 
@@ -18,7 +20,7 @@ start::Start
     = {{separator_with_space} {hspace} vblock+:valid_block {separator_with_space}}+ {blank} $
     ;
 """
-LA = START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + GEOMETRY + SHARED + ARITHMETIC + TYPES + SET_OPERATORS
+LA = GRAMMAR + START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + GEOMETRY + SHARED + ARITHMETIC + TYPES + SET_OPERATORS
 #include :: "keywords.ebnf"
 #include :: "number.ebnf"
 #include :: "operators.ebnf"
