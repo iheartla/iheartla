@@ -394,9 +394,13 @@ class FunctionType(LaVarType):
     def get_signature(self):
         signature = get_list_signature(self.params) + ' → '
         ret_list = []
-        for cur_ret in self.ret:
-            ret_list.append(cur_ret.get_signature())
-        return signature + ','.join(ret_list)
+        if isinstance(self.ret, list):
+            for cur_ret in self.ret:
+                ret_list.append(cur_ret.get_signature())
+            ret_sig = ','.join(ret_list)
+        else:
+            ret_sig = self.ret.get_signature()
+        return signature + ret_sig
 
     def get_overloading_signature(self):
         return self.get_param_signature()
