@@ -286,6 +286,7 @@ class TypeWalker(NodeWalker):
         self.func_mapping_dict = {}# key in func_data_dict -> func name in source code
         self.func_name_dict = {}   # local function node -> local function name
         self.func_sig_dict = {}    # function signature -> identity local function name
+        self.func_imported_renaming = {}  # renamed overloading func name -> imported func name
         self.extra_symtable = {}   # symtable for overloaded functions (due to renaming)
         #
         self.desc_dict = {}        # comment for parameters
@@ -399,6 +400,7 @@ class TypeWalker(NodeWalker):
         self.local_func_dict.clear()
         self.extra_symtable.clear()
         self.func_sig_dict.clear()
+        self.func_imported_renaming.clear()
         self.opt_dict.clear()
         self.func_data_dict.clear()
         self.func_mapping_dict.clear()
@@ -503,6 +505,7 @@ class TypeWalker(NodeWalker):
         func_sig_dict
         :return:
         """
+        new_sym_name = None
         target_symtable = self.get_cur_param_data().symtable
         if is_main:
             target_symtable = self.symtable
@@ -534,9 +537,11 @@ class TypeWalker(NodeWalker):
                     self.extra_symtable[n_name] = c_type
                     self.func_mapping_dict[n_name] = sym
                     la_debug("n_name:{}".format(n_name))
+                    new_sym_name = n_name
                 if not self.pre_walk:
                     la_debug("sym:{}, sig:{}".format(sym, c_type.get_signature()))
                     la_debug("self.func_sig_dict:{}".format(self.func_sig_dict))
+        return new_sym_name
 
     def get_sym_type(self, sym):
         """
@@ -1414,7 +1419,12 @@ class TypeWalker(NodeWalker):
                 self.add_builtin_module_data(pkg_name, params_list, name_list, r_dict)
             if pkg_name == TRIANGLE_MESH:
                 for name in name_list:
-                    self.symtable[r_dict[name]] = get_sym_type_from_pkg(name, pkg_name)
+                    # self.symtable[r_dict[name]] = get_sym_type_from_pkg(name, pkg_name)
+                    new_sym_name = self.add_sym_type(r_dict[name], get_sym_type_from_pkg(name, pkg_name), get_err_msg_info(node.parseinfo,
+                                                                            "Parameter {} has been defined.".format(
+                                                                                name)))
+                    if new_sym_name:
+                        self.func_imported_renaming[new_sym_name] = name
         else:
             module = package_info.ir
             self.import_module_list.append(DependenceData(module.get_name(), params_list, name_list))
@@ -2627,8 +2637,11 @@ class TypeWalker(NodeWalker):
             ir_node.la_type = ret_type
             node_info.ir = ir_node
             # Builtin function call
-            if func_name in TRIANGLE_MESH_FUNC_MAPPING:
-                tri_node = GPFuncNode(param_list, TRIANGLE_MESH_FUNC_MAPPING[func_name], func_name)
+            builtin_name = ir_node.identity_name
+            if ir_node.identity_name in self.func_imported_renaming:
+                builtin_name = self.func_imported_renaming[ir_node.identity_name]
+            if builtin_name in TRIANGLE_MESH_FUNC_MAPPING:
+                tri_node = GPFuncNode(param_list, TRIANGLE_MESH_FUNC_MAPPING[builtin_name], builtin_name)
                 node_info = NodeInfo(ret_type, symbols=symbols)
                 tri_node.la_type = ret_type
                 node_info.ir = tri_node
