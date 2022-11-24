@@ -6793,6 +6793,24 @@ class grammardefaultParser(Parser):
                 '<de_where_condition>'
             )
 
+    @tatsumasu()
+    def _attribute_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._pattern('index')
+            with self._option():
+                self._pattern('vertices')
+            with self._option():
+                self._pattern('edges')
+            with self._option():
+                self._pattern('faces')
+            with self._option():
+                self._pattern('tets')
+            self._error(
+                'expecting one of: '
+                'index vertices edges faces tets'
+            )
+
     @tatsumasu('WhereCondition')
     def _la_where_condition_(self):  # noqa
         self._identifier_()
@@ -6837,8 +6855,8 @@ class grammardefaultParser(Parser):
             def block10():
                 self._hspace_()
             self._closure(block10)
-            self._token('index')
-            self.name_last_node('index')
+            self._attribute_()
+            self.name_last_node('attrib')
         self._closure(block9)
 
         def block12():
@@ -6855,7 +6873,7 @@ class grammardefaultParser(Parser):
             self.name_last_node('desc')
         self._closure(block12)
         self._define(
-            ['type', 'index', 'desc'],
+            ['type', 'attrib', 'desc'],
             ['id']
         )
 
@@ -6895,8 +6913,8 @@ class grammardefaultParser(Parser):
             def block10():
                 self._hspace_()
             self._closure(block10)
-            self._token('index')
-            self.name_last_node('index')
+            self._attribute_()
+            self.name_last_node('attrib')
         self._closure(block9)
 
         def block12():
@@ -6913,7 +6931,7 @@ class grammardefaultParser(Parser):
             self.name_last_node('desc')
         self._closure(block12)
         self._define(
-            ['subset', 'type', 'index', 'desc'],
+            ['subset', 'type', 'attrib', 'desc'],
             ['id']
         )
 
@@ -6961,11 +6979,11 @@ class grammardefaultParser(Parser):
             def block10():
                 self._hspace_()
             self._closure(block10)
-            self._token('index')
-            self.name_last_node('index')
+            self._attribute_()
+            self.name_last_node('attrib')
         self._closure(block9)
         self._define(
-            ['type', 'index'],
+            ['type', 'attrib'],
             ['id']
         )
 
@@ -10594,6 +10612,9 @@ class grammardefaultSemantics:
     def where_condition(self, ast):  # noqa
         return ast
 
+    def attribute(self, ast):  # noqa
+        return ast
+
     def la_where_condition(self, ast):  # noqa
         return ast
 
@@ -11563,17 +11584,17 @@ class WhereConditions(ModelBase):
 
 @dataclass(eq=False)
 class WhereCondition(ModelBase):
+    attrib: Any = None
     desc: Any = None
     id: Any = None
-    index: Any = None
     type: Any = None
 
 
 @dataclass(eq=False)
 class DeWhereCondition(ModelBase):
+    attrib: Any = None
     desc: Any = None
     id: Any = None
-    index: Any = None
     subset: Any = None
     type: Any = None
 

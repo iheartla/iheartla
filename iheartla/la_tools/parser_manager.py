@@ -1,5 +1,6 @@
 from .la_helper import *
 from .la_logger import *
+from .la_package import *
 if not DEBUG_PARSER:
     from ..la_local_parsers.init_parser import grammarinitParser, grammarinitModelBuilderSemantics
     from ..la_local_parsers.default_parser import grammardefaultParser, grammardefaultModelBuilderSemantics

@@ -22,17 +22,20 @@ where_condition
     | de_where_condition
     ;
     
+attribute
+    = /index/ | /vertices/ | /edges/ | /faces/ | /tets/
+    ;
     
 la_where_condition::WhereCondition
-    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN) {hspace} type:la_type {{hspace} index:'index'} { {hspace} ':' {hspace} desc:description}
+    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN) {hspace} type:la_type {{hspace} attrib:attribute} { {hspace} ':' {hspace} desc:description}
     ;
     
 de_where_condition::DeWhereCondition
-    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} subset:SUBSET {hspace} type:la_type {{hspace} index:'index'} { {hspace} ':' {hspace} desc:description}
+    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} subset:SUBSET {hspace} type:la_type {{hspace} attrib:attribute} { {hspace} ':' {hspace} desc:description}
     ;
     
 where_condition_terse::WhereCondition
-    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN) {hspace} type:la_type {{hspace} index:'index'}
+    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN) {hspace} type:la_type {{hspace} attrib:attribute}
     ;
 
 #######################################################################################################################
