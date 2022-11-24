@@ -15,6 +15,10 @@ class VarTypeEnum(Enum):
     MAPPING = 8
     TUPLE = 9
     OVERLOADINGFUNCTION = 10
+    VERTEXTYPE = 11
+    EDGETYPE = 12
+    FACETYPE = 13
+    TETTYPE = 14
 
 
 class DynamicTypeEnum(IntFlag):
@@ -126,7 +130,8 @@ class LaVarType(object):
         # return self.var_type == VarTypeEnum.VECTOR or (self.var_type == VarTypeEnum.MATRIX and self.cols == 1)
 
     def is_scalar(self):
-        return self.var_type == VarTypeEnum.SCALAR
+        return self.var_type == VarTypeEnum.SCALAR or self.var_type == VarTypeEnum.VERTEXTYPE \
+               or self.var_type == VarTypeEnum.EDGETYPE or self.var_type == VarTypeEnum.FACETYPE or self.var_type == VarTypeEnum.TETTYPE
 
     def is_mapping(self):
         return self.var_type == VarTypeEnum.MAPPING
@@ -200,6 +205,38 @@ class IntType(ScalarType):
 
     def get_raw_text(self):
         return 'ℤ'
+
+class VertexType(ScalarType):
+    def __init__(self):
+        ScalarType.__init__(self, is_int=True)
+        self.var_type = VarTypeEnum.VERTEXTYPE
+
+    def get_raw_text(self):
+        return 'v:ℤ'
+
+class EdgeType(ScalarType):
+    def __init__(self):
+        ScalarType.__init__(self, is_int=True)
+        self.var_type = VarTypeEnum.EDGETYPE
+
+    def get_raw_text(self):
+        return 'e:ℤ'
+
+class FaceType(ScalarType):
+    def __init__(self):
+        ScalarType.__init__(self, is_int=True)
+        self.var_type = VarTypeEnum.FACETYPE
+
+    def get_raw_text(self):
+        return 'f:ℤ'
+
+class TetType(ScalarType):
+    def __init__(self):
+        ScalarType.__init__(self, is_int=True)
+        self.var_type = VarTypeEnum.TETTYPE
+
+    def get_raw_text(self):
+        return 'f:ℤ'
 
 class SequenceType(LaVarType):
     def __init__(self, size=0, desc=None, element_type=None, symbol=None, dynamic=False):

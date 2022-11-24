@@ -1015,11 +1015,25 @@ class TypeWalker(NodeWalker):
             ir_node.desc = node.desc
         type_node = self.walk(node.type, **kwargs)
         if node.attrib:
-            # check index type condition
-            self.assert_expr(type_node.la_type.is_integer_element(), get_err_msg_info(node.id[0].parseinfo, "Invalid index type: element must be integer"))
-            type_node.la_type.index_type = True
-            if not type_node.la_type.is_scalar():
-                type_node.la_type.element_type.index_type = True
+            self.assert_expr(type_node.la_type.is_integer_element(),
+                             get_err_msg_info(node.id[0].parseinfo, "Invalid attribute: element must be integer"))
+            if node.attrib == 'index':
+                # check index type condition
+                type_node.la_type.index_type = True
+                if not type_node.la_type.is_scalar():
+                    type_node.la_type.element_type.index_type = True
+            elif node.attrib == 'vertices':
+                if type_node.la_type.is_scalar():
+                    type_node.la_type = VertexType()
+            elif node.attrib == 'edges':
+                if type_node.la_type.is_scalar():
+                    type_node.la_type = EdgeType()
+            elif node.attrib == 'faces':
+                if type_node.la_type.is_scalar():
+                    type_node.la_type = FaceType()
+            elif node.attrib == 'tets':
+                if type_node.la_type.is_scalar():
+                    type_node.la_type = TetType()
         type_node.parse_info = node.parseinfo
         type_node.la_type.desc = desc
         for id_index in range(len(node.id)):
