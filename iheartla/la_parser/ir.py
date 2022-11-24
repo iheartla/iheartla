@@ -249,10 +249,11 @@ class WhereConditionsNode(StmtNode):
 
 
 class WhereConditionNode(StmtNode):
-    def __init__(self, la_type=None, parse_info=None, raw_text=None):
+    def __init__(self, la_type=None, attrib=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.WhereCondition, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.id = []
         self.type = None
+        self.attrib = attrib
         self.desc = None
 
     def get_type_dict(self):

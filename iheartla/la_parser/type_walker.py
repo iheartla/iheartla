@@ -1013,7 +1013,7 @@ class TypeWalker(NodeWalker):
         pass
 
     def walk_WhereCondition(self, node, **kwargs):
-        ir_node = WhereConditionNode(parse_info=node.parseinfo, raw_text=node.text)
+        ir_node = WhereConditionNode(attrib=node.attrib, parse_info=node.parseinfo, raw_text=node.text)
         ret = node.text.split(':')
         desc = ':'.join(ret[1:len(ret)])
         if hasattr(node, 'desc'):

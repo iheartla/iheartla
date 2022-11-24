@@ -240,6 +240,8 @@ class CodeGenLatex(CodeGen):
             content = "{} \\in {}".format(','.join(id_list), type_content)
         else:
             content = "{} & \\in {}".format(','.join(id_list), type_content)
+        if node.attrib:
+            content += " ,\\text{{ {}}}".format(node.attrib)
         if node.desc:
             content += " \\text{{ {}}}".format(self.convert_special_syms(node.desc))
         return content
