@@ -2484,26 +2484,26 @@ class TypeWalker(NodeWalker):
                 self.used_params.append(node.name)
             if self.visiting_opt and node.name in self.parameters and node.name not in self.used_params:
                 self.used_params.append(node.name)
-            if contains_sub_symbol(node.name):
-                split_res = split_sub_string(node.name)
-                name = self.filter_symbol(split_res[0])
-                ir_node = SequenceIndexNode(raw_text=node.name)
-                ir_node.main = IdNode(name, parse_info=node.parseinfo)
-                ir_node.main.la_type = self.symtable[name]
-                ir_node.main_index = IdNode(split_res[-1], parse_info=node.parseinfo)
-                if split_res[-1].isnumeric():
-                    ir_node.main_index.la_type = ScalarType(is_int=True)
-                else:
-                    self.assert_expr(split_res[-1] in self.symtable, get_err_msg_info(node.parseinfo, "Subscript not defined"))
-                    self.assert_expr(self.symtable[split_res[-1]].is_int_scalar(), get_err_msg_info(node.parseinfo, "Subscript has to be integer"))
-                    ir_node.main_index.la_type = self.symtable[split_res[-1]]
-                    self.update_sub_sym_lists(name, split_res[-1])
-                ir_node.la_type = self.symtable[name].element_type
-                ir_node.process_subs_dict(self.lhs_sub_dict)
-            else:
-                ir_node = IdNode(node.name, parse_info=node.parseinfo)
-                node.name = self.filter_symbol(node.name)
-                ir_node.la_type = self.get_sym_type(node.name)
+            # if contains_sub_symbol(node.name):
+            #     split_res = split_sub_string(node.name)
+            #     name = self.filter_symbol(split_res[0])
+            #     ir_node = SequenceIndexNode(raw_text=node.name)
+            #     ir_node.main = IdNode(name, parse_info=node.parseinfo)
+            #     ir_node.main.la_type = self.symtable[name]
+            #     ir_node.main_index = IdNode(split_res[-1], parse_info=node.parseinfo)
+            #     if split_res[-1].isnumeric():
+            #         ir_node.main_index.la_type = ScalarType(is_int=True)
+            #     else:
+            #         self.assert_expr(split_res[-1] in self.symtable, get_err_msg_info(node.parseinfo, "Subscript not defined"))
+            #         self.assert_expr(self.symtable[split_res[-1]].is_int_scalar(), get_err_msg_info(node.parseinfo, "Subscript has to be integer"))
+            #         ir_node.main_index.la_type = self.symtable[split_res[-1]]
+            #         self.update_sub_sym_lists(name, split_res[-1])
+            #     ir_node.la_type = self.symtable[name].element_type
+            #     ir_node.process_subs_dict(self.lhs_sub_dict)
+            # else:
+            ir_node = IdNode(node.name, parse_info=node.parseinfo)
+            node.name = self.filter_symbol(node.name)
+            ir_node.la_type = self.get_sym_type(node.name)
             name_info = NodeInfo(ir_node.la_type, ir=ir_node)
         else:
             name_info = self.walk(node.name, **kwargs)
