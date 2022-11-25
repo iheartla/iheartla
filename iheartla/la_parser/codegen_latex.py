@@ -277,6 +277,10 @@ class CodeGenLatex(CodeGen):
             content += " ,\\text{ index}"
         return content
 
+    def visit_named_type(self, node, **kwargs):
+        content = "\\text{{ {}}}".format(node.name)
+        return content
+
     def visit_set_type(self, node, **kwargs):
         content = ''
         int_list = []

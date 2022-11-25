@@ -8784,6 +8784,54 @@ class grammardefaultParser(Parser):
     def _dimension_(self):  # noqa
         self._arithmetic_expression_()
 
+    @tatsumasu('NamedType')
+    def _named_type_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._pattern('VertexSet')
+                self.name_last_node('v')
+                self._define(
+                    ['v'],
+                    []
+                )
+            with self._option():
+                self._pattern('EdgeSet')
+                self.name_last_node('e')
+                self._define(
+                    ['e'],
+                    []
+                )
+            with self._option():
+                self._pattern('FaceSet')
+                self.name_last_node('f')
+                self._define(
+                    ['f'],
+                    []
+                )
+            with self._option():
+                self._pattern('TetSet')
+                self.name_last_node('t')
+                self._define(
+                    ['t'],
+                    []
+                )
+            with self._option():
+                self._pattern('SimplicialSet')
+                self.name_last_node('s')
+                self._define(
+                    ['s'],
+                    []
+                )
+            self._error(
+                'expecting one of: '
+                'VertexSet EdgeSet FaceSet TetSet'
+                'SimplicialSet'
+            )
+        self._define(
+            ['v', 'e', 'f', 't', 's'],
+            []
+        )
+
     @tatsumasu()
     def _la_type_(self):  # noqa
         with self._choice():
@@ -8801,13 +8849,17 @@ class grammardefaultParser(Parser):
                 self._tuple_type_()
             with self._option():
                 self._scalar_type_()
+            with self._option():
+                self._named_type_()
             self._error(
                 'expecting one of: '
                 'matrix [ℝℤ] <matrix_type> vector'
                 '<vector_type> scalar ℝ ℤ <scalar_type>'
                 "'{' <set_type> <params_type>"
                 "<tuple_type> '∅' <function_type>"
-                '<identifier> <mapping_type>'
+                '<identifier> <mapping_type> VertexSet'
+                'EdgeSet FaceSet TetSet SimplicialSet'
+                '<named_type>'
             )
 
     @tatsumasu()
@@ -10753,6 +10805,9 @@ class grammardefaultSemantics:
     def dimension(self, ast):  # noqa
         return ast
 
+    def named_type(self, ast):  # noqa
+        return ast
+
     def la_type(self, ast):  # noqa
         return ast
 
@@ -11796,6 +11851,15 @@ class SetType(ModelBase):
 @dataclass(eq=False)
 class TupleType(ModelBase):
     sub_types: Any = None
+
+
+@dataclass(eq=False)
+class NamedType(ModelBase):
+    e: Any = None
+    f: Any = None
+    s: Any = None
+    t: Any = None
+    v: Any = None
 
 
 @dataclass(eq=False)

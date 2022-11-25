@@ -1230,6 +1230,22 @@ class TypeWalker(NodeWalker):
         ir_node.la_type = la_type
         return ir_node
 
+    def walk_NamedType(self, node, **kwargs):
+        ir_node = NamedTypeNode(name=node.text, parse_info=node.parseinfo, raw_text=node.text)
+        la_type = ScalarType()
+        if node.v:
+            la_type = VertexSetType()
+        elif node.e:
+            la_type = EdgeSetType()
+        elif node.f:
+            la_type = FaceSetType()
+        elif node.t:
+            la_type = TetSetType()
+        elif node.s:
+            la_type = SimplicialSetType()
+        ir_node.la_type = la_type
+        return ir_node
+
     def walk_SetType(self, node, **kwargs):
         ir_node = SetTypeNode(parse_info=node.parseinfo, raw_text=node.text)
         int_list = []

@@ -38,6 +38,14 @@ dimension
     arithmetic_expression
     ;
 
+named_type::NamedType
+    = v:/VertexSet/
+    | e:/EdgeSet/
+    | f:/FaceSet/
+    | t:/TetSet/
+    | s:/SimplicialSet/
+    ;
+    
 la_type
     =
     | function_type
@@ -47,6 +55,7 @@ la_type
     | set_type
     | tuple_type
     | scalar_type
+    | named_type
     ;
 
 params_type
