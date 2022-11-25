@@ -72,6 +72,9 @@ VI = 'Vi'
 EI = 'Ei'
 FI = 'Fi'
 NEI = 'nEi'
+BM1 = 'bm1'
+BM2 = 'bm2'
+BM3 = 'bm3'
 PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', 'arccos', 'tan', 'atan', 'arctan', 'atan2',
                                   'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh',
                                   'cot', 'sec', 'csc'],
@@ -85,7 +88,7 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                  STAR, CLOSURE, LINK, BOUNDARY, IS_COMPLEX, IS_PURE_COMPLEX,
                                  VERTICES, EDGES, FACES, TETS, DIAMOND]}
 PACKAGES_SYM_DICT = {'trigonometry': ['e'],
-                 TRIANGLE_MESH: [EDGES, VI, EI, FI, NEI]}
+                 TRIANGLE_MESH: [EDGES, VI, EI, FI, NEI, BM1, BM2, BM3]}
 TRIANGLE_MESH_FUNC_MAPPING = {
 FACES_OF_EDGE: GPType.FacesOfEdge,
 FACE_NORMAL: GPType.FaceNormal,
@@ -123,44 +126,50 @@ DIAMOND:GPType.Diamond,
 }
 TRIANGLE_MESH_SYM_TYPE = {
 # functions
-FACES_OF_EDGE: make_function_type([IntType()], [FaceSetType()]),
+FACES_OF_EDGE: make_function_type([EdgeType()], [FaceSetType()]),
 FACE_NORMAL: make_function_type(),
 DIHEDRAL: make_function_type(),
-GET_ADJACENT_VERTICES_V: make_function_type([IntType()], [VertexSetType()]),
-GET_INCIDENT_EDGES_V: make_function_type([IntType()], [EdgeSetType()]),
-GET_INCIDENT_FACES_V: make_function_type([IntType()], [FaceSetType()]),
+GET_ADJACENT_VERTICES_V: make_function_type([VertexType()], [VertexSetType()]),
+GET_INCIDENT_EDGES_V: make_function_type([VertexType()], [EdgeSetType()]),
+GET_INCIDENT_FACES_V: make_function_type([VertexType()], [FaceSetType()]),
 #
-GET_INCIDENT_VERTICES_E: make_function_type([IntType()], [VertexSetType()]),
-GET_INCIDENT_FACES_E: make_function_type([IntType()], [FaceSetType()]),
-GET_DIAMOND_VERTICES_E: make_function_type([IntType()], [VertexSetType()]),
-GET_DIAMOND_FACES_E: make_function_type([IntType()], [IntType(), IntType()]),
+GET_INCIDENT_VERTICES_E: make_function_type([EdgeType()], [VertexSetType()]),
+GET_INCIDENT_FACES_E: make_function_type([EdgeType()], [FaceSetType()]),
+GET_DIAMOND_VERTICES_E: make_function_type([EdgeType()], [VertexSetType()]),
+GET_DIAMOND_FACES_E: make_function_type([EdgeType()], [VertexType(), VertexType()]),
 #
-GET_INCIDENT_VERTICES_F: make_function_type([IntType()], [VertexSetType()]),
-GET_INCIDENT_EDGES_F: make_function_type([IntType()], [EdgeSetType()]),
-GET_ADJACENT_FACES_F: make_function_type([IntType()], [FaceSetType()]),
+GET_INCIDENT_VERTICES_F: make_function_type([FaceType()], [VertexSetType()]),
+GET_INCIDENT_EDGES_F: make_function_type([FaceType()], [EdgeSetType()]),
+GET_ADJACENT_FACES_F: make_function_type([FaceType()], [FaceSetType()]),
 #
 BUILD_VERTEX_VECTOR: make_function_type([VertexSetType()], [VectorType()]),
 BUILD_EDGE_VECTOR: make_function_type([EdgeSetType()], [VectorType()]),
 BUILD_FACE_VECTOR: make_function_type([FaceSetType()], [VectorType()]),
-GET_VERTICES_E: make_function_type([IntType()], [IntType(), IntType()]),
-GET_EDGES_F: make_function_type([IntType()], [IntType(), IntType(), IntType()]),
-GET_VERTICES_F: make_function_type([IntType()], [IntType(), IntType(), IntType()]),
+#
+GET_VERTICES_E: make_function_type([EdgeType()], [VertexType(), VertexType()]),
+GET_EDGES_F: make_function_type([FaceType()], [EdgeType(), EdgeType(), EdgeType()]),
+GET_VERTICES_F: make_function_type([FaceType()], [VertexType(), VertexType(), VertexType()]),
+#
 STAR: make_function_type([SimplicialSetType()], [SimplicialSetType()]),
 CLOSURE: make_function_type([SimplicialSetType()], [SimplicialSetType()]),
 LINK: make_function_type([SimplicialSetType()], [SimplicialSetType()]),
 BOUNDARY: make_function_type([SimplicialSetType()], [SimplicialSetType()]),
 IS_COMPLEX: make_function_type([SimplicialSetType()], [IntType()]),
 IS_PURE_COMPLEX: make_function_type([SimplicialSetType()], [IntType()]),
+#
 VERTICES: make_function_type([SimplicialSetType()], [VertexSetType()]),
 EDGES: make_function_type([SimplicialSetType()], [EdgeSetType()]),
 FACES: make_function_type([SimplicialSetType()], [FaceSetType()]),
 TETS: make_function_type([SimplicialSetType()], [TetSetType()]),
-DIAMOND: make_function_type([IntType()], [SimplicialSetType()]),
+DIAMOND: make_function_type([EdgeType()], [SimplicialSetType()]),
 # variables
 VI: VertexSetType(),
 EI: EdgeSetType(),
 FI: FaceSetType(),
-NEI: EdgeSetType()
+NEI: EdgeSetType(),
+BM1: MatrixType(),
+BM2: MatrixType(),
+BM3: MatrixType()
 }
 def merge_dict(dict1, dict2):
     # key:[value,]
