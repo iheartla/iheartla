@@ -632,6 +632,12 @@ class CodeGenLatex(CodeGen):
         index_info = self.visit(node.row_index, **kwargs)
         return "{}_{{ {} }}".format(main_info, index_info)
 
+    def visit_tuple_index(self, node, **kwargs):
+        main_info = self.visit(node.main, **kwargs)
+        kwargs['is_sub'] = True
+        index_info = self.visit(node.row_index, **kwargs)
+        return "{}_{{ {} }}".format(main_info, index_info)
+
     def visit_sequence_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
         kwargs['is_sub'] = True
