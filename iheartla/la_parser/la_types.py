@@ -164,6 +164,10 @@ class LaVarType(object):
                 same = self.rows == other.rows and self.cols == other.cols
             elif self.var_type == VarTypeEnum.VECTOR:
                 same = self.rows == other.rows
+            elif self.var_type == VarTypeEnum.SET:
+                same = self.cur_type == other.cur_type
+            elif self.var_type == VarTypeEnum.SCALAR:
+                same = self.cur_type == other.cur_type
             else:
                 same = True
         return same
@@ -179,10 +183,11 @@ class LaVarType(object):
 
 
 class ScalarType(LaVarType):
-    def __init__(self, is_int=False, desc=None, element_type=None, symbol=None, index_type=False, is_constant=False, dynamic=DynamicTypeEnum.DYN_INVALID):
+    def __init__(self, is_int=False, desc=None, element_type=None, symbol=None, index_type=False, is_constant=False, dynamic=DynamicTypeEnum.DYN_INVALID, cur_type=SetTypeEnum.DEFAULT):
         LaVarType.__init__(self, VarTypeEnum.SCALAR, desc, element_type, symbol, index_type=index_type, dynamic=dynamic)
         self.is_int = is_int
         self.is_constant = is_constant  # constant number
+        self.cur_type = cur_type
 
     def get_signature(self):
         # if self.is_int:
@@ -208,32 +213,32 @@ class IntType(ScalarType):
 
 class VertexType(ScalarType):
     def __init__(self):
-        ScalarType.__init__(self, is_int=True)
-        self.var_type = VarTypeEnum.VERTEXTYPE
+        ScalarType.__init__(self, is_int=True, cur_type=SetTypeEnum.VERTEX)
+        # self.var_type = VarTypeEnum.VERTEXTYPE
 
     def get_raw_text(self):
         return 'v:ℤ'
 
 class EdgeType(ScalarType):
     def __init__(self):
-        ScalarType.__init__(self, is_int=True)
-        self.var_type = VarTypeEnum.EDGETYPE
+        ScalarType.__init__(self, is_int=True, cur_type=SetTypeEnum.EDGE)
+        # self.var_type = VarTypeEnum.EDGETYPE
 
     def get_raw_text(self):
         return 'e:ℤ'
 
 class FaceType(ScalarType):
     def __init__(self):
-        ScalarType.__init__(self, is_int=True)
-        self.var_type = VarTypeEnum.FACETYPE
+        ScalarType.__init__(self, is_int=True, cur_type=SetTypeEnum.FACE)
+        # self.var_type = VarTypeEnum.FACETYPE
 
     def get_raw_text(self):
         return 'f:ℤ'
 
 class TetType(ScalarType):
     def __init__(self):
-        ScalarType.__init__(self, is_int=True)
-        self.var_type = VarTypeEnum.TETTYPE
+        ScalarType.__init__(self, is_int=True, cur_type=SetTypeEnum.TET)
+        # self.var_type = VarTypeEnum.TETTYPE
 
     def get_raw_text(self):
         return 'f:ℤ'
@@ -345,6 +350,9 @@ class SetType(LaVarType):
         # return 'set:' + ','.join([c_type.get_signature() for c_type in self.type_list])
         return self.get_raw_text()
 
+    def contains_single_int(self):
+        return len(self.type_list) == 1 and self.type_list[0].is_int_scalar()
+
     def is_integer_element(self):
         for value in self.int_list:
             if not value:
@@ -374,22 +382,22 @@ class SetType(LaVarType):
 
 class VertexSetType(SetType):
     def __init__(self):
-        SetType.__init__(self, size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)], cur_type=SetTypeEnum.VERTEX)
+        SetType.__init__(self, size=1, int_list=[True], type_list=[VertexType()], cur_type=SetTypeEnum.VERTEX)
     def get_signature(self):
         return 'vertexset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
 class EdgeSetType(SetType):
     def __init__(self):
-        SetType.__init__(self, size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)], cur_type=SetTypeEnum.EDGE)
+        SetType.__init__(self, size=1, int_list=[True], type_list=[EdgeType()], cur_type=SetTypeEnum.EDGE)
     def get_signature(self):
         return 'edgeset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
 class FaceSetType(SetType):
     def __init__(self):
-        SetType.__init__(self, size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)], cur_type=SetTypeEnum.FACE)
+        SetType.__init__(self, size=1, int_list=[True], type_list=[FaceType()], cur_type=SetTypeEnum.FACE)
     def get_signature(self):
         return 'faceset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
 class TetSetType(SetType):
     def __init__(self):
-        SetType.__init__(self, size=1, int_list=[True], type_list=[ScalarType(is_int=True, index_type=True)], cur_type=SetTypeEnum.TET)
+        SetType.__init__(self, size=1, int_list=[True], type_list=[TetType()], cur_type=SetTypeEnum.TET)
     def get_signature(self):
         return 'tetset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
 

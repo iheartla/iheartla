@@ -1030,15 +1030,23 @@ class TypeWalker(NodeWalker):
             elif node.attrib == 'vertices':
                 if type_node.la_type.is_scalar():
                     type_node.la_type = VertexType()
+                elif type_node.la_type.is_set() and type_node.la_type.contains_single_int():
+                    type_node.la_type = VertexSetType()
             elif node.attrib == 'edges':
                 if type_node.la_type.is_scalar():
                     type_node.la_type = EdgeType()
+                elif type_node.la_type.is_set() and type_node.la_type.contains_single_int():
+                    type_node.la_type = EdgeSetType()
             elif node.attrib == 'faces':
                 if type_node.la_type.is_scalar():
                     type_node.la_type = FaceType()
+                elif type_node.la_type.is_set() and type_node.la_type.contains_single_int():
+                    type_node.la_type = FaceSetType()
             elif node.attrib == 'tets':
                 if type_node.la_type.is_scalar():
                     type_node.la_type = TetType()
+                elif type_node.la_type.is_set() and type_node.la_type.contains_single_int():
+                    type_node.la_type = TetSetType()
         type_node.parse_info = node.parseinfo
         type_node.la_type.desc = desc
         for id_index in range(len(node.id)):
