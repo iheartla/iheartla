@@ -167,9 +167,9 @@ VI: VertexSetType(),
 EI: EdgeSetType(),
 FI: FaceSetType(),
 NEI: EdgeSetType(),
-BM1: MatrixType(),
-BM2: MatrixType(),
-BM3: MatrixType()
+BM1: None,
+BM2: None,
+BM3: None
 }
 def merge_dict(dict1, dict2):
     # key:[value,]
@@ -183,9 +183,18 @@ def merge_dict(dict1, dict2):
 PACKAGES_DICT = merge_dict(PACKAGES_FUNC_DICT, PACKAGES_SYM_DICT)
 CLASS_PACKAGES = [TRIANGLE_MESH]
 
-def get_sym_type_from_pkg(sym, pkg):
+def get_sym_type_from_pkg(sym, pkg, dim_dict=None):
     ret = LaVarType()
     if pkg == TRIANGLE_MESH:
         if sym in TRIANGLE_MESH_SYM_TYPE:
-            ret = TRIANGLE_MESH_SYM_TYPE[sym]
+            if TRIANGLE_MESH_SYM_TYPE[sym] is None:
+                if dim_dict:
+                    if sym == BM1:
+                        ret = MatrixType(rows=dim_dict['vi_size'], cols=dim_dict['ei_size'])
+                    elif sym == BM2:
+                        ret = MatrixType(rows=dim_dict['ei_size'], cols=dim_dict['fi_size'])
+                    elif sym == BM3:
+                        ret = MatrixType(rows=dim_dict['fi_size'], cols=dim_dict['ti_size'])
+            else:
+                ret = TRIANGLE_MESH_SYM_TYPE[sym]
     return ret

@@ -46,10 +46,16 @@ class BuiltinModuleData(object):
 
 
 class TriangleMeshModuleData(BuiltinModuleData):
-    def __init__(self, module='', instance_name='', params_list=None, name_list=None, r_dict=None):
+    def __init__(self, module='', instance_name='', params_list=None, name_list=None, r_dict=None,
+                 dim_dict=None):
         super().__init__(module, instance_name, params_list, name_list, r_dict=r_dict)
         self.v = params_list[0]
         self.f = params_list[1]
+        self.vi_size = dim_dict['vi_size'] if 'vi_size' in dim_dict else 0
+        self.ei_size = dim_dict['ei_size'] if 'ei_size' in dim_dict else 0
+        self.fi_size = dim_dict['fi_size'] if 'fi_size' in dim_dict else 0
+        self.ti_size = dim_dict['ti_size'] if 'ti_size' in dim_dict else 0
+
 
 class EquationData(object):
     def __init__(self, name='', parameters=[], definition=[], dependence=[], symtable={}, desc_dict={}, la_content='', func_data_dict={}, expr_dict={}, opt_syms=[]):
@@ -1386,10 +1392,10 @@ class TypeWalker(NodeWalker):
         if node.r:
             rname = self.walk(node.r, **kwargs).ir
         return NodeInfo(ir=ImportVarNode(self.walk(node.name, **kwargs).ir, rname))
-    def add_builtin_module_data(self, module, params_list=[], name_list=[], r_dict=None):
+    def add_builtin_module_data(self, module, params_list=[], name_list=[], r_dict=None, dim_dict=None):
         if module not in self.builtin_module_dict:
             if module == TRIANGLE_MESH:
-                self.builtin_module_dict[module] = TriangleMeshModuleData(module, self.generate_var_name(module),params_list=params_list,name_list=name_list,r_dict=r_dict)
+                self.builtin_module_dict[module] = TriangleMeshModuleData(module, self.generate_var_name(module),params_list=params_list,name_list=name_list,r_dict=r_dict, dim_dict=dim_dict)
             else:
                 self.builtin_module_dict[module] = BuiltinModuleData(module, self.generate_var_name(module),params_list=params_list,name_list=name_list,r_dict=r_dict)
         return self.builtin_module_dict[module]
@@ -1423,12 +1429,17 @@ class TypeWalker(NodeWalker):
                 self.assert_expr(name in func_list, get_err_msg(get_line_info(node.parseinfo),
                                                            get_line_info(node.parseinfo).text.find(name),
                                                            "Function {} not exist".format(name)))
+            dim_dict = {}
             if not self.pre_walk:
-                self.add_builtin_module_data(pkg_name, params_list, name_list, r_dict)
+                dim_dict = {'vi_size': self.generate_var_name('dimv'),
+                            'ei_size': self.generate_var_name('dime'),
+                            'fi_size': self.generate_var_name('dimf'),
+                            'ti_size': self.generate_var_name('dimt')}
+                self.add_builtin_module_data(pkg_name, params_list, name_list, r_dict, dim_dict=dim_dict)
             if pkg_name == TRIANGLE_MESH:
                 for name in name_list:
                     # self.symtable[r_dict[name]] = get_sym_type_from_pkg(name, pkg_name)
-                    new_sym_name = self.add_sym_type(r_dict[name], get_sym_type_from_pkg(name, pkg_name), get_err_msg_info(node.parseinfo,
+                    new_sym_name = self.add_sym_type(r_dict[name], get_sym_type_from_pkg(name, pkg_name, dim_dict), get_err_msg_info(node.parseinfo,
                                                                             "Parameter {} has been defined.".format(
                                                                                 name)))
                     if new_sym_name:
