@@ -1485,7 +1485,11 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         ret_type, need_cast = self.type_inference(TypeInferenceEnum.INF_SUB, left_info, right_info)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
-        ir_node = SubNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, raw_text=node.text)
+        if ret_type.is_set():
+            # difference
+            ir_node = DifferenceNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, raw_text=node.text)
+        else:
+            ir_node = SubNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, raw_text=node.text)
         ir_node.la_type = ret_type
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)
@@ -4238,6 +4242,9 @@ class TypeWalker(NodeWalker):
                 if right_type.is_matrix():
                     ret_type = copy.deepcopy(right_type)
                 ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+            elif left_type.is_set():
+                self.assert_expr(right_type.is_set() and right_type.cur_type==left_type.cur_type, get_err_msg())
+                ret_type = copy.deepcopy(left_type)
             else:
                 # sequence et al.
                 self.assert_expr(left_type.var_type == right_type.var_type, get_err_msg())

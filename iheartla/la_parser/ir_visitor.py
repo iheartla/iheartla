@@ -42,6 +42,7 @@ class IRBaseVisitor(object):
             IRNodeType.Div: "visit_div",
             IRNodeType.Union: "visit_union",
             IRNodeType.Intersection: "visit_intersection",
+            IRNodeType.Difference: "visit_difference",
             IRNodeType.AddSub: "visit_add_sub",
             IRNodeType.Summation: "visit_summation",
             IRNodeType.Norm: "visit_norm",

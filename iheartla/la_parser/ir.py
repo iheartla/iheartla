@@ -68,6 +68,7 @@ class IRNodeType(Enum):
     GPFunction = 230
     Union = 231
     Intersection = 232
+    Difference = 233
     # matrix
     Matrix = 300
     MatrixRows = 301
@@ -665,6 +666,12 @@ class UnionNode(ExprNode):
 class IntersectionNode(ExprNode):
     def __init__(self, left=None, right=None, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Intersection, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        self.left = left
+        self.right = right
+
+class DifferenceNode(ExprNode):
+    def __init__(self, left=None, right=None, la_type=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.Difference, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
 

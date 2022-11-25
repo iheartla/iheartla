@@ -411,6 +411,9 @@ class CodeGenLatex(CodeGen):
     def visit_intersection(self, node, **kwargs):
         return self.visit(node.left, **kwargs) + "\\cap" + self.visit(node.right, **kwargs)
 
+    def visit_difference(self, node, **kwargs):
+        return self.visit(node.left, **kwargs) + "-" + self.visit(node.right, **kwargs)
+
     def visit_summation(self, node, **kwargs):
         self.cur_scope = node.symbol
         if node.cond:
