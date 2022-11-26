@@ -142,9 +142,9 @@ GET_INCIDENT_VERTICES_F: make_function_type([FaceType()], [VertexSetType()]),
 GET_INCIDENT_EDGES_F: make_function_type([FaceType()], [EdgeSetType()]),
 GET_ADJACENT_FACES_F: make_function_type([FaceType()], [FaceSetType()]),
 #
-BUILD_VERTEX_VECTOR: None,
-BUILD_EDGE_VECTOR: None,
-BUILD_FACE_VECTOR: None,
+BUILD_VERTEX_VECTOR: make_function_type(),  # must be a valid function type for preprocessing
+BUILD_EDGE_VECTOR: make_function_type(),
+BUILD_FACE_VECTOR: make_function_type(),
 #
 GET_VERTICES_E: make_function_type([EdgeType()], [VertexType(), VertexType()]),
 GET_EDGES_F: make_function_type([FaceType()], [EdgeType(), EdgeType(), EdgeType()]),
@@ -171,6 +171,7 @@ BM1: None,
 BM2: None,
 BM3: None
 }
+TRIANGLE_MESH_DYNAMIC_TYPE_LIST = [BM1, BM2, BM3, BUILD_VERTEX_VECTOR, BUILD_EDGE_VECTOR, BUILD_FACE_VECTOR]
 def merge_dict(dict1, dict2):
     # key:[value,]
     res = copy.deepcopy(dict1)
@@ -187,7 +188,7 @@ def get_sym_type_from_pkg(sym, pkg, dim_dict=None):
     ret = LaVarType()
     if pkg == TRIANGLE_MESH:
         if sym in TRIANGLE_MESH_SYM_TYPE:
-            if TRIANGLE_MESH_SYM_TYPE[sym] is None:
+            if sym in TRIANGLE_MESH_DYNAMIC_TYPE_LIST:
                 if dim_dict:
                     if sym == BM1:
                         ret = MatrixType(rows=dim_dict['vi_size'], cols=dim_dict['ei_size'])
@@ -201,6 +202,8 @@ def get_sym_type_from_pkg(sym, pkg, dim_dict=None):
                         ret = make_function_type([EdgeSetType()], [VectorType(rows=dim_dict['ei_size'])])
                     elif sym == BUILD_FACE_VECTOR:
                         ret = make_function_type([FaceSetType()], [VectorType(rows=dim_dict['fi_size'])])
+                else:
+                    ret = TRIANGLE_MESH_SYM_TYPE[sym]
             else:
                 ret = TRIANGLE_MESH_SYM_TYPE[sym]
     return ret

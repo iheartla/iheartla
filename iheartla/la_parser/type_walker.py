@@ -1445,12 +1445,11 @@ class TypeWalker(NodeWalker):
                 self.assert_expr(name in func_list, get_err_msg(get_line_info(node.parseinfo),
                                                            get_line_info(node.parseinfo).text.find(name),
                                                            "Function {} not exist".format(name)))
-            dim_dict = {}
+            dim_dict = {'vi_size': self.generate_var_name('dimv'),
+                        'ei_size': self.generate_var_name('dime'),
+                        'fi_size': self.generate_var_name('dimf'),
+                        'ti_size': self.generate_var_name('dimt')}
             if not self.pre_walk:
-                dim_dict = {'vi_size': self.generate_var_name('dimv'),
-                            'ei_size': self.generate_var_name('dime'),
-                            'fi_size': self.generate_var_name('dimf'),
-                            'ti_size': self.generate_var_name('dimt')}
                 self.add_builtin_module_data(pkg_name, params_list, name_list, r_dict, dim_dict=dim_dict)
             if pkg_name == TRIANGLE_MESH:
                 for name in name_list:
