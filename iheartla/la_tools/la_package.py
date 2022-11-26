@@ -142,9 +142,9 @@ GET_INCIDENT_VERTICES_F: make_function_type([FaceType()], [VertexSetType()]),
 GET_INCIDENT_EDGES_F: make_function_type([FaceType()], [EdgeSetType()]),
 GET_ADJACENT_FACES_F: make_function_type([FaceType()], [FaceSetType()]),
 #
-BUILD_VERTEX_VECTOR: make_function_type([VertexSetType()], [VectorType()]),
-BUILD_EDGE_VECTOR: make_function_type([EdgeSetType()], [VectorType()]),
-BUILD_FACE_VECTOR: make_function_type([FaceSetType()], [VectorType()]),
+BUILD_VERTEX_VECTOR: None,
+BUILD_EDGE_VECTOR: None,
+BUILD_FACE_VECTOR: None,
 #
 GET_VERTICES_E: make_function_type([EdgeType()], [VertexType(), VertexType()]),
 GET_EDGES_F: make_function_type([FaceType()], [EdgeType(), EdgeType(), EdgeType()]),
@@ -195,6 +195,12 @@ def get_sym_type_from_pkg(sym, pkg, dim_dict=None):
                         ret = MatrixType(rows=dim_dict['ei_size'], cols=dim_dict['fi_size'])
                     elif sym == BM3:
                         ret = MatrixType(rows=dim_dict['fi_size'], cols=dim_dict['ti_size'])
+                    elif sym == BUILD_VERTEX_VECTOR:
+                        ret = make_function_type([VertexSetType()], [VectorType(rows=dim_dict['vi_size'])])
+                    elif sym == BUILD_EDGE_VECTOR:
+                        ret = make_function_type([EdgeSetType()], [VectorType(rows=dim_dict['ei_size'])])
+                    elif sym == BUILD_FACE_VECTOR:
+                        ret = make_function_type([FaceSetType()], [VectorType(rows=dim_dict['fi_size'])])
             else:
                 ret = TRIANGLE_MESH_SYM_TYPE[sym]
     return ret
