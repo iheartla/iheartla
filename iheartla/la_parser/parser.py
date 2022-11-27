@@ -106,7 +106,7 @@ _parser_manager = ParserManager.getInstance(GRAMMAR_DIR)
 
 
 def get_compiled_parser(grammar, keys='init', extra_dict={}):
-    log_la("keys:" + keys)
+    # log_la("keys:" + keys)
     return _parser_manager.get_parser(keys, grammar, extra_dict)
 
 

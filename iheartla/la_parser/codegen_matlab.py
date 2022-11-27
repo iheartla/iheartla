@@ -770,8 +770,8 @@ class CodeGenMatlab(CodeGen):
     def visit_function(self, node, **kwargs):
         name_info = self.visit(node.name, **kwargs)
         func_name = name_info.content
-        if node.identity_name:
-            func_name = node.identity_name
+        if self.get_sym_type(func_name).is_overloaded() and node.identity_name:
+            func_name = self.filter_symbol(node.identity_name)
         pre_list = []
         params = []
         if node.params:

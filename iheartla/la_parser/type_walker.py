@@ -482,7 +482,7 @@ class TypeWalker(NodeWalker):
                 valid = True
             index += 1
         self.name_cnt_dict[base] = index - 1
-        la_debug("generate_var_name: {}".format(ret))
+        # la_debug("generate_var_name: {}".format(ret))
         return ret
 
     def get_line_desc(self, node):
@@ -542,7 +542,7 @@ class TypeWalker(NodeWalker):
                     self.func_sig_dict[sig] = n_name
                     self.extra_symtable[n_name] = c_type
                     self.func_mapping_dict[n_name] = sym
-                    la_debug("n_name:{}".format(n_name))
+                    # la_debug("n_name:{}".format(n_name))
                     new_sym_name = n_name
                 if not self.pre_walk:
                     la_debug("sym:{}, sig:{}".format(sym, c_type.get_signature()))
@@ -636,7 +636,7 @@ class TypeWalker(NodeWalker):
         self.main_param.symtable = self.symtable
         self.pre_walk = True if 'pre_walk' in kwargs else False
         # self.symtable.clear()
-        self.visualizer.visualize(node)  # visualize
+        # self.visualizer.visualize(node)  # visualize
         ir_node = StartNode(parse_info=node.parseinfo, raw_text=node.text)
         # if node.directive:
         #     for directive in node.directive:

@@ -883,7 +883,7 @@ class CodeGenEigen(CodeGen):
         name_info = self.visit(node.name, **kwargs)
         func_name = name_info.content
         if node.identity_name and node.identity_name in self.parameters:
-            func_name = node.identity_name
+            func_name = self.filter_symbol(node.identity_name)
         pre_list = []
         params = []
         if node.params:
