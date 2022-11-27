@@ -97,11 +97,11 @@ class TestExtraFunction(BasePythonTest):
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
-                     "    std::function<double>(double)> a1;"
+                     "    std::function<double(double)> a1;"
                      "    a1 = [](double p)->double{"
                      "    return p;"
                      "    };",
-                     "    std::function<int>(int)> a2;"
+                     "    std::function<int(int)> a2;"
                      "    a2 = [](int p)->int{"
                      "    return p;"
                      "    };",

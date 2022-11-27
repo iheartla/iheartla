@@ -881,6 +881,9 @@ class CodeGenEigen(CodeGen):
 
     def visit_function(self, node, **kwargs):
         name_info = self.visit(node.name, **kwargs)
+        func_name = name_info.content
+        if node.identity_name and node.identity_name in self.parameters:
+            func_name = node.identity_name
         pre_list = []
         params = []
         if node.params:
@@ -892,7 +895,7 @@ class CodeGenEigen(CodeGen):
             if self.visiting_diff_init:
                 return CodeNodeInfo(','.join(params), pre_list)
             return name_info
-        content = "{}({})".format(name_info.content, ', '.join(params))
+        content = "{}({})".format(func_name, ', '.join(params))
         return CodeNodeInfo(content, pre_list)
 
     def visit_local_func(self, node, **kwargs):
