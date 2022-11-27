@@ -751,7 +751,7 @@ class CodeGenNumpy(CodeGen):
             if self.visiting_diff_init:
                 return CodeNodeInfo(','.join(params), pre_list)
             return name_info
-        if func_name in self.local_func_def and not func_name.startswith("self."):
+        if (func_name in self.lhs_list or func_name in self.local_func_dict) and not func_name.startswith("self."):
             func_name = 'self.' + func_name
         content = "{}({})".format(func_name, ', '.join(params))
         return CodeNodeInfo(content, pre_list)
