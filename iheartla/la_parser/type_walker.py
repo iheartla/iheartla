@@ -568,6 +568,9 @@ class TypeWalker(NodeWalker):
         if not resolved:
             if sym in self.symtable:
                 node_type = self.symtable[sym]
+        if not resolved:
+            if sym in self.extra_symtable:
+                node_type = self.extra_symtable[sym]
         return node_type
 
     def is_sym_existed(self, sym):
@@ -580,6 +583,9 @@ class TypeWalker(NodeWalker):
                 existed = True
         if not existed:
             if sym in self.symtable:
+                existed = True
+        if not existed:
+            if sym in self.extra_symtable:
                 existed = True
         return existed
 
@@ -769,12 +775,21 @@ class TypeWalker(NodeWalker):
         self.multi_lhs_list = multi_lhs_list
         if self.pre_walk:
             return ir_node
+        self.convert_parameters()
         self.gen_block_node(stat_list, index_list, ir_node, **kwargs)
         # set properties
         self.main_param.parameters = self.parameters
         self.main_param.symtable = self.symtable
         self.print_all()
         return ir_node
+
+    def convert_parameters(self):
+        # process in the end
+        for c_index in range(len(self.parameters)):
+            if self.get_sym_type(self.parameters[c_index]).is_function():
+                if not self.get_sym_type(self.func_mapping_dict[self.parameters[c_index]]).is_overloaded():
+                    # if it's not overloading, then convert the name back
+                    self.parameters[c_index] = self.func_mapping_dict[self.parameters[c_index]]
 
     def print_all(self):
         la_debug("TypeWalker end ==================================================================================================================")
@@ -1074,11 +1089,13 @@ class TypeWalker(NodeWalker):
                     # main params: due to multiple blocks
                     if type_node.la_type.is_function():
                         sig = get_func_signature(id0, type_node.la_type)
-                        if sig in self.func_sig_dict and type_node.la_type.is_overloaded():
-                            # make sure it has func overloading
-                            self.update_parameters(self.func_sig_dict[sig], kwargs[PARAM_INDEX]+id_index)
-                        else:
-                            self.update_parameters(id0, kwargs[PARAM_INDEX] + id_index)
+                        # if sig in self.func_sig_dict and type_node.la_type.is_overloaded():
+                        # make sure it has func overloading
+                        # handle parameters in the end, since now the final type of the sym is unknown
+                        self.parameters[kwargs[PARAM_INDEX]+id_index] = self.func_sig_dict[sig]
+                        # self.update_parameters(id0, kwargs[PARAM_INDEX]+id_index)
+                        # else:
+                        #     self.update_parameters(id0, kwargs[PARAM_INDEX] + id_index)
                     else:
                         self.update_parameters(id0, kwargs[PARAM_INDEX]+id_index)
                 if type_node.la_type.is_matrix():
