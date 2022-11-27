@@ -9555,10 +9555,16 @@ class grammarinitParser(Parser):
         self._closure(block27)
         self._right_hand_side_()
         self.add_last_node_to_name('expr')
+        with self._optional():
 
-        def block29():
+            def block29():
+                self._hspace_()
+            self._closure(block29)
+            self._line_()
+
+        def block30():
             self._hspace_()
-        self._closure(block29)
+        self._closure(block30)
         with self._group():
             with self._choice():
                 with self._option():
@@ -9570,39 +9576,39 @@ class grammarinitParser(Parser):
                     '<WHERE> <GIVEN>'
                 )
 
-        def block31():
+        def block32():
             self._hspace_()
-        self._closure(block31)
+        self._closure(block32)
         self._where_condition_()
         self.add_last_node_to_name('defs')
 
-        def block33():
-
-            def block34():
-                self._hspace_()
-            self._closure(block34)
-            self._token(',')
+        def block34():
 
             def block35():
                 self._hspace_()
             self._closure(block35)
+            self._token(',')
+
+            def block36():
+                self._hspace_()
+            self._closure(block36)
             self._where_condition_()
             self.add_last_node_to_name('defs')
-        self._closure(block33)
+        self._closure(block34)
 
-        def block37():
-
-            def block38():
-                self._hspace_()
-            self._closure(block38)
-            self._token(';')
+        def block38():
 
             def block39():
                 self._hspace_()
             self._closure(block39)
+            self._token(';')
+
+            def block40():
+                self._hspace_()
+            self._closure(block40)
             self._general_assignment_()
             self.add_last_node_to_name('extra')
-        self._closure(block37)
+        self._closure(block38)
         self._define(
             ['name', 'def_p', 'def_s', 'op'],
             ['params', 'separators', 'expr', 'defs', 'extra']

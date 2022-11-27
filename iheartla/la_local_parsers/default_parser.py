@@ -9818,10 +9818,16 @@ class grammardefaultParser(Parser):
         self._closure(block61)
         self._right_hand_side_()
         self.add_last_node_to_name('expr')
+        with self._optional():
 
-        def block63():
+            def block63():
+                self._hspace_()
+            self._closure(block63)
+            self._line_()
+
+        def block64():
             self._hspace_()
-        self._closure(block63)
+        self._closure(block64)
         with self._group():
             with self._choice():
                 with self._option():
@@ -9833,39 +9839,39 @@ class grammardefaultParser(Parser):
                     '<WHERE> <GIVEN>'
                 )
 
-        def block65():
+        def block66():
             self._hspace_()
-        self._closure(block65)
+        self._closure(block66)
         self._where_condition_()
         self.add_last_node_to_name('defs')
 
-        def block67():
-
-            def block68():
-                self._hspace_()
-            self._closure(block68)
-            self._token(',')
+        def block68():
 
             def block69():
                 self._hspace_()
             self._closure(block69)
+            self._token(',')
+
+            def block70():
+                self._hspace_()
+            self._closure(block70)
             self._where_condition_()
             self.add_last_node_to_name('defs')
-        self._closure(block67)
+        self._closure(block68)
 
-        def block71():
-
-            def block72():
-                self._hspace_()
-            self._closure(block72)
-            self._token(';')
+        def block72():
 
             def block73():
                 self._hspace_()
             self._closure(block73)
+            self._token(';')
+
+            def block74():
+                self._hspace_()
+            self._closure(block74)
             self._general_assignment_()
             self.add_last_node_to_name('extra')
-        self._closure(block71)
+        self._closure(block72)
         self._define(
             ['name', 'def_p', 'def_s', 'op'],
             ['params', 'separators', 'subs', 'expr', 'defs', 'extra']
