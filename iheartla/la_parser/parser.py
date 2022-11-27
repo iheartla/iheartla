@@ -360,6 +360,25 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
         if _id_pattern.fullmatch(par):
             continue  # valid single identifier
         multi_list.append(par)
+    if len(func_dict.keys()) > 0:
+        key_list = list(func_dict.keys())
+        extra_list = []
+        for key in key_list:
+            if '`' not in key:
+                extra_list.append('`{}`'.format(key))
+        key_list += extra_list
+        key_list = [re.escape(item).replace('/', '\\/') for item in key_list]
+        key_list = sorted(key_list, key=len, reverse=True)
+        func_rule = "/" + "/|/".join(key_list) + "/"
+        extra_dict['funcs'] = key_list
+        log_la("func_rule:" + func_rule)
+        for f_name in key_list:
+            if _id_pattern.fullmatch(f_name):
+                continue  # valid single func name
+            multi_list.append(f_name)
+        if DEBUG_PARSER:
+            current_content = current_content.replace("func_id='!!!';", "func_id={};".format(func_rule))
+        parse_key += "func symbol:{}, func sig:{}".format(','.join(func_dict.keys()), ";".join(func_dict.values()))
     # not add backticks
     new_list = []
     for key in multi_list:
@@ -376,21 +395,6 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
         if DEBUG_PARSER:
             current_content = current_content.replace("= !KEYWORDS(",
                                                       "= const:({}) | (!(KEYWORDS | {} )".format(keys_rule, keys_rule))
-    if len(func_dict.keys()) > 0:
-        key_list = list(func_dict.keys())
-        extra_list = []
-        for key in key_list:
-            if '`' not in key:
-                extra_list.append('`{}`'.format(key))
-        key_list += extra_list
-        key_list = [re.escape(item).replace('/', '\\/') for item in key_list]
-        key_list = sorted(key_list, key=len, reverse=True)
-        func_rule = "/" + "/|/".join(key_list) + "/"
-        extra_dict['funcs'] = key_list
-        log_la("func_rule:" + func_rule)
-        if DEBUG_PARSER:
-            current_content = current_content.replace("func_id='!!!';", "func_id={};".format(func_rule))
-        parse_key += "func symbol:{}, func sig:{}".format(','.join(func_dict.keys()), ";".join(func_dict.values()))
     # get new parser
     record("Get new parser")
     parser = get_compiled_parser(current_content, parse_key, extra_dict)
