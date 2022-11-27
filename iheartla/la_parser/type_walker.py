@@ -784,6 +784,7 @@ class TypeWalker(NodeWalker):
         self.logger.info("symtable:")
         for k,v in self.symtable.items():
             la_debug("{} : {}".format(k, v.get_signature()))
+        self.logger.info("parameters: {}".format(self.parameters))
         self.logger.info("extra_symtable:".format())
         for k, v in self.extra_symtable.items():
             self.logger.info("{} : {}".format(k, v.get_signature()))
@@ -1073,7 +1074,8 @@ class TypeWalker(NodeWalker):
                     # main params: due to multiple blocks
                     if type_node.la_type.is_function():
                         sig = get_func_signature(id0, type_node.la_type)
-                        if sig in self.func_sig_dict:
+                        if sig in self.func_sig_dict and type_node.la_type.is_overloaded():
+                            # make sure it has func overloading
                             self.update_parameters(self.func_sig_dict[sig], kwargs[PARAM_INDEX]+id_index)
                         else:
                             self.update_parameters(id0, kwargs[PARAM_INDEX] + id_index)
