@@ -27,6 +27,9 @@ class GPType(IntEnum):
     Tets = 21
     Diamond = 22
     DiamondFacesE = 23
+    VectorToVertex = 24
+    VectorToEdge = 25
+    VectorToFace = 26
     # dec
     Star = 100
     Closure = 101
@@ -53,6 +56,9 @@ GET_ADJACENT_FACES_F = 'get_adjacent_faces_f'
 BUILD_VERTEX_VECTOR = 'build_vertex_vector'
 BUILD_EDGE_VECTOR = 'build_edge_vector'
 BUILD_FACE_VECTOR = 'build_face_vector'
+VECTOR_TO_VERTEX = 'vector_to_set'
+VECTOR_TO_EDGE = 'vector_to_edge'
+VECTOR_TO_FACE = 'vector_to_face'
 STAR = 'star'
 CLOSURE = 'closure'
 LINK = 'link'
@@ -84,6 +90,7 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                  GET_INCIDENT_VERTICES_E, GET_INCIDENT_FACES_E, GET_DIAMOND_VERTICES_E, GET_DIAMOND_FACES_E,
                                  GET_INCIDENT_VERTICES_F, GET_INCIDENT_EDGES_F, GET_ADJACENT_FACES_F,
                                  BUILD_VERTEX_VECTOR, BUILD_EDGE_VECTOR, BUILD_FACE_VECTOR,
+                                 VECTOR_TO_VERTEX, VECTOR_TO_EDGE, VECTOR_TO_FACE,
                                  GET_VERTICES_E, GET_EDGES_F, GET_VERTICES_F,
                                  STAR, CLOSURE, LINK, BOUNDARY, IS_COMPLEX, IS_PURE_COMPLEX,
                                  VERTICES, EDGES, FACES, TETS, DIAMOND]}
@@ -109,6 +116,10 @@ GET_ADJACENT_FACES_F: GPType.AdjacentFacesF,
 BUILD_VERTEX_VECTOR: GPType.BuildVertexVector,
 BUILD_EDGE_VECTOR: GPType.BuildEdgeVector,
 BUILD_FACE_VECTOR: GPType.BuildFaceVector,
+#
+VECTOR_TO_VERTEX: GPType.VectorToVertex,
+VECTOR_TO_EDGE: GPType.VectorToEdge,
+VECTOR_TO_FACE: GPType.VectorToFace,
 GET_VERTICES_E: GPType.GetVerticesE,
 GET_EDGES_F: GPType.GetEdgesF,
 GET_VERTICES_F: GPType.GetVerticesF,
@@ -146,6 +157,10 @@ BUILD_VERTEX_VECTOR: make_function_type(),  # must be a valid function type for 
 BUILD_EDGE_VECTOR: make_function_type(),
 BUILD_FACE_VECTOR: make_function_type(),
 #
+VECTOR_TO_VERTEX: make_function_type(),
+VECTOR_TO_EDGE: make_function_type(),
+VECTOR_TO_FACE: make_function_type(),
+#
 GET_VERTICES_E: make_function_type([EdgeType()], [VertexType(), VertexType()]),
 GET_EDGES_F: make_function_type([FaceType()], [EdgeType(), EdgeType(), EdgeType()]),
 GET_VERTICES_F: make_function_type([FaceType()], [VertexType(), VertexType(), VertexType()]),
@@ -171,7 +186,8 @@ BM1: None,
 BM2: None,
 BM3: None
 }
-TRIANGLE_MESH_DYNAMIC_TYPE_LIST = [BM1, BM2, BM3, BUILD_VERTEX_VECTOR, BUILD_EDGE_VECTOR, BUILD_FACE_VECTOR]
+TRIANGLE_MESH_DYNAMIC_TYPE_LIST = [BM1, BM2, BM3, BUILD_VERTEX_VECTOR, BUILD_EDGE_VECTOR, BUILD_FACE_VECTOR,
+                                   VECTOR_TO_VERTEX, VECTOR_TO_EDGE, VECTOR_TO_FACE]
 def merge_dict(dict1, dict2):
     # key:[value,]
     res = copy.deepcopy(dict1)
@@ -202,6 +218,12 @@ def get_sym_type_from_pkg(sym, pkg, dim_dict=None):
                         ret = make_function_type([EdgeSetType()], [VectorType(rows=dim_dict['ei_size'])])
                     elif sym == BUILD_FACE_VECTOR:
                         ret = make_function_type([FaceSetType()], [VectorType(rows=dim_dict['fi_size'])])
+                    elif sym == VECTOR_TO_VERTEX:
+                        ret = make_function_type([VectorType(rows=dim_dict['vi_size']), [VertexSetType()]])
+                    elif sym == VECTOR_TO_EDGE:
+                        ret = make_function_type([VectorType(rows=dim_dict['ei_size']), [EdgeSetType()]])
+                    elif sym == VECTOR_TO_FACE:
+                        ret = make_function_type([VectorType(rows=dim_dict['fi_size']), [FaceSetType()]])
                 else:
                     ret = TRIANGLE_MESH_SYM_TYPE[sym]
             else:
