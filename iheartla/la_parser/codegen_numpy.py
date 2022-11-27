@@ -1278,6 +1278,24 @@ class CodeGenNumpy(CodeGen):
         left_info.pre_list += right_info.pre_list
         return left_info
 
+    def visit_union(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        left_info.content = "frozenset.union({}, {})".format(left_info.content, right_info.content)
+        return left_info
+
+    def visit_intersection(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        left_info.content = "frozenset.intersection({}, {})".format(left_info.content, right_info.content)
+        return left_info
+
+    def visit_difference(self, node, **kwargs):
+        left_info = self.visit(node.left, **kwargs)
+        right_info = self.visit(node.right, **kwargs)
+        left_info.content = "{} - {}".format(left_info.content, right_info.content)
+        return left_info
+
     def visit_cast(self, node, **kwargs):
         value_info = self.visit(node.value, **kwargs)
         if node.la_type.is_scalar():
