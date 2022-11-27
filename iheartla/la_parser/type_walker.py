@@ -1368,7 +1368,6 @@ class TypeWalker(NodeWalker):
 
     def walk_MappingType(self, node, **kwargs):
         ir_node = MappingTypeNode(parse_info=node.parseinfo, raw_text=node.text)
-        ir_node.empty = node.empty
         ir_node.separators = node.separators
         params = []
         template_symbols = {}

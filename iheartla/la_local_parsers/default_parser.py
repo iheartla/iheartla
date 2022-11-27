@@ -8974,52 +8974,27 @@ class grammardefaultParser(Parser):
         with self._choice():
             with self._option():
                 with self._group():
-                    with self._choice():
-                        with self._option():
-                            with self._group():
-                                self._identifier_()
-                                self.add_last_node_to_name('params')
+                    self._identifier_()
+                    self.add_last_node_to_name('params')
 
-                                def block3():
+                    def block2():
 
-                                    def block4():
-                                        self._hspace_()
-                                    self._closure(block4)
-                                    self._params_separator_()
-                                    self.add_last_node_to_name('separators')
+                        def block3():
+                            self._hspace_()
+                        self._closure(block3)
+                        self._params_separator_()
+                        self.add_last_node_to_name('separators')
 
-                                    def block6():
-                                        self._hspace_()
-                                    self._closure(block6)
-                                    self._identifier_()
-                                    self.add_last_node_to_name('params')
-                                self._closure(block3)
-                            self._define(
-                                [],
-                                ['params', 'separators']
-                            )
-                        with self._option():
-                            self._token('∅')
-                            self.name_last_node('empty')
-                            self._define(
-                                ['empty'],
-                                []
-                            )
-                        with self._option():
-                            self._token('{')
+                        def block5():
+                            self._hspace_()
+                        self._closure(block5)
+                        self._identifier_()
+                        self.add_last_node_to_name('params')
+                    self._closure(block2)
 
-                            def block9():
-                                self._hspace_()
-                            self._closure(block9)
-                            self._token('}')
-                        self._error(
-                            'expecting one of: '
-                            "<identifier> '∅' '{'"
-                        )
-
-                def block10():
+                def block7():
                     self._hspace_()
-                self._closure(block10)
+                self._closure(block7)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -9031,78 +9006,53 @@ class grammardefaultParser(Parser):
                             "'→' '->'"
                         )
 
-                def block12():
+                def block9():
                     self._hspace_()
-                self._closure(block12)
+                self._closure(block9)
                 self._params_type_()
                 self.add_last_node_to_name('ret_type')
 
-                def block14():
+                def block11():
 
-                    def block15():
+                    def block12():
                         self._hspace_()
-                    self._closure(block15)
+                    self._closure(block12)
                     self._params_separator_()
                     self.add_last_node_to_name('ret_separators')
 
-                    def block17():
+                    def block14():
                         self._hspace_()
-                    self._closure(block17)
+                    self._closure(block14)
                     self._params_type_()
                     self.add_last_node_to_name('ret_type')
-                self._closure(block14)
+                self._closure(block11)
                 self._define(
-                    ['empty'],
+                    [],
                     ['params', 'separators', 'ret_type', 'ret_separators']
                 )
             with self._option():
                 with self._group():
-                    with self._choice():
-                        with self._option():
-                            with self._group():
-                                self._identifier_()
-                                self.add_last_node_to_name('params')
+                    self._identifier_()
+                    self.add_last_node_to_name('params')
 
-                                def block21():
+                    def block17():
 
-                                    def block22():
-                                        self._hspace_()
-                                    self._closure(block22)
-                                    self._params_separator_()
-                                    self.add_last_node_to_name('separators')
+                        def block18():
+                            self._hspace_()
+                        self._closure(block18)
+                        self._params_separator_()
+                        self.add_last_node_to_name('separators')
 
-                                    def block24():
-                                        self._hspace_()
-                                    self._closure(block24)
-                                    self._identifier_()
-                                    self.add_last_node_to_name('params')
-                                self._closure(block21)
-                            self._define(
-                                [],
-                                ['params', 'separators']
-                            )
-                        with self._option():
-                            self._token('∅')
-                            self.name_last_node('empty')
-                            self._define(
-                                ['empty'],
-                                []
-                            )
-                        with self._option():
-                            self._token('{')
+                        def block20():
+                            self._hspace_()
+                        self._closure(block20)
+                        self._identifier_()
+                        self.add_last_node_to_name('params')
+                    self._closure(block17)
 
-                            def block27():
-                                self._hspace_()
-                            self._closure(block27)
-                            self._token('}')
-                        self._error(
-                            'expecting one of: '
-                            "<identifier> '∅' '{'"
-                        )
-
-                def block28():
+                def block22():
                     self._hspace_()
-                self._closure(block28)
+                self._closure(block22)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -9114,28 +9064,28 @@ class grammardefaultParser(Parser):
                             "'→' '->'"
                         )
 
-                def block30():
+                def block24():
                     self._hspace_()
-                self._closure(block30)
+                self._closure(block24)
                 self._identifier_()
                 self.add_last_node_to_name('ret')
 
-                def block32():
+                def block26():
 
-                    def block33():
+                    def block27():
                         self._hspace_()
-                    self._closure(block33)
+                    self._closure(block27)
                     self._params_separator_()
                     self.add_last_node_to_name('ret_separators')
 
-                    def block35():
+                    def block29():
                         self._hspace_()
-                    self._closure(block35)
+                    self._closure(block29)
                     self._identifier_()
                     self.add_last_node_to_name('ret')
-                self._closure(block32)
+                self._closure(block26)
                 self._define(
-                    ['empty'],
+                    [],
                     ['params', 'separators', 'ret', 'ret_separators']
                 )
             self._error(
@@ -9155,10 +9105,10 @@ class grammardefaultParser(Parser):
                 "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
                 '<SUBSET> as <AS> # <POUND>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
-                "<identifier> '∅' '{'"
+                '<identifier>'
             )
         self._define(
-            ['empty'],
+            [],
             ['params', 'separators', 'ret_type', 'ret_separators', 'ret']
         )
 
@@ -11873,7 +11823,6 @@ class FunctionType(ModelBase):
 
 @dataclass(eq=False)
 class MappingType(ModelBase):
-    empty: Any = None
     params: Any = None
     ret: Any = None
     ret_separators: Any = None

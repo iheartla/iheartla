@@ -72,8 +72,8 @@ function_type::FunctionType
     
 
 mapping_type::MappingType
-    = ((params+:identifier {{hspace} separators+:params_separator {hspace} params+:identifier})|empty:'∅'|'{'{hspace}'}') {hspace} ('→'|'->') {hspace} ret_type+:params_type {{hspace} ret_separators+:params_separator {hspace} ret_type+:params_type}
-    | ((params+:identifier {{hspace} separators+:params_separator {hspace} params+:identifier})|empty:'∅'|'{'{hspace}'}') {hspace} ('→'|'->') {hspace} ret+:identifier {{hspace} ret_separators+:params_separator {hspace} ret+:identifier}
+    = (params+:identifier {{hspace} separators+:params_separator {hspace} params+:identifier}) {hspace} ('→'|'->') {hspace} ret_type+:params_type {{hspace} ret_separators+:params_separator {hspace} ret_type+:params_type}
+    | (params+:identifier {{hspace} separators+:params_separator {hspace} params+:identifier}) {hspace} ('→'|'->') {hspace} ret+:identifier {{hspace} ret_separators+:params_separator {hspace} ret+:identifier}
     ;
 
 
