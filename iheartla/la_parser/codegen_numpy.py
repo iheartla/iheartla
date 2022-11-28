@@ -738,7 +738,8 @@ class CodeGenNumpy(CodeGen):
     def visit_function(self, node, **kwargs):
         name_info = self.visit(node.name, **kwargs)
         func_name = name_info.content
-        if self.get_sym_type(func_name).is_overloaded() and node.identity_name:
+        original_name = self.filter_symbol(node.name.get_main_id())
+        if self.get_sym_type(original_name).is_overloaded() and node.identity_name:
             func_name = self.filter_symbol(node.identity_name)
         pre_list = []
         params = []
