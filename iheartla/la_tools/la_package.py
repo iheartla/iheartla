@@ -56,7 +56,7 @@ GET_ADJACENT_FACES_F = 'get_adjacent_faces_f'
 BUILD_VERTEX_VECTOR = 'build_vertex_vector'
 BUILD_EDGE_VECTOR = 'build_edge_vector'
 BUILD_FACE_VECTOR = 'build_face_vector'
-VECTOR_TO_VERTEX = 'vector_to_set'
+VECTOR_TO_VERTEX = 'vector_to_vertex'
 VECTOR_TO_EDGE = 'vector_to_edge'
 VECTOR_TO_FACE = 'vector_to_face'
 STAR = 'star'
@@ -219,11 +219,11 @@ def get_sym_type_from_pkg(sym, pkg, dim_dict=None):
                     elif sym == BUILD_FACE_VECTOR:
                         ret = make_function_type([FaceSetType()], [VectorType(rows=dim_dict['fi_size'])])
                     elif sym == VECTOR_TO_VERTEX:
-                        ret = make_function_type([VectorType(rows=dim_dict['vi_size']), [VertexSetType()]])
+                        ret = make_function_type([VectorType(rows=dim_dict['vi_size'])], [VertexSetType()])
                     elif sym == VECTOR_TO_EDGE:
-                        ret = make_function_type([VectorType(rows=dim_dict['ei_size']), [EdgeSetType()]])
+                        ret = make_function_type([VectorType(rows=dim_dict['ei_size'])], [EdgeSetType()])
                     elif sym == VECTOR_TO_FACE:
-                        ret = make_function_type([VectorType(rows=dim_dict['fi_size']), [FaceSetType()]])
+                        ret = make_function_type([VectorType(rows=dim_dict['fi_size'])], [FaceSetType()])
                 else:
                     ret = TRIANGLE_MESH_SYM_TYPE[sym]
             else:
