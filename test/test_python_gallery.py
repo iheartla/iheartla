@@ -683,8 +683,8 @@ class TestGallery(BasePythonTest):
                       [[4, 2, 3, 4], [3, 1, 2, 1], [2, 3, 2, 2], [3, 4, 3, 4]],
                       [[1, 2, 2, 4], [2, 1, 5, 1], [1, 3, 2, 2], [3, 4, 9, 4]],
                       [[2, 2, 2, 4], [5, 1, 2, 1], [2, 3, 2, 1], [2, 4, 1, 4]]])
-        u = np.array([[2, 1, 4, 3], [3, 1, 2, 6]])
-        B = np.array([[266, 223, 205, 355], [659, 414, 417, 723]])
+        u = np.array([[2, 1, 4, 3], [3, 1, 2, 6], [0, 0, 0, 0], [0, 0, 0, 0]])
+        B = np.array([[266, 223, 205, 355], [659, 414, 417, 723], [0, 0, 0, 0], [0, 0, 0, 0]])
         func_info = self.gen_func_info(la_str)
         self.assertDMatrixApproximateEqual(func_info.numpy_func(w, M, u).v, B)
         # eigen test
@@ -710,8 +710,12 @@ class TestGallery(BasePythonTest):
                      "    u1 << 2, 1, 4, 3;",
                      "    Eigen::Matrix<double, 4, 1> u2;"
                      "    u2 << 3, 1, 2, 6;",
+                     "    Eigen::Matrix<double, 4, 1> u3;"
+                     "    u3 << 0, 0, 0, 0;",
                      "    u.push_back(u1);",
                      "    u.push_back(u2);",
+                     "    u.push_back(u3);",
+                     "    u.push_back(u3);",
                      "    Eigen::Matrix<double, 4, 1> B1;"
                      "    B1 << 266, 223, 205, 355;",
                      "    Eigen::Matrix<double, 4, 1> B2;"
