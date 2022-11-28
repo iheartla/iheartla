@@ -386,7 +386,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             with self._option():
                 self._GIVEN_()
             with self._option():
-                self._SUM_()
+                self._pattern('sum')
             with self._option():
                 self._MIN_()
             with self._option():
@@ -418,13 +418,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             with self._option():
                 self._PI_()
             with self._option():
-                self._token('|')
-            with self._option():
                 self._pattern('ℝ')
             with self._option():
                 self._pattern('ℤ')
-            with self._option():
-                self._pattern('ᵀ')
             with self._option():
                 self._WITH_()
             with self._option():
@@ -440,8 +436,6 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             with self._option():
                 self._DERIVATIVE_()
             with self._option():
-                self._PARTIAL_()
-            with self._option():
                 self._SOLVE_()
             with self._option():
                 self._PRIME_()
@@ -453,17 +447,16 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 self._POUND_()
             self._error(
                 'expecting one of: '
-                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
-                'min <MIN> max <MAX> argmin <ARGMIN>'
-                'argmax <ARGMAX> int <INT> if <IF>'
-                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
-                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
-                'subject to <SUBJECT_TO> from <FROM> π'
-                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
-                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
-                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
-                '<SUBSET> as <AS> # <POUND>'
+                'where <WHERE> given <GIVEN> sum min'
+                '<MIN> max <MAX> argmin <ARGMIN> argmax'
+                '<ARGMAX> int <INT> if <IF> otherwise'
+                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
+                'ln <LN> sqrt <SQRT> s.t. subject to'
+                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
+                '<WITH> initial <INITIAL> and <AND> or'
+                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
+                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
             )
 
     @tatsumasu('Exponent')
@@ -3199,16 +3192,15 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
-                '<WHERE> given <GIVEN> sum ∑ <SUM> min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> if <IF> otherwise <OTHERWISE> ∈'
-                '<IN> exp <EXP> log <LOG> ln <LN> sqrt'
-                '<SQRT> s.t. subject to <SUBJECT_TO> from'
-                '<FROM> π <PI> ℝ ℤ ᵀ with <WITH> initial'
-                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
-                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
-                '<SUBSET> as <AS> # <POUND>'
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX> if'
+                '<IF> otherwise <OTHERWISE> ∈ <IN> exp'
+                '<EXP> log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                '<PI> ℝ ℤ with <WITH> initial <INITIAL>'
+                'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
+                '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
+                "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
@@ -3362,16 +3354,15 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
-                '<WHERE> given <GIVEN> sum ∑ <SUM> min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> if <IF> otherwise <OTHERWISE> ∈'
-                '<IN> exp <EXP> log <LOG> ln <LN> sqrt'
-                '<SQRT> s.t. subject to <SUBJECT_TO> from'
-                '<FROM> π <PI> ℝ ℤ ᵀ with <WITH> initial'
-                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
-                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
-                '<SUBSET> as <AS> # <POUND>'
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX> if'
+                '<IF> otherwise <OTHERWISE> ∈ <IN> exp'
+                '<EXP> log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                '<PI> ℝ ℤ with <WITH> initial <INITIAL>'
+                'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
+                '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
+                "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
                 '<BUILTIN_KEYWORDS> <KEYWORDS> \\d <pi>'
                 '<factor_in_matrix>'
             )
@@ -3526,16 +3517,15 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
-                '<WHERE> given <GIVEN> sum ∑ <SUM> min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> if <IF> otherwise <OTHERWISE> ∈'
-                '<IN> exp <EXP> log <LOG> ln <LN> sqrt'
-                '<SQRT> s.t. subject to <SUBJECT_TO> from'
-                '<FROM> π <PI> ℝ ℤ ᵀ with <WITH> initial'
-                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
-                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
-                '<SUBSET> as <AS> # <POUND>'
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX> if'
+                '<IF> otherwise <OTHERWISE> ∈ <IN> exp'
+                '<EXP> log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                '<PI> ℝ ℤ with <WITH> initial <INITIAL>'
+                'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
+                '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
+                "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
                 '<BUILTIN_KEYWORDS> <KEYWORDS> \\d <pi>'
                 '<factor_in_matrix>'
             )
@@ -3807,17 +3797,16 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 'expecting one of: '
                 '[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
                 "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
-                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
-                'min <MIN> max <MAX> argmin <ARGMIN>'
-                'argmax <ARGMAX> int <INT> if <IF>'
-                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
-                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
-                'subject to <SUBJECT_TO> from <FROM> π'
-                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
-                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
-                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
-                '<SUBSET> as <AS> # <POUND>'
+                'where <WHERE> given <GIVEN> sum min'
+                '<MIN> max <MAX> argmin <ARGMIN> argmax'
+                '<ARGMAX> int <INT> if <IF> otherwise'
+                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
+                'ln <LN> sqrt <SQRT> s.t. subject to'
+                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
+                '<WITH> initial <INITIAL> and <AND> or'
+                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
+                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier_alone>'
             )
@@ -3955,17 +3944,16 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 'expecting one of: '
                 '[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
                 "9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
-                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
-                'min <MIN> max <MAX> argmin <ARGMIN>'
-                'argmax <ARGMAX> int <INT> if <IF>'
-                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
-                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
-                'subject to <SUBJECT_TO> from <FROM> π'
-                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
-                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
-                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
-                '<SUBSET> as <AS> # <POUND>'
+                'where <WHERE> given <GIVEN> sum min'
+                '<MIN> max <MAX> argmin <ARGMIN> argmax'
+                '<ARGMAX> int <INT> if <IF> otherwise'
+                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
+                'ln <LN> sqrt <SQRT> s.t. subject to'
+                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
+                '<WITH> initial <INITIAL> and <AND> or'
+                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
+                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
@@ -6885,15 +6873,14 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
-                '<WHERE> given <GIVEN> sum ∑ <SUM> min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                "<SUBJECT_TO> from <FROM> π <PI> '|' ℝ ℤ"
-                'ᵀ with <WITH> initial <INITIAL> and'
-                '<AND> or <OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                '<DERIVATIVE> ∂ <PARTIAL> solve Solve'
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
+                'int <INT> if <IF> otherwise <OTHERWISE>'
+                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
                 '<AS> # <POUND> <BUILTIN_KEYWORDS>'
                 '<KEYWORDS> <identifier> <local_func>'
@@ -7025,15 +7012,14 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
-                '<WHERE> given <GIVEN> sum ∑ <SUM> min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                "<SUBJECT_TO> from <FROM> π <PI> '|' ℝ ℤ"
-                'ᵀ with <WITH> initial <INITIAL> and'
-                '<AND> or <OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                '<DERIVATIVE> ∂ <PARTIAL> solve Solve'
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
+                'int <INT> if <IF> otherwise <OTHERWISE>'
+                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
                 '<AS> # <POUND> <BUILTIN_KEYWORDS>'
                 '<KEYWORDS> <identifier>'
@@ -7169,15 +7155,14 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
-                '<WHERE> given <GIVEN> sum ∑ <SUM> min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                "<SUBJECT_TO> from <FROM> π <PI> '|' ℝ ℤ"
-                'ᵀ with <WITH> initial <INITIAL> and'
-                '<AND> or <OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                '<DERIVATIVE> ∂ <PARTIAL> solve Solve'
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
+                'int <INT> if <IF> otherwise <OTHERWISE>'
+                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
                 '<AS> # <POUND> <BUILTIN_KEYWORDS>'
                 "<KEYWORDS> <identifier> '(' <vector> '['"
@@ -7314,16 +7299,16 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<IF> otherwise <OTHERWISE> ∈ <IN> exp'
                 '<EXP> log <LOG> ln <LN> sqrt <SQRT> s.t.'
                 'subject to <SUBJECT_TO> from <FROM> π'
-                '<PI> ℝ ℤ ᵀ with <WITH> initial <INITIAL>'
+                '<PI> ℝ ℤ with <WITH> initial <INITIAL>'
                 'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
-                '𝕕 <DERIVATIVE> ∂ <PARTIAL> solve Solve'
-                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> <BUILTIN_KEYWORDS>'
-                "<KEYWORDS> <identifier> <integer> '.'"
-                '<digit> <mantissa> <floating_point>'
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                "<fraction> \\d <number> '[' '⎡' <matrix>"
-                "<vector> '{' <set> <pi> <constant>"
+                '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
+                "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                "<identifier> <integer> '.' <digit>"
+                '<mantissa> <floating_point> <double>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+                "\\d <number> '[' '⎡' <matrix> <vector>"
+                "'{' <set> <pi> <constant>"
             )
         self._define(
             ['op', 'sub', 'nm', 'id0', 'num', 'm', 'v', 's', 'c'],
@@ -7346,15 +7331,14 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 "'(' <subexpression> [A-Za-"
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
-                '<WHERE> given <GIVEN> sum ∑ <SUM> min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                "<SUBJECT_TO> from <FROM> π <PI> '|' ℝ ℤ"
-                'ᵀ with <WITH> initial <INITIAL> and'
-                '<AND> or <OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                '<DERIVATIVE> ∂ <PARTIAL> solve Solve'
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
+                'int <INT> if <IF> otherwise <OTHERWISE>'
+                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
                 '<AS> # <POUND> <BUILTIN_KEYWORDS>'
                 '<KEYWORDS> <identifier_alone> <integer>'
@@ -8141,15 +8125,14 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
-                '<WHERE> given <GIVEN> sum ∑ <SUM> min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                "<SUBJECT_TO> from <FROM> π <PI> '|' ℝ ℤ"
-                'ᵀ with <WITH> initial <INITIAL> and'
-                '<AND> or <OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                '<DERIVATIVE> ∂ <PARTIAL> solve Solve'
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
+                'int <INT> if <IF> otherwise <OTHERWISE>'
+                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
                 '<AS> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> <integer> '.' <digit>"
@@ -8896,15 +8879,14 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
-                '<WHERE> given <GIVEN> sum ∑ <SUM> min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                "<SUBJECT_TO> from <FROM> π <PI> '|' ℝ ℤ"
-                'ᵀ with <WITH> initial <INITIAL> and'
-                '<AND> or <OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                '<DERIVATIVE> ∂ <PARTIAL> solve Solve'
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
+                'int <INT> if <IF> otherwise <OTHERWISE>'
+                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
                 '<AS> # <POUND> <BUILTIN_KEYWORDS>'
                 '<KEYWORDS> <identifier>'
@@ -9092,17 +9074,16 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 'expecting one of: '
                 '[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
                 "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
-                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
-                'min <MIN> max <MAX> argmin <ARGMIN>'
-                'argmax <ARGMAX> int <INT> if <IF>'
-                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
-                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
-                'subject to <SUBJECT_TO> from <FROM> π'
-                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
-                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
-                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
-                '<SUBSET> as <AS> # <POUND>'
+                'where <WHERE> given <GIVEN> sum min'
+                '<MIN> max <MAX> argmin <ARGMIN> argmax'
+                '<ARGMAX> int <INT> if <IF> otherwise'
+                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
+                'ln <LN> sqrt <SQRT> s.t. subject to'
+                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
+                '<WITH> initial <INITIAL> and <AND> or'
+                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
+                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
@@ -9123,17 +9104,16 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 'expecting one of: '
                 '[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
                 "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
-                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
-                'min <MIN> max <MAX> argmin <ARGMIN>'
-                'argmax <ARGMAX> int <INT> if <IF>'
-                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
-                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
-                'subject to <SUBJECT_TO> from <FROM> π'
-                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
-                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
-                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
-                '<SUBSET> as <AS> # <POUND>'
+                'where <WHERE> given <GIVEN> sum min'
+                '<MIN> max <MAX> argmin <ARGMIN> argmax'
+                '<ARGMAX> int <INT> if <IF> otherwise'
+                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
+                'ln <LN> sqrt <SQRT> s.t. subject to'
+                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
+                '<WITH> initial <INITIAL> and <AND> or'
+                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
+                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier_alone>'
                 '<identifier_with_multi_subscript>'
@@ -9435,15 +9415,14 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<identifier_alone> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
-                '<WHERE> given <GIVEN> sum ∑ <SUM> min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                "<SUBJECT_TO> from <FROM> π <PI> '|' ℝ ℤ"
-                'ᵀ with <WITH> initial <INITIAL> and'
-                '<AND> or <OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                '<DERIVATIVE> ∂ <PARTIAL> solve Solve'
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
+                'int <INT> if <IF> otherwise <OTHERWISE>'
+                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
                 '<AS> # <POUND> <BUILTIN_KEYWORDS>'
                 '<KEYWORDS> <func_id>'

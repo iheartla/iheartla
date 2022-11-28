@@ -512,17 +512,16 @@ class ParserFileManager(object):
             self._error(
                 'expecting one of: '
                 "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                'where <WHERE> given <GIVEN> sum ∑ <SUM>'
-                'min <MIN> max <MAX> argmin <ARGMIN>'
-                'argmax <ARGMAX> int <INT> if <IF>'
-                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
-                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
-                'subject to <SUBJECT_TO> from <FROM> π'
-                "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
-                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
-                "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
-                '<SUBSET> as <AS> # <POUND>'
+                'where <WHERE> given <GIVEN> sum min'
+                '<MIN> max <MAX> argmin <ARGMIN> argmax'
+                '<ARGMAX> int <INT> if <IF> otherwise'
+                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
+                'ln <LN> sqrt <SQRT> s.t. subject to'
+                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
+                '<WITH> initial <INITIAL> and <AND> or'
+                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
+                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
@@ -597,17 +596,16 @@ class ParserFileManager(object):
                 self._error(
                     'expecting one of: '
                     "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                    'where <WHERE> given <GIVEN> sum ∑ <SUM>'
-                    'min <MIN> max <MAX> argmin <ARGMIN>'
-                    'argmax <ARGMAX> int <INT> if <IF>'
-                    'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
-                    'log <LOG> ln <LN> sqrt <SQRT> s.t.'
-                    'subject to <SUBJECT_TO> from <FROM> π'
-                    "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
-                    '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                    '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
-                    "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
-                    '<SUBSET> as <AS> # <POUND>'
+                    'where <WHERE> given <GIVEN> sum min'
+                    '<MIN> max <MAX> argmin <ARGMIN> argmax'
+                    '<ARGMAX> int <INT> if <IF> otherwise'
+                    '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
+                    'ln <LN> sqrt <SQRT> s.t. subject to'
+                    '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
+                    '<WITH> initial <INITIAL> and <AND> or'
+                    '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
+                    "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
+                    '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
                     '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(
@@ -660,17 +658,16 @@ class ParserFileManager(object):
                 self._error(
                     'expecting one of: '
                     "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                    'where <WHERE> given <GIVEN> sum ∑ <SUM>'
-                    'min <MIN> max <MAX> argmin <ARGMIN>'
-                    'argmax <ARGMAX> int <INT> if <IF>'
-                    'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
-                    'log <LOG> ln <LN> sqrt <SQRT> s.t.'
-                    'subject to <SUBJECT_TO> from <FROM> π'
-                    "<PI> '|' ℝ ℤ ᵀ with <WITH> initial"
-                    '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                    '∇ <NABLA> 𝕕 <DERIVATIVE> ∂ <PARTIAL>'
-                    "solve Solve SOLVE <SOLVE> ' <PRIME> ⊂"
-                    '<SUBSET> as <AS> # <POUND>'
+                    'where <WHERE> given <GIVEN> sum min'
+                    '<MIN> max <MAX> argmin <ARGMIN> argmax'
+                    '<ARGMAX> int <INT> if <IF> otherwise'
+                    '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
+                    'ln <LN> sqrt <SQRT> s.t. subject to'
+                    '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
+                    '<WITH> initial <INITIAL> and <AND> or'
+                    '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
+                    "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
+                    '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
                     '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(

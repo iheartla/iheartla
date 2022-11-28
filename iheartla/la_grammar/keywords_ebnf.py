@@ -13,7 +13,7 @@ DERIVATIVE = /𝕕/;
 PARTIAL = /∂/;
 WHERE = /where/;
 GIVEN = /given/;
-SUM = /sum/ | /∑/;
+SUM = /sum/ | /∑/;  
 MIN = /min/;
 MAX = /max/;
 ARGMIN = /argmin/;
@@ -72,7 +72,7 @@ BUILTIN_KEYWORDS
     =
     | WHERE
     | GIVEN
-    | SUM
+    | /sum/
     | MIN
     | MAX
     | ARGMIN
@@ -88,14 +88,14 @@ BUILTIN_KEYWORDS
     | SUBJECT_TO
     | FROM
     | PI
-    | '|'
-    | /ℝ/|/ℤ/ | /ᵀ/
+    | /ℝ/|/ℤ/
     #| SIN | COS | ASIN | ARCSIN | ACOS | ARCCOS | TAN | ATAN | ARCTAN | ATAN2
     | WITH
     | INITIAL
     | AND
     | OR
-    | DELTA | NABLA | DERIVATIVE | PARTIAL
+    | DELTA | NABLA | DERIVATIVE 
+    # | PARTIAL  can't be matched as identifiers
     | SOLVE
     | PRIME
     | SUBSET
