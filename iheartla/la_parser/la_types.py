@@ -284,6 +284,17 @@ class MatrixType(LaVarType):
         self.index_var = index_var    # used by sparse mat
         self.value_var = value_var    # used by sparse mat
 
+    def __deepcopy__(self, memo):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        memo[id(self)] = result
+        for k, v in self.__dict__.items():
+            if k in ['item_types', 'rows_ir', 'cols_ir']:
+                setattr(result, k, getattr(self, k))
+            else:
+                setattr(result, k, copy.deepcopy(v, memo))
+        return result
+
     def get_signature(self):
         # if self.element_type:
         #     return "matrix,rows:{},cols:{},ele_type:{}".format(self.rows, self.cols, self.element_type.get_signature())
