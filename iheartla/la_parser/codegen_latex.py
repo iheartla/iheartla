@@ -681,7 +681,15 @@ class CodeGenLatex(CodeGen):
         content_list = []
         for item in node.items:
             content_list.append(self.visit(item, **kwargs))
-        return '\\{' + ', '.join(content_list) + '\\}'
+        content = ', '.join(content_list)
+        if node.cond:
+            kwargs['is_sub'] = True
+            sub = ','.join(node.enum_list)
+            del kwargs['is_sub']
+            range = self.visit(node.range, **kwargs)
+            sub += "\in " + range
+            content += '| {}, {}'.format(sub, self.visit(node.cond, **kwargs))
+        return '\\{' + content + '\\}'
 
     def visit_MatrixRows(self, node, **kwargs):
         ret = []

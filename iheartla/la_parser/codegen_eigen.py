@@ -1215,12 +1215,55 @@ class CodeGenEigen(CodeGen):
         cur_m_id = node.symbol
         ret = []
         pre_list = []
-        for item in node.items:
-            item_info = self.visit(item, **kwargs)
-            ret.append(item_info.content)
-            pre_list += item_info.pre_list
-        content = '    {} {}({{{}}});\n'.format(self.get_ctype(node.la_type), cur_m_id, ", ".join(ret))
-        pre_list.append(content)
+        if node.cond:
+            pre_list.append('    {} {};\n'.format(self.get_ctype(node.la_type), cur_m_id))
+            cond_info = self.visit(node.cond, **kwargs)
+            cond_content = "        if(" + cond_info.content + "){\n"
+            #
+            range_info = self.visit(node.range, **kwargs)
+            if len(node.enum_list) == 1:
+                pre_list.append(
+                    '    for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), node.enum_list[0],
+                                                 range_info.content))
+            else:
+                tuple_name = self.generate_var_name("tuple")
+                pre_list.append('    for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), tuple_name,
+                                                            range_info.content))
+                extra_content = ''
+                if node.use_tuple:
+                    pre_list.append('        {} {} = {};\n'.format(self.get_ctype(self.get_sym_type(node.enum_list[0])),
+                                                              node.enum_list[0], tuple_name))
+                else:
+                    for i in range(len(node.enum_list)):
+                        if node.range.la_type.index_type:
+                            pre_list.append(
+                                '        int {} = std::get<{}>({}){} + 1;\n'.format(node.enum_list[i], i, tuple_name,
+                                                                                extra_content))
+                        else:
+                            pre_list.append('        int {} = std::get<{}>({}){};\n'.format(node.enum_list[i], i, tuple_name,
+                                                                                       extra_content))
+            exp_pre_list = []
+            exp_info = self.visit(node.items[0], **kwargs)
+            pre_list.append(cond_content)
+            if exp_info.pre_list:  # catch pre_list
+                list_content = "".join(exp_info.pre_list)
+                # content += exp_info.pre_list
+                list_content = list_content.split('\n')
+                for index in range(len(list_content)):
+                    if index != len(list_content) - 1:
+                        exp_pre_list.append(list_content[index] + '\n')
+            pre_list += exp_pre_list
+            pre_list.append("            {}.insert({});\n".format(cur_m_id, exp_info.content))
+            pre_list.append("        }\n")
+            pre_list.append("    }\n")
+        else:
+            # {a, b, c}
+            for item in node.items:
+                item_info = self.visit(item, **kwargs)
+                ret.append(item_info.content)
+                pre_list += item_info.pre_list
+            content = '    {} {}({{{}}});\n'.format(self.get_ctype(node.la_type), cur_m_id, ", ".join(ret))
+            pre_list.append(content)
         return CodeNodeInfo(cur_m_id, pre_list=pre_list)
 
     def visit_matrix(self, node, **kwargs):

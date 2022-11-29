@@ -1074,11 +1074,40 @@ class CodeGenMatlab(CodeGen):
         cur_m_id = node.symbol
         ret = []
         pre_list = []
-        for item in node.items:
-            item_info = self.visit(item, **kwargs)
-            ret.append(item_info.content)
-            pre_list += item_info.pre_list
-        content = '[{}]'.format("; ".join(ret))
+        if node.cond:
+            pre_list.append('    {} = []\n'.format(cur_m_id))
+            cond_info = self.visit(node.cond, **kwargs)
+            cond_content = "        if " + cond_info.content + "\n"
+            #
+            range_info = self.visit(node.range, **kwargs)
+            index_name = self.generate_var_name('index')
+            pre_list.append('    for {} = 1:size({}, 1)\n'.format(index_name, range_info.content))
+            extra_content = ''
+            for i in range(len(node.enum_list)):
+                pre_list.append(
+                    '        {} = {}({}, {});\n'.format(node.enum_list[i], range_info.content, index_name, i + 1))
+            exp_pre_list = []
+            exp_info = self.visit(node.items[0], **kwargs)
+            if exp_info.pre_list:  # catch pre_list
+                list_content = "".join(exp_info.pre_list)
+                # content += exp_info.pre_list
+                list_content = list_content.split('\n')
+                for index in range(len(list_content)):
+                    if index != len(list_content) - 1:
+                        exp_pre_list.append(list_content[index] + '\n')
+            #
+            pre_list += exp_pre_list
+            pre_list += cond_content
+            pre_list.append("            {} = [{}; {}];\n".format(cur_m_id, cur_m_id, exp_info.content))
+            pre_list.append("        end\n")
+            pre_list.append("    end\n")
+            content = cur_m_id
+        else:
+            for item in node.items:
+                item_info = self.visit(item, **kwargs)
+                ret.append(item_info.content)
+                pre_list += item_info.pre_list
+            content = '[{}]'.format(", ".join(ret))
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_to_matrix(self, node, **kwargs):

@@ -753,6 +753,11 @@ class SetNode(ExprNode):
         super().__init__(IRNodeType.Set, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.items = []
         self.symbol = None
+        self.enum_list = None
+        self.range = None
+        self.cond = None
+        self.f = None
+        self.o = None
 
 
 class ToMatrixNode(ExprNode):

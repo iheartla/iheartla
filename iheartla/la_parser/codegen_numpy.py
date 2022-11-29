@@ -1049,11 +1049,41 @@ class CodeGenNumpy(CodeGen):
         cur_m_id = node.symbol
         ret = []
         pre_list = []
-        for item in node.items:
-            item_info = self.visit(item, **kwargs)
-            ret.append(item_info.content)
-            pre_list += item_info.pre_list
-        content = 'np.hstack(({}))'.format(", ".join(ret))
+        if node.cond:
+            pre_list.append('    {} = frozenset()\n'.format(cur_m_id))
+            cond_info = self.visit(node.cond, **kwargs)
+            cond_content = "        if(" + cond_info.content + "):\n"
+            #
+            range_info = self.visit(node.range, **kwargs)
+            index_name = self.generate_var_name('tuple')
+            pre_list.append('    for {} in {}:\n'.format(index_name, range_info.content))
+            extra_content = ''
+            for i in range(len(node.enum_list)):
+                if node.range.la_type.index_type:
+                    pre_list.append(
+                        '        {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+                else:
+                    pre_list.append(
+                        '        {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+            exp_pre_list = []
+            exp_info = self.visit(node.items[0], **kwargs)
+            if exp_info.pre_list:  # catch pre_list
+                list_content = "".join(exp_info.pre_list)
+                # content += exp_info.pre_list
+                list_content = list_content.split('\n')
+                for index in range(len(list_content)):
+                    if index != len(list_content) - 1:
+                        exp_pre_list.append(list_content[index] + '\n')
+            pre_list += exp_pre_list
+            pre_list += cond_content
+            pre_list.append("            {}.insert({})\n".format(cur_m_id, exp_info.content))
+            content = cur_m_id
+        else:
+            for item in node.items:
+                item_info = self.visit(item, **kwargs)
+                ret.append(item_info.content)
+                pre_list += item_info.pre_list
+            content = 'frozenset({{{}}})'.format(", ".join(ret))
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_to_matrix(self, node, **kwargs):
