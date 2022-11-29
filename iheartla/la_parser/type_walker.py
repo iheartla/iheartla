@@ -262,6 +262,7 @@ class TypeWalker(NodeWalker):
         self.sum_sym_list = []
         self.lhs_subs = []
         self.lhs_sym_list = []
+        self.scope_list = []
         self.sum_conds = []
         self.la_content = ''
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
@@ -338,6 +339,19 @@ class TypeWalker(NodeWalker):
         self.main_param.symtable = self.symtable
         return self.main_param
 
+    def get_param_data(self, scope):
+        if scope == 'global':
+            return self.main_param
+        else:
+            return self.func_data_dict[scope].params_data
+
+    def get_upper_param_data(self):
+        if len(self.scope_list) > 1:
+            upper_scope = self.get_upper_scope()
+            return self.get_param_data(upper_scope)
+        return self.main_param
+
+
     def copy_data_to_opt(self):
         for key, paramData in self.opt_dict.items():
             paramData.symtable.update(self.main_param.symtable)
@@ -391,6 +405,7 @@ class TypeWalker(NodeWalker):
         self.multi_dim_list.clear()
         self.lhs_subs.clear()
         self.lhs_sym_list.clear()
+        self.scope_list.clear()
         self.sum_conds.clear()
         self.lhs_list.clear()
         self.la_content = la_content
@@ -641,6 +656,7 @@ class TypeWalker(NodeWalker):
         la_debug("TypeWalker begin ==================================================================================================================")
         self.main_param.symtable = self.symtable
         self.pre_walk = True if 'pre_walk' in kwargs else False
+        self.scope_list = ['global']
         # self.symtable.clear()
         # self.visualizer.visualize(node)  # visualize
         ir_node = StartNode(parse_info=node.parseinfo, raw_text=node.text)
@@ -827,6 +843,8 @@ class TypeWalker(NodeWalker):
         self.saved_opt_syms = copy.deepcopy(self.opt_syms)
         self.saved_opt_dict = copy.deepcopy(self.opt_dict)
         self.saved_scope = self.cur_scope
+        # start from main scope
+        self.saved_scope_list = copy.deepcopy(self.scope_list)
 
     def pop_environment(self):
         # self.logger.debug("pop_environment: {}".format(self.saved_symtable))
@@ -846,6 +864,7 @@ class TypeWalker(NodeWalker):
         self.is_param_block = False
         self.visiting_solver_eq = False
         self.cur_scope = self.saved_scope
+        self.scope_list = self.saved_scope_list
 
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
         block_node = BlockNode()
@@ -1993,6 +2012,13 @@ class TypeWalker(NodeWalker):
     def walk_DeSolver(self, node, **kwargs):
         # print(node)
         pass
+
+    def push_scope(self, scope):
+        self.set_cur_scope(scope)
+        self.scope_list.append(scope)
+
+    def pop_scope(self):
+        self.scope_list.pop()
 
     def set_cur_scope(self, scope):
         self.cur_scope = scope
@@ -3451,7 +3477,8 @@ class TypeWalker(NodeWalker):
     def walk_Set(self, node, **kwargs):
         symbols = set()
         new_id = self.generate_var_name("set_def")
-        self.set_cur_scope(new_id)
+        self.push_scope(new_id)
+        # self.set_cur_scope(new_id)
         subs_list = []
         ir_node = SetNode(parse_info=node.parseinfo, raw_text=node.text)
         self.assert_expr(len(node.exp) > 0, get_err_msg_info(node.parseinfo, "Empty set is not allowed."))
@@ -3469,9 +3496,7 @@ class TypeWalker(NodeWalker):
                         enum = self.walk(cur_id_raw, **kwargs)
                         subs_list.append(enum.content)
                         self.assert_expr(enum.content not in self.symtable, get_err_msg_info(cur_id_raw.parseinfo, "Subscript has been defined"))
-                        self.symtable[enum.content] = ScalarType(index_type=False, is_int=True)  # add subscript to symbol table temporarily
-                        self.func_data_dict[self.cur_scope].params_data.symtable[enum.content] = ScalarType(index_type=False, is_int=True)
-                        self.sum_subs.append(enum.content)
+                        self.add_sym_type(enum.content, ScalarType(index_type=False, is_int=True))
                 else:
                     # (e ∈ E)
                     self.assert_expr(range_info.la_type.size > 1 and len(node.enum) == 1, get_err_msg_info(node.parseinfo, "Invalid size"))
@@ -3480,9 +3505,7 @@ class TypeWalker(NodeWalker):
                     enum = self.walk(cur_id_raw)
                     subs_list.append(enum.content)
                     self.assert_expr(enum.content not in self.symtable, get_err_msg_info(cur_id_raw.parseinfo, "Subscript has been defined"))
-                    self.symtable[enum.content] = TupleType(type_list=range_info.la_type.type_list)  # add subscript to symbol table temporarily
-                    self.func_data_dict[self.cur_scope].params_data.symtable[enum.content] = TupleType(type_list=range_info.la_type.type_list)
-                    self.sum_subs.append(enum.content)
+                    self.add_sym_type(enum.content, TupleType(type_list=range_info.la_type.type_list))
                     ir_node.use_tuple = True
                 ir_node.enum_list = subs_list
             ir_node.cond = self.walk(node.cond, **kwargs).ir
@@ -3496,10 +3519,11 @@ class TypeWalker(NodeWalker):
             symbols = symbols.union(exp_info.symbols)
         ir_node.la_type = SetType(size=1, int_list=[True], type_list=[f_type], element_type=f_type)
         node_info = NodeInfo(ir=ir_node, la_type=ir_node.la_type, symbols=symbols)
+        self.pop_scope()
         if LHS in kwargs:
             lhs = kwargs[LHS]
             new_id = self.generate_var_name(lhs+"set")
-            self.symtable[new_id] = ir_node.la_type
+            self.get_cur_param_data().symtable[new_id] = ir_node.la_type
             ir_node.symbol = new_id
         else:
             new_id = self.generate_var_name(self.local_func_name+"set")
@@ -4405,6 +4429,12 @@ class TypeWalker(NodeWalker):
 
     def is_main_scope(self):
         return self.cur_scope == 'global'
+
+    def get_cur_scope(self):
+        return self.scope_list[-1]
+    def get_upper_scope(self):
+        # upper layer scope
+        return self.scope_list[-2]
 
     def get_main_id(self, identifier):
         if identifier in self.get_cur_param_data().ids_dict:
