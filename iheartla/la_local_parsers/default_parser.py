@@ -477,6 +477,10 @@ class grammardefaultParser(Parser):
         self._pattern('#')
 
     @tatsumasu()
+    def _FOR_(self):  # noqa
+        self._pattern('for')
+
+    @tatsumasu()
     def _BUILTIN_KEYWORDS_(self):  # noqa
         with self._choice():
             with self._option():
@@ -543,6 +547,8 @@ class grammardefaultParser(Parser):
                 self._AS_()
             with self._option():
                 self._POUND_()
+            with self._option():
+                self._FOR_()
             self._error(
                 'expecting one of: '
                 'where <WHERE> given <GIVEN> sum min'
@@ -554,7 +560,8 @@ class grammardefaultParser(Parser):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                '<FOR>'
             )
 
     @tatsumasu('Exponent')
@@ -2565,35 +2572,206 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('Set')
     def _set_(self):  # noqa
-        self._token('{')
+        with self._choice():
+            with self._option():
+                self._token('{')
 
-        def block0():
-            self._hspace_()
-        self._closure(block0)
-        self._expression_()
-        self.add_last_node_to_name('exp')
+                def block1():
+                    self._hspace_()
+                self._closure(block1)
+                self._expression_()
+                self.add_last_node_to_name('exp')
 
-        def block2():
+                def block3():
 
-            def block3():
-                self._hspace_()
-            self._closure(block3)
-            self._token(',')
+                    def block4():
+                        self._hspace_()
+                    self._closure(block4)
+                    self._token(',')
 
-            def block4():
-                self._hspace_()
-            self._closure(block4)
-            self._expression_()
-            self.add_last_node_to_name('exp')
-        self._closure(block2)
+                    def block5():
+                        self._hspace_()
+                    self._closure(block5)
+                    self._expression_()
+                    self.add_last_node_to_name('exp')
+                self._closure(block3)
 
-        def block6():
-            self._hspace_()
-        self._closure(block6)
-        self._token('}')
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._token('}')
+                self._define(
+                    [],
+                    ['exp']
+                )
+            with self._option():
+                self._token('{')
+                self._expression_()
+                self.add_last_node_to_name('exp')
+
+                def block9():
+                    self._hspace_()
+                self._closure(block9)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._FOR_()
+                        with self._option():
+                            self._pattern('∀')
+                        self._error(
+                            'expecting one of: '
+                            '<FOR> ∀'
+                        )
+                self.name_last_node('f')
+
+                def block12():
+                    self._hspace_()
+                self._closure(block12)
+                self._identifier_alone_()
+                self.add_last_node_to_name('enum')
+
+                def block14():
+
+                    def block15():
+                        self._hspace_()
+                    self._closure(block15)
+
+                    def block16():
+                        self._token(',')
+                    self._closure(block16)
+
+                    def block17():
+                        self._hspace_()
+                    self._closure(block17)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('enum')
+                self._closure(block14)
+
+                def block19():
+                    self._hspace_()
+                self._closure(block19)
+                self._IN_()
+
+                def block20():
+                    self._hspace_()
+                self._closure(block20)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._function_operator_()
+                        with self._option():
+                            self._builtin_operators_()
+                        with self._option():
+                            self._identifier_alone_()
+                        self._error(
+                            'expecting one of: '
+                            '<function_operator> <builtin_operators>'
+                            '<identifier_alone>'
+                        )
+                self.name_last_node('range')
+
+                def block23():
+                    self._hspace_()
+                self._closure(block23)
+                self._IF_()
+
+                def block24():
+                    self._hspace_()
+                self._closure(block24)
+                self._if_condition_()
+                self.name_last_node('cond')
+
+                def block26():
+                    self._hspace_()
+                self._closure(block26)
+                self._token('}')
+                self._define(
+                    ['f', 'range', 'cond'],
+                    ['exp', 'enum']
+                )
+            with self._option():
+                self._token('{')
+                self._expression_()
+                self.add_last_node_to_name('exp')
+
+                def block28():
+                    self._hspace_()
+                self._closure(block28)
+                self._pattern('|')
+                self.name_last_node('o')
+
+                def block30():
+                    self._hspace_()
+                self._closure(block30)
+                self._identifier_alone_()
+                self.add_last_node_to_name('enum')
+
+                def block32():
+
+                    def block33():
+                        self._hspace_()
+                    self._closure(block33)
+
+                    def block34():
+                        self._token(',')
+                    self._closure(block34)
+
+                    def block35():
+                        self._hspace_()
+                    self._closure(block35)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('enum')
+                self._closure(block32)
+
+                def block37():
+                    self._hspace_()
+                self._closure(block37)
+                self._IN_()
+
+                def block38():
+                    self._hspace_()
+                self._closure(block38)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._function_operator_()
+                        with self._option():
+                            self._builtin_operators_()
+                        with self._option():
+                            self._identifier_alone_()
+                        self._error(
+                            'expecting one of: '
+                            '<function_operator> <builtin_operators>'
+                            '<identifier_alone>'
+                        )
+                self.name_last_node('range')
+
+                def block41():
+                    self._hspace_()
+                self._closure(block41)
+                self._token(',')
+
+                def block42():
+                    self._hspace_()
+                self._closure(block42)
+                self._if_condition_()
+                self.name_last_node('cond')
+
+                def block44():
+                    self._hspace_()
+                self._closure(block44)
+                self._token('}')
+                self._define(
+                    ['o', 'range', 'cond'],
+                    ['exp', 'enum']
+                )
+            self._error(
+                'expecting one of: '
+                "'{'"
+            )
         self._define(
-            [],
-            ['exp']
+            ['f', 'range', 'cond', 'o'],
+            ['exp', 'enum']
         )
 
     @tatsumasu('MultiCondExpr')
@@ -3296,12 +3474,13 @@ class grammardefaultParser(Parser):
                 '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
                 '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> <BUILTIN_KEYWORDS>'
-                "<KEYWORDS> <identifier> <integer> '.'"
-                '<digit> <mantissa> <floating_point>'
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                "<fraction> \\d <number> '[' '⎡' <matrix>"
-                "<vector> '{' <set> <pi> <constant>"
+                '<AS> # <POUND> for <FOR>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                "<identifier> <integer> '.' <digit>"
+                '<mantissa> <floating_point> <double>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+                "\\d <number> '[' '⎡' <matrix> <vector>"
+                "'{' <set> <pi> <constant>"
             )
         self._define(
             ['op', 'sub', 'nm', 'id0', 'num', 'm', 'v', 's', 'c'],
@@ -3455,8 +3634,9 @@ class grammardefaultParser(Parser):
                 '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
                 '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> <BUILTIN_KEYWORDS>'
-                '<KEYWORDS> \\d <pi> <factor_in_matrix>'
+                '<AS> # <POUND> for <FOR>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS> \\d <pi>'
+                '<factor_in_matrix>'
             )
         self._define(
             ['base', 't', 'r', 'power'],
@@ -3616,8 +3796,9 @@ class grammardefaultParser(Parser):
                 '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
                 '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> <BUILTIN_KEYWORDS>'
-                '<KEYWORDS> \\d <pi> <factor_in_matrix>'
+                '<AS> # <POUND> for <FOR>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS> \\d <pi>'
+                '<factor_in_matrix>'
             )
         self._define(
             ['left', 'right', 'p'],
@@ -3895,8 +4076,8 @@ class grammardefaultParser(Parser):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier_alone>'
             )
         self._define(
@@ -4042,8 +4223,8 @@ class grammardefaultParser(Parser):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
             ['value', 'id'],
@@ -7069,8 +7250,8 @@ class grammardefaultParser(Parser):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<local_func> <identifier> <assignment>'
                 '<expression> <addition> <subtraction>'
                 "<add_sub_operator> <term> '-' 'with'"
@@ -7207,8 +7388,8 @@ class grammardefaultParser(Parser):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier>'
             )
         self._define(
@@ -7349,8 +7530,8 @@ class grammardefaultParser(Parser):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> '(' <vector> '[' '⎡'"
                 '<matrix>'
             )
@@ -7488,12 +7669,13 @@ class grammardefaultParser(Parser):
                 '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
                 '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> <BUILTIN_KEYWORDS>'
-                "<KEYWORDS> <identifier> <integer> '.'"
-                '<digit> <mantissa> <floating_point>'
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                "<fraction> \\d <number> '[' '⎡' <matrix>"
-                "<vector> '{' <set> <pi> <constant>"
+                '<AS> # <POUND> for <FOR>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                "<identifier> <integer> '.' <digit>"
+                '<mantissa> <floating_point> <double>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+                "\\d <number> '[' '⎡' <matrix> <vector>"
+                "'{' <set> <pi> <constant>"
             )
         self._define(
             ['op', 'sub', 'nm', 'id0', 'num', 'm', 'v', 's', 'c'],
@@ -7524,8 +7706,8 @@ class grammardefaultParser(Parser):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier_alone> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
@@ -8332,7 +8514,7 @@ class grammardefaultParser(Parser):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS>'
+                '<PRIME> ⊂ <SUBSET> as <AS> for <FOR>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
@@ -9085,8 +9267,8 @@ class grammardefaultParser(Parser):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier>'
             )
         self._define(
@@ -9296,8 +9478,8 @@ class grammardefaultParser(Parser):
                     '<WITH> initial <INITIAL> and <AND> or'
                     '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                     "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                    '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                    '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                    '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(
                 ['const', 'id', 'value'],
@@ -9358,8 +9540,8 @@ class grammardefaultParser(Parser):
                     '<WITH> initial <INITIAL> and <AND> or'
                     '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                     "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                    '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                    '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                    '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(
                 ['value', 'id'],
@@ -9386,8 +9568,8 @@ class grammardefaultParser(Parser):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier_with_subscript>'
             )
 
@@ -10057,6 +10239,9 @@ class grammardefaultSemantics:
         return ast
 
     def POUND(self, ast):  # noqa
+        return ast
+
+    def FOR(self, ast):  # noqa
         return ast
 
     def BUILTIN_KEYWORDS(self, ast):  # noqa
@@ -11107,7 +11292,12 @@ class Vector(ModelBase):
 
 @dataclass(eq=False)
 class Set(ModelBase):
+    cond: Any = None
+    enum: Any = None
     exp: Any = None
+    f: Any = None
+    o: Any = None
+    range: Any = None
 
 
 @dataclass(eq=False)

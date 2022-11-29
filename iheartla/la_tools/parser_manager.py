@@ -521,8 +521,8 @@ class ParserFileManager(object):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
             ['value', 'id'],
@@ -605,8 +605,8 @@ class ParserFileManager(object):
                     '<WITH> initial <INITIAL> and <AND> or'
                     '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                     "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                    '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                    '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                    '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(
                 ['const', 'id', 'value'],
@@ -667,8 +667,8 @@ class ParserFileManager(object):
                     '<WITH> initial <INITIAL> and <AND> or'
                     '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                     "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                    '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                    '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                    '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(
                 ['value', 'id'],

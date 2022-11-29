@@ -11,6 +11,10 @@ vector::Vector
 
 set::Set            
     = '{' {hspace} exp+:expression {{hspace} ',' {hspace} exp+:expression} {hspace} '}'
+    | '{' exp+:expression {hspace} f:(FOR|/∀/) {hspace} enum+:identifier_alone {{hspace} {','} {hspace} enum+:identifier_alone} {hspace} 
+    IN {hspace} range:(function_operator | builtin_operators | identifier_alone) {hspace} IF {hspace} cond:if_condition {hspace}  '}'
+    | '{' exp+:expression {hspace} o:/|/ {hspace} enum+:identifier_alone {{hspace} {','} {hspace} enum+:identifier_alone} {hspace} 
+    IN {hspace} range:(function_operator | builtin_operators | identifier_alone) {hspace} ',' {hspace} cond:if_condition {hspace}   '}'
     ;
     
 multi_cond_expr::MultiCondExpr

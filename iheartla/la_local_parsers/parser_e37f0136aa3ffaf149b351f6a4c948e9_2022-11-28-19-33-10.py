@@ -24,7 +24,7 @@ from tatsu.util import re, generic_main  # noqa
 KEYWORDS = {}  # type: ignore
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
+class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
     def __init__(self, text, /, config: ParserConfig = None, **settings):
         base_config = ParserConfig.new(
             owner=self,
@@ -41,7 +41,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
         super().__init__(text, config=config)
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
+class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def __init__(self, config: ParserConfig = None, **settings):
         base_config = ParserConfig.new(
             owner=self,
@@ -379,6 +379,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._pattern('#')
 
     @tatsumasu()
+    def _FOR_(self):  # noqa
+        self._pattern('for')
+
+    @tatsumasu()
     def _BUILTIN_KEYWORDS_(self):  # noqa
         with self._choice():
             with self._option():
@@ -445,6 +449,8 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._AS_()
             with self._option():
                 self._POUND_()
+            with self._option():
+                self._FOR_()
             self._error(
                 'expecting one of: '
                 'where <WHERE> given <GIVEN> sum min'
@@ -456,7 +462,8 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                '<FOR>'
             )
 
     @tatsumasu('Exponent')
@@ -629,8 +636,8 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<set_operators> sum ∑ <SUM>'
                 "<sum_operator> int <INT> '∫'"
                 '<integral_operator> <trans_operator> √'
-                "<sqrt_operator> '!!!' <func_id>"
-                '<function_operator> <exp_func>'
+                '<sqrt_operator> <identifier_alone>'
+                '<func_id> <function_operator> <exp_func>'
                 '<log_func> <ln_func> <sqrt_func>'
                 '<predefined_built_operators>'
                 '<builtin_operators>'
@@ -2467,35 +2474,206 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu('Set')
     def _set_(self):  # noqa
-        self._token('{')
+        with self._choice():
+            with self._option():
+                self._token('{')
 
-        def block0():
-            self._hspace_()
-        self._closure(block0)
-        self._expression_()
-        self.add_last_node_to_name('exp')
+                def block1():
+                    self._hspace_()
+                self._closure(block1)
+                self._expression_()
+                self.add_last_node_to_name('exp')
 
-        def block2():
+                def block3():
 
-            def block3():
-                self._hspace_()
-            self._closure(block3)
-            self._token(',')
+                    def block4():
+                        self._hspace_()
+                    self._closure(block4)
+                    self._token(',')
 
-            def block4():
-                self._hspace_()
-            self._closure(block4)
-            self._expression_()
-            self.add_last_node_to_name('exp')
-        self._closure(block2)
+                    def block5():
+                        self._hspace_()
+                    self._closure(block5)
+                    self._expression_()
+                    self.add_last_node_to_name('exp')
+                self._closure(block3)
 
-        def block6():
-            self._hspace_()
-        self._closure(block6)
-        self._token('}')
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._token('}')
+                self._define(
+                    [],
+                    ['exp']
+                )
+            with self._option():
+                self._token('{')
+                self._expression_()
+                self.add_last_node_to_name('exp')
+
+                def block9():
+                    self._hspace_()
+                self._closure(block9)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._FOR_()
+                        with self._option():
+                            self._pattern('∀')
+                        self._error(
+                            'expecting one of: '
+                            '<FOR> ∀'
+                        )
+                self.name_last_node('f')
+
+                def block12():
+                    self._hspace_()
+                self._closure(block12)
+                self._identifier_alone_()
+                self.add_last_node_to_name('enum')
+
+                def block14():
+
+                    def block15():
+                        self._hspace_()
+                    self._closure(block15)
+
+                    def block16():
+                        self._token(',')
+                    self._closure(block16)
+
+                    def block17():
+                        self._hspace_()
+                    self._closure(block17)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('enum')
+                self._closure(block14)
+
+                def block19():
+                    self._hspace_()
+                self._closure(block19)
+                self._IN_()
+
+                def block20():
+                    self._hspace_()
+                self._closure(block20)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._function_operator_()
+                        with self._option():
+                            self._builtin_operators_()
+                        with self._option():
+                            self._identifier_alone_()
+                        self._error(
+                            'expecting one of: '
+                            '<function_operator> <builtin_operators>'
+                            '<identifier_alone>'
+                        )
+                self.name_last_node('range')
+
+                def block23():
+                    self._hspace_()
+                self._closure(block23)
+                self._IF_()
+
+                def block24():
+                    self._hspace_()
+                self._closure(block24)
+                self._if_condition_()
+                self.name_last_node('cond')
+
+                def block26():
+                    self._hspace_()
+                self._closure(block26)
+                self._token('}')
+                self._define(
+                    ['f', 'range', 'cond'],
+                    ['exp', 'enum']
+                )
+            with self._option():
+                self._token('{')
+                self._expression_()
+                self.add_last_node_to_name('exp')
+
+                def block28():
+                    self._hspace_()
+                self._closure(block28)
+                self._pattern('|')
+                self.name_last_node('o')
+
+                def block30():
+                    self._hspace_()
+                self._closure(block30)
+                self._identifier_alone_()
+                self.add_last_node_to_name('enum')
+
+                def block32():
+
+                    def block33():
+                        self._hspace_()
+                    self._closure(block33)
+
+                    def block34():
+                        self._token(',')
+                    self._closure(block34)
+
+                    def block35():
+                        self._hspace_()
+                    self._closure(block35)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('enum')
+                self._closure(block32)
+
+                def block37():
+                    self._hspace_()
+                self._closure(block37)
+                self._IN_()
+
+                def block38():
+                    self._hspace_()
+                self._closure(block38)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._function_operator_()
+                        with self._option():
+                            self._builtin_operators_()
+                        with self._option():
+                            self._identifier_alone_()
+                        self._error(
+                            'expecting one of: '
+                            '<function_operator> <builtin_operators>'
+                            '<identifier_alone>'
+                        )
+                self.name_last_node('range')
+
+                def block41():
+                    self._hspace_()
+                self._closure(block41)
+                self._token(',')
+
+                def block42():
+                    self._hspace_()
+                self._closure(block42)
+                self._if_condition_()
+                self.name_last_node('cond')
+
+                def block44():
+                    self._hspace_()
+                self._closure(block44)
+                self._token('}')
+                self._define(
+                    ['o', 'range', 'cond'],
+                    ['exp', 'enum']
+                )
+            self._error(
+                'expecting one of: '
+                "'{'"
+            )
         self._define(
-            [],
-            ['exp']
+            ['f', 'range', 'cond', 'o'],
+            ['exp', 'enum']
         )
 
     @tatsumasu('MultiCondExpr')
@@ -3186,24 +3364,27 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<pseudoinverse_in_matrix_operator>'
                 "<operations_in_matrix> '('"
                 "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
-                '<number_matrix> <identifier_alone>'
-                '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                'where <WHERE> given <GIVEN> sum min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> if <IF> otherwise <OTHERWISE> ∈'
-                '<IN> exp <EXP> log <LOG> ln <LN> sqrt'
-                '<SQRT> s.t. subject to <SUBJECT_TO> from'
-                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
-                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
-                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> <BUILTIN_KEYWORDS>'
-                "<KEYWORDS> <identifier> <integer> '.'"
-                '<digit> <mantissa> <floating_point>'
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                "<fraction> \\d <number> '[' '⎡' <matrix>"
-                "<vector> '{' <set> <pi> <constant>"
+                '<number_matrix>'
+                '<identifier_with_multi_subscript>'
+                '<identifier_alone>'
+                '<identifier_with_subscript> [A-Za-'
+                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
+                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX> if'
+                '<IF> otherwise <OTHERWISE> ∈ <IN> exp'
+                '<EXP> log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                '<PI> ℝ ℤ with <WITH> initial <INITIAL>'
+                'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
+                '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
+                "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
+                'for <FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                "<identifier> <integer> '.' <digit>"
+                '<mantissa> <floating_point> <double>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+                "\\d <number> '[' '⎡' <matrix> <vector>"
+                "'{' <set> <pi> <constant>"
             )
         self._define(
             ['op', 'sub', 'nm', 'id0', 'num', 'm', 'v', 's', 'c'],
@@ -3264,8 +3445,9 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 'sum ∑ <SUM> <sum_in_matrix_operator> int'
                 "<INT> '∫' <integral_operator>"
                 '<trans_in_matrix_operator> √'
-                "<sqrt_in_matrix_operator> '!!!'"
-                '<func_id> <function_operator> <exp_func>'
+                '<sqrt_in_matrix_operator>'
+                '<identifier_alone> <func_id>'
+                '<function_operator> <exp_func>'
                 '<log_func> <ln_func> <sqrt_func>'
                 '<predefined_built_operators>'
                 '<builtin_operators>'
@@ -3345,20 +3527,22 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<sqrt_in_matrix_operator>'
                 '<function_operator> <builtin_operators>'
                 '<pseudoinverse_in_matrix_operator>'
+                '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                'where <WHERE> given <GIVEN> sum min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> if <IF> otherwise <OTHERWISE> ∈'
-                '<IN> exp <EXP> log <LOG> ln <LN> sqrt'
-                '<SQRT> s.t. subject to <SUBJECT_TO> from'
-                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
-                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
-                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> <BUILTIN_KEYWORDS>'
-                '<KEYWORDS> \\d <pi> <factor_in_matrix>'
+                '<identifier_with_subscript> [A-Za-'
+                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
+                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX> if'
+                '<IF> otherwise <OTHERWISE> ∈ <IN> exp'
+                '<EXP> log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                '<PI> ℝ ℤ with <WITH> initial <INITIAL>'
+                'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
+                '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
+                "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
+                'for <FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '\\d <pi> <factor_in_matrix>'
             )
         self._define(
             ['base', 't', 'r', 'power'],
@@ -3506,20 +3690,22 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<sqrt_in_matrix_operator>'
                 '<function_operator> <builtin_operators>'
                 '<pseudoinverse_in_matrix_operator>'
+                '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                'where <WHERE> given <GIVEN> sum min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> if <IF> otherwise <OTHERWISE> ∈'
-                '<IN> exp <EXP> log <LOG> ln <LN> sqrt'
-                '<SQRT> s.t. subject to <SUBJECT_TO> from'
-                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
-                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
-                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> <BUILTIN_KEYWORDS>'
-                '<KEYWORDS> \\d <pi> <factor_in_matrix>'
+                '<identifier_with_subscript> [A-Za-'
+                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
+                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX> if'
+                '<IF> otherwise <OTHERWISE> ∈ <IN> exp'
+                '<EXP> log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                '<PI> ℝ ℤ with <WITH> initial <INITIAL>'
+                'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
+                '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
+                "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
+                'for <FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '\\d <pi> <factor_in_matrix>'
             )
         self._define(
             ['left', 'right', 'p'],
@@ -3787,7 +3973,8 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                '[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
+                "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> int <INT> if <IF> otherwise'
@@ -3797,8 +3984,8 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier_alone>'
             )
         self._define(
@@ -3944,8 +4131,8 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
             ['value', 'id'],
@@ -6859,21 +7046,23 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._right_hand_side_()
             self._error(
                 'expecting one of: '
+                '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_unicode_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                'where <WHERE> given <GIVEN> sum min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
-                '<WITH> initial <INITIAL> and <AND> or'
-                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
+                '<identifier_with_subscript> [A-Za-'
+                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
+                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
+                'int <INT> if <IF> otherwise <OTHERWISE>'
+                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
+                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
+                '<AS> # <POUND> for <FOR>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
-                '<local_func> <identifier> <assignment>'
+                '<identifier> <local_func> <assignment>'
                 '<expression> <addition> <subtraction>'
                 "<add_sub_operator> <term> '-' 'with'"
                 "<optimize_operator> '{'"
@@ -6997,19 +7186,21 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 )
             self._error(
                 'expecting one of: '
+                '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                'where <WHERE> given <GIVEN> sum min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
-                '<WITH> initial <INITIAL> and <AND> or'
-                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
+                '<identifier_with_subscript> [A-Za-'
+                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
+                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
+                'int <INT> if <IF> otherwise <OTHERWISE>'
+                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
+                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
+                '<AS> # <POUND> for <FOR>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier>'
             )
@@ -7139,19 +7330,21 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._matrix_()
             self._error(
                 'expecting one of: '
+                '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                'where <WHERE> given <GIVEN> sum min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
-                '<WITH> initial <INITIAL> and <AND> or'
-                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
+                '<identifier_with_subscript> [A-Za-'
+                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
+                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
+                'int <INT> if <IF> otherwise <OTHERWISE>'
+                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
+                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
+                '<AS> # <POUND> for <FOR>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> '(' <vector> '[' '⎡'"
                 '<matrix>'
@@ -7273,29 +7466,30 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 "<pseudoinverse_operator> <factor> '||'"
                 "'‖' '|' '<' '⟨' <union_operator>"
                 '<intersect_operator> sum ∑ <SUM> int'
-                "<INT> '∫' √ '!!!' <func_id> <exp_func>"
-                '<log_func> <ln_func> <sqrt_func>'
-                '<predefined_built_operators>'
+                "<INT> '∫' √ <identifier_alone> <func_id>"
+                '<exp_func> <log_func> <ln_func>'
+                '<sqrt_func> <predefined_built_operators>'
                 "<operations> '(' <subexpression> '0' '1'"
                 "'𝟙' [01\\u1D7D9] <number_matrix>"
-                '<identifier_alone>'
-                '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                'where <WHERE> given <GIVEN> min <MIN>'
-                'max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> if <IF> otherwise <OTHERWISE> ∈'
-                '<IN> exp <EXP> log <LOG> ln <LN> sqrt'
-                '<SQRT> s.t. subject to <SUBJECT_TO> from'
-                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
-                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
-                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> <BUILTIN_KEYWORDS>'
-                "<KEYWORDS> <identifier> <integer> '.'"
-                '<digit> <mantissa> <floating_point>'
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                "<fraction> \\d <number> '[' '⎡' <matrix>"
-                "<vector> '{' <set> <pi> <constant>"
+                '<identifier_with_multi_subscript>'
+                '<identifier_with_subscript> [A-Za-'
+                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
+                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
+                '<WHERE> given <GIVEN> min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX> if'
+                '<IF> otherwise <OTHERWISE> ∈ <IN> exp'
+                '<EXP> log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                '<PI> ℝ ℤ with <WITH> initial <INITIAL>'
+                'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
+                '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
+                "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
+                'for <FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                "<identifier> <integer> '.' <digit>"
+                '<mantissa> <floating_point> <double>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+                "\\d <number> '[' '⎡' <matrix> <vector>"
+                "'{' <set> <pi> <constant>"
             )
         self._define(
             ['op', 'sub', 'nm', 'id0', 'num', 'm', 'v', 's', 'c'],
@@ -7315,18 +7509,19 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._constant_()
             self._error(
                 'expecting one of: '
-                "'(' <subexpression>"
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                'where <WHERE> given <GIVEN> sum min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
-                '<WITH> initial <INITIAL> and <AND> or'
-                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
+                "'(' <subexpression> [A-Za-"
+                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
+                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
+                'int <INT> if <IF> otherwise <OTHERWISE>'
+                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
+                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
+                '<AS> # <POUND> for <FOR>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier_alone> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
@@ -8106,24 +8301,26 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             self._error(
                 'expecting one of: '
                 "'(' <arithmetic_subexpression> # <POUND>"
-                '<size_op> <identifier_alone>'
-                '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                'where <WHERE> given <GIVEN> sum min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
-                '<WITH> initial <INITIAL> and <AND> or'
-                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
-                "<identifier> <integer> '.' <digit>"
-                '<mantissa> <floating_point> <double>'
-                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
-                '\\d <number>'
+                '<size_op>'
+                '<identifier_with_multi_subscript>'
+                '<identifier_alone>'
+                '<identifier_with_subscript> [A-Za-'
+                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
+                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
+                'int <INT> if <IF> otherwise <OTHERWISE>'
+                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
+                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
+                '<AS> for <FOR> <BUILTIN_KEYWORDS>'
+                "<KEYWORDS> <identifier> <integer> '.'"
+                '<digit> <mantissa> <floating_point>'
+                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
+                '<fraction> \\d <number>'
             )
         self._define(
             ['sub', 'size', 'id0', 'num'],
@@ -8859,19 +9056,21 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 )
             self._error(
                 'expecting one of: '
+                '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                'where <WHERE> given <GIVEN> sum min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
-                '<WITH> initial <INITIAL> and <AND> or'
-                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
+                '<identifier_with_subscript> [A-Za-'
+                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
+                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
+                'int <INT> if <IF> otherwise <OTHERWISE>'
+                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
+                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
+                '<AS> # <POUND> for <FOR>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier>'
             )
@@ -8995,7 +9194,20 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu()
     def _func_id_(self):  # noqa
-        self._token('!!!')
+        self._identifier_alone_()
+
+        def block0():
+            with self._choice():
+                with self._option():
+                    self._token('_')
+                    self._identifier_alone_()
+                with self._option():
+                    self._unicode_subscript_()
+                self._error(
+                    'expecting one of: '
+                    "'_' <unicode_subscript>"
+                )
+        self._closure(block0)
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
@@ -9007,7 +9219,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     with self._choice():
                         with self._option():
                             with self._group():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                             self.name_last_node('value')
                             self._define(
                                 ['value'],
@@ -9024,7 +9236,8 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             )
                         self._error(
                             'expecting one of: '
-                            "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                            '[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
+                            "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                         )
                 self._define(
                     ['value', 'id'],
@@ -9034,7 +9247,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 with self._group():
                     self._KEYWORDS_()
                     with self._group():
-                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                 self.name_last_node('value')
                 self._define(
                     ['value'],
@@ -9042,7 +9255,8 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                '[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
+                "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> int <INT> if <IF> otherwise'
@@ -9052,8 +9266,8 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
             ['value', 'id'],
@@ -9064,13 +9278,15 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
     def _identifier_(self):  # noqa
         with self._choice():
             with self._option():
+                self._identifier_with_multi_subscript_()
+            with self._option():
                 self._identifier_with_subscript_()
             with self._option():
                 self._identifier_alone_()
             self._error(
                 'expecting one of: '
-                '<identifier_alone>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                '[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
+                "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> int <INT> if <IF> otherwise'
@@ -9080,10 +9296,120 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<WITH> initial <INITIAL> and <AND> or'
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<identifier_alone>'
+                '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript>'
             )
+
+    @tatsumasu('IdentifierSubscript')
+    def _identifier_with_multi_subscript_(self):  # noqa
+        self._identifier_alone_()
+        self.name_last_node('left')
+
+        def block1():
+            self._token('_')
+            self._identifier_alone_()
+            self.add_last_node_to_name('right')
+        self._positive_closure(block1)
+        with self._group():
+            with self._choice():
+                with self._option():
+
+                    def block4():
+                        with self._choice():
+                            with self._option():
+                                with self._group():
+                                    self._token(',')
+                                    self._token('*')
+                                    self.add_last_node_to_name('right')
+                                self._define(
+                                    [],
+                                    ['right']
+                                )
+                            with self._option():
+                                with self._group():
+
+                                    def block7():
+                                        self._token(',')
+                                    self._closure(block7)
+                                    with self._group():
+                                        with self._choice():
+                                            with self._option():
+                                                self._integer_()
+                                            with self._option():
+                                                self._identifier_alone_()
+                                            self._error(
+                                                'expecting one of: '
+                                                '<integer> <identifier_alone>'
+                                            )
+                                    self.add_last_node_to_name('right')
+                                self._define(
+                                    [],
+                                    ['right']
+                                )
+                            self._error(
+                                'expecting one of: '
+                                "',' <integer> <identifier_alone>"
+                            )
+                    self._closure(block4)
+                    self._define(
+                        [],
+                        ['right']
+                    )
+                with self._option():
+
+                    def block10():
+                        with self._choice():
+                            with self._option():
+                                with self._group():
+                                    self._token(',')
+                                    self._token('*')
+                                    self.add_last_node_to_name('right')
+                                self._define(
+                                    [],
+                                    ['right']
+                                )
+                            with self._option():
+                                with self._group():
+
+                                    def block13():
+                                        self._token(',')
+                                    self._closure(block13)
+                                    with self._group():
+                                        with self._choice():
+                                            with self._option():
+                                                self._sub_integer_()
+                                            with self._option():
+                                                self._unicode_subscript_()
+                                            self._error(
+                                                'expecting one of: '
+                                                '<sub_integer> <unicode_subscript>'
+                                            )
+                                    self.add_last_node_to_name('right')
+                                self._define(
+                                    [],
+                                    ['right']
+                                )
+                            self._error(
+                                'expecting one of: '
+                                "',' <sub_integer> <unicode_subscript>"
+                            )
+                    self._closure(block10)
+                    self._define(
+                        [],
+                        ['right']
+                    )
+                self._error(
+                    'expecting one of: '
+                    "',' <integer> <identifier_alone>"
+                    '<sub_integer> <unicode_subscript>'
+                )
+        self._define(
+            ['left'],
+            ['right']
+        )
 
     @tatsumasu('Function')
     def _function_operator_(self):  # noqa
@@ -9269,7 +9595,20 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                "'!!!' <func_id>"
+                '<identifier_alone> [A-Za-'
+                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
+                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
+                'int <INT> if <IF> otherwise <OTHERWISE>'
+                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
+                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
+                '<AS> # <POUND> for <FOR>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS> <func_id>'
             )
         self._define(
             ['name', 'p'],
@@ -9281,7 +9620,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         with self._group():
             with self._choice():
                 with self._option():
-                    self._identifier_with_unicode_subscript_()
+                    self._identifier_()
                     self.name_last_node('name')
 
                     def block2():
@@ -9322,7 +9661,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         ['params', 'separators']
                     )
                 with self._option():
-                    self._identifier_with_unicode_subscript_()
+                    self._identifier_()
                     self.name_last_node('name')
 
                     def block14():
@@ -9362,145 +9701,32 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         ['name', 'def_s'],
                         ['params', 'separators']
                     )
-                with self._option():
-                    self._identifier_alone_()
-                    self.name_last_node('name')
-
-                    def block26():
-                        self._token('_')
-                        self._identifier_alone_()
-                        self.add_last_node_to_name('subs')
-
-                        def block28():
-
-                            def block29():
-                                self._token(',')
-                            self._closure(block29)
-                            self._identifier_alone_()
-                            self.add_last_node_to_name('subs')
-                        self._closure(block28)
-                    self._closure(block26)
-
-                    def block31():
-                        self._pattern('\\(')
-                        self.name_last_node('def_p')
-
-                        def block33():
-
-                            def block34():
-                                self._hspace_()
-                            self._closure(block34)
-                            self._identifier_alone_()
-                            self.add_last_node_to_name('params')
-
-                            def block36():
-
-                                def block37():
-                                    self._hspace_()
-                                self._closure(block37)
-                                self._params_separator_()
-                                self.add_last_node_to_name('separators')
-
-                                def block39():
-                                    self._hspace_()
-                                self._closure(block39)
-                                self._identifier_alone_()
-                                self.add_last_node_to_name('params')
-                            self._closure(block36)
-                        self._closure(block33)
-
-                        def block41():
-                            self._hspace_()
-                        self._closure(block41)
-                        self._token(')')
-                    self._closure(block31)
-                    self._define(
-                        ['name', 'def_p'],
-                        ['subs', 'params', 'separators']
-                    )
-                with self._option():
-                    self._identifier_alone_()
-                    self.name_last_node('name')
-
-                    def block43():
-                        self._token('_')
-                        self._identifier_alone_()
-                        self.add_last_node_to_name('subs')
-
-                        def block45():
-
-                            def block46():
-                                self._token(',')
-                            self._closure(block46)
-                            self._identifier_alone_()
-                            self.add_last_node_to_name('subs')
-                        self._closure(block45)
-                    self._closure(block43)
-
-                    def block48():
-                        self._pattern('\\[')
-                        self.name_last_node('def_s')
-
-                        def block50():
-
-                            def block51():
-                                self._hspace_()
-                            self._closure(block51)
-                            self._identifier_alone_()
-                            self.add_last_node_to_name('params')
-
-                            def block53():
-
-                                def block54():
-                                    self._hspace_()
-                                self._closure(block54)
-                                self._params_separator_()
-                                self.add_last_node_to_name('separators')
-
-                                def block56():
-                                    self._hspace_()
-                                self._closure(block56)
-                                self._identifier_alone_()
-                                self.add_last_node_to_name('params')
-                            self._closure(block53)
-                        self._closure(block50)
-
-                        def block58():
-                            self._hspace_()
-                        self._closure(block58)
-                        self._token(']')
-                    self._closure(block48)
-                    self._define(
-                        ['name', 'def_s'],
-                        ['subs', 'params', 'separators']
-                    )
                 self._error(
                     'expecting one of: '
-                    '<identifier_with_unicode_subscript>'
-                    '<identifier_alone>'
+                    '<identifier>'
                 )
 
-        def block59():
+        def block25():
             self._hspace_()
-        self._closure(block59)
+        self._closure(block25)
         self._token('=')
         self.name_last_node('op')
 
-        def block61():
+        def block27():
             self._hspace_()
-        self._closure(block61)
+        self._closure(block27)
         self._right_hand_side_()
         self.add_last_node_to_name('expr')
         with self._optional():
 
-            def block63():
+            def block29():
                 self._hspace_()
-            self._closure(block63)
+            self._closure(block29)
             self._line_()
 
-        def block64():
+        def block30():
             self._hspace_()
-        self._closure(block64)
+        self._closure(block30)
         with self._group():
             with self._choice():
                 with self._option():
@@ -9512,46 +9738,46 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     '<WHERE> <GIVEN>'
                 )
 
-        def block66():
+        def block32():
             self._hspace_()
-        self._closure(block66)
+        self._closure(block32)
         self._where_condition_()
         self.add_last_node_to_name('defs')
 
-        def block68():
+        def block34():
 
-            def block69():
+            def block35():
                 self._hspace_()
-            self._closure(block69)
+            self._closure(block35)
             self._token(',')
 
-            def block70():
+            def block36():
                 self._hspace_()
-            self._closure(block70)
+            self._closure(block36)
             self._where_condition_()
             self.add_last_node_to_name('defs')
-        self._closure(block68)
+        self._closure(block34)
 
-        def block72():
+        def block38():
 
-            def block73():
+            def block39():
                 self._hspace_()
-            self._closure(block73)
+            self._closure(block39)
             self._token(';')
 
-            def block74():
+            def block40():
                 self._hspace_()
-            self._closure(block74)
+            self._closure(block40)
             self._general_assignment_()
             self.add_last_node_to_name('extra')
-        self._closure(block72)
+        self._closure(block38)
         self._define(
             ['name', 'def_p', 'def_s', 'op'],
-            ['params', 'separators', 'subs', 'expr', 'defs', 'extra']
+            ['params', 'separators', 'expr', 'defs', 'extra']
         )
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682Semantics:
+class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics:
     def start(self, ast):  # noqa
         return ast
 
@@ -9751,6 +9977,9 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics:
         return ast
 
     def POUND(self, ast):  # noqa
+        return ast
+
+    def FOR(self, ast):  # noqa
         return ast
 
     def BUILTIN_KEYWORDS(self, ast):  # noqa
@@ -10479,6 +10708,9 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics:
     def identifier(self, ast):  # noqa
         return ast
 
+    def identifier_with_multi_subscript(self, ast):  # noqa
+        return ast
+
     def function_operator(self, ast):  # noqa
         return ast
 
@@ -10494,7 +10726,7 @@ def main(filename, start=None, **kwargs):
     else:
         with open(filename) as f:
             text = f.read()
-    parser = grammarc21f969b5f03d33d43e04f8f136e7682Parser()
+    parser = grammare37f0136aa3ffaf149b351f6a4c948e9Parser()
     return parser.parse(
         text,
         rule_name=start,
@@ -10507,7 +10739,7 @@ if __name__ == '__main__':
     import json
     from tatsu.util import asjson
 
-    ast = generic_main(main, grammarc21f969b5f03d33d43e04f8f136e7682Parser, name='grammarc21f969b5f03d33d43e04f8f136e7682')
+    ast = generic_main(main, grammare37f0136aa3ffaf149b351f6a4c948e9Parser, name='grammare37f0136aa3ffaf149b351f6a4c948e9')
     data = asjson(ast)
     print(json.dumps(data, indent=2))
 #!/usr/bin/env python
@@ -10535,13 +10767,13 @@ class ModelBase(Node):
     pass
 
 
-class grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics(ModelBuilderSemantics):
+class grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics(ModelBuilderSemantics):
     def __init__(self, context=None, types=None):
         types = [
             t for t in globals().values()
             if type(t) is type and issubclass(t, ModelBase)
         ] + (types or [])
-        super(grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics, self).__init__(context=context, types=types)
+        super(grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics, self).__init__(context=context, types=types)
 
 
 @dataclass(eq=False)
@@ -10801,7 +11033,12 @@ class Vector(ModelBase):
 
 @dataclass(eq=False)
 class Set(ModelBase):
+    cond: Any = None
+    enum: Any = None
     exp: Any = None
+    f: Any = None
+    o: Any = None
+    range: Any = None
 
 
 @dataclass(eq=False)
@@ -11556,4 +11793,3 @@ class LocalFunc(ModelBase):
     op: Any = None
     params: Any = None
     separators: Any = None
-    subs: Any = None

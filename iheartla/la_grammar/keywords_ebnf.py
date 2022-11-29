@@ -65,6 +65,7 @@ SOLVE = /solve/ | /Solve/ | /SOLVE/;
 SUBSET = /⊂/;
 AS = /as/;
 POUND = /#/;
+FOR = /for/;
 """
 
 KEYWORDS = KEYS + r"""
@@ -101,5 +102,6 @@ BUILTIN_KEYWORDS
     | SUBSET
     | AS
     | POUND
+    | FOR
     ;
 """
