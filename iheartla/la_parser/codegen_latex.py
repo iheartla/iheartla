@@ -999,5 +999,5 @@ class CodeGenLatex(CodeGen):
             param_info = self.visit(param, **kwargs)
             params_content_list.append(param_info)
         content = node.func_name.replace('_', '\_')
-        content = "{}({})".format(content, ', '.join(params_content_list))
+        content = "\\mathit{{{}}}({})".format(content, ', '.join(params_content_list))
         return content
