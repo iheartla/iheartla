@@ -147,7 +147,7 @@ GET_INCIDENT_FACES_V: make_function_type([VertexType()], [FaceSetType()]),
 GET_INCIDENT_VERTICES_E: make_function_type([EdgeType()], [VertexSetType()]),
 GET_INCIDENT_FACES_E: make_function_type([EdgeType()], [FaceSetType()]),
 GET_DIAMOND_VERTICES_E: make_function_type([EdgeType()], [VertexSetType()]),
-GET_DIAMOND_FACES_E: make_function_type([EdgeType()], [VertexType(), VertexType()]),
+GET_DIAMOND_FACES_E: make_function_type([EdgeType()], [FaceType(), FaceType()]),
 #
 GET_INCIDENT_VERTICES_F: make_function_type([FaceType()], [VertexSetType()]),
 GET_INCIDENT_EDGES_F: make_function_type([FaceType()], [EdgeSetType()]),

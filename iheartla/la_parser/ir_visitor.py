@@ -534,7 +534,7 @@ class IRVisitor(IRBaseVisitor):
 
     def print_symbols(self):
         la_debug("CodeGen ==================================================================================================================")
-        self.logger.info("symtable:")
+        self.logger.info("symtable")
         def get_type_desc(v):
             extra = ''
             if v.var_type == VarTypeEnum.MATRIX:
@@ -566,6 +566,8 @@ class IRVisitor(IRBaseVisitor):
             if isinstance(param_data, LocalFuncData):
                 self.logger.info("local function name:" + str(param_data.name))
                 param_data = param_data.params_data
+            else:
+                self.logger.info("Main param:")
             self.logger.info("symtable:")
             for k, v in param_data.symtable.items():
                 self.logger.info("{} : {}".format(k, v.get_signature()))
@@ -580,9 +582,9 @@ class IRVisitor(IRBaseVisitor):
         self.logger.info("optimized variables:{}".format(self.opt_syms))
 
     def init_type(self, type_walker, func_name):
-        # self.symtable = type_walker.symtable
-        # self.parameters = type_walker.parameters
         self.main_param = type_walker.main_param
+        # self.symtable = self.main_param.symtable
+        # self.parameters = self.main_param.parameters
         for key in self.symtable.keys():
             self.def_dict[key] = False
         self.func_data_dict = type_walker.func_data_dict  # local function name -> LocalFuncData
