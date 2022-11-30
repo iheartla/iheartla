@@ -2697,7 +2697,7 @@ class grammardefaultParser(Parser):
                 def block28():
                     self._hspace_()
                 self._closure(block28)
-                self._pattern('|')
+                self._pattern('\\|')
                 self.name_last_node('o')
 
                 def block30():
@@ -5538,24 +5538,15 @@ class grammardefaultParser(Parser):
 
     @tatsumasu()
     def _BUILD_VERTEX_VECTOR_(self):  # noqa
-        if 'build_vertex_vector' in self.conversion_dict:
-            self._pattern(self.conversion_dict['build_vertex_vector'])
-        else:
-            self._pattern('build_vertex_vector')
+        self._pattern('build_vertex_vector')
 
     @tatsumasu()
     def _BUILD_EDGE_VECTOR_(self):  # noqa
-        if 'build_edge_vector' in self.conversion_dict:
-            self._pattern(self.conversion_dict['build_edge_vector'])
-        else:
-            self._pattern('build_edge_vector')
+        self._pattern('build_edge_vector')
 
     @tatsumasu()
     def _BUILD_FACE_VECTOR_(self):  # noqa
-        if 'build_face_vector' in self.conversion_dict:
-            self._pattern(self.conversion_dict['build_face_vector'])
-        else:
-            self._pattern('build_face_vector')
+        self._pattern('build_face_vector')
 
     @tatsumasu()
     def _STAR_(self):  # noqa

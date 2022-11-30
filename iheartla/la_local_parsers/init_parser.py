@@ -2599,7 +2599,7 @@ class grammarinitParser(Parser):
                 def block28():
                     self._hspace_()
                 self._closure(block28)
-                self._pattern('|')
+                self._pattern('\\|')
                 self.name_last_node('o')
 
                 def block30():
