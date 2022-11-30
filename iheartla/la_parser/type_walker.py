@@ -238,7 +238,6 @@ def la_remove_key(keys, **kwargs):
 class TypeWalker(NodeWalker):
     def __init__(self):
         super().__init__()
-        self.pre_func_symtable = {}
         self.symtable = {}
         self.parameters = []
         self.name_cnt_dict = {}
@@ -383,17 +382,10 @@ class TypeWalker(NodeWalker):
     def is_inside_sum(self):
         return len(self.sum_subs) > 0
 
-    def save_func_symtable(self):
-        self.pre_func_symtable.clear()
-        for k, value in self.symtable.items():
-            if value.is_function():
-                self.pre_func_symtable[k] = value
-
     def reset(self):
         self.reset_state()
 
     def reset_state(self, la_content=''):
-        self.save_func_symtable()
         self.symtable.clear()
         self.parameters.clear()
         self.name_cnt_dict.clear()
@@ -562,12 +554,14 @@ class TypeWalker(NodeWalker):
             # it's safe here since the above assertion is not triggered
             if c_type.is_function():
                 sig = get_func_signature(sym, c_type)
+                la_debug("cur sig:{}".format(sig))
+                la_debug("cur func_sig_dict:{}".format(self.func_sig_dict))
                 if sig not in self.func_sig_dict:
                     n_name = self.generate_var_name(sym)
                     self.func_sig_dict[sig] = n_name
                     self.extra_symtable[n_name] = c_type
                     self.func_mapping_dict[n_name] = sym
-                    # la_debug("n_name:{}".format(n_name))
+                    la_debug("n_name:{}".format(n_name))
                     new_sym_name = n_name
                 if not self.pre_walk:
                     la_debug("sym:{}, sig:{}".format(sym, c_type.get_signature()))
@@ -777,8 +771,8 @@ class TypeWalker(NodeWalker):
         self.multi_lhs_list = multi_lhs_list
         if self.pre_walk:
             return ir_node
-        self.convert_parameters()
         self.gen_block_node(stat_list, index_list, ir_node, **kwargs)
+        self.convert_parameters()
         # set properties
         self.main_param.parameters = self.parameters
         self.main_param.symtable = self.symtable
@@ -786,12 +780,14 @@ class TypeWalker(NodeWalker):
         return ir_node
 
     def convert_parameters(self):
+        la_debug("before convert_parameters:{}".format(self.parameters))
         # process in the end
         for c_index in range(len(self.parameters)):
             if self.get_sym_type(self.parameters[c_index]).is_function():
                 if not self.get_sym_type(self.func_mapping_dict[self.parameters[c_index]]).is_overloaded():
                     # if it's not overloading, then convert the name back
                     self.parameters[c_index] = self.func_mapping_dict[self.parameters[c_index]]
+        la_debug("after convert_parameters:{}".format(self.parameters))
 
     def print_all(self):
         la_debug("TypeWalker end ==================================================================================================================")
