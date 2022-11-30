@@ -110,3 +110,53 @@ class TestExtraFunction(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_func_overloading_mix(self):
+        la_str = """aₘ(f) = f + m where f,m ∈ ℤ 
+                    a(g,h) = g+h where g,h ∈ ℝ 
+                    b = a(2, 3)
+                    a ∈  ℝ -> ℝ
+                    """
+        func_info = self.gen_func_info(la_str)
+        a1 = lambda p: p
+        self.assertEqual(func_info.numpy_func(a1).b, 5)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::function<double(double)> a1;"
+                     "    a1 = [](double p)->double{"
+                     "    return p;"
+                     "    };",
+                     "    int B = {}(a1).b;".format(func_info.eig_func_name),
+                     "    return ((B - 5) == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_func_overloading_mix1(self):
+        la_str = """aₘ(f) = f + m where f,m ∈ ℤ 
+                    a(g,h) = g+h where g,h ∈ ℝ 
+                    b = a(2, 3)
+                    a ∈  ℝ -> ℝ
+                    a ∈  ℤ -> ℤ
+                    """
+        func_info = self.gen_func_info(la_str)
+        a1 = lambda p: p
+        a2 = lambda p: p
+        self.assertEqual(func_info.numpy_func(a1, a2).b, 5)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::function<double(double)> a1;"
+                     "    a1 = [](double p)->double{"
+                     "    return p;"
+                     "    };",
+                     "    std::function<int(int)> a2;"
+                     "    a2 = [](int p)->int{"
+                     "    return p;"
+                     "    };",
+                     "    int B = {}(a1, a2).b;".format(func_info.eig_func_name),
+                     "    return ((B - 5) == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
