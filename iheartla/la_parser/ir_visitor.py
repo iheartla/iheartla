@@ -557,7 +557,7 @@ class IRVisitor(IRBaseVisitor):
                 self.logger.info("local function name:" + str(param_data.name))
                 param_data = param_data.params_data
             self.logger.info("symtable:")
-            for k, v in self.symtable.items():
+            for k, v in param_data.symtable.items():
                 self.logger.info("{} : {}".format(k, v.get_signature()))
             self.logger.info("parameters: {}".format(param_data.parameters, hex(id(param_data.parameters))))
             self.logger.info("subscripts: {}".format(param_data.subscripts, hex(id(param_data.subscripts))))
