@@ -305,7 +305,6 @@ class IRVisitor(IRBaseVisitor):
         self.tmp_symtable = {}
         self.def_dict = {}
         self.local_func_parsing = False
-        self.cur_scope = 'global'
         self.local_func_name = ''  # function name when visiting expressions
         # self.parameters = set()
         # self.subscripts = {}
@@ -326,6 +325,7 @@ class IRVisitor(IRBaseVisitor):
         self.local_func_syms = []
         self.local_func_dict = {}
         self.extra_symtable = {}
+        self.scope_list = ['global']
         self.visiting_opt = False  # optimization
         self.opt_key = ''
         self.opt_dict = {}
@@ -478,30 +478,50 @@ class IRVisitor(IRBaseVisitor):
         :param sym: symbol name
         :return: la type
         """
-        if self.local_func_parsing:
-            if self.local_func_name in self.func_data_dict:
-                if sym in self.func_data_dict[self.local_func_name].params_data.symtable:
-                    return self.func_data_dict[self.local_func_name].params_data.symtable[sym]
-        elif self.cur_scope != "global":
-            if sym in self.func_data_dict[self.cur_scope].params_data.symtable:
-                return self.func_data_dict[self.cur_scope].params_data.symtable[sym]
-        ty = None
-        if sym in self.main_param.symtable:
-            ty = self.main_param.symtable[sym]
-        elif self.enable_tmp_sym and sym in self.tmp_symtable:
-            ty = self.tmp_symtable[sym]
-        elif sym in self.extra_symtable:
-            ty = self.extra_symtable[sym]
-        return ty
+        # if self.local_func_parsing:
+        #     if self.local_func_name in self.func_data_dict:
+        #         if sym in self.func_data_dict[self.local_func_name].params_data.symtable:
+        #             return self.func_data_dict[self.local_func_name].params_data.symtable[sym]
+        # elif self.cur_scope != "global":
+        #     if sym in self.func_data_dict[self.cur_scope].params_data.symtable:
+        #         return self.func_data_dict[self.cur_scope].params_data.symtable[sym]
+        # ty = None
+        # if sym in self.main_param.symtable:
+        #     ty = self.main_param.symtable[sym]
+        # elif self.enable_tmp_sym and sym in self.tmp_symtable:
+        #     ty = self.tmp_symtable[sym]
+        # elif sym in self.extra_symtable:
+        #     ty = self.extra_symtable[sym]
+        node_type = LaVarType(VarTypeEnum.INVALID)
+        resolved = False
+        for cur_index in range(len(self.scope_list)):
+            cur_scope = self.scope_list[len(self.scope_list) - 1 - cur_index]
+            if cur_scope == 'global':
+                cur_symtable = self.main_param.symtable
+            else:
+                cur_symtable = self.func_data_dict[cur_scope].params_data.symtable
+            if sym in cur_symtable:
+                node_type = cur_symtable[sym]
+                resolved = True
+                break
+        if not resolved:
+            if sym in self.extra_symtable:
+                node_type = self.extra_symtable[sym]
+        return node_type
+        # return ty
 
     def get_cur_param_data(self, func_name=''):
         # either main where/given block or local function block
         # if func_name != '':
         #     if func_name in self.func_data_dict:
         #         return self.func_data_dict[func_name].params_data
-        if self.local_func_parsing:
-            if self.local_func_name in self.func_data_dict:
-                return self.func_data_dict[self.local_func_name].params_data
+        # if self.local_func_parsing:
+        #     if self.local_func_name in self.func_data_dict:
+        #         return self.func_data_dict[self.local_func_name].params_data
+        # return self.main_param
+        cur_scope = self.scope_list[-1]
+        if cur_scope != 'global':
+            return self.func_data_dict[cur_scope].params_data
         return self.main_param
 
     def generate_var_name(self, base='sym'):
@@ -521,6 +541,13 @@ class IRVisitor(IRBaseVisitor):
             index += 1
         self.name_cnt_dict[base] = index - 1
         return ret
+
+    def push_scope(self, scope):
+        self.scope_list.append(scope)
+
+    def pop_scope(self):
+        # be careful on the position
+        self.scope_list.pop()
 
     def print_symbols(self):
         la_debug("CodeGen ==================================================================================================================")
@@ -620,11 +647,8 @@ class IRVisitor(IRBaseVisitor):
             content = str(node.value)
         return CodeNodeInfo(content)
 
-    def reset_scope(self):
-        self.cur_scope = 'global'
-
     def is_main_scope(self):
-        return self.cur_scope == 'global'
+        return self.scope_list[-1] == 'global'
 
     def is_keyword(self, name):
         return is_keyword(name, parser_type=self.parse_type)

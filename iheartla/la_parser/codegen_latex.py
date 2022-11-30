@@ -419,7 +419,7 @@ class CodeGenLatex(CodeGen):
         return self.visit(node.left, **kwargs) + "-" + self.visit(node.right, **kwargs)
 
     def visit_summation(self, node, **kwargs):
-        self.cur_scope = node.symbol
+        self.push_scope(node.scope_name)
         if node.cond:
             sub = '{' + self.visit(node.cond, **kwargs) + '}'
         else:
@@ -439,7 +439,7 @@ class CodeGenLatex(CodeGen):
             for et in node.extra_list:
                 extra_list.append(self.visit(et, **kwargs))
             content += ' \\text{{ where }}  ' + '; '.join(extra_list)
-        self.reset_scope()
+        self.pop_scope()
         return content
 
     def visit_function(self, node, **kwargs):
@@ -473,6 +473,7 @@ class CodeGenLatex(CodeGen):
 
     def visit_local_func(self, node, **kwargs):
         self.local_func_parsing = True
+        self.push_scope(node.scope_name)
         params_str = ''
         def_params = ''
         if len(node.params)-node.n_subs > 0:
@@ -508,6 +509,7 @@ class CodeGenLatex(CodeGen):
                 extra_list.append(self.visit(et, **kwargs))
             content += '; ' + '; '.join(extra_list)
         self.local_func_parsing = False
+        self.pop_scope()
         return content
 
     def visit_if(self, node, **kwargs):
@@ -678,6 +680,7 @@ class CodeGenLatex(CodeGen):
         return '\\begin{pmatrix}\n' + '\\\\'.join(content_list) + '\\end{pmatrix}'
 
     def visit_set(self, node, **kwargs):
+        self.push_scope(node.scope_name)
         content_list = []
         for item in node.items:
             content_list.append(self.visit(item, **kwargs))
@@ -689,6 +692,7 @@ class CodeGenLatex(CodeGen):
             range = self.visit(node.range, **kwargs)
             sub += "\in " + range
             content += '| {}, {}'.format(sub, self.visit(node.cond, **kwargs))
+        self.pop_scope()
         return '\\{' + content + '\\}'
 
     def visit_MatrixRows(self, node, **kwargs):

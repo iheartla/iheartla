@@ -408,6 +408,7 @@ class LocalFuncNode(StmtNode):
         self.defs = defs
         self.n_subs = 0   # number of subscripts
         self.extra_list = []  # extra assignments
+        self.scope_name = None
 
 
 class AssignType(IntEnum):
@@ -758,6 +759,7 @@ class SetNode(ExprNode):
         self.cond = None
         self.f = None
         self.o = None
+        self.scope_name = None
 
 
 class ToMatrixNode(ExprNode):
@@ -802,6 +804,7 @@ class SummationNode(ExprNode):
         self.range = None
         self.extra_list = []
         self.use_tuple = False
+        self.scope_name = None
 
 
 class OptimizeType(Enum):

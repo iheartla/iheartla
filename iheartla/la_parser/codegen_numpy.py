@@ -601,6 +601,7 @@ class CodeGenNumpy(CodeGen):
 
     def visit_summation(self, node, **kwargs):
         target_var = []
+        self.push_scope(node.scope_name)
         # sub = self.visit(node.id).content
         def set_name_conventions(sub):
             # name convention
@@ -685,6 +686,7 @@ class CodeGenNumpy(CodeGen):
             content.append(str("    " + assign_id + " += " + exp_str + '\n'))
             content[0] = "    " + content[0]
             self.del_name_conventions(name_convention)
+            self.pop_scope()
             return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
         sym_info = node.sym_dict[target_var[0]]
         if self.get_sym_type(target_var[0]).is_matrix():
@@ -733,6 +735,7 @@ class CodeGenNumpy(CodeGen):
             content += exp_pre_list
             content.append(str("    " + assign_id + " += " + exp_str + '\n'))
         content[0] = "    " + content[0]
+        self.pop_scope()
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
     def visit_function(self, node, **kwargs):
@@ -759,6 +762,7 @@ class CodeGenNumpy(CodeGen):
 
     def visit_local_func(self, node, **kwargs):
         self.local_func_parsing = True
+        self.push_scope(node.scope_name)
         name_info = self.visit(node.name, **kwargs)
         self.local_func_name = node.identity_name  # function name when visiting expressions
         param_list = []
@@ -808,6 +812,7 @@ class CodeGenNumpy(CodeGen):
             self.local_func_def += '\n'
         self.local_func_def += content
         self.local_func_parsing = False
+        self.pop_scope()
         return CodeNodeInfo()
 
     def visit_norm(self, node, **kwargs):
@@ -1046,6 +1051,7 @@ class CodeGenNumpy(CodeGen):
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_set(self, node, **kwargs):
+        self.push_scope(node.scope_name)
         cur_m_id = node.symbol
         ret = []
         pre_list = []
@@ -1084,6 +1090,7 @@ class CodeGenNumpy(CodeGen):
                 ret.append(item_info.content)
                 pre_list += item_info.pre_list
             content = 'frozenset({{{}}})'.format(", ".join(ret))
+        self.pop_scope()
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_to_matrix(self, node, **kwargs):

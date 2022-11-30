@@ -646,6 +646,7 @@ class CodeGenMatlab(CodeGen):
         return declaration_content + comment_content + content
 
     def visit_summation(self, node, **kwargs):
+        self.push_scope(node.scope_name)
         target_var = []
         # sub = self.visit(node.id).content
         def set_name_conventions(sub):
@@ -718,6 +719,7 @@ class CodeGenMatlab(CodeGen):
             content.append(str("    " + assign_id + " += " + exp_str + ';\n'))
             content[0] = "    " + content[0]
             self.del_name_conventions(name_convention)
+            self.pop_scope()
             return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
         sym_info = node.sym_dict[target_var[0]]
         if self.get_sym_type(target_var[0]).is_matrix():
@@ -765,6 +767,7 @@ class CodeGenMatlab(CodeGen):
         if node.cond:
             content.append("    end\n")
         content.append("end\n")
+        self.pop_scope()
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
     def visit_function(self, node, **kwargs):
@@ -789,6 +792,7 @@ class CodeGenMatlab(CodeGen):
 
     def visit_local_func(self, node, **kwargs):
         self.local_func_parsing = True
+        self.push_scope(node.scope_name)
         name_info = self.visit(node.name, **kwargs)
         self.local_func_name = node.identity_name  # function name when visiting expressions
         param_list = []
@@ -839,6 +843,7 @@ class CodeGenMatlab(CodeGen):
         content += '    end\n\n'
         self.local_func_def += "    function [{}] = {}({})\n".format(', '.join(name_list), node.identity_name, ", ".join(param_list)) + content
         self.local_func_parsing = False
+        self.pop_scope()
         return CodeNodeInfo()
 
     def visit_norm(self, node, **kwargs):
@@ -1071,6 +1076,7 @@ class CodeGenMatlab(CodeGen):
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_set(self, node, **kwargs):
+        self.push_scope(node.scope_name)
         cur_m_id = node.symbol
         ret = []
         pre_list = []
@@ -1108,6 +1114,7 @@ class CodeGenMatlab(CodeGen):
                 ret.append(item_info.content)
                 pre_list += item_info.pre_list
             content = '[{}]'.format(", ".join(ret))
+        self.pop_scope()
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_to_matrix(self, node, **kwargs):

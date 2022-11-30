@@ -1655,6 +1655,7 @@ class TypeWalker(NodeWalker):
         ir_node = LocalFuncNode(name=IdNode(original_local_func_name, parse_info=node.parseinfo), expr=[],
                                 parse_info=node.parseinfo, raw_text=node.text, defs=par_defs,
                                 def_type=def_type, identity_name=local_func_name)
+        ir_node.scope_name = local_func_name
         # extra exprs
         if node.extra and len(node.extra) > 0:
             for et in node.extra:
@@ -2021,6 +2022,7 @@ class TypeWalker(NodeWalker):
         subs_list = []
         #
         ir_node = SummationNode(parse_info=node.parseinfo, raw_text=node.text)
+        ir_node.scope_name = new_id
         if node.cond:
             self.sum_sym_list.append({})
             id_info = self.walk(node.id, **kwargs)
@@ -3459,9 +3461,10 @@ class TypeWalker(NodeWalker):
     def walk_Set(self, node, **kwargs):
         symbols = set()
         new_id = self.generate_var_name("set_def")
-        self.push_scope(new_id)
         enum_list = []
         ir_node = SetNode(parse_info=node.parseinfo, raw_text=node.text)
+        self.push_scope(new_id)
+        ir_node.scope_name = new_id
         self.assert_expr(len(node.exp) > 0, get_err_msg_info(node.parseinfo, "Empty set is not allowed."))
         f_type = None
         if node.cond:
