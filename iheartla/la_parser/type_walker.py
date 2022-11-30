@@ -240,7 +240,6 @@ class TypeWalker(NodeWalker):
         super().__init__()
         self.pre_func_symtable = {}
         self.symtable = {}
-        self.tmp_symtable = {}  # temporary variables in integral or optimization
         self.parameters = []
         self.name_cnt_dict = {}
         self.def_use_mode = True
@@ -396,7 +395,6 @@ class TypeWalker(NodeWalker):
     def reset_state(self, la_content=''):
         self.save_func_symtable()
         self.symtable.clear()
-        self.tmp_symtable.clear()
         self.parameters.clear()
         self.name_cnt_dict.clear()
         self.ret_symbol = None
@@ -2178,11 +2176,10 @@ class TypeWalker(NodeWalker):
                     la_type_list.append(par_type.type.la_type)
                     # temporary add to symbol table : opt scope
                     # self.symtable[par_type.id[cur_index].get_name()] = par_type.type.la_type
-                    self.tmp_symtable[par_type.id[cur_index].get_main_id()] = self.get_cur_param_data().symtable[par_type.id[cur_index].get_main_id()]
                     if par_type.id[cur_index].get_main_id() not in self.opt_syms:
                         self.opt_syms.append(par_type.id[cur_index].get_main_id())
             self.is_param_block = False
-            self.symtable.update(self.get_cur_param_data().symtable)
+            # self.symtable.update(self.get_cur_param_data().symtable)
         opt_type = OptimizeType.OptimizeInvalid
         ret_type = ScalarType()
         if node.min:
@@ -2206,6 +2203,7 @@ class TypeWalker(NodeWalker):
         self.assert_expr(exp_node.la_type.is_scalar(), get_err_msg_info(exp_node.parse_info, "Objective function must return a scalar"))
         opt_node = OptimizeNode(opt_type, cond_list, exp_node, base_node_list, base_type_list, parse_info=node.parseinfo, key=self.opt_key, init_list=init_list, init_syms=init_syms, def_list=par_defs, raw_text=node.text)
         opt_node.la_type = ret_type
+        opt_node.scope_name = self.opt_key
         opt_node.symbols = exp_info.symbols
         node_info = NodeInfo(opt_node.la_type, ir=opt_node, symbols=exp_info.symbols)
         self.visiting_opt = False
@@ -2227,20 +2225,22 @@ class TypeWalker(NodeWalker):
 
     def walk_Integral(self, node, **kwargs):
         base_node = self.walk(node.id, **kwargs).ir
+        name = self.generate_var_name('integral')
+        self.push_scope(name)
         # temporary add to symbol table : opt scope
         base_id = base_node.get_main_id()
-        self.symtable[base_id] = ScalarType() # scalar only
-        self.tmp_symtable[base_id] = ScalarType()
+        self.add_sym_type(base_id, ScalarType())
         if node.d:
             domain_node = self.walk(node.d, **kwargs)
         else:
             domain_node = DomainNode(self.walk(node.lower, **kwargs).ir, self.walk(node.upper, **kwargs).ir, raw_text=node.text)
         int_node = IntegralNode(domain=domain_node, exp=self.walk(node.exp, **kwargs).ir, base=base_node, parse_info=node.parseinfo, raw_text=node.text)
+        int_node.scope_name = name
         node_info = NodeInfo(ScalarType())
         node_info.ir = int_node
         int_node.la_type = node_info.la_type
         #
-        del self.symtable[base_id]
+        self.pop_scope()
         return node_info
 
     def walk_Norm(self, node, **kwargs):

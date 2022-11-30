@@ -828,6 +828,7 @@ class OptimizeNode(ExprNode):
         self.init_list = init_list
         self.init_syms = init_syms
         self.symbols = set()
+        self.scope_name = None
 
 
 class DomainNode(ExprNode):
@@ -843,6 +844,7 @@ class IntegralNode(ExprNode):
         self.domain = domain
         self.exp = exp
         self.base = base
+        self.scope_name = None
 
 
 class InnerProductNode(ExprNode):

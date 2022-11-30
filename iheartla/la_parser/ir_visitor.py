@@ -302,7 +302,6 @@ class IRVisitor(IRBaseVisitor):
         super().__init__()
         self.pre_str = ''
         self.post_str = ''
-        self.tmp_symtable = {}
         self.def_dict = {}
         self.local_func_parsing = False
         self.local_func_name = ''  # function name when visiting expressions
@@ -339,7 +338,6 @@ class IRVisitor(IRBaseVisitor):
         self.visiting_func_name = False
         self.visiting_diff_eq = False
         self.visiting_diff_init = False
-        self.enable_tmp_sym = False
         self.class_only = False
         self.lhs_list = []
         self.module_list = []
@@ -478,20 +476,6 @@ class IRVisitor(IRBaseVisitor):
         :param sym: symbol name
         :return: la type
         """
-        # if self.local_func_parsing:
-        #     if self.local_func_name in self.func_data_dict:
-        #         if sym in self.func_data_dict[self.local_func_name].params_data.symtable:
-        #             return self.func_data_dict[self.local_func_name].params_data.symtable[sym]
-        # elif self.cur_scope != "global":
-        #     if sym in self.func_data_dict[self.cur_scope].params_data.symtable:
-        #         return self.func_data_dict[self.cur_scope].params_data.symtable[sym]
-        # ty = None
-        # if sym in self.main_param.symtable:
-        #     ty = self.main_param.symtable[sym]
-        # elif self.enable_tmp_sym and sym in self.tmp_symtable:
-        #     ty = self.tmp_symtable[sym]
-        # elif sym in self.extra_symtable:
-        #     ty = self.extra_symtable[sym]
         node_type = LaVarType(VarTypeEnum.INVALID)
         resolved = False
         for cur_index in range(len(self.scope_list)):
@@ -508,7 +492,6 @@ class IRVisitor(IRBaseVisitor):
             if sym in self.extra_symtable:
                 node_type = self.extra_symtable[sym]
         return node_type
-        # return ty
 
     def get_cur_param_data(self, func_name=''):
         # either main where/given block or local function block
@@ -600,7 +583,6 @@ class IRVisitor(IRBaseVisitor):
         # self.symtable = type_walker.symtable
         # self.parameters = type_walker.parameters
         self.main_param = type_walker.main_param
-        self.tmp_symtable = type_walker.tmp_symtable
         for key in self.symtable.keys():
             self.def_dict[key] = False
         self.func_data_dict = type_walker.func_data_dict  # local function name -> LocalFuncData
@@ -744,7 +726,7 @@ class IRVisitor(IRBaseVisitor):
     def trim_content(self, content):
         # convert special string in identifiers
         res = content
-        ids_list = list(self.symtable.keys()) + list(self.tmp_symtable.keys())
+        ids_list = list(self.symtable.keys())
         for ids in self.get_cur_param_data().ids_dict.keys():
             all_ids = self.get_all_ids(ids)
             # these can contain asterisks from vector/matrix slicing 
