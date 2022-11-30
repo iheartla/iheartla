@@ -1,3 +1,6 @@
+import regex
+import sys
+sys.modules["re"] = regex
 import iheartla.la_tools.la_helper as la_helper
 from iheartla.la_tools.la_helper import DEBUG_MODE
 from iheartla.la_tools.la_logger import LaLogger
