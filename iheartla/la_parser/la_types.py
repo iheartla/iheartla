@@ -213,7 +213,7 @@ class IntType(ScalarType):
 
 class VertexType(ScalarType):
     def __init__(self):
-        ScalarType.__init__(self, is_int=True, cur_type=SetTypeEnum.VERTEX)
+        ScalarType.__init__(self, is_int=True, index_type=True, cur_type=SetTypeEnum.VERTEX)
         # self.var_type = VarTypeEnum.VERTEXTYPE
 
     def get_raw_text(self):
@@ -221,7 +221,7 @@ class VertexType(ScalarType):
 
 class EdgeType(ScalarType):
     def __init__(self):
-        ScalarType.__init__(self, is_int=True, cur_type=SetTypeEnum.EDGE)
+        ScalarType.__init__(self, is_int=True, index_type=True, cur_type=SetTypeEnum.EDGE)
         # self.var_type = VarTypeEnum.EDGETYPE
 
     def get_raw_text(self):
@@ -229,7 +229,7 @@ class EdgeType(ScalarType):
 
 class FaceType(ScalarType):
     def __init__(self):
-        ScalarType.__init__(self, is_int=True, cur_type=SetTypeEnum.FACE)
+        ScalarType.__init__(self, is_int=True, index_type=True, cur_type=SetTypeEnum.FACE)
         # self.var_type = VarTypeEnum.FACETYPE
 
     def get_raw_text(self):
@@ -237,7 +237,7 @@ class FaceType(ScalarType):
 
 class TetType(ScalarType):
     def __init__(self):
-        ScalarType.__init__(self, is_int=True, cur_type=SetTypeEnum.TET)
+        ScalarType.__init__(self, is_int=True, index_type=True, cur_type=SetTypeEnum.TET)
         # self.var_type = VarTypeEnum.TETTYPE
 
     def get_raw_text(self):
