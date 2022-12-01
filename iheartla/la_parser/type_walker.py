@@ -614,17 +614,26 @@ class TypeWalker(NodeWalker):
         :param existed: the symbol should exist or not
         :return:
         """
-        resolved = False
-        for cur_index in range(len(self.scope_list)):
-            cur_scope = self.scope_list[len(self.scope_list) - 1 - cur_index]
+        if existed:
+            resolved = False
+            for cur_index in range(len(self.scope_list)):
+                cur_scope = self.scope_list[len(self.scope_list) - 1 - cur_index]
+                if cur_scope == 'global':
+                    cur_symtable = self.symtable
+                else:
+                    cur_symtable = self.func_data_dict[cur_scope].params_data.symtable
+                if sym in cur_symtable:
+                    resolved = True
+                    break
+            self.assert_expr(existed == resolved, msg)
+        else:
+            # only check current scope
+            cur_scope = self.scope_list[-1]
             if cur_scope == 'global':
                 cur_symtable = self.symtable
             else:
                 cur_symtable = self.func_data_dict[cur_scope].params_data.symtable
-            if sym in cur_symtable:
-                resolved = True
-                break
-        self.assert_expr(existed == resolved, msg)
+            self.assert_expr(sym not in cur_symtable, msg)
 
     def walk_Node(self, node):
         print('Reached Node: ', node)
