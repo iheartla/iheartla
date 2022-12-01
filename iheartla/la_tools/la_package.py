@@ -207,11 +207,11 @@ def get_sym_type_from_pkg(sym, pkg, dim_dict=None):
             if sym in TRIANGLE_MESH_DYNAMIC_TYPE_LIST:
                 if dim_dict:
                     if sym == BM1:
-                        ret = MatrixType(rows=dim_dict['vi_size'], cols=dim_dict['ei_size'])
+                        ret = MatrixType(rows=dim_dict['vi_size'], cols=dim_dict['ei_size'], sparse=True, element_type=ScalarType(is_int=True))
                     elif sym == BM2:
-                        ret = MatrixType(rows=dim_dict['ei_size'], cols=dim_dict['fi_size'])
+                        ret = MatrixType(rows=dim_dict['ei_size'], cols=dim_dict['fi_size'], sparse=True, element_type=ScalarType(is_int=True))
                     elif sym == BM3:
-                        ret = MatrixType(rows=dim_dict['fi_size'], cols=dim_dict['ti_size'])
+                        ret = MatrixType(rows=dim_dict['fi_size'], cols=dim_dict['ti_size'], sparse=True, element_type=ScalarType(is_int=True))
                     elif sym == VERTICES_TO_VECTOR:
                         ret = make_function_type([VertexSetType()], [VectorType(rows=dim_dict['vi_size'])])
                     elif sym == EDGES_TO_VECTOR:
