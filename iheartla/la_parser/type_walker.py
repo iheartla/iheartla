@@ -727,6 +727,9 @@ class TypeWalker(NodeWalker):
                             par_type = self.walk(par_def, **kwargs)
                             type_dict = par_type.get_type_dict()
                             self.local_func_dict[func_sym].update(type_dict)
+                        # assignment inside local function, e.g.: f(x) = *** where * = ***
+                        for extra in vblock_info[0].extra:
+                            handle_assignment(extra)
                         self.local_func_parsing = False
                         self.is_param_block = False
                     for cur_expr in vblock_info[0].expr:
