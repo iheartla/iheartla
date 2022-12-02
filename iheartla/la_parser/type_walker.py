@@ -1489,7 +1489,8 @@ class TypeWalker(NodeWalker):
             if pkg_name == TRIANGLE_MESH:
                 for name in name_list:
                     # self.symtable[r_dict[name]] = get_sym_type_from_pkg(name, pkg_name)
-                    new_sym_name = self.add_sym_type(r_dict[name], get_sym_type_from_pkg(name, pkg_name, dim_dict), get_err_msg_info(node.parseinfo,
+                    # add func names to symtable, for dynamic func types, ignore the dimension info for now
+                    new_sym_name = self.add_sym_type(r_dict[name], get_sym_type_from_pkg(name, pkg_name, None), get_err_msg_info(node.parseinfo,
                                                                             "Parameter {} has been defined.".format(
                                                                                 name)))
                     if new_sym_name:
@@ -2641,11 +2642,13 @@ class TypeWalker(NodeWalker):
             symbols = set()
             param_node_list = []
             param_type_list = []
+            # params from subscripts
             for index in range(len(node.subs)):
                 c_node = self.walk(node.subs[index], **kwargs)
                 param_node_list.append(c_node)
                 param_type_list.append(c_node.la_type)
             ir_node.n_subs = len(node.subs)
+            # params inside parentheses
             for index in range(len(node.params)):
                 c_node = self.walk(node.params[index], **kwargs)
                 param_node_list.append(c_node)
@@ -2662,6 +2665,16 @@ class TypeWalker(NodeWalker):
                 ir_node.identity_name = func_name
             self.assert_expr(len(param_node_list) == len(name_type.params) or len(node.params) == 0,
                              get_err_msg_info(node.parseinfo, "Function error. Parameters count mismatch"))
+            # Builtin function call
+            builtin_name = ir_node.identity_name
+            if ir_node.identity_name in self.func_imported_renaming:
+                builtin_name = self.func_imported_renaming[ir_node.identity_name]
+            # get dynamic func type based on parameters
+            if builtin_name in TRIANGLE_MESH_FUNC_MAPPING:
+                if builtin_name in TRIANGLE_MESH_DYNAMIC_TYPE_LIST:
+                    # dynamic func type, the first parameter must be mesh type
+                    self.assert_expr(param_type_list[0].is_mesh(), get_err_msg_info(node.parseinfo, "Function error. The first parameter must be mesh type"))
+                    name_type = get_sym_type_from_pkg(builtin_name, TRIANGLE_MESH, param_type_list[0])
             for index in range(len(param_node_list)):
                 param_info = param_node_list[index]
                 symbols = symbols.union(param_info.symbols)
@@ -2723,9 +2736,6 @@ class TypeWalker(NodeWalker):
             ir_node.la_type = ret_type
             node_info.ir = ir_node
             # Builtin function call
-            builtin_name = ir_node.identity_name
-            if ir_node.identity_name in self.func_imported_renaming:
-                builtin_name = self.func_imported_renaming[ir_node.identity_name]
             if builtin_name in TRIANGLE_MESH_FUNC_MAPPING:
                 tri_node = GPFuncNode(param_list, TRIANGLE_MESH_FUNC_MAPPING[builtin_name], builtin_name)
                 node_info = NodeInfo(ret_type, symbols=symbols)

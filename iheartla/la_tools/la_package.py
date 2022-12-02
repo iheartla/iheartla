@@ -219,33 +219,33 @@ def merge_dict(dict1, dict2):
 PACKAGES_DICT = merge_dict(PACKAGES_FUNC_DICT, PACKAGES_SYM_DICT)
 CLASS_PACKAGES = [TRIANGLE_MESH]
 
-def get_sym_type_from_pkg(sym, pkg, dim_dict=None):
+def get_sym_type_from_pkg(sym, pkg, mesh_type=None):
     ret = LaVarType()
     if pkg == TRIANGLE_MESH:
         if sym in TRIANGLE_MESH_SYM_TYPE:
             if sym in TRIANGLE_MESH_DYNAMIC_TYPE_LIST:
-                if dim_dict:
+                if mesh_type:
                     if sym == BM1:
-                        ret = MatrixType(rows=dim_dict['vi_size'], cols=dim_dict['ei_size'], sparse=True, element_type=ScalarType(is_int=True))
+                        ret = MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True))
                     elif sym == BM2:
-                        ret = MatrixType(rows=dim_dict['ei_size'], cols=dim_dict['fi_size'], sparse=True, element_type=ScalarType(is_int=True))
+                        ret = MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True))
                     elif sym == BM3:
-                        ret = MatrixType(rows=dim_dict['fi_size'], cols=dim_dict['ti_size'], sparse=True, element_type=ScalarType(is_int=True))
+                        ret = MatrixType(rows=mesh_type.fi_size, cols=mesh_type.ti_size, sparse=True, element_type=ScalarType(is_int=True))
                     elif sym == VERTICES_TO_VECTOR:
-                        ret = make_function_type([VertexSetType()], [VectorType(rows=dim_dict['vi_size'])])
+                        ret = make_function_type([VertexSetType()], [VectorType(rows=mesh_type.vi_size)])
                     elif sym == EDGES_TO_VECTOR:
-                        ret = make_function_type([EdgeSetType()], [VectorType(rows=dim_dict['ei_size'])])
+                        ret = make_function_type([EdgeSetType()], [VectorType(rows=mesh_type.ei_size)])
                     elif sym == FACES_TO_VECTOR:
-                        ret = make_function_type([FaceSetType()], [VectorType(rows=dim_dict['fi_size'])])
+                        ret = make_function_type([FaceSetType()], [VectorType(rows=mesh_type.fi_size)])
                     elif sym == VECTOR_TO_VERTICES:
-                        ret = make_function_type([VectorType(rows=dim_dict['vi_size'])], [VertexSetType()])
+                        ret = make_function_type([VectorType(rows=mesh_type.vi_size)], [VertexSetType()])
                     elif sym == VECTOR_TO_EDGES:
-                        ret = make_function_type([VectorType(rows=dim_dict['ei_size'])], [EdgeSetType()])
+                        ret = make_function_type([VectorType(rows=mesh_type.ei_size)], [EdgeSetType()])
                     elif sym == VECTOR_TO_FACES:
-                        ret = make_function_type([VectorType(rows=dim_dict['fi_size'])], [FaceSetType()])
+                        ret = make_function_type([VectorType(rows=mesh_type.fi_size)], [FaceSetType()])
                     elif sym == BoundaryMatrices:
-                        ret = make_function_type([MeshType()], [MatrixType(rows=dim_dict['ei_size'], cols=dim_dict['fi_size'], sparse=True, element_type=ScalarType(is_int=True)),
-                                                                MatrixType(rows=dim_dict['ei_size'], cols=dim_dict['fi_size'], sparse=True, element_type=ScalarType(is_int=True))])
+                        ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True)),
+                                                                MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True))])
                 else:
                     ret = TRIANGLE_MESH_SYM_TYPE[sym]
             else:
