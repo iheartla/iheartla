@@ -44,6 +44,7 @@ named_type::NamedType
     | f:/FaceSet/
     | t:/TetSet/
     | s:/SimplicialSet/
+    | m:/mesh|Mesh/
     ;
     
 la_type

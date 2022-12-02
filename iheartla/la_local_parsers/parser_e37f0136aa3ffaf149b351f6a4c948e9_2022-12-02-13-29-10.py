@@ -8788,13 +8788,20 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                     ['s'],
                     []
                 )
+            with self._option():
+                self._pattern('mesh|Mesh')
+                self.name_last_node('m')
+                self._define(
+                    ['m'],
+                    []
+                )
             self._error(
                 'expecting one of: '
                 'VertexSet EdgeSet FaceSet TetSet'
-                'SimplicialSet'
+                'SimplicialSet mesh|Mesh'
             )
         self._define(
-            ['v', 'e', 'f', 't', 's'],
+            ['v', 'e', 'f', 't', 's', 'm'],
             []
         )
 
@@ -8825,7 +8832,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 "<tuple_type> '∅' <function_type>"
                 '<identifier> <mapping_type> VertexSet'
                 'EdgeSet FaceSet TetSet SimplicialSet'
-                '<named_type>'
+                'mesh|Mesh <named_type>'
             )
 
     @tatsumasu()
@@ -11723,6 +11730,7 @@ class TupleType(ModelBase):
 class NamedType(ModelBase):
     e: Any = None
     f: Any = None
+    m: Any = None
     s: Any = None
     t: Any = None
     v: Any = None
