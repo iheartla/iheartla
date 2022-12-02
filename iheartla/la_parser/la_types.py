@@ -19,6 +19,7 @@ class VarTypeEnum(Enum):
     EDGETYPE = 12
     FACETYPE = 13
     TETTYPE = 14
+    MESH = 15
 
 
 class DynamicTypeEnum(IntFlag):
@@ -151,6 +152,9 @@ class LaVarType(object):
     def is_overloaded(self):
         return self.var_type == VarTypeEnum.OVERLOADINGFUNCTION
 
+    def is_mesh(self):
+        return self.var_type == VarTypeEnum.MESH
+
     def is_same_type(self, other, omit_size=False):
         # not consider whether the element is int or not
         same = False
@@ -242,6 +246,15 @@ class TetType(ScalarType):
 
     def get_raw_text(self):
         return 'f:ℤ'
+
+class MeshType(LaVarType):
+    def __init__(self, dim_dict=None, desc=None):
+        LaVarType.__init__(self, VarTypeEnum.MESH, desc)
+        self.vi_size = dim_dict['vi_size'] if dim_dict and 'vi_size' in dim_dict else 0
+        self.ei_size = dim_dict['ei_size'] if dim_dict and 'ei_size' in dim_dict else 0
+        self.fi_size = dim_dict['fi_size'] if dim_dict and 'fi_size' in dim_dict else 0
+        self.ti_size = dim_dict['ti_size'] if dim_dict and 'ti_size' in dim_dict else 0
+
 
 class SequenceType(LaVarType):
     def __init__(self, size=0, desc=None, element_type=None, symbol=None, dynamic=False):

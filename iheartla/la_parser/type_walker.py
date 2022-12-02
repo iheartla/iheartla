@@ -49,8 +49,8 @@ class TriangleMeshModuleData(BuiltinModuleData):
     def __init__(self, module='', instance_name='', params_list=None, name_list=None, r_dict=None,
                  dim_dict=None):
         super().__init__(module, instance_name, params_list, name_list, r_dict=r_dict)
-        self.v = params_list[0]
-        self.f = params_list[1]
+        self.v = params_list[0] if params_list and len(params_list)>0 else None
+        self.f = params_list[1] if params_list and len(params_list)>0 else None
         self.vi_size = dim_dict['vi_size'] if 'vi_size' in dim_dict else 0
         self.ei_size = dim_dict['ei_size'] if 'ei_size' in dim_dict else 0
         self.fi_size = dim_dict['fi_size'] if 'fi_size' in dim_dict else 0
@@ -1273,6 +1273,12 @@ class TypeWalker(NodeWalker):
             la_type = TetSetType()
         elif node.s:
             la_type = SimplicialSetType()
+        elif node.m:
+            dim_dict = {'vi_size': self.generate_var_name('dimv'),
+            'ei_size': self.generate_var_name('dime'),
+            'fi_size': self.generate_var_name('dimf'),
+            'ti_size': self.generate_var_name('dimt')}
+            la_type = MeshType(dim_dict)
         ir_node.la_type = la_type
         return ir_node
 

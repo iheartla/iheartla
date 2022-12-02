@@ -133,6 +133,8 @@ class CodeGenEigen(CodeGen):
             type_str = self.get_tuple_str(la_type)
         elif la_type.is_function():
             type_str = "std::function<{}({})>".format(self.get_ctype(la_type.ret[0]), self.get_func_params_str(la_type))
+        elif la_type.is_mesh():
+            type_str = "Mesh"
         else:
             assert type_str != '', "Error, invalid type"
         return type_str

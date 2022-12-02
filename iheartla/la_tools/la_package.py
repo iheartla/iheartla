@@ -37,9 +37,20 @@ class GPType(IntEnum):
     Boundary = 103
     IsComplex = 104
     IsPureComplex = 105
+    #
+    MeshSets = 200
+    BoundaryMatrices = 201
 
-TRIANGLE_MESH = 'triangle_mesh'
+# dimension name
+VI_SIZE = 'vi_size'
+EI_SIZE = 'ei_size'
+FI_SIZE = 'fi_size'
+TI_SIZE = 'ti_size'
+#
+TRIANGLE_MESH = 'MeshHelper'
 # triangle_mesh function
+MeshSets = 'MeshSets'
+BoundaryMatrices = 'BoundaryMatrices'
 FACES_OF_EDGE = 'faces_of_edge'
 DIHEDRAL = 'dihedral'
 FACE_NORMAL = 'face_normal'
@@ -93,10 +104,14 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                  VECTOR_TO_VERTICES, VECTOR_TO_EDGES, VECTOR_TO_FACES,
                                  GET_VERTICES_E, GET_EDGES_F, GET_VERTICES_F,
                                  STAR, CLOSURE, LINK, BOUNDARY, IS_COMPLEX, IS_PURE_COMPLEX,
-                                 VERTICES, EDGES, FACES, TETS, DIAMOND]}
+                                 VERTICES, EDGES, FACES, TETS, DIAMOND,
+                                 MeshSets, BoundaryMatrices]
+                      }
 PACKAGES_SYM_DICT = {'trigonometry': ['e'],
                  TRIANGLE_MESH: [EDGES, VI, EI, FI, NEI, BM1, BM2, BM3]}
 TRIANGLE_MESH_FUNC_MAPPING = {
+MeshSets: GPType.MeshSets,
+BoundaryMatrices: GPType.BoundaryMatrices,
 FACES_OF_EDGE: GPType.FacesOfEdge,
 FACE_NORMAL: GPType.FaceNormal,
 DIHEDRAL: GPType.Dihedral,
@@ -136,6 +151,8 @@ TETS: GPType.Tets,
 DIAMOND:GPType.Diamond,
 }
 TRIANGLE_MESH_SYM_TYPE = {
+MeshSets: make_function_type([MeshType()], [VertexSetType(), EdgeSetType(), FaceSetType()]),
+BoundaryMatrices: make_function_type([MeshType()], [MatrixType(), MatrixType()]),
 # functions
 FACES_OF_EDGE: make_function_type([EdgeType()], [FaceSetType()]),
 FACE_NORMAL: make_function_type(),
@@ -186,8 +203,10 @@ BM1: None,
 BM2: None,
 BM3: None
 }
+# need extra info
 TRIANGLE_MESH_DYNAMIC_TYPE_LIST = [BM1, BM2, BM3, VERTICES_TO_VECTOR, EDGES_TO_VECTOR, FACES_TO_VECTOR,
-                                   VECTOR_TO_VERTICES, VECTOR_TO_EDGES, VECTOR_TO_FACES]
+                                   VECTOR_TO_VERTICES, VECTOR_TO_EDGES, VECTOR_TO_FACES,
+                                   BoundaryMatrices]
 def merge_dict(dict1, dict2):
     # key:[value,]
     res = copy.deepcopy(dict1)
@@ -224,6 +243,9 @@ def get_sym_type_from_pkg(sym, pkg, dim_dict=None):
                         ret = make_function_type([VectorType(rows=dim_dict['ei_size'])], [EdgeSetType()])
                     elif sym == VECTOR_TO_FACES:
                         ret = make_function_type([VectorType(rows=dim_dict['fi_size'])], [FaceSetType()])
+                    elif sym == BoundaryMatrices:
+                        ret = make_function_type([MeshType()], [MatrixType(rows=dim_dict['ei_size'], cols=dim_dict['fi_size'], sparse=True, element_type=ScalarType(is_int=True)),
+                                                                MatrixType(rows=dim_dict['ei_size'], cols=dim_dict['fi_size'], sparse=True, element_type=ScalarType(is_int=True))])
                 else:
                     ret = TRIANGLE_MESH_SYM_TYPE[sym]
             else:

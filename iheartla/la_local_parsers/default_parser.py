@@ -57,6 +57,11 @@ class grammardefaultParser(Parser):
         config = base_config.replace_config(config)
         config = config.merge(**settings)
         super().__init__(config=config)
+        self.new_id_list = []
+        self.new_func_list = []
+        self.builtin_list = []
+        self.conversion_dict = {}
+        self.const_e = False
 
     @tatsumasu('Start')
     @nomemo
@@ -9396,66 +9401,150 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
-        with self._choice():
-            with self._option():
-                with self._ifnot():
-                    self._KEYWORDS_()
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            with self._group():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
-                            self.name_last_node('value')
-                            self._define(
-                                ['value'],
-                                []
-                            )
-                        with self._option():
-                            self._token('`')
-                            self._pattern('[^`]*')
-                            self.name_last_node('id')
-                            self._token('`')
-                            self._define(
-                                ['id'],
-                                []
-                            )
-                        self._error(
-                            'expecting one of: '
-                            "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                        )
-                self._define(
-                    ['value', 'id'],
-                    []
-                )
-            with self._option():
-                with self._group():
-                    self._KEYWORDS_()
+        if len(self.new_id_list) > 0:
+            with self._choice():
+                with self._option():
                     with self._group():
-                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
-                self.name_last_node('value')
-                self._define(
-                    ['value'],
-                    []
+                        with self._choice():
+                            for new_id in self.new_id_list:
+                                with self._option():
+                                    self._pattern(new_id)
+                            self._error('no available options')
+                    self.name_last_node('const')
+                with self._option():
+                    with self._ifnot():
+                        with self._group():
+                            with self._choice():
+                                with self._option():
+                                    self._KEYWORDS_()
+                                for new_id in self.new_id_list:
+                                    with self._option():
+                                        self._pattern(new_id)
+                                self._error('no available options')
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                with self._group():
+                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                                self.name_last_node('value')
+                                self._define(
+                                    ['value'],
+                                    []
+                                )
+                            with self._option():
+                                self._token('`')
+                                self._pattern('[^`]*')
+                                self.name_last_node('id')
+                                self._token('`')
+                                self._define(
+                                    ['id'],
+                                    []
+                                )
+                            self._error(
+                                'expecting one of: '
+                                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                            )
+                    self._define(
+                        ['value', 'id'],
+                        []
+                    )
+                with self._option():
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._KEYWORDS_()
+                            for new_id in self.new_id_list:
+                                with self._option():
+                                    self._pattern(new_id)
+                            self._error('no available options')
+                        with self._group():
+                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                    self.name_last_node('value')
+                    self._define(
+                        ['value'],
+                        []
+                    )
+                self._error(
+                    'expecting one of: '
+                    "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                    'where <WHERE> given <GIVEN> sum min'
+                    '<MIN> max <MAX> argmin <ARGMIN> argmax'
+                    '<ARGMAX> int <INT> if <IF> otherwise'
+                    '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
+                    'ln <LN> sqrt <SQRT> s.t. subject to'
+                    '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
+                    '<WITH> initial <INITIAL> and <AND> or'
+                    '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
+                    "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
+                    '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                    '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
-            self._error(
-                'expecting one of: '
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                'where <WHERE> given <GIVEN> sum min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
-                '<WITH> initial <INITIAL> and <AND> or'
-                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
+            self._define(
+                ['const', 'id', 'value'],
+                []
             )
-        self._define(
-            ['value', 'id'],
-            []
-        )
+        else:
+            # default
+            with self._choice():
+                with self._option():
+                    with self._ifnot():
+                        self._KEYWORDS_()
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                with self._group():
+                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                                self.name_last_node('value')
+                                self._define(
+                                    ['value'],
+                                    []
+                                )
+                            with self._option():
+                                self._token('`')
+                                self._pattern('[^`]*')
+                                self.name_last_node('id')
+                                self._token('`')
+                                self._define(
+                                    ['id'],
+                                    []
+                                )
+                            self._error(
+                                'expecting one of: '
+                                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                            )
+                    self._define(
+                        ['value', 'id'],
+                        []
+                    )
+                with self._option():
+                    with self._group():
+                        self._KEYWORDS_()
+                        with self._group():
+                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                    self.name_last_node('value')
+                    self._define(
+                        ['value'],
+                        []
+                    )
+                self._error(
+                    'expecting one of: '
+                    "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                    'where <WHERE> given <GIVEN> sum min'
+                    '<MIN> max <MAX> argmin <ARGMIN> argmax'
+                    '<ARGMAX> int <INT> if <IF> otherwise'
+                    '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
+                    'ln <LN> sqrt <SQRT> s.t. subject to'
+                    '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
+                    '<WITH> initial <INITIAL> and <AND> or'
+                    '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
+                    "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
+                    '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
+                    '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                )
+            self._define(
+                ['value', 'id'],
+                []
+            )
 
     @tatsumasu()
     def _identifier_(self):  # noqa
