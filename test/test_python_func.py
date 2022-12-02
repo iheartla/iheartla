@@ -307,67 +307,67 @@ class TestFunction(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
-    def test_seq_func_assign(self):
-        la_str = """a_i = p_i
-                    c_i = a_i(1)
-                    where 
-                    p_i ∈ ℝ -> ℝ"""
-        func_info = self.gen_func_info(la_str)
-        P = np.array([1, 2])
-        f = lambda p : p
-        f1 = lambda p : 2*p
-        self.assertDMatrixEqual(func_info.numpy_func(np.asarray([f, f1])).c, P)
-        # eigen test
-        cppyy.include(func_info.eig_file_name)
-        func_list = ["bool {}(){{".format(func_info.eig_test_name),
-                     "    std::vector<std::function<double(double)> > f_i(2);"
-                     "    std::function<double(double)> f;"
-                     "    f = [](double p)->double{",
-                     "    return p;"
-                     "    };",
-                     "    std::function<double(double)> f2;"
-                     "    f2 = [](double p)->double{",
-                     "    return 2*p;"
-                     "    };",
-                     "    f_i[0] = f;",
-                     "    f_i[1] = f2;",
-                     "    Eigen::Matrix < double, 2, 1 > D;"
-                     "    D << 1, 2;"
-                     "    Eigen::VectorXd B = {}(f_i).c;".format(func_info.eig_func_name),
-                     "    return ((B - D).norm() == 0);",
-                     "}"]
-        cppyy.cppdef('\n'.join(func_list))
-        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+    # def test_seq_func_assign(self):
+    #     la_str = """a_i = p_i
+    #                 c_i = a_i(1)
+    #                 where
+    #                 p_i ∈ ℝ -> ℝ"""
+    #     func_info = self.gen_func_info(la_str)
+    #     P = np.array([1, 2])
+    #     f = lambda p : p
+    #     f1 = lambda p : 2*p
+    #     self.assertDMatrixEqual(func_info.numpy_func(np.asarray([f, f1])).c, P)
+    #     # eigen test
+    #     cppyy.include(func_info.eig_file_name)
+    #     func_list = ["bool {}(){{".format(func_info.eig_test_name),
+    #                  "    std::vector<std::function<double(double)> > f_i(2);"
+    #                  "    std::function<double(double)> f;"
+    #                  "    f = [](double p)->double{",
+    #                  "    return p;"
+    #                  "    };",
+    #                  "    std::function<double(double)> f2;"
+    #                  "    f2 = [](double p)->double{",
+    #                  "    return 2*p;"
+    #                  "    };",
+    #                  "    f_i[0] = f;",
+    #                  "    f_i[1] = f2;",
+    #                  "    Eigen::Matrix < double, 2, 1 > D;"
+    #                  "    D << 1, 2;"
+    #                  "    Eigen::VectorXd B = {}(f_i).c;".format(func_info.eig_func_name),
+    #                  "    return ((B - D).norm() == 0);",
+    #                  "}"]
+    #     cppyy.cppdef('\n'.join(func_list))
+    #     self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
-    def test_seq_func_sum(self):
-        la_str = """c = sum_i p_i(A_i)
-                    where 
-                    p_i ∈ ℝ -> ℝ
-                    A_i ∈ ℝ"""
-        func_info = self.gen_func_info(la_str)
-        A = np.array([1, 2])
-        f = lambda p : p
-        f1 = lambda p : 2*p
-        self.assertEqual(func_info.numpy_func(np.asarray([f, f1]), A).c, 5)
-        # eigen test
-        cppyy.include(func_info.eig_file_name)
-        func_list = ["bool {}(){{".format(func_info.eig_test_name),
-                     "    std::vector<double> A(2);"
-                     "    A[0] = 1;"
-                     "    A[1] = 2;"
-                     "    std::vector<std::function<double(double)> > f_i(2);"
-                     "    std::function<double(double)> f;"
-                     "    f = [](double p)->double{",
-                     "    return p;"
-                     "    };",
-                     "    std::function<double(double)> f2;"
-                     "    f2 = [](double p)->double{",
-                     "    return 2*p;"
-                     "    };",
-                     "    f_i[0] = f;",
-                     "    f_i[1] = f2;",
-                     "    double B = {}(f_i, A).c;".format(func_info.eig_func_name),
-                     "    return B == 5;",
-                     "}"]
-        cppyy.cppdef('\n'.join(func_list))
-        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+    # def test_seq_func_sum(self):
+    #     la_str = """c = sum_i p_i(A_i)
+    #                 where
+    #                 p_i ∈ ℝ -> ℝ
+    #                 A_i ∈ ℝ"""
+    #     func_info = self.gen_func_info(la_str)
+    #     A = np.array([1, 2])
+    #     f = lambda p : p
+    #     f1 = lambda p : 2*p
+    #     self.assertEqual(func_info.numpy_func(np.asarray([f, f1]), A).c, 5)
+    #     # eigen test
+    #     cppyy.include(func_info.eig_file_name)
+    #     func_list = ["bool {}(){{".format(func_info.eig_test_name),
+    #                  "    std::vector<double> A(2);"
+    #                  "    A[0] = 1;"
+    #                  "    A[1] = 2;"
+    #                  "    std::vector<std::function<double(double)> > f_i(2);"
+    #                  "    std::function<double(double)> f;"
+    #                  "    f = [](double p)->double{",
+    #                  "    return p;"
+    #                  "    };",
+    #                  "    std::function<double(double)> f2;"
+    #                  "    f2 = [](double p)->double{",
+    #                  "    return 2*p;"
+    #                  "    };",
+    #                  "    f_i[0] = f;",
+    #                  "    f_i[1] = f2;",
+    #                  "    double B = {}(f_i, A).c;".format(func_info.eig_func_name),
+    #                  "    return B == 5;",
+    #                  "}"]
+    #     cppyy.cppdef('\n'.join(func_list))
+    #     self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
