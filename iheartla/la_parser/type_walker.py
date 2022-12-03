@@ -858,6 +858,44 @@ class TypeWalker(NodeWalker):
         self.visiting_solver_eq = False
         self.scope_list = self.saved_scope_list
 
+    def get_ordered_stat(self, stat_list):
+        """
+        Apply def-use to sub assignments
+        :param stat_list: extra assignment inside summation and local functions
+        :return: ir list with correct order
+        """
+        new_list = []
+        order_list = [-1] * len(stat_list)  # visited order for all statment
+        cnt = 0
+        retries = 0
+        while cnt < len(stat_list):
+            visited_list = [False] * len(stat_list)
+            for cur_index in range(len(stat_list)):
+                if order_list[cur_index] == -1 and not visited_list[cur_index]:
+                    cur_stat = stat_list[cur_index]
+                    self.logger.debug("tried stat:{}, retries:{}".format(cur_stat.text, retries))
+                    # try to parse
+                    self.push_environment()
+                    try:
+                        type_info = self.walk(cur_stat)
+                        new_list.append(type_info.ir)
+                        order_list[cur_index] = cnt
+                        cnt += 1
+                        retries = 0
+                        # self.logger.debug("expr index:{}, stat:{}".format(cnt, cur_stat.text))
+                        break
+                    # except AssertionError as e:
+                    except Exception as e:
+                        self.logger.debug("failed stat:{}, e:{}".format(cur_stat.text, e))
+                        retries += 1
+                        visited_list[cur_index] = True
+                        if retries > len(stat_list):
+                            raise e
+                        # parse failed, pop saved env
+                        self.pop_environment()
+                        continue
+        return new_list
+
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
         block_node = BlockNode()
         if self.def_use_mode:
@@ -1671,9 +1709,7 @@ class TypeWalker(NodeWalker):
         ir_node.scope_name = local_func_name
         # extra exprs
         if node.extra and len(node.extra) > 0:
-            for et in node.extra:
-                extra_info = self.walk(et, **kwargs)
-                ir_node.extra_list.append(extra_info.ir)
+            ir_node.extra_list = self.get_ordered_stat(node.extra)
         ret_list = []
         expr_list = []
         cur_symbols = set()
@@ -2096,9 +2132,7 @@ class TypeWalker(NodeWalker):
         self.logger.debug("new sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         # extra exprs
         if node.extra and len(node.extra) > 0:
-            for et in node.extra:
-                extra_info = self.walk(et, **kwargs)
-                ir_node.extra_list.append(extra_info.ir)
+            ir_node.extra_list = self.get_ordered_stat(node.extra)
         ret_info = self.walk(node.exp, **kwargs)
         ir_node.exp = ret_info.ir
         ret_info.ir.set_parent(ir_node)
