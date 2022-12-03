@@ -434,9 +434,9 @@ class CodeGenLatex(CodeGen):
                 sub = self.visit(node.id, **kwargs)
                 del kwargs['is_sub']
         content = "\\sum_{" + sub + "} " + self.visit(node.exp, **kwargs)
-        if len(node.extra_list) > 0:
+        if len(node.tex_list) > 0:
             extra_list = []
-            for et in node.extra_list:
+            for et in node.tex_list:
                 extra_list.append(self.visit(et, **kwargs))
             content += ' \\text{{ where }}  ' + '; '.join(extra_list)
         self.pop_scope()
@@ -503,9 +503,9 @@ class CodeGenLatex(CodeGen):
                 par_list.append(self.visit(par, **kwargs))
             # content += "\\intertext{{{}}} ".format('where') + ', '.join(par_list)
             content += ' \\text{{ where }}  ' + ', '.join(par_list)
-        if len(node.extra_list) > 0:
+        if len(node.tex_list) > 0:
             extra_list = []
-            for et in node.extra_list:
+            for et in node.tex_list:
                 extra_list.append(self.visit(et, **kwargs))
             content += '; ' + '; '.join(extra_list)
         self.local_func_parsing = False

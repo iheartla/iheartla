@@ -865,6 +865,7 @@ class TypeWalker(NodeWalker):
         :return: ir list with correct order
         """
         new_list = []
+        tex_list = [None] * len(stat_list)
         order_list = [-1] * len(stat_list)  # visited order for all statment
         cnt = 0
         retries = 0
@@ -880,6 +881,7 @@ class TypeWalker(NodeWalker):
                         type_info = self.walk(cur_stat)
                         new_list.append(type_info.ir)
                         order_list[cur_index] = cnt
+                        tex_list[cur_index] = type_info.ir
                         cnt += 1
                         retries = 0
                         # self.logger.debug("expr index:{}, stat:{}".format(cnt, cur_stat.text))
@@ -894,7 +896,7 @@ class TypeWalker(NodeWalker):
                         # parse failed, pop saved env
                         self.pop_environment()
                         continue
-        return new_list
+        return new_list, tex_list
 
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
         block_node = BlockNode()
@@ -1709,7 +1711,7 @@ class TypeWalker(NodeWalker):
         ir_node.scope_name = local_func_name
         # extra exprs
         if node.extra and len(node.extra) > 0:
-            ir_node.extra_list = self.get_ordered_stat(node.extra)
+            ir_node.extra_list, ir_node.tex_list = self.get_ordered_stat(node.extra)
         ret_list = []
         expr_list = []
         cur_symbols = set()
@@ -2132,7 +2134,7 @@ class TypeWalker(NodeWalker):
         self.logger.debug("new sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         # extra exprs
         if node.extra and len(node.extra) > 0:
-            ir_node.extra_list = self.get_ordered_stat(node.extra)
+            ir_node.extra_list, ir_node.tex_list = self.get_ordered_stat(node.extra)
         ret_info = self.walk(node.exp, **kwargs)
         ir_node.exp = ret_info.ir
         ret_info.ir.set_parent(ir_node)

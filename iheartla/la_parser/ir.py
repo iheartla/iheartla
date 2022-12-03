@@ -408,6 +408,7 @@ class LocalFuncNode(StmtNode):
         self.defs = defs
         self.n_subs = 0   # number of subscripts
         self.extra_list = []  # extra assignments
+        self.tex_list = []    # extra assignments for tex output
         self.scope_name = None
 
 
@@ -803,6 +804,7 @@ class SummationNode(ExprNode):
         self.enum_list = None
         self.range = None
         self.extra_list = []
+        self.tex_list = []    # extra assignments for tex output
         self.use_tuple = False
         self.scope_name = None
 
