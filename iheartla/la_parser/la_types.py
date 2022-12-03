@@ -255,6 +255,11 @@ class MeshType(LaVarType):
         self.fi_size = dim_dict['fi_size'] if dim_dict and 'fi_size' in dim_dict else 0
         self.ti_size = dim_dict['ti_size'] if dim_dict and 'ti_size' in dim_dict else 0
 
+    def get_raw_text(self):
+        return 'mesh({},{},{},{})'.format(self.vi_size, self.ei_size, self.fi_size, self.ti_size)
+
+    def get_signature(self):
+        return self.get_raw_text()
 
 class SequenceType(LaVarType):
     def __init__(self, size=0, desc=None, element_type=None, symbol=None, dynamic=False):
