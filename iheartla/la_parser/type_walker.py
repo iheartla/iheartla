@@ -4505,6 +4505,13 @@ class TypeWalker(NodeWalker):
             self.get_cur_param_data().symtable[arr[0]] = SequenceType(size=new_var_name, element_type=id_type, desc=id_type.desc, symbol=arr[0])
         else:
             id_type.symbol = identifier
+            if id_type.is_mesh():
+                # mesh type needs to be initialized when adding to symtable
+                id_type = copy.deepcopy(id_type)
+                id_type.init_dims({'vi_size': self.generate_var_name('dimv'),
+                        'ei_size': self.generate_var_name('dime'),
+                        'fi_size': self.generate_var_name('dimf'),
+                        'ti_size': self.generate_var_name('dimt')})
             self.add_sym_type(identifier, id_type, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier)))
             # self.check_sym_existence(identifier, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier)), False)
             # self.get_cur_param_data().symtable[identifier] = id_type

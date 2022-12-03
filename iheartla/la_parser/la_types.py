@@ -250,6 +250,9 @@ class TetType(ScalarType):
 class MeshType(LaVarType):
     def __init__(self, dim_dict=None, desc=None):
         LaVarType.__init__(self, VarTypeEnum.MESH, desc)
+        self.init_dims(dim_dict)
+
+    def init_dims(self, dim_dict=None):
         self.vi_size = dim_dict['vi_size'] if dim_dict and 'vi_size' in dim_dict else 0
         self.ei_size = dim_dict['ei_size'] if dim_dict and 'ei_size' in dim_dict else 0
         self.fi_size = dim_dict['fi_size'] if dim_dict and 'fi_size' in dim_dict else 0
