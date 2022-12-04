@@ -676,11 +676,17 @@ class IntersectionNode(ExprNode):
         self.left = left
         self.right = right
 
+class DiffFormat(IntEnum):
+    DiffInvalid = -1
+    DiffNormal = 0  # a - b
+    DiffSplit = 1   # a \ b
+
 class DifferenceNode(ExprNode):
-    def __init__(self, left=None, right=None, la_type=None, parse_info=None, raw_text=None):
+    def __init__(self, left=None, right=None, diff_format=DiffFormat.DiffNormal, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Difference, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
+        self.diff_format = diff_format
 
 class AddSubNode(ExprNode):
     def __init__(self, left=None, right=None, la_type=None, parse_info=None, raw_text=None, op='+-'):

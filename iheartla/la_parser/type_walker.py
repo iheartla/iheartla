@@ -2558,6 +2558,18 @@ class TypeWalker(NodeWalker):
             node_info.ir = ir_node
             op_type = MulOpType.MulOpInvalid
             return self.make_mul_info(node_info, right_info, op_type, parse_info=node.parseinfo, raw_text=node.text)
+        elif left_info.la_type.is_set():
+            self.assert_expr(right_info.la_type.is_set(), get_err_msg_info(right_info.ir.parse_info,
+                                                                             "Parameter {} must be a set".format(
+                                                                                 node.right.text)))
+            ret_type, need_cast = self.type_inference(TypeInferenceEnum.INF_SUB, left_info, right_info)
+            ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
+            ir_node = DifferenceNode(left_info.ir, right_info.ir, diff_format=DiffFormat.DiffSplit, parse_info=node.parseinfo, raw_text=node.text)
+            ir_node.la_type = ret_type
+            left_info.ir.set_parent(ir_node)
+            right_info.ir.set_parent(ir_node)
+            ret_info.ir = ir_node
+            return ret_info
         ir_node = SolverNode(parse_info=node.parseinfo, raw_text=node.text)
         ir_node.pow = node.p
         ir_node.left = left_info.ir

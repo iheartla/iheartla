@@ -416,7 +416,10 @@ class CodeGenLatex(CodeGen):
         return self.visit(node.left, **kwargs) + "\\cap" + self.visit(node.right, **kwargs)
 
     def visit_difference(self, node, **kwargs):
-        return self.visit(node.left, **kwargs) + "-" + self.visit(node.right, **kwargs)
+        sign = "-"
+        if node.diff_format == DiffFormat.DiffSplit:
+            sign = "\\setminus"
+        return self.visit(node.left, **kwargs) + sign + self.visit(node.right, **kwargs)
 
     def visit_summation(self, node, **kwargs):
         self.push_scope(node.scope_name)
