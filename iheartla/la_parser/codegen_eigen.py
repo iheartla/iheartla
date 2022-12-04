@@ -632,7 +632,15 @@ class CodeGenEigen(CodeGen):
                 test_content += cur_test_content
         return visited_sym_set, test_content
 
+    def check_overloading_types(self):
+        for k,v in self.symtable.items():
+            if v.is_overloaded() and v.has_duplicate_cpp_types():
+                self.duplicate_func_list.append(k)
+                print("duplicate: {}".format(k))
+
     def visit_block(self, node, **kwargs):
+        self.check_overloading_types()
+        #
         show_doc = False
         rand_func_name = "generateRandomData"
         # main
@@ -887,6 +895,8 @@ class CodeGenEigen(CodeGen):
         func_name = name_info.content
         if node.identity_name and node.identity_name in self.parameters:
             func_name = self.filter_symbol(node.identity_name)
+        if func_name in self.duplicate_func_list:
+            func_name = self.filter_symbol(node.identity_name)
         pre_list = []
         params = []
         if node.params:
@@ -912,10 +922,13 @@ class CodeGenEigen(CodeGen):
             param_list.append(
                 "        const {} & {}".format(self.get_ctype(self.get_cur_param_data().symtable[param_info.content]),
                                                param_info.content))
+        output_name = name_info.content
+        if output_name in self.duplicate_func_list:
+            output_name = node.identity_name
         if len(param_list) == 0:
-            content = "    {} {}()\n"
+            content = "    {} {}()\n".format(self.get_ctype(node.expr[0].la_type), output_name)
         else:
-            content = "    {} {}(\n".format(self.get_ctype(node.expr[0].la_type), name_info.content)
+            content = "    {} {}(\n".format(self.get_ctype(node.expr[0].la_type), output_name)
             content += ",\n".join(param_list) + ')\n'
         content += '    {\n'
         # get dimension content

@@ -389,6 +389,7 @@ class IRVisitor(IRBaseVisitor):
         self.declared_symbols = set()
         self.used_params = []
         self.opt_syms = []
+        self.duplicate_func_list = []    # overloaded func types incompatible in cpp
 
     def add_name_conventions(self, con_dict):
         for key, value in con_dict.items():
@@ -610,6 +611,7 @@ class IRVisitor(IRBaseVisitor):
         self.declared_symbols.clear()
         self.local_func_def = ''
         self.comment_dict.clear()
+        self.duplicate_func_list.clear()
 
     def visit_code(self, node, **kwargs):
         self.content = self.pre_str + self.visit(node) + self.post_str

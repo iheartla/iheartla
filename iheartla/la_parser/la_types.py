@@ -501,8 +501,8 @@ class FunctionType(LaVarType):
     def get_overloading_signature(self):
         return self.get_param_signature()
 
-    def get_param_signature(self):
-        return get_list_signature(self.params)
+    def get_param_signature(self, cpp=False):
+        return get_list_signature(self.params, cpp)
 
     def ret_template(self):
         return len(self.ret_symbols) > 0
@@ -550,6 +550,16 @@ class OverloadingFunctionType(LaVarType):
         sig_list = [func.get_signature() for func in self.func_list]
         return signature + '\n'.join(sig_list)
 
+    def has_duplicate_cpp_types(self):
+        cpp_sig_list = []
+        ret = False
+        for cur_func in self.func_list:
+            cpp_sig = cur_func.get_param_signature(cpp=True)
+            if cpp_sig in cpp_sig_list:
+                ret = True
+                break
+            cpp_sig_list.append(cpp_sig)
+        return ret
 class MappingType(LaVarType):
     def __init__(self, desc=None, symbol=None, params=None, ret=None, template_symbols=None, ret_symbols=None, cur_type=FuncType.FuncDetermined):
         LaVarType.__init__(self, VarTypeEnum.MAPPING, desc, symbol)
@@ -626,9 +636,9 @@ def get_op_desc(op):
     return desc
 
 
-def get_list_signature(param_list):
+def get_list_signature(param_list, cpp=False):
     # get the signatures of function parameters
-    return ','.join(param.get_signature() for param in param_list)
+    return ','.join(param.get_cpp_signature() if cpp else param.get_signature() for param in param_list)
 
 def get_func_signature(name, la_type):
     # only consider parameters
