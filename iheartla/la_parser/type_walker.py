@@ -2751,10 +2751,10 @@ class TypeWalker(NodeWalker):
                     pass
                 elif cur_type.is_vector():
                     if cur_type.rows in name_type.template_symbols:
-                        ret_type = VectorType()
+                        ret_type = VectorType(element_type=cur_type.element_type)
                         ret_type.rows = convertion_dict[cur_type.rows]
                 elif cur_type.is_matrix():
-                    ret_type = MatrixType()
+                    ret_type = MatrixType(element_type=cur_type.element_type)
                     if cur_type.rows in name_type.template_symbols:
                         ret_type.rows = convertion_dict[cur_type.rows]
                     else:
