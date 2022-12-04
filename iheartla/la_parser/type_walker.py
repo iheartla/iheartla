@@ -3507,6 +3507,7 @@ class TypeWalker(NodeWalker):
         symbols = set()
         ir_node = VectorNode(parse_info=node.parseinfo, raw_text=node.text)
         dim_list = []
+        is_int = True
         for exp in node.exp:
             exp_info = self.walk(exp, **kwargs)
             self.assert_expr(exp_info.la_type.is_scalar() or exp_info.la_type.is_vector(), get_err_msg_info(node.parseinfo, "Item in vector must be scalar or vector"))
@@ -3516,7 +3517,9 @@ class TypeWalker(NodeWalker):
             else:
                 dim_list.append(1)
             symbols = symbols.union(exp_info.symbols)
-        ir_node.la_type = VectorType(rows=self.get_sum_value(dim_list))
+            if is_int:
+                is_int = exp_info.la_type.is_integer_element()
+        ir_node.la_type = VectorType(rows=self.get_sum_value(dim_list), element_type=ScalarType(is_int=is_int))
         node_info = NodeInfo(ir=ir_node, la_type=ir_node.la_type, symbols=symbols)
         if LHS in kwargs:
             lhs = kwargs[LHS]
