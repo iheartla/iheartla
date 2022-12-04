@@ -134,7 +134,7 @@ class CodeGenEigen(CodeGen):
         elif la_type.is_function():
             type_str = "std::function<{}({})>".format(self.get_ctype(la_type.ret[0]), self.get_func_params_str(la_type))
         elif la_type.is_mesh():
-            type_str = "Mesh"
+            type_str = MESH_CLASS
         else:
             assert type_str != '', "Error, invalid type"
         return type_str
@@ -324,8 +324,8 @@ class CodeGenEigen(CodeGen):
                         self.code_frame.include += '#include "{}.h"\n'.format(MESH_CLASS)
                         self.code_frame.include += '#include "{}.h"\n'.format(MESH_HELPER)
                         class_name = MESH_HELPER
-                    item_list.append("    {} {};\n".format(class_name, module_data.instance_name))
-                    init_var += "        {}.initialize({});\n".format(module_data.instance_name, ', '.join(module_data.params_list))
+                    # item_list.append("    {} {};\n".format(class_name, module_data.instance_name))
+                    # init_var += "        {}.initialize({});\n".format(module_data.instance_name, ', '.join(module_data.params_list))
         content = ["struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),
                    init_content,
