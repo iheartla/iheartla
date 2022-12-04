@@ -177,7 +177,11 @@ class LaVarType(object):
         return same
 
     def get_signature(self):
+        # signature for iheartla types, as long as it can be used to differentiate
         return ''
+    def get_cpp_signature(self):
+        # some different types in iheartla corresponding to the same types in Eigen, e.g.: ℤ^3 v.s. ℤ^(3×1)
+        return self.get_signature()
 
     def get_json_content(self):
         return ''
@@ -323,6 +327,12 @@ class MatrixType(LaVarType):
         #     return "matrix,rows:{},cols:{}".format(self.rows, self.cols)
         return self.get_raw_text()
 
+    def get_cpp_signature(self):
+        e_type = 'ℤ' if self.element_type.is_int else 'ℝ'
+        if self.cols == 1:
+            return "{}^{}".format(e_type, self.rows)
+        return "{}^({}×{})".format(e_type, self.rows, self.cols)
+
     def is_integer_element(self):
         return self.element_type.is_integer_element()
 
@@ -417,21 +427,30 @@ class VertexSetType(SetType):
         SetType.__init__(self, size=1, int_list=[True], type_list=[VertexType()], cur_type=SetTypeEnum.VERTEX)
     def get_signature(self):
         return 'vertexset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
+
+    def get_cpp_signature(self):
+        return self.get_raw_text()
 class EdgeSetType(SetType):
     def __init__(self):
         SetType.__init__(self, size=1, int_list=[True], type_list=[EdgeType()], cur_type=SetTypeEnum.EDGE)
     def get_signature(self):
         return 'edgeset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
+    def get_cpp_signature(self):
+        return self.get_raw_text()
 class FaceSetType(SetType):
     def __init__(self):
         SetType.__init__(self, size=1, int_list=[True], type_list=[FaceType()], cur_type=SetTypeEnum.FACE)
     def get_signature(self):
         return 'faceset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
+    def get_cpp_signature(self):
+        return self.get_raw_text()
 class TetSetType(SetType):
     def __init__(self):
         SetType.__init__(self, size=1, int_list=[True], type_list=[TetType()], cur_type=SetTypeEnum.TET)
     def get_signature(self):
         return 'tetset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
+    def get_cpp_signature(self):
+        return self.get_raw_text()
 
 class TupleType(LaVarType):
     def __init__(self, desc=None, element_type=None, symbol=None, type_list=None, dynamic=DynamicTypeEnum.DYN_INVALID):
