@@ -154,21 +154,21 @@ TRIANGLE_MESH_SYM_TYPE = {
 MeshSets: make_function_type([MeshType()], [VertexSetType(), EdgeSetType(), FaceSetType()]),
 BoundaryMatrices: make_function_type([MeshType()], [MatrixType(), MatrixType()]),
 # functions
-FACES_OF_EDGE: make_function_type([EdgeType()], [FaceSetType()]),
+FACES_OF_EDGE: make_function_type([MeshType(),EdgeType()], [FaceSetType()]),
 FACE_NORMAL: make_function_type(),
 DIHEDRAL: make_function_type(),
-GET_ADJACENT_VERTICES_V: make_function_type([VertexType()], [VertexSetType()]),
-GET_INCIDENT_EDGES_V: make_function_type([VertexType()], [EdgeSetType()]),
-GET_INCIDENT_FACES_V: make_function_type([VertexType()], [FaceSetType()]),
+GET_ADJACENT_VERTICES_V: make_function_type([MeshType(),VertexType()], [VertexSetType()]),
+GET_INCIDENT_EDGES_V: make_function_type([MeshType(),VertexType()], [EdgeSetType()]),
+GET_INCIDENT_FACES_V: make_function_type([MeshType(),VertexType()], [FaceSetType()]),
 #
-GET_INCIDENT_VERTICES_E: make_function_type([EdgeType()], [VertexSetType()]),
-GET_INCIDENT_FACES_E: make_function_type([EdgeType()], [FaceSetType()]),
-GET_DIAMOND_VERTICES_E: make_function_type([EdgeType()], [VertexSetType()]),
-GET_DIAMOND_FACES_E: make_function_type([EdgeType()], [FaceType(), FaceType()]),
+GET_INCIDENT_VERTICES_E: make_function_type([MeshType(),EdgeType()], [VertexSetType()]),
+GET_INCIDENT_FACES_E: make_function_type([MeshType(),EdgeType()], [FaceSetType()]),
+GET_DIAMOND_VERTICES_E: make_function_type([MeshType(),EdgeType()], [VertexSetType()]),
+GET_DIAMOND_FACES_E: make_function_type([MeshType(),EdgeType()], [FaceType(), FaceType()]),
 #
-GET_INCIDENT_VERTICES_F: make_function_type([FaceType()], [VertexSetType()]),
-GET_INCIDENT_EDGES_F: make_function_type([FaceType()], [EdgeSetType()]),
-GET_ADJACENT_FACES_F: make_function_type([FaceType()], [FaceSetType()]),
+GET_INCIDENT_VERTICES_F: make_function_type([MeshType(),FaceType()], [VertexSetType()]),
+GET_INCIDENT_EDGES_F: make_function_type([MeshType(),FaceType()], [EdgeSetType()]),
+GET_ADJACENT_FACES_F: make_function_type([MeshType(),FaceType()], [FaceSetType()]),
 #
 VERTICES_TO_VECTOR: make_function_type(),  # must be a valid function type for preprocessing
 EDGES_TO_VECTOR: make_function_type(),
@@ -178,22 +178,22 @@ VECTOR_TO_VERTICES: make_function_type(),
 VECTOR_TO_EDGES: make_function_type(),
 VECTOR_TO_FACES: make_function_type(),
 #
-GET_VERTICES_E: make_function_type([EdgeType()], [VertexType(), VertexType()]),
-GET_EDGES_F: make_function_type([FaceType()], [EdgeType(), EdgeType(), EdgeType()]),
-GET_VERTICES_F: make_function_type([FaceType()], [VertexType(), VertexType(), VertexType()]),
+GET_VERTICES_E: make_function_type([MeshType(),EdgeType()], [VertexType(), VertexType()]),
+GET_EDGES_F: make_function_type([MeshType(),FaceType()], [EdgeType(), EdgeType(), EdgeType()]),
+GET_VERTICES_F: make_function_type([MeshType(),FaceType()], [VertexType(), VertexType(), VertexType()]),
 #
-STAR: make_function_type([SimplicialSetType()], [SimplicialSetType()]),
-CLOSURE: make_function_type([SimplicialSetType()], [SimplicialSetType()]),
-LINK: make_function_type([SimplicialSetType()], [SimplicialSetType()]),
-BOUNDARY: make_function_type([SimplicialSetType()], [SimplicialSetType()]),
-IS_COMPLEX: make_function_type([SimplicialSetType()], [IntType()]),
-IS_PURE_COMPLEX: make_function_type([SimplicialSetType()], [IntType()]),
+STAR: make_function_type([MeshType(),SimplicialSetType()], [SimplicialSetType()]),
+CLOSURE: make_function_type([MeshType(),SimplicialSetType()], [SimplicialSetType()]),
+LINK: make_function_type([MeshType(),SimplicialSetType()], [SimplicialSetType()]),
+BOUNDARY: make_function_type([MeshType(),SimplicialSetType()], [SimplicialSetType()]),
+IS_COMPLEX: make_function_type([MeshType(),SimplicialSetType()], [IntType()]),
+IS_PURE_COMPLEX: make_function_type([MeshType(),SimplicialSetType()], [IntType()]),
 #
-VERTICES: make_function_type([SimplicialSetType()], [VertexSetType()]),
-EDGES: make_function_type([SimplicialSetType()], [EdgeSetType()]),
-FACES: make_function_type([SimplicialSetType()], [FaceSetType()]),
-TETS: make_function_type([SimplicialSetType()], [TetSetType()]),
-DIAMOND: make_function_type([EdgeType()], [SimplicialSetType()]),
+VERTICES: make_function_type([MeshType(),SimplicialSetType()], [VertexSetType()]),
+EDGES: make_function_type([MeshType(),SimplicialSetType()], [EdgeSetType()]),
+FACES: make_function_type([MeshType(),SimplicialSetType()], [FaceSetType()]),
+TETS: make_function_type([MeshType(),SimplicialSetType()], [TetSetType()]),
+DIAMOND: make_function_type([MeshType(),EdgeType()], [SimplicialSetType()]),
 # variables
 VI: VertexSetType(),
 EI: EdgeSetType(),
@@ -232,17 +232,17 @@ def get_sym_type_from_pkg(sym, pkg, mesh_type=None):
                     elif sym == BM3:
                         ret = MatrixType(rows=mesh_type.fi_size, cols=mesh_type.ti_size, sparse=True, element_type=ScalarType(is_int=True))
                     elif sym == VERTICES_TO_VECTOR:
-                        ret = make_function_type([VertexSetType()], [VectorType(rows=mesh_type.vi_size)])
+                        ret = make_function_type([MeshType(),VertexSetType()], [VectorType(rows=mesh_type.vi_size)])
                     elif sym == EDGES_TO_VECTOR:
-                        ret = make_function_type([EdgeSetType()], [VectorType(rows=mesh_type.ei_size)])
+                        ret = make_function_type([MeshType(),EdgeSetType()], [VectorType(rows=mesh_type.ei_size)])
                     elif sym == FACES_TO_VECTOR:
-                        ret = make_function_type([FaceSetType()], [VectorType(rows=mesh_type.fi_size)])
+                        ret = make_function_type([MeshType(),FaceSetType()], [VectorType(rows=mesh_type.fi_size)])
                     elif sym == VECTOR_TO_VERTICES:
-                        ret = make_function_type([VectorType(rows=mesh_type.vi_size)], [VertexSetType()])
+                        ret = make_function_type([MeshType(),VectorType(rows=mesh_type.vi_size)], [VertexSetType()])
                     elif sym == VECTOR_TO_EDGES:
-                        ret = make_function_type([VectorType(rows=mesh_type.ei_size)], [EdgeSetType()])
+                        ret = make_function_type([MeshType(),VectorType(rows=mesh_type.ei_size)], [EdgeSetType()])
                     elif sym == VECTOR_TO_FACES:
-                        ret = make_function_type([VectorType(rows=mesh_type.fi_size)], [FaceSetType()])
+                        ret = make_function_type([MeshType(),VectorType(rows=mesh_type.fi_size)], [FaceSetType()])
                     elif sym == BoundaryMatrices:
                         ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True)),
                                                                 MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True))])
