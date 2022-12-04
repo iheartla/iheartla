@@ -259,7 +259,7 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
                 if not _id_pattern.fullmatch(r_dict[name]):
                     # multi-letter imported syms
                     multi_list.append(r_dict[name])
-                if package == TRIANGLE_MESH:
+                if package == MESH_HELPER:
                     # check property, not func
                     # if name in PACKAGES_SYM_DICT[package]:
                     continue

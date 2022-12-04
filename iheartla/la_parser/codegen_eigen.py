@@ -254,7 +254,7 @@ class CodeGenEigen(CodeGen):
         if len(self.builtin_module_dict) > 0: # builtin module initialization
             for key, module_data in self.builtin_module_dict.items():
                 if key in CLASS_PACKAGES:
-                    if key == TRIANGLE_MESH:
+                    if key == MESH_HELPER:
                         c_name = name
                         if c_name in module_data.inverse_dict:
                             c_name = module_data.inverse_dict[c_name]
@@ -320,9 +320,10 @@ class CodeGenEigen(CodeGen):
             for key, module_data in self.builtin_module_dict.items():
                 if key in CLASS_PACKAGES:
                     class_name = key
-                    if key == TRIANGLE_MESH:
-                        self.code_frame.include += '#include "{}.h"\n'.format(TRIANGLE_MESH)
-                        class_name = TRIANGLE_MESH
+                    if key == MESH_HELPER:
+                        self.code_frame.include += '#include "{}.h"\n'.format(MESH_CLASS)
+                        self.code_frame.include += '#include "{}.h"\n'.format(MESH_HELPER)
+                        class_name = MESH_HELPER
                     item_list.append("    {} {};\n".format(class_name, module_data.instance_name))
                     init_var += "        {}.initialize({});\n".format(module_data.instance_name, ', '.join(module_data.params_list))
         content = ["struct {} {{".format(self.get_result_type()),
@@ -2247,7 +2248,7 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def get_func_prefix(self):
-        return self.builtin_module_dict[TRIANGLE_MESH].instance_name
+        return self.builtin_module_dict[MESH_HELPER].instance_name
 
     def visit_fraction(self, node, **kwargs):
         return CodeNodeInfo("({}/double({}))".format(node.numerator, node.denominator))

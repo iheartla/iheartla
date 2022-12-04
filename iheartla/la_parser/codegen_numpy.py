@@ -212,7 +212,7 @@ class CodeGenNumpy(CodeGen):
             for key, module_data in self.builtin_module_dict.items():
                 if key in CLASS_PACKAGES:
                     class_name = key
-                    if key == TRIANGLE_MESH:
+                    if key == MESH_HELPER:
                         self.code_frame.include += 'from TriangleMesh import *\n'
                         class_name = "TriangleMesh"
                     init_var += "        self.{} = {}({})\n".format(module_data.instance_name, class_name, ','.join(module_data.params_list))
@@ -1903,7 +1903,7 @@ class CodeGenNumpy(CodeGen):
         return CodeNodeInfo("{}({})".format(content, params_content), pre_list=pre_list)
 
     def get_func_prefix(self):
-        return "self.{}".format(self.builtin_module_dict[TRIANGLE_MESH].instance_name)
+        return "self.{}".format(self.builtin_module_dict[MESH_HELPER].instance_name)
 
     def visit_constant(self, node, **kwargs):
         content = ''

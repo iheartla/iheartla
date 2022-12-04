@@ -173,7 +173,7 @@ class CodeGen(IRPrinter):
         res = name
         for key, module_data in self.builtin_module_dict.items():
             if key in CLASS_PACKAGES:
-                if key == TRIANGLE_MESH:
+                if key == MESH_HELPER:
                     if name in module_data.inverse_dict:
                         res = module_data.inverse_dict[name]
         return res

@@ -34,7 +34,7 @@ class DependenceData(object):
 
 class BuiltinModuleData(object):
     def __init__(self, module='', instance_name='', params_list=None, name_list=None, r_dict=None):
-        self.module = module   # triangle_mesh
+        self.module = module   # MeshHelper
         self.instance_name = instance_name  #
         self.name_list = name_list
         self.params_list = params_list
@@ -1485,7 +1485,7 @@ class TypeWalker(NodeWalker):
         return NodeInfo(ir=ImportVarNode(self.walk(node.name, **kwargs).ir, rname))
     def add_builtin_module_data(self, module, params_list=[], name_list=[], r_dict=None, dim_dict=None):
         if module not in self.builtin_module_dict:
-            if module == TRIANGLE_MESH:
+            if module == MESH_HELPER:
                 self.builtin_module_dict[module] = TriangleMeshModuleData(module, self.generate_var_name(module),params_list=params_list,name_list=name_list,r_dict=r_dict, dim_dict=dim_dict)
             else:
                 self.builtin_module_dict[module] = BuiltinModuleData(module, self.generate_var_name(module),params_list=params_list,name_list=name_list,r_dict=r_dict)
@@ -1526,7 +1526,7 @@ class TypeWalker(NodeWalker):
                         'ti_size': self.generate_var_name('dimt')}
             if not self.pre_walk:
                 self.add_builtin_module_data(pkg_name, params_list, name_list, r_dict, dim_dict=dim_dict)
-            if pkg_name == TRIANGLE_MESH:
+            if pkg_name == MESH_HELPER:
                 for name in name_list:
                     # self.symtable[r_dict[name]] = get_sym_type_from_pkg(name, pkg_name)
                     # add func names to symtable, for dynamic func types, ignore the dimension info for now
@@ -2706,11 +2706,11 @@ class TypeWalker(NodeWalker):
             if ir_node.identity_name in self.func_imported_renaming:
                 builtin_name = self.func_imported_renaming[ir_node.identity_name]
             # get dynamic func type based on parameters
-            if builtin_name in TRIANGLE_MESH_FUNC_MAPPING:
-                if builtin_name in TRIANGLE_MESH_DYNAMIC_TYPE_LIST:
+            if builtin_name in MESH_HELPER_FUNC_MAPPING:
+                if builtin_name in MESH_HELPER_DYNAMIC_TYPE_LIST:
                     # dynamic func type, the first parameter must be mesh type
                     self.assert_expr(param_type_list[0].is_mesh(), get_err_msg_info(node.parseinfo, "Function error. The first parameter must be mesh type"))
-                    name_type = get_sym_type_from_pkg(builtin_name, TRIANGLE_MESH, param_type_list[0])
+                    name_type = get_sym_type_from_pkg(builtin_name, MESH_HELPER, param_type_list[0])
             for index in range(len(param_node_list)):
                 param_info = param_node_list[index]
                 symbols = symbols.union(param_info.symbols)
@@ -2772,8 +2772,8 @@ class TypeWalker(NodeWalker):
             ir_node.la_type = ret_type
             node_info.ir = ir_node
             # Builtin function call
-            if builtin_name in TRIANGLE_MESH_FUNC_MAPPING:
-                tri_node = GPFuncNode(param_list, TRIANGLE_MESH_FUNC_MAPPING[builtin_name], builtin_name)
+            if builtin_name in MESH_HELPER_FUNC_MAPPING:
+                tri_node = GPFuncNode(param_list, MESH_HELPER_FUNC_MAPPING[builtin_name], builtin_name)
                 node_info = NodeInfo(ret_type, symbols=symbols)
                 tri_node.la_type = ret_type
                 node_info.ir = tri_node
@@ -3816,9 +3816,9 @@ class TypeWalker(NodeWalker):
         elif GPType.BuildVertexVector <= func_type <= GPType.BuildFaceVector:
             self.assert_expr(len(node.params) == 1 and param_list[0].la_type.is_set(), 'Parameter should be set')
             if GPType.BuildVertexVector == func_type:
-                ret_type = VectorType(rows=self.symtable[self.builtin_module_dict[TRIANGLE_MESH].v].rows, element_type=ScalarType(is_int=True, index_type=True))
+                ret_type = VectorType(rows=self.symtable[self.builtin_module_dict[MESH_HELPER].v].rows, element_type=ScalarType(is_int=True, index_type=True))
             elif GPType.BuildFaceVector == func_type:
-                ret_type = VectorType(rows=self.symtable[self.builtin_module_dict[TRIANGLE_MESH].f].rows, element_type=ScalarType(is_int=True, index_type=True))
+                ret_type = VectorType(rows=self.symtable[self.builtin_module_dict[MESH_HELPER].f].rows, element_type=ScalarType(is_int=True, index_type=True))
             else:
                 ret_type = VectorType(element_type=ScalarType(is_int=True, index_type=True))
         elif func_type == GPType.GetVerticesE:

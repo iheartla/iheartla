@@ -47,8 +47,9 @@ EI_SIZE = 'ei_size'
 FI_SIZE = 'fi_size'
 TI_SIZE = 'ti_size'
 #
-TRIANGLE_MESH = 'MeshHelper'
-# triangle_mesh function
+MESH_CLASS = 'TriangleMesh'
+MESH_HELPER = 'MeshHelper'
+# MeshHelper function
 MeshSets = 'MeshSets'
 BoundaryMatrices = 'BoundaryMatrices'
 FACES_OF_EDGE = 'faces_of_edge'
@@ -96,7 +97,7 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                   'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh',
                                   'cot', 'sec', 'csc'],
                  'linearalgebra': ['trace', 'tr', 'diag', 'vec', 'det', 'rank', 'null', 'orth', 'inv'],
-                 TRIANGLE_MESH: [FACES_OF_EDGE, FACE_NORMAL, DIHEDRAL,
+                 MESH_HELPER: [FACES_OF_EDGE, FACE_NORMAL, DIHEDRAL,
                                  GET_ADJACENT_VERTICES_V, GET_INCIDENT_EDGES_V, GET_INCIDENT_FACES_V,
                                  GET_INCIDENT_VERTICES_E, GET_INCIDENT_FACES_E, GET_DIAMOND_VERTICES_E, GET_DIAMOND_FACES_E,
                                  GET_INCIDENT_VERTICES_F, GET_INCIDENT_EDGES_F, GET_ADJACENT_FACES_F,
@@ -108,8 +109,8 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                  MeshSets, BoundaryMatrices]
                       }
 PACKAGES_SYM_DICT = {'trigonometry': ['e'],
-                 TRIANGLE_MESH: [EDGES, VI, EI, FI, NEI, BM1, BM2, BM3]}
-TRIANGLE_MESH_FUNC_MAPPING = {
+                 MESH_HELPER: [EDGES, VI, EI, FI, NEI, BM1, BM2, BM3]}
+MESH_HELPER_FUNC_MAPPING = {
 MeshSets: GPType.MeshSets,
 BoundaryMatrices: GPType.BoundaryMatrices,
 FACES_OF_EDGE: GPType.FacesOfEdge,
@@ -150,7 +151,7 @@ FACES: GPType.Faces,
 TETS: GPType.Tets,
 DIAMOND:GPType.Diamond,
 }
-TRIANGLE_MESH_SYM_TYPE = {
+MESH_HELPER_SYM_TYPE = {
 MeshSets: make_function_type([MeshType()], [VertexSetType(), EdgeSetType(), FaceSetType()]),
 BoundaryMatrices: make_function_type([MeshType()], [MatrixType(), MatrixType()]),
 # functions
@@ -204,7 +205,7 @@ BM2: None,
 BM3: None
 }
 # need extra info
-TRIANGLE_MESH_DYNAMIC_TYPE_LIST = [BM1, BM2, BM3, VERTICES_TO_VECTOR, EDGES_TO_VECTOR, FACES_TO_VECTOR,
+MESH_HELPER_DYNAMIC_TYPE_LIST = [BM1, BM2, BM3, VERTICES_TO_VECTOR, EDGES_TO_VECTOR, FACES_TO_VECTOR,
                                    VECTOR_TO_VERTICES, VECTOR_TO_EDGES, VECTOR_TO_FACES,
                                    BoundaryMatrices]
 def merge_dict(dict1, dict2):
@@ -217,13 +218,13 @@ def merge_dict(dict1, dict2):
             res[key] = value
     return res
 PACKAGES_DICT = merge_dict(PACKAGES_FUNC_DICT, PACKAGES_SYM_DICT)
-CLASS_PACKAGES = [TRIANGLE_MESH]
+CLASS_PACKAGES = [MESH_HELPER]
 
 def get_sym_type_from_pkg(sym, pkg, mesh_type=None):
     ret = LaVarType()
-    if pkg == TRIANGLE_MESH:
-        if sym in TRIANGLE_MESH_SYM_TYPE:
-            if sym in TRIANGLE_MESH_DYNAMIC_TYPE_LIST:
+    if pkg == MESH_HELPER:
+        if sym in MESH_HELPER_SYM_TYPE:
+            if sym in MESH_HELPER_DYNAMIC_TYPE_LIST:
                 if mesh_type:
                     if sym == BM1:
                         ret = MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True))
@@ -247,7 +248,7 @@ def get_sym_type_from_pkg(sym, pkg, mesh_type=None):
                         ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True)),
                                                                 MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True))])
                 else:
-                    ret = TRIANGLE_MESH_SYM_TYPE[sym]
+                    ret = MESH_HELPER_SYM_TYPE[sym]
             else:
-                ret = TRIANGLE_MESH_SYM_TYPE[sym]
+                ret = MESH_HELPER_SYM_TYPE[sym]
     return ret
