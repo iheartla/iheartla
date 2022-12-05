@@ -410,7 +410,10 @@ class CodeGenLatex(CodeGen):
             return self.visit(node.left, **kwargs) + "÷" + self.visit(node.right, **kwargs)
 
     def visit_union(self, node, **kwargs):
-        return self.visit(node.left, **kwargs) + "\\cup" + self.visit(node.right, **kwargs)
+        op = "\\cup"
+        if node.union_format == UnionFormat.UnionAdd:
+            op = " + "
+        return self.visit(node.left, **kwargs) + op + self.visit(node.right, **kwargs)
 
     def visit_intersection(self, node, **kwargs):
         return self.visit(node.left, **kwargs) + "\\cap" + self.visit(node.right, **kwargs)

@@ -1564,7 +1564,11 @@ class TypeWalker(NodeWalker):
         right_info = self.walk(node.right, **kwargs)
         ret_type, need_cast = self.type_inference(TypeInferenceEnum.INF_ADD, left_info, right_info)
         ret_info = NodeInfo(ret_type, symbols=left_info.symbols.union(right_info.symbols))
-        ir_node = AddNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, raw_text=node.text)
+        if ret_type.is_set():
+            # union
+            ir_node = UnionNode(left_info.ir, right_info.ir, union_format=UnionFormat.UnionAdd, parse_info=node.parseinfo, raw_text=node.text)
+        else:
+            ir_node = AddNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, raw_text=node.text)
         ir_node.la_type = ret_type
         left_info.ir.set_parent(ir_node)
         right_info.ir.set_parent(ir_node)

@@ -664,11 +664,16 @@ class SubNode(ExprNode):
                 child_node = self.right.get_child(node_type)
         return child_node
 
+class UnionFormat(IntEnum):
+    UnionInvalid = -1
+    UnionNormal = 0  # a ∪ b
+    UnionAdd = 1     # a + b
 class UnionNode(ExprNode):
-    def __init__(self, left=None, right=None, la_type=None, parse_info=None, raw_text=None):
+    def __init__(self, left=None, right=None, union_format=UnionFormat.UnionNormal, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Union, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.left = left
         self.right = right
+        self.union_format = union_format
 
 class IntersectionNode(ExprNode):
     def __init__(self, left=None, right=None, la_type=None, parse_info=None, raw_text=None):
