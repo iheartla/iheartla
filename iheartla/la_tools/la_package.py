@@ -30,6 +30,8 @@ class GPType(IntEnum):
     VectorToVertex = 24
     VectorToEdge = 25
     VectorToFace = 26
+    VertexPositions = 27
+    FaceMatrix = 28
     # dec
     Star = 100
     Closure = 101
@@ -71,6 +73,8 @@ FACES_TO_VECTOR = 'faces_to_vector'
 VECTOR_TO_VERTICES = 'vector_to_vertices'
 VECTOR_TO_EDGES = 'vector_to_edges'
 VECTOR_TO_FACES = 'vector_to_faces'
+VERTEX_POSITIONS = 'vertex_positions'
+FACE_MATRIX = 'face_matrix'
 STAR = 'star'
 CLOSURE = 'closure'
 LINK = 'link'
@@ -102,7 +106,7 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                  GET_INCIDENT_VERTICES_E, GET_INCIDENT_FACES_E, GET_DIAMOND_VERTICES_E, GET_DIAMOND_FACES_E,
                                  GET_INCIDENT_VERTICES_F, GET_INCIDENT_EDGES_F, GET_ADJACENT_FACES_F,
                                  VERTICES_TO_VECTOR, EDGES_TO_VECTOR, FACES_TO_VECTOR,
-                                 VECTOR_TO_VERTICES, VECTOR_TO_EDGES, VECTOR_TO_FACES,
+                                 VECTOR_TO_VERTICES, VECTOR_TO_EDGES, VECTOR_TO_FACES, VERTEX_POSITIONS, FACE_MATRIX,
                                  GET_VERTICES_E, GET_EDGES_F, GET_VERTICES_F,
                                  STAR, CLOSURE, LINK, BOUNDARY, IS_COMPLEX, IS_PURE_COMPLEX,
                                  VERTICES, EDGES, FACES, TETS, DIAMOND,
@@ -136,6 +140,8 @@ FACES_TO_VECTOR: GPType.BuildFaceVector,
 VECTOR_TO_VERTICES: GPType.VectorToVertex,
 VECTOR_TO_EDGES: GPType.VectorToEdge,
 VECTOR_TO_FACES: GPType.VectorToFace,
+VERTEX_POSITIONS: GPType.VertexPositions,
+FACE_MATRIX: GPType.FaceMatrix,
 GET_VERTICES_E: GPType.GetVerticesE,
 GET_EDGES_F: GPType.GetEdgesF,
 GET_VERTICES_F: GPType.GetVerticesF,
@@ -178,6 +184,8 @@ FACES_TO_VECTOR: make_function_type(),
 VECTOR_TO_VERTICES: make_function_type(),
 VECTOR_TO_EDGES: make_function_type(),
 VECTOR_TO_FACES: make_function_type(),
+VERTEX_POSITIONS: make_function_type(),
+FACE_MATRIX: make_function_type(),
 #
 GET_VERTICES_E: make_function_type([MeshType(),EdgeType()], [VertexType(), VertexType()]),
 GET_EDGES_F: make_function_type([MeshType(),FaceType()], [EdgeType(), EdgeType(), EdgeType()]),
@@ -206,7 +214,7 @@ BM3: None
 }
 # need extra info
 MESH_HELPER_DYNAMIC_TYPE_LIST = [BM1, BM2, BM3, VERTICES_TO_VECTOR, EDGES_TO_VECTOR, FACES_TO_VECTOR,
-                                   VECTOR_TO_VERTICES, VECTOR_TO_EDGES, VECTOR_TO_FACES,
+                                   VECTOR_TO_VERTICES, VECTOR_TO_EDGES, VECTOR_TO_FACES, VERTEX_POSITIONS, FACE_MATRIX,
                                    BoundaryMatrices]
 def merge_dict(dict1, dict2):
     # key:[value,]
@@ -244,6 +252,10 @@ def get_sym_type_from_pkg(sym, pkg, mesh_type=None):
                         ret = make_function_type([MeshType(),VectorType(rows=mesh_type.ei_size)], [EdgeSetType()])
                     elif sym == VECTOR_TO_FACES:
                         ret = make_function_type([MeshType(),VectorType(rows=mesh_type.fi_size)], [FaceSetType()])
+                    elif sym == VERTEX_POSITIONS:
+                        ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=3)])
+                    elif sym == FACE_MATRIX:
+                        ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.fi_size, cols=3)])
                     elif sym == BoundaryMatrices:
                         ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True)),
                                                                 MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True))])

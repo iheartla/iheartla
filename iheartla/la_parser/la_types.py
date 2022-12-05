@@ -783,5 +783,5 @@ def get_derived_type(op, left_type, right_type):
         ret_type = copy.deepcopy(left_type)
     return ret_type
 
-def make_function_type(params=None, ret=None):
+def make_function_type(params=[], ret=[]):
     return FunctionType(params=params, ret=ret)

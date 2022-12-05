@@ -2715,8 +2715,6 @@ class TypeWalker(NodeWalker):
                 ir_node.identity_name = self.func_sig_dict[get_func_signature(func_name, name_type)]
             else:
                 ir_node.identity_name = func_name
-            self.assert_expr(len(param_node_list) == len(name_type.params) or len(node.params) == 0,
-                             get_err_msg_info(node.parseinfo, "Function error. Parameters count mismatch"))
             # Builtin function call
             builtin_name = ir_node.identity_name
             if ir_node.identity_name in self.func_imported_renaming:
@@ -2727,6 +2725,8 @@ class TypeWalker(NodeWalker):
                     # dynamic func type, the first parameter must be mesh type
                     self.assert_expr(param_type_list[0].is_mesh(), get_err_msg_info(node.parseinfo, "Function error. The first parameter must be mesh type"))
                     name_type = get_sym_type_from_pkg(builtin_name, MESH_HELPER, param_type_list[0])
+            self.assert_expr(len(param_node_list) == len(name_type.params) or len(node.params) == 0,
+                             get_err_msg_info(node.parseinfo, "Function error. Parameters count mismatch"))
             for index in range(len(param_node_list)):
                 param_info = param_node_list[index]
                 symbols = symbols.union(param_info.symbols)
