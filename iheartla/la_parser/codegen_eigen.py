@@ -1221,10 +1221,10 @@ class CodeGenEigen(CodeGen):
             item_info = self.visit(item, **kwargs)
             ret.append(item_info.content)
             pre_list += item_info.pre_list
-        if self.get_sym_type(cur_m_id).is_dim_constant():
-            content = '    Eigen::Matrix<double, {}, 1> {};\n'.format(self.get_sym_type(cur_m_id).rows, cur_m_id)
+        if node.la_type.is_dim_constant():
+            content = '    {} {};\n'.format(self.get_ctype(node.la_type), cur_m_id)
         else:
-            content = '    Eigen::VectorXd {}({});\n'.format(cur_m_id, self.get_sym_type(cur_m_id).rows)
+            content = '    {} {}({});\n'.format(self.get_ctype(node.la_type), cur_m_id, self.get_sym_type(cur_m_id).rows)
         content += '    {} << {};\n'.format(cur_m_id, ", ".join(ret))
         pre_list.append(content)
         return CodeNodeInfo(cur_m_id, pre_list=pre_list)

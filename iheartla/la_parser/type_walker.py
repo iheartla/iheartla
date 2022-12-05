@@ -4177,6 +4177,8 @@ class TypeWalker(NodeWalker):
                 sum_value = sum(int_list)
         else:
             sum_value = '+'.join(str_list)
+        if isinstance(sum_value, int):
+            return sum_value
         return simpify_dims(sum_value)
 
     def check_bmat_validity(self, type_array, mat_size):
