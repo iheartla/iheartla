@@ -111,6 +111,25 @@ class TestExtraFunction(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_func_overloading_in_cpp(self):
+        la_str = """aₘ(f) = f where f,m ∈ ℤ^3
+                    aₘ(f) = f where f,m ∈ ℤ^(3×1)
+                    d = a((1,2,3), (2,3,4))
+                    """
+        func_info = self.gen_func_info(la_str)
+        A = np.array([2, 3, 4])
+        self.assertDMatrixEqual(func_info.numpy_func().d, A)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<int, 3, 1> P;",
+                     "    P << 2, 3, 4;",
+                     "    Eigen::Matrix<int, 3, 1> B = {}().d;".format(func_info.eig_func_name),
+                     "    return ((B - P).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_func_overloading_mix(self):
         la_str = """aₘ(f) = f + m where f,m ∈ ℤ 
                     a(g,h) = g+h where g,h ∈ ℝ 
