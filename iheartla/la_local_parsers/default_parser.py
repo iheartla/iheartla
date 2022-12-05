@@ -9134,144 +9134,31 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('MappingType')
     def _mapping_type_(self):  # noqa
-        with self._choice():
-            with self._option():
-                with self._group():
-                    self._identifier_()
-                    self.add_last_node_to_name('params')
+        self._identifier_()
+        self.name_last_node('src')
 
-                    def block2():
-
-                        def block3():
-                            self._hspace_()
-                        self._closure(block3)
-                        self._params_separator_()
-                        self.add_last_node_to_name('separators')
-
-                        def block5():
-                            self._hspace_()
-                        self._closure(block5)
-                        self._identifier_()
-                        self.add_last_node_to_name('params')
-                    self._closure(block2)
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            self._token('→')
-                        with self._option():
-                            self._token('->')
-                        self._error(
-                            'expecting one of: '
-                            "'→' '->'"
-                        )
-
-                def block9():
-                    self._hspace_()
-                self._closure(block9)
-                self._params_type_()
-                self.add_last_node_to_name('ret_type')
-
-                def block11():
-
-                    def block12():
-                        self._hspace_()
-                    self._closure(block12)
-                    self._params_separator_()
-                    self.add_last_node_to_name('ret_separators')
-
-                    def block14():
-                        self._hspace_()
-                    self._closure(block14)
-                    self._params_type_()
-                    self.add_last_node_to_name('ret_type')
-                self._closure(block11)
-                self._define(
-                    [],
-                    ['params', 'separators', 'ret_type', 'ret_separators']
+        def block1():
+            self._hspace_()
+        self._closure(block1)
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._token('→')
+                with self._option():
+                    self._token('->')
+                self._error(
+                    'expecting one of: '
+                    "'→' '->'"
                 )
-            with self._option():
-                with self._group():
-                    self._identifier_()
-                    self.add_last_node_to_name('params')
 
-                    def block17():
-
-                        def block18():
-                            self._hspace_()
-                        self._closure(block18)
-                        self._params_separator_()
-                        self.add_last_node_to_name('separators')
-
-                        def block20():
-                            self._hspace_()
-                        self._closure(block20)
-                        self._identifier_()
-                        self.add_last_node_to_name('params')
-                    self._closure(block17)
-
-                def block22():
-                    self._hspace_()
-                self._closure(block22)
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            self._token('→')
-                        with self._option():
-                            self._token('->')
-                        self._error(
-                            'expecting one of: '
-                            "'→' '->'"
-                        )
-
-                def block24():
-                    self._hspace_()
-                self._closure(block24)
-                self._identifier_()
-                self.add_last_node_to_name('ret')
-
-                def block26():
-
-                    def block27():
-                        self._hspace_()
-                    self._closure(block27)
-                    self._params_separator_()
-                    self.add_last_node_to_name('ret_separators')
-
-                    def block29():
-                        self._hspace_()
-                    self._closure(block29)
-                    self._identifier_()
-                    self.add_last_node_to_name('ret')
-                self._closure(block26)
-                self._define(
-                    [],
-                    ['params', 'separators', 'ret', 'ret_separators']
-                )
-            self._error(
-                'expecting one of: '
-                '<identifier_alone>'
-                '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                'where <WHERE> given <GIVEN> sum min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
-                '<WITH> initial <INITIAL> and <AND> or'
-                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
-                '<identifier>'
-            )
+        def block3():
+            self._hspace_()
+        self._closure(block3)
+        self._params_type_()
+        self.name_last_node('dst')
         self._define(
-            [],
-            ['params', 'separators', 'ret_type', 'ret_separators', 'ret']
+            ['src', 'dst'],
+            []
         )
 
     @tatsumasu('Integer')
@@ -11997,11 +11884,8 @@ class FunctionType(ModelBase):
 
 @dataclass(eq=False)
 class MappingType(ModelBase):
-    params: Any = None
-    ret: Any = None
-    ret_separators: Any = None
-    ret_type: Any = None
-    separators: Any = None
+    dst: Any = None
+    src: Any = None
 
 
 @dataclass(eq=False)
