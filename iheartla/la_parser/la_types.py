@@ -561,10 +561,10 @@ class OverloadingFunctionType(LaVarType):
             cpp_sig_list.append(cpp_sig)
         return ret
 class MappingType(LaVarType):
-    def __init__(self, desc=None, symbol=None, params=None, ret=None, template_symbols=None, ret_symbols=None, cur_type=FuncType.FuncDetermined):
+    def __init__(self, desc=None, symbol=None, src=None, dst=None, template_symbols=None, ret_symbols=None, cur_type=FuncType.FuncDetermined):
         LaVarType.__init__(self, VarTypeEnum.MAPPING, desc, symbol)
-        self.params = params or []
-        self.ret = ret
+        self.src = src
+        self.dst = dst
         self.template_symbols = template_symbols or {}  # symbol: index of params
         self.ret_symbols = ret_symbols or []
         self.cur_type = cur_type
