@@ -43,6 +43,23 @@ class GPType(IntEnum):
     MeshSets = 200
     BoundaryMatrices = 201
 
+class MeshData(object):
+    def __init__(self, v=None, e=None, f=None, t=None, la_type=None):
+        # track the symbols in this assignment: v,e,f = meshset(T)
+        self.v = v
+        self.e = e
+        self.f = f
+        self.t = t
+        self.la_type = la_type
+
+    def init_dims(self, dim_list):
+        if len(dim_list) >= 3:
+            self.v = dim_list[0]
+            self.e = dim_list[1]
+            self.f = dim_list[2]
+        if len(dim_list) > 3:
+            self.t = dim_list[3]
+
 # dimension name
 VI_SIZE = 'vi_size'
 EI_SIZE = 'ei_size'

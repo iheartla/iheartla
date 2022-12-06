@@ -296,6 +296,7 @@ class TypeWalker(NodeWalker):
         self.desc_dict = {}        # comment for parameters
         self.import_module_list = []
         self.builtin_module_dict = {}
+        self.mesh_dict = {}
         self.main_param = ParamsData()
         self.used_params = []
         self.opt_syms = []
@@ -422,6 +423,7 @@ class TypeWalker(NodeWalker):
         self.desc_dict.clear()
         self.import_module_list.clear()
         self.builtin_module_dict.clear()
+        self.mesh_dict.clear()
         self.main_param.reset()
         self.used_params.clear()
         self.opt_syms.clear()
@@ -900,6 +902,7 @@ class TypeWalker(NodeWalker):
 
     def get_meshset_assign(self, stat_list):
         ret = []
+        name = []
         for index in range(len(stat_list)):
             if type(stat_list[index]).__name__ == 'Assignment':
                 if stat_list[index].right:
@@ -907,7 +910,8 @@ class TypeWalker(NodeWalker):
                     if type(rhs).__name__ == 'Expression' and type(rhs.value).__name__ == 'Factor' and type(rhs.value.op).__name__ == 'Function':
                         if rhs.value.op.name == MeshSets:
                             ret.append(index)
-        return ret
+                            name.append(rhs.value.op.params[0].text)
+        return ret, name
 
     def convert_mapping_type(self):
         # only in global scope
@@ -917,7 +921,7 @@ class TypeWalker(NodeWalker):
                 la_debug("mapping conversion: {}, type:{}, length:{}".format(k, self.symtable[k].get_signature(), self.symtable[v.src].length))
 
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
-        meshset_list = self.get_meshset_assign(stat_list)
+        meshset_list, name_list = self.get_meshset_assign(stat_list)
         block_node = BlockNode()
         if self.def_use_mode:
             new_list = []
@@ -926,9 +930,12 @@ class TypeWalker(NodeWalker):
             retries = 0
             if len(meshset_list) > 0:
                 # parse meshset assignment first, assume mesh always comes from params
-                for cur_index in meshset_list:
+                for c_index in range(len(meshset_list)):
+                    cur_index = meshset_list[c_index]
                     type_info = self.walk(stat_list[cur_index], **kwargs)
                     ir_node.vblock[index_list[cur_index]] = type_info.ir  # latex use
+                    lhs_list = [lhs.get_main_id() for lhs in type_info.ir.left]
+                    self.mesh_dict[name_list[c_index]].init_dims(lhs_list)
                     new_list.append(type_info.ir)
                     order_list[cur_index] = cnt
                     cnt += 1
@@ -1342,11 +1349,8 @@ class TypeWalker(NodeWalker):
         elif node.s:
             la_type = SimplicialSetType()
         elif node.m:
-            dim_dict = {'vi_size': self.generate_var_name('dimv'),
-            'ei_size': self.generate_var_name('dime'),
-            'fi_size': self.generate_var_name('dimf'),
-            'ti_size': self.generate_var_name('dimt')}
-            la_type = MeshType(dim_dict)
+            # init dims later
+            la_type = MeshType()
         ir_node.la_type = la_type
         return ir_node
 
@@ -4579,6 +4583,7 @@ class TypeWalker(NodeWalker):
                         'ei_size': self.generate_var_name('dime'),
                         'fi_size': self.generate_var_name('dimf'),
                         'ti_size': self.generate_var_name('dimt')})
+                self.mesh_dict[identifier] = MeshData(la_type=id_type)
             self.add_sym_type(identifier, id_type, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier)))
             # self.check_sym_existence(identifier, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier)), False)
             # self.get_cur_param_data().symtable[identifier] = id_type
