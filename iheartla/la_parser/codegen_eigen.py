@@ -681,9 +681,11 @@ class CodeGenEigen(CodeGen):
         if len(type_checks) > 0:
             content += '\n'.join(type_checks) + '\n\n'
         # statements
+        mesh_content = ""
         stats_content = ""
         for index in range(len(node.stmts)):
             ret_str = ''
+            cur_stats_content = ''
             need_semicolon = False
             if index == len(node.stmts) - 1:
                 if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Equation):
@@ -706,14 +708,18 @@ class CodeGenEigen(CodeGen):
                     continue
             stat_info = self.visit(node.stmts[index], **kwargs)
             if stat_info.pre_list:
-                stats_content += "".join(stat_info.pre_list)
+                cur_stats_content += "".join(stat_info.pre_list)
             if need_semicolon:
-                stats_content += ret_str + stat_info.content + ';\n'
+                cur_stats_content += ret_str + stat_info.content + ';\n'
             else:
-                stats_content += ret_str + stat_info.content + '\n'
-
+                cur_stats_content += ret_str + stat_info.content + '\n'
+            if index in node.meshset_list:
+                mesh_content += cur_stats_content
+            else:
+                stats_content += cur_stats_content
         # content += stats_content
         # content += '\n}\n'
+        content = mesh_content + content    # mesh content before dims checking
         content = self.get_struct_definition(self.update_prelist_str([pre_content], '    '),
                                              self.update_prelist_str([content], '    '),
                                              self.update_prelist_str([stats_content], '    '))

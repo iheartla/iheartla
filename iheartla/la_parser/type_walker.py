@@ -923,6 +923,7 @@ class TypeWalker(NodeWalker):
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
         meshset_list, name_list = self.get_meshset_assign(stat_list)
         block_node = BlockNode()
+        block_node.meshset_list = meshset_list
         if self.def_use_mode:
             new_list = []
             order_list = [-1] * len(stat_list)  # visited order for all statment

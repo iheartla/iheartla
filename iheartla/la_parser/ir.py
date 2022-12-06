@@ -379,6 +379,7 @@ class BlockNode(StmtNode):
     def __init__(self, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.Block, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.stmts = []
+        self.meshset_list = []    # index for meshset assignment in stmts
 
     def add_stmt(self, stmt):
         if isinstance(stmt, BlockNode):
