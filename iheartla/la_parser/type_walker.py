@@ -898,13 +898,33 @@ class TypeWalker(NodeWalker):
                         continue
         return new_list, tex_list
 
+    def get_meshset_assign(self, stat_list):
+        ret = []
+        for index in range(len(stat_list)):
+            if type(stat_list[index]).__name__ == 'Assignment':
+                if stat_list[index].right:
+                    rhs = stat_list[index].right[0]
+                    if type(rhs).__name__ == 'Expression' and type(rhs.value).__name__ == 'Factor' and type(rhs.value.op).__name__ == 'Function':
+                        if rhs.value.op.name == MeshSets:
+                            ret.append(index)
+        return ret
+
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
+        meshset_list = self.get_meshset_assign(stat_list)
         block_node = BlockNode()
         if self.def_use_mode:
             new_list = []
             order_list = [-1] * len(stat_list)  # visited order for all statment
             cnt = 0
             retries = 0
+            if len(meshset_list) > 0:
+                # parse meshset assignment first, assume mesh always comes from params
+                for cur_index in meshset_list:
+                    type_info = self.walk(stat_list[cur_index], **kwargs)
+                    ir_node.vblock[index_list[cur_index]] = type_info.ir  # latex use
+                    new_list.append(type_info.ir)
+                    order_list[cur_index] = cnt
+                    cnt += 1
             while cnt < len(stat_list):
                 visited_list = [False] * len(stat_list)
                 for cur_index in range(len(stat_list)):
