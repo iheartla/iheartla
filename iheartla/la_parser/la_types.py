@@ -381,12 +381,13 @@ class VectorType(LaVarType):
 
 
 class SetType(LaVarType):
-    def __init__(self, size=0, desc=None, element_type=None, symbol=None, int_list=None, type_list=None, dynamic=DynamicTypeEnum.DYN_INVALID, cur_type=SetTypeEnum.DEFAULT):
+    def __init__(self, size=0, length=None, desc=None, element_type=None, symbol=None, int_list=None, type_list=None, dynamic=DynamicTypeEnum.DYN_INVALID, cur_type=SetTypeEnum.DEFAULT):
         LaVarType.__init__(self, VarTypeEnum.SET, desc, element_type, symbol, dynamic=dynamic)
         self.size = size
         self.int_list = int_list     # whether the element is real number or integer
         self.type_list = type_list   # subtypes in a set
         self.cur_type = cur_type
+        self.length = length
 
     def get_signature(self):
         # return 'set:' + ','.join([c_type.get_signature() for c_type in self.type_list])
@@ -423,30 +424,30 @@ class SetType(LaVarType):
 
 
 class VertexSetType(SetType):
-    def __init__(self):
-        SetType.__init__(self, size=1, int_list=[True], type_list=[VertexType()], cur_type=SetTypeEnum.VERTEX)
+    def __init__(self, length=None):
+        SetType.__init__(self, size=1, length=length, int_list=[True], type_list=[VertexType()], cur_type=SetTypeEnum.VERTEX)
     def get_signature(self):
         return 'vertexset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
 
     def get_cpp_signature(self):
         return self.get_raw_text()
 class EdgeSetType(SetType):
-    def __init__(self):
-        SetType.__init__(self, size=1, int_list=[True], type_list=[EdgeType()], cur_type=SetTypeEnum.EDGE)
+    def __init__(self, length=None):
+        SetType.__init__(self, size=1, length=length, int_list=[True], type_list=[EdgeType()], cur_type=SetTypeEnum.EDGE)
     def get_signature(self):
         return 'edgeset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
     def get_cpp_signature(self):
         return self.get_raw_text()
 class FaceSetType(SetType):
-    def __init__(self):
-        SetType.__init__(self, size=1, int_list=[True], type_list=[FaceType()], cur_type=SetTypeEnum.FACE)
+    def __init__(self, length=None):
+        SetType.__init__(self, size=1, length=length, int_list=[True], type_list=[FaceType()], cur_type=SetTypeEnum.FACE)
     def get_signature(self):
         return 'faceset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
     def get_cpp_signature(self):
         return self.get_raw_text()
 class TetSetType(SetType):
-    def __init__(self):
-        SetType.__init__(self, size=1, int_list=[True], type_list=[TetType()], cur_type=SetTypeEnum.TET)
+    def __init__(self, length=None):
+        SetType.__init__(self, size=1, length=length, int_list=[True], type_list=[TetType()], cur_type=SetTypeEnum.TET)
     def get_signature(self):
         return 'tetset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
     def get_cpp_signature(self):

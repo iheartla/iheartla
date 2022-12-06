@@ -215,7 +215,7 @@ BM3: None
 # need extra info
 MESH_HELPER_DYNAMIC_TYPE_LIST = [BM1, BM2, BM3, VERTICES_TO_VECTOR, EDGES_TO_VECTOR, FACES_TO_VECTOR,
                                    VECTOR_TO_VERTICES, VECTOR_TO_EDGES, VECTOR_TO_FACES, VERTEX_POSITIONS, FACE_MATRIX,
-                                   BoundaryMatrices]
+                                   MeshSets, BoundaryMatrices]
 def merge_dict(dict1, dict2):
     # key:[value,]
     res = copy.deepcopy(dict1)
@@ -256,6 +256,8 @@ def get_sym_type_from_pkg(sym, pkg, mesh_type=None):
                         ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=3)])
                     elif sym == FACE_MATRIX:
                         ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.fi_size, cols=3)])
+                    elif sym == MeshSets:
+                        ret = make_function_type([MeshType()], [VertexSetType(length=mesh_type.vi_size), EdgeSetType(length=mesh_type.ei_size), FaceSetType(length=mesh_type.fi_size)])
                     elif sym == BoundaryMatrices:
                         ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True)),
                                                                 MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True))])

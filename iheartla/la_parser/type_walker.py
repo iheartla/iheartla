@@ -909,6 +909,13 @@ class TypeWalker(NodeWalker):
                             ret.append(index)
         return ret
 
+    def convert_mapping_type(self):
+        # only in global scope
+        for k, v in self.symtable.items():
+            if v.is_mapping():
+                self.symtable[k] = SequenceType(size=self.symtable[v.src].length, element_type=v.dst)
+                la_debug("mapping conversion: {}, type:{}, length:{}".format(k, self.symtable[k].get_signature(), self.symtable[v.src].length))
+
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
         meshset_list = self.get_meshset_assign(stat_list)
         block_node = BlockNode()
@@ -925,6 +932,7 @@ class TypeWalker(NodeWalker):
                     new_list.append(type_info.ir)
                     order_list[cur_index] = cnt
                     cnt += 1
+            self.convert_mapping_type()
             while cnt < len(stat_list):
                 visited_list = [False] * len(stat_list)
                 for cur_index in range(len(stat_list)):
@@ -1465,6 +1473,8 @@ class TypeWalker(NodeWalker):
     def walk_MappingType(self, node, **kwargs):
         src_info = self.walk(node.src, **kwargs)
         dst_node = self.walk(node.dst, **kwargs)
+        dst_type = dst_node.la_type
+        self.assert_expr(dst_type.is_scalar() or dst_type.is_vector() or dst_type.is_matrix(), get_err_msg_info(node.parseinfo, "Invalid mapping type"))
         ir_node = MappingTypeNode(src=src_info.ir, dst=dst_node, parse_info=node.parseinfo, raw_text=node.text)
         la_type = MappingType(src=src_info.ir.get_main_id(), dst=dst_node.la_type)
         ir_node.la_type = la_type
