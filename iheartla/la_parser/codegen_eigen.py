@@ -411,8 +411,10 @@ class CodeGenEigen(CodeGen):
                     if data_type.is_scalar() and data_type.is_int:
                         integer_type = True
                 if not (parameter in dim_defined_dict and dim_defined_dict[parameter] == 0):
-                    type_checks.append(
-                        '    assert( {}.size() == {} );'.format(parameter, self.get_sym_type(parameter).size))
+                    if self.get_sym_type(parameter).check_dim:
+                        # only chem dims with previous dim assignment
+                        type_checks.append(
+                            '    assert( {}.size() == {} );'.format(parameter, self.get_sym_type(parameter).size))
                 if ele_type.is_matrix():
                     if not ele_type.is_dim_constant() and not ele_type.is_dynamic():
                         type_checks.append('    for( const auto& el : {} ) {{'.format(parameter))

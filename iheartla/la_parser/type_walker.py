@@ -917,7 +917,7 @@ class TypeWalker(NodeWalker):
         # only in global scope
         for k, v in self.symtable.items():
             if v.is_mapping():
-                self.symtable[k] = SequenceType(size=self.symtable[v.src].length, element_type=v.dst)
+                self.symtable[k] = SequenceType(size=self.symtable[v.src].length, element_type=v.dst, check_dim=False)
                 la_debug("mapping conversion: {}, type:{}, length:{}".format(k, self.symtable[k].get_signature(), self.symtable[v.src].length))
 
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):

@@ -269,9 +269,10 @@ class MeshType(LaVarType):
         return self.get_raw_text()
 
 class SequenceType(LaVarType):
-    def __init__(self, size=0, desc=None, element_type=None, symbol=None, dynamic=False):
+    def __init__(self, size=0, check_dim=True, desc=None, element_type=None, symbol=None, dynamic=False):
         LaVarType.__init__(self, VarTypeEnum.SEQUENCE, desc, element_type, symbol, dynamic=dynamic)
         self.size = size
+        self.check_dim = check_dim    # whether output assertion for dim checking
 
     def get_signature(self):
         return "sequence of {}".format(self.element_type.get_signature())
