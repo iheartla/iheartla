@@ -412,7 +412,7 @@ class CodeGenEigen(CodeGen):
                         integer_type = True
                 if not (parameter in dim_defined_dict and dim_defined_dict[parameter] == 0):
                     if self.get_sym_type(parameter).check_dim:
-                        # only chem dims with previous dim assignment
+                        # only check dims with previous dim assignment
                         type_checks.append(
                             '    assert( {}.size() == {} );'.format(parameter, self.get_sym_type(parameter).size))
                 if ele_type.is_matrix():

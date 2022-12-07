@@ -775,7 +775,7 @@ class TypeWalker(NodeWalker):
                                 if rhs_id_node.la_type.is_function():
                                     if lhs_id_node.contain_subscript():
                                         self.assert_expr(lhs_id_node.node_type == IRNodeType.SequenceIndex, get_err_msg_info(lhs_id_node.parse_info, "Invalid assignment for function"))
-                            except AssertionError as e:
+                            except Exception as e:
                                 # lhs = symbol
                                 continue
                 elif type(stat_list[index]).__name__ == 'LocalFunc':
