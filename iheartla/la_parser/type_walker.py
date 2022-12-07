@@ -914,17 +914,20 @@ class TypeWalker(NodeWalker):
         return ret, name
 
     def convert_mapping_type(self):
-        # only in global scope
-        for k, v in self.symtable.items():
+        # Handle mapping type in current scope
+        for k, v in self.get_cur_param_data().symtable.items():
             if v.is_mapping():
                 if v.src:
                     # mapping from mesh V,E,F
-                    self.symtable[k] = SequenceType(size=self.symtable[v.src].length, element_type=v.dst)
-                    la_debug("mapping conversion: {}, type:{}, length:{}".format(k, self.symtable[k].get_signature(), self.symtable[v.src].length))
+                    src_type = self.get_sym_type(v.src)
+                    self.get_cur_param_data().symtable[k] = SequenceType(size=src_type.length, element_type=v.dst)
+                    la_debug("mapping conversion: {}, type:{}, length:{}".format(k, self.get_cur_param_data().symtable[k].get_signature(), self.get_cur_param_data().symtable[v.src].length))
                 else:
                     # mapping from element in a set
-                    self.assert_expr(v.ele_set in self.symtable and self.symtable[v.ele_set].is_set(), "Element {} should be a set".format(v.ele_set))
-                    self.symtable[k] = self.symtable[v.ele_set].element_type
+                    self.check_sym_existence(v.ele_set, "Element {} should be a set".format(v.ele_set))
+                    set_type = self.get_sym_type(v.ele_set)
+                    self.assert_expr(set_type.is_set(), "Element {} should be a set".format(v.ele_set))
+                    self.get_cur_param_data().symtable[k] = set_type.element_type
 
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
         meshset_list, name_list = self.get_meshset_assign(stat_list)
@@ -1743,6 +1746,8 @@ class TypeWalker(NodeWalker):
                                 parse_info=node.parseinfo, raw_text=node.text, defs=par_defs,
                                 def_type=def_type, identity_name=local_func_name)
         ir_node.scope_name = local_func_name
+        # handle mapping type here
+        self.convert_mapping_type()
         # extra exprs
         if node.extra and len(node.extra) > 0:
             ir_node.extra_list, ir_node.tex_list = self.get_ordered_stat(node.extra)
