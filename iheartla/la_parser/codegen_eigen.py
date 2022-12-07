@@ -719,9 +719,14 @@ class CodeGenEigen(CodeGen):
                 mesh_content += cur_stats_content
             else:
                 stats_content += cur_stats_content
+        mesh_dim_list = []
+        for mesh, data in self.mesh_dict.items():
+            mesh_dim_list.append("    int {} = {}.n_vertices();\n".format(data.la_type.vi_size, mesh))
+            mesh_dim_list.append("    int {} = {}.n_edges();\n".format(data.la_type.ei_size, mesh))
+            mesh_dim_list.append("    int {} = {}.n_faces();\n".format(data.la_type.fi_size, mesh))
         # content += stats_content
         # content += '\n}\n'
-        content = mesh_content + content    # mesh content before dims checking
+        content = mesh_content + ''.join(mesh_dim_list) + content    # mesh content before dims checking
         content = self.get_struct_definition(self.update_prelist_str([pre_content], '    '),
                                              self.update_prelist_str([content], '    '),
                                              self.update_prelist_str([stats_content], '    '))

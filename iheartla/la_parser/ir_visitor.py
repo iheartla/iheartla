@@ -389,6 +389,7 @@ class IRVisitor(IRBaseVisitor):
         self.declared_symbols = set()
         self.used_params = []
         self.opt_syms = []
+        self.mesh_dict = {}
         self.duplicate_func_list = []    # overloaded func types incompatible in cpp
 
     def add_name_conventions(self, con_dict):
@@ -603,6 +604,7 @@ class IRVisitor(IRBaseVisitor):
         self.used_params = type_walker.used_params
         self.builtin_module_dict = type_walker.builtin_module_dict
         self.opt_syms = type_walker.opt_syms
+        self.mesh_dict = type_walker.mesh_dict
         if func_name is not None:
             self.func_name = func_name.replace(' ','')
         else:
