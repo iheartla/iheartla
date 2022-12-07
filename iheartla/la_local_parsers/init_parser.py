@@ -8944,30 +8944,63 @@ class grammarinitParser(Parser):
 
     @tatsumasu('MappingType')
     def _mapping_type_(self):  # noqa
-        self._identifier_()
-        self.name_last_node('src')
+        with self._choice():
+            with self._option():
+                self._identifier_()
+                self.name_last_node('src')
 
-        def block1():
-            self._hspace_()
-        self._closure(block1)
-        with self._group():
-            with self._choice():
-                with self._option():
-                    self._token('→')
-                with self._option():
-                    self._token('->')
-                self._error(
-                    'expecting one of: '
-                    "'→' '->'"
+                def block2():
+                    self._hspace_()
+                self._closure(block2)
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._token('→')
+                        with self._option():
+                            self._token('->')
+                        self._error(
+                            'expecting one of: '
+                            "'→' '->'"
+                        )
+
+                def block4():
+                    self._hspace_()
+                self._closure(block4)
+                self._params_type_()
+                self.name_last_node('dst')
+                self._define(
+                    ['src', 'dst'],
+                    []
                 )
-
-        def block3():
-            self._hspace_()
-        self._closure(block3)
-        self._params_type_()
-        self.name_last_node('dst')
+            with self._option():
+                self._identifier_()
+                self.name_last_node('s')
+                self._define(
+                    ['s'],
+                    []
+                )
+            self._error(
+                'expecting one of: '
+                '<identifier_with_multi_subscript>'
+                '<identifier_alone>'
+                '<identifier_with_subscript> [A-Za-'
+                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
+                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
+                '<WHERE> given <GIVEN> sum min <MIN> max'
+                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
+                'int <INT> if <IF> otherwise <OTHERWISE>'
+                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
+                '<SQRT> s.t. subject to <SUBJECT_TO> from'
+                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
+                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
+                '<AS> # <POUND> for <FOR>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<identifier>'
+            )
         self._define(
-            ['src', 'dst'],
+            ['src', 'dst', 's'],
             []
         )
 
@@ -11633,6 +11666,7 @@ class FunctionType(ModelBase):
 @dataclass(eq=False)
 class MappingType(ModelBase):
     dst: Any = None
+    s: Any = None
     src: Any = None
 
 

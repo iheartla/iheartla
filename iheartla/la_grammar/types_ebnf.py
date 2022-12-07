@@ -74,6 +74,7 @@ function_type::FunctionType
 
 mapping_type::MappingType
     = src:identifier {hspace} ('→'|'->') {hspace} dst:params_type
+    | s:identifier
     ;
 
 
