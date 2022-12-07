@@ -908,7 +908,7 @@ class TypeWalker(NodeWalker):
                 if stat_list[index].right:
                     rhs = stat_list[index].right[0]
                     if type(rhs).__name__ == 'Expression' and type(rhs.value).__name__ == 'Factor' and type(rhs.value.op).__name__ == 'Function':
-                        if rhs.value.op.name == self.builtin_module_dict[MESH_HELPER].r_dict[MeshSets]:
+                        if len(self.builtin_module_dict)>0 and rhs.value.op.name == self.builtin_module_dict[MESH_HELPER].r_dict[MeshSets]:
                             ret.append(index)
                             name.append(rhs.value.op.params[0].text)
         return ret, name
@@ -917,8 +917,14 @@ class TypeWalker(NodeWalker):
         # only in global scope
         for k, v in self.symtable.items():
             if v.is_mapping():
-                self.symtable[k] = SequenceType(size=self.symtable[v.src].length, element_type=v.dst)
-                la_debug("mapping conversion: {}, type:{}, length:{}".format(k, self.symtable[k].get_signature(), self.symtable[v.src].length))
+                if v.src:
+                    # mapping from mesh V,E,F
+                    self.symtable[k] = SequenceType(size=self.symtable[v.src].length, element_type=v.dst)
+                    la_debug("mapping conversion: {}, type:{}, length:{}".format(k, self.symtable[k].get_signature(), self.symtable[v.src].length))
+                else:
+                    # mapping from element in a set
+                    self.assert_expr(v.ele_set in self.symtable and self.symtable[v.ele_set].is_set(), "Element {} should be a set".format(v.ele_set))
+                    self.symtable[k] = self.symtable[v.ele_set].element_type
 
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
         meshset_list, name_list = self.get_meshset_assign(stat_list)
@@ -1476,12 +1482,20 @@ class TypeWalker(NodeWalker):
         return ir_node
 
     def walk_MappingType(self, node, **kwargs):
-        src_info = self.walk(node.src, **kwargs)
-        dst_node = self.walk(node.dst, **kwargs)
-        dst_type = dst_node.la_type
-        self.assert_expr(dst_type.is_scalar() or dst_type.is_vector() or dst_type.is_matrix(), get_err_msg_info(node.parseinfo, "Invalid mapping type"))
-        ir_node = MappingTypeNode(src=src_info.ir, dst=dst_node, parse_info=node.parseinfo, raw_text=node.text)
-        la_type = MappingType(src=src_info.ir.get_main_id(), dst=dst_node.la_type)
+        ir_node = MappingTypeNode(parse_info=node.parseinfo, raw_text=node.text)
+        if node.src:
+            src_info = self.walk(node.src, **kwargs)
+            dst_node = self.walk(node.dst, **kwargs)
+            dst_type = dst_node.la_type
+            self.assert_expr(dst_type.is_scalar() or dst_type.is_vector() or dst_type.is_matrix(), get_err_msg_info(node.parseinfo, "Invalid mapping type"))
+            ir_node = MappingTypeNode(src=src_info.ir, dst=dst_node, parse_info=node.parseinfo, raw_text=node.text)
+            ir_node.src = src_info.ir
+            ir_node.dst = dst_node
+            la_type = MappingType(src=src_info.ir.get_main_id(), dst=dst_node.la_type)
+        else:
+            sym_info = self.walk(node.s, **kwargs)
+            ir_node.ele_set = sym_info.ir
+            la_type = MappingType(ele_set=sym_info.ir.get_main_id())
         ir_node.la_type = la_type
         return ir_node
 

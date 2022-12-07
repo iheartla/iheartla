@@ -318,10 +318,11 @@ class FunctionTypeNode(ExprNode):
 
 
 class MappingTypeNode(ExprNode):
-    def __init__(self, src=None, dst=None, la_type=None, parse_info=None, raw_text=None):
+    def __init__(self, src=None, dst=None, ele_set=None, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.MappingType, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.src = src
         self.dst = dst
+        self.ele_set = ele_set
 
 
 class ImportNode(StmtNode):

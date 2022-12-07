@@ -335,7 +335,10 @@ class CodeGenLatex(CodeGen):
         return params_str + '\\rightarrow ' + ret
 
     def visit_mapping_type(self, node, **kwargs):
-        return self.visit(node.src, **kwargs) + '\\rightarrow ' + self.visit(node.dst, **kwargs)
+        if node.src:
+            return self.visit(node.src, **kwargs) + '\\rightarrow ' + self.visit(node.dst, **kwargs)
+        else:
+            return self.visit(node.ele_set, **kwargs)
 
     def visit_assignment(self, node, **kwargs):
         content = ''
