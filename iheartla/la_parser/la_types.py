@@ -387,6 +387,10 @@ class SetType(LaVarType):
         self.size = size
         self.int_list = int_list     # whether the element is real number or integer
         self.type_list = type_list   # subtypes in a set
+        if len(type_list) > 1:
+            self.element_type = TupleType(type_list=self.type_list)
+        elif len(type_list) == 1:
+            self.element_type = self.type_list[0]
         self.cur_type = cur_type
         self.length = length
 

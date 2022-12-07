@@ -924,9 +924,9 @@ class TypeWalker(NodeWalker):
                     la_debug("mapping conversion: {}, type:{}, length:{}".format(k, self.get_cur_param_data().symtable[k].get_signature(), self.get_cur_param_data().symtable[v.src].length))
                 else:
                     # mapping from element in a set
-                    self.check_sym_existence(v.ele_set, "Element {} should be a set".format(v.ele_set))
+                    self.check_sym_existence(v.ele_set, "Symbol {} is not defined".format(v.ele_set))
                     set_type = self.get_sym_type(v.ele_set)
-                    self.assert_expr(set_type.is_set(), "Element {} should be a set".format(v.ele_set))
+                    self.assert_expr(set_type.is_set(), "Symbol {} should be a set".format(v.ele_set))
                     self.get_cur_param_data().symtable[k] = set_type.element_type
 
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
