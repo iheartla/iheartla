@@ -66,6 +66,12 @@ SUBSET = /⊂/;
 AS = /as/;
 POUND = /#/;
 FOR = /for/;
+VERTEXSET = /VertexSet/;
+EDGESET = /EdgeSet/;
+FACESET = /FaceSet/;
+TETSET = /TetSet/;
+SIMPLICIALSET = /SimplicialSet/;
+MESH = /mesh/ | /Mesh/;
 """
 
 KEYWORDS = KEYS + r"""
@@ -103,5 +109,11 @@ BUILTIN_KEYWORDS
     | AS
     | POUND
     | FOR
+    | VERTEXSET
+    | EDGESET
+    | FACESET
+    | TETSET
+    | SIMPLICIALSET
+    | MESH
     ;
 """

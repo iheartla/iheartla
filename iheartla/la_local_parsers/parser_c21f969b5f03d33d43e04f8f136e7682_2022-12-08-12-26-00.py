@@ -383,6 +383,38 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self._pattern('for')
 
     @tatsumasu()
+    def _VERTEXSET_(self):  # noqa
+        self._pattern('VertexSet')
+
+    @tatsumasu()
+    def _EDGESET_(self):  # noqa
+        self._pattern('EdgeSet')
+
+    @tatsumasu()
+    def _FACESET_(self):  # noqa
+        self._pattern('FaceSet')
+
+    @tatsumasu()
+    def _TETSET_(self):  # noqa
+        self._pattern('TetSet')
+
+    @tatsumasu()
+    def _SIMPLICIALSET_(self):  # noqa
+        self._pattern('SimplicialSet')
+
+    @tatsumasu()
+    def _MESH_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._pattern('mesh')
+            with self._option():
+                self._pattern('Mesh')
+            self._error(
+                'expecting one of: '
+                'mesh Mesh'
+            )
+
+    @tatsumasu()
     def _BUILTIN_KEYWORDS_(self):  # noqa
         with self._choice():
             with self._option():
@@ -451,6 +483,18 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._POUND_()
             with self._option():
                 self._FOR_()
+            with self._option():
+                self._VERTEXSET_()
+            with self._option():
+                self._EDGESET_()
+            with self._option():
+                self._FACESET_()
+            with self._option():
+                self._TETSET_()
+            with self._option():
+                self._SIMPLICIALSET_()
+            with self._option():
+                self._MESH_()
             self._error(
                 'expecting one of: '
                 'where <WHERE> given <GIVEN> sum min'
@@ -463,7 +507,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR>'
+                '<FOR> VertexSet <VERTEXSET> EdgeSet'
+                '<EDGESET> FaceSet <FACESET> TetSet'
+                '<TETSET> SimplicialSet <SIMPLICIALSET>'
+                'mesh Mesh <MESH>'
             )
 
     @tatsumasu('Exponent')
@@ -3376,7 +3423,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
                 '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> for <FOR>'
+                '<AS> # <POUND> for <FOR> VertexSet'
+                '<VERTEXSET> EdgeSet <EDGESET> FaceSet'
+                '<FACESET> TetSet <TETSET> SimplicialSet'
+                '<SIMPLICIALSET> mesh Mesh <MESH>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
@@ -3536,7 +3586,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
                 '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> for <FOR>'
+                '<AS> # <POUND> for <FOR> VertexSet'
+                '<VERTEXSET> EdgeSet <EDGESET> FaceSet'
+                '<FACESET> TetSet <TETSET> SimplicialSet'
+                '<SIMPLICIALSET> mesh Mesh <MESH>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS> \\d <pi>'
                 '<factor_in_matrix>'
             )
@@ -3698,7 +3751,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
                 '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> for <FOR>'
+                '<AS> # <POUND> for <FOR> VertexSet'
+                '<VERTEXSET> EdgeSet <EDGESET> FaceSet'
+                '<FACESET> TetSet <TETSET> SimplicialSet'
+                '<SIMPLICIALSET> mesh Mesh <MESH>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS> \\d <pi>'
                 '<factor_in_matrix>'
             )
@@ -3979,8 +4035,11 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
-                '<identifier_alone>'
+                '<FOR> VertexSet <VERTEXSET> EdgeSet'
+                '<EDGESET> FaceSet <FACESET> TetSet'
+                '<TETSET> SimplicialSet <SIMPLICIALSET>'
+                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                '<KEYWORDS> <identifier_alone>'
             )
         self._define(
             ['left'],
@@ -4126,7 +4185,11 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<FOR> VertexSet <VERTEXSET> EdgeSet'
+                '<EDGESET> FaceSet <FACESET> TetSet'
+                '<TETSET> SimplicialSet <SIMPLICIALSET>'
+                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                '<KEYWORDS>'
             )
         self._define(
             ['value', 'id'],
@@ -7053,11 +7116,14 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
-                '<local_func> <identifier> <assignment>'
-                '<expression> <addition> <subtraction>'
-                "<add_sub_operator> <term> '-' 'with'"
-                "<optimize_operator> '{'"
+                '<FOR> VertexSet <VERTEXSET> EdgeSet'
+                '<EDGESET> FaceSet <FACESET> TetSet'
+                '<TETSET> SimplicialSet <SIMPLICIALSET>'
+                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                '<KEYWORDS> <local_func> <identifier>'
+                '<assignment> <expression> <addition>'
+                '<subtraction> <add_sub_operator> <term>'
+                "'-' 'with' <optimize_operator> '{'"
                 '<multi_cond_expr> <right_hand_side>'
             )
 
@@ -7191,8 +7257,11 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
-                '<identifier>'
+                '<FOR> VertexSet <VERTEXSET> EdgeSet'
+                '<EDGESET> FaceSet <FACESET> TetSet'
+                '<TETSET> SimplicialSet <SIMPLICIALSET>'
+                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                '<KEYWORDS> <identifier>'
             )
         self._define(
             ['op'],
@@ -7333,9 +7402,12 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
-                "<identifier> '(' <vector> '[' '⎡'"
-                '<matrix>'
+                '<FOR> VertexSet <VERTEXSET> EdgeSet'
+                '<EDGESET> FaceSet <FACESET> TetSet'
+                '<TETSET> SimplicialSet <SIMPLICIALSET>'
+                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                "<KEYWORDS> <identifier> '(' <vector> '['"
+                "'⎡' <matrix>"
             )
 
     @tatsumasu()
@@ -7471,7 +7543,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
                 '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> for <FOR>'
+                '<AS> # <POUND> for <FOR> VertexSet'
+                '<VERTEXSET> EdgeSet <EDGESET> FaceSet'
+                '<FACESET> TetSet <TETSET> SimplicialSet'
+                '<SIMPLICIALSET> mesh Mesh <MESH>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
@@ -7509,11 +7584,14 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
-                "<identifier_alone> <integer> '.' <digit>"
-                '<mantissa> <floating_point> <double>'
-                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
-                '\\d <number> <pi> <constant>'
+                '<FOR> VertexSet <VERTEXSET> EdgeSet'
+                '<EDGESET> FaceSet <FACESET> TetSet'
+                '<TETSET> SimplicialSet <SIMPLICIALSET>'
+                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                '<KEYWORDS> <identifier_alone> <integer>'
+                "'.' <digit> <mantissa> <floating_point>"
+                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
+                '<fraction> \\d <number> <pi> <constant>'
             )
 
     @tatsumasu()
@@ -8301,7 +8379,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> for <FOR>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                'VertexSet <VERTEXSET> EdgeSet <EDGESET>'
+                'FaceSet <FACESET> TetSet <TETSET>'
+                'SimplicialSet <SIMPLICIALSET> mesh Mesh'
+                '<MESH> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
@@ -8739,42 +8820,42 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
     def _named_type_(self):  # noqa
         with self._choice():
             with self._option():
-                self._pattern('VertexSet')
+                self._VERTEXSET_()
                 self.name_last_node('v')
                 self._define(
                     ['v'],
                     []
                 )
             with self._option():
-                self._pattern('EdgeSet')
+                self._EDGESET_()
                 self.name_last_node('e')
                 self._define(
                     ['e'],
                     []
                 )
             with self._option():
-                self._pattern('FaceSet')
+                self._FACESET_()
                 self.name_last_node('f')
                 self._define(
                     ['f'],
                     []
                 )
             with self._option():
-                self._pattern('TetSet')
+                self._TETSET_()
                 self.name_last_node('t')
                 self._define(
                     ['t'],
                     []
                 )
             with self._option():
-                self._pattern('SimplicialSet')
+                self._SIMPLICIALSET_()
                 self.name_last_node('s')
                 self._define(
                     ['s'],
                     []
                 )
             with self._option():
-                self._pattern('mesh|Mesh')
+                self._MESH_()
                 self.name_last_node('m')
                 self._define(
                     ['m'],
@@ -8782,8 +8863,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                'VertexSet EdgeSet FaceSet TetSet'
-                'SimplicialSet mesh|Mesh'
+                'VertexSet <VERTEXSET> EdgeSet <EDGESET>'
+                'FaceSet <FACESET> TetSet <TETSET>'
+                'SimplicialSet <SIMPLICIALSET> mesh Mesh'
+                '<MESH>'
             )
         self._define(
             ['v', 'e', 'f', 't', 's', 'm'],
@@ -8816,8 +8899,10 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 "'{' <set_type> <params_type>"
                 "<tuple_type> '∅' <function_type>"
                 '<identifier> <mapping_type> VertexSet'
-                'EdgeSet FaceSet TetSet SimplicialSet'
-                'mesh|Mesh <named_type>'
+                '<VERTEXSET> EdgeSet <EDGESET> FaceSet'
+                '<FACESET> TetSet <TETSET> SimplicialSet'
+                '<SIMPLICIALSET> mesh Mesh <MESH>'
+                '<named_type>'
             )
 
     @tatsumasu()
@@ -8979,8 +9064,11 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
-                '<identifier>'
+                '<FOR> VertexSet <VERTEXSET> EdgeSet'
+                '<EDGESET> FaceSet <FACESET> TetSet'
+                '<TETSET> SimplicialSet <SIMPLICIALSET>'
+                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                '<KEYWORDS> <identifier>'
             )
         self._define(
             ['src', 'dst', 's'],
@@ -9160,7 +9248,11 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<FOR> VertexSet <VERTEXSET> EdgeSet'
+                '<EDGESET> FaceSet <FACESET> TetSet'
+                '<TETSET> SimplicialSet <SIMPLICIALSET>'
+                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                '<KEYWORDS>'
             )
         self._define(
             ['value', 'id'],
@@ -9188,8 +9280,11 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
-                '<identifier_with_subscript>'
+                '<FOR> VertexSet <VERTEXSET> EdgeSet'
+                '<EDGESET> FaceSet <FACESET> TetSet'
+                '<TETSET> SimplicialSet <SIMPLICIALSET>'
+                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                '<KEYWORDS> <identifier_with_subscript>'
             )
 
     @tatsumasu('Function')
@@ -9861,6 +9956,24 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics:
         return ast
 
     def FOR(self, ast):  # noqa
+        return ast
+
+    def VERTEXSET(self, ast):  # noqa
+        return ast
+
+    def EDGESET(self, ast):  # noqa
+        return ast
+
+    def FACESET(self, ast):  # noqa
+        return ast
+
+    def TETSET(self, ast):  # noqa
+        return ast
+
+    def SIMPLICIALSET(self, ast):  # noqa
+        return ast
+
+    def MESH(self, ast):  # noqa
         return ast
 
     def BUILTIN_KEYWORDS(self, ast):  # noqa

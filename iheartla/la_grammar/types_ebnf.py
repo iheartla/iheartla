@@ -39,12 +39,12 @@ dimension
     ;
 
 named_type::NamedType
-    = v:/VertexSet/
-    | e:/EdgeSet/
-    | f:/FaceSet/
-    | t:/TetSet/
-    | s:/SimplicialSet/
-    | m:/mesh|Mesh/
+    = v:VERTEXSET
+    | e:EDGESET
+    | f:FACESET
+    | t:TETSET
+    | s:SIMPLICIALSET
+    | m:MESH
     ;
     
 la_type

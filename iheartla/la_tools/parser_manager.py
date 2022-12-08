@@ -522,7 +522,11 @@ class ParserFileManager(object):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<FOR> VertexSet <VERTEXSET> EdgeSet'
+                '<EDGESET> FaceSet <FACESET> TetSet'
+                '<TETSET> SimplicialSet <SIMPLICIALSET>'
+                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                '<KEYWORDS>'
             )
         self._define(
             ['value', 'id'],
@@ -606,7 +610,11 @@ class ParserFileManager(object):
                     '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                     "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                     '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                    '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                    '<FOR> VertexSet <VERTEXSET> EdgeSet'
+                    '<EDGESET> FaceSet <FACESET> TetSet'
+                    '<TETSET> SimplicialSet <SIMPLICIALSET>'
+                    'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                    '<KEYWORDS>'
                 )
             self._define(
                 ['const', 'id', 'value'],
@@ -668,7 +676,11 @@ class ParserFileManager(object):
                     '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                     "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                     '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                    '<FOR> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                    '<FOR> VertexSet <VERTEXSET> EdgeSet'
+                    '<EDGESET> FaceSet <FACESET> TetSet'
+                    '<TETSET> SimplicialSet <SIMPLICIALSET>'
+                    'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                    '<KEYWORDS>'
                 )
             self._define(
                 ['value', 'id'],
