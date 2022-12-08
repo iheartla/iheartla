@@ -179,3 +179,24 @@ class TestExtraFunction(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_func_set_param(self):
+        la_str = """S ∈ {ℤ}
+                    f(x) = x where x ∈ S
+                    a = f(2)
+                    """
+        func_info = self.gen_func_info(la_str)
+        a1 = [1 , 2, 3]
+        self.assertEqual(func_info.numpy_func(a1).a, 2)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::set<int > a1;"
+                     "    a1.insert(1);"
+                     "    a1.insert(2);"
+                     "    a1.insert(3);"
+                     "    int B = {}(a1).a;".format(func_info.eig_func_name),
+                     "    return ((B - 2) == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
