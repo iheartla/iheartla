@@ -20,6 +20,7 @@ class ParamsData(object):
         self.ids_dict = {}    # identifiers with subscripts
         self.parameters = []  #
         self.symtable = {}    # for params only
+        self.set_checking = {}  # check key is a member of value
 
     def update_dim_dict(self, dim, target, pos):
         if dim in self.dim_seq_set:
@@ -58,3 +59,4 @@ class ParamsData(object):
         self.ids_dict.clear()
         self.parameters.clear()
         self.symtable.clear()
+        self.set_checking.clear()

@@ -27,6 +27,13 @@ class CodeGenMatlab(CodeGen):
             check_list = ['    assert( mod({}, 1) == 0.0 );'.format(dims) for dims in self.get_cur_param_data().arith_dim_list]
         return check_list
 
+    def get_set_checking_str(self):
+        check_list = []
+        if len(self.get_cur_param_data().set_checking) > 0:
+            for key, value in self.get_cur_param_data().set_checking.items():
+                check_list = ['    assert( ismember({}, {}) );'.format(key, value)]
+        return check_list
+
     def randn_str(self,sizes=[]):
         if len(sizes) == 0:
             return "randn()"
@@ -602,6 +609,7 @@ class CodeGenMatlab(CodeGen):
         content += dim_content
         type_checks += self.get_dim_check_str()
         type_checks += self.get_arith_dim_check_str()
+        type_checks += self.get_set_checking_str()
         if len(type_checks) > 0:
             content += '\n'.join(type_checks) + '\n\n'
         #
@@ -819,6 +827,7 @@ class CodeGenMatlab(CodeGen):
             content += self.update_prelist_str([dim_content], '    ')
         type_checks += self.get_dim_check_str()
         type_checks += self.get_arith_dim_check_str()
+        type_checks += self.get_set_checking_str()
         if len(type_checks) > 0:
             type_checks = self.update_prelist_str(type_checks, '    ')
             content += type_checks + '\n'

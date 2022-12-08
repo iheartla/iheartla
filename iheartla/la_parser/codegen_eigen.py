@@ -35,6 +35,13 @@ class CodeGenEigen(CodeGen):
                           self.get_cur_param_data().arith_dim_list]
         return check_list
 
+    def get_set_checking_str(self):
+        check_list = []
+        if len(self.get_cur_param_data().set_checking) > 0:
+            for key, value in self.get_cur_param_data().set_checking.items():
+                check_list = ['    assert( {}.find({}) != {}.end() );'.format(value, key, value)]
+        return check_list
+
     def get_set_item_str(self, set_type):
         type_list = []
         if set_type.type_list and len(set_type.type_list) > 0:
@@ -680,6 +687,7 @@ class CodeGenEigen(CodeGen):
         content += dim_content
         type_checks += self.get_dim_check_str()
         type_checks += self.get_arith_dim_check_str()
+        type_checks += self.get_set_checking_str()
         if len(type_checks) > 0:
             content += '\n'.join(type_checks) + '\n\n'
         # statements
@@ -958,6 +966,7 @@ class CodeGenEigen(CodeGen):
         #
         type_checks += self.get_dim_check_str()
         type_checks += self.get_arith_dim_check_str()
+        type_checks += self.get_set_checking_str()
         if len(type_checks) > 0:
             type_checks = self.update_prelist_str(type_checks, '    ')
             content += type_checks + '\n'
