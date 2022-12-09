@@ -887,6 +887,8 @@ class CodeGenMatlab(CodeGen):
                 content = "norm({}, 'fro')".format(value)
             elif node.norm_type == NormType.NormNuclear:
                 content = "norm(svd({}),1)".format(value)
+        elif type_info.la_type.is_set():
+            content = "size({}, 1)".format(value)
         return CodeNodeInfo(content, pre_list)
 
     def visit_transpose(self, node, **kwargs):

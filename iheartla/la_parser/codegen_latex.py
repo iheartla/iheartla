@@ -754,7 +754,7 @@ class CodeGenLatex(CodeGen):
         return left_info + ' \setminus ' + right_info
 
     def visit_norm(self, node, **kwargs):
-        if node.value.la_type.is_scalar():
+        if node.value.la_type.is_scalar() or node.value.la_type.is_set() :
             content = "\\left|{}\\right|".format(self.visit(node.value, **kwargs))
         else:
             value_content = self.visit(node.value, **kwargs)

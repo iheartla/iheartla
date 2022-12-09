@@ -636,7 +636,7 @@ class TypeWalker(NodeWalker):
         self.pre_walk = True if 'pre_walk' in kwargs else False
         self.scope_list = ['global']
         # self.symtable.clear()
-        # self.visualizer.visualize(node)  # visualize
+        self.visualizer.visualize(node)  # visualize
         ir_node = StartNode(parse_info=node.parseinfo, raw_text=node.text)
         # if node.directive:
         #     for directive in node.directive:
@@ -2319,6 +2319,8 @@ class TypeWalker(NodeWalker):
         ir_node = NormNode(parse_info=node.parseinfo, raw_text=node.text)
         value_info = self.walk(node.value, **kwargs)
         ir_node.value = value_info.ir
+        # ret type
+        ret_type = ScalarType()
         if node.sub:
             if node.sub == '*':
                 ir_node.norm_type = NormType.NormNuclear
@@ -2368,9 +2370,10 @@ class TypeWalker(NodeWalker):
                     self.assert_expr(not ir_node.value.la_type.sparse, get_err_msg(get_line_info(node.parseinfo),
                                                                           get_line_info(node.parseinfo).text.find('*'),
                                                                           "Norm error. Nuclear norm is invalid for sparse matrix"))
-
-        # ret type
-        ret_type = ScalarType()
+        elif ir_node.value.la_type.is_set():
+            self.assert_expr(node.single is not None, get_err_msg_info(node.parseinfo, "Set type has to use | rather than ||"))
+            ir_node.norm_type = NormType.NormSize
+            ret_type = ScalarType(is_int=True)
         ir_node.la_type = ret_type
         if node.power:
             # superscript

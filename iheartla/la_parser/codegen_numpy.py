@@ -856,6 +856,8 @@ class CodeGenNumpy(CodeGen):
                 content = "np.linalg.norm({}, 'fro')".format(value)
             elif node.norm_type == NormType.NormNuclear:
                 content = "np.linalg.norm({}, 'nuc')".format(value)
+        elif type_info.la_type.is_set():
+            content = "len({})".format(value)
         return CodeNodeInfo(content, pre_list)
 
     def visit_transpose(self, node, **kwargs):

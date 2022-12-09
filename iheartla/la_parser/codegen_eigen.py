@@ -1037,6 +1037,8 @@ class CodeGenEigen(CodeGen):
                 pre_list.append(
                     "    Eigen::JacobiSVD<Eigen::MatrixXd> {}(T, Eigen::ComputeThinU | Eigen::ComputeThinV);\n".format(
                         svd_name))
+        elif type_info.la_type.is_set():
+            content = "({}).size()".format(value)
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_transpose(self, node, **kwargs):
