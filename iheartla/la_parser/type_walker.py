@@ -44,19 +44,6 @@ class BuiltinModuleData(object):
             for k,v in self.r_dict.items():
                 self.inverse_dict[v] = k
 
-
-class TriangleMeshModuleData(BuiltinModuleData):
-    def __init__(self, module='', instance_name='', params_list=None, name_list=None, r_dict=None,
-                 dim_dict=None):
-        super().__init__(module, instance_name, params_list, name_list, r_dict=r_dict)
-        self.v = params_list[0] if params_list and len(params_list)>0 else None
-        self.f = params_list[1] if params_list and len(params_list)>0 else None
-        self.vi_size = dim_dict['vi_size'] if 'vi_size' in dim_dict else 0
-        self.ei_size = dim_dict['ei_size'] if 'ei_size' in dim_dict else 0
-        self.fi_size = dim_dict['fi_size'] if 'fi_size' in dim_dict else 0
-        self.ti_size = dim_dict['ti_size'] if 'ti_size' in dim_dict else 0
-
-
 class EquationData(object):
     def __init__(self, name='', parameters=[], definition=[], dependence=[], symtable={}, desc_dict={}, la_content='', func_data_dict={}, expr_dict={}, opt_syms=[]):
         self.name = name
@@ -1516,12 +1503,9 @@ class TypeWalker(NodeWalker):
         if node.r:
             rname = self.walk(node.r, **kwargs).ir
         return NodeInfo(ir=ImportVarNode(self.walk(node.name, **kwargs).ir, rname))
-    def add_builtin_module_data(self, module, params_list=[], name_list=[], r_dict=None, dim_dict=None):
+    def add_builtin_module_data(self, module, params_list=[], name_list=[], r_dict=None):
         if module not in self.builtin_module_dict:
-            if module == MESH_HELPER:
-                self.builtin_module_dict[module] = TriangleMeshModuleData(module, self.generate_var_name(module),params_list=params_list,name_list=name_list,r_dict=r_dict, dim_dict=dim_dict)
-            else:
-                self.builtin_module_dict[module] = BuiltinModuleData(module, self.generate_var_name(module),params_list=params_list,name_list=name_list,r_dict=r_dict)
+            self.builtin_module_dict[module] = BuiltinModuleData(module, self.generate_var_name(module),params_list=params_list,name_list=name_list,r_dict=r_dict)
         return self.builtin_module_dict[module]
     def walk_Import(self, node, **kwargs):
         params = []
@@ -1553,12 +1537,8 @@ class TypeWalker(NodeWalker):
                 self.assert_expr(name in func_list, get_err_msg(get_line_info(node.parseinfo),
                                                            get_line_info(node.parseinfo).text.find(name),
                                                            "Function {} not exist".format(name)))
-            dim_dict = {'vi_size': self.generate_var_name('dimv'),
-                        'ei_size': self.generate_var_name('dime'),
-                        'fi_size': self.generate_var_name('dimf'),
-                        'ti_size': self.generate_var_name('dimt')}
             if not self.pre_walk:
-                self.add_builtin_module_data(pkg_name, params_list, name_list, r_dict, dim_dict=dim_dict)
+                self.add_builtin_module_data(pkg_name, params_list, name_list, r_dict)
             if pkg_name == MESH_HELPER:
                 for name in name_list:
                     # self.symtable[r_dict[name]] = get_sym_type_from_pkg(name, pkg_name)
@@ -4601,10 +4581,10 @@ class TypeWalker(NodeWalker):
             if id_type.is_mesh():
                 # mesh type needs to be initialized when adding to symtable
                 id_type = copy.deepcopy(id_type)
-                id_type.init_dims({'vi_size': self.generate_var_name('dimv'),
-                        'ei_size': self.generate_var_name('dime'),
-                        'fi_size': self.generate_var_name('dimf'),
-                        'ti_size': self.generate_var_name('dimt')})
+                id_type.init_dims({VI_SIZE: self.generate_var_name('dimv'),
+                        EI_SIZE: self.generate_var_name('dime'),
+                        FI_SIZE: self.generate_var_name('dimf'),
+                        TI_SIZE: self.generate_var_name('dimt')})
                 self.mesh_dict[identifier] = MeshData(la_type=id_type)
             self.add_sym_type(identifier, id_type, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier)))
             # self.check_sym_existence(identifier, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier)), False)
