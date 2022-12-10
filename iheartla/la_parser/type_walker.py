@@ -909,6 +909,7 @@ class TypeWalker(NodeWalker):
                 if v.src:
                     # mapping from mesh V,E,F
                     src_type = self.get_sym_type(v.src)
+                    self.assert_expr(src_type.is_mesh_element_set(), "Symbol {} should be vertices/edges/faces".format(v.src))
                     self.get_cur_param_data().symtable[k] = SequenceType(size=src_type.length, element_type=v.dst)
                     la_debug("mapping conversion: {}, type:{}, length:{}".format(k, self.get_cur_param_data().symtable[k].get_signature(), self.get_cur_param_data().symtable[v.src].length))
                 else:

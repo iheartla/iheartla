@@ -143,6 +143,21 @@ class LaVarType(object):
     def is_set(self):
         return self.var_type == VarTypeEnum.SET
 
+    def is_mesh_element_set(self):
+        return self.is_vertex_set() or self.is_edge_set() or self.is_face_set() or self.is_tet_set()
+
+    def is_vertex_set(self):
+        return self.is_set() and self.cur_type == SetTypeEnum.VERTEX
+
+    def is_edge_set(self):
+        return self.is_set() and self.cur_type == SetTypeEnum.EDGE
+
+    def is_face_set(self):
+        return self.is_set() and self.cur_type == SetTypeEnum.FACE
+
+    def is_tet_set(self):
+        return self.is_set() and self.cur_type == SetTypeEnum.TET
+
     def is_tuple(self):
         return self.var_type == VarTypeEnum.TUPLE
 
