@@ -895,9 +895,11 @@ class TypeWalker(NodeWalker):
                 if stat_list[index].right:
                     rhs = stat_list[index].right[0]
                     if type(rhs).__name__ == 'Expression' and type(rhs.value).__name__ == 'Factor' and type(rhs.value.op).__name__ == 'Function':
-                        if len(self.builtin_module_dict)>0 and rhs.value.op.name == self.builtin_module_dict[MESH_HELPER].r_dict[MeshSets]:
-                            ret.append(index)
-                            name.append(rhs.value.op.params[0].text)
+                        if len(self.builtin_module_dict) > 0:
+                            if MESH_HELPER in self.builtin_module_dict and MeshSets in self.builtin_module_dict[MESH_HELPER].r_dict:
+                                if rhs.value.op.name == self.builtin_module_dict[MESH_HELPER].r_dict[MeshSets]:
+                                    ret.append(index)
+                                    name.append(rhs.value.op.params[0].text)
         return ret, name
 
     def convert_mapping_type(self):
