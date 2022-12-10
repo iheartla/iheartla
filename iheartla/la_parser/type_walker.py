@@ -3238,6 +3238,7 @@ class TypeWalker(NodeWalker):
                 # prefix is a keyword
                 value = ''.join(node.value)
             value = get_unicode_subscript(value)
+            value = get_unicode_superscript(value)
         elif node.id:
             value = '`' + node.id + '`'
         else:
