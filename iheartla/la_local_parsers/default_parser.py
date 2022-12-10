@@ -1367,7 +1367,16 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._factor_()
                 self.name_last_node('base')
-                self._sup_integer_()
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._sup_integer_()
+                        with self._option():
+                            self._unicode_superscript_()
+                        self._error(
+                            'expecting one of: '
+                            '<sup_integer> <unicode_superscript>'
+                        )
                 self.name_last_node('power')
                 self._define(
                     ['base', 'power'],
@@ -4205,6 +4214,15 @@ class grammardefaultParser(Parser):
     @tatsumasu('IdentifierAlone')
     def _unicode_subscript_(self):  # noqa
         self._pattern('[\\u2090-\\u209C\\u1D62\\u2C7C]')
+        self.name_last_node('value')
+        self._define(
+            ['value'],
+            []
+        )
+
+    @tatsumasu('IdentifierAlone')
+    def _unicode_superscript_(self):  # noqa
+        self._pattern('[\\u1D43\\u1D47\\u1D9C\\u1D48\\u1D49\\u1DA0\\u1D4D\\u02B0\\u2071\\u02B2\\u1D4F\\u02E1\\u1D50\\u207F\\u1D52\\u1D56\\u02B3\\u02E2\\u1D57\\u1D58\\u1D5B\\u02B7\\u02E3\\u02B8\\u1DBB\\u1DA6\\u1DAB\\u1DB0\\u1DB8\\u1D2C\\u1D2E\\u1D30\\u1D31\\u1D33\\u1D34\\u1D35\\u1D36\\u1D37\\u1D38\\u1D39\\u1D3A\\u1D3C\\u1D3E\\u1D3F\\u1D40\\u1D41\\u2C7D\\u1D42]')
         self.name_last_node('value')
         self._define(
             ['value'],
@@ -10494,6 +10512,9 @@ class grammardefaultSemantics:
         return ast
 
     def unicode_subscript(self, ast):  # noqa
+        return ast
+
+    def unicode_superscript(self, ast):  # noqa
         return ast
 
     def size_op(self, ast):  # noqa

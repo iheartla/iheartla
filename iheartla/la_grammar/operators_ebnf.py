@@ -78,7 +78,7 @@ power_operator::Power
     = base:factor t:'^T'
     | base:factor r:('^(-1)' | '⁻¹')
     | base:factor '^' power:factor
-    | base:factor power:sup_integer
+    | base:factor power:(sup_integer|unicode_superscript)
     ;
 
 solver_operator::Solver
