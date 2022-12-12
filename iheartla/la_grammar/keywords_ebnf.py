@@ -66,11 +66,11 @@ SUBSET = /⊂/;
 AS = /as/;
 POUND = /#/;
 FOR = /for/;
-VERTEXSET = /VertexSet/;
-EDGESET = /EdgeSet/;
-FACESET = /FaceSet/;
-TETSET = /TetSet/;
-SIMPLICIALSET = /SimplicialSet/;
+VERTEXSET = /[Vv]ertex[Ss]et/;
+EDGESET = /[Ee]dge[Ss]et/;
+FACESET = /[Ff]ace[Ss]et/;
+TETSET = /[Tt]et[Ss]et/;
+SIMPLICIALSET = /[Ss]implicial[Ss]et/;
 MESH = /mesh/ | /Mesh/;
 """
 

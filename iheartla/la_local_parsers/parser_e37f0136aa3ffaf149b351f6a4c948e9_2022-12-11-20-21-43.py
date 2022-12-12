@@ -384,23 +384,23 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
 
     @tatsumasu()
     def _VERTEXSET_(self):  # noqa
-        self._pattern('VertexSet')
+        self._pattern('[Vv]ertex[Ss]et')
 
     @tatsumasu()
     def _EDGESET_(self):  # noqa
-        self._pattern('EdgeSet')
+        self._pattern('[Ee]dge[Ss]et')
 
     @tatsumasu()
     def _FACESET_(self):  # noqa
-        self._pattern('FaceSet')
+        self._pattern('[Ff]ace[Ss]et')
 
     @tatsumasu()
     def _TETSET_(self):  # noqa
-        self._pattern('TetSet')
+        self._pattern('[Tt]et[Ss]et')
 
     @tatsumasu()
     def _SIMPLICIALSET_(self):  # noqa
-        self._pattern('SimplicialSet')
+        self._pattern('[Ss]implicial[Ss]et')
 
     @tatsumasu()
     def _MESH_(self):  # noqa
@@ -507,10 +507,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> VertexSet <VERTEXSET> EdgeSet'
-                '<EDGESET> FaceSet <FACESET> TetSet'
-                '<TETSET> SimplicialSet <SIMPLICIALSET>'
-                'mesh Mesh <MESH>'
+                '<FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                '<FACESET> [Tt]et[Ss]et <TETSET>'
+                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
+                'Mesh <MESH>'
             )
 
     @tatsumasu('Exponent')
@@ -3435,10 +3436,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
                 '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
                 "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
-                'for <FOR> VertexSet <VERTEXSET> EdgeSet'
-                '<EDGESET> FaceSet <FACESET> TetSet'
-                '<TETSET> SimplicialSet <SIMPLICIALSET>'
-                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                'for <FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                '<FACESET> [Tt]et[Ss]et <TETSET>'
+                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
+                'Mesh <MESH> <BUILTIN_KEYWORDS>'
                 "<KEYWORDS> <identifier> <integer> '.'"
                 '<digit> <mantissa> <floating_point>'
                 '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
@@ -3600,10 +3602,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
                 '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
                 "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
-                'for <FOR> VertexSet <VERTEXSET> EdgeSet'
-                '<EDGESET> FaceSet <FACESET> TetSet'
-                '<TETSET> SimplicialSet <SIMPLICIALSET>'
-                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                'for <FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                '<FACESET> [Tt]et[Ss]et <TETSET>'
+                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
+                'Mesh <MESH> <BUILTIN_KEYWORDS>'
                 '<KEYWORDS> \\d <pi> <factor_in_matrix>'
             )
         self._define(
@@ -3766,10 +3769,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
                 '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
                 "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
-                'for <FOR> VertexSet <VERTEXSET> EdgeSet'
-                '<EDGESET> FaceSet <FACESET> TetSet'
-                '<TETSET> SimplicialSet <SIMPLICIALSET>'
-                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                'for <FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                '<FACESET> [Tt]et[Ss]et <TETSET>'
+                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
+                'Mesh <MESH> <BUILTIN_KEYWORDS>'
                 '<KEYWORDS> \\d <pi> <factor_in_matrix>'
             )
         self._define(
@@ -4050,10 +4054,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> VertexSet <VERTEXSET> EdgeSet'
-                '<EDGESET> FaceSet <FACESET> TetSet'
-                '<TETSET> SimplicialSet <SIMPLICIALSET>'
-                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                '<FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                '<FACESET> [Tt]et[Ss]et <TETSET>'
+                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
+                'Mesh <MESH> <BUILTIN_KEYWORDS>'
                 '<KEYWORDS> <identifier_alone>'
             )
         self._define(
@@ -4209,10 +4214,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> VertexSet <VERTEXSET> EdgeSet'
-                '<EDGESET> FaceSet <FACESET> TetSet'
-                '<TETSET> SimplicialSet <SIMPLICIALSET>'
-                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                '<FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                '<FACESET> [Tt]et[Ss]et <TETSET>'
+                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
+                'Mesh <MESH> <BUILTIN_KEYWORDS>'
                 '<KEYWORDS>'
             )
         self._define(
@@ -7141,9 +7147,10 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
                 '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> for <FOR> VertexSet'
-                '<VERTEXSET> EdgeSet <EDGESET> FaceSet'
-                '<FACESET> TetSet <TETSET> SimplicialSet'
+                '<AS> # <POUND> for <FOR> [Vv]ertex[Ss]et'
+                '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
+                '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
+                '<TETSET> [Ss]implicial[Ss]et'
                 '<SIMPLICIALSET> mesh Mesh <MESH>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier> <local_func> <assignment>'
@@ -7284,9 +7291,10 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
                 '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> for <FOR> VertexSet'
-                '<VERTEXSET> EdgeSet <EDGESET> FaceSet'
-                '<FACESET> TetSet <TETSET> SimplicialSet'
+                '<AS> # <POUND> for <FOR> [Vv]ertex[Ss]et'
+                '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
+                '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
+                '<TETSET> [Ss]implicial[Ss]et'
                 '<SIMPLICIALSET> mesh Mesh <MESH>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier>'
@@ -7431,9 +7439,10 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
                 '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> for <FOR> VertexSet'
-                '<VERTEXSET> EdgeSet <EDGESET> FaceSet'
-                '<FACESET> TetSet <TETSET> SimplicialSet'
+                '<AS> # <POUND> for <FOR> [Vv]ertex[Ss]et'
+                '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
+                '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
+                '<TETSET> [Ss]implicial[Ss]et'
                 '<SIMPLICIALSET> mesh Mesh <MESH>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> '(' <vector> '[' '⎡'"
@@ -7574,10 +7583,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
                 '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
                 "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
-                'for <FOR> VertexSet <VERTEXSET> EdgeSet'
-                '<EDGESET> FaceSet <FACESET> TetSet'
-                '<TETSET> SimplicialSet <SIMPLICIALSET>'
-                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                'for <FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                '<FACESET> [Tt]et[Ss]et <TETSET>'
+                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
+                'Mesh <MESH> <BUILTIN_KEYWORDS>'
                 "<KEYWORDS> <identifier> <integer> '.'"
                 '<digit> <mantissa> <floating_point>'
                 '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
@@ -7614,9 +7624,10 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
                 '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> for <FOR> VertexSet'
-                '<VERTEXSET> EdgeSet <EDGESET> FaceSet'
-                '<FACESET> TetSet <TETSET> SimplicialSet'
+                '<AS> # <POUND> for <FOR> [Vv]ertex[Ss]et'
+                '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
+                '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
+                '<TETSET> [Ss]implicial[Ss]et'
                 '<SIMPLICIALSET> mesh Mesh <MESH>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier_alone> <integer> '.' <digit>"
@@ -8412,9 +8423,10 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
                 '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> for <FOR> VertexSet <VERTEXSET>'
-                'EdgeSet <EDGESET> FaceSet <FACESET>'
-                'TetSet <TETSET> SimplicialSet'
+                '<AS> for <FOR> [Vv]ertex[Ss]et'
+                '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
+                '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
+                '<TETSET> [Ss]implicial[Ss]et'
                 '<SIMPLICIALSET> mesh Mesh <MESH>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> <integer> '.' <digit>"
@@ -8897,10 +8909,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                'VertexSet <VERTEXSET> EdgeSet <EDGESET>'
-                'FaceSet <FACESET> TetSet <TETSET>'
-                'SimplicialSet <SIMPLICIALSET> mesh Mesh'
-                '<MESH>'
+                '[Vv]ertex[Ss]et <VERTEXSET>'
+                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                '<FACESET> [Tt]et[Ss]et <TETSET>'
+                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
+                'Mesh <MESH>'
             )
         self._define(
             ['v', 'e', 'f', 't', 's', 'm'],
@@ -8932,11 +8945,12 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<vector_type> scalar ℝ ℤ <scalar_type>'
                 "'{' <set_type> <params_type>"
                 "<tuple_type> '∅' <function_type>"
-                '<identifier> <mapping_type> VertexSet'
-                '<VERTEXSET> EdgeSet <EDGESET> FaceSet'
-                '<FACESET> TetSet <TETSET> SimplicialSet'
-                '<SIMPLICIALSET> mesh Mesh <MESH>'
-                '<named_type>'
+                '<identifier> <mapping_type>'
+                '[Vv]ertex[Ss]et <VERTEXSET>'
+                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                '<FACESET> [Tt]et[Ss]et <TETSET>'
+                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
+                'Mesh <MESH> <named_type>'
             )
 
     @tatsumasu()
@@ -9099,9 +9113,10 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
                 '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> for <FOR> VertexSet'
-                '<VERTEXSET> EdgeSet <EDGESET> FaceSet'
-                '<FACESET> TetSet <TETSET> SimplicialSet'
+                '<AS> # <POUND> for <FOR> [Vv]ertex[Ss]et'
+                '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
+                '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
+                '<TETSET> [Ss]implicial[Ss]et'
                 '<SIMPLICIALSET> mesh Mesh <MESH>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier>'
@@ -9299,10 +9314,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> VertexSet <VERTEXSET> EdgeSet'
-                '<EDGESET> FaceSet <FACESET> TetSet'
-                '<TETSET> SimplicialSet <SIMPLICIALSET>'
-                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                '<FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                '<FACESET> [Tt]et[Ss]et <TETSET>'
+                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
+                'Mesh <MESH> <BUILTIN_KEYWORDS>'
                 '<KEYWORDS>'
             )
         self._define(
@@ -9333,10 +9349,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> VertexSet <VERTEXSET> EdgeSet'
-                '<EDGESET> FaceSet <FACESET> TetSet'
-                '<TETSET> SimplicialSet <SIMPLICIALSET>'
-                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                '<FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                '<FACESET> [Tt]et[Ss]et <TETSET>'
+                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
+                'Mesh <MESH> <BUILTIN_KEYWORDS>'
                 '<KEYWORDS> <identifier_alone>'
                 '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript>'
@@ -9646,9 +9663,10 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
                 '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
                 "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> for <FOR> VertexSet'
-                '<VERTEXSET> EdgeSet <EDGESET> FaceSet'
-                '<FACESET> TetSet <TETSET> SimplicialSet'
+                '<AS> # <POUND> for <FOR> [Vv]ertex[Ss]et'
+                '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
+                '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
+                '<TETSET> [Ss]implicial[Ss]et'
                 '<SIMPLICIALSET> mesh Mesh <MESH>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS> <func_id>'
             )

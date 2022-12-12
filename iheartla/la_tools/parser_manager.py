@@ -522,10 +522,11 @@ class ParserFileManager(object):
                 '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                 "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                 '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> VertexSet <VERTEXSET> EdgeSet'
-                '<EDGESET> FaceSet <FACESET> TetSet'
-                '<TETSET> SimplicialSet <SIMPLICIALSET>'
-                'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                '<FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                '<FACESET> [Tt]et[Ss]et <TETSET>'
+                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
+                'Mesh <MESH> <BUILTIN_KEYWORDS>'
                 '<KEYWORDS>'
             )
         self._define(
@@ -610,10 +611,11 @@ class ParserFileManager(object):
                     '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                     "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                     '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                    '<FOR> VertexSet <VERTEXSET> EdgeSet'
-                    '<EDGESET> FaceSet <FACESET> TetSet'
-                    '<TETSET> SimplicialSet <SIMPLICIALSET>'
-                    'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                    '<FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                    '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                    '<FACESET> [Tt]et[Ss]et <TETSET>'
+                    '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
+                    'Mesh <MESH> <BUILTIN_KEYWORDS>'
                     '<KEYWORDS>'
                 )
             self._define(
@@ -676,10 +678,11 @@ class ParserFileManager(object):
                     '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
                     "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
                     '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                    '<FOR> VertexSet <VERTEXSET> EdgeSet'
-                    '<EDGESET> FaceSet <FACESET> TetSet'
-                    '<TETSET> SimplicialSet <SIMPLICIALSET>'
-                    'mesh Mesh <MESH> <BUILTIN_KEYWORDS>'
+                    '<FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                    '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                    '<FACESET> [Tt]et[Ss]et <TETSET>'
+                    '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
+                    'Mesh <MESH> <BUILTIN_KEYWORDS>'
                     '<KEYWORDS>'
                 )
             self._define(
