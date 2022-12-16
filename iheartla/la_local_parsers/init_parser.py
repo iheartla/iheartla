@@ -9823,11 +9823,17 @@ class grammarinitParser(Parser):
             def block39():
                 self._hspace_()
             self._closure(block39)
-            self._token(';')
+            self._pattern('[;,]')
 
             def block40():
                 self._hspace_()
             self._closure(block40)
+            with self._optional():
+                self._line_()
+
+            def block41():
+                self._hspace_()
+            self._closure(block41)
             self._general_assignment_()
             self.add_last_node_to_name('extra')
         self._closure(block38)

@@ -10076,11 +10076,17 @@ class grammardefaultParser(Parser):
             def block73():
                 self._hspace_()
             self._closure(block73)
-            self._token(';')
+            self._pattern('[;,]')
 
             def block74():
                 self._hspace_()
             self._closure(block74)
+            with self._optional():
+                self._line_()
+
+            def block75():
+                self._hspace_()
+            self._closure(block75)
             self._general_assignment_()
             self.add_last_node_to_name('extra')
         self._closure(block72)
