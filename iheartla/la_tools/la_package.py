@@ -67,7 +67,7 @@ FI_SIZE = 'fi_size'
 TI_SIZE = 'ti_size'
 #
 MESH_CLASS = 'TriangleMesh'
-MESH_HELPER = 'MeshHelper'
+MESH_HELPER = 'MeshConnectivity'
 # MeshHelper function
 MeshSets = 'MeshSets'
 BoundaryMatrices = 'BoundaryMatrices'
