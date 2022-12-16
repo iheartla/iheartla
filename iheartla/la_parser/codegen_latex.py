@@ -435,7 +435,7 @@ class CodeGenLatex(CodeGen):
             extra_list = []
             for et in node.tex_list:
                 extra_list.append(self.visit(et, **kwargs))
-            content += ' \\text{{ where }}  ' + '; '.join(extra_list)
+            content += ' \\text{{ where }}  ' + ', '.join(extra_list)
         self.pop_scope()
         return content
 
@@ -504,7 +504,7 @@ class CodeGenLatex(CodeGen):
             extra_list = []
             for et in node.tex_list:
                 extra_list.append(self.visit(et, **kwargs))
-            content += '; ' + '; '.join(extra_list)
+            content += ', ' + ', '.join(extra_list)
         self.local_func_parsing = False
         self.pop_scope()
         return content
