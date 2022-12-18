@@ -3611,7 +3611,16 @@ class TypeWalker(NodeWalker):
                 self.assert_expr(f_type.is_same_type(exp_info.la_type), get_err_msg_info(node.parseinfo, "Different element types."))
             ir_node.items.append(exp_info.ir)
             symbols = symbols.union(exp_info.symbols)
-        ir_node.la_type = SetType(size=1, int_list=[True], type_list=[f_type], element_type=f_type)
+        if f_type.is_vertex_type():
+            ir_node.la_type = VertexSetType()
+        elif f_type.is_edge_type():
+            ir_node.la_type = EdgeSetType()
+        elif f_type.is_face_type():
+            ir_node.la_type = FaceSetType()
+        elif f_type.is_tet_type():
+            ir_node.la_type = TetSetType()
+        else:
+            ir_node.la_type = SetType(size=1, int_list=[True], type_list=[f_type], element_type=f_type)
         node_info = NodeInfo(ir=ir_node, la_type=ir_node.la_type, symbols=symbols)
         self.pop_scope()
         new_id = self.generate_var_name(self.local_func_name+"set")
