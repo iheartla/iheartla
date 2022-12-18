@@ -828,6 +828,11 @@ class TypeWalker(NodeWalker):
         # start from main scope
         self.saved_scope_list = copy.deepcopy(self.scope_list)
 
+    def push_scope_environment(self):
+        # used for sum and local func
+        self.saved_scope_func_data_dict = copy.deepcopy(self.func_data_dict)
+
+
     def pop_environment(self):
         # self.logger.debug("pop_environment: {}".format(self.saved_symtable))
         self.symtable = self.saved_symtable
@@ -847,6 +852,9 @@ class TypeWalker(NodeWalker):
         self.visiting_solver_eq = False
         self.scope_list = self.saved_scope_list
 
+    def pop_scope_environment(self):
+        self.func_data_dict = self.saved_scope_func_data_dict
+
     def get_ordered_stat(self, stat_list):
         """
         Apply def-use to sub assignments
@@ -865,7 +873,7 @@ class TypeWalker(NodeWalker):
                     cur_stat = stat_list[cur_index]
                     self.logger.debug("tried stat:{}, retries:{}".format(cur_stat.text, retries))
                     # try to parse
-                    self.push_environment()
+                    self.push_scope_environment()
                     try:
                         type_info = self.walk(cur_stat)
                         new_list.append(type_info.ir)
@@ -883,7 +891,7 @@ class TypeWalker(NodeWalker):
                         if retries > len(stat_list):
                             raise e
                         # parse failed, pop saved env
-                        self.pop_environment()
+                        self.pop_scope_environment()
                         continue
         return new_list, tex_list
 
