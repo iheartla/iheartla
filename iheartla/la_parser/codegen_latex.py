@@ -351,10 +351,10 @@ class CodeGenLatex(CodeGen):
             rhs_list = []
             for cur_index in range(len(node.right)):
                 rhs_list.append(self.visit(node.right[cur_index], **kwargs))
-            if self.is_main_scope() and not self.local_func_parsing:
-                content = ','.join(lhs_list) + " & = " + ','.join(rhs_list)
-            else:
-                content = ','.join(lhs_list) + " = " + ','.join(rhs_list)
+            # if self.is_main_scope() and not self.local_func_parsing:
+            content = ','.join(lhs_list) + " & = " + ','.join(rhs_list)
+            # else:
+            #     content = ','.join(lhs_list) + " = " + ','.join(rhs_list)
         self.code_frame.expr += content +'\n'
         self.code_frame.expr_dict[node.raw_text] = content
         return content
@@ -504,7 +504,7 @@ class CodeGenLatex(CodeGen):
             extra_list = []
             for et in node.tex_list:
                 extra_list.append(self.visit(et, **kwargs))
-            content += ', ' + ', '.join(extra_list)
+            content += ', \\\\' + ', \\\\'.join(extra_list)
         self.local_func_parsing = False
         self.pop_scope()
         return content
