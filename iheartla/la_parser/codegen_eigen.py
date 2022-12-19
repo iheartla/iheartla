@@ -77,7 +77,7 @@ class CodeGenEigen(CodeGen):
             type_str = "std::vector<{}>".format(self.get_ctype(la_type.element_type))
         elif la_type.is_matrix():
             if la_type.sparse:
-                if la_type.is_dim_constant():
+                if la_type.is_dim_constant() and la_type.rows != 0 and la_type.cols != 0:
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::SparseMatrix<int>"
                     else:
@@ -94,7 +94,7 @@ class CodeGenEigen(CodeGen):
                     else:
                         type_str = "Eigen::MatrixXd"
                 else:
-                    if la_type.is_dim_constant():
+                    if la_type.is_dim_constant() and la_type.rows != 0 and la_type.cols != 0:
                         if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                             type_str = "Eigen::Matrix<int, {}, {}>".format(la_type.rows, la_type.cols)
                         else:
@@ -119,7 +119,7 @@ class CodeGenEigen(CodeGen):
                 else:
                     type_str = "Eigen::VectorXd"
             else:
-                if la_type.is_dim_constant():
+                if la_type.is_dim_constant() and la_type.rows != 0:
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::Matrix<int, {}, 1>".format(la_type.rows)
                     else:
