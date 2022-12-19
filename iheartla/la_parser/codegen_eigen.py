@@ -2264,10 +2264,17 @@ class CodeGenEigen(CodeGen):
                     content = "({}).diagonal()".format(params_content)
             elif node.func_type == MathFuncType.MathFuncVec:
                 vec_name = self.generate_var_name("vec")
+                c_type = self.get_ctype(node.la_type)
                 content = '{}'.format(vec_name)
-                pre_list.append(
-                    '    Eigen::VectorXd {}(Eigen::Map<Eigen::VectorXd>(((Eigen::MatrixXd)({})).data(), ({}).cols()*({}).rows()));;\n'.format(
-                        vec_name, params_content, params_content, params_content))
+                if node.param.la_type.is_set():
+                    std_vec = self.generate_var_name("stdv")
+                    pre_list.append('    std::vector<{}> {}({}.begin(), {}.end());\n'.format(self.get_ctype(node.param.la_type.element_type), std_vec, params_content, params_content))
+                    pre_list.append(
+                        '    {} {}(Eigen::Map<{}>(&{}[0], {}.size()));\n'.format(c_type, vec_name, c_type, std_vec, std_vec))
+                else:
+                    pre_list.append(
+                        '    Eigen::VectorXd {}(Eigen::Map<Eigen::VectorXd>(((Eigen::MatrixXd)({})).data(), ({}).cols()*({}).rows()));;\n'.format(
+                            vec_name, params_content, params_content, params_content))
             elif node.func_type == MathFuncType.MathFuncDet:
                 content = "({}).determinant()".format(params_content)
             elif node.func_type == MathFuncType.MathFuncRank:

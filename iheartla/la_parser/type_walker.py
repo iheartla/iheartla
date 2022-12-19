@@ -3826,8 +3826,11 @@ class TypeWalker(NodeWalker):
             else:
                 ret_type = MatrixType(rows=param.la_type.rows, cols=param.la_type.rows)
         elif func_type == MathFuncType.MathFuncVec:
-            self.assert_expr(param.la_type.is_matrix(), get_err_msg_info(param.parse_info, "Parameter must be valid matrix type"))
-            ret_type = VectorType(rows=param.la_type.rows*param.la_type.cols)
+            if param.la_type.is_matrix():
+                self.assert_expr(param.la_type.is_matrix(), get_err_msg_info(param.parse_info, "Parameter must be valid matrix type"))
+                ret_type = VectorType(rows=param.la_type.rows*param.la_type.cols)
+            elif param.la_type.is_set():
+                ret_type = VectorType(element_type=param.la_type.element_type)
         elif func_type == MathFuncType.MathFuncDet:
             self.assert_expr(param.la_type.is_matrix(), get_err_msg_info(param.parse_info, "Parameter must be valid matrix type"))
             ret_type = ScalarType()

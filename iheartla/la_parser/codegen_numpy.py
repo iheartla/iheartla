@@ -1900,6 +1900,8 @@ class CodeGenNumpy(CodeGen):
         elif node.func_type == MathFuncType.MathFuncDiag:
             content = 'np.diag'
         elif node.func_type == MathFuncType.MathFuncVec:
+            if node.param.la_type.is_set():
+                return CodeNodeInfo("list({})".format(params_content))  # column-major
             return CodeNodeInfo("np.matrix.flatten({}, order='F')".format(params_content))  # column-major
         elif node.func_type == MathFuncType.MathFuncDet:
             content = 'scipy.linalg.det'
