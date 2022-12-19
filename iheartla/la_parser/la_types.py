@@ -379,12 +379,12 @@ class MatrixType(LaVarType):
 
 
 class VectorType(LaVarType):
-    def __init__(self, rows=0, desc=None, element_type=ScalarType(), symbol=None, dynamic=DynamicTypeEnum.DYN_INVALID, rows_ir=None):
+    def __init__(self, rows=0, desc=None, element_type=ScalarType(), sparse=False,symbol=None, dynamic=DynamicTypeEnum.DYN_INVALID, rows_ir=None):
         LaVarType.__init__(self, VarTypeEnum.VECTOR, desc, element_type, symbol, dynamic=dynamic)
         self.rows = rows
         self.rows_ir = rows_ir
         self.cols = 1
-        self.sparse = False
+        self.sparse = sparse
 
     def get_signature(self):
         # if self.element_type:

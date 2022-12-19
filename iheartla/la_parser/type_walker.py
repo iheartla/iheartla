@@ -1333,6 +1333,8 @@ class TypeWalker(NodeWalker):
             # assert len(ir_node.id1.subs) == 1, get_err_msg_info(ir_node.id1.parse_info, "Invalid dimension for vector")
             la_type.add_dynamic_type(DynamicTypeEnum.DYN_ROW)
         ir_node.la_type = la_type
+        if node.attr and 'sparse' in node.attr:
+            la_type.sparse = True
         return ir_node
 
     def walk_ScalarType(self, node, **kwargs):

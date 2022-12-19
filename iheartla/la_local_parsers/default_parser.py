@@ -593,6 +593,8 @@ class grammardefaultParser(Parser):
                 self._SIMPLICIALSET_()
             with self._option():
                 self._MESH_()
+            with self._option():
+                self._SPARSE_()
             self._error(
                 'expecting one of: '
                 'where <WHERE> given <GIVEN> sum min'
@@ -609,7 +611,7 @@ class grammardefaultParser(Parser):
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH>'
+                'Mesh <MESH> sparse <SPARSE>'
             )
 
     @tatsumasu('Exponent')
@@ -3541,8 +3543,8 @@ class grammardefaultParser(Parser):
                 '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
                 '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
                 '<TETSET> [Ss]implicial[Ss]et'
-                '<SIMPLICIALSET> mesh Mesh <MESH>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
+                '<SPARSE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
@@ -3705,9 +3707,9 @@ class grammardefaultParser(Parser):
                 '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
                 '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
                 '<TETSET> [Ss]implicial[Ss]et'
-                '<SIMPLICIALSET> mesh Mesh <MESH>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS> \\d <pi>'
-                '<factor_in_matrix>'
+                '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
+                '<SPARSE> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '\\d <pi> <factor_in_matrix>'
             )
         self._define(
             ['base', 't', 'r', 'power'],
@@ -3871,9 +3873,9 @@ class grammardefaultParser(Parser):
                 '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
                 '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
                 '<TETSET> [Ss]implicial[Ss]et'
-                '<SIMPLICIALSET> mesh Mesh <MESH>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS> \\d <pi>'
-                '<factor_in_matrix>'
+                '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
+                '<SPARSE> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '\\d <pi> <factor_in_matrix>'
             )
         self._define(
             ['left', 'right', 'p'],
@@ -4156,8 +4158,9 @@ class grammardefaultParser(Parser):
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH> <BUILTIN_KEYWORDS>'
-                '<KEYWORDS> <identifier_alone>'
+                'Mesh <MESH> sparse <SPARSE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<identifier_alone>'
             )
         self._define(
             ['left'],
@@ -4316,8 +4319,8 @@ class grammardefaultParser(Parser):
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH> <BUILTIN_KEYWORDS>'
-                '<KEYWORDS>'
+                'Mesh <MESH> sparse <SPARSE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
             ['value', 'id'],
@@ -7339,11 +7342,12 @@ class grammardefaultParser(Parser):
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH> <BUILTIN_KEYWORDS>'
-                '<KEYWORDS> <local_func> <identifier>'
-                '<assignment> <expression> <addition>'
-                '<subtraction> <add_sub_operator> <term>'
-                "'-' 'with' <optimize_operator> '{'"
+                'Mesh <MESH> sparse <SPARSE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<local_func> <identifier> <assignment>'
+                '<expression> <addition> <subtraction>'
+                "<add_sub_operator> <term> '-' 'with'"
+                "<optimize_operator> '{'"
                 '<multi_cond_expr> <right_hand_side>'
             )
 
@@ -7481,8 +7485,9 @@ class grammardefaultParser(Parser):
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH> <BUILTIN_KEYWORDS>'
-                '<KEYWORDS> <identifier>'
+                'Mesh <MESH> sparse <SPARSE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<identifier>'
             )
         self._define(
             ['op'],
@@ -7627,9 +7632,10 @@ class grammardefaultParser(Parser):
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH> <BUILTIN_KEYWORDS>'
-                "<KEYWORDS> <identifier> '(' <vector> '['"
-                "'⎡' <matrix>"
+                'Mesh <MESH> sparse <SPARSE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                "<identifier> '(' <vector> '[' '⎡'"
+                '<matrix>'
             )
 
     @tatsumasu()
@@ -7769,8 +7775,8 @@ class grammardefaultParser(Parser):
                 '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
                 '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
                 '<TETSET> [Ss]implicial[Ss]et'
-                '<SIMPLICIALSET> mesh Mesh <MESH>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
+                '<SPARSE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
@@ -7811,11 +7817,12 @@ class grammardefaultParser(Parser):
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH> <BUILTIN_KEYWORDS>'
-                '<KEYWORDS> <identifier_alone> <integer>'
-                "'.' <digit> <mantissa> <floating_point>"
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                '<fraction> \\d <number> <pi> <constant>'
+                'Mesh <MESH> sparse <SPARSE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                "<identifier_alone> <integer> '.' <digit>"
+                '<mantissa> <floating_point> <double>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+                '\\d <number> <pi> <constant>'
             )
 
     @tatsumasu()
@@ -8623,11 +8630,12 @@ class grammardefaultParser(Parser):
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH> <BUILTIN_KEYWORDS>'
-                "<KEYWORDS> <identifier> <integer> '.'"
-                '<digit> <mantissa> <floating_point>'
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                '<fraction> \\d <number>'
+                'Mesh <MESH> sparse <SPARSE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                "<identifier> <integer> '.' <digit>"
+                '<mantissa> <floating_point> <double>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+                '\\d <number>'
             )
         self._define(
             ['sub', 'size', 'id0', 'num'],
@@ -8761,91 +8769,101 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('VectorType')
     def _vector_type_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._pattern('vector')
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._pattern('vector')
 
-                def block1():
-                    self._hspace_()
-                self._closure(block1)
-                self._token('(')
+                    def block1():
+                        self._hspace_()
+                    self._closure(block1)
+                    self._token('(')
 
-                def block2():
-                    self._hspace_()
-                self._closure(block2)
-                self._dimension_()
-                self.name_last_node('id1')
+                    def block2():
+                        self._hspace_()
+                    self._closure(block2)
+                    self._dimension_()
+                    self.name_last_node('id1')
 
-                def block4():
-                    self._hspace_()
-                self._closure(block4)
-                self._token(')')
-                self._define(
-                    ['id1'],
-                    []
+                    def block4():
+                        self._hspace_()
+                    self._closure(block4)
+                    self._token(')')
+                    self._define(
+                        ['id1'],
+                        []
+                    )
+                with self._option():
+                    self._pattern('[ℝℤ]')
+                    self.name_last_node('type')
+
+                    def block6():
+                        self._hspace_()
+                    self._closure(block6)
+                    self._token('^')
+
+                    def block7():
+                        self._hspace_()
+                    self._closure(block7)
+                    self._token('(')
+
+                    def block8():
+                        self._hspace_()
+                    self._closure(block8)
+                    self._dimension_()
+                    self.name_last_node('id1')
+
+                    def block10():
+                        self._hspace_()
+                    self._closure(block10)
+                    self._token(')')
+                    self._define(
+                        ['type', 'id1'],
+                        []
+                    )
+                with self._option():
+                    self._pattern('[ℝℤ]')
+                    self.name_last_node('type')
+
+                    def block12():
+                        self._hspace_()
+                    self._closure(block12)
+                    self._token('^')
+
+                    def block13():
+                        self._hspace_()
+                    self._closure(block13)
+                    self._dimension_()
+                    self.name_last_node('id1')
+                    self._define(
+                        ['type', 'id1'],
+                        []
+                    )
+                with self._option():
+                    self._pattern('[ℝℤ]')
+                    self.name_last_node('type')
+                    self._sup_integer_()
+                    self.name_last_node('id1')
+                    self._define(
+                        ['type', 'id1'],
+                        []
+                    )
+                self._error(
+                    'expecting one of: '
+                    'vector [ℝℤ]'
                 )
-            with self._option():
-                self._pattern('[ℝℤ]')
-                self.name_last_node('type')
 
-                def block6():
-                    self._hspace_()
-                self._closure(block6)
-                self._token('^')
+        def block17():
 
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._token('(')
-
-                def block8():
-                    self._hspace_()
-                self._closure(block8)
-                self._dimension_()
-                self.name_last_node('id1')
-
-                def block10():
-                    self._hspace_()
-                self._closure(block10)
-                self._token(')')
-                self._define(
-                    ['type', 'id1'],
-                    []
-                )
-            with self._option():
-                self._pattern('[ℝℤ]')
-                self.name_last_node('type')
-
-                def block12():
-                    self._hspace_()
-                self._closure(block12)
-                self._token('^')
-
-                def block13():
-                    self._hspace_()
-                self._closure(block13)
-                self._dimension_()
-                self.name_last_node('id1')
-                self._define(
-                    ['type', 'id1'],
-                    []
-                )
-            with self._option():
-                self._pattern('[ℝℤ]')
-                self.name_last_node('type')
-                self._sup_integer_()
-                self.name_last_node('id1')
-                self._define(
-                    ['type', 'id1'],
-                    []
-                )
-            self._error(
-                'expecting one of: '
-                'vector [ℝℤ]'
-            )
+            def block18():
+                self._hspace_()
+            self._positive_closure(block18)
+            self._matrix_attribute_()
+            self.add_last_node_to_name('attr')
+        self._closure(block17)
         self._define(
             ['id1', 'type'],
-            []
+            ['attr']
         )
 
     @tatsumasu('ScalarType')
@@ -9311,8 +9329,9 @@ class grammardefaultParser(Parser):
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH> <BUILTIN_KEYWORDS>'
-                '<KEYWORDS> <identifier>'
+                'Mesh <MESH> sparse <SPARSE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<identifier>'
             )
         self._define(
             ['src', 'dst', 's'],
@@ -9526,8 +9545,8 @@ class grammardefaultParser(Parser):
                     '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                     '<FACESET> [Tt]et[Ss]et <TETSET>'
                     '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                    'Mesh <MESH> <BUILTIN_KEYWORDS>'
-                    '<KEYWORDS>'
+                    'Mesh <MESH> sparse <SPARSE>'
+                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(
                 ['const', 'id', 'value'],
@@ -9593,8 +9612,8 @@ class grammardefaultParser(Parser):
                     '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                     '<FACESET> [Tt]et[Ss]et <TETSET>'
                     '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                    'Mesh <MESH> <BUILTIN_KEYWORDS>'
-                    '<KEYWORDS>'
+                    'Mesh <MESH> sparse <SPARSE>'
+                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(
                 ['value', 'id'],
@@ -9626,8 +9645,9 @@ class grammardefaultParser(Parser):
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH> <BUILTIN_KEYWORDS>'
-                '<KEYWORDS> <identifier_with_subscript>'
+                'Mesh <MESH> sparse <SPARSE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<identifier_with_subscript>'
             )
 
     @tatsumasu('Function')
@@ -12038,6 +12058,7 @@ class MatrixType(ModelBase):
 
 @dataclass(eq=False)
 class VectorType(ModelBase):
+    attr: Any = None
     id1: Any = None
     type: Any = None
 

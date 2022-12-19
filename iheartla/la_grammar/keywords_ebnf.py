@@ -115,5 +115,6 @@ BUILTIN_KEYWORDS
     | TETSET
     | SIMPLICIALSET
     | MESH
+    | SPARSE
     ;
 """

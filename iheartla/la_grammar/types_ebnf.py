@@ -9,10 +9,11 @@ matrix_attribute
     ;
 
 vector_type::VectorType
-    = /vector/ {hspace} '(' {hspace} id1:dimension {hspace}')'
+    = (/vector/ {hspace} '(' {hspace} id1:dimension {hspace}')'
     | type:/[ℝℤ]/ {hspace} '^' {hspace} '(' {hspace} id1:dimension {hspace}')'
     | type:/[ℝℤ]/ {hspace} '^' {hspace} id1:dimension
-    | type:/[ℝℤ]/ id1:sup_integer
+    | type:/[ℝℤ]/ id1:sup_integer)
+    {{hspace}+ attr+:matrix_attribute}
     ;
 
 scalar_type::ScalarType
