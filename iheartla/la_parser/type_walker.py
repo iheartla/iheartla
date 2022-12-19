@@ -3621,6 +3621,7 @@ class TypeWalker(NodeWalker):
             ir_node.la_type = TetSetType()
         else:
             ir_node.la_type = SetType(size=1, int_list=[True], type_list=[f_type], element_type=f_type)
+        ir_node.la_type.length = len(node.exp)
         node_info = NodeInfo(ir=ir_node, la_type=ir_node.la_type, symbols=symbols)
         self.pop_scope()
         new_id = self.generate_var_name(self.local_func_name+"set")
