@@ -2546,7 +2546,7 @@ class TypeWalker(NodeWalker):
         base_info = self.walk(node.base, **kwargs)
         ir_node.base = base_info.ir
         symbols = base_info.symbols
-        if node.t:
+        if node.t or node.power.text == 'ᵀ':
             if 'T' in self.symtable:
                 # normal pow
                 power_ir = IdNode('T', parse_info=node.parseinfo, raw_text=node.text)
@@ -2556,6 +2556,8 @@ class TypeWalker(NodeWalker):
             else:
                 # transpose
                 ir_node.t = node.t
+                if node.power.text == 'ᵀ':
+                    ir_node.t = 'ᵀ'
                 self.assert_expr(base_info.la_type.is_matrix() or base_info.la_type.is_vector(), get_err_msg_info(base_info.ir.parse_info,"Transpose error. The base must be a matrix or vecotr"))
                 sparse = False
                 if base_info.la_type.is_matrix():
