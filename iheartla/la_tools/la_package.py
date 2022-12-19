@@ -42,6 +42,7 @@ class GPType(IntEnum):
     #
     MeshSets = 200
     BoundaryMatrices = 201
+    UnsignedBoundaryMatrices = 202
 
 class MeshData(object):
     def __init__(self, v=None, e=None, f=None, t=None, la_type=None):
@@ -71,6 +72,7 @@ MESH_HELPER = 'MeshConnectivity'
 # MeshHelper function
 MeshSets = 'MeshSets'
 BoundaryMatrices = 'BoundaryMatrices'
+UnsignedBoundaryMatrices = 'UnsignedBoundaryMatrices'
 FACES_OF_EDGE = 'faces_of_edge'
 DIHEDRAL = 'dihedral'
 FACE_NORMAL = 'face_normal'
@@ -127,13 +129,14 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                  GET_VERTICES_E, GET_EDGES_F, GET_VERTICES_F,
                                  STAR, CLOSURE, LINK, BOUNDARY, IS_COMPLEX, IS_PURE_COMPLEX,
                                  VERTICES, EDGES, FACES, TETS, DIAMOND,
-                                 MeshSets, BoundaryMatrices]
+                                 MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices]
                       }
 PACKAGES_SYM_DICT = {'trigonometry': ['e'],
                  MESH_HELPER: [EDGES, VI, EI, FI, NEI, BM1, BM2, BM3]}
 MESH_HELPER_FUNC_MAPPING = {
 MeshSets: GPType.MeshSets,
 BoundaryMatrices: GPType.BoundaryMatrices,
+UnsignedBoundaryMatrices: GPType.UnsignedBoundaryMatrices,
 FACES_OF_EDGE: GPType.FacesOfEdge,
 FACE_NORMAL: GPType.FaceNormal,
 DIHEDRAL: GPType.Dihedral,
@@ -177,6 +180,7 @@ DIAMOND:GPType.Diamond,
 MESH_HELPER_SYM_TYPE = {
 MeshSets: make_function_type([MeshType()], [VertexSetType(), EdgeSetType(), FaceSetType()]),
 BoundaryMatrices: make_function_type([MeshType()], [MatrixType(), MatrixType()]),
+UnsignedBoundaryMatrices: make_function_type([MeshType()], [MatrixType(), MatrixType()]),
 # functions
 FACES_OF_EDGE: make_function_type([MeshType(),EdgeType()], [FaceSetType()]),
 FACE_NORMAL: make_function_type(),
@@ -276,6 +280,9 @@ def get_sym_type_from_pkg(sym, pkg, mesh_type=None):
                     elif sym == MeshSets:
                         ret = make_function_type([MeshType()], [VertexSetType(length=mesh_type.vi_size), EdgeSetType(length=mesh_type.ei_size), FaceSetType(length=mesh_type.fi_size)])
                     elif sym == BoundaryMatrices:
+                        ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True)),
+                                                                MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True))])
+                    elif sym == UnsignedBoundaryMatrices:
                         ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True)),
                                                                 MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True))])
                 else:
