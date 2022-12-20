@@ -322,7 +322,6 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
                 r_name_list = []
                 par_list = []
                 if len(tmp_type_walker.parameters) != len(module.params):
-                    parse_info = sym.parse_info
                     err_msg = "Parameters doesn't match, need {} while given {}".format(len(tmp_type_walker.parameters),
                                                                                         len(module.params))
                     raise
