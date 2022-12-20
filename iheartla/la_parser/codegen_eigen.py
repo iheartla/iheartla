@@ -358,7 +358,7 @@ class CodeGenEigen(CodeGen):
 
     def copy_func_impl(self, sym, module_name):
         """implement function from other modules"""
-        ret_type = self.get_ctype(self.symtable[sym].ret)
+        ret_type = self.get_ctype(self.symtable[sym].ret[0])
         param_list = []
         init_list = []
         for cur_index in range(len(self.symtable[sym].params)):
