@@ -591,9 +591,10 @@ class FunctionType(LaVarType):
 
 
 class OverloadingFunctionType(LaVarType):
-    def __init__(self, desc=None, symbol=None, func_list=None):
+    def __init__(self, desc=None, symbol=None, func_list=None, fname_list=None):
         LaVarType.__init__(self, VarTypeEnum.OVERLOADINGFUNCTION, desc, symbol)
         self.func_list = func_list
+        self.fname_list = fname_list  # predefined overloading names
 
     def get_correct_ftype(self, param_list):
         omitted = False  # whether size is omitted

@@ -1574,11 +1574,17 @@ class TypeWalker(NodeWalker):
                         self.func_imported_renaming[new_sym_name] = name
                         using_name = new_sym_name
                     if sym_type.is_overloaded():
-                        # update self.func_sig_dict
-                        for cur_f_type in sym_type.func_list:
+                        # update self.func_sig_dict, use predefined names if possible
+                        f_size = len(sym_type.func_list)
+                        if sym_type.fname_list:
+                            name_list = sym_type.fname_list
+                        else:
+                            name_list = [self.generate_var_name(using_name) for i in range(len(using_name))]
+                        for cur_f_index in range(len(sym_type.func_list)):
+                            cur_f_type = sym_type.func_list[cur_f_index]
                             sig = get_func_signature(using_name, cur_f_type)
                             if sig not in self.func_sig_dict:
-                                n_name = self.generate_var_name(using_name)
+                                n_name = name_list[cur_f_index]
                                 self.func_sig_dict[sig] = n_name
         else:
             module = package_info.ir
