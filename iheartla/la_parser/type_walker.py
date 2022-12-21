@@ -541,7 +541,7 @@ class TypeWalker(NodeWalker):
             self.assert_expr(False, error_msg)
         if need_check and check:
             # it's safe here since the above assertion is not triggered
-            if c_type.is_function():
+            if c_type.is_function() and not c_type.is_overloaded():
                 sig = get_func_signature(sym, c_type)
                 la_debug("cur sig:{}".format(sig))
                 la_debug("cur func_sig_dict:{}".format(self.func_sig_dict))
@@ -2752,6 +2752,7 @@ class TypeWalker(NodeWalker):
                 correct_type = name_type.get_correct_ftype(param_type_list)
                 if correct_type is None:
                     la_debug("name_type:{}".format(name_type.get_signature()))
+                    # try to relax conditions
                 name_type = correct_type
                 self.assert_expr(name_type is not None, get_err_msg_info(node.parseinfo, "Function error. Can't find function with current parameter types."))
                 ir_node.identity_name = self.func_sig_dict[get_func_signature(func_name, name_type)]

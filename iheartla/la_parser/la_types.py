@@ -206,6 +206,10 @@ class LaVarType(object):
     def get_signature(self):
         # signature for iheartla types, as long as it can be used to differentiate
         return ''
+
+    def get_relaxed_signature(self):
+        # for matrix/vector, try to omit 0 dimensions
+        return self.get_signature()
     def get_cpp_signature(self):
         # some different types in iheartla corresponding to the same types in Eigen, e.g.: ℤ^3 v.s. ℤ^(3×1)
         return self.get_signature()
@@ -356,6 +360,9 @@ class MatrixType(LaVarType):
         e_sig = self.element_type.get_signature()
         return "{}^({}×{})".format(e_sig, self.rows, self.cols)
 
+    def get_relaxed_signature(self):
+        e_sig = self.element_type.get_signature()
+        return "{}^(×)".format(e_sig)
     def get_cpp_signature(self):
         e_type = 'ℤ' if self.element_type.is_int else 'ℝ'
         if self.cols == 1:
@@ -405,6 +412,10 @@ class VectorType(LaVarType):
         #     return "vector,rows:{}".format(self.rows)
         e_sig = self.element_type.get_signature()
         return "{}^{}".format(e_sig, self.rows)
+
+    def get_relaxed_signature(self):
+        e_sig = self.element_type.get_signature()
+        return "{}^".format(e_sig)
 
     def get_cpp_signature(self):
         e_type = 'ℤ' if self.element_type.is_int else 'ℝ'
@@ -554,6 +565,9 @@ class FunctionType(LaVarType):
     def get_param_signature(self, cpp=False):
         return get_list_signature(self.params, cpp)
 
+    def get_param_relatex_signature(self, cpp=False):
+        return get_list_relatex_signature(self.params, cpp)
+
     def ret_template(self):
         return len(self.ret_symbols) > 0
 
@@ -582,6 +596,14 @@ class OverloadingFunctionType(LaVarType):
         for cur_func in self.func_list:
             cur_sig = cur_func.get_param_signature()
             la_debug("cur_sig:{}".format(cur_sig))
+            if param_sig == cur_sig:
+                return cur_func
+        # no type found, relax checking conditions (omit 0 dimension in matrices/vectors)
+        param_sig = get_list_relatex_signature(param_list)
+        la_debug("omitted param_sig:{}".format(param_sig))
+        for cur_func in self.func_list:
+            cur_sig = cur_func.get_param_relatex_signature()
+            la_debug("omitted cur_sig:{}".format(cur_sig))
             if param_sig == cur_sig:
                 return cur_func
         return None
@@ -687,6 +709,9 @@ def get_op_desc(op):
 def get_list_signature(param_list, cpp=False):
     # get the signatures of function parameters
     return ','.join(param.get_cpp_signature() if cpp else param.get_signature() for param in param_list)
+def get_list_relatex_signature(param_list, cpp=False):
+    # get the signatures of function parameters
+    return ','.join(param.get_cpp_signature() if cpp else param.get_relaxed_signature() for param in param_list)
 
 def get_func_signature(name, la_type):
     # only consider parameters
