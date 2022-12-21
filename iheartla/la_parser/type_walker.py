@@ -1564,12 +1564,22 @@ class TypeWalker(NodeWalker):
                 for name in name_list:
                     # self.symtable[r_dict[name]] = get_sym_type_from_pkg(name, pkg_name)
                     # add func names to symtable, for dynamic func types, ignore the dimension info for now
-                    new_sym_name = self.add_sym_type(r_dict[name], get_sym_type_from_pkg(name, pkg_name, None), get_err_msg_info(node.parseinfo,
+                    sym_type = get_sym_type_from_pkg(name, pkg_name, None)
+                    using_name = r_dict[name]
+                    new_sym_name = self.add_sym_type(r_dict[name], sym_type, get_err_msg_info(node.parseinfo,
                                                                             "Parameter {} has been defined.".format(
                                                                                 name)))
                     self.func_imported_renaming[r_dict[name]] = name
                     if new_sym_name:
                         self.func_imported_renaming[new_sym_name] = name
+                        using_name = new_sym_name
+                    if sym_type.is_overloaded():
+                        # update self.func_sig_dict
+                        for cur_f_type in sym_type.func_list:
+                            sig = get_func_signature(using_name, cur_f_type)
+                            if sig not in self.func_sig_dict:
+                                n_name = self.generate_var_name(using_name)
+                                self.func_sig_dict[sig] = n_name
         else:
             module = package_info.ir
             self.import_module_list.append(DependenceData(module.get_name(), params_list, name_list))
@@ -2730,6 +2740,7 @@ class TypeWalker(NodeWalker):
         #     ir_node.order_mode = OrderFormat.OrderDot
         #     self.cur_eq_type |= EqTypeEnum.ODE
         if name_type.is_function():
+            omitted = False # whether size is omitted when checking func types
             # function type is already specified in where block
             convertion_dict = {}   # template -> instance
             param_list = []
@@ -2749,7 +2760,7 @@ class TypeWalker(NodeWalker):
                 param_type_list.append(c_node.la_type)
             if name_type.is_overloaded():
                 # get correct type for current parameters
-                correct_type = name_type.get_correct_ftype(param_type_list)
+                correct_type, omitted = name_type.get_correct_ftype(param_type_list)
                 if correct_type is None:
                     la_debug("name_type:{}".format(name_type.get_signature()))
                     # try to relax conditions

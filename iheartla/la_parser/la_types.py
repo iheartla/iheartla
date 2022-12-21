@@ -192,9 +192,15 @@ class LaVarType(object):
                 else:
                     same = self.size == other.size and self.element_type.is_same_type(other.element_type)
             elif self.var_type == VarTypeEnum.MATRIX:
-                same = self.rows == other.rows and self.cols == other.cols
+                if omit_size:
+                    same = self.element_type.is_same_type(other.element_type)
+                else:
+                    same = self.rows == other.rows and self.cols == other.cols and self.element_type.is_same_type(other.element_type)
             elif self.var_type == VarTypeEnum.VECTOR:
-                same = self.rows == other.rows
+                if omit_size:
+                    same = self.rows == other.rows and self.element_type.is_same_type(other.element_type)
+                else:
+                    same = self.rows == other.rows
             elif self.var_type == VarTypeEnum.SET:
                 same = self.cur_type == other.cur_type
             elif self.var_type == VarTypeEnum.SCALAR:
@@ -590,6 +596,7 @@ class OverloadingFunctionType(LaVarType):
         self.func_list = func_list
 
     def get_correct_ftype(self, param_list):
+        omitted = False  # whether size is omitted
         # given param list, get the correct function type
         param_sig = get_list_signature(param_list)
         la_debug("param_sig:{}".format(param_sig))
@@ -597,16 +604,17 @@ class OverloadingFunctionType(LaVarType):
             cur_sig = cur_func.get_param_signature()
             la_debug("cur_sig:{}".format(cur_sig))
             if param_sig == cur_sig:
-                return cur_func
+                return cur_func, omitted
         # no type found, relax checking conditions (omit 0 dimension in matrices/vectors)
+        omitted = True
         param_sig = get_list_relatex_signature(param_list)
         la_debug("omitted param_sig:{}".format(param_sig))
         for cur_func in self.func_list:
             cur_sig = cur_func.get_param_relatex_signature()
             la_debug("omitted cur_sig:{}".format(cur_sig))
             if param_sig == cur_sig:
-                return cur_func
-        return None
+                return cur_func, omitted
+        return None, omitted
 
     def add_new_type(self, f_type):
         success = True
