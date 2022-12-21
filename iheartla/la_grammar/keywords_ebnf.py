@@ -72,6 +72,11 @@ FACESET = /[Ff]ace[Ss]et/;
 TETSET = /[Tt]et[Ss]et/;
 SIMPLICIALSET = /[Ss]implicial[Ss]et/;
 MESH = /mesh/ | /Mesh/;
+INDEX = /index/;
+VERTICES = /vertices/;
+EDGES = /edges/;
+FACES = /faces/;
+TETS = /tets/;
 """
 
 KEYWORDS = KEYS + r"""
@@ -116,5 +121,10 @@ BUILTIN_KEYWORDS
     | SIMPLICIALSET
     | MESH
     | SPARSE
+    | INDEX
+    | VERTICES
+    | EDGES
+    | FACES
+    | TETS
     ;
 """

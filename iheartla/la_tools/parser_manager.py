@@ -526,7 +526,9 @@ class ParserFileManager(object):
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH> sparse <SPARSE>'
+                'Mesh <MESH> sparse <SPARSE> index'
+                '<INDEX> vertices <VERTICES> edges'
+                '<EDGES> faces <FACES> tets <TETS>'
                 '<BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
@@ -615,7 +617,9 @@ class ParserFileManager(object):
                     '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                     '<FACESET> [Tt]et[Ss]et <TETSET>'
                     '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                    'Mesh <MESH> sparse <SPARSE>'
+                    'Mesh <MESH> sparse <SPARSE> index'
+                    '<INDEX> vertices <VERTICES> edges'
+                    '<EDGES> faces <FACES> tets <TETS>'
                     '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(
@@ -682,7 +686,9 @@ class ParserFileManager(object):
                     '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                     '<FACESET> [Tt]et[Ss]et <TETSET>'
                     '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                    'Mesh <MESH> sparse <SPARSE>'
+                    'Mesh <MESH> sparse <SPARSE> index'
+                    '<INDEX> vertices <VERTICES> edges'
+                    '<EDGES> faces <FACES> tets <TETS>'
                     '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(

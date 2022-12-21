@@ -26,10 +26,6 @@ IS_PURE_COMPLEX = /is_pure_complex/;
 GET_VERTICES_E = /get_vertices_e/;
 GET_VERTICES_F = /get_vertices_f/;
 GET_EDGES_F = /get_edges_f/;
-VERTICES = /vertices/;
-EDGES = /edges/;
-FACES = /faces/;
-TETS = /tets/;
 DIAMOND = /diamond/;
 
 faces_of_edge_func::FacesOfEdgeFunc
