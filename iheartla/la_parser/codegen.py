@@ -177,6 +177,14 @@ class CodeGen(IRPrinter):
                     if name in module_data.inverse_dict:
                         res = module_data.inverse_dict[name]
         return res
+
+    def convert_overloaded_name(self, name):
+        # mapp builtin func names to the different backends
+        cur_dict = BACKEND_OVERLOADING_DICT[self.parse_type]
+        if name in cur_dict:
+            return cur_dict[name]
+        return name
+
     def visit_gp_func(self, node, **kwargs):
         if node.func_name not in self.code_frame.extra_funcs:
             self.code_frame.extra_funcs.append(node.func_name)

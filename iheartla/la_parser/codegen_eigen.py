@@ -930,6 +930,7 @@ class CodeGenEigen(CodeGen):
             func_name = self.filter_symbol(node.identity_name)
         if func_name in self.duplicate_func_list:
             func_name = self.filter_symbol(node.identity_name)
+        func_name = self.convert_overloaded_name(func_name)
         pre_list = []
         params = []
         if node.params:

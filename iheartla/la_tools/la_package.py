@@ -44,6 +44,7 @@ class GPType(IntEnum):
     BoundaryMatrices = 201
     UnsignedBoundaryMatrices = 202
     CanonicalVertexOrderings = 203
+    NoneZeros = 204
 
 class MeshData(object):
     def __init__(self, v=None, e=None, f=None, t=None, la_type=None):
@@ -71,6 +72,7 @@ TI_SIZE = 'ti_size'
 MESH_CLASS = 'TriangleMesh'
 MESH_HELPER = 'MeshConnectivity'
 # MeshHelper function
+NoneZeros = 'NoneZeros'
 CanonicalVertexOrderings = 'CanonicalVertexOrderings'
 MeshSets = 'MeshSets'
 BoundaryMatrices = 'BoundaryMatrices'
@@ -131,7 +133,7 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                  GET_VERTICES_E, GET_EDGES_F, GET_VERTICES_F,
                                  STAR, CLOSURE, LINK, BOUNDARY, IS_COMPLEX, IS_PURE_COMPLEX,
                                  VERTICES, EDGES, FACES, TETS, DIAMOND,
-                                 MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, CanonicalVertexOrderings]
+                                 MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, CanonicalVertexOrderings, NoneZeros]
                       }
 PACKAGES_SYM_DICT = {'trigonometry': ['e'],
                  MESH_HELPER: [EDGES, VI, EI, FI, NEI, BM1, BM2, BM3]}
@@ -140,6 +142,7 @@ MeshSets: GPType.MeshSets,
 BoundaryMatrices: GPType.BoundaryMatrices,
 UnsignedBoundaryMatrices: GPType.UnsignedBoundaryMatrices,
 CanonicalVertexOrderings: GPType.CanonicalVertexOrderings,
+NoneZeros: GPType.NoneZeros,
 FACES_OF_EDGE: GPType.FacesOfEdge,
 FACE_NORMAL: GPType.FaceNormal,
 DIHEDRAL: GPType.Dihedral,
@@ -185,6 +188,14 @@ MeshSets: make_function_type([MeshType()], [VertexSetType(), EdgeSetType(), Face
 BoundaryMatrices: make_function_type([MeshType()], [MatrixType(), MatrixType()]),
 UnsignedBoundaryMatrices: make_function_type([MeshType()], [MatrixType(), MatrixType()]),
 CanonicalVertexOrderings: make_function_type([MeshType()], [MatrixType(), MatrixType()]),
+NoneZeros: OverloadingFunctionType(func_list=[make_function_type([MatrixType(element_type=VertexType())], [VertexSetType()]),
+                                              make_function_type([MatrixType(element_type=EdgeType())], [EdgeSetType()]),
+                                              make_function_type([MatrixType(element_type=FaceType())], [FaceSetType()]),
+                                              make_function_type([MatrixType(element_type=TetType())], [TetSetType()])],
+                                   fname_list=['{}_0'.format(NoneZeros),
+                                               '{}_1'.format(NoneZeros),
+                                               '{}_2'.format(NoneZeros),
+                                               '{}_3'.format(NoneZeros)]),
 # functions
 FACES_OF_EDGE: make_function_type([MeshType(),EdgeType()], [FaceSetType()]),
 FACE_NORMAL: make_function_type(),
@@ -252,6 +263,28 @@ def merge_dict(dict1, dict2):
     return res
 PACKAGES_DICT = merge_dict(PACKAGES_FUNC_DICT, PACKAGES_SYM_DICT)
 CLASS_PACKAGES = [MESH_HELPER]
+
+# for builtin packages, the overloading functions may have different names in different backends
+BACKEND_OVERLOADING_DICT = {
+    ParserTypeEnum.EIGEN : {
+        '{}_0'.format(NoneZeros): '{}_0'.format(NoneZeros),
+        '{}_1'.format(NoneZeros): '{}_1'.format(NoneZeros),
+        '{}_2'.format(NoneZeros): '{}_2'.format(NoneZeros),
+        '{}_3'.format(NoneZeros): '{}_3'.format(NoneZeros),
+    },
+    ParserTypeEnum.NUMPY : {
+        '{}_0'.format(NoneZeros): '{}_0'.format(NoneZeros),
+        '{}_1'.format(NoneZeros): '{}_1'.format(NoneZeros),
+        '{}_2'.format(NoneZeros): '{}_2'.format(NoneZeros),
+        '{}_3'.format(NoneZeros): '{}_3'.format(NoneZeros),
+    },
+    ParserTypeEnum.MATLAB : {
+        '{}_0'.format(NoneZeros): '{}_0'.format(NoneZeros),
+        '{}_1'.format(NoneZeros): '{}_1'.format(NoneZeros),
+        '{}_2'.format(NoneZeros): '{}_2'.format(NoneZeros),
+        '{}_3'.format(NoneZeros): '{}_3'.format(NoneZeros),
+    },
+}
 
 def get_sym_type_from_pkg(sym, pkg, mesh_type=None):
     ret = LaVarType()

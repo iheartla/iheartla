@@ -784,6 +784,7 @@ class CodeGenMatlab(CodeGen):
         original_name = self.filter_symbol(node.name.get_main_id())
         if self.get_sym_type(original_name).is_overloaded() and node.identity_name:
             func_name = self.filter_symbol(node.identity_name)
+        func_name = self.convert_overloaded_name(func_name)
         pre_list = []
         params = []
         if node.params:
