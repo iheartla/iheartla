@@ -43,6 +43,7 @@ class GPType(IntEnum):
     MeshSets = 200
     BoundaryMatrices = 201
     UnsignedBoundaryMatrices = 202
+    CanonicalVertexOrderings = 203
 
 class MeshData(object):
     def __init__(self, v=None, e=None, f=None, t=None, la_type=None):
@@ -70,6 +71,7 @@ TI_SIZE = 'ti_size'
 MESH_CLASS = 'TriangleMesh'
 MESH_HELPER = 'MeshConnectivity'
 # MeshHelper function
+CanonicalVertexOrderings = 'CanonicalVertexOrderings'
 MeshSets = 'MeshSets'
 BoundaryMatrices = 'BoundaryMatrices'
 UnsignedBoundaryMatrices = 'UnsignedBoundaryMatrices'
@@ -129,7 +131,7 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                  GET_VERTICES_E, GET_EDGES_F, GET_VERTICES_F,
                                  STAR, CLOSURE, LINK, BOUNDARY, IS_COMPLEX, IS_PURE_COMPLEX,
                                  VERTICES, EDGES, FACES, TETS, DIAMOND,
-                                 MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices]
+                                 MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, CanonicalVertexOrderings]
                       }
 PACKAGES_SYM_DICT = {'trigonometry': ['e'],
                  MESH_HELPER: [EDGES, VI, EI, FI, NEI, BM1, BM2, BM3]}
@@ -137,6 +139,7 @@ MESH_HELPER_FUNC_MAPPING = {
 MeshSets: GPType.MeshSets,
 BoundaryMatrices: GPType.BoundaryMatrices,
 UnsignedBoundaryMatrices: GPType.UnsignedBoundaryMatrices,
+CanonicalVertexOrderings: GPType.CanonicalVertexOrderings,
 FACES_OF_EDGE: GPType.FacesOfEdge,
 FACE_NORMAL: GPType.FaceNormal,
 DIHEDRAL: GPType.Dihedral,
@@ -181,6 +184,7 @@ MESH_HELPER_SYM_TYPE = {
 MeshSets: make_function_type([MeshType()], [VertexSetType(), EdgeSetType(), FaceSetType()]),
 BoundaryMatrices: make_function_type([MeshType()], [MatrixType(), MatrixType()]),
 UnsignedBoundaryMatrices: make_function_type([MeshType()], [MatrixType(), MatrixType()]),
+CanonicalVertexOrderings: make_function_type([MeshType()], [MatrixType(), MatrixType()]),
 # functions
 FACES_OF_EDGE: make_function_type([MeshType(),EdgeType()], [FaceSetType()]),
 FACE_NORMAL: make_function_type(),
@@ -236,7 +240,7 @@ BM3: None
 # need extra info
 MESH_HELPER_DYNAMIC_TYPE_LIST = [BM1, BM2, BM3, VERTICES_TO_VECTOR, EDGES_TO_VECTOR, FACES_TO_VECTOR,
                                    VECTOR_TO_VERTICES, VECTOR_TO_EDGES, VECTOR_TO_FACES, VERTEX_POSITIONS, FACE_MATRIX,
-                                   MeshSets, BoundaryMatrices]
+                                   MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, CanonicalVertexOrderings]
 def merge_dict(dict1, dict2):
     # key:[value,]
     res = copy.deepcopy(dict1)
@@ -285,6 +289,11 @@ def get_sym_type_from_pkg(sym, pkg, mesh_type=None):
                     elif sym == UnsignedBoundaryMatrices:
                         ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True)),
                                                                 MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True))])
+                    elif sym == CanonicalVertexOrderings:
+                        ret = make_function_type([MeshType()], [
+                            VectorType(rows=mesh_type.vi_size, element_type=VertexType()),
+                            MatrixType(rows=mesh_type.ei_size, cols=2, element_type=EdgeType()),
+                            MatrixType(rows=mesh_type.fi_size, cols=3, element_type=FaceType())])
                 else:
                     ret = MESH_HELPER_SYM_TYPE[sym]
             else:
