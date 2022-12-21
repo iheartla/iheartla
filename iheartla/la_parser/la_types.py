@@ -276,7 +276,7 @@ class TetType(ScalarType):
         # self.var_type = VarTypeEnum.TETTYPE
 
     def get_raw_text(self):
-        return 'f:ℤ'
+        return 't:ℤ'
 
 class MeshType(LaVarType):
     def __init__(self, dim_dict=None, desc=None):
@@ -353,7 +353,8 @@ class MatrixType(LaVarType):
         #     return "matrix,rows:{},cols:{},ele_type:{}".format(self.rows, self.cols, self.element_type.get_signature())
         # else:
         #     return "matrix,rows:{},cols:{}".format(self.rows, self.cols)
-        return self.get_raw_text()
+        e_sig = self.element_type.get_signature()
+        return "{}^({}×{})".format(e_sig, self.rows, self.cols)
 
     def get_cpp_signature(self):
         e_type = 'ℤ' if self.element_type.is_int else 'ℝ'
@@ -402,7 +403,12 @@ class VectorType(LaVarType):
         #     return "vector,rows:{},ele_type:{}".format(self.rows, self.element_type.get_signature())
         # else:
         #     return "vector,rows:{}".format(self.rows)
-        return self.get_raw_text()
+        e_sig = self.element_type.get_signature()
+        return "{}^{}".format(e_sig, self.rows)
+
+    def get_cpp_signature(self):
+        e_type = 'ℤ' if self.element_type.is_int else 'ℝ'
+        return "{}^{}".format(e_type, self.rows)
 
     def is_integer_element(self):
         return self.element_type.is_integer_element()
