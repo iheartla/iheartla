@@ -386,6 +386,17 @@ class VectorType(LaVarType):
         self.cols = 1
         self.sparse = sparse
 
+    def __deepcopy__(self, memo):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        memo[id(self)] = result
+        for k, v in self.__dict__.items():
+            if k in ['rows_ir']:
+                setattr(result, k, getattr(self, k))
+            else:
+                setattr(result, k, copy.deepcopy(v, memo))
+        return result
+
     def get_signature(self):
         # if self.element_type:
         #     return "vector,rows:{},ele_type:{}".format(self.rows, self.element_type.get_signature())
