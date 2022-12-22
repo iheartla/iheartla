@@ -2764,6 +2764,18 @@ class TypeWalker(NodeWalker):
                 c_node = self.walk(node.params[index], **kwargs)
                 param_node_list.append(c_node)
                 param_type_list.append(c_node.la_type)
+            # Builtin function call
+            builtin_name = func_name
+            if func_name in self.func_imported_renaming:
+                builtin_name = self.func_imported_renaming[func_name]
+            # get dynamic func type based on parameters
+            if builtin_name in MESH_HELPER_FUNC_MAPPING:
+                if builtin_name in MESH_HELPER_DYNAMIC_TYPE_LIST:
+                    # dynamic func type, the first parameter must be mesh type
+                    self.assert_expr(param_type_list[0].is_mesh(), get_err_msg_info(node.parseinfo,
+                                                                                    "Function error. The first parameter must be mesh type"))
+                    name_type = get_sym_type_from_pkg(builtin_name, MESH_HELPER, param_type_list[0])
+            # check overloading
             if name_type.is_overloaded():
                 # get correct type for current parameters
                 correct_type, omitted = name_type.get_correct_ftype(param_type_list)
@@ -2775,16 +2787,6 @@ class TypeWalker(NodeWalker):
                 ir_node.identity_name = self.func_sig_dict[get_func_signature(func_name, name_type)]
             else:
                 ir_node.identity_name = func_name
-            # Builtin function call
-            builtin_name = ir_node.identity_name
-            if ir_node.identity_name in self.func_imported_renaming:
-                builtin_name = self.func_imported_renaming[ir_node.identity_name]
-            # get dynamic func type based on parameters
-            if builtin_name in MESH_HELPER_FUNC_MAPPING:
-                if builtin_name in MESH_HELPER_DYNAMIC_TYPE_LIST:
-                    # dynamic func type, the first parameter must be mesh type
-                    self.assert_expr(param_type_list[0].is_mesh(), get_err_msg_info(node.parseinfo, "Function error. The first parameter must be mesh type"))
-                    name_type = get_sym_type_from_pkg(builtin_name, MESH_HELPER, param_type_list[0])
             self.assert_expr(len(param_node_list) == len(name_type.params) or len(node.params) == 0,
                              get_err_msg_info(node.parseinfo, "Function error. Parameters count mismatch"))
             for index in range(len(param_node_list)):
