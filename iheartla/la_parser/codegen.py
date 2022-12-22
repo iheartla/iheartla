@@ -194,7 +194,8 @@ class CodeGen(IRPrinter):
             param_info = self.visit(param, **kwargs)
             pre_list += param_info.pre_list
             params_content_list.append(param_info.content)
-        content = node.func_name
+        content = node.identity_name
+        content = self.convert_overloaded_name(content)
         # content = "{}.{}({})".format(self.get_func_prefix(), self.get_builtin_func_name(content), ', '.join(params_content_list))
         content = "{}.{}({})".format(params_content_list[0], self.get_builtin_func_name(content), ', '.join(params_content_list[1:]))
         return CodeNodeInfo(content, pre_list=pre_list)

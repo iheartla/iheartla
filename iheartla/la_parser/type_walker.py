@@ -2851,7 +2851,7 @@ class TypeWalker(NodeWalker):
             node_info.ir = ir_node
             # Builtin function call
             if builtin_name in MESH_HELPER_FUNC_MAPPING:
-                tri_node = GPFuncNode(param_list, MESH_HELPER_FUNC_MAPPING[builtin_name], builtin_name)
+                tri_node = GPFuncNode(param_list, MESH_HELPER_FUNC_MAPPING[builtin_name], builtin_name, identity_name=ir_node.identity_name)
                 node_info = NodeInfo(ret_type, symbols=symbols)
                 tri_node.la_type = ret_type
                 node_info.ir = tri_node

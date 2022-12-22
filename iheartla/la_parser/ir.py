@@ -1343,11 +1343,12 @@ class MathFuncNode(ExprNode):
             self.parse_info = param.parse_info
 
 class GPFuncNode(ExprNode):
-    def __init__(self, params=None, func_type=GPType.Invalid, func_name=None, separator=None, la_type=None, parse_info=None, raw_text=None):
+    def __init__(self, params=None, func_type=GPType.Invalid, func_name=None, identity_name=None, separator=None, la_type=None, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.GPFunction, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.params = params
         self.func_type = func_type
         self.func_name = func_name
+        self.identity_name = identity_name
         self.separator = separator
 
 class FactorNode(ExprNode):
