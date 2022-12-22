@@ -302,6 +302,9 @@ class MeshType(LaVarType):
     def get_raw_text(self):
         return 'mesh({},{},{},{})'.format(self.vi_size, self.ei_size, self.fi_size, self.ti_size)
 
+    def get_relaxed_signature(self):
+        return 'mesh()'
+
     def get_signature(self):
         return self.get_raw_text()
 
