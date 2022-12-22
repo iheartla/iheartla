@@ -45,6 +45,7 @@ class GPType(IntEnum):
     UnsignedBoundaryMatrices = 202
     CanonicalVertexOrderings = 203
     NoneZeros = 204
+    IndicatorVector = 205
 
 class MeshData(object):
     def __init__(self, v=None, e=None, f=None, t=None, la_type=None):
@@ -73,6 +74,7 @@ MESH_CLASS = 'TriangleMesh'
 MESH_HELPER = 'MeshConnectivity'
 # MeshHelper function
 NoneZeros = 'NoneZeros'
+IndicatorVector = 'IndicatorVector'
 CanonicalVertexOrderings = 'CanonicalVertexOrderings'
 MeshSets = 'MeshSets'
 BoundaryMatrices = 'BoundaryMatrices'
@@ -133,7 +135,7 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                  GET_VERTICES_E, GET_EDGES_F, GET_VERTICES_F,
                                  STAR, CLOSURE, LINK, BOUNDARY, IS_COMPLEX, IS_PURE_COMPLEX,
                                  VERTICES, EDGES, FACES, TETS, DIAMOND,
-                                 MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, CanonicalVertexOrderings, NoneZeros]
+                                 MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, CanonicalVertexOrderings, NoneZeros, IndicatorVector]
                       }
 PACKAGES_SYM_DICT = {'trigonometry': ['e'],
                  MESH_HELPER: [EDGES, VI, EI, FI, NEI, BM1, BM2, BM3]}
@@ -143,6 +145,7 @@ BoundaryMatrices: GPType.BoundaryMatrices,
 UnsignedBoundaryMatrices: GPType.UnsignedBoundaryMatrices,
 CanonicalVertexOrderings: GPType.CanonicalVertexOrderings,
 NoneZeros: GPType.NoneZeros,
+IndicatorVector: GPType.IndicatorVector,
 FACES_OF_EDGE: GPType.FacesOfEdge,
 FACE_NORMAL: GPType.FaceNormal,
 DIHEDRAL: GPType.Dihedral,
@@ -196,6 +199,14 @@ NoneZeros: OverloadingFunctionType(func_list=[make_function_type([MatrixType(ele
                                                '{}_1'.format(NoneZeros),
                                                '{}_2'.format(NoneZeros),
                                                '{}_3'.format(NoneZeros)]),
+IndicatorVector: OverloadingFunctionType(func_list=[make_function_type([MeshType(), VertexSetType()], [MatrixType(cols=1, sparse=True, element_type=VertexType())]),
+                                              make_function_type([MeshType(), EdgeSetType()], [MatrixType(cols=1, sparse=True, element_type=EdgeType())]),
+                                              make_function_type([MeshType(), FaceSetType()], [MatrixType(cols=1, sparse=True, element_type=FaceType())]),
+                                              make_function_type([MeshType(), TetSetType()], [MatrixType(cols=1, sparse=True, element_type=TetType())])],
+                                   fname_list=['{}_0'.format(IndicatorVector),
+                                               '{}_1'.format(IndicatorVector),
+                                               '{}_2'.format(IndicatorVector),
+                                               '{}_3'.format(IndicatorVector)]),
 # functions
 FACES_OF_EDGE: make_function_type([MeshType(),EdgeType()], [FaceSetType()]),
 FACE_NORMAL: make_function_type(),
@@ -251,7 +262,7 @@ BM3: None
 # need extra info
 MESH_HELPER_DYNAMIC_TYPE_LIST = [BM1, BM2, BM3, VERTICES_TO_VECTOR, EDGES_TO_VECTOR, FACES_TO_VECTOR,
                                    VECTOR_TO_VERTICES, VECTOR_TO_EDGES, VECTOR_TO_FACES, VERTEX_POSITIONS, FACE_MATRIX,
-                                   MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, CanonicalVertexOrderings]
+                                   MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, CanonicalVertexOrderings, IndicatorVector]
 def merge_dict(dict1, dict2):
     # key:[value,]
     res = copy.deepcopy(dict1)
@@ -271,6 +282,10 @@ BACKEND_OVERLOADING_DICT = {
         '{}_1'.format(NoneZeros): '{}_1'.format(NoneZeros),
         '{}_2'.format(NoneZeros): '{}_2'.format(NoneZeros),
         '{}_3'.format(NoneZeros): '{}_3'.format(NoneZeros),
+        '{}_0'.format(IndicatorVector): 'vertices_to_vector',
+        '{}_1'.format(IndicatorVector): 'edges_to_vector',
+        '{}_2'.format(IndicatorVector): 'faces_to_vector',
+        '{}_3'.format(IndicatorVector): 'tets_to_vector',
     },
     ParserTypeEnum.NUMPY : {
         '{}_0'.format(NoneZeros): '{}_0'.format(NoneZeros),
@@ -327,6 +342,15 @@ def get_sym_type_from_pkg(sym, pkg, mesh_type=None):
                             VectorType(rows=mesh_type.vi_size, element_type=VertexType()),
                             MatrixType(rows=mesh_type.ei_size, cols=2, element_type=EdgeType()),
                             MatrixType(rows=mesh_type.fi_size, cols=3, element_type=FaceType())])
+                    elif sym == IndicatorVector:
+                        ret = OverloadingFunctionType(func_list=[make_function_type([MeshType(), VertexSetType()], [MatrixType(rows=mesh_type.vi_size, cols=1, sparse=True, element_type=VertexType())]),
+                                              make_function_type([MeshType(), EdgeSetType()], [MatrixType(rows=mesh_type.ei_size, cols=1, sparse=True, element_type=EdgeType())]),
+                                              make_function_type([MeshType(), FaceSetType()], [MatrixType(rows=mesh_type.fi_size, cols=1, sparse=True, element_type=FaceType())]),
+                                              make_function_type([MeshType(), TetSetType()], [MatrixType(rows=mesh_type.ti_size, cols=1, sparse=True, element_type=TetType())])],
+                                   fname_list=['{}_0'.format(IndicatorVector),
+                                               '{}_1'.format(IndicatorVector),
+                                               '{}_2'.format(IndicatorVector),
+                                               '{}_3'.format(IndicatorVector)])
                 else:
                     ret = MESH_HELPER_SYM_TYPE[sym]
             else:
