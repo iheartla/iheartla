@@ -44,7 +44,7 @@ class GPType(IntEnum):
     BoundaryMatrices = 201
     UnsignedBoundaryMatrices = 202
     CanonicalVertexOrderings = 203
-    NoneZeros = 204
+    NonZeros = 204
     IndicatorVector = 205
     ValueSet = 206
 
@@ -74,7 +74,7 @@ TI_SIZE = 'ti_size'
 MESH_CLASS = 'TriangleMesh'
 MESH_HELPER = 'MeshConnectivity'
 # MeshHelper function
-NoneZeros = 'NoneZeros'
+NonZeros = 'NonZeros'
 ValueSet = 'ValueSet'
 IndicatorVector = 'IndicatorVector'
 CanonicalVertexOrderings = 'CanonicalVertexOrderings'
@@ -138,7 +138,7 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                  STAR, CLOSURE, LINK, BOUNDARY, IS_COMPLEX, IS_PURE_COMPLEX,
                                  VERTICES, EDGES, FACES, TETS, DIAMOND,
                                  MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, CanonicalVertexOrderings,
-                               NoneZeros, IndicatorVector, ValueSet]
+                               NonZeros, IndicatorVector, ValueSet]
                       }
 PACKAGES_SYM_DICT = {'trigonometry': ['e'],
                  MESH_HELPER: [EDGES, VI, EI, FI, NEI, BM1, BM2, BM3]}
@@ -147,7 +147,7 @@ MeshSets: GPType.MeshSets,
 BoundaryMatrices: GPType.BoundaryMatrices,
 UnsignedBoundaryMatrices: GPType.UnsignedBoundaryMatrices,
 CanonicalVertexOrderings: GPType.CanonicalVertexOrderings,
-NoneZeros: GPType.NoneZeros,
+NonZeros: GPType.NonZeros,
 ValueSet: GPType.ValueSet,
 IndicatorVector: GPType.IndicatorVector,
 FACES_OF_EDGE: GPType.FacesOfEdge,
@@ -195,15 +195,15 @@ MeshSets: make_function_type([MeshType()], [VertexSetType(), EdgeSetType(), Face
 BoundaryMatrices: make_function_type([MeshType()], [MatrixType(), MatrixType()]),
 UnsignedBoundaryMatrices: make_function_type([MeshType()], [MatrixType(), MatrixType()]),
 CanonicalVertexOrderings: make_function_type([MeshType()], [MatrixType(), MatrixType()]),
-# NoneZeros: OverloadingFunctionType(func_list=[make_function_type([MatrixType(element_type=VertexType())], [VertexSetType()]),
+# NonZeros: OverloadingFunctionType(func_list=[make_function_type([MatrixType(element_type=VertexType())], [VertexSetType()]),
 #                                               make_function_type([MatrixType(element_type=EdgeType())], [EdgeSetType()]),
 #                                               make_function_type([MatrixType(element_type=FaceType())], [FaceSetType()]),
 #                                               make_function_type([MatrixType(element_type=TetType())], [TetSetType()])],
-#                                    fname_list=['{}_0'.format(NoneZeros),
-#                                                '{}_1'.format(NoneZeros),
-#                                                '{}_2'.format(NoneZeros),
-#                                                '{}_3'.format(NoneZeros)]),
-NoneZeros: make_function_type([MatrixType(element_type=ScalarType(is_int=True))], [SetType(int_list=[True], type_list=[ScalarType(is_int=True)])]),
+#                                    fname_list=['{}_0'.format(NonZeros),
+#                                                '{}_1'.format(NonZeros),
+#                                                '{}_2'.format(NonZeros),
+#                                                '{}_3'.format(NonZeros)]),
+NonZeros: make_function_type([MatrixType(element_type=ScalarType(is_int=True))], [SetType(int_list=[True], type_list=[ScalarType(is_int=True)])]),
 # ValueSet: OverloadingFunctionType(func_list=[make_function_type([MatrixType(element_type=VertexType()), ScalarType(is_int=True)], [VertexSetType()]),
 #                                               make_function_type([MatrixType(element_type=EdgeType()), ScalarType(is_int=True)], [EdgeSetType()]),
 #                                               make_function_type([MatrixType(element_type=FaceType()), ScalarType(is_int=True)], [FaceSetType()]),
@@ -292,14 +292,16 @@ CLASS_PACKAGES = [MESH_HELPER]
 # for builtin packages, the overloading functions may have different names in different backends
 BACKEND_OVERLOADING_DICT = {
     ParserTypeEnum.EIGEN : {
-        '{}_0'.format(NoneZeros): '{}_0'.format(NoneZeros),
-        '{}_1'.format(NoneZeros): '{}_1'.format(NoneZeros),
-        '{}_2'.format(NoneZeros): '{}_2'.format(NoneZeros),
-        '{}_3'.format(NoneZeros): '{}_3'.format(NoneZeros),
+NonZeros:'nonzeros',
+        '{}_0'.format(NonZeros): '{}_0'.format(NonZeros),
+        '{}_1'.format(NonZeros): '{}_1'.format(NonZeros),
+        '{}_2'.format(NonZeros): '{}_2'.format(NonZeros),
+        '{}_3'.format(NonZeros): '{}_3'.format(NonZeros),
         '{}_0'.format(IndicatorVector): 'vertices_to_vector',
         '{}_1'.format(IndicatorVector): 'edges_to_vector',
         '{}_2'.format(IndicatorVector): 'faces_to_vector',
         '{}_3'.format(IndicatorVector): 'tets_to_vector',
+ValueSet:'ValueSet',
     },
     ParserTypeEnum.NUMPY : {
     },
