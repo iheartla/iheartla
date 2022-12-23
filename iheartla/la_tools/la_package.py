@@ -46,6 +46,7 @@ class GPType(IntEnum):
     CanonicalVertexOrderings = 203
     NoneZeros = 204
     IndicatorVector = 205
+    ValueSet = 206
 
 class MeshData(object):
     def __init__(self, v=None, e=None, f=None, t=None, la_type=None):
@@ -74,6 +75,7 @@ MESH_CLASS = 'TriangleMesh'
 MESH_HELPER = 'MeshConnectivity'
 # MeshHelper function
 NoneZeros = 'NoneZeros'
+ValueSet = 'ValueSet'
 IndicatorVector = 'IndicatorVector'
 CanonicalVertexOrderings = 'CanonicalVertexOrderings'
 MeshSets = 'MeshSets'
@@ -135,7 +137,8 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                  GET_VERTICES_E, GET_EDGES_F, GET_VERTICES_F,
                                  STAR, CLOSURE, LINK, BOUNDARY, IS_COMPLEX, IS_PURE_COMPLEX,
                                  VERTICES, EDGES, FACES, TETS, DIAMOND,
-                                 MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, CanonicalVertexOrderings, NoneZeros, IndicatorVector]
+                                 MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, CanonicalVertexOrderings,
+                               NoneZeros, IndicatorVector, ValueSet]
                       }
 PACKAGES_SYM_DICT = {'trigonometry': ['e'],
                  MESH_HELPER: [EDGES, VI, EI, FI, NEI, BM1, BM2, BM3]}
@@ -145,6 +148,7 @@ BoundaryMatrices: GPType.BoundaryMatrices,
 UnsignedBoundaryMatrices: GPType.UnsignedBoundaryMatrices,
 CanonicalVertexOrderings: GPType.CanonicalVertexOrderings,
 NoneZeros: GPType.NoneZeros,
+ValueSet: GPType.ValueSet,
 IndicatorVector: GPType.IndicatorVector,
 FACES_OF_EDGE: GPType.FacesOfEdge,
 FACE_NORMAL: GPType.FaceNormal,
@@ -199,6 +203,14 @@ NoneZeros: OverloadingFunctionType(func_list=[make_function_type([MatrixType(ele
                                                '{}_1'.format(NoneZeros),
                                                '{}_2'.format(NoneZeros),
                                                '{}_3'.format(NoneZeros)]),
+ValueSet: OverloadingFunctionType(func_list=[make_function_type([MatrixType(element_type=VertexType()), ScalarType(is_int=True)], [VertexSetType()]),
+                                              make_function_type([MatrixType(element_type=EdgeType()), ScalarType(is_int=True)], [EdgeSetType()]),
+                                              make_function_type([MatrixType(element_type=FaceType()), ScalarType(is_int=True)], [FaceSetType()]),
+                                              make_function_type([MatrixType(element_type=TetType()), ScalarType(is_int=True)], [TetSetType()])],
+                                   fname_list=['{}_0'.format(ValueSet),
+                                               '{}_1'.format(ValueSet),
+                                               '{}_2'.format(ValueSet),
+                                               '{}_3'.format(ValueSet)]),
 IndicatorVector: OverloadingFunctionType(func_list=[make_function_type([MeshType(), VertexSetType()], [MatrixType(cols=1, sparse=True, element_type=VertexType())]),
                                               make_function_type([MeshType(), EdgeSetType()], [MatrixType(cols=1, sparse=True, element_type=EdgeType())]),
                                               make_function_type([MeshType(), FaceSetType()], [MatrixType(cols=1, sparse=True, element_type=FaceType())]),
@@ -288,16 +300,8 @@ BACKEND_OVERLOADING_DICT = {
         '{}_3'.format(IndicatorVector): 'tets_to_vector',
     },
     ParserTypeEnum.NUMPY : {
-        '{}_0'.format(NoneZeros): '{}_0'.format(NoneZeros),
-        '{}_1'.format(NoneZeros): '{}_1'.format(NoneZeros),
-        '{}_2'.format(NoneZeros): '{}_2'.format(NoneZeros),
-        '{}_3'.format(NoneZeros): '{}_3'.format(NoneZeros),
     },
     ParserTypeEnum.MATLAB : {
-        '{}_0'.format(NoneZeros): '{}_0'.format(NoneZeros),
-        '{}_1'.format(NoneZeros): '{}_1'.format(NoneZeros),
-        '{}_2'.format(NoneZeros): '{}_2'.format(NoneZeros),
-        '{}_3'.format(NoneZeros): '{}_3'.format(NoneZeros),
     },
 }
 
