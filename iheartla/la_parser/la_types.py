@@ -599,7 +599,8 @@ class OverloadingFunctionType(LaVarType):
         self.func_list = func_list
         self.fname_list = fname_list  # predefined overloading names
 
-    def get_correct_ftype(self, param_list):
+    def get_correct_ftype(self, param_list, allow_omit=True):
+        # when adding new types, allow_omit is supposed to be False, when checking func call, it's True
         omitted = False  # whether size is omitted
         # given param list, get the correct function type
         param_sig = get_list_signature(param_list)
@@ -610,19 +611,20 @@ class OverloadingFunctionType(LaVarType):
             if param_sig == cur_sig:
                 return cur_func, omitted
         # no type found, relax checking conditions (omit 0 dimension in matrices/vectors)
-        omitted = True
-        param_sig = get_list_relatex_signature(param_list)
-        la_debug("omitted param_sig:{}".format(param_sig))
-        for cur_func in self.func_list:
-            cur_sig = cur_func.get_param_relatex_signature()
-            la_debug("omitted cur_sig:{}".format(cur_sig))
-            if param_sig == cur_sig:
-                return cur_func, omitted
+        if allow_omit:
+            omitted = True
+            param_sig = get_list_relatex_signature(param_list)
+            la_debug("omitted param_sig:{}".format(param_sig))
+            for cur_func in self.func_list:
+                cur_sig = cur_func.get_param_relatex_signature()
+                la_debug("omitted cur_sig:{}".format(cur_sig))
+                if param_sig == cur_sig:
+                    return cur_func, omitted
         return None, omitted
 
     def add_new_type(self, f_type):
         success = True
-        found = self.get_correct_ftype(f_type.params)
+        found, omitted = self.get_correct_ftype(f_type.params, allow_omit=False)
         la_debug("add_new_type, current:{}, sig:{}".format(len(self.func_list), f_type.get_signature()))
         if found is None:
             self.func_list.append(f_type)
