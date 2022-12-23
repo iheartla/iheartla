@@ -197,5 +197,9 @@ class CodeGen(IRPrinter):
         content = node.identity_name
         content = self.convert_overloaded_name(content)
         # content = "{}.{}({})".format(self.get_func_prefix(), self.get_builtin_func_name(content), ', '.join(params_content_list))
-        content = "{}.{}({})".format(params_content_list[0], self.get_builtin_func_name(content), ', '.join(params_content_list[1:]))
+        if node.params[0].la_type.is_mesh():
+            # if the first param is a mesh
+            content = "{}.{}({})".format(params_content_list[0], self.get_builtin_func_name(content), ', '.join(params_content_list[1:]))
+        else:
+            content = "{}({})".format(self.get_builtin_func_name(content), ', '.join(params_content_list))
         return CodeNodeInfo(content, pre_list=pre_list)
