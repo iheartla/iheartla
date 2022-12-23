@@ -264,6 +264,9 @@ class VertexType(ScalarType):
     def get_raw_text(self):
         return 'v:ℤ'
 
+    def get_cpp_signature(self):
+        return 'ℤ'
+
 class EdgeType(ScalarType):
     def __init__(self):
         ScalarType.__init__(self, is_int=True, index_type=True, cur_type=SetTypeEnum.EDGE)
@@ -271,6 +274,9 @@ class EdgeType(ScalarType):
 
     def get_raw_text(self):
         return 'e:ℤ'
+
+    def get_cpp_signature(self):
+        return 'ℤ'
 
 class FaceType(ScalarType):
     def __init__(self):
@@ -280,6 +286,9 @@ class FaceType(ScalarType):
     def get_raw_text(self):
         return 'f:ℤ'
 
+    def get_cpp_signature(self):
+        return 'ℤ'
+
 class TetType(ScalarType):
     def __init__(self):
         ScalarType.__init__(self, is_int=True, index_type=True, cur_type=SetTypeEnum.TET)
@@ -287,6 +296,9 @@ class TetType(ScalarType):
 
     def get_raw_text(self):
         return 't:ℤ'
+
+    def get_cpp_signature(self):
+        return 'ℤ'
 
 class MeshType(LaVarType):
     def __init__(self, dim_dict=None, desc=None):
@@ -637,6 +649,7 @@ class OverloadingFunctionType(LaVarType):
         return signature + '\n'.join(sig_list)
 
     def has_duplicate_cpp_types(self):
+        # some iheartla types have the same signatures in cpp, e.g.:{Z} vertices v.s.  {Z} edges
         cpp_sig_list = []
         ret = False
         for cur_func in self.func_list:
