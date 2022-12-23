@@ -784,10 +784,11 @@ class EleConvertType(Enum):
     EleToSimplicialSet = 4
 
 class ElementConvertNode(ExprNode):
-    def __init__(self, la_type=None, name=None, params=None, to_type=EleConvertType.EleInvalid, parse_info=None, raw_text=None):
+    def __init__(self, la_type=None, name=None, params=None, separators=None, to_type=EleConvertType.EleInvalid, parse_info=None, raw_text=None):
         super().__init__(IRNodeType.ElementConvert, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.name = name
         self.params = params
+        self.separators = separators
         self.to_type = to_type
 
 class ToMatrixNode(ExprNode):

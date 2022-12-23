@@ -1080,7 +1080,9 @@ class CodeGenEigen(CodeGen):
                 pre_list += param_info.pre_list
             content = "std::tuple<std::set<int>, std::set<int>, std::set<int>, std::set<int> >{{ {} }}".format(",".join(params))
         else:
-            content = self.visit(node.params[0], **kwargs)
+            param_info = self.visit(node.params[0], **kwargs)
+            pre_list += param_info.pre_list
+            content = param_info.content
         return CodeNodeInfo(content, pre_list)
 
     def visit_power(self, node, **kwargs):

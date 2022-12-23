@@ -692,6 +692,14 @@ class CodeGenLatex(CodeGen):
         self.pop_scope()
         return '\\{' + content + '\\}'
 
+    def visit_element_convert(self, node, **kwargs):
+        params_str = ''
+        for index in range(len(node.params)):
+            params_str += self.visit(node.params[index], **kwargs)
+            if index < len(node.params) - 1:
+                params_str += node.separators[index] + ''
+        return "\\textit{{{}}}".format(node.name) + "({})".format(params_str)
+
     def visit_MatrixRows(self, node, **kwargs):
         ret = []
         for val in node.value:

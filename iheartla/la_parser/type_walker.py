@@ -4132,6 +4132,7 @@ class TypeWalker(NodeWalker):
             param_node_list.append(c_node)
             param_type_list.append(c_node.la_type)
         ir_node = ElementConvertNode(params=param_node_list, parse_info=node.parseinfo, raw_text=node.text)
+        ir_node.separators = node.separators
         if node.v:
             ir_node.to_type = EleConvertType.EleToVertexSet
             ir_node.la_type = VertexSetType()
