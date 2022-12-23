@@ -831,7 +831,7 @@ class grammardefaultParser(Parser):
                 "<sqrt_operator> '!!!' <func_id>"
                 '<function_operator> <exp_func>'
                 '<log_func> <ln_func> <sqrt_func>'
-                '<set_convert_func>'
+                '<element_convert_func>'
                 '<predefined_built_operators>'
                 '<builtin_operators>'
                 '<pseudoinverse_operator>'
@@ -2444,7 +2444,7 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._sqrt_func_()
             with self._option():
-                self._set_convert_func_()
+                self._element_convert_func_()
             self._error(
                 'expecting one of: '
                 'exp <EXP> <exp_func> log[\\u2082]'
@@ -2454,11 +2454,11 @@ class grammardefaultParser(Parser):
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET>'
-                '<set_convert_func>'
+                '<element_convert_func>'
             )
 
-    @tatsumasu('SetConvertFunc')
-    def _set_convert_func_(self):  # noqa
+    @tatsumasu('ElementConvertFunc')
+    def _element_convert_func_(self):  # noqa
         with self._group():
             with self._choice():
                 with self._option():
@@ -3745,7 +3745,7 @@ class grammardefaultParser(Parser):
                 "<sqrt_in_matrix_operator> '!!!'"
                 '<func_id> <function_operator> <exp_func>'
                 '<log_func> <ln_func> <sqrt_func>'
-                '<set_convert_func>'
+                '<element_convert_func>'
                 '<predefined_built_operators>'
                 '<builtin_operators>'
                 '<pseudoinverse_in_matrix_operator>'
@@ -7875,7 +7875,7 @@ class grammardefaultParser(Parser):
                 '<intersect_operator> sum ∑ <SUM> int'
                 "<INT> '∫' √ '!!!' <func_id> <exp_func>"
                 '<log_func> <ln_func> <sqrt_func>'
-                '<set_convert_func>'
+                '<element_convert_func>'
                 '<predefined_built_operators>'
                 "<operations> '(' <subexpression> '0' '1'"
                 "'𝟙' [01\\u1D7D9] <number_matrix>"
@@ -10599,7 +10599,7 @@ class grammardefaultSemantics:
     def predefined_built_operators(self, ast):  # noqa
         return ast
 
-    def set_convert_func(self, ast):  # noqa
+    def element_convert_func(self, ast):  # noqa
         return ast
 
     def exp_func(self, ast):  # noqa
@@ -11503,7 +11503,7 @@ class Squareroot(ModelBase):
 
 
 @dataclass(eq=False)
-class SetConvertFunc(ModelBase):
+class ElementConvertFunc(ModelBase):
     e: Any = None
     f: Any = None
     params: Any = None

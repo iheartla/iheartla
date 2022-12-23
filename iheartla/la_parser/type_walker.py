@@ -4128,7 +4128,7 @@ class TypeWalker(NodeWalker):
         param_type_list = []
         # params inside parentheses
         for index in range(len(node.params)):
-            c_node = self.walk(node.params[index], **kwargs)
+            c_node = self.walk(node.params[index], **kwargs).ir
             param_node_list.append(c_node)
             param_type_list.append(c_node.la_type)
         ir_node = ElementConvertNode(params=param_node_list, parse_info=node.parseinfo, raw_text=node.text)
