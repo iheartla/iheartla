@@ -83,6 +83,7 @@ class IRBaseVisitor(object):
             IRNodeType.Vector: "visit_vector",
             IRNodeType.Set: "visit_set",
             IRNodeType.ToMatrix: "visit_to_matrix",
+            IRNodeType.ElementConvert: "visit_element_convert",
             #
             IRNodeType.MatrixIndex: "visit_matrix_index",
             IRNodeType.VectorIndex: "visit_vector_index",
@@ -159,6 +160,9 @@ class IRBaseVisitor(object):
         pass
 
     def visit_to_matrix(self, node, **kwargs):
+        pass
+
+    def visit_element_convert(self, node, **kwargs):
         pass
 
     def visit_sparse_matrix(self, node, **kwargs):

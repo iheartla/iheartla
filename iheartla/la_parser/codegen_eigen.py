@@ -1069,6 +1069,20 @@ class CodeGenEigen(CodeGen):
         f_info.content = "sqrt({})".format(f_info.content)
         return f_info
 
+    def visit_element_convert(self, node, **kwargs):
+        pre_list = []
+        if node.to_type == EleConvertType.EleToSimplicialSet:
+            # tuple
+            params = []
+            for param in node.params:
+                param_info = self.visit(param, **kwargs)
+                params.append(param_info.content)
+                pre_list += param_info.pre_list
+            content = "std::tuple<std::set<int>, std::set<int>, std::set<int>, std::set<int> >{{ {} }}".format(",".join(params))
+        else:
+            content = self.visit(node.params[0], **kwargs)
+        return CodeNodeInfo(content, pre_list)
+
     def visit_power(self, node, **kwargs):
         pre_list = []
         base_info = self.visit(node.base, **kwargs)

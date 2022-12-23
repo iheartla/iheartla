@@ -84,6 +84,7 @@ class IRNodeType(Enum):
     ToMatrix = 311
     MultiConds = 312
     Set = 313
+    ElementConvert = 314
     #
     MatrixIndex = 320
     VectorIndex = 321
@@ -774,6 +775,20 @@ class SetNode(ExprNode):
         self.o = None
         self.scope_name = None
 
+class EleConvertType(Enum):
+    EleInvalid = -1
+    EleToVertexSet = 0
+    EleToEdgeSet = 1
+    EleToFaceSet = 2
+    EleToTetSet = 3
+    EleToSimplicialSet = 4
+
+class ElementConvertNode(ExprNode):
+    def __init__(self, la_type=None, name=None, params=None, to_type=EleConvertType.EleInvalid, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.ElementConvert, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        self.name = name
+        self.params = params
+        self.to_type = to_type
 
 class ToMatrixNode(ExprNode):
     def __init__(self, la_type=None, parse_info=None, raw_text=None, item=None):

@@ -4123,6 +4123,47 @@ class TypeWalker(NodeWalker):
     def walk_DiamondFunc(self, node, **kwargs):
         return self.create_gp_node_info(GPType.Diamond, node, **kwargs)
     ###################################################################
+    def walk_ElementConvertFunc(self, node, **kwargs):
+        param_node_list = []
+        param_type_list = []
+        # params inside parentheses
+        for index in range(len(node.params)):
+            c_node = self.walk(node.params[index], **kwargs)
+            param_node_list.append(c_node)
+            param_type_list.append(c_node.la_type)
+        ir_node = ElementConvertNode(params=param_node_list, parse_info=node.parseinfo, raw_text=node.text)
+        if node.v:
+            ir_node.to_type = EleConvertType.EleToVertexSet
+            ir_node.la_type = VertexSetType()
+            ir_node.name = node.v
+            self.assert_expr(len(param_node_list) == 1 and param_type_list[0].is_set(), get_err_msg_info(node.parseinfo,
+                                                                     "Function error. Can't find function with current parameter types."))
+        elif node.e:
+            ir_node.to_type = EleConvertType.EleToEdgeSet
+            ir_node.la_type = EdgeSetType()
+            ir_node.name = node.e
+            self.assert_expr(len(param_node_list) == 1 and param_type_list[0].is_set(), get_err_msg_info(node.parseinfo,
+                                                                     "Function error. Can't find function with current parameter types."))
+        elif node.f:
+            ir_node.to_type = EleConvertType.EleToFaceSet
+            ir_node.la_type = FaceSetType()
+            ir_node.name = node.f
+            self.assert_expr(len(param_node_list) == 1 and param_type_list[0].is_set(), get_err_msg_info(node.parseinfo,
+                                                                     "Function error. Can't find function with current parameter types."))
+        elif node.t:
+            ir_node.to_type = EleConvertType.EleToTetSet
+            ir_node.la_type = TetSetType()
+            ir_node.name = node.t
+            self.assert_expr(len(param_node_list) == 1 and param_type_list[0].is_set(), get_err_msg_info(node.parseinfo,
+                                                                     "Function error. Can't find function with current parameter types."))
+        elif node.s:
+            ir_node.to_type = EleConvertType.EleToSimplicialSet
+            ir_node.la_type = SimplicialSetType()
+            ir_node.name = node.s
+            self.assert_expr(len(param_node_list) == 3 and param_type_list[0].is_set() and param_type_list[1].is_set() and param_type_list[2].is_set(),
+                             get_err_msg_info(node.parseinfo, "Function error. Can't find function with current parameter types."))
+        return NodeInfo(ir_node.la_type, ir=ir_node)
+
     def walk_ArithExpression(self, node, **kwargs):
         value_info = self.walk(node.value, **kwargs)
         ir_node = ExpressionNode(parse_info=node.parseinfo, raw_text=node.text)
