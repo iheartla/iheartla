@@ -165,6 +165,11 @@ predefined_built_operators
     | log_func
     | ln_func
     | sqrt_func
+    | element_convert_func
+    ;
+    
+element_convert_func::ElementConvertFunc
+    = (v:VERTEXSET | e:EDGESET | f:FACESET | t:TETSET | s:SIMPLICIALSET) '(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
     ;
 
 exp_func::ExpFunc

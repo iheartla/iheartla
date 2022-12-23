@@ -721,6 +721,7 @@ class grammarinitParser(Parser):
                 '<sqrt_operator> <identifier_alone>'
                 '<func_id> <function_operator> <exp_func>'
                 '<log_func> <ln_func> <sqrt_func>'
+                '<set_convert_func>'
                 '<predefined_built_operators>'
                 '<builtin_operators>'
                 '<pseudoinverse_operator>'
@@ -2332,13 +2333,98 @@ class grammarinitParser(Parser):
                 self._ln_func_()
             with self._option():
                 self._sqrt_func_()
+            with self._option():
+                self._set_convert_func_()
             self._error(
                 'expecting one of: '
                 'exp <EXP> <exp_func> log[\\u2082]'
                 'log[\\u2081][\\u2080] log <LOG> <log_func>'
                 'ln <LN> <ln_func> sqrt <SQRT>'
-                '<sqrt_func>'
+                '<sqrt_func> [Vv]ertex[Ss]et <VERTEXSET>'
+                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                '<FACESET> [Tt]et[Ss]et <TETSET>'
+                '[Ss]implicial[Ss]et <SIMPLICIALSET>'
+                '<set_convert_func>'
             )
+
+    @tatsumasu('SetConvertFunc')
+    def _set_convert_func_(self):  # noqa
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._VERTEXSET_()
+                    self.name_last_node('v')
+                    self._define(
+                        ['v'],
+                        []
+                    )
+                with self._option():
+                    self._EDGESET_()
+                    self.name_last_node('e')
+                    self._define(
+                        ['e'],
+                        []
+                    )
+                with self._option():
+                    self._FACESET_()
+                    self.name_last_node('f')
+                    self._define(
+                        ['f'],
+                        []
+                    )
+                with self._option():
+                    self._TETSET_()
+                    self.name_last_node('t')
+                    self._define(
+                        ['t'],
+                        []
+                    )
+                with self._option():
+                    self._SIMPLICIALSET_()
+                    self.name_last_node('s')
+                    self._define(
+                        ['s'],
+                        []
+                    )
+                self._error(
+                    'expecting one of: '
+                    '<VERTEXSET> <EDGESET> <FACESET> <TETSET>'
+                    '<SIMPLICIALSET>'
+                )
+        self._token('(')
+
+        def block6():
+
+            def block7():
+                self._hspace_()
+            self._closure(block7)
+            self._expression_()
+            self.add_last_node_to_name('params')
+
+            def block9():
+
+                def block10():
+                    self._hspace_()
+                self._closure(block10)
+                self._params_separator_()
+                self.add_last_node_to_name('separators')
+
+                def block12():
+                    self._hspace_()
+                self._closure(block12)
+                self._expression_()
+                self.add_last_node_to_name('params')
+            self._closure(block9)
+        self._closure(block6)
+
+        def block14():
+            self._hspace_()
+        self._closure(block14)
+        self._token(')')
+        self._define(
+            ['v', 'e', 'f', 't', 's'],
+            ['params', 'separators']
+        )
 
     @tatsumasu('ExpFunc')
     def _exp_func_(self):  # noqa
@@ -3553,6 +3639,7 @@ class grammarinitParser(Parser):
                 '<identifier_alone> <func_id>'
                 '<function_operator> <exp_func>'
                 '<log_func> <ln_func> <sqrt_func>'
+                '<set_convert_func>'
                 '<predefined_built_operators>'
                 '<builtin_operators>'
                 '<pseudoinverse_in_matrix_operator>'
@@ -7611,7 +7698,8 @@ class grammarinitParser(Parser):
                 '<intersect_operator> sum ∑ <SUM> int'
                 "<INT> '∫' √ <identifier_alone> <func_id>"
                 '<exp_func> <log_func> <ln_func>'
-                '<sqrt_func> <predefined_built_operators>'
+                '<sqrt_func> <set_convert_func>'
+                '<predefined_built_operators>'
                 "<operations> '(' <subexpression> '0' '1'"
                 "'𝟙' [01\\u1D7D9] <number_matrix>"
                 '<identifier_with_multi_subscript>'
@@ -10257,6 +10345,9 @@ class grammarinitSemantics:
     def predefined_built_operators(self, ast):  # noqa
         return ast
 
+    def set_convert_func(self, ast):  # noqa
+        return ast
+
     def exp_func(self, ast):  # noqa
         return ast
 
@@ -11158,6 +11249,17 @@ class PseudoInverse(ModelBase):
 @dataclass(eq=False)
 class Squareroot(ModelBase):
     f: Any = None
+
+
+@dataclass(eq=False)
+class SetConvertFunc(ModelBase):
+    e: Any = None
+    f: Any = None
+    params: Any = None
+    s: Any = None
+    separators: Any = None
+    t: Any = None
+    v: Any = None
 
 
 @dataclass(eq=False)
