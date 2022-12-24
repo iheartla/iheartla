@@ -682,7 +682,7 @@ class CodeGenLatex(CodeGen):
         for item in node.items:
             content_list.append(self.visit(item, **kwargs))
         content = ', '.join(content_list)
-        if len(node.enum_list) > 0:
+        if node.enum_list and len(node.enum_list) > 0:
             kwargs['is_sub'] = True
             sub = ','.join(node.enum_list)
             del kwargs['is_sub']

@@ -1092,7 +1092,7 @@ class CodeGenMatlab(CodeGen):
         cur_m_id = node.symbol
         ret = []
         pre_list = []
-        if len(node.enum_list) > 0:
+        if node.enum_list and len(node.enum_list) > 0:
             pre_list.append('    {} = []\n'.format(cur_m_id))
             #
             range_info = self.visit(node.range, **kwargs)

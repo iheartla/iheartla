@@ -3610,7 +3610,7 @@ class TypeWalker(NodeWalker):
         ir_node.scope_name = new_id
         self.assert_expr(len(node.exp) > 0, get_err_msg_info(node.parseinfo, "Empty set is not allowed."))
         f_type = None
-        if node.enum and len(node.enum) > 0:
+        if node.enum:
             ir_node.f = node.f
             ir_node.o = node.o
             range_info = self.walk(node.range, **kwargs)

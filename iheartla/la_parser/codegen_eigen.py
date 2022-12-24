@@ -1287,7 +1287,7 @@ class CodeGenEigen(CodeGen):
         cur_m_id = node.symbol
         ret = []
         pre_list = []
-        if len(node.enum_list) > 0:
+        if node.enum_list and len(node.enum_list) > 0:
             pre_list.append('    {} {};\n'.format(self.get_ctype(node.la_type), cur_m_id))
             #
             range_info = self.visit(node.range, **kwargs)
