@@ -1092,10 +1092,8 @@ class CodeGenMatlab(CodeGen):
         cur_m_id = node.symbol
         ret = []
         pre_list = []
-        if node.cond:
+        if len(node.enum_list) > 0:
             pre_list.append('    {} = []\n'.format(cur_m_id))
-            cond_info = self.visit(node.cond, **kwargs)
-            cond_content = "        if " + cond_info.content + "\n"
             #
             range_info = self.visit(node.range, **kwargs)
             index_name = self.generate_var_name('index')
@@ -1115,9 +1113,14 @@ class CodeGenMatlab(CodeGen):
                         exp_pre_list.append(list_content[index] + '\n')
             #
             pre_list += exp_pre_list
-            pre_list += cond_content
-            pre_list.append("            {} = [{}; {}];\n".format(cur_m_id, cur_m_id, exp_info.content))
-            pre_list.append("        end\n")
+            if node.cond:
+                cond_info = self.visit(node.cond, **kwargs)
+                cond_content = "        if " + cond_info.content + "\n"
+                pre_list += cond_content
+                pre_list.append("            {} = [{}; {}];\n".format(cur_m_id, cur_m_id, exp_info.content))
+                pre_list.append("        end\n")
+            else:
+                pre_list.append("        {} = [{}; {}];\n".format(cur_m_id, cur_m_id, exp_info.content))
             pre_list.append("    end\n")
             content = cur_m_id
         else:

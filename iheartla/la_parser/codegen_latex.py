@@ -682,13 +682,14 @@ class CodeGenLatex(CodeGen):
         for item in node.items:
             content_list.append(self.visit(item, **kwargs))
         content = ', '.join(content_list)
-        if node.cond:
+        if len(node.enum_list) > 0:
             kwargs['is_sub'] = True
             sub = ','.join(node.enum_list)
             del kwargs['is_sub']
             range = self.visit(node.range, **kwargs)
             sub += "\in " + range
-            content += '| {}, {}'.format(sub, self.visit(node.cond, **kwargs))
+            if node.cond:
+                content += '| {}, {}'.format(sub, self.visit(node.cond, **kwargs))
         self.pop_scope()
         return '\\{' + content + '\\}'
 

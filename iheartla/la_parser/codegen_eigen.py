@@ -1287,10 +1287,8 @@ class CodeGenEigen(CodeGen):
         cur_m_id = node.symbol
         ret = []
         pre_list = []
-        if node.cond:
+        if len(node.enum_list) > 0:
             pre_list.append('    {} {};\n'.format(self.get_ctype(node.la_type), cur_m_id))
-            cond_info = self.visit(node.cond, **kwargs)
-            cond_content = "        if(" + cond_info.content + "){\n"
             #
             range_info = self.visit(node.range, **kwargs)
             if len(node.enum_list) == 1:
@@ -1316,7 +1314,10 @@ class CodeGenEigen(CodeGen):
                                                                                        extra_content))
             exp_pre_list = []
             exp_info = self.visit(node.items[0], **kwargs)
-            pre_list.append(cond_content)
+            if node.cond:
+                cond_info = self.visit(node.cond, **kwargs)
+                cond_content = "        if(" + cond_info.content + "){\n"
+                pre_list.append(cond_content)
             if exp_info.pre_list:  # catch pre_list
                 list_content = "".join(exp_info.pre_list)
                 # content += exp_info.pre_list
@@ -1325,8 +1326,11 @@ class CodeGenEigen(CodeGen):
                     if index != len(list_content) - 1:
                         exp_pre_list.append(list_content[index] + '\n')
             pre_list += exp_pre_list
-            pre_list.append("            {}.insert({});\n".format(cur_m_id, exp_info.content))
-            pre_list.append("        }\n")
+            if node.cond:
+                pre_list.append("            {}.insert({});\n".format(cur_m_id, exp_info.content))
+                pre_list.append("        }\n")
+            else:
+                pre_list.append("        {}.insert({});\n".format(cur_m_id, exp_info.content))
             pre_list.append("    }\n")
         else:
             # {a, b, c}

@@ -1067,10 +1067,8 @@ class CodeGenNumpy(CodeGen):
         cur_m_id = node.symbol
         ret = []
         pre_list = []
-        if node.cond:
+        if len(node.enum_list) > 0:
             pre_list.append('    {} = frozenset()\n'.format(cur_m_id))
-            cond_info = self.visit(node.cond, **kwargs)
-            cond_content = "        if(" + cond_info.content + "):\n"
             #
             range_info = self.visit(node.range, **kwargs)
             index_name = self.generate_var_name('tuple')
@@ -1093,8 +1091,13 @@ class CodeGenNumpy(CodeGen):
                     if index != len(list_content) - 1:
                         exp_pre_list.append(list_content[index] + '\n')
             pre_list += exp_pre_list
-            pre_list += cond_content
-            pre_list.append("            {}.insert({})\n".format(cur_m_id, exp_info.content))
+            if node.cond:
+                cond_info = self.visit(node.cond, **kwargs)
+                cond_content = "        if(" + cond_info.content + "):\n"
+                pre_list += cond_content
+                pre_list.append("            {}.insert({})\n".format(cur_m_id, exp_info.content))
+            else:
+                pre_list.append("        {}.insert({})\n".format(cur_m_id, exp_info.content))
             content = cur_m_id
         else:
             for item in node.items:

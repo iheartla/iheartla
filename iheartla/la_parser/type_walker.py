@@ -3610,30 +3610,30 @@ class TypeWalker(NodeWalker):
         ir_node.scope_name = new_id
         self.assert_expr(len(node.exp) > 0, get_err_msg_info(node.parseinfo, "Empty set is not allowed."))
         f_type = None
-        if node.cond:
+        if node.enum and len(node.enum) > 0:
             ir_node.f = node.f
             ir_node.o = node.o
             range_info = self.walk(node.range, **kwargs)
             ir_node.range = range_info.ir
-            if node.enum and len(node.enum) > 0:
-                if range_info.la_type.size == len(node.enum):
-                    # (i,j ∈ E)
-                    for cur_index in range(len(node.enum)):
-                        cur_id_raw = node.enum[cur_index]
-                        enum = self.walk(cur_id_raw, **kwargs)
-                        enum_list.append(enum.content)
-                        self.check_sym_existence(enum.content, get_err_msg_info(cur_id_raw.parseinfo, "Subscript has been defined"), False)
-                        self.add_sym_type(enum.content, range_info.la_type.type_list[cur_index])
-                else:
-                    # (e ∈ E)
-                    self.assert_expr(range_info.la_type.size > 1 and len(node.enum) == 1, get_err_msg_info(node.parseinfo, "Invalid size"))
-                    cur_id_raw = node.enum[0]
-                    enum = self.walk(cur_id_raw)
+            if range_info.la_type.size == len(node.enum):
+                # (i,j ∈ E)
+                for cur_index in range(len(node.enum)):
+                    cur_id_raw = node.enum[cur_index]
+                    enum = self.walk(cur_id_raw, **kwargs)
                     enum_list.append(enum.content)
                     self.check_sym_existence(enum.content, get_err_msg_info(cur_id_raw.parseinfo, "Subscript has been defined"), False)
-                    self.add_sym_type(enum.content, TupleType(type_list=range_info.la_type.type_list))
-                    ir_node.use_tuple = True
-                ir_node.enum_list = enum_list
+                    self.add_sym_type(enum.content, range_info.la_type.type_list[cur_index])
+            else:
+                # (e ∈ E)
+                self.assert_expr(range_info.la_type.size > 1 and len(node.enum) == 1, get_err_msg_info(node.parseinfo, "Invalid size"))
+                cur_id_raw = node.enum[0]
+                enum = self.walk(cur_id_raw)
+                enum_list.append(enum.content)
+                self.check_sym_existence(enum.content, get_err_msg_info(cur_id_raw.parseinfo, "Subscript has been defined"), False)
+                self.add_sym_type(enum.content, TupleType(type_list=range_info.la_type.type_list))
+                ir_node.use_tuple = True
+            ir_node.enum_list = enum_list
+        if node.cond:
             ir_node.cond = self.walk(node.cond, **kwargs).ir
         for c_index in range(len(node.exp)):
             exp_info = self.walk(node.exp[c_index], **kwargs)
