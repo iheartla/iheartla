@@ -77,6 +77,7 @@ VERTICES = /vertices/;
 EDGES = /edges/;
 FACES = /faces/;
 TETS = /tets/;
+TUPLE = /tuple/;
 """
 
 KEYWORDS = KEYS + r"""
@@ -126,5 +127,6 @@ BUILTIN_KEYWORDS
     | EDGES
     | FACES
     | TETS
+    | TUPLE
     ;
 """

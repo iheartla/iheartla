@@ -528,8 +528,8 @@ class ParserFileManager(object):
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<EDGES> faces <FACES> tets <TETS> tuple'
+                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
             ['value', 'id'],
@@ -619,8 +619,8 @@ class ParserFileManager(object):
                     '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
                     'Mesh <MESH> sparse <SPARSE> index'
                     '<INDEX> vertices <VERTICES> edges'
-                    '<EDGES> faces <FACES> tets <TETS>'
-                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                    '<EDGES> faces <FACES> tets <TETS> tuple'
+                    '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(
                 ['const', 'id', 'value'],
@@ -688,8 +688,8 @@ class ParserFileManager(object):
                     '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
                     'Mesh <MESH> sparse <SPARSE> index'
                     '<INDEX> vertices <VERTICES> edges'
-                    '<EDGES> faces <FACES> tets <TETS>'
-                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                    '<EDGES> faces <FACES> tets <TETS> tuple'
+                    '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(
                 ['value', 'id'],

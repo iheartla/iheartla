@@ -545,6 +545,10 @@ class grammardefaultParser(Parser):
             self._pattern('tets')
 
     @tatsumasu()
+    def _TUPLE_(self):  # noqa
+        self._pattern('tuple')
+
+    @tatsumasu()
     def _BUILTIN_KEYWORDS_(self):  # noqa
         with self._choice():
             with self._option():
@@ -637,6 +641,8 @@ class grammardefaultParser(Parser):
                 self._FACES_()
             with self._option():
                 self._TETS_()
+            with self._option():
+                self._TUPLE_()
             self._error(
                 'expecting one of: '
                 'where <WHERE> given <GIVEN> sum min'
@@ -655,7 +661,8 @@ class grammardefaultParser(Parser):
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS>'
+                '<EDGES> faces <FACES> tets <TETS> tuple'
+                '<TUPLE>'
             )
 
     @tatsumasu('Exponent')
@@ -2454,7 +2461,7 @@ class grammardefaultParser(Parser):
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET>'
-                '<element_convert_func>'
+                'tuple <TUPLE> <element_convert_func>'
             )
 
     @tatsumasu('ElementConvertFunc')
@@ -2496,43 +2503,50 @@ class grammardefaultParser(Parser):
                         ['s'],
                         []
                     )
+                with self._option():
+                    self._TUPLE_()
+                    self.name_last_node('tu')
+                    self._define(
+                        ['tu'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     '<VERTEXSET> <EDGESET> <FACESET> <TETSET>'
-                    '<SIMPLICIALSET>'
+                    '<SIMPLICIALSET> <TUPLE>'
                 )
         self._token('(')
 
-        def block6():
+        def block7():
 
-            def block7():
+            def block8():
                 self._hspace_()
-            self._closure(block7)
+            self._closure(block8)
             self._expression_()
             self.add_last_node_to_name('params')
 
-            def block9():
+            def block10():
 
-                def block10():
+                def block11():
                     self._hspace_()
-                self._closure(block10)
+                self._closure(block11)
                 self._params_separator_()
                 self.add_last_node_to_name('separators')
 
-                def block12():
+                def block13():
                     self._hspace_()
-                self._closure(block12)
+                self._closure(block13)
                 self._expression_()
                 self.add_last_node_to_name('params')
-            self._closure(block9)
-        self._closure(block6)
+            self._closure(block10)
+        self._closure(block7)
 
-        def block14():
+        def block15():
             self._hspace_()
-        self._closure(block14)
+        self._closure(block15)
         self._token(')')
         self._define(
-            ['v', 'e', 'f', 't', 's'],
+            ['v', 'e', 'f', 't', 's', 'tu'],
             ['params', 'separators']
         )
 
@@ -3690,12 +3704,13 @@ class grammardefaultParser(Parser):
                 '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
                 '<SPARSE> index <INDEX> vertices'
                 '<VERTICES> edges <EDGES> faces <FACES>'
-                'tets <TETS> <BUILTIN_KEYWORDS>'
-                "<KEYWORDS> <identifier> <integer> '.'"
-                '<digit> <mantissa> <floating_point>'
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                "<fraction> \\d <number> '[' '⎡' <matrix>"
-                "<vector> '{' <set> <pi> <constant>"
+                'tets <TETS> tuple <TUPLE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                "<identifier> <integer> '.' <digit>"
+                '<mantissa> <floating_point> <double>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+                "\\d <number> '[' '⎡' <matrix> <vector>"
+                "'{' <set> <pi> <constant>"
             )
         self._define(
             ['op', 'sub', 'nm', 'id0', 'num', 'm', 'v', 's', 'c'],
@@ -3857,8 +3872,9 @@ class grammardefaultParser(Parser):
                 '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
                 '<SPARSE> index <INDEX> vertices'
                 '<VERTICES> edges <EDGES> faces <FACES>'
-                'tets <TETS> <BUILTIN_KEYWORDS>'
-                '<KEYWORDS> \\d <pi> <factor_in_matrix>'
+                'tets <TETS> tuple <TUPLE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS> \\d <pi>'
+                '<factor_in_matrix>'
             )
         self._define(
             ['base', 't', 'r', 'power'],
@@ -4025,8 +4041,9 @@ class grammardefaultParser(Parser):
                 '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
                 '<SPARSE> index <INDEX> vertices'
                 '<VERTICES> edges <EDGES> faces <FACES>'
-                'tets <TETS> <BUILTIN_KEYWORDS>'
-                '<KEYWORDS> \\d <pi> <factor_in_matrix>'
+                'tets <TETS> tuple <TUPLE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS> \\d <pi>'
+                '<factor_in_matrix>'
             )
         self._define(
             ['left', 'right', 'p'],
@@ -4311,8 +4328,8 @@ class grammardefaultParser(Parser):
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<EDGES> faces <FACES> tets <TETS> tuple'
+                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier_alone>'
             )
         self._define(
@@ -4474,8 +4491,8 @@ class grammardefaultParser(Parser):
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<EDGES> faces <FACES> tets <TETS> tuple'
+                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
             ['value', 'id'],
@@ -7471,8 +7488,8 @@ class grammardefaultParser(Parser):
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<EDGES> faces <FACES> tets <TETS> tuple'
+                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<local_func> <identifier> <assignment>'
                 '<expression> <addition> <subtraction>'
                 "<add_sub_operator> <term> '-' 'with'"
@@ -7616,8 +7633,8 @@ class grammardefaultParser(Parser):
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<EDGES> faces <FACES> tets <TETS> tuple'
+                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier>'
             )
         self._define(
@@ -7765,8 +7782,8 @@ class grammardefaultParser(Parser):
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<EDGES> faces <FACES> tets <TETS> tuple'
+                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> '(' <vector> '[' '⎡'"
                 '<matrix>'
             )
@@ -7912,12 +7929,13 @@ class grammardefaultParser(Parser):
                 '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
                 '<SPARSE> index <INDEX> vertices'
                 '<VERTICES> edges <EDGES> faces <FACES>'
-                'tets <TETS> <BUILTIN_KEYWORDS>'
-                "<KEYWORDS> <identifier> <integer> '.'"
-                '<digit> <mantissa> <floating_point>'
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                "<fraction> \\d <number> '[' '⎡' <matrix>"
-                "<vector> '{' <set> <pi> <constant>"
+                'tets <TETS> tuple <TUPLE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                "<identifier> <integer> '.' <digit>"
+                '<mantissa> <floating_point> <double>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+                "\\d <number> '[' '⎡' <matrix> <vector>"
+                "'{' <set> <pi> <constant>"
             )
         self._define(
             ['op', 'sub', 'nm', 'id0', 'num', 'm', 'v', 's', 'c'],
@@ -7955,8 +7973,8 @@ class grammardefaultParser(Parser):
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<EDGES> faces <FACES> tets <TETS> tuple'
+                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier_alone> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
@@ -8770,8 +8788,8 @@ class grammardefaultParser(Parser):
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<EDGES> faces <FACES> tets <TETS> tuple'
+                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
@@ -9471,8 +9489,8 @@ class grammardefaultParser(Parser):
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<EDGES> faces <FACES> tets <TETS> tuple'
+                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier>'
             )
         self._define(
@@ -9689,8 +9707,8 @@ class grammardefaultParser(Parser):
                     '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
                     'Mesh <MESH> sparse <SPARSE> index'
                     '<INDEX> vertices <VERTICES> edges'
-                    '<EDGES> faces <FACES> tets <TETS>'
-                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                    '<EDGES> faces <FACES> tets <TETS> tuple'
+                    '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(
                 ['const', 'id', 'value'],
@@ -9758,8 +9776,8 @@ class grammardefaultParser(Parser):
                     '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
                     'Mesh <MESH> sparse <SPARSE> index'
                     '<INDEX> vertices <VERTICES> edges'
-                    '<EDGES> faces <FACES> tets <TETS>'
-                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                    '<EDGES> faces <FACES> tets <TETS> tuple'
+                    '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(
                 ['value', 'id'],
@@ -9793,8 +9811,8 @@ class grammardefaultParser(Parser):
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<EDGES> faces <FACES> tets <TETS> tuple'
+                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier_with_subscript>'
             )
 
@@ -10506,6 +10524,9 @@ class grammardefaultSemantics:
         return ast
 
     def TETS(self, ast):  # noqa
+        return ast
+
+    def TUPLE(self, ast):  # noqa
         return ast
 
     def BUILTIN_KEYWORDS(self, ast):  # noqa
@@ -11524,6 +11545,7 @@ class ElementConvertFunc(ModelBase):
     s: Any = None
     separators: Any = None
     t: Any = None
+    tu: Any = None
     v: Any = None
 
 
