@@ -2801,12 +2801,16 @@ class grammardefaultParser(Parser):
                 )
             with self._option():
                 self._token('{')
+
+                def block8():
+                    self._hspace_()
+                self._closure(block8)
                 self._expression_()
                 self.add_last_node_to_name('exp')
 
-                def block9():
+                def block10():
                     self._hspace_()
-                self._closure(block9)
+                self._closure(block10)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -2819,37 +2823,37 @@ class grammardefaultParser(Parser):
                         )
                 self.name_last_node('f')
 
-                def block12():
+                def block13():
                     self._hspace_()
-                self._closure(block12)
+                self._closure(block13)
                 self._identifier_alone_()
                 self.add_last_node_to_name('enum')
 
-                def block14():
-
-                    def block15():
-                        self._hspace_()
-                    self._closure(block15)
+                def block15():
 
                     def block16():
-                        self._token(',')
+                        self._hspace_()
                     self._closure(block16)
 
                     def block17():
-                        self._hspace_()
+                        self._token(',')
                     self._closure(block17)
+
+                    def block18():
+                        self._hspace_()
+                    self._closure(block18)
                     self._identifier_alone_()
                     self.add_last_node_to_name('enum')
-                self._closure(block14)
-
-                def block19():
-                    self._hspace_()
-                self._closure(block19)
-                self._IN_()
+                self._closure(block15)
 
                 def block20():
                     self._hspace_()
                 self._closure(block20)
+                self._IN_()
+
+                def block21():
+                    self._hspace_()
+                self._closure(block21)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -2865,20 +2869,23 @@ class grammardefaultParser(Parser):
                         )
                 self.name_last_node('range')
 
-                def block23():
-                    self._hspace_()
-                self._closure(block23)
-                self._IF_()
-
                 def block24():
                     self._hspace_()
                 self._closure(block24)
-                self._if_condition_()
-                self.name_last_node('cond')
 
-                def block26():
-                    self._hspace_()
-                self._closure(block26)
+                def block25():
+                    self._IF_()
+
+                    def block26():
+                        self._hspace_()
+                    self._closure(block26)
+                    self._if_condition_()
+                    self.name_last_node('cond')
+
+                    def block28():
+                        self._hspace_()
+                    self._closure(block28)
+                self._closure(block25)
                 self._token('}')
                 self._define(
                     ['f', 'range', 'cond'],
@@ -2886,46 +2893,50 @@ class grammardefaultParser(Parser):
                 )
             with self._option():
                 self._token('{')
+
+                def block29():
+                    self._hspace_()
+                self._closure(block29)
                 self._expression_()
                 self.add_last_node_to_name('exp')
 
-                def block28():
+                def block31():
                     self._hspace_()
-                self._closure(block28)
+                self._closure(block31)
                 self._pattern('\\|')
                 self.name_last_node('o')
 
-                def block30():
+                def block33():
                     self._hspace_()
-                self._closure(block30)
+                self._closure(block33)
                 self._identifier_alone_()
                 self.add_last_node_to_name('enum')
 
-                def block32():
+                def block35():
 
-                    def block33():
+                    def block36():
                         self._hspace_()
-                    self._closure(block33)
+                    self._closure(block36)
 
-                    def block34():
+                    def block37():
                         self._token(',')
-                    self._closure(block34)
+                    self._closure(block37)
 
-                    def block35():
+                    def block38():
                         self._hspace_()
-                    self._closure(block35)
+                    self._closure(block38)
                     self._identifier_alone_()
                     self.add_last_node_to_name('enum')
-                self._closure(block32)
+                self._closure(block35)
 
-                def block37():
+                def block40():
                     self._hspace_()
-                self._closure(block37)
+                self._closure(block40)
                 self._IN_()
 
-                def block38():
+                def block41():
                     self._hspace_()
-                self._closure(block38)
+                self._closure(block41)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -2941,20 +2952,23 @@ class grammardefaultParser(Parser):
                         )
                 self.name_last_node('range')
 
-                def block41():
-                    self._hspace_()
-                self._closure(block41)
-                self._token(',')
-
-                def block42():
-                    self._hspace_()
-                self._closure(block42)
-                self._if_condition_()
-                self.name_last_node('cond')
-
                 def block44():
                     self._hspace_()
                 self._closure(block44)
+
+                def block45():
+                    self._token(',')
+
+                    def block46():
+                        self._hspace_()
+                    self._closure(block46)
+                    self._if_condition_()
+                    self.name_last_node('cond')
+
+                    def block48():
+                        self._hspace_()
+                    self._closure(block48)
+                self._closure(block45)
                 self._token('}')
                 self._define(
                     ['o', 'range', 'cond'],
