@@ -352,9 +352,14 @@ class CodeGenLatex(CodeGen):
             for cur_index in range(len(node.right)):
                 rhs_list.append(self.visit(node.right[cur_index], **kwargs))
             # if self.is_main_scope() and not self.local_func_parsing:
-            content = ','.join(lhs_list) + " & = " + ','.join(rhs_list)
+            #     content = ','.join(lhs_list) + " & = " + ','.join(rhs_list)
             # else:
             #     content = ','.join(lhs_list) + " = " + ','.join(rhs_list)
+            if self.visiting_sum:
+                # assignment in sum
+                content = ','.join(lhs_list) + " = " + ','.join(rhs_list)
+            else:
+                content = ','.join(lhs_list) + " & = " + ','.join(rhs_list)
         self.code_frame.expr += content +'\n'
         self.code_frame.expr_dict[node.raw_text] = content
         return content
@@ -416,6 +421,7 @@ class CodeGenLatex(CodeGen):
         return self.visit(node.left, **kwargs) + sign + self.visit(node.right, **kwargs)
 
     def visit_summation(self, node, **kwargs):
+        self.visiting_sum = True
         self.push_scope(node.scope_name)
         if node.cond:
             sub = '{' + self.visit(node.cond, **kwargs) + '}'
@@ -437,6 +443,7 @@ class CodeGenLatex(CodeGen):
                 extra_list.append(self.visit(et, **kwargs))
             content += ' \\text{{ where }}  ' + ', '.join(extra_list)
         self.pop_scope()
+        self.visiting_sum = False
         return content
 
     def visit_function(self, node, **kwargs):
