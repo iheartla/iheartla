@@ -17,6 +17,10 @@ identifier_with_subscript::IdentifierSubscript
     (',' right+:'*')
     | ({','} right+:(integer | identifier_alone)) } )
     |
+    (left:identifier_alone p:'_(' right+:(integer | '*' | identifier_alone) {
+    (',' right+:'*')
+    | ({','} right+:(integer | identifier_alone)) } ')' )
+    |
     ( left:identifier_alone right+:(sub_integer|unicode_subscript) {
     (',' right+:'*')
     | ({','} right+:(sub_integer|unicode_subscript)) } )

@@ -4256,19 +4256,23 @@ class grammardefaultParser(Parser):
                 with self._group():
                     self._identifier_alone_()
                     self.name_last_node('left')
+                    self._token('_(')
+                    self.name_last_node('p')
                     with self._group():
                         with self._choice():
                             with self._option():
-                                self._sub_integer_()
+                                self._integer_()
                             with self._option():
-                                self._unicode_subscript_()
+                                self._token('*')
+                            with self._option():
+                                self._identifier_alone_()
                             self._error(
                                 'expecting one of: '
-                                '<sub_integer> <unicode_subscript>'
+                                "<integer> '*' <identifier_alone>"
                             )
                     self.add_last_node_to_name('right')
 
-                    def block13():
+                    def block14():
                         with self._choice():
                             with self._option():
                                 with self._group():
@@ -4282,9 +4286,67 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 with self._group():
 
-                                    def block16():
+                                    def block17():
                                         self._token(',')
-                                    self._closure(block16)
+                                    self._closure(block17)
+                                    with self._group():
+                                        with self._choice():
+                                            with self._option():
+                                                self._integer_()
+                                            with self._option():
+                                                self._identifier_alone_()
+                                            self._error(
+                                                'expecting one of: '
+                                                '<integer> <identifier_alone>'
+                                            )
+                                    self.add_last_node_to_name('right')
+                                self._define(
+                                    [],
+                                    ['right']
+                                )
+                            self._error(
+                                'expecting one of: '
+                                "',' <integer> <identifier_alone>"
+                            )
+                    self._closure(block14)
+                    self._token(')')
+                self._define(
+                    ['left', 'p'],
+                    ['right']
+                )
+            with self._option():
+                with self._group():
+                    self._identifier_alone_()
+                    self.name_last_node('left')
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._sub_integer_()
+                            with self._option():
+                                self._unicode_subscript_()
+                            self._error(
+                                'expecting one of: '
+                                '<sub_integer> <unicode_subscript>'
+                            )
+                    self.add_last_node_to_name('right')
+
+                    def block23():
+                        with self._choice():
+                            with self._option():
+                                with self._group():
+                                    self._token(',')
+                                    self._token('*')
+                                    self.add_last_node_to_name('right')
+                                self._define(
+                                    [],
+                                    ['right']
+                                )
+                            with self._option():
+                                with self._group():
+
+                                    def block26():
+                                        self._token(',')
+                                    self._closure(block26)
                                     with self._group():
                                         with self._choice():
                                             with self._option():
@@ -4304,7 +4366,7 @@ class grammardefaultParser(Parser):
                                 'expecting one of: '
                                 "',' <sub_integer> <unicode_subscript>"
                             )
-                    self._closure(block13)
+                    self._closure(block23)
                 self._define(
                     ['left'],
                     ['right']
@@ -4333,7 +4395,7 @@ class grammardefaultParser(Parser):
                 '<identifier_alone>'
             )
         self._define(
-            ['left'],
+            ['left', 'p'],
             ['right']
         )
 
@@ -11657,6 +11719,7 @@ class Factor(ModelBase):
 @dataclass(eq=False)
 class IdentifierSubscript(ModelBase):
     left: Any = None
+    p: Any = None
     right: Any = None
 
 
