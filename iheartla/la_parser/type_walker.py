@@ -4157,6 +4157,10 @@ class TypeWalker(NodeWalker):
             ir_node.name = node.t
             self.assert_expr(len(param_node_list) == 1 and param_type_list[0].is_set(), get_err_msg_info(node.parseinfo,
                                                                      "Function error. Can't find function with current parameter types."))
+        elif node.tu:
+            ir_node.to_type = EleConvertType.EleToTuple
+            ir_node.la_type = TupleType(type_list=param_type_list)
+            ir_node.name = node.tu
         elif node.s:
             ir_node.to_type = EleConvertType.EleToSimplicialSet
             ir_node.la_type = SimplicialSetType()

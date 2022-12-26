@@ -1071,14 +1071,16 @@ class CodeGenEigen(CodeGen):
 
     def visit_element_convert(self, node, **kwargs):
         pre_list = []
-        if node.to_type == EleConvertType.EleToSimplicialSet:
+        if node.to_type == EleConvertType.EleToSimplicialSet or node.to_type == EleConvertType.EleToTuple:
             # tuple
             params = []
+            type_list = []
             for param in node.params:
                 param_info = self.visit(param, **kwargs)
                 params.append(param_info.content)
                 pre_list += param_info.pre_list
-            content = "std::tuple<std::set<int>, std::set<int>, std::set<int>, std::set<int> >{{ {} }}".format(",".join(params))
+                type_list.append(self.get_ctype(param.la_type))
+            content = "std::tuple<{} >{{ {} }}".format(",".join(type_list), ",".join(params))
         else:
             param_info = self.visit(node.params[0], **kwargs)
             pre_list += param_info.pre_list
