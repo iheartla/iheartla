@@ -190,6 +190,8 @@ def generate_latex_code(type_walker, node_info, frame):
             # If xelatex worked, we have a PDF, even if pdfcrop failed.
             # if ret.returncode == 0:
             show_pdf = io.BytesIO(open("{}.pdf".format(template_name), 'rb').read())
+        else:
+            show_pdf = None
         return tex_content, show_pdf
 
     ## Let's create a temporary directory that cleans itself up
