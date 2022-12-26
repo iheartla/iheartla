@@ -255,8 +255,8 @@ class CodeGenLatex(CodeGen):
         content = "{}^{{ {} \\times {} }}".format(type_str, id1, id2)
         if node.la_type.sparse:
             content += " ,\\text{ sparse}"
-        if node.la_type.index_type:
-            content += " ,\\text{ index}"
+        # if node.la_type.index_type:
+        #     content += " ,\\text{ index}"
         return content
 
     def visit_vector_type(self, node, **kwargs):
@@ -265,16 +265,16 @@ class CodeGenLatex(CodeGen):
         if node.type == 'ℤ':
             type_str = '\\mathbb{Z}'
         content = "{}^{{ {}}}".format(type_str, id1)
-        if node.la_type.index_type:
-            content += " ,\\text{ index}"
+        # if node.la_type.index_type:
+        #     content += " ,\\text{ index}"
         return content
 
     def visit_scalar_type(self, node, **kwargs):
         content = "\\mathbb{R}"
         if node.is_int:
             content = "\\mathbb{Z}"
-        if node.la_type.index_type:
-            content += " ,\\text{ index}"
+        # if node.la_type.index_type:
+        #     content += " ,\\text{ index}"
         return content
 
     def visit_named_type(self, node, **kwargs):
@@ -309,14 +309,14 @@ class CodeGenLatex(CodeGen):
         elif node.homogeneous_types:
             content = "∨ ".join([self.visit(h_type) for h_type in node.homogeneous_types])
         content = '\\{' + content + '\\}'
-        if node.la_type.index_type:
-            content += " ,\\text{ index}"
+        # if node.la_type.index_type:
+        #     content += " ,\\text{ index}"
         return content
 
     def visit_tuple_type(self, node, **kwargs):
         content = "\\times".join([self.visit(sub_type) for sub_type in node.sub_types])
-        if node.la_type.index_type:
-            content += " ,\\text{ index}"
+        # if node.la_type.index_type:
+        #     content += " ,\\text{ index}"
         return content
 
     def visit_function_type(self, node, **kwargs):
