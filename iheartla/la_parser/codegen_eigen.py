@@ -331,7 +331,7 @@ class CodeGenEigen(CodeGen):
                 for cur_index in range(len(module.syms)):
                     sym = module.syms[cur_index]
                     if self.symtable[module.r_syms[cur_index]].is_function():
-                        imported_function += self.copy_func_impl(sym, module.name)
+                        imported_function += self.copy_func_impl(sym, module.name, self.symtable[module.r_syms[cur_index]])
                     else:
                         init_var += "        {} = _{}.{};\n".format(module.r_syms[cur_index], module.name, sym)
             init_struct += ',\n'.join(init_struct_list) + '\n'
@@ -356,13 +356,13 @@ class CodeGenEigen(CodeGen):
         return "\n".join(
             content) + def_struct + declare_modules + imported_function + pre_str + init_struct + '    {\n' + def_str + assign_content + init_var + stat_str + '    }\n' + "};\n"
 
-    def copy_func_impl(self, sym, module_name):
+    def copy_func_impl(self, sym, module_name, func_type):
         """implement function from other modules"""
-        ret_type = self.get_ctype(self.symtable[sym].ret[0])
+        ret_type = self.get_ctype(func_type.ret[0])
         param_list = []
         init_list = []
-        for cur_index in range(len(self.symtable[sym].params)):
-            param_list.append("{} p{}".format(self.get_ctype(self.symtable[sym].params[cur_index]), cur_index))
+        for cur_index in range(len(func_type.params)):
+            param_list.append("{} p{}".format(self.get_ctype(func_type.params[cur_index]), cur_index))
             init_list.append("p{}".format(cur_index))
         content_list = ["    {} {}({}){{\n".format(ret_type, sym, ','.join(param_list)),
                         "        return _{}.{}({});\n".format(module_name, sym, ','.join(init_list)),
