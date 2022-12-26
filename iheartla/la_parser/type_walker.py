@@ -1927,7 +1927,17 @@ class TypeWalker(NodeWalker):
             if cur_index == 0:
                 # only one rhs, order matters: parse lhs first, then rhs
                 right_info = self.walk(node.right[cur_index], **kwargs)
-                rhs_type_list = right_info.la_type if isinstance(right_info.la_type, list) else [right_info.la_type]
+                # rhs_type_list = right_info.la_type if isinstance(right_info.la_type, list) else [right_info.la_type]
+                if isinstance(right_info.la_type, list):
+                    # return a list by some builtin funcs
+                    rhs_type_list = right_info.la_type
+                elif right_info.la_type.is_tuple():
+                    if len(node.left) == len(right_info.la_type.type_list):
+                        # unpack tuple type
+                        rhs_type_list = right_info.la_type.type_list
+                else:
+                    # make a list
+                    rhs_type_list = [right_info.la_type]
             right_type = rhs_type_list[cur_index]
             if len(self.lhs_subs) > 0:
                 for cur_s_index in range(len(self.lhs_subs)):
