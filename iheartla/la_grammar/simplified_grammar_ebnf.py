@@ -38,7 +38,7 @@ identifier
     
 # handle _ in identifier
 identifier_with_multi_subscript::IdentifierSubscript
-    = left:identifier_alone {'_' right+:identifier_alone }+ ({
+    = left:identifier_alone {'_' right+:(identifier_alone | BUILTIN_KEYWORDS) }+ ({
     (',' right+:'*')
     | ({','} right+:(integer | identifier_alone)) }
     |

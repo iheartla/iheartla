@@ -9618,14 +9618,23 @@ class grammarinitParser(Parser):
 
         def block1():
             self._token('_')
-            self._identifier_alone_()
+            with self._group():
+                with self._choice():
+                    with self._option():
+                        self._identifier_alone_()
+                    with self._option():
+                        self._BUILTIN_KEYWORDS_()
+                    self._error(
+                        'expecting one of: '
+                        '<identifier_alone> <BUILTIN_KEYWORDS>'
+                    )
             self.add_last_node_to_name('right')
         self._positive_closure(block1)
         with self._group():
             with self._choice():
                 with self._option():
 
-                    def block4():
+                    def block5():
                         with self._choice():
                             with self._option():
                                 with self._group():
@@ -9639,9 +9648,9 @@ class grammarinitParser(Parser):
                             with self._option():
                                 with self._group():
 
-                                    def block7():
+                                    def block8():
                                         self._token(',')
-                                    self._closure(block7)
+                                    self._closure(block8)
                                     with self._group():
                                         with self._choice():
                                             with self._option():
@@ -9661,14 +9670,14 @@ class grammarinitParser(Parser):
                                 'expecting one of: '
                                 "',' <integer> <identifier_alone>"
                             )
-                    self._closure(block4)
+                    self._closure(block5)
                     self._define(
                         [],
                         ['right']
                     )
                 with self._option():
 
-                    def block10():
+                    def block11():
                         with self._choice():
                             with self._option():
                                 with self._group():
@@ -9682,9 +9691,9 @@ class grammarinitParser(Parser):
                             with self._option():
                                 with self._group():
 
-                                    def block13():
+                                    def block14():
                                         self._token(',')
-                                    self._closure(block13)
+                                    self._closure(block14)
                                     with self._group():
                                         with self._choice():
                                             with self._option():
@@ -9704,7 +9713,7 @@ class grammarinitParser(Parser):
                                 'expecting one of: '
                                 "',' <sub_integer> <unicode_subscript>"
                             )
-                    self._closure(block10)
+                    self._closure(block11)
                     self._define(
                         [],
                         ['right']
