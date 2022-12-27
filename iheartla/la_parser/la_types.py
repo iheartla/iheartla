@@ -607,10 +607,11 @@ class FunctionType(LaVarType):
 
 
 class OverloadingFunctionType(LaVarType):
-    def __init__(self, desc=None, symbol=None, func_list=None, fname_list=None):
+    def __init__(self, desc=None, symbol=None, func_list=None, fname_list=None, pre_fname_list=None):
         LaVarType.__init__(self, VarTypeEnum.OVERLOADINGFUNCTION, desc, symbol)
         self.func_list = func_list
         self.fname_list = fname_list  # predefined overloading names
+        self.pre_fname_list = pre_fname_list # original fname list in other module
 
     def get_correct_ftype(self, param_list, allow_omit=True):
         # when adding new types, allow_omit is supposed to be False, when checking func call, it's True

@@ -358,15 +358,31 @@ class CodeGenEigen(CodeGen):
 
     def copy_func_impl(self, sym, r_syms, module_name, func_type):
         """implement function from other modules"""
-        ret_type = self.get_ctype(func_type.ret[0])
-        param_list = []
-        init_list = []
-        for cur_index in range(len(func_type.params)):
-            param_list.append("{} p{}".format(self.get_ctype(func_type.params[cur_index]), cur_index))
-            init_list.append("p{}".format(cur_index))
-        content_list = ["    {} {}({}){{\n".format(ret_type, r_syms, ','.join(param_list)),
-                        "        return _{}.{}({});\n".format(module_name, sym, ','.join(init_list)),
-                        "    };\n"]
+        content_list = []
+        if not func_type.is_overloaded():
+            ret_type = self.get_ctype(func_type.ret[0])
+            param_list = []
+            init_list = []
+            for cur_index in range(len(func_type.params)):
+                param_list.append("{} p{}".format(self.get_ctype(func_type.params[cur_index]), cur_index))
+                init_list.append("p{}".format(cur_index))
+            content_list += ["    {} {}({}){{\n".format(ret_type, r_syms, ','.join(param_list)),
+                            "        return _{}.{}({});\n".format(module_name, sym, ','.join(init_list)),
+                            "    };\n"]
+        else:
+            for c_index in range(len(func_type.func_list)):
+                c_type = func_type.func_list[c_index]
+                c_name = func_type.fname_list[c_index]
+                p_name = func_type.pre_fname_list[c_index]
+                ret_type = self.get_ctype(c_type.ret[0])
+                param_list = []
+                init_list = []
+                for cur_index in range(len(c_type.params)):
+                    param_list.append("{} p{}".format(self.get_ctype(c_type.params[cur_index]), cur_index))
+                    init_list.append("p{}".format(cur_index))
+                content_list += ["    {} {}({}){{\n".format(ret_type, c_name, ','.join(param_list)),
+                                 "        return _{}.{}({});\n".format(module_name, p_name, ','.join(init_list)),
+                                 "    };\n"]
         return ''.join(content_list)
 
     def get_ret_display(self):

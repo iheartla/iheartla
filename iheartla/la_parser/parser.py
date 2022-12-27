@@ -334,6 +334,7 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
                     par_mapping_dict[tmp_type_walker.parameters[cur_index]] = par.get_name()
                 # check whether the dimensions depend on parameters
                 replace_sym_dims(tmp_type_walker.symtable, par_mapping_dict)
+                sig_dict = {}
                 for sym in module.names:
                     if sym.get_name() not in tmp_type_walker.symtable:
                         parse_info = sym.parse_info
@@ -344,10 +345,15 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
                     existed_syms_dict[r_sym] = copy.deepcopy(tmp_type_walker.symtable[sym.get_name()])
                     name_list.append(sym.get_name())
                     r_name_list.append(r_sym)
-
+                    # handle func onverloading
+                    if existed_syms_dict[r_sym].is_overloaded():
+                        existed_syms_dict[r_sym].pre_fname_list = existed_syms_dict[r_sym].fname_list
+                        if r_sym == sym.get_name():
+                            # at this step, only set unchanged func names
+                            sig_dict.update(tmp_type_walker.get_sym_sig_dict([sym.get_name()]))
                 module_list.append(
                     CodeModule(frame=pre_frame, name=module.module.get_name(), syms=name_list, r_syms=r_name_list,
-                               params=par_list, func_sig_dict=tmp_type_walker.get_sym_sig_dict(name_list)))
+                               params=par_list, func_sig_dict=sig_dict))
                 module_param_list.append(copy.deepcopy(tmp_type_walker.parameters))
                 module_sym_list.append(copy.deepcopy(tmp_type_walker.symtable))
             except:
@@ -419,6 +425,25 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
     # second parsing
     type_walker.reset_state(content)  # reset
     type_walker.symtable.update(existed_syms_dict)
+    # add signatures before parsing
+    if len(dependent_modules) > 0:
+        # check parameters type for imported custom modules
+        for cur_index in range(len(module_list)):
+            module = module_list[cur_index]
+            type_walker.func_sig_dict.update(module.func_sig_dict)
+            for s_index in range(len(module.syms)):
+                sym = module.syms[s_index]
+                r_sym = module.r_syms[s_index]
+                # handle func onverloading
+                if existed_syms_dict[r_sym].is_overloaded():
+                    if r_sym != sym:
+                        # regenerat
+                        existed_syms_dict[r_sym].fname_list = []
+                        for c_index in range(len(existed_syms_dict[r_sym].func_list)):
+                            sig = get_func_signature(r_sym, existed_syms_dict[r_sym].func_list[c_index])
+                            n_name = type_walker.generate_var_name(r_sym)
+                            type_walker.func_sig_dict[sig] = n_name
+                            existed_syms_dict[r_sym].fname_list.append(n_name)
     start_node = type_walker.walk(model)
     record("Second type walker, after")
     if type_walker.need_mutator:
@@ -426,7 +451,7 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
     start_node.module_list = module_list
     start_node.module_syms = existed_syms_dict
     if len(dependent_modules) > 0:
-        # check parameters type
+        # check parameters type for imported custom modules
         for cur_index in range(len(dependent_modules)):
             module = dependent_modules[cur_index]
             params = module_param_list[cur_index]
