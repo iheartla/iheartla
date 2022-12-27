@@ -453,6 +453,39 @@ class CodeGenLatex(CodeGen):
         self.visiting_sum = False
         return content
 
+    def visit_union_sequence(self, node, **kwargs):
+        self.visiting_sum = True
+        self.push_scope(node.scope_name)
+        if node.cond:
+            sub = '{' + self.visit(node.cond, **kwargs) + '}'
+        else:
+            if node.enum_list:
+                kwargs['is_sub'] = True
+                sub = ','.join(node.enum_list)
+                del kwargs['is_sub']
+                range = self.visit(node.range, **kwargs)
+                sub += "\in " + range
+                content = "\\bigcup_{" + sub + "} "
+            elif node.lower:
+                sub = self.visit(node.id, **kwargs)
+                lower = self.visit(node.lower, **kwargs)
+                upper = self.visit(node.upper, **kwargs)
+                content = "\\bigcup_{" + sub + "=" + lower + "}^{ " + upper + "}"
+            else:
+                kwargs['is_sub'] = True
+                sub = self.visit(node.id, **kwargs)
+                del kwargs['is_sub']
+                content = "\\bigcup_{" + sub + "} "
+        content += self.visit(node.exp, **kwargs)
+        if len(node.tex_list) > 0:
+            extra_list = []
+            for et in node.tex_list:
+                extra_list.append(self.visit(et, **kwargs))
+            content += ' \\text{{ where }}  ' + ', '.join(extra_list)
+        self.pop_scope()
+        self.visiting_sum = False
+        return content
+
     def visit_function(self, node, **kwargs):
         params = []
         if node.params:

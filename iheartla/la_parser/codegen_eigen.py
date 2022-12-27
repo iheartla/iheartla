@@ -788,6 +788,137 @@ class CodeGenEigen(CodeGen):
         content = self.trim_content(content)
         return content
 
+    def visit_union_sequence(self, node, **kwargs):
+        target_var = []
+        self.push_scope(node.scope_name)
+        def set_name_conventions(sub):
+            # name convention
+            name_convention = {}
+            for var in node.symbols:
+                if self.contain_subscript(var):
+                    var_ids = self.get_all_ids(var)
+                    var_subs = var_ids[1]
+                    for var_sub in var_subs:
+                        if sub == var_sub:
+                            target_var.append(var_ids[0])
+                    if len(var_ids[1]) > 1:  # matrix
+                        name_convention[var] = "{}({}, {})".format(var_ids[0], var_ids[1][0], var_ids[1][1])
+                    else:
+                        name_convention[var] = "{}.at({})".format(var_ids[0], var_ids[1][0])
+            self.add_name_conventions(name_convention)
+            return name_convention
+
+        if node.enum_list:
+            name_convention = {}
+            for sub in node.enum_list:
+                name_convention.update(set_name_conventions(sub))
+        else:
+            sub = self.visit(node.id).content
+            name_convention = set_name_conventions(sub)
+        for sym, subs in node.sym_dict.items():
+            target_var.append(sym)
+        #
+        assign_id = node.symbol
+        cond_content = ""
+        if node.cond:
+            cond_info = self.visit(node.cond, **kwargs)
+            cond_content = "if(" + cond_info.content + "){\n"
+        kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
+        content = []
+        exp_info = self.visit(node.exp)
+        exp_str = exp_info.content
+        assign_id_type = self.get_sym_type(assign_id)
+        # set declaration
+        content.append("{} {};\n".format(self.get_ctype(assign_id_type), assign_id))
+        if node.enum_list:
+            range_info = self.visit(node.range, **kwargs)
+            if len(node.enum_list) == 1:
+                content.append(
+                    'for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), node.enum_list[0],
+                                                 range_info.content))
+            else:
+                tuple_name = self.generate_var_name("tuple")
+                content.append('for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), tuple_name,
+                                                            range_info.content))
+                extra_content = ''
+                if node.use_tuple:
+                    content.append('    {} {} = {};\n'.format(self.get_ctype(self.get_sym_type(node.enum_list[0])),
+                                                              node.enum_list[0], tuple_name))
+                else:
+                    for i in range(len(node.enum_list)):
+                        if node.range.la_type.index_type:
+                            content.append(
+                                '    int {} = std::get<{}>({}){} + 1;\n'.format(node.enum_list[i], i, tuple_name,
+                                                                                extra_content))
+                        else:
+                            content.append('    int {} = std::get<{}>({}){};\n'.format(node.enum_list[i], i, tuple_name,
+                                                                                       extra_content))
+            exp_pre_list = []
+            if exp_info.pre_list:  # catch pre_list
+                list_content = "".join(exp_info.pre_list)
+                # content += exp_info.pre_list
+                list_content = list_content.split('\n')
+                for index in range(len(list_content)):
+                    if index != len(list_content) - 1:
+                        exp_pre_list.append(list_content[index] + '\n')
+            content += exp_pre_list
+            # exp_str
+            if len(node.extra_list) > 0:
+                for et in node.extra_list:
+                    extra_info = self.visit(et, **kwargs)
+                    content += [self.update_prelist_str([extra_info.content], '    ')]
+            content.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::inserter({}, {}.begin()));\n".format(
+            assign_id, assign_id, exp_str, exp_str, assign_id, assign_id))
+            content[0] = "    " + content[0]
+            content.append("}\n")
+            self.del_name_conventions(name_convention)
+            self.pop_scope()
+            return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
+        sym_info = node.sym_dict[target_var[0]]
+        if node.lower:
+            # explicit range
+            lower_info = self.visit(node.lower, **kwargs)
+            upper_info = self.visit(node.upper, **kwargs)
+            content += lower_info.pre_list
+            content += upper_info.pre_list
+            content.append(
+                "for(int {}={}; {}<={}; {}++){{\n".format(sub, lower_info.content, sub, upper_info.content, sub))
+        else:
+            # implicit range
+            content.append("for(int {}=1; {}<={}.size(); {}++){{\n".format(sub, sub, self.convert_bound_symbol(target_var[0]),
+                                                                    sub))
+        exp_pre_list = []
+        if exp_info.pre_list:  # catch pre_list
+            list_content = "".join(exp_info.pre_list)
+            # content += exp_info.pre_list
+            list_content = list_content.split('\n')
+            for index in range(len(list_content)):
+                if index != len(list_content) - 1:
+                    exp_pre_list.append(list_content[index] + '\n')
+        # exp_str
+        if len(node.extra_list) > 0:
+            for et in node.extra_list:
+                extra_info = self.visit(et, **kwargs)
+                content += [self.update_prelist_str([extra_info.content], '    ')]
+        # only one sub for now
+        if node.cond:
+            content += ["    " + pre for pre in cond_info.pre_list]
+            content.append("    " + cond_content)
+            content += ["    " + pre for pre in exp_pre_list]
+            content.append("        std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::inserter({}, {}.begin()));\n".format(
+            assign_id, assign_id, exp_str, exp_str, assign_id, assign_id))
+            content.append("    }\n")
+        else:
+            content += exp_pre_list
+            content.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::inserter({}, {}.begin()));\n".format(
+            assign_id, assign_id, exp_str, exp_str, assign_id, assign_id))
+        content[0] = "    " + content[0]
+
+        content.append("}\n")
+        self.del_name_conventions(name_convention)
+        self.pop_scope()
+        return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
+
     def visit_summation(self, node, **kwargs):
         target_var = []
         self.push_scope(node.scope_name)

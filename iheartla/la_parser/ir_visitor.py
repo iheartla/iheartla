@@ -45,6 +45,7 @@ class IRBaseVisitor(object):
             IRNodeType.Difference: "visit_difference",
             IRNodeType.AddSub: "visit_add_sub",
             IRNodeType.Summation: "visit_summation",
+            IRNodeType.UnionSequence: "visit_union_sequence",
             IRNodeType.Norm: "visit_norm",
             IRNodeType.Transpose: "visit_transpose",
             IRNodeType.PseudoInverse: "visit_pseudoinverse",
@@ -169,6 +170,9 @@ class IRBaseVisitor(object):
         pass
 
     def visit_summation(self, node, **kwargs):
+        pass
+
+    def visit_union_sequence(self, node, **kwargs):
         pass
 
     def visit_determinant(self, node, **kwargs):

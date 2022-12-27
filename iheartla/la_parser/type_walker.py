@@ -2151,13 +2151,17 @@ class TypeWalker(NodeWalker):
 
     def walk_Summation(self, node, **kwargs):
         #
-        new_id = self.generate_var_name("sum")
+        if node.u:
+            ir_node = UnionSequence(parse_info=node.parseinfo, raw_text=node.text)
+            new_id = self.generate_var_name("union")
+        else:
+            ir_node = SummationNode(parse_info=node.parseinfo, raw_text=node.text)
+            new_id = self.generate_var_name("sum")
         self.push_scope(new_id)
         self.logger.debug("cur sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))
         kwargs[INSIDE_SUMMATION] = True
         subs_list = []
         #
-        ir_node = SummationNode(parse_info=node.parseinfo, raw_text=node.text)
         ir_node.scope_name = new_id
         if node.cond:
             self.sum_sym_list.append({})

@@ -69,6 +69,7 @@ class IRNodeType(Enum):
     Union = 231
     Intersection = 232
     Difference = 233
+    UnionSequence = 234
     # matrix
     Matrix = 300
     MatrixRows = 301
@@ -839,6 +840,26 @@ class SummationNode(ExprNode):
         self.lower = None
         self.upper = None
 
+
+class UnionSequence(ExprNode):
+    def __init__(self, la_type=None, parse_info=None, raw_text=None):
+        super().__init__(IRNodeType.UnionSequence, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        self.sub = None
+        self.exp = None
+        self.id = None
+        self.cond = None
+        self.symbols = None
+        self.symbol = None
+        self.content = None
+        self.sym_dict = {}  # identifiers containing sub, used for type checking only
+        self.enum_list = None
+        self.range = None
+        self.extra_list = []
+        self.tex_list = []    # extra assignments for tex output
+        self.use_tuple = False
+        self.scope_name = None
+        self.lower = None
+        self.upper = None
 
 class OptimizeType(Enum):
     OptimizeInvalid = -1

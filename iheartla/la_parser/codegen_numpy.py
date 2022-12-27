@@ -756,6 +756,124 @@ class CodeGenNumpy(CodeGen):
         self.pop_scope()
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
+    def visit_union_sequence(self, node, **kwargs):
+        target_var = []
+        self.push_scope(node.scope_name)
+        # sub = self.visit(node.id).content
+        def set_name_conventions(sub):
+            # name convention
+            name_convention = {}
+            for var in node.symbols:
+                if self.contain_subscript(var):
+                    var_ids = self.get_all_ids(var)
+                    var_subs = var_ids[1]
+                    for var_sub in var_subs:
+                        if sub == var_sub:
+                            target_var.append(var_ids[0])
+                    if len(var_ids[1]) > 1:  # matrix
+                        name_convention[var] = "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1])
+                    else:
+                        name_convention[var] = "{}[{}]".format(var_ids[0], var_ids[1][0])
+            self.add_name_conventions(name_convention)
+            return name_convention
+        if node.enum_list:
+            name_convention = {}
+            for sub in node.enum_list:
+                name_convention.update(set_name_conventions(sub))
+        else:
+            sub = self.visit(node.id).content
+            name_convention = set_name_conventions(sub)
+        for sym, subs in node.sym_dict.items():
+            target_var.append(sym)
+        # try to first use dim of parameters
+        target_var = list(set(target_var))
+        param_l = []
+        remain_l = []
+        for cur_v in target_var:
+            if cur_v in self.main_param.parameters:
+                param_l.append(cur_v)
+            else:
+                remain_l.append(cur_v)
+        target_var = param_l + remain_l
+        #
+        assign_id = node.symbol
+        cond_content = ""
+        if node.cond:
+            cond_info = self.visit(node.cond, **kwargs)
+            cond_content = "if(" + cond_info.content + "):\n"
+        kwargs[WALK_TYPE] = WalkTypeEnum.RETRIEVE_EXPRESSION
+        content = []
+        exp_info = self.visit(node.exp)
+        exp_str = exp_info.content
+        assign_id_type = self.get_sym_type(assign_id)
+        content.append("{} = {{}}\n".format(assign_id))
+        if node.enum_list:
+            range_info = self.visit(node.range, **kwargs)
+            index_name = self.generate_var_name('tuple')
+            content.append('for {} in {}:\n'.format(index_name, range_info.content))
+            extra_content = ''
+            for i in range(len(node.enum_list)):
+                if node.range.la_type.index_type:
+                    content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+                else:
+                    content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+            exp_pre_list = []
+            if exp_info.pre_list:  # catch pre_list
+                list_content = "".join(exp_info.pre_list)
+                # content += exp_info.pre_list
+                list_content = list_content.split('\n')
+                for index in range(len(list_content)):
+                    if index != len(list_content) - 1:
+                        exp_pre_list.append(list_content[index] + '\n')
+            content += exp_pre_list
+            # exp_str
+            if len(node.extra_list) > 0:
+                for et in node.extra_list:
+                    extra_info = self.visit(et, **kwargs)
+                content += [self.update_prelist_str([extra_info.content], '    ')]
+            content.append("    {} = frozenset.union({}, {})\n".format(assign_id, assign_id, exp_str))
+            content[0] = "    " + content[0]
+            self.del_name_conventions(name_convention)
+            self.pop_scope()
+            return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
+        sym_info = node.sym_dict[target_var[0]]
+        if node.lower:
+            # explicit range
+            lower_info = self.visit(node.lower, **kwargs)
+            upper_info = self.visit(node.upper, **kwargs)
+            content += lower_info.pre_list
+            content += upper_info.pre_list
+            content.append(
+                "for {} in range({}, {}+1):\n".format(sub, lower_info.content, upper_info.content))
+        else:
+            # implicit range
+            content.append("for {} in range(1, len({})+1):\n".format(sub, self.get_target_name(self.convert_bound_symbol(target_var[0]))))
+        exp_pre_list = []
+        if exp_info.pre_list:   # catch pre_list
+            list_content = "".join(exp_info.pre_list)
+            # content += exp_info.pre_list
+            list_content = list_content.split('\n')
+            for index in range(len(list_content)):
+                if index != len(list_content)-1:
+                    exp_pre_list.append(list_content[index] + '\n')
+        # exp_str
+        if len(node.extra_list) > 0:
+            for et in node.extra_list:
+                extra_info = self.visit(et, **kwargs)
+                content += [self.update_prelist_str([extra_info.content], '    ')]
+        # only one sub for now
+        if node.cond:
+            content += ["    " + pre for pre in cond_info.pre_list]
+            content.append("    " + cond_content)
+            content += ["    " + pre for pre in exp_pre_list]
+            content.append("        {} = frozenset.union({}, {})\n".format(assign_id, assign_id, exp_str))
+        else:
+            content += exp_pre_list
+            content.append("    {} = frozenset.union({}, {})\n".format(assign_id, assign_id, exp_str))
+        content[0] = "    " + content[0]
+        self.pop_scope()
+        return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
+
     def visit_function(self, node, **kwargs):
         name_info = self.visit(node.name, **kwargs)
         func_name = name_info.content
