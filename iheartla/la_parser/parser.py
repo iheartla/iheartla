@@ -347,7 +347,7 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
 
                 module_list.append(
                     CodeModule(frame=pre_frame, name=module.module.get_name(), syms=name_list, r_syms=r_name_list,
-                               params=par_list))
+                               params=par_list, func_sig_dict=tmp_type_walker.get_sym_sig_dict(name_list)))
                 module_param_list.append(copy.deepcopy(tmp_type_walker.parameters))
                 module_sym_list.append(copy.deepcopy(tmp_type_walker.symtable))
             except:

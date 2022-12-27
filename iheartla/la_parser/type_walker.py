@@ -306,6 +306,15 @@ class TypeWalker(NodeWalker):
             if not self.omit_assert:
                 assert cond, msg
 
+    def get_sym_sig_dict(self, name_list):
+        sig_dict = {}
+        for name in name_list:
+            if self.symtable[name].is_overloaded():
+                for c_index in range(len(self.symtable[name].func_list)):
+                    sig = get_func_signature(name, self.symtable[name].func_list[c_index])
+                    sig_dict[sig] = self.func_sig_dict[sig]
+        return sig_dict
+
     def get_cur_param_data(self):
         # either main where/given block or local function block
         cur_scope = self.scope_list[-1]
