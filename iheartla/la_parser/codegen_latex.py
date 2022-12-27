@@ -432,11 +432,18 @@ class CodeGenLatex(CodeGen):
                 del kwargs['is_sub']
                 range = self.visit(node.range, **kwargs)
                 sub += "\in " + range
+                content = "\\sum_{" + sub + "} "
+            elif node.lower:
+                sub = self.visit(node.id, **kwargs)
+                lower = self.visit(node.lower, **kwargs)
+                upper = self.visit(node.upper, **kwargs)
+                content = "\\sum_{" + sub + "=" + lower + "}^{ "+ upper + "}"
             else:
                 kwargs['is_sub'] = True
                 sub = self.visit(node.id, **kwargs)
                 del kwargs['is_sub']
-        content = "\\sum_{" + sub + "} " + self.visit(node.exp, **kwargs)
+                content = "\\sum_{" + sub + "} "
+        content += self.visit(node.exp, **kwargs)
         if len(node.tex_list) > 0:
             extra_list = []
             for et in node.tex_list:
