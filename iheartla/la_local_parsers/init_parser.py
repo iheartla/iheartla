@@ -1508,33 +1508,125 @@ class grammarinitParser(Parser):
                         self._hspace_()
                     self._closure(block15)
                     self._identifier_alone_()
-                    self.add_last_node_to_name('enum')
+                    self.name_last_node('id')
 
                     def block17():
-
-                        def block18():
-                            self._hspace_()
-                        self._closure(block18)
-
-                        def block19():
-                            self._token(',')
-                        self._closure(block19)
-
-                        def block20():
-                            self._hspace_()
-                        self._closure(block20)
-                        self._identifier_alone_()
-                        self.add_last_node_to_name('enum')
-                    self._closure(block17)
-
-                    def block22():
                         self._hspace_()
-                    self._closure(block22)
-                    self._IN_()
+                    self._closure(block17)
+                    self._token('=')
+
+                    def block18():
+                        self._hspace_()
+                    self._closure(block18)
+                    self._expression_()
+                    self.name_last_node('lower')
+
+                    def block20():
+                        self._hspace_()
+                    self._closure(block20)
+                    self._token(')^')
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._identifier_alone_()
+                            with self._option():
+                                self._integer_()
+                            self._error(
+                                'expecting one of: '
+                                '<identifier_alone> <integer>'
+                            )
+                    self.name_last_node('upper')
 
                     def block23():
                         self._hspace_()
-                    self._closure(block23)
+                    self._positive_closure(block23)
+                    self._term_()
+                    self.name_last_node('exp')
+                    self._define(
+                        ['id', 'lower', 'upper', 'exp'],
+                        []
+                    )
+                with self._option():
+                    self._SUM_()
+                    self._token('_(')
+
+                    def block25():
+                        self._hspace_()
+                    self._closure(block25)
+                    self._identifier_alone_()
+                    self.name_last_node('id')
+
+                    def block27():
+                        self._hspace_()
+                    self._closure(block27)
+                    self._token('=')
+
+                    def block28():
+                        self._hspace_()
+                    self._closure(block28)
+                    self._expression_()
+                    self.name_last_node('lower')
+
+                    def block30():
+                        self._hspace_()
+                    self._closure(block30)
+                    self._token(')^(')
+
+                    def block31():
+                        self._hspace_()
+                    self._closure(block31)
+                    self._expression_()
+                    self.name_last_node('upper')
+
+                    def block33():
+                        self._hspace_()
+                    self._closure(block33)
+                    self._token(')')
+
+                    def block34():
+                        self._hspace_()
+                    self._positive_closure(block34)
+                    self._term_()
+                    self.name_last_node('exp')
+                    self._define(
+                        ['id', 'lower', 'upper', 'exp'],
+                        []
+                    )
+                with self._option():
+                    self._SUM_()
+                    self._token('_(')
+
+                    def block36():
+                        self._hspace_()
+                    self._closure(block36)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('enum')
+
+                    def block38():
+
+                        def block39():
+                            self._hspace_()
+                        self._closure(block39)
+
+                        def block40():
+                            self._token(',')
+                        self._closure(block40)
+
+                        def block41():
+                            self._hspace_()
+                        self._closure(block41)
+                        self._identifier_alone_()
+                        self.add_last_node_to_name('enum')
+                    self._closure(block38)
+
+                    def block43():
+                        self._hspace_()
+                    self._closure(block43)
+                    self._IN_()
+
+                    def block44():
+                        self._hspace_()
+                    self._closure(block44)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -1550,14 +1642,14 @@ class grammarinitParser(Parser):
                             )
                     self.name_last_node('range')
 
-                    def block26():
+                    def block47():
                         self._hspace_()
-                    self._closure(block26)
+                    self._closure(block47)
                     self._token(')')
 
-                    def block27():
+                    def block48():
                         self._hspace_()
-                    self._positive_closure(block27)
+                    self._positive_closure(block48)
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
@@ -1569,17 +1661,17 @@ class grammarinitParser(Parser):
                     '<SUM>'
                 )
 
-        def block29():
+        def block50():
             with self._optional():
 
-                def block30():
+                def block51():
                     self._hspace_()
-                self._closure(block30)
+                self._closure(block51)
                 self._line_()
 
-            def block31():
+            def block52():
                 self._hspace_()
-            self._closure(block31)
+            self._closure(block52)
             with self._group():
                 with self._choice():
                     with self._option():
@@ -1591,34 +1683,34 @@ class grammarinitParser(Parser):
                         '<WHERE> <WITH>'
                     )
 
-            def block33():
+            def block54():
                 self._hspace_()
-            self._closure(block33)
+            self._closure(block54)
             self._general_assignment_()
             self.add_last_node_to_name('extra')
 
-            def block35():
+            def block56():
 
-                def block36():
+                def block57():
                     self._hspace_()
-                self._closure(block36)
+                self._closure(block57)
                 self._token(',')
 
-                def block37():
+                def block58():
                     self._hspace_()
-                self._closure(block37)
+                self._closure(block58)
                 with self._optional():
                     self._line_()
 
-                def block38():
+                def block59():
                     self._hspace_()
-                self._closure(block38)
+                self._closure(block59)
                 self._general_assignment_()
                 self.add_last_node_to_name('extra')
-            self._closure(block35)
-        self._closure(block29)
+            self._closure(block56)
+        self._closure(block50)
         self._define(
-            ['sub', 'exp', 'id', 'cond', 'range'],
+            ['sub', 'exp', 'id', 'cond', 'lower', 'upper', 'range'],
             ['enum', 'extra']
         )
 
@@ -11267,8 +11359,10 @@ class Summation(ModelBase):
     exp: Any = None
     extra: Any = None
     id: Any = None
+    lower: Any = None
     range: Any = None
     sub: Any = None
+    upper: Any = None
 
 
 @dataclass(eq=False)
