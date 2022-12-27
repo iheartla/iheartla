@@ -783,6 +783,7 @@ class TypeWalker(NodeWalker):
             return ir_node
         self.gen_block_node(stat_list, index_list, ir_node, **kwargs)
         self.convert_parameters()
+        self.fill_func_names()
         # set properties
         self.main_param.parameters = self.parameters
         self.main_param.symtable = self.symtable
@@ -798,6 +799,14 @@ class TypeWalker(NodeWalker):
                     # if it's not overloading, then convert the name back
                     self.parameters[c_index] = self.func_mapping_dict[self.parameters[c_index]]
         la_debug("after convert_parameters:{}".format(self.parameters))
+
+    def fill_func_names(self):
+        # refill func names in overloaded funcs
+        for k,v in self.symtable.items():
+            if v.is_overloaded():
+                if v.fname_list is None or len(v.fname_list) != len(v.func_list):
+                    # refill
+                    self.symtable[k].fname_list = [self.func_sig_dict[get_func_signature(k, c_type)] for c_type in v.func_list]
 
     def print_all(self):
         la_debug("TypeWalker end ==================================================================================================================")
