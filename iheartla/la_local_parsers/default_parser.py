@@ -832,7 +832,7 @@ class grammardefaultParser(Parser):
                 '<cross_product_operator>'
                 '<kronecker_product_operator>'
                 '<union_operator> <intersect_operator>'
-                '<set_operators> sum ∑ <SUM>'
+                "<set_operators> sum ∑ <SUM> '∪'"
                 "<sum_operator> int <INT> '∫'"
                 '<integral_operator> <trans_operator> √'
                 "<sqrt_operator> '!!!' <func_id>"
@@ -1544,96 +1544,152 @@ class grammardefaultParser(Parser):
         with self._group():
             with self._choice():
                 with self._option():
-                    self._SUM_()
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._SUM_()
+                            with self._option():
+                                self._token('∪')
+                                self.name_last_node('u')
+                                self._define(
+                                    ['u'],
+                                    []
+                                )
+                            self._error(
+                                'expecting one of: '
+                                "<SUM> '∪'"
+                            )
                     self._token('_')
                     self._identifier_alone_()
                     self.name_last_node('sub')
 
-                    def block2():
+                    def block4():
                         self._hspace_()
-                    self._positive_closure(block2)
+                    self._positive_closure(block4)
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['sub', 'exp'],
+                        ['u', 'sub', 'exp'],
                         []
                     )
                 with self._option():
-                    self._SUM_()
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._SUM_()
+                            with self._option():
+                                self._token('∪')
+                                self.name_last_node('u')
+                                self._define(
+                                    ['u'],
+                                    []
+                                )
+                            self._error(
+                                'expecting one of: '
+                                "<SUM> '∪'"
+                            )
                     self._token('_')
                     self._identifier_alone_()
                     self.name_last_node('sub')
                     with self._if():
                         self._token('(')
 
-                    def block5():
-                        self._hspace_()
-                    self._closure(block5)
-                    self._term_()
-                    self.name_last_node('exp')
-                    self._define(
-                        ['sub', 'exp'],
-                        []
-                    )
-                with self._option():
-                    self._SUM_()
-                    self._token('_(')
-
-                    def block7():
-                        self._hspace_()
-                    self._closure(block7)
-                    self._identifier_alone_()
-                    self.name_last_node('id')
-
                     def block9():
                         self._hspace_()
                     self._closure(block9)
-                    self._token('for')
-
-                    def block10():
-                        self._hspace_()
-                    self._closure(block10)
-                    self._if_condition_()
-                    self.name_last_node('cond')
-
-                    def block12():
-                        self._hspace_()
-                    self._closure(block12)
-                    self._token(')')
-
-                    def block13():
-                        self._hspace_()
-                    self._positive_closure(block13)
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['id', 'cond', 'exp'],
+                        ['u', 'sub', 'exp'],
                         []
                     )
                 with self._option():
-                    self._SUM_()
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._SUM_()
+                            with self._option():
+                                self._token('∪')
+                                self.name_last_node('u')
+                                self._define(
+                                    ['u'],
+                                    []
+                                )
+                            self._error(
+                                'expecting one of: '
+                                "<SUM> '∪'"
+                            )
                     self._token('_(')
+
+                    def block13():
+                        self._hspace_()
+                    self._closure(block13)
+                    self._identifier_alone_()
+                    self.name_last_node('id')
 
                     def block15():
                         self._hspace_()
                     self._closure(block15)
-                    self._identifier_alone_()
-                    self.name_last_node('id')
+                    self._token('for')
 
-                    def block17():
+                    def block16():
                         self._hspace_()
-                    self._closure(block17)
-                    self._token('=')
+                    self._closure(block16)
+                    self._if_condition_()
+                    self.name_last_node('cond')
 
                     def block18():
                         self._hspace_()
                     self._closure(block18)
+                    self._token(')')
+
+                    def block19():
+                        self._hspace_()
+                    self._positive_closure(block19)
+                    self._term_()
+                    self.name_last_node('exp')
+                    self._define(
+                        ['u', 'id', 'cond', 'exp'],
+                        []
+                    )
+                with self._option():
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._SUM_()
+                            with self._option():
+                                self._token('∪')
+                                self.name_last_node('u')
+                                self._define(
+                                    ['u'],
+                                    []
+                                )
+                            self._error(
+                                'expecting one of: '
+                                "<SUM> '∪'"
+                            )
+                    self._token('_(')
+
+                    def block23():
+                        self._hspace_()
+                    self._closure(block23)
+                    self._identifier_alone_()
+                    self.name_last_node('id')
+
+                    def block25():
+                        self._hspace_()
+                    self._closure(block25)
+                    self._token('=')
+
+                    def block26():
+                        self._hspace_()
+                    self._closure(block26)
                     self._expression_()
                     self.name_last_node('lower')
 
-                    def block20():
+                    def block28():
                         self._hspace_()
-                    self._closure(block20)
+                    self._closure(block28)
                     self._token(')^')
                     with self._group():
                         with self._choice():
@@ -1647,96 +1703,124 @@ class grammardefaultParser(Parser):
                             )
                     self.name_last_node('upper')
 
-                    def block23():
+                    def block31():
                         self._hspace_()
-                    self._positive_closure(block23)
+                    self._positive_closure(block31)
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['id', 'lower', 'upper', 'exp'],
+                        ['u', 'id', 'lower', 'upper', 'exp'],
                         []
                     )
                 with self._option():
-                    self._SUM_()
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._SUM_()
+                            with self._option():
+                                self._token('∪')
+                                self.name_last_node('u')
+                                self._define(
+                                    ['u'],
+                                    []
+                                )
+                            self._error(
+                                'expecting one of: '
+                                "<SUM> '∪'"
+                            )
                     self._token('_(')
 
-                    def block25():
+                    def block35():
                         self._hspace_()
-                    self._closure(block25)
+                    self._closure(block35)
                     self._identifier_alone_()
                     self.name_last_node('id')
 
-                    def block27():
+                    def block37():
                         self._hspace_()
-                    self._closure(block27)
+                    self._closure(block37)
                     self._token('=')
 
-                    def block28():
+                    def block38():
                         self._hspace_()
-                    self._closure(block28)
+                    self._closure(block38)
                     self._expression_()
                     self.name_last_node('lower')
 
-                    def block30():
+                    def block40():
                         self._hspace_()
-                    self._closure(block30)
+                    self._closure(block40)
                     self._token(')^(')
 
-                    def block31():
+                    def block41():
                         self._hspace_()
-                    self._closure(block31)
+                    self._closure(block41)
                     self._expression_()
                     self.name_last_node('upper')
-
-                    def block33():
-                        self._hspace_()
-                    self._closure(block33)
-                    self._token(')')
-
-                    def block34():
-                        self._hspace_()
-                    self._positive_closure(block34)
-                    self._term_()
-                    self.name_last_node('exp')
-                    self._define(
-                        ['id', 'lower', 'upper', 'exp'],
-                        []
-                    )
-                with self._option():
-                    self._SUM_()
-                    self._token('_(')
-
-                    def block36():
-                        self._hspace_()
-                    self._closure(block36)
-                    self._identifier_alone_()
-                    self.add_last_node_to_name('enum')
-
-                    def block38():
-
-                        def block39():
-                            self._hspace_()
-                        self._closure(block39)
-
-                        def block40():
-                            self._token(',')
-                        self._closure(block40)
-
-                        def block41():
-                            self._hspace_()
-                        self._closure(block41)
-                        self._identifier_alone_()
-                        self.add_last_node_to_name('enum')
-                    self._closure(block38)
 
                     def block43():
                         self._hspace_()
                     self._closure(block43)
-                    self._IN_()
+                    self._token(')')
 
                     def block44():
                         self._hspace_()
-                    self._closure(block44)
+                    self._positive_closure(block44)
+                    self._term_()
+                    self.name_last_node('exp')
+                    self._define(
+                        ['u', 'id', 'lower', 'upper', 'exp'],
+                        []
+                    )
+                with self._option():
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._SUM_()
+                            with self._option():
+                                self._token('∪')
+                                self.name_last_node('u')
+                                self._define(
+                                    ['u'],
+                                    []
+                                )
+                            self._error(
+                                'expecting one of: '
+                                "<SUM> '∪'"
+                            )
+                    self._token('_(')
+
+                    def block48():
+                        self._hspace_()
+                    self._closure(block48)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('enum')
+
+                    def block50():
+
+                        def block51():
+                            self._hspace_()
+                        self._closure(block51)
+
+                        def block52():
+                            self._token(',')
+                        self._closure(block52)
+
+                        def block53():
+                            self._hspace_()
+                        self._closure(block53)
+                        self._identifier_alone_()
+                        self.add_last_node_to_name('enum')
+                    self._closure(block50)
+
+                    def block55():
+                        self._hspace_()
+                    self._closure(block55)
+                    self._IN_()
+
+                    def block56():
+                        self._hspace_()
+                    self._closure(block56)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -1752,36 +1836,36 @@ class grammardefaultParser(Parser):
                             )
                     self.name_last_node('range')
 
-                    def block47():
+                    def block59():
                         self._hspace_()
-                    self._closure(block47)
+                    self._closure(block59)
                     self._token(')')
 
-                    def block48():
+                    def block60():
                         self._hspace_()
-                    self._positive_closure(block48)
+                    self._positive_closure(block60)
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['range', 'exp'],
+                        ['u', 'range', 'exp'],
                         ['enum']
                     )
                 self._error(
                     'expecting one of: '
-                    '<SUM>'
+                    "<SUM> '∪'"
                 )
 
-        def block50():
+        def block62():
             with self._optional():
 
-                def block51():
+                def block63():
                     self._hspace_()
-                self._closure(block51)
+                self._closure(block63)
                 self._line_()
 
-            def block52():
+            def block64():
                 self._hspace_()
-            self._closure(block52)
+            self._closure(block64)
             with self._group():
                 with self._choice():
                     with self._option():
@@ -1793,34 +1877,34 @@ class grammardefaultParser(Parser):
                         '<WHERE> <WITH>'
                     )
 
-            def block54():
+            def block66():
                 self._hspace_()
-            self._closure(block54)
+            self._closure(block66)
             self._general_assignment_()
             self.add_last_node_to_name('extra')
 
-            def block56():
+            def block68():
 
-                def block57():
+                def block69():
                     self._hspace_()
-                self._closure(block57)
+                self._closure(block69)
                 self._token(',')
 
-                def block58():
+                def block70():
                     self._hspace_()
-                self._closure(block58)
+                self._closure(block70)
                 with self._optional():
                     self._line_()
 
-                def block59():
+                def block71():
                     self._hspace_()
-                self._closure(block59)
+                self._closure(block71)
                 self._general_assignment_()
                 self.add_last_node_to_name('extra')
-            self._closure(block56)
-        self._closure(block50)
+            self._closure(block68)
+        self._closure(block62)
         self._define(
-            ['sub', 'exp', 'id', 'cond', 'lower', 'upper', 'range'],
+            ['u', 'sub', 'exp', 'id', 'cond', 'lower', 'upper', 'range'],
             ['enum', 'extra']
         )
 
@@ -8057,7 +8141,7 @@ class grammardefaultParser(Parser):
                 '<builtin_operators>'
                 "<pseudoinverse_operator> <factor> '||'"
                 "'‖' '|' '<' '⟨' <union_operator>"
-                '<intersect_operator> sum ∑ <SUM> int'
+                "<intersect_operator> sum ∑ <SUM> '∪' int"
                 "<INT> '∫' √ '!!!' <func_id> <exp_func>"
                 '<log_func> <ln_func> <sqrt_func>'
                 '<element_convert_func>'
@@ -11602,6 +11686,7 @@ class Summation(ModelBase):
     lower: Any = None
     range: Any = None
     sub: Any = None
+    u: Any = None
     upper: Any = None
 
 
