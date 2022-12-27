@@ -730,29 +730,39 @@ class CodeGenMatlab(CodeGen):
             self.pop_scope()
             return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
         sym_info = node.sym_dict[target_var[0]]
-        if self.get_sym_type(target_var[0]).is_matrix():
-            if sub == sym_info[0]:
-                content.append("for {} = 1:size({},1)\n".format(sub, target_var[0]))
-            else:
-                content.append("for {} = 1:size({},2)\n".format(sub, target_var[0]))
-        elif self.get_sym_type(target_var[0]).is_sequence():
-            sym_list = node.sym_dict[target_var[0]]
-            sub_index = sym_list.index(sub)
-            if sub_index == 0:
-                size_str = "{}, 1".format(target_var[0])
-            elif sub_index == 1:
-                if self.get_sym_type(target_var[0]).element_type.is_dynamic_row():
-                    size_str = "{}{{{}}}, 1".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
-                else:
-                    size_str = "{}".format(self.get_sym_type(target_var[0]).element_type.rows)
-            else:
-                if self.get_sym_type(target_var[0]).element_type.is_dynamic_col():
-                    size_str = "{}{{{}}}, 2".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
-                else:
-                    size_str = "{}".format(self.get_sym_type(target_var[0]).element_type.cols)
-            content.append("for {} = 1:size({})\n".format(sub, size_str))
+        if node.lower:
+            # explicit range
+            lower_info = self.visit(node.lower, **kwargs)
+            upper_info = self.visit(node.upper, **kwargs)
+            content += lower_info.pre_list
+            content += upper_info.pre_list
+            content.append(
+                "for {} = {}:{}\n".format(sub, lower_info.content, upper_info.content))
         else:
-            content.append("for {} = 1:size({},1)\n".format(sub, self.convert_bound_symbol(target_var[0])))
+            # implicit range
+            if self.get_sym_type(target_var[0]).is_matrix():
+                if sub == sym_info[0]:
+                    content.append("for {} = 1:size({},1)\n".format(sub, target_var[0]))
+                else:
+                    content.append("for {} = 1:size({},2)\n".format(sub, target_var[0]))
+            elif self.get_sym_type(target_var[0]).is_sequence():
+                sym_list = node.sym_dict[target_var[0]]
+                sub_index = sym_list.index(sub)
+                if sub_index == 0:
+                    size_str = "{}, 1".format(target_var[0])
+                elif sub_index == 1:
+                    if self.get_sym_type(target_var[0]).element_type.is_dynamic_row():
+                        size_str = "{}{{{}}}, 1".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
+                    else:
+                        size_str = "{}".format(self.get_sym_type(target_var[0]).element_type.rows)
+                else:
+                    if self.get_sym_type(target_var[0]).element_type.is_dynamic_col():
+                        size_str = "{}{{{}}}, 2".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
+                    else:
+                        size_str = "{}".format(self.get_sym_type(target_var[0]).element_type.cols)
+                content.append("for {} = 1:size({})\n".format(sub, size_str))
+            else:
+                content.append("for {} = 1:size({},1)\n".format(sub, self.convert_bound_symbol(target_var[0])))
         if exp_info.pre_list:   # catch pre_list
             list_content = "".join(exp_info.pre_list)
             # content += exp_info.pre_list

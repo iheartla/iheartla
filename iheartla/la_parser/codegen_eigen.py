@@ -883,32 +883,42 @@ class CodeGenEigen(CodeGen):
             self.pop_scope()
             return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
         sym_info = node.sym_dict[target_var[0]]
-        if self.get_sym_type(target_var[0]).is_matrix():  # todo
-            [is_property, new_name] = self.is_triangle_property(target_var[0])
-            if sub == sym_info[0]:
-                content.append("for(int {}=1; {}<={}.rows(); {}++){{\n".format(sub, sub, new_name, sub))
-            else:
-                content.append("for(int {}=1; {}<={}.cols(); {}++){{\n".format(sub, sub, new_name, sub))
-        elif self.get_sym_type(target_var[0]).is_sequence():
-            sym_list = node.sym_dict[target_var[0]]
-            sub_index = sym_list.index(sub)
-            if sub_index == 0:
-                size_str = "{}.size()".format(self.convert_bound_symbol(target_var[0]))
-            elif sub_index == 1:
-                if self.get_sym_type(target_var[0]).element_type.is_dynamic_row():
-                    size_str = "{}.at({}-1).rows()".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
-                else:
-                    size_str = "{}".format(self.get_sym_type(target_var[0]).element_type.rows)
-            else:
-                if self.get_sym_type(target_var[0]).element_type.is_dynamic_col():
-                    size_str = "{}.at({}-1).cols()".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
-                else:
-                    size_str = "{}".format(self.get_sym_type(target_var[0]).element_type.cols)
-            content.append("for(int {}=1; {}<={}; {}++){{\n".format(sub, sub, size_str, sub))
-        else:
+        if node.lower:
+            # explicit range
+            lower_info = self.visit(node.lower, **kwargs)
+            upper_info = self.visit(node.upper, **kwargs)
+            content += lower_info.pre_list
+            content += upper_info.pre_list
             content.append(
-                "for(int {}=1; {}<={}.size(); {}++){{\n".format(sub, sub, self.convert_bound_symbol(target_var[0]),
-                                                                sub))
+                "for(int {}={}; {}<={}; {}++){{\n".format(sub, lower_info.content, sub, upper_info.content, sub))
+        else:
+            # implicit range
+            if self.get_sym_type(target_var[0]).is_matrix():  # todo
+                [is_property, new_name] = self.is_triangle_property(target_var[0])
+                if sub == sym_info[0]:
+                    content.append("for(int {}=1; {}<={}.rows(); {}++){{\n".format(sub, sub, new_name, sub))
+                else:
+                    content.append("for(int {}=1; {}<={}.cols(); {}++){{\n".format(sub, sub, new_name, sub))
+            elif self.get_sym_type(target_var[0]).is_sequence():
+                sym_list = node.sym_dict[target_var[0]]
+                sub_index = sym_list.index(sub)
+                if sub_index == 0:
+                    size_str = "{}.size()".format(self.convert_bound_symbol(target_var[0]))
+                elif sub_index == 1:
+                    if self.get_sym_type(target_var[0]).element_type.is_dynamic_row():
+                        size_str = "{}.at({}-1).rows()".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
+                    else:
+                        size_str = "{}".format(self.get_sym_type(target_var[0]).element_type.rows)
+                else:
+                    if self.get_sym_type(target_var[0]).element_type.is_dynamic_col():
+                        size_str = "{}.at({}-1).cols()".format(self.convert_bound_symbol(target_var[0]), sym_list[0])
+                    else:
+                        size_str = "{}".format(self.get_sym_type(target_var[0]).element_type.cols)
+                content.append("for(int {}=1; {}<={}; {}++){{\n".format(sub, sub, size_str, sub))
+            else:
+                content.append(
+                    "for(int {}=1; {}<={}.size(); {}++){{\n".format(sub, sub, self.convert_bound_symbol(target_var[0]),
+                                                                    sub))
         exp_pre_list = []
         if exp_info.pre_list:  # catch pre_list
             list_content = "".join(exp_info.pre_list)

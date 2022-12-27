@@ -836,6 +836,8 @@ class SummationNode(ExprNode):
         self.tex_list = []    # extra assignments for tex output
         self.use_tuple = False
         self.scope_name = None
+        self.lower = None
+        self.upper = None
 
 
 class OptimizeType(Enum):
