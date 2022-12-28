@@ -2851,7 +2851,7 @@ class TypeWalker(NodeWalker):
                 symbols = symbols.union(param_info.symbols)
                 param_list.append(param_info.ir)
                 if len(name_type.template_symbols) == 0:
-                    self.assert_expr(name_type.params[index].is_same_type(param_info.ir.la_type, True), get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch"))
+                    self.assert_expr(name_type.params[index].is_same_type(param_info.ir.la_type, True), get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch: {} vs {}".format(name_type.params[index].get_signature(), param_info.ir.la_type.get_signature())))
                     continue
                 if name_type.params[index].is_scalar():
                     self.assert_expr(name_type.params[index].is_same_type(param_info.ir.la_type), get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch"))
