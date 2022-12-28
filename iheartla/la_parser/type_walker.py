@@ -2245,6 +2245,8 @@ class TypeWalker(NodeWalker):
         if node.extra and len(node.extra) > 0:
             ir_node.extra_list, ir_node.tex_list = self.get_ordered_stat(node.extra)
         ret_info = self.walk(node.exp, **kwargs)
+        if node.u:
+            self.assert_expr(ret_info.la_type.is_set(), get_err_msg_info(node.exp.parseinfo, "Expression must be set type"))
         ir_node.exp = ret_info.ir
         ret_info.ir.set_parent(ir_node)
         ret_type = ret_info.la_type
