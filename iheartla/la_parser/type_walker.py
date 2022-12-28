@@ -4607,6 +4607,11 @@ class TypeWalker(NodeWalker):
                     # if left_type.rows == 1 and right_type.cols == 1:
                     #     ret_type = ScalarType()
                     ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+                    if ret_type.rows == 1 and ret_type.cols == 1:
+                        #
+                        ret_type = ScalarType()
+                        need_cast = True
+                        ret_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
                 elif right_type.is_vector():
                     self.assert_expr(is_same_expr(left_type.cols, right_type.rows), get_err_msg())
                     if left_type.rows == 1:
