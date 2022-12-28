@@ -424,7 +424,7 @@ class CodeGenLatex(CodeGen):
         self.visiting_sum = True
         self.push_scope(node.scope_name)
         if node.cond:
-            sub = '{' + self.visit(node.cond, **kwargs) + '}'
+            content = "\\sum_{" + self.visit(node.cond, **kwargs) + '}'
         else:
             if node.enum_list:
                 kwargs['is_sub'] = True
@@ -457,7 +457,7 @@ class CodeGenLatex(CodeGen):
         self.visiting_sum = True
         self.push_scope(node.scope_name)
         if node.cond:
-            sub = '{' + self.visit(node.cond, **kwargs) + '}'
+            content = "\\bigcup_{" + self.visit(node.cond, **kwargs) + '}'
         else:
             if node.enum_list:
                 kwargs['is_sub'] = True
