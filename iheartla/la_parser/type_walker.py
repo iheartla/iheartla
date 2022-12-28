@@ -2629,7 +2629,7 @@ class TypeWalker(NodeWalker):
         base_info = self.walk(node.base, **kwargs)
         ir_node.base = base_info.ir
         symbols = base_info.symbols
-        if node.t or node.power.text == 'ᵀ':
+        if node.t or (node.power and node.power.text == 'ᵀ'):
             if 'T' in self.symtable:
                 # normal pow
                 power_ir = IdNode('T', parse_info=node.parseinfo, raw_text=node.text)
