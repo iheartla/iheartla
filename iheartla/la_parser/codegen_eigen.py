@@ -1237,6 +1237,12 @@ class CodeGenEigen(CodeGen):
                 params.append(param_info.content)
                 pre_list += param_info.pre_list
                 type_list.append(self.get_ctype(param.la_type))
+            if node.to_type == EleConvertType.EleToSimplicialSet and len(node.params) == 3:
+                # add extra empty tet set
+                extra_n = self.generate_var_name("tetset")
+                pre_list.append("{} {};".format(self.get_ctype(node.params[-1].la_type), extra_n))
+                type_list.append(type_list[-1])
+                params.append(extra_n)
             content = "std::tuple<{} >{{ {} }}".format(",".join(type_list), ",".join(params))
         else:
             param_info = self.visit(node.params[0], **kwargs)
