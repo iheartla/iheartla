@@ -168,6 +168,7 @@ predefined_built_operators
     | ln_func
     | sqrt_func
     | element_convert_func
+    | minmax_func
     ;
     
 element_convert_func::ElementConvertFunc
@@ -178,6 +179,10 @@ element_convert_func::ElementConvertFunc
 
 exp_func::ExpFunc
     = EXP '(' {hspace} param:expression {hspace} ')'
+    ;
+    
+minmax_func::MinmaxFunc
+    = (min:MIN|max:MAX) '(' {hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression} {hspace} ')'
     ;
 
 log_func::LogFunc

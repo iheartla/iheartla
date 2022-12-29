@@ -728,7 +728,7 @@ class grammarinitParser(Parser):
                 '<sqrt_operator> <identifier_alone>'
                 '<func_id> <function_operator> <exp_func>'
                 '<log_func> <ln_func> <sqrt_func>'
-                '<element_convert_func>'
+                '<element_convert_func> <minmax_func>'
                 '<predefined_built_operators>'
                 '<builtin_operators>'
                 '<pseudoinverse_operator>'
@@ -2518,6 +2518,8 @@ class grammarinitParser(Parser):
                 self._sqrt_func_()
             with self._option():
                 self._element_convert_func_()
+            with self._option():
+                self._minmax_func_()
             self._error(
                 'expecting one of: '
                 'exp <EXP> <exp_func> log[\\u2082]'
@@ -2529,7 +2531,8 @@ class grammarinitParser(Parser):
                 '[Ss]implicial[Ss]et <SIMPLICIALSET>'
                 'tuple <TUPLE> vertices <VERTICES> edges'
                 '<EDGES> faces <FACES> tets <TETS>'
-                '<element_convert_func>'
+                '<element_convert_func> min <MIN> max'
+                '<MAX> <minmax_func>'
             )
 
     @tatsumasu('ElementConvertFunc')
@@ -2665,6 +2668,60 @@ class grammarinitParser(Parser):
         self._define(
             ['param'],
             []
+        )
+
+    @tatsumasu('MinmaxFunc')
+    def _minmax_func_(self):  # noqa
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._MIN_()
+                    self.name_last_node('min')
+                    self._define(
+                        ['min'],
+                        []
+                    )
+                with self._option():
+                    self._MAX_()
+                    self.name_last_node('max')
+                    self._define(
+                        ['max'],
+                        []
+                    )
+                self._error(
+                    'expecting one of: '
+                    '<MIN> <MAX>'
+                )
+        self._token('(')
+
+        def block3():
+            self._hspace_()
+        self._closure(block3)
+        self._expression_()
+        self.add_last_node_to_name('params')
+
+        def block5():
+
+            def block6():
+                self._hspace_()
+            self._closure(block6)
+            self._params_separator_()
+            self.add_last_node_to_name('separators')
+
+            def block8():
+                self._hspace_()
+            self._closure(block8)
+            self._expression_()
+            self.add_last_node_to_name('params')
+        self._closure(block5)
+
+        def block10():
+            self._hspace_()
+        self._closure(block10)
+        self._token(')')
+        self._define(
+            ['min', 'max'],
+            ['params', 'separators']
         )
 
     @tatsumasu('LogFunc')
@@ -3874,7 +3931,7 @@ class grammarinitParser(Parser):
                 '<identifier_alone> <func_id>'
                 '<function_operator> <exp_func>'
                 '<log_func> <ln_func> <sqrt_func>'
-                '<element_convert_func>'
+                '<element_convert_func> <minmax_func>'
                 '<predefined_built_operators>'
                 '<builtin_operators>'
                 '<pseudoinverse_in_matrix_operator>'
@@ -8017,6 +8074,7 @@ class grammarinitParser(Parser):
                 "<INT> '∫' √ <identifier_alone> <func_id>"
                 '<exp_func> <log_func> <ln_func>'
                 '<sqrt_func> <element_convert_func>'
+                '<minmax_func>'
                 '<predefined_built_operators>'
                 "<operations> '(' <subexpression> '0' '1'"
                 "'𝟙' [01\\u1D7D9] <number_matrix>"
@@ -10684,6 +10742,9 @@ class grammarinitSemantics:
     def exp_func(self, ast):  # noqa
         return ast
 
+    def minmax_func(self, ast):  # noqa
+        return ast
+
     def log_func(self, ast):  # noqa
         return ast
 
@@ -11606,6 +11667,14 @@ class ElementConvertFunc(ModelBase):
 @dataclass(eq=False)
 class ExpFunc(ModelBase):
     param: Any = None
+
+
+@dataclass(eq=False)
+class MinmaxFunc(ModelBase):
+    max: Any = None
+    min: Any = None
+    params: Any = None
+    separators: Any = None
 
 
 @dataclass(eq=False)
