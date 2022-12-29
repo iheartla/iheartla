@@ -2637,7 +2637,9 @@ class grammardefaultParser(Parser):
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET>'
-                'tuple <TUPLE> <element_convert_func>'
+                'tuple <TUPLE> vertices <VERTICES> edges'
+                '<EDGES> faces <FACES> tets <TETS>'
+                '<element_convert_func>'
             )
 
     @tatsumasu('ElementConvertFunc')
@@ -2646,30 +2648,30 @@ class grammardefaultParser(Parser):
             with self._choice():
                 with self._option():
                     self._VERTEXSET_()
-                    self.name_last_node('v')
+                    self.name_last_node('vs')
                     self._define(
-                        ['v'],
+                        ['vs'],
                         []
                     )
                 with self._option():
                     self._EDGESET_()
-                    self.name_last_node('e')
+                    self.name_last_node('es')
                     self._define(
-                        ['e'],
+                        ['es'],
                         []
                     )
                 with self._option():
                     self._FACESET_()
-                    self.name_last_node('f')
+                    self.name_last_node('fs')
                     self._define(
-                        ['f'],
+                        ['fs'],
                         []
                     )
                 with self._option():
                     self._TETSET_()
-                    self.name_last_node('t')
+                    self.name_last_node('ts')
                     self._define(
-                        ['t'],
+                        ['ts'],
                         []
                     )
                 with self._option():
@@ -2686,43 +2688,72 @@ class grammardefaultParser(Parser):
                         ['tu'],
                         []
                     )
+                with self._option():
+                    self._VERTICES_()
+                    self.name_last_node('v')
+                    self._define(
+                        ['v'],
+                        []
+                    )
+                with self._option():
+                    self._EDGES_()
+                    self.name_last_node('e')
+                    self._define(
+                        ['e'],
+                        []
+                    )
+                with self._option():
+                    self._FACES_()
+                    self.name_last_node('f')
+                    self._define(
+                        ['f'],
+                        []
+                    )
+                with self._option():
+                    self._TETS_()
+                    self.name_last_node('t')
+                    self._define(
+                        ['t'],
+                        []
+                    )
                 self._error(
                     'expecting one of: '
                     '<VERTEXSET> <EDGESET> <FACESET> <TETSET>'
-                    '<SIMPLICIALSET> <TUPLE>'
+                    '<SIMPLICIALSET> <TUPLE> <VERTICES>'
+                    '<EDGES> <FACES> <TETS>'
                 )
         self._token('(')
 
-        def block7():
+        def block11():
 
-            def block8():
+            def block12():
                 self._hspace_()
-            self._closure(block8)
+            self._closure(block12)
             self._expression_()
             self.add_last_node_to_name('params')
 
-            def block10():
+            def block14():
 
-                def block11():
+                def block15():
                     self._hspace_()
-                self._closure(block11)
+                self._closure(block15)
                 self._params_separator_()
                 self.add_last_node_to_name('separators')
 
-                def block13():
+                def block17():
                     self._hspace_()
-                self._closure(block13)
+                self._closure(block17)
                 self._expression_()
                 self.add_last_node_to_name('params')
-            self._closure(block10)
-        self._closure(block7)
+            self._closure(block14)
+        self._closure(block11)
 
-        def block15():
+        def block19():
             self._hspace_()
-        self._closure(block15)
+        self._closure(block19)
         self._token(')')
         self._define(
-            ['v', 'e', 'f', 't', 's', 'tu'],
+            ['vs', 'es', 'fs', 'ts', 's', 'tu', 'v', 'e', 'f', 't'],
             ['params', 'separators']
         )
 
@@ -11781,13 +11812,17 @@ class Squareroot(ModelBase):
 @dataclass(eq=False)
 class ElementConvertFunc(ModelBase):
     e: Any = None
+    es: Any = None
     f: Any = None
+    fs: Any = None
     params: Any = None
     s: Any = None
     separators: Any = None
     t: Any = None
+    ts: Any = None
     tu: Any = None
     v: Any = None
+    vs: Any = None
 
 
 @dataclass(eq=False)
