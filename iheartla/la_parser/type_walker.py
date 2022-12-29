@@ -1571,6 +1571,9 @@ class TypeWalker(NodeWalker):
                 r_dict[name_ir.get_name()] = name_ir.get_name()
             name_ir_list.append(name_ir)
             name_list.append(name_ir.get_name())
+        import_all = False
+        if node.star:
+            import_all = True
         pkg_name = package_info.ir.get_name()
         if pkg_name in PACKAGES_DICT:
             package = package_info.ir
@@ -1611,7 +1614,7 @@ class TypeWalker(NodeWalker):
             module = package_info.ir
             self.import_module_list.append(DependenceData(module.get_name(), params_list, name_list))
         import_node = ImportNode(package=package, module=module, names=name_ir_list, separators=node.separators,
-                                     params=params, r_dict=r_dict, parse_info=node.parseinfo, raw_text=node.text)
+                                     params=params, r_dict=r_dict, import_all=import_all, parse_info=node.parseinfo, raw_text=node.text)
         return import_node
 
     def walk_Statements(self, node, **kwargs):

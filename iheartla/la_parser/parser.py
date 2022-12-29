@@ -1,3 +1,5 @@
+import copy
+
 from tatsu.exceptions import (
     FailedCut,
     FailedParse
@@ -335,6 +337,13 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
                 # check whether the dimensions depend on parameters
                 replace_sym_dims(tmp_type_walker.symtable, par_mapping_dict)
                 sig_dict = {}
+                # check import all
+                if module.import_all:
+                    sym_names = list(tmp_type_walker.symtable.keys())
+                    module.names = [IdNode(name) for name in sym_names]
+                    for name in sym_names:
+                        module.r_dict[name] = name
+                #
                 for sym in module.names:
                     if sym.get_name() not in tmp_type_walker.symtable:
                         parse_info = sym.parse_info
