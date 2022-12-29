@@ -4,7 +4,7 @@ Directive
     ;
 
 import::Import
-    = names+:import_var {{hspace} ',' {hspace} names+:import_var } {hspace} FROM  {hspace}+ package:multi_str {hspace} 
+    = (names+:import_var {{hspace} ',' {hspace} names+:import_var } | star:'*' ) {hspace} FROM  {hspace}+ package:multi_str {hspace} 
     {'(' {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'} {hspace}
     ;
     

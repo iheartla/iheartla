@@ -7158,76 +7158,94 @@ class grammarinitParser(Parser):
 
     @tatsumasu('Import')
     def _import_(self):  # noqa
-        self._import_var_()
-        self.add_last_node_to_name('names')
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._import_var_()
+                    self.add_last_node_to_name('names')
 
-        def block1():
+                    def block2():
 
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._token(',')
+                        def block3():
+                            self._hspace_()
+                        self._closure(block3)
+                        self._token(',')
 
-            def block3():
-                self._hspace_()
-            self._closure(block3)
-            self._import_var_()
-            self.add_last_node_to_name('names')
-        self._closure(block1)
+                        def block4():
+                            self._hspace_()
+                        self._closure(block4)
+                        self._import_var_()
+                        self.add_last_node_to_name('names')
+                    self._closure(block2)
+                    self._define(
+                        [],
+                        ['names']
+                    )
+                with self._option():
+                    self._token('*')
+                    self.name_last_node('star')
+                    self._define(
+                        ['star'],
+                        []
+                    )
+                self._error(
+                    'expecting one of: '
+                    "<import_var> '*'"
+                )
 
-        def block5():
+        def block7():
             self._hspace_()
-        self._closure(block5)
+        self._closure(block7)
         self._FROM_()
-
-        def block6():
-            self._hspace_()
-        self._positive_closure(block6)
-        self._multi_str_()
-        self.name_last_node('package')
 
         def block8():
             self._hspace_()
-        self._closure(block8)
+        self._positive_closure(block8)
+        self._multi_str_()
+        self.name_last_node('package')
 
-        def block9():
+        def block10():
+            self._hspace_()
+        self._closure(block10)
+
+        def block11():
             self._token('(')
 
-            def block10():
+            def block12():
 
-                def block11():
+                def block13():
                     self._hspace_()
-                self._closure(block11)
+                self._closure(block13)
                 self._identifier_alone_()
                 self.add_last_node_to_name('params')
 
-                def block13():
-
-                    def block14():
-                        self._hspace_()
-                    self._closure(block14)
-                    self._params_separator_()
-                    self.add_last_node_to_name('separators')
+                def block15():
 
                     def block16():
                         self._hspace_()
                     self._closure(block16)
+                    self._params_separator_()
+                    self.add_last_node_to_name('separators')
+
+                    def block18():
+                        self._hspace_()
+                    self._closure(block18)
                     self._identifier_alone_()
                     self.add_last_node_to_name('params')
-                self._closure(block13)
-            self._closure(block10)
+                self._closure(block15)
+            self._closure(block12)
 
-            def block18():
+            def block20():
                 self._hspace_()
-            self._closure(block18)
+            self._closure(block20)
             self._token(')')
-        self._closure(block9)
+        self._closure(block11)
 
-        def block19():
+        def block21():
             self._hspace_()
-        self._closure(block19)
+        self._closure(block21)
         self._define(
-            ['package'],
+            ['star', 'package'],
             ['names', 'params', 'separators']
         )
 
@@ -7495,7 +7513,7 @@ class grammarinitParser(Parser):
                 self._statements_()
             self._error(
                 'expecting one of: '
-                '<import> <import_var> <Directive>'
+                "<import> <import_var> '*' <Directive>"
                 '<where_condition> [ \\t] <hspace>'
                 '<where_conditions> where <WHERE> given'
                 '<GIVEN> <params_block> <statement>'
@@ -12077,6 +12095,7 @@ class Import(ModelBase):
     package: Any = None
     params: Any = None
     separators: Any = None
+    star: Any = None
 
 
 @dataclass(eq=False)
