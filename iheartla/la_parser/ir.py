@@ -784,6 +784,10 @@ class EleConvertType(Enum):
     EleToTetSet = 3
     EleToSimplicialSet = 4
     EleToTuple = 5
+    EleToVertex = 6
+    EleToEdge = 7
+    EleToFace = 8
+    EleToTet = 9
 
 class ElementConvertNode(ExprNode):
     def __init__(self, la_type=None, name=None, params=None, separators=None, to_type=EleConvertType.EleInvalid, parse_info=None, raw_text=None):

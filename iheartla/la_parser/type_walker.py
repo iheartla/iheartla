@@ -4191,24 +4191,48 @@ class TypeWalker(NodeWalker):
         ir_node = ElementConvertNode(params=param_node_list, parse_info=node.parseinfo, raw_text=node.text)
         ir_node.separators = node.separators
         if node.v:
+            ir_node.to_type = EleConvertType.EleToVertex
+            ir_node.la_type = VertexType()
+            ir_node.name = node.v
+            self.assert_expr(len(param_node_list) == 1 and param_type_list[0].is_integer_element(), get_err_msg_info(node.parseinfo,
+                                                                                                     "Function error. Can't find function with current parameter types."))
+        elif node.e:
+            ir_node.to_type = EleConvertType.EleToEdge
+            ir_node.la_type = EdgeType()
+            ir_node.name = node.v
+            self.assert_expr(len(param_node_list) == 1 and param_type_list[0].is_integer_element(), get_err_msg_info(node.parseinfo,
+                                                                                                         "Function error. Can't find function with current parameter types."))
+        elif node.f:
+            ir_node.to_type = EleConvertType.EleToFace
+            ir_node.la_type = FaceType()
+            ir_node.name = node.v
+            self.assert_expr(len(param_node_list) == 1 and param_type_list[0].is_integer_element(), get_err_msg_info(node.parseinfo,
+                                                                                                         "Function error. Can't find function with current parameter types."))
+        elif node.t:
+            ir_node.to_type = EleConvertType.EleToTet
+            ir_node.la_type = TetType()
+            ir_node.name = node.v
+            self.assert_expr(len(param_node_list) == 1 and param_type_list[0].is_integer_element(), get_err_msg_info(node.parseinfo,
+                                                                                                         "Function error. Can't find function with current parameter types."))
+        elif node.vs:
             ir_node.to_type = EleConvertType.EleToVertexSet
             ir_node.la_type = VertexSetType()
             ir_node.name = node.v
             self.assert_expr(len(param_node_list) == 1 and param_type_list[0].is_set(), get_err_msg_info(node.parseinfo,
                                                                      "Function error. Can't find function with current parameter types."))
-        elif node.e:
+        elif node.es:
             ir_node.to_type = EleConvertType.EleToEdgeSet
             ir_node.la_type = EdgeSetType()
             ir_node.name = node.e
             self.assert_expr(len(param_node_list) == 1 and param_type_list[0].is_set(), get_err_msg_info(node.parseinfo,
                                                                      "Function error. Can't find function with current parameter types."))
-        elif node.f:
+        elif node.fs:
             ir_node.to_type = EleConvertType.EleToFaceSet
             ir_node.la_type = FaceSetType()
             ir_node.name = node.f
             self.assert_expr(len(param_node_list) == 1 and param_type_list[0].is_set(), get_err_msg_info(node.parseinfo,
                                                                      "Function error. Can't find function with current parameter types."))
-        elif node.t:
+        elif node.ts:
             ir_node.to_type = EleConvertType.EleToTetSet
             ir_node.la_type = TetSetType()
             ir_node.name = node.t
