@@ -221,6 +221,9 @@ def la_remove_key(keys, **kwargs):
     elif keys in kwargs:
         del kwargs[keys]
 
+class RecursiveException(Exception):
+    "Raised when the function is not defined yet"
+    pass
 
 class TypeWalker(NodeWalker):
     def __init__(self):
@@ -1802,13 +1805,6 @@ class TypeWalker(NodeWalker):
             ir_node.extra_list, ir_node.tex_list = self.get_ordered_stat(node.extra)
         ret_list = []
         expr_list = []
-        cur_symbols = set()
-        for cur_index in range(len(node.expr)):
-            expr_info = self.walk(node.expr[cur_index], **kwargs)
-            expr_info.ir.set_parent(ir_node)
-            expr_list.append(expr_info.ir)
-            ret_list.append(expr_info.ir.la_type)
-            cur_symbols = cur_symbols.union(expr_info.symbols)
         ir_node.expr = expr_list
         param_tps = []
         par_names = []
@@ -1848,6 +1844,14 @@ class TypeWalker(NodeWalker):
         #                                                                        local_func_name, len(par_names), len(par_defs))))
         self.func_data_dict[local_func_name].params_data.parameters = par_names
         ir_node.separators = node.separators
+        #
+        cur_symbols = set()
+        for cur_index in range(len(node.expr)):
+            expr_info = self.walk(node.expr[cur_index], **kwargs)
+            expr_info.ir.set_parent(ir_node)
+            expr_list.append(expr_info.ir)
+            ret_list.append(expr_info.ir.la_type)
+            cur_symbols = cur_symbols.union(expr_info.symbols)
         ir_node.la_type = FunctionType(params=param_tps, ret=ret_list)
         self.extra_symtable[local_func_name] = ir_node.la_type
         self.add_sym_type(original_local_func_name, ir_node.la_type, get_err_msg(get_line_info(node.parseinfo),0,"Symbol {} has been defined".format(local_func_name)), is_main=True)
@@ -2931,7 +2935,8 @@ class TypeWalker(NodeWalker):
             # else:
             #     la_type = FunctionType(cur_type=FuncType.FuncDynamic)
             # self.get_cur_param_data().symtable[ir_node.name.get_main_id()] = la_type
-            assert False, "Not a function: {}".format(node.name)
+            # assert False, "Not a function: {}".format(node.name)
+            raise RecursiveException
             node_info = NodeInfo(la_type, ir=ir_node)
             return node_info
             # assert len(node.params) == 1, "Not a function"  # never reach
@@ -3603,9 +3608,17 @@ class TypeWalker(NodeWalker):
                 la_type = ir.la_type
             ir_node.ifs = ifs_node
             if node.other:
-                other_info = self.walk(node.other, **kwargs)
-                ir_node.other = other_info.ir
-                symbols = symbols.union(other_info.symbols)
+                if self.local_func_parsing:
+                    try:
+                        other_info = self.walk(node.other, **kwargs)
+                        ir_node.other = other_info.ir
+                        symbols = symbols.union(other_info.symbols)
+                    except RecursiveException:
+                        pass
+                else:
+                    other_info = self.walk(node.other, **kwargs)
+                    ir_node.other = other_info.ir
+                    symbols = symbols.union(other_info.symbols)
             node_info = NodeInfo(la_type, symbols=symbols)
             ir_node.la_type = la_type
             node_info.ir = ir_node
@@ -3614,14 +3627,27 @@ class TypeWalker(NodeWalker):
     def walk_MultiIfs(self, node, **kwargs):
         symbols = set()
         ir_list = []
-        if node.ifs:
-            node_info = self.walk(node.ifs, **kwargs)
-            ir_list += node_info.ir
-            symbols = symbols.union(node_info.symbols)
-        if node.value:
-            node_info = self.walk(node.value, **kwargs)
-            ir_list.append(node_info.ir)
-            symbols = symbols.union(node_info.symbols)
+        if self.local_func_parsing:
+            try:
+                if node.ifs:
+                    node_info = self.walk(node.ifs, **kwargs)
+                    ir_list += node_info.ir
+                    symbols = symbols.union(node_info.symbols)
+                if node.value:
+                    node_info = self.walk(node.value, **kwargs)
+                    ir_list.append(node_info.ir)
+                    symbols = symbols.union(node_info.symbols)
+            except RecursiveException:
+                pass
+        else:
+            if node.ifs:
+                node_info = self.walk(node.ifs, **kwargs)
+                ir_list += node_info.ir
+                symbols = symbols.union(node_info.symbols)
+            if node.value:
+                node_info = self.walk(node.value, **kwargs)
+                ir_list.append(node_info.ir)
+                symbols = symbols.union(node_info.symbols)
         ret_info = NodeInfo(ir=ir_list, symbols=symbols)
         return ret_info
 
