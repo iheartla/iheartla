@@ -158,16 +158,19 @@ class CodeGenLatex(CodeGen):
                 if index < len(node.params) - 1:
                     params_str += node.separators[index] + ''
             params_str = params_str.replace('\\mathit{', '\\textit{')
+        name_str = ", ".join(name_list)
+        if node.import_all:
+            name_str = '*'
         if node.package:
             if params_str == '':
-                content = "\\text{{ {} from {} }}\\\\\n".format(", ".join(name_list), node.package.get_name().replace('_', '\_'))
+                content = "\\text{{ {} from {} }}\\\\\n".format(name_str, node.package.get_name().replace('_', '\_'))
             else:
-                content = "\\text{{ {} from {}({}) }}\\\\\n".format(", ".join(name_list), node.package.get_name().replace('_', '\_'), params_str)
+                content = "\\text{{ {} from {}({}) }}\\\\\n".format(name_str, node.package.get_name().replace('_', '\_'), params_str)
         else:
             if params_str != '':
-                content = "\\text{{ {} from {}({}) }}\\\\\n".format(", ".join(name_list), node.module.get_name().replace('_', '\_'), params_str)
+                content = "\\text{{ {} from {}({}) }}\\\\\n".format(name_str, node.module.get_name().replace('_', '\_'), params_str)
             else:
-                content = "\\text{{ {} from {}() }}\\\\\n".format(", ".join(name_list), node.module.get_name().replace('_', '\_'))
+                content = "\\text{{ {} from {}() }}\\\\\n".format(name_str, node.module.get_name().replace('_', '\_'))
         return content
 
     def visit_start(self, node, **kwargs):
