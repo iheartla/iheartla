@@ -1155,9 +1155,10 @@ class CodeGenEigen(CodeGen):
             extra_expr += '\n'.join(extra_list)
         if node.expr[0].is_node(IRNodeType.MultiConds):
             content += '        {} {}_ret;\n'.format(self.get_ctype(node.expr[0].la_type), name_info.content)
+            content += extra_expr
             if len(expr_info.pre_list) > 0:
                 content += self.update_prelist_str(expr_info.pre_list, "    ")
-            content += extra_expr + '        return {}_ret;'.format(name_info.content)
+            content += '        return {}_ret;'.format(name_info.content)
         else:
             if len(expr_info.pre_list) > 0:
                 content += self.update_prelist_str(expr_info.pre_list, "    ")
