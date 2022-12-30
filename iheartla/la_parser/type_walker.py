@@ -3621,7 +3621,7 @@ class TypeWalker(NodeWalker):
                 first = False
                 ifs_node.cond_list.append(ir)
                 ir.set_parent(ifs_node)
-                la_type = ir.la_type
+                la_type = ir.la_type if ir.la_type.is_valid() else la_type
             ir_node.ifs = ifs_node
             if node.other:
                 if self.local_func_parsing:
@@ -3629,12 +3629,14 @@ class TypeWalker(NodeWalker):
                         other_info = self.walk(node.other, **kwargs)
                         ir_node.other = other_info.ir
                         symbols = symbols.union(other_info.symbols)
+                        la_type = other_info.ir.la_type if other_info.ir.la_type.is_valid() else la_type
                     except RecursiveException:
                         pass
                 else:
                     other_info = self.walk(node.other, **kwargs)
                     ir_node.other = other_info.ir
                     symbols = symbols.union(other_info.symbols)
+                    la_type = other_info.ir.la_type if other_info.ir.la_type.is_valid() else la_type
             node_info = NodeInfo(la_type, symbols=symbols)
             ir_node.la_type = la_type
             node_info.ir = ir_node
