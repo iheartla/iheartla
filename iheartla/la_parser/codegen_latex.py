@@ -1048,6 +1048,17 @@ class CodeGenLatex(CodeGen):
             content = ' \mathop{\\text{orth}}'
         elif node.func_type == MathFuncType.MathFuncInv:
             content = ' \mathop{\\text{inv}}'
+        elif node.func_type == MathFuncType.MathFuncMin or node.func_type == MathFuncType.MathFuncMax:
+            content = ' \mathop{\\text{max}}'
+            if node.func_type == MathFuncType.MathFuncMin:
+                content = ' \mathop{\\text{min}}'
+            if node.remain_params and len(node.remain_params) > 0:
+                # multi params
+                param_list = [param_info]
+                for remain in node.remain_params:
+                    remain_info = self.visit(remain, **kwargs)
+                    param_list.append(remain_info)
+                param_info = ', '.join(param_list)
         return "{}\\left( {} \\right)".format(content, param_info)
 
     def visit_gp_func(self, node, **kwargs):

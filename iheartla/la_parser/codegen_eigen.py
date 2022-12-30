@@ -11,6 +11,7 @@ class CodeGenEigen(CodeGen):
         self.pre_str = '''#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n'''
         self.post_str = ''''''
         self.ret = 'ret'
+        self.pre_str += '#include <algorithm>\n'
         if self.unofficial_method:
             self.pre_str += '#include <unsupported/Eigen/MatrixFunctions>\n'
         if self.has_opt:
@@ -2487,6 +2488,36 @@ class CodeGenEigen(CodeGen):
                 content = 'orth'
             elif node.func_type == MathFuncType.MathFuncInv:
                 content = "({}).inverse()".format(params_content)
+            elif node.func_type == MathFuncType.MathFuncMin or node.func_type == MathFuncType.MathFuncMax:
+                if node.remain_params and len(node.remain_params) > 0:
+                    f_name = 'std::max'
+                    if node.func_type == MathFuncType.MathFuncMin:
+                        f_name = 'std::min'
+                    # multi params
+                    param_list = [param_info.content]
+                    for remain in node.remain_params:
+                        remain_info = self.visit(remain, **kwargs)
+                        param_list.append(remain_info.content)
+                    content = "{}({{{}}})".format(f_name, ', '.join(param_list))
+                else:
+                    # one param
+                    if node.param.la_type.is_sequence():
+                        f_name = 'std::max_element'
+                        if node.func_type == MathFuncType.MathFuncMin:
+                            f_name = 'std::min_element'
+                        e_name = self.generate_var_name("element")
+                        pre_list.append("    auto {} = {}(({}).begin(), ({}).end());\n".format(e_name, f_name, params_content, params_content))
+                        content = "{}[std::distance({}.begin(), {})]".format(params_content, params_content, e_name)
+                    elif node.param.la_type.is_set():
+                        if node.func_type == MathFuncType.MathFuncMin:
+                            content = "*({}).begin()".format(params_content)
+                        else:
+                            content = "*({}).rbegin()".format(params_content)
+                    else:
+                        f_name = 'maxCoeff()'
+                        if node.func_type == MathFuncType.MathFuncMin:
+                            f_name = 'minCoeff()'
+                        content = "({}).{}".format(params_content, f_name)
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def get_func_prefix(self):

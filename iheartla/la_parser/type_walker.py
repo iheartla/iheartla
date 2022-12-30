@@ -3939,6 +3939,22 @@ class TypeWalker(NodeWalker):
         elif func_type == MathFuncType.MathFuncInv:
             self.assert_expr(param.la_type.is_matrix() and param.la_type.rows == param.la_type.cols, get_err_msg_info(param.parse_info, "Parameter must be valid matrix type"))
             ret_type = MatrixType(rows=param.la_type.rows, cols=param.la_type.cols)
+        elif func_type == MathFuncType.MathFuncMin or func_type == MathFuncType.MathFuncMax:
+            ret_type = ScalarType()
+            if remains and len(remains) > 0:
+                # multi params
+                self.assert_expr(param.la_type.is_scalar(), get_err_msg_info(param.parse_info, "Parameter must be valid scalar type for multiple params"))
+                for par_info in remains:
+                    par = par_info.ir
+                    remain_list.append(par)
+                    self.assert_expr(par.la_type.is_scalar(),
+                                     get_err_msg_info(par.parse_info, "Parameter must be scalar type for multiple params"))
+                    symbols = symbols.union(par_info.symbols)
+            else:
+                # one param
+                self.assert_expr(param.la_type.is_set() or param.la_type.is_matrix() or param.la_type.is_vector() or param.la_type.is_sequence(), get_err_msg_info(param.parse_info,
+                                                                             "Parameter must be valid matrix/vector/set/sequence type"))
+                ret_type = param.la_type.element_type
         tri_node = MathFuncNode(param, func_type, remain_list)
         node_info = NodeInfo(ret_type, symbols=symbols)
         tri_node.la_type = ret_type
@@ -4080,6 +4096,16 @@ class TypeWalker(NodeWalker):
 
     def walk_ExpFunc(self, node, **kwargs):
         return self.create_math_node_info(MathFuncType.MathFuncExp, self.walk(node.param, **kwargs))
+
+    def walk_MinmaxFunc(self, node, **kwargs):
+        t = MathFuncType.MathFuncMax
+        if node.min:
+            t = MathFuncType.MathFuncMin
+        params_list = [self.walk(param, **kwargs) for param in node.params]
+        remain = []
+        if len(node.params) > 1:
+            remain = params_list[1:]
+        return self.create_math_node_info(t, params_list[0], remain)
 
     def walk_LogFunc(self, node, **kwargs):
         func_type = MathFuncType.MathFuncLog

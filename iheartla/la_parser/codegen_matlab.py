@@ -2042,6 +2042,24 @@ class CodeGenMatlab(CodeGen):
             content = 'orth'
         elif node.func_type == MathFuncType.MathFuncInv:
             content = 'inv'
+        elif node.func_type == MathFuncType.MathFuncMin or node.func_type == MathFuncType.MathFuncMax:
+            if node.remain_params and len(node.remain_params) > 0:
+                f_name = 'max'
+                if node.func_type == MathFuncType.MathFuncMin:
+                    f_name = 'min'
+                # multi params
+                param_list = [param_info.content]
+                for remain in node.remain_params:
+                    remain_info = self.visit(remain, **kwargs)
+                    param_list.append(remain_info.content)
+                content = "{}({})".format(f_name, ', '.join(param_list))
+            else:
+                # one param
+                f_name = 'max'
+                if node.func_type == MathFuncType.MathFuncMin:
+                    f_name = 'min'
+                content = "{}({})".format(f_name, params_content)
+            return CodeNodeInfo(content, pre_list=pre_list)
         return CodeNodeInfo("{}({})".format(content, params_content), pre_list=pre_list)
 
     def visit_constant(self, node, **kwargs):

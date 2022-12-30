@@ -1374,6 +1374,8 @@ class MathFuncType(IntEnum):
     MathFuncNull = 27
     MathFuncOrth = 28
     MathFuncInv = 29
+    MathFuncMin = 30
+    MathFuncMax = 31
 
 
 class MathFuncNode(ExprNode):
