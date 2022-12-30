@@ -128,20 +128,11 @@ PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', '
                                   'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh',
                                   'cot', 'sec', 'csc'],
                  'linearalgebra': ['trace', 'tr', 'diag', 'vec', 'det', 'rank', 'null', 'orth', 'inv'],
-                 MESH_HELPER: [FACES_OF_EDGE, FACE_NORMAL, DIHEDRAL,
-                                 GET_ADJACENT_VERTICES_V, GET_INCIDENT_EDGES_V, GET_INCIDENT_FACES_V,
-                                 GET_INCIDENT_VERTICES_E, GET_INCIDENT_FACES_E, GET_DIAMOND_VERTICES_E, GET_DIAMOND_FACES_E,
-                                 GET_INCIDENT_VERTICES_F, GET_INCIDENT_EDGES_F, GET_ADJACENT_FACES_F,
-                                 VERTICES_TO_VECTOR, EDGES_TO_VECTOR, FACES_TO_VECTOR,
-                                 VECTOR_TO_VERTICES, VECTOR_TO_EDGES, VECTOR_TO_FACES, VERTEX_POSITIONS, FACE_MATRIX,
-                                 GET_VERTICES_E, GET_EDGES_F, GET_VERTICES_F,
-                                 STAR, CLOSURE, LINK, BOUNDARY, IS_COMPLEX, IS_PURE_COMPLEX,
-                                 VERTICES, EDGES, FACES, TETS, DIAMOND,
-                                 MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, CanonicalVertexOrderings,
+                 MESH_HELPER: [MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices,
                                NonZeros, IndicatorVector, ValueSet]
                       }
 PACKAGES_SYM_DICT = {'trigonometry': ['e'],
-                 MESH_HELPER: [EDGES, VI, EI, FI, NEI, BM1, BM2, BM3]}
+                 MESH_HELPER: []}
 MESH_HELPER_FUNC_MAPPING = {
 MeshSets: GPType.MeshSets,
 BoundaryMatrices: GPType.BoundaryMatrices,
