@@ -1322,6 +1322,7 @@ class CodeGenEigen(CodeGen):
         if node.other:
             other_info = self.visit(node.other, **kwargs)
             pre_list.append('    else{\n')
+            pre_list += ["    " + pre for pre in other_info.pre_list]
             pre_list.append('        {}_ret = {};\n'.format(name, other_info.content))
             pre_list.append('    }\n')
         return CodeNodeInfo(cur_m_id, pre_list)
