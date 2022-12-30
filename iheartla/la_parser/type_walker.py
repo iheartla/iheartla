@@ -1578,10 +1578,17 @@ class TypeWalker(NodeWalker):
         if pkg_name in PACKAGES_DICT:
             package = package_info.ir
             func_list = PACKAGES_DICT[pkg_name]
-            for name in name_list:
-                self.assert_expr(name in func_list, get_err_msg(get_line_info(node.parseinfo),
-                                                           get_line_info(node.parseinfo).text.find(name),
-                                                           "Function {} not exist".format(name)))
+            if import_all:
+                name_list = func_list
+                name_ir_list = [IdNode(name) for name in name_list]
+                for c_name in name_list:
+                    r_dict[c_name] = c_name
+            else:
+                # check specific name
+                for name in name_list:
+                    self.assert_expr(name in func_list, get_err_msg(get_line_info(node.parseinfo),
+                                                               get_line_info(node.parseinfo).text.find(name),
+                                                               "Function {} not exist".format(name)))
             if not self.pre_walk:
                 self.add_builtin_module_data(pkg_name, params_list, name_list, r_dict)
             if pkg_name == MESH_HELPER:
