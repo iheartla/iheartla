@@ -270,6 +270,7 @@ class TypeWalker(NodeWalker):
         self.local_func_syms = []  # local function names
         self.local_func_pars = []  # parameters for local functions
         self.local_func_parsing = False
+        self.local_func_error = False
         self.local_func_name = ''  # function name when visiting expressions
         self.local_func_dict = {}  # local function name -> parameter dict
         self.visiting_opt = False  # optimization
@@ -411,6 +412,7 @@ class TypeWalker(NodeWalker):
         self.local_func_syms.clear()
         self.local_func_pars.clear()
         self.local_func_parsing = False
+        self.local_func_error = False
         self.local_func_name = ''
         self.local_func_dict.clear()
         self.extra_symtable.clear()
@@ -874,6 +876,7 @@ class TypeWalker(NodeWalker):
         self.local_func_parsing = False
         self.is_param_block = False
         self.visiting_solver_eq = False
+        self.local_func_error = False
         self.scope_list = self.saved_scope_list
 
     def pop_scope_environment(self):
@@ -1766,6 +1769,7 @@ class TypeWalker(NodeWalker):
 
     def walk_LocalFunc(self, node, **kwargs):
         self.local_func_parsing = True
+        self.local_func_error = False
         local_func_name = self.func_name_dict[node.text]
         self.push_scope(local_func_name)
         def_type = LocalFuncDefType.LocalFuncDefInvalid
@@ -1805,7 +1809,6 @@ class TypeWalker(NodeWalker):
             ir_node.extra_list, ir_node.tex_list = self.get_ordered_stat(node.extra)
         ret_list = []
         expr_list = []
-        ir_node.expr = expr_list
         param_tps = []
         par_names = []
         if type(node.name).__name__ == 'IdentifierSubscript':
@@ -1853,8 +1856,19 @@ class TypeWalker(NodeWalker):
             ret_list.append(expr_info.ir.la_type)
             cur_symbols = cur_symbols.union(expr_info.symbols)
         ir_node.la_type = FunctionType(params=param_tps, ret=ret_list)
-        self.extra_symtable[local_func_name] = ir_node.la_type
         self.add_sym_type(original_local_func_name, ir_node.la_type, get_err_msg(get_line_info(node.parseinfo),0,"Symbol {} has been defined".format(local_func_name)), is_main=True)
+        if self.local_func_error:
+            # error happened, revisit expr
+            expr_list.clear()
+            ret_list.clear()
+            for cur_index in range(len(node.expr)):
+                expr_info = self.walk(node.expr[cur_index], **kwargs)
+                expr_info.ir.set_parent(ir_node)
+                expr_list.append(expr_info.ir)
+                ret_list.append(expr_info.ir.la_type)
+                cur_symbols = cur_symbols.union(expr_info.symbols)
+        ir_node.expr = expr_list
+        self.extra_symtable[local_func_name] = ir_node.la_type
         self.func_sig_dict[get_func_signature(original_local_func_name, ir_node.la_type)] = local_func_name
         ir_node.symbols = cur_symbols.union(set(par_names))
         # self.symtable[local_func_name] = ir_node.la_type
@@ -2936,6 +2950,7 @@ class TypeWalker(NodeWalker):
             #     la_type = FunctionType(cur_type=FuncType.FuncDynamic)
             # self.get_cur_param_data().symtable[ir_node.name.get_main_id()] = la_type
             # assert False, "Not a function: {}".format(node.name)
+            self.local_func_error = True
             raise RecursiveException
             node_info = NodeInfo(la_type, ir=ir_node)
             return node_info
@@ -3600,6 +3615,7 @@ class TypeWalker(NodeWalker):
             ifs_node.set_parent(ir_node)
             symbols = symbols.union(ifs_info.symbols)
             first = True
+            la_type = LaVarType()
             for ir in ifs_info.ir:
                 ir.first_in_list = first
                 first = False
