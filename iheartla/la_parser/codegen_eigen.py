@@ -373,8 +373,12 @@ class CodeGenEigen(CodeGen):
         else:
             for c_index in range(len(func_type.func_list)):
                 c_type = func_type.func_list[c_index]
-                c_name = func_type.fname_list[c_index]
-                p_name = func_type.pre_fname_list[c_index]
+                if func_type.has_duplicate_cpp_types():
+                    c_name = func_type.fname_list[c_index]
+                    p_name = func_type.pre_fname_list[c_index]
+                else:
+                    c_name = sym
+                    p_name = sym
                 ret_type = self.get_ctype(c_type.ret[0])
                 param_list = []
                 init_list = []
