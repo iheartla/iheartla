@@ -27,7 +27,7 @@ attribute
     ;
     
 la_where_condition::WhereCondition
-    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN) {hspace} type:la_type {{hspace} attrib:attribute} { {hspace} ':' {hspace} desc:description}
+    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN | subset:SUBSET) {hspace} type:la_type {{hspace} attrib:attribute} { {hspace} ':' {hspace} desc:description}
     ;
     
 de_where_condition::DeWhereCondition
@@ -35,7 +35,7 @@ de_where_condition::DeWhereCondition
     ;
     
 where_condition_terse::WhereCondition
-    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN) {hspace} type:la_type {{hspace} attrib:attribute}
+    = id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN | subset:SUBSET) {hspace} type:la_type {{hspace} attrib:attribute}
     ;
 
 #######################################################################################################################
