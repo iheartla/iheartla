@@ -662,11 +662,12 @@ class OverloadingFunctionType(LaVarType):
             cpp_sig_list.append(cpp_sig)
         return ret
 class MappingType(LaVarType):
-    def __init__(self, desc=None, symbol=None, src=None, dst=None, ele_set=None):
+    def __init__(self, desc=None, symbol=None, src=None, dst=None, ele_set=None, subset=False):
         LaVarType.__init__(self, VarTypeEnum.MAPPING, desc, symbol)
         self.src = src
         self.dst = dst
         self.ele_set = ele_set
+        self.subset = subset
 
 
 class SummationAttrs(object):

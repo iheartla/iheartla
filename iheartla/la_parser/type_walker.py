@@ -951,10 +951,13 @@ class TypeWalker(NodeWalker):
                     # mapping from element in a set
                     self.check_sym_existence(v.ele_set, "Symbol {} is not defined".format(v.ele_set))
                     set_type = self.get_sym_type(v.ele_set)
+                    la_type = set_type.element_type
+                    if v.subset:
+                        la_type = set_type
+                    else:
+                        self.get_cur_param_data().set_checking[k] = v.ele_set
                     self.assert_expr(set_type.is_set(), "Symbol {} should be a set".format(v.ele_set))
-                    self.get_cur_param_data().symtable[k] = set_type.element_type
-                    self.get_cur_param_data().set_checking[k] = v.ele_set
-
+                    self.get_cur_param_data().symtable[k] = la_type
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
         meshset_list, name_list = self.get_meshset_assign(stat_list)
         block_node = BlockNode()
@@ -1274,6 +1277,9 @@ class TypeWalker(NodeWalker):
                             self.get_cur_param_data().arith_dim_list.append(type_node.la_type.rows)
                 elif type_node.la_type.is_mapping():
                     self.mapping_dict[id0] = type_node
+                    if node.subset:
+                        type_node.subset = True
+                        type_node.la_type.subset = True
         ir_node.type = type_node
         return ir_node
 
