@@ -19,7 +19,7 @@ where_conditions::WhereConditions
 where_condition
     =
     la_where_condition
-    | de_where_condition
+    #| de_where_condition
     ;
     
 attribute

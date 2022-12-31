@@ -7353,16 +7353,7 @@ class grammarinitParser(Parser):
 
     @tatsumasu()
     def _where_condition_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._la_where_condition_()
-            with self._option():
-                self._de_where_condition_()
-            self._error(
-                'expecting one of: '
-                '<identifier> <la_where_condition>'
-                '<de_where_condition>'
-            )
+        self._la_where_condition_()
 
     @tatsumasu()
     def _attribute_(self):  # noqa
