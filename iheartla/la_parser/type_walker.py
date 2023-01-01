@@ -2246,6 +2246,7 @@ class TypeWalker(NodeWalker):
                 ir_node.range = range_info.ir
             elif node.lower:
                 # explicit ranges
+                index_type = False
                 self.sum_sym_list.append({})
                 id_info = self.walk(node.id, **kwargs)
                 self.sum_subs.append(id_info.content)
@@ -2258,12 +2259,14 @@ class TypeWalker(NodeWalker):
                 #     lhs_ids = self.get_all_ids(lhs)
                     # assert lhs_ids[1][0] == lhs_ids[1][1], "multiple subscripts for sum"
                 sub_parse_info = node.id.parseinfo
-                self.assert_expr(subs not in self.symtable,
-                                 get_err_msg_info(sub_parse_info, "Subscript has been defined"))
-                self.add_sym_type(subs, ScalarType(index_type=False, is_int=True))
-                subs_list.append(subs)
                 ir_node.lower = self.walk(node.lower, **kwargs).ir
                 ir_node.upper = self.walk(node.upper, **kwargs).ir
+                if ir_node.lower.la_type.index_type and ir_node.upper.la_type.index_type:
+                    index_type = True
+                self.assert_expr(subs not in self.symtable,
+                                 get_err_msg_info(sub_parse_info, "Subscript has been defined"))
+                self.add_sym_type(subs, ScalarType(index_type=index_type, is_int=True))
+                subs_list.append(subs)
             else:
                 self.sum_sym_list.append({})
                 sub_info = self.walk(node.sub)
