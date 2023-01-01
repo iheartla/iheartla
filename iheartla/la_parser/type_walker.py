@@ -4763,6 +4763,18 @@ class TypeWalker(NodeWalker):
         elif op == TypeInferenceEnum.INF_MATRIX_ROW:
             # assert left_type.var_type == right_type.var_type
             ret_type = copy.deepcopy(left_type)
+        if not ret_type.is_scalar():
+            if left_type.is_integer_element() and not right_type.is_integer_element():
+                new_node = ToDoubleValueNode(parse_info=left_info.ir.parse_info, item=left_info.ir)
+                new_node.la_type = copy.deepcopy(left_type)
+                new_node.la_type.element_type.is_int = True
+                left_info.ir = new_node
+            else:
+                if not left_type.is_integer_element() and right_type.is_integer_element():
+                    new_node = ToDoubleValueNode(parse_info=right_info.ir.parse_info, item=right_info.ir)
+                    new_node.la_type = copy.deepcopy(right_type)
+                    new_node.la_type.element_type.is_int = True
+                    right_info.ir = new_node
         return ret_type, need_cast
 
     def contain_subscript(self, identifier):

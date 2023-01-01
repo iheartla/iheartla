@@ -2348,6 +2348,14 @@ class CodeGenEigen(CodeGen):
     def visit_integral(self, node, **kwargs):
         return CodeNodeInfo("")
 
+    def visit_to_double(self, node, **kwargs):
+        node_info = self.visit(node.item, **kwargs)
+        if node.la_type.is_scalar():
+            node_info.content = "double({})".format(node_info.content)
+        else:
+            node_info.content = "({}).cast<double>()".format(node_info.content)
+        return node_info
+
     def visit_inner_product(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)

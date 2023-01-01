@@ -86,6 +86,7 @@ class IRNodeType(Enum):
     MultiConds = 312
     Set = 313
     ElementConvert = 314
+    ToDouble = 315
     #
     MatrixIndex = 320
     VectorIndex = 321
@@ -802,6 +803,11 @@ class ElementConvertNode(ExprNode):
 class ToMatrixNode(ExprNode):
     def __init__(self, la_type=None, parse_info=None, raw_text=None, item=None):
         super().__init__(IRNodeType.ToMatrix, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        self.item = item
+
+class ToDoubleValueNode(ExprNode):
+    def __init__(self, la_type=None, parse_info=None, raw_text=None, item=None):
+        super().__init__(IRNodeType.ToDouble, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.item = item
 
 

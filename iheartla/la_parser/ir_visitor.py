@@ -84,6 +84,7 @@ class IRBaseVisitor(object):
             IRNodeType.Vector: "visit_vector",
             IRNodeType.Set: "visit_set",
             IRNodeType.ToMatrix: "visit_to_matrix",
+            IRNodeType.ToDouble: "visit_to_double",
             IRNodeType.ElementConvert: "visit_element_convert",
             #
             IRNodeType.MatrixIndex: "visit_matrix_index",
@@ -161,6 +162,9 @@ class IRBaseVisitor(object):
         pass
 
     def visit_to_matrix(self, node, **kwargs):
+        pass
+
+    def visit_to_double(self, node, **kwargs):
         pass
 
     def visit_element_convert(self, node, **kwargs):
@@ -628,6 +632,8 @@ class IRVisitor(IRBaseVisitor):
         self.content = self.pre_str + self.visit(node) + self.post_str
 
     def visit_to_matrix(self, node, **kwargs):
+        return self.visit(node.item, **kwargs)
+    def visit_to_double(self, node, **kwargs):
         return self.visit(node.item, **kwargs)
 
     def visit_double(self, node, **kwargs):
