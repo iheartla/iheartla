@@ -2679,7 +2679,7 @@ class TypeWalker(NodeWalker):
                 sparse = False
                 if base_info.la_type.is_matrix():
                     sparse = base_info.la_type.sparse
-                ir_node.la_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows, sparse=sparse)
+                ir_node.la_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows, sparse=sparse, element_type=copy.deepcopy(base_info.la_type.element_type))
         elif node.r:
             ir_node.r = node.r
             if base_info.la_type.is_matrix():
@@ -4763,7 +4763,7 @@ class TypeWalker(NodeWalker):
         elif op == TypeInferenceEnum.INF_MATRIX_ROW:
             # assert left_type.var_type == right_type.var_type
             ret_type = copy.deepcopy(left_type)
-        if not ret_type.is_scalar():
+        if not left_type.is_scalar() or not right_type.is_scalar():
             if left_type.is_integer_element() and not right_type.is_integer_element():
                 new_node = ToDoubleValueNode(parse_info=left_info.ir.parse_info, item=left_info.ir)
                 new_node.la_type = copy.deepcopy(left_type)
