@@ -3789,6 +3789,7 @@ class TypeWalker(NodeWalker):
         block = False
         sparse = False
         type_array = []
+        is_int = True
         for row in node_info.content:
             row_type = []
             for col in row:
@@ -3799,6 +3800,8 @@ class TypeWalker(NodeWalker):
                     block = True
                 elif col.la_type.is_vector():
                     block = True
+                if is_int:
+                    is_int = col.la_type.is_integer_element()
             if len(row) > cols:
                 cols = len(row)
             type_array.append(row_type)
@@ -3825,17 +3828,18 @@ class TypeWalker(NodeWalker):
         if LHS in kwargs:
             lhs = kwargs[LHS]
             new_id = self.generate_var_name(lhs)
-            self.symtable[new_id] = MatrixType(rows=rows, cols=cols, block=block, sparse=sparse, list_dim=list_dim, item_types=node_info.content)
+            self.symtable[new_id] = MatrixType(rows=rows, cols=cols, element_type=ScalarType(is_int=is_int), block=block, sparse=sparse, list_dim=list_dim, item_types=node_info.content)
             ret_node_info.symbol = new_id
             ir_node.symbol = new_id
         elif self.local_func_parsing:
             new_id = self.generate_var_name(self.local_func_name)
-            self.get_cur_param_data().symtable[new_id] = MatrixType(rows=rows, cols=cols, block=block, sparse=sparse, list_dim=list_dim,
+            self.get_cur_param_data().symtable[new_id] = MatrixType(rows=rows, cols=cols, element_type=ScalarType(is_int=is_int), block=block, sparse=sparse, list_dim=list_dim,
                                                item_types=node_info.content)
             ret_node_info.symbol = new_id
             ir_node.symbol = new_id
-        ir_node.la_type = ret_node_info.la_type
+        ir_node.la_type = self.symtable[new_id]
         ret_node_info.ir = ir_node
+        ret_node_info.la_type = self.symtable[new_id]
         return ret_node_info
 
     def walk_MatrixRows(self, node, **kwargs):

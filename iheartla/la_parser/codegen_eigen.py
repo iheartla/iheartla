@@ -1640,10 +1640,10 @@ class CodeGenEigen(CodeGen):
         else:
             # dense
             if self.get_sym_type(cur_m_id).is_dim_constant():
-                content += 'Eigen::Matrix<double, {}, {}> {};\n'.format(self.get_sym_type(cur_m_id).rows,
+                content += 'Eigen::Matrix<{}, {}, {}> {};\n'.format("int" if self.get_sym_type(cur_m_id).is_integer_element() else "double", self.get_sym_type(cur_m_id).rows,
                                                                         self.get_sym_type(cur_m_id).cols, cur_m_id)
             else:
-                content += 'Eigen::MatrixXd {}({}, {});\n'.format(cur_m_id, self.get_sym_type(cur_m_id).rows,
+                content += '{} {}({}, {});\n'.format("Eigen::MatrixXi" if self.get_sym_type(cur_m_id).is_integer_element() else "Eigen::MatrixXd", cur_m_id, self.get_sym_type(cur_m_id).rows,
                                                                   self.get_sym_type(cur_m_id).cols)
             if type_info.la_type:
                 all_rows = []
