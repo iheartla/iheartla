@@ -1804,8 +1804,15 @@ class CodeGenEigen(CodeGen):
         name = self.generate_var_name('uni')
         left_info.pre_list += right_info.pre_list
         left_info.pre_list.append("    {} {};\n".format(self.get_ctype(node.left.la_type), name))
-        left_info.pre_list.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::inserter({}, {}.begin()));\n".format(
-            left_info.content, left_info.content, right_info.content, right_info.content, name, name))
+        lhs_name = self.generate_var_name('lhs')
+        rhs_name = self.generate_var_name('rhs')
+        left_info.pre_list.append(
+            "    {} {} = {};\n".format(self.get_ctype(node.left.la_type), lhs_name, left_info.content))
+        left_info.pre_list.append(
+            "    {} {} = {};\n".format(self.get_ctype(node.left.la_type), rhs_name, right_info.content))
+        left_info.pre_list.append(
+            "    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::inserter({}, {}.begin()));\n".format(
+                lhs_name, lhs_name, rhs_name, rhs_name, name, name))
         left_info.content = name
         return left_info
 
@@ -1815,10 +1822,18 @@ class CodeGenEigen(CodeGen):
         name = self.generate_var_name('intsect')
         left_info.pre_list += right_info.pre_list
         left_info.pre_list.append("    {} {};\n".format(self.get_ctype(node.left.la_type), name))
-        left_info.pre_list.append("    std::set_intersection({}.begin(), {}.end(), {}.begin(), {}.end(), std::inserter({}, {}.begin()));\n".format(
-            left_info.content, left_info.content, right_info.content, right_info.content, name, name))
+        lhs_name = self.generate_var_name('lhs')
+        rhs_name = self.generate_var_name('rhs')
+        left_info.pre_list.append(
+            "    {} {} = {};\n".format(self.get_ctype(node.left.la_type), lhs_name, left_info.content))
+        left_info.pre_list.append(
+            "    {} {} = {};\n".format(self.get_ctype(node.left.la_type), rhs_name, right_info.content))
+        left_info.pre_list.append(
+            "    std::set_intersection({}.begin(), {}.end(), {}.begin(), {}.end(), std::inserter({}, {}.begin()));\n".format(
+                lhs_name, lhs_name, rhs_name, rhs_name, name, name))
         left_info.content = name
         return left_info
+
 
     def visit_difference(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
