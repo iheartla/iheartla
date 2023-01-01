@@ -704,6 +704,8 @@ class IRVisitor(IRBaseVisitor):
             name = name.replace(rm, '')
         new_list = []
         pre_unicode = False
+        if name.isnumeric() or name[0].isnumeric():
+            name = "num{}".format(name)
         for e in name:
             if self.parse_type == ParserTypeEnum.NUMPY or self.parse_type == ParserTypeEnum.MATLAB:
                 # make sure identifier is valid in numpy
@@ -776,8 +778,11 @@ class IRVisitor(IRBaseVisitor):
     def filter_symbol(self, symbol):
         if '`' in symbol:
             new_symbol = symbol.replace('`', '')
-            if not self.pattern.fullmatch(new_symbol) or is_keyword(new_symbol):
-                new_symbol = symbol
+            if new_symbol.isnumeric():
+                new_symbol = "num{}".format(new_symbol)
+            else:
+                if not self.pattern.fullmatch(new_symbol) or is_keyword(new_symbol):
+                    new_symbol = symbol
         else:
             new_symbol = symbol
         return new_symbol
