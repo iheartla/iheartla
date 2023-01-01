@@ -1164,9 +1164,10 @@ class CodeGenEigen(CodeGen):
                 content += self.update_prelist_str(expr_info.pre_list, "    ")
             content += '        return {}_ret;'.format(name_info.content)
         else:
+            content += extra_expr
             if len(expr_info.pre_list) > 0:
                 content += self.update_prelist_str(expr_info.pre_list, "    ")
-            content += extra_expr + '        return ' + expr_info.content + ';'
+            content += '        return ' + expr_info.content + ';'
         content += '    \n    }\n'
         self.local_func_def += content
         self.local_func_parsing = False
