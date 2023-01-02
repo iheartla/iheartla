@@ -439,6 +439,10 @@ class grammarinitParser(Parser):
         self._pattern('tuple')
 
     @tatsumasu()
+    def _SEQUENCE_(self):  # noqa
+        self._pattern('sequence')
+
+    @tatsumasu()
     def _BUILTIN_KEYWORDS_(self):  # noqa
         with self._choice():
             with self._option():
@@ -533,6 +537,8 @@ class grammarinitParser(Parser):
                 self._TETS_()
             with self._option():
                 self._TUPLE_()
+            with self._option():
+                self._SEQUENCE_()
             self._error(
                 'expecting one of: '
                 'where <WHERE> given <GIVEN> sum min'
@@ -552,7 +558,7 @@ class grammarinitParser(Parser):
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
                 '<EDGES> faces <FACES> tets <TETS> tuple'
-                '<TUPLE>'
+                '<TUPLE> sequence <SEQUENCE>'
             )
 
     @tatsumasu('Exponent')
@@ -2529,8 +2535,9 @@ class grammarinitParser(Parser):
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET>'
-                'tuple <TUPLE> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS>'
+                'tuple <TUPLE> sequence <SEQUENCE>'
+                'vertices <VERTICES> edges <EDGES> faces'
+                '<FACES> tets <TETS>'
                 '<element_convert_func> min <MIN> max'
                 '<MAX> <minmax_func>'
             )
@@ -2582,6 +2589,13 @@ class grammarinitParser(Parser):
                         []
                     )
                 with self._option():
+                    self._SEQUENCE_()
+                    self.name_last_node('se')
+                    self._define(
+                        ['se'],
+                        []
+                    )
+                with self._option():
                     self._VERTICES_()
                     self.name_last_node('v')
                     self._define(
@@ -2612,41 +2626,41 @@ class grammarinitParser(Parser):
                 self._error(
                     'expecting one of: '
                     '<VERTEXSET> <EDGESET> <FACESET> <TETSET>'
-                    '<SIMPLICIALSET> <TUPLE> <VERTICES>'
-                    '<EDGES> <FACES> <TETS>'
+                    '<SIMPLICIALSET> <TUPLE> <SEQUENCE>'
+                    '<VERTICES> <EDGES> <FACES> <TETS>'
                 )
         self._token('(')
 
-        def block11():
+        def block12():
 
-            def block12():
+            def block13():
                 self._hspace_()
-            self._closure(block12)
+            self._closure(block13)
             self._expression_()
             self.add_last_node_to_name('params')
 
-            def block14():
+            def block15():
 
-                def block15():
+                def block16():
                     self._hspace_()
-                self._closure(block15)
+                self._closure(block16)
                 self._params_separator_()
                 self.add_last_node_to_name('separators')
 
-                def block17():
+                def block18():
                     self._hspace_()
-                self._closure(block17)
+                self._closure(block18)
                 self._expression_()
                 self.add_last_node_to_name('params')
-            self._closure(block14)
-        self._closure(block11)
+            self._closure(block15)
+        self._closure(block12)
 
-        def block19():
+        def block20():
             self._hspace_()
-        self._closure(block19)
+        self._closure(block20)
         self._token(')')
         self._define(
-            ['vs', 'es', 'fs', 'ts', 's', 'tu', 'v', 'e', 'f', 't'],
+            ['vs', 'es', 'fs', 'ts', 's', 'tu', 'se', 'v', 'e', 'f', 't'],
             ['params', 'separators']
         )
 
@@ -3861,7 +3875,8 @@ class grammarinitParser(Parser):
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
                 '<EDGES> faces <FACES> tets <TETS> tuple'
-                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<TUPLE> sequence <SEQUENCE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
@@ -4031,8 +4046,9 @@ class grammarinitParser(Parser):
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
                 '<EDGES> faces <FACES> tets <TETS> tuple'
-                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS> \\d'
-                '<pi> <factor_in_matrix>'
+                '<TUPLE> sequence <SEQUENCE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS> \\d <pi>'
+                '<factor_in_matrix>'
             )
         self._define(
             ['base', 't', 'r', 'power'],
@@ -4201,8 +4217,9 @@ class grammarinitParser(Parser):
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
                 '<EDGES> faces <FACES> tets <TETS> tuple'
-                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS> \\d'
-                '<pi> <factor_in_matrix>'
+                '<TUPLE> sequence <SEQUENCE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS> \\d <pi>'
+                '<factor_in_matrix>'
             )
         self._define(
             ['left', 'right', 'p'],
@@ -4551,7 +4568,8 @@ class grammarinitParser(Parser):
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
                 '<EDGES> faces <FACES> tets <TETS> tuple'
-                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<TUPLE> sequence <SEQUENCE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier_alone>'
             )
         self._define(
@@ -4714,7 +4732,8 @@ class grammarinitParser(Parser):
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
                 '<EDGES> faces <FACES> tets <TETS> tuple'
-                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<TUPLE> sequence <SEQUENCE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
             ['value', 'id'],
@@ -7656,8 +7675,8 @@ class grammarinitParser(Parser):
                 '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
                 '<SPARSE> index <INDEX> vertices'
                 '<VERTICES> edges <EDGES> faces <FACES>'
-                'tets <TETS> tuple <TUPLE>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                'tets <TETS> tuple <TUPLE> sequence'
+                '<SEQUENCE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier> <local_func> <assignment>'
                 '<expression> <addition> <subtraction>'
                 "<add_sub_operator> <term> '-' 'with'"
@@ -7803,8 +7822,8 @@ class grammarinitParser(Parser):
                 '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
                 '<SPARSE> index <INDEX> vertices'
                 '<VERTICES> edges <EDGES> faces <FACES>'
-                'tets <TETS> tuple <TUPLE>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                'tets <TETS> tuple <TUPLE> sequence'
+                '<SEQUENCE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier>'
             )
         self._define(
@@ -7954,8 +7973,8 @@ class grammarinitParser(Parser):
                 '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
                 '<SPARSE> index <INDEX> vertices'
                 '<VERTICES> edges <EDGES> faces <FACES>'
-                'tets <TETS> tuple <TUPLE>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                'tets <TETS> tuple <TUPLE> sequence'
+                '<SEQUENCE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> '(' <vector> '[' '⎡'"
                 '<matrix>'
             )
@@ -8103,7 +8122,8 @@ class grammarinitParser(Parser):
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
                 '<EDGES> faces <FACES> tets <TETS> tuple'
-                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<TUPLE> sequence <SEQUENCE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
@@ -8147,8 +8167,8 @@ class grammarinitParser(Parser):
                 '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
                 '<SPARSE> index <INDEX> vertices'
                 '<VERTICES> edges <EDGES> faces <FACES>'
-                'tets <TETS> tuple <TUPLE>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                'tets <TETS> tuple <TUPLE> sequence'
+                '<SEQUENCE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier_alone> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
@@ -8949,8 +8969,8 @@ class grammarinitParser(Parser):
                 '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
                 '<SPARSE> index <INDEX> vertices'
                 '<VERTICES> edges <EDGES> faces <FACES>'
-                'tets <TETS> tuple <TUPLE>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                'tets <TETS> tuple <TUPLE> sequence'
+                '<SEQUENCE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 "<identifier> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
@@ -9652,8 +9672,8 @@ class grammarinitParser(Parser):
                 '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
                 '<SPARSE> index <INDEX> vertices'
                 '<VERTICES> edges <EDGES> faces <FACES>'
-                'tets <TETS> tuple <TUPLE>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                'tets <TETS> tuple <TUPLE> sequence'
+                '<SEQUENCE> <BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier>'
             )
         self._define(
@@ -9856,7 +9876,8 @@ class grammarinitParser(Parser):
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
                 '<EDGES> faces <FACES> tets <TETS> tuple'
-                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<TUPLE> sequence <SEQUENCE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
             ['value', 'id'],
@@ -9893,7 +9914,8 @@ class grammarinitParser(Parser):
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
                 '<EDGES> faces <FACES> tets <TETS> tuple'
-                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<TUPLE> sequence <SEQUENCE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 '<identifier_alone>'
                 '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript>'
@@ -10219,8 +10241,9 @@ class grammarinitParser(Parser):
                 '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
                 '<SPARSE> index <INDEX> vertices'
                 '<VERTICES> edges <EDGES> faces <FACES>'
-                'tets <TETS> tuple <TUPLE>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS> <func_id>'
+                'tets <TETS> tuple <TUPLE> sequence'
+                '<SEQUENCE> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<func_id>'
             )
         self._define(
             ['name', 'p'],
@@ -10634,6 +10657,9 @@ class grammarinitSemantics:
         return ast
 
     def TUPLE(self, ast):  # noqa
+        return ast
+
+    def SEQUENCE(self, ast):  # noqa
         return ast
 
     def BUILTIN_KEYWORDS(self, ast):  # noqa
@@ -11661,6 +11687,7 @@ class ElementConvertFunc(ModelBase):
     fs: Any = None
     params: Any = None
     s: Any = None
+    se: Any = None
     separators: Any = None
     t: Any = None
     ts: Any = None

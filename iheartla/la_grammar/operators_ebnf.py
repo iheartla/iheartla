@@ -172,7 +172,7 @@ predefined_built_operators
     ;
     
 element_convert_func::ElementConvertFunc
-    = (vs:VERTEXSET | es:EDGESET | fs:FACESET | ts:TETSET | s:SIMPLICIALSET | tu:TUPLE 
+    = (vs:VERTEXSET | es:EDGESET | fs:FACESET | ts:TETSET | s:SIMPLICIALSET | tu:TUPLE | se:SEQUENCE
     | v:VERTICES | e:EDGES | f:FACES | t:TETS) 
     '(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
     ;

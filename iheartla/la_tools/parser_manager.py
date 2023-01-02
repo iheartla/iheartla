@@ -529,7 +529,8 @@ class ParserFileManager(object):
                 'Mesh <MESH> sparse <SPARSE> index'
                 '<INDEX> vertices <VERTICES> edges'
                 '<EDGES> faces <FACES> tets <TETS> tuple'
-                '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<TUPLE> sequence <SEQUENCE>'
+                '<BUILTIN_KEYWORDS> <KEYWORDS>'
             )
         self._define(
             ['value', 'id'],
@@ -620,7 +621,8 @@ class ParserFileManager(object):
                     'Mesh <MESH> sparse <SPARSE> index'
                     '<INDEX> vertices <VERTICES> edges'
                     '<EDGES> faces <FACES> tets <TETS> tuple'
-                    '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                    '<TUPLE> sequence <SEQUENCE>'
+                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(
                 ['const', 'id', 'value'],
@@ -689,7 +691,8 @@ class ParserFileManager(object):
                     'Mesh <MESH> sparse <SPARSE> index'
                     '<INDEX> vertices <VERTICES> edges'
                     '<EDGES> faces <FACES> tets <TETS> tuple'
-                    '<TUPLE> <BUILTIN_KEYWORDS> <KEYWORDS>'
+                    '<TUPLE> sequence <SEQUENCE>'
+                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
                 )
             self._define(
                 ['value', 'id'],
