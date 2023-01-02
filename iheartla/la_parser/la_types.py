@@ -52,6 +52,12 @@ class LaVarType(object):
     def is_integer_element(self):
         return False
 
+    def set_int(self, value):
+        if self.element_type:
+            self.element_type.set_int(value)
+        else:
+            self.is_int = value
+
     def is_dynamic(self):
         return self.dynamic != DynamicTypeEnum.DYN_INVALID
 
