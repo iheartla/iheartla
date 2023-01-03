@@ -4341,6 +4341,10 @@ class TypeWalker(NodeWalker):
             ir_node.to_type = EleConvertType.EleToTuple
             ir_node.la_type = TupleType(type_list=param_type_list)
             ir_node.name = node.tu
+        elif node.se:
+            ir_node.to_type = EleConvertType.EleToSequence
+            ir_node.la_type = SequenceType(size=len(param_type_list), element_type=param_type_list[0])
+            ir_node.name = node.se
         elif node.s:
             ir_node.to_type = EleConvertType.EleToSimplicialSet
             ir_node.la_type = SimplicialSetType()
