@@ -2506,7 +2506,9 @@ class CodeGenEigen(CodeGen):
                 content = '{}'.format(vec_name)
                 if node.param.la_type.is_set():
                     std_vec = self.generate_var_name("stdv")
-                    pre_list.append('    std::vector<{}> {}({}.begin(), {}.end());\n'.format(self.get_ctype(node.param.la_type.element_type), std_vec, params_content, params_content))
+                    op_n = self.generate_var_name("op")
+                    pre_list.append('    {} {} = {};\n'.format(self.get_ctype(node.param.la_type), op_n, params_content))
+                    pre_list.append('    std::vector<{}> {}({}.begin(), {}.end());\n'.format(self.get_ctype(node.param.la_type.element_type), std_vec, op_n, op_n))
                     pre_list.append(
                         '    {} {}(Eigen::Map<{}>(&{}[0], {}.size()));\n'.format(c_type, vec_name, c_type, std_vec, std_vec))
                 else:
