@@ -63,7 +63,6 @@ statement
     =
     | local_func
     | assignment
-    #| de_solver
     | right_hand_side
     ;
 
@@ -89,15 +88,6 @@ general_assignment::GeneralAssignment
     = left+:left_hand_side {{hspace} ',' {hspace} left+:left_hand_side} {hspace} op:'=' {hspace} right+:right_hand_side
     ;
    
-de_solver::DeSolver
-    =
-    SOLVE '_' u:identifier {hspace} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression 
-    {{hspace} ';' {hspace} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression }
-    ;
- 
-#### name:(func_id | identifier)
-
-
 
 right_hand_side
     =
