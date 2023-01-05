@@ -3632,7 +3632,7 @@ class TypeWalker(NodeWalker):
                 ifs_node.cond_list.append(ir)
                 ir.set_parent(ifs_node)
                 la_type = ir.la_type if ir.la_type.is_valid() else la_type
-                if is_int and not la_type.is_int:
+                if is_int and not la_type.is_integer_element():
                     is_int = False
             ir_node.ifs = ifs_node
             if node.other:
@@ -3649,7 +3649,7 @@ class TypeWalker(NodeWalker):
                     ir_node.other = other_info.ir
                     symbols = symbols.union(other_info.symbols)
                     la_type = other_info.ir.la_type if other_info.ir.la_type.is_valid() else la_type
-                if is_int and not la_type.is_int:
+                if is_int and not la_type.is_integer_element():
                     is_int = False
             la_type.set_int(is_int)
             node_info = NodeInfo(la_type, symbols=symbols)
