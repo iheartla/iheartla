@@ -734,10 +734,10 @@ class CodeGenLatex(CodeGen):
         content = ', '.join(content_list)
         if node.enum_list and len(node.enum_list) > 0:
             kwargs['is_sub'] = True
-            sub = ','.join(node.enum_list)
+            sub = ','.join(["\\mathit{{{}}}".format(e) for e in node.enum_list])
             del kwargs['is_sub']
             range = self.visit(node.range, **kwargs)
-            sub += "\in " + range
+            sub += "\\in " + range
             content += '| {}'.format(sub)
             if node.cond:
                 content += ', {}'.format(self.visit(node.cond, **kwargs))
