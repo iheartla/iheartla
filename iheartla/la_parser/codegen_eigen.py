@@ -2536,9 +2536,19 @@ class CodeGenEigen(CodeGen):
                         f_name = 'std::min'
                     # multi params
                     param_list = [param_info.content]
+                    # need to make sure params have the same types
+                    has_int = node.param.la_type.is_integer_element()
+                    all_int = node.param.la_type.is_integer_element()
                     for remain in node.remain_params:
                         remain_info = self.visit(remain, **kwargs)
                         param_list.append(remain_info.content)
+                        if remain.la_type.is_integer_element():
+                            has_int = True
+                        else:
+                            all_int = False
+                    if not all_int and has_int:
+                        # convert some int value to double so that max/min won't complain
+                        param_list = ["double({})".format(c_param) for c_param in param_list]
                     content = "{}({{{}}})".format(f_name, ', '.join(param_list))
                 else:
                     # one param
