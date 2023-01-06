@@ -745,6 +745,17 @@ class TypeWalker(NodeWalker):
                         # assignment inside local function, e.g.: f(x) = *** where * = ***
                         for extra in vblock_info[0].extra:
                             handle_assignment(extra)
+                            for cur_index in range(len(extra.right)):
+                                c_rhs = extra.right[cur_index]
+                                if type(c_rhs).__name__ == 'Expression' and type(
+                                        c_rhs.value).__name__ == 'Factor' and c_rhs.value.sub:
+                                    # extract expression insdie subexpression
+                                    c_rhs = c_rhs.value.sub.value
+                                if type(c_rhs).__name__ == 'Expression' and type(
+                                        c_rhs.value).__name__ == 'Factor' and c_rhs.value.op and type(
+                                        c_rhs.value.op).__name__ == 'Summation':
+                                    for extra in c_rhs.value.op.extra:
+                                        handle_assignment(extra)
                         self.local_func_parsing = False
                         self.is_param_block = False
                     for cur_expr in vblock_info[0].expr:
