@@ -131,4 +131,16 @@ BUILTIN_KEYWORDS
     | TUPLE
     | SEQUENCE
     ;
+    
+NOT_PREFIX_KEYWORD
+    = POUND
+    | DELTA
+    | NABLA
+    | IN
+    | DERIVATIVE
+    ;
+    
+PREFIX_KEYWORD 
+    = !NOT_PREFIX_KEYWORD( KEYWORDS )
+    ;
 """

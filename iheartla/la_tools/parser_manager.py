@@ -501,7 +501,7 @@ class ParserFileManager(object):
                 )
             with self._option():
                 with self._group():
-                    self._KEYWORDS_()
+                    self._PREFIX_KEYWORD_()
                     with self._group():
                         self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                 self.name_last_node('value')
@@ -512,17 +512,17 @@ class ParserFileManager(object):
             self._error(
                 'expecting one of: '
                 "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                'where <WHERE> given <GIVEN> sum min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
-                '<WITH> initial <INITIAL> and <AND> or'
-                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                '<KEYWORDS> where <WHERE> given <GIVEN>'
+                'sum min <MIN> max <MAX> argmin <ARGMIN>'
+                'argmax <ARGMAX> int <INT> if <IF>'
+                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                'subject to <SUBJECT_TO> from <FROM> π'
+                '<PI> ℝ ℤ with <WITH> initial <INITIAL>'
+                'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
+                '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
+                "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
+                'for <FOR> [Vv]ertex[Ss]et <VERTEXSET>'
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
@@ -530,7 +530,7 @@ class ParserFileManager(object):
                 '<INDEX> vertices <VERTICES> edges'
                 '<EDGES> faces <FACES> tets <TETS> tuple'
                 '<TUPLE> sequence <SEQUENCE>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                '<BUILTIN_KEYWORDS> <PREFIX_KEYWORD>'
             )
         self._define(
             ['value', 'id'],
@@ -589,7 +589,7 @@ class ParserFileManager(object):
                     with self._group():
                         with self._choice():
                             with self._option():
-                                self._KEYWORDS_()
+                                self._PREFIX_KEYWORD_()
                             for new_id in self.new_id_list:
                                 with self._option():
                                     self._pattern(new_id)
@@ -604,17 +604,17 @@ class ParserFileManager(object):
                 self._error(
                     'expecting one of: '
                     "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                    'where <WHERE> given <GIVEN> sum min'
-                    '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                    '<ARGMAX> int <INT> if <IF> otherwise'
-                    '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                    'ln <LN> sqrt <SQRT> s.t. subject to'
-                    '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
-                    '<WITH> initial <INITIAL> and <AND> or'
-                    '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                    "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                    '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                    '<FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                    '<KEYWORDS> where <WHERE> given <GIVEN>'
+                    'sum min <MIN> max <MAX> argmin <ARGMIN>'
+                    'argmax <ARGMAX> int <INT> if <IF>'
+                    'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                    'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                    'subject to <SUBJECT_TO> from <FROM> π'
+                    '<PI> ℝ ℤ with <WITH> initial <INITIAL>'
+                    'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
+                    '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
+                    "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
+                    'for <FOR> [Vv]ertex[Ss]et <VERTEXSET>'
                     '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                     '<FACESET> [Tt]et[Ss]et <TETSET>'
                     '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
@@ -622,7 +622,7 @@ class ParserFileManager(object):
                     '<INDEX> vertices <VERTICES> edges'
                     '<EDGES> faces <FACES> tets <TETS> tuple'
                     '<TUPLE> sequence <SEQUENCE>'
-                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                    '<BUILTIN_KEYWORDS> <PREFIX_KEYWORD>'
                 )
             self._define(
                 ['const', 'id', 'value'],
@@ -663,7 +663,7 @@ class ParserFileManager(object):
                     )
                 with self._option():
                     with self._group():
-                        self._KEYWORDS_()
+                        self._PREFIX_KEYWORD_()
                         with self._group():
                             self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
@@ -674,17 +674,17 @@ class ParserFileManager(object):
                 self._error(
                     'expecting one of: '
                     "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                    'where <WHERE> given <GIVEN> sum min'
-                    '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                    '<ARGMAX> int <INT> if <IF> otherwise'
-                    '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                    'ln <LN> sqrt <SQRT> s.t. subject to'
-                    '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
-                    '<WITH> initial <INITIAL> and <AND> or'
-                    '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                    "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                    '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                    '<FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                    '<KEYWORDS> where <WHERE> given <GIVEN>'
+                    'sum min <MIN> max <MAX> argmin <ARGMIN>'
+                    'argmax <ARGMAX> int <INT> if <IF>'
+                    'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
+                    'log <LOG> ln <LN> sqrt <SQRT> s.t.'
+                    'subject to <SUBJECT_TO> from <FROM> π'
+                    '<PI> ℝ ℤ with <WITH> initial <INITIAL>'
+                    'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
+                    '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
+                    "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
+                    'for <FOR> [Vv]ertex[Ss]et <VERTEXSET>'
                     '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                     '<FACESET> [Tt]et[Ss]et <TETSET>'
                     '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
@@ -692,7 +692,7 @@ class ParserFileManager(object):
                     '<INDEX> vertices <VERTICES> edges'
                     '<EDGES> faces <FACES> tets <TETS> tuple'
                     '<TUPLE> sequence <SEQUENCE>'
-                    '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                    '<BUILTIN_KEYWORDS> <PREFIX_KEYWORD>'
                 )
             self._define(
                 ['value', 'id'],
