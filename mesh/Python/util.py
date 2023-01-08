@@ -117,5 +117,5 @@ def preprocess_matrix(source):
 if __name__ == '__main__':
     P = np.asarray([[1, 31, 4], [1, 3, 1], [1, 1, 1], [31, 4, 1]])
     # P = np.asarray([[1, 31, 1], [1, 3, 1], [1, 1, 1], [31, 1, 1]])
-    print(preprocess_matrix(P))
-    print(sort_vector([3, 2, 1, 1, 3]))
+    print(sort_matrix(P))
+    # print(sort_vector([3, 2, 1, 1, 3]))
