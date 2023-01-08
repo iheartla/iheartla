@@ -383,6 +383,18 @@ class grammarinitParser(Parser):
         self._pattern('for')
 
     @tatsumasu()
+    def _SCALAR_(self):  # noqa
+        self._pattern('scalar')
+
+    @tatsumasu()
+    def _VECTOR_(self):  # noqa
+        self._pattern('vector')
+
+    @tatsumasu()
+    def _MATRIX_(self):  # noqa
+        self._pattern('matrix')
+
+    @tatsumasu()
     def _VERTEXSET_(self):  # noqa
         self._pattern('[Vv]ertex[Ss]et')
 
@@ -486,6 +498,12 @@ class grammarinitParser(Parser):
             with self._option():
                 self._pattern('ℤ')
             with self._option():
+                self._SCALAR_()
+            with self._option():
+                self._VECTOR_()
+            with self._option():
+                self._MATRIX_()
+            with self._option():
                 self._WITH_()
             with self._option():
                 self._INITIAL_()
@@ -546,12 +564,13 @@ class grammarinitParser(Parser):
                 '<ARGMAX> int <INT> if <IF> otherwise'
                 '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
                 'ln <LN> sqrt <SQRT> s.t. subject to'
-                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
-                '<WITH> initial <INITIAL> and <AND> or'
-                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ'
+                'scalar <SCALAR> vector <VECTOR> matrix'
+                '<MATRIX> with <WITH> initial <INITIAL>'
+                'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
+                '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
+                "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
+                'for <FOR> [Vv]ertex[Ss]et <VERTEXSET>'
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
@@ -4677,12 +4696,13 @@ class grammarinitParser(Parser):
                 '<ARGMAX> int <INT> if <IF> otherwise'
                 '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
                 'ln <LN> sqrt <SQRT> s.t. subject to'
-                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ with'
-                '<WITH> initial <INITIAL> and <AND> or'
-                '<OR> [Δ] <DELTA> ∇ <NABLA> 𝕕'
-                "<DERIVATIVE> solve Solve SOLVE <SOLVE> '"
-                '<PRIME> ⊂ <SUBSET> as <AS> # <POUND> for'
-                '<FOR> [Vv]ertex[Ss]et <VERTEXSET>'
+                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ'
+                'scalar <SCALAR> vector <VECTOR> matrix'
+                '<MATRIX> with <WITH> initial <INITIAL>'
+                'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
+                '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
+                "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
+                'for <FOR> [Vv]ertex[Ss]et <VERTEXSET>'
                 '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
                 '<FACESET> [Tt]et[Ss]et <TETSET>'
                 '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
@@ -8803,7 +8823,7 @@ class grammarinitParser(Parser):
     def _matrix_type_(self):  # noqa
         with self._choice():
             with self._option():
-                self._pattern('matrix')
+                self._MATRIX_()
 
                 def block1():
                     self._hspace_()
@@ -8894,7 +8914,7 @@ class grammarinitParser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                'matrix [ℝℤ]'
+                'matrix <MATRIX> [ℝℤ]'
             )
         self._define(
             ['id1', 'id2', 'type'],
@@ -8910,7 +8930,7 @@ class grammarinitParser(Parser):
         with self._group():
             with self._choice():
                 with self._option():
-                    self._pattern('vector')
+                    self._VECTOR_()
 
                     def block1():
                         self._hspace_()
@@ -8988,7 +9008,7 @@ class grammarinitParser(Parser):
                     )
                 self._error(
                     'expecting one of: '
-                    'vector [ℝℤ]'
+                    '<VECTOR> [ℝℤ]'
                 )
 
         def block17():
@@ -9008,7 +9028,7 @@ class grammarinitParser(Parser):
     def _scalar_type_(self):  # noqa
         with self._choice():
             with self._option():
-                self._pattern('scalar')
+                self._SCALAR_()
             with self._option():
                 self._pattern('ℝ')
             with self._option():
@@ -9020,7 +9040,7 @@ class grammarinitParser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                'scalar ℝ ℤ'
+                'scalar <SCALAR> ℝ ℤ'
             )
         self._define(
             ['z'],
@@ -9292,16 +9312,17 @@ class grammarinitParser(Parser):
                 self._named_type_()
             self._error(
                 'expecting one of: '
-                'matrix [ℝℤ] <matrix_type> vector'
-                '<vector_type> scalar ℝ ℤ <scalar_type>'
-                "'{' <set_type> <params_type>"
-                "<tuple_type> '∅' <function_type>"
-                '<identifier> <mapping_type>'
-                '[Vv]ertex[Ss]et <VERTEXSET>'
-                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
-                '<FACESET> [Tt]et[Ss]et <TETSET>'
-                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH> <named_type>'
+                'matrix <MATRIX> [ℝℤ] <matrix_type>'
+                'vector <VECTOR> <vector_type> scalar'
+                "<SCALAR> ℝ ℤ <scalar_type> '{'"
+                '<set_type> <params_type> <tuple_type>'
+                "'∅' <function_type> <identifier>"
+                '<mapping_type> [Vv]ertex[Ss]et'
+                '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
+                '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
+                '<TETSET> [Ss]implicial[Ss]et'
+                '<SIMPLICIALSET> mesh Mesh <MESH>'
+                '<named_type>'
             )
 
     @tatsumasu()
@@ -9320,10 +9341,10 @@ class grammarinitParser(Parser):
                 self._tuple_type_()
             self._error(
                 'expecting one of: '
-                'matrix [ℝℤ] <matrix_type> vector'
-                '<vector_type> scalar ℝ ℤ <scalar_type>'
-                "'{' <set_type> <params_type>"
-                '<tuple_type>'
+                'matrix <MATRIX> [ℝℤ] <matrix_type>'
+                'vector <VECTOR> <vector_type> scalar'
+                "<SCALAR> ℝ ℤ <scalar_type> '{'"
+                '<set_type> <params_type> <tuple_type>'
             )
 
     @tatsumasu('FunctionType')
@@ -9646,19 +9667,21 @@ class grammarinitParser(Parser):
                 'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
                 'log <LOG> ln <LN> sqrt <SQRT> s.t.'
                 'subject to <SUBJECT_TO> from <FROM> π'
-                '<PI> ℝ ℤ with <WITH> initial <INITIAL>'
-                'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
-                '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
-                "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
-                'for <FOR> [Vv]ertex[Ss]et <VERTEXSET>'
-                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
-                '<FACESET> [Tt]et[Ss]et <TETSET>'
-                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH> sparse <SPARSE> index'
-                '<INDEX> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS> tuple'
-                '<TUPLE> sequence <SEQUENCE>'
-                '<BUILTIN_KEYWORDS> <PREFIX_KEYWORD>'
+                '<PI> ℝ ℤ scalar <SCALAR> vector <VECTOR>'
+                'matrix <MATRIX> with <WITH> initial'
+                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
+                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
+                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
+                '<AS> # <POUND> for <FOR> [Vv]ertex[Ss]et'
+                '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
+                '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
+                '<TETSET> [Ss]implicial[Ss]et'
+                '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
+                '<SPARSE> index <INDEX> vertices'
+                '<VERTICES> edges <EDGES> faces <FACES>'
+                'tets <TETS> tuple <TUPLE> sequence'
+                '<SEQUENCE> <BUILTIN_KEYWORDS>'
+                '<PREFIX_KEYWORD>'
             )
         self._define(
             ['value', 'id'],
@@ -9687,19 +9710,21 @@ class grammarinitParser(Parser):
                 'int <INT> if <IF> otherwise <OTHERWISE>'
                 '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
                 '<SQRT> s.t. subject to <SUBJECT_TO> from'
-                '<FROM> π <PI> ℝ ℤ with <WITH> initial'
-                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
-                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> for <FOR> [Vv]ertex[Ss]et'
-                '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
-                '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
-                '<TETSET> [Ss]implicial[Ss]et'
-                '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
-                '<SPARSE> index <INDEX> vertices'
-                '<VERTICES> edges <EDGES> faces <FACES>'
-                'tets <TETS> tuple <TUPLE> sequence'
-                '<SEQUENCE> <BUILTIN_KEYWORDS>'
+                '<FROM> π <PI> ℝ ℤ scalar <SCALAR> vector'
+                '<VECTOR> matrix <MATRIX> with <WITH>'
+                'initial <INITIAL> and <AND> or <OR> [Δ]'
+                '<DELTA> ∇ <NABLA> 𝕕 <DERIVATIVE> solve'
+                "Solve SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET>"
+                'as <AS> # <POUND> for <FOR>'
+                '[Vv]ertex[Ss]et <VERTEXSET>'
+                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
+                '<FACESET> [Tt]et[Ss]et <TETSET>'
+                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
+                'Mesh <MESH> sparse <SPARSE> index'
+                '<INDEX> vertices <VERTICES> edges'
+                '<EDGES> faces <FACES> tets <TETS> tuple'
+                '<TUPLE> sequence <SEQUENCE>'
+                '<BUILTIN_KEYWORDS>'
             )
 
     @tatsumasu('IdentifierSubscript')
@@ -10384,6 +10409,15 @@ class grammarinitSemantics:
         return ast
 
     def FOR(self, ast):  # noqa
+        return ast
+
+    def SCALAR(self, ast):  # noqa
+        return ast
+
+    def VECTOR(self, ast):  # noqa
+        return ast
+
+    def MATRIX(self, ast):  # noqa
         return ast
 
     def VERTEXSET(self, ast):  # noqa

@@ -66,6 +66,9 @@ SUBSET = /⊂/;
 AS = /as/;
 POUND = /#/;
 FOR = /for/;
+SCALAR = /scalar/;
+VECTOR = /vector/;
+MATRIX = /matrix/;
 VERTEXSET = /[Vv]ertex[Ss]et/;
 EDGESET = /[Ee]dge[Ss]et/;
 FACESET = /[Ff]ace[Ss]et/;
@@ -103,6 +106,7 @@ BUILTIN_KEYWORDS
     | FROM
     | PI
     | /ℝ/|/ℤ/
+    | SCALAR | VECTOR | MATRIX
     #| SIN | COS | ASIN | ARCSIN | ACOS | ARCCOS | TAN | ATAN | ARCTAN | ATAN2
     | WITH
     | INITIAL

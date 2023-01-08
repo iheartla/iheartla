@@ -1,6 +1,6 @@
 TYPES = r"""
 matrix_type::MatrixType
-    = /matrix/ {hspace} '(' {hspace} id1:dimension  {hspace} ',' {hspace} id2:dimension {hspace}')'  {{hspace}+ attr+:matrix_attribute}
+    = MATRIX {hspace} '(' {hspace} id1:dimension  {hspace} ',' {hspace} id2:dimension {hspace}')'  {{hspace}+ attr+:matrix_attribute}
     | type:/[ℝℤ]/ {hspace} '^' {hspace} '(' {hspace} id1:dimension  {hspace} '×' {hspace} id2:dimension {hspace}')'  {{hspace}+ attr+:matrix_attribute}
     ;
 
@@ -9,7 +9,7 @@ matrix_attribute
     ;
 
 vector_type::VectorType
-    = (/vector/ {hspace} '(' {hspace} id1:dimension {hspace}')'
+    = (VECTOR {hspace} '(' {hspace} id1:dimension {hspace}')'
     | type:/[ℝℤ]/ {hspace} '^' {hspace} '(' {hspace} id1:dimension {hspace}')'
     | type:/[ℝℤ]/ {hspace} '^' {hspace} id1:dimension
     | type:/[ℝℤ]/ id1:sup_integer)
@@ -17,7 +17,7 @@ vector_type::VectorType
     ;
 
 scalar_type::ScalarType
-    = /scalar/
+    = SCALAR
     | /ℝ/
     | z:/ℤ/
     ;
