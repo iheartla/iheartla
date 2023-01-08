@@ -3855,7 +3855,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
                 '<number_matrix> <identifier_alone>'
                 '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> if <IF> otherwise <OTHERWISE> ∈'
@@ -4023,7 +4023,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<pseudoinverse_in_matrix_operator>'
                 '<identifier_alone>'
                 '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> if <IF> otherwise <OTHERWISE> ∈'
@@ -4192,7 +4192,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<pseudoinverse_in_matrix_operator>'
                 '<identifier_alone>'
                 '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> if <IF> otherwise <OTHERWISE> ∈'
@@ -4541,7 +4541,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> int <INT> if <IF> otherwise'
@@ -7647,7 +7647,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 'expecting one of: '
                 '<identifier_alone>'
                 '<identifier_with_unicode_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> int <INT> if <IF> otherwise'
@@ -7793,7 +7793,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 'expecting one of: '
                 '<identifier_alone>'
                 '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> int <INT> if <IF> otherwise'
@@ -7855,61 +7855,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             ['left', 'right']
         )
 
-    @tatsumasu('DeSolver')
-    def _de_solver_(self):  # noqa
-        self._SOLVE_()
-        self._token('_')
-        self._identifier_()
-        self.name_last_node('u')
-
-        def block1():
-            self._hspace_()
-        self._closure(block1)
-        self._expression_()
-        self.add_last_node_to_name('lexpr')
-
-        def block3():
-            self._hspace_()
-        self._closure(block3)
-        self._token('=')
-        self.name_last_node('op')
-
-        def block5():
-            self._hspace_()
-        self._closure(block5)
-        self._expression_()
-        self.add_last_node_to_name('rexpr')
-
-        def block7():
-
-            def block8():
-                self._hspace_()
-            self._closure(block8)
-            self._token(';')
-
-            def block9():
-                self._hspace_()
-            self._closure(block9)
-            self._expression_()
-            self.add_last_node_to_name('lexpr')
-
-            def block11():
-                self._hspace_()
-            self._closure(block11)
-            self._token('=')
-            self.name_last_node('op')
-
-            def block13():
-                self._hspace_()
-            self._closure(block13)
-            self._expression_()
-            self.add_last_node_to_name('rexpr')
-        self._closure(block7)
-        self._define(
-            ['u', 'op'],
-            ['lexpr', 'rexpr']
-        )
-
     @tatsumasu()
     @nomemo
     def _right_hand_side_(self):  # noqa
@@ -7943,7 +7888,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 'expecting one of: '
                 '<identifier_alone>'
                 '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> int <INT> if <IF> otherwise'
@@ -8091,7 +8036,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 "'𝟙' [01\\u1D7D9] <number_matrix>"
                 '<identifier_alone>'
                 '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 'where <WHERE> given <GIVEN> min <MIN>'
                 'max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> if <IF> otherwise <OTHERWISE> ∈'
@@ -8135,7 +8080,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             self._error(
                 'expecting one of: '
                 "'(' <subexpression>"
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> int <INT> if <IF> otherwise'
@@ -8935,7 +8880,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 "'(' <arithmetic_subexpression> # <POUND>"
                 '<size_op> <identifier_alone>'
                 '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> int <INT> if <IF> otherwise'
@@ -9637,7 +9582,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 'expecting one of: '
                 '<identifier_alone>'
                 '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> int <INT> if <IF> otherwise'
@@ -9791,7 +9736,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     with self._choice():
                         with self._option():
                             with self._group():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                                self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                             self.name_last_node('value')
                             self._define(
                                 ['value'],
@@ -9808,7 +9753,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                             )
                         self._error(
                             'expecting one of: '
-                            "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                            "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                         )
                 self._define(
                     ['value', 'id'],
@@ -9818,7 +9763,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 with self._group():
                     self._KEYWORDS_()
                     with self._group():
-                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                        self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                 self.name_last_node('value')
                 self._define(
                     ['value'],
@@ -9826,7 +9771,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> int <INT> if <IF> otherwise'
@@ -9862,7 +9807,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             self._error(
                 'expecting one of: '
                 '<identifier_alone>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
                 '<ARGMAX> int <INT> if <IF> otherwise'
@@ -11174,9 +11119,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Semantics:
     def general_assignment(self, ast):  # noqa
         return ast
 
-    def de_solver(self, ast):  # noqa
-        return ast
-
     def right_hand_side(self, ast):  # noqa
         return ast
 
@@ -12193,14 +12135,6 @@ class GeneralAssignment(ModelBase):
     left: Any = None
     op: Any = None
     right: Any = None
-
-
-@dataclass(eq=False)
-class DeSolver(ModelBase):
-    lexpr: Any = None
-    op: Any = None
-    rexpr: Any = None
-    u: Any = None
 
 
 @dataclass(eq=False)

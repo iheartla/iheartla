@@ -3856,7 +3856,7 @@ class grammarinitParser(Parser):
                 '<number_matrix>'
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [A-Za-'
+                '<identifier_with_subscript> [∂A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
                 '<WHERE> given <GIVEN> sum min <MIN> max'
@@ -4027,7 +4027,7 @@ class grammarinitParser(Parser):
                 '<pseudoinverse_in_matrix_operator>'
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [A-Za-'
+                '<identifier_with_subscript> [∂A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
                 '<WHERE> given <GIVEN> sum min <MIN> max'
@@ -4198,7 +4198,7 @@ class grammarinitParser(Parser):
                 '<pseudoinverse_in_matrix_operator>'
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [A-Za-'
+                '<identifier_with_subscript> [∂A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
                 '<WHERE> given <GIVEN> sum min <MIN> max'
@@ -4549,7 +4549,7 @@ class grammarinitParser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
+                '[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
                 "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
@@ -7656,7 +7656,7 @@ class grammarinitParser(Parser):
                 'expecting one of: '
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [A-Za-'
+                '<identifier_with_subscript> [∂A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
                 '<WHERE> given <GIVEN> sum min <MIN> max'
@@ -7803,7 +7803,7 @@ class grammarinitParser(Parser):
                 'expecting one of: '
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [A-Za-'
+                '<identifier_with_subscript> [∂A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
                 '<WHERE> given <GIVEN> sum min <MIN> max'
@@ -7866,61 +7866,6 @@ class grammarinitParser(Parser):
             ['left', 'right']
         )
 
-    @tatsumasu('DeSolver')
-    def _de_solver_(self):  # noqa
-        self._SOLVE_()
-        self._token('_')
-        self._identifier_()
-        self.name_last_node('u')
-
-        def block1():
-            self._hspace_()
-        self._closure(block1)
-        self._expression_()
-        self.add_last_node_to_name('lexpr')
-
-        def block3():
-            self._hspace_()
-        self._closure(block3)
-        self._token('=')
-        self.name_last_node('op')
-
-        def block5():
-            self._hspace_()
-        self._closure(block5)
-        self._expression_()
-        self.add_last_node_to_name('rexpr')
-
-        def block7():
-
-            def block8():
-                self._hspace_()
-            self._closure(block8)
-            self._token(';')
-
-            def block9():
-                self._hspace_()
-            self._closure(block9)
-            self._expression_()
-            self.add_last_node_to_name('lexpr')
-
-            def block11():
-                self._hspace_()
-            self._closure(block11)
-            self._token('=')
-            self.name_last_node('op')
-
-            def block13():
-                self._hspace_()
-            self._closure(block13)
-            self._expression_()
-            self.add_last_node_to_name('rexpr')
-        self._closure(block7)
-        self._define(
-            ['u', 'op'],
-            ['lexpr', 'rexpr']
-        )
-
     @tatsumasu()
     @nomemo
     def _right_hand_side_(self):  # noqa
@@ -7954,7 +7899,7 @@ class grammarinitParser(Parser):
                 'expecting one of: '
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [A-Za-'
+                '<identifier_with_subscript> [∂A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
                 '<WHERE> given <GIVEN> sum min <MIN> max'
@@ -8103,7 +8048,7 @@ class grammarinitParser(Parser):
                 "<operations> '(' <subexpression> '0' '1'"
                 "'𝟙' [01\\u1D7D9] <number_matrix>"
                 '<identifier_with_multi_subscript>'
-                '<identifier_with_subscript> [A-Za-'
+                '<identifier_with_subscript> [∂A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
                 '<WHERE> given <GIVEN> min <MIN> max'
@@ -8148,7 +8093,7 @@ class grammarinitParser(Parser):
                 self._constant_()
             self._error(
                 'expecting one of: '
-                "'(' <subexpression> [A-Za-"
+                "'(' <subexpression> [∂A-Za-"
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
                 '<WHERE> given <GIVEN> sum min <MIN> max'
@@ -8950,7 +8895,7 @@ class grammarinitParser(Parser):
                 '<size_op>'
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [A-Za-'
+                '<identifier_with_subscript> [∂A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
                 '<WHERE> given <GIVEN> sum min <MIN> max'
@@ -9653,7 +9598,7 @@ class grammarinitParser(Parser):
                 'expecting one of: '
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [A-Za-'
+                '<identifier_with_subscript> [∂A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
                 '<WHERE> given <GIVEN> sum min <MIN> max'
@@ -9821,7 +9766,7 @@ class grammarinitParser(Parser):
                     with self._choice():
                         with self._option():
                             with self._group():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
+                                self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                             self.name_last_node('value')
                             self._define(
                                 ['value'],
@@ -9838,7 +9783,7 @@ class grammarinitParser(Parser):
                             )
                         self._error(
                             'expecting one of: '
-                            '[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
+                            '[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
                             "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                         )
                 self._define(
@@ -9849,7 +9794,7 @@ class grammarinitParser(Parser):
                 with self._group():
                     self._KEYWORDS_()
                     with self._group():
-                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
+                        self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                 self.name_last_node('value')
                 self._define(
                     ['value'],
@@ -9857,7 +9802,7 @@ class grammarinitParser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
+                '[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
                 "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
@@ -9895,7 +9840,7 @@ class grammarinitParser(Parser):
                 self._identifier_alone_()
             self._error(
                 'expecting one of: '
-                '[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
+                '[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
                 "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 'where <WHERE> given <GIVEN> sum min'
                 '<MIN> max <MAX> argmin <ARGMIN> argmax'
@@ -10222,7 +10167,7 @@ class grammarinitParser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '<identifier_alone> [A-Za-'
+                '<identifier_alone> [∂A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`' where"
                 '<WHERE> given <GIVEN> sum min <MIN> max'
@@ -11233,9 +11178,6 @@ class grammarinitSemantics:
         return ast
 
     def general_assignment(self, ast):  # noqa
-        return ast
-
-    def de_solver(self, ast):  # noqa
         return ast
 
     def right_hand_side(self, ast):  # noqa
@@ -12257,14 +12199,6 @@ class GeneralAssignment(ModelBase):
     left: Any = None
     op: Any = None
     right: Any = None
-
-
-@dataclass(eq=False)
-class DeSolver(ModelBase):
-    lexpr: Any = None
-    op: Any = None
-    rexpr: Any = None
-    u: Any = None
 
 
 @dataclass(eq=False)
