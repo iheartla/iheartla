@@ -110,7 +110,7 @@ multi_cond::MultiCond
     ;
 
 integral_operator::Integral
-    = (INT|'∫') '_' (d:domain | (lower:sub_factor {hspace} '^' {hspace} upper:sub_factor )) {hspace} exp:expression {hspace} PARTIAL id:identifier_alone
+    = (INT|'∫') '_' (d:domain | (lower:sub_factor {hspace} '^' {hspace} upper:sub_factor )) {hspace} exp:expression {hspace} DERIVATIVE id:identifier_alone
     ;
 
 domain::Domain

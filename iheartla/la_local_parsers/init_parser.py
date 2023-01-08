@@ -2045,7 +2045,7 @@ class grammarinitParser(Parser):
         def block9():
             self._hspace_()
         self._closure(block9)
-        self._PARTIAL_()
+        self._DERIVATIVE_()
         self._identifier_alone_()
         self.name_last_node('id')
         self._define(
