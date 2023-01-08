@@ -9,7 +9,7 @@ cppyy.add_include_path(eigen_path)
 class TestOthers(BasePythonTest):
     def test_integral_1(self):
         # no return symbol
-        la_str = """c = int_[1, 2] ia ∂i
+        la_str = """c = int_[1, 2] ia 𝕕i
         where 
         a: scalar """
         func_info = self.gen_func_info(la_str)
@@ -21,7 +21,7 @@ class TestOthers(BasePythonTest):
 
     def test_integral_2(self):
         # no return symbol
-        la_str = """c = int_1^2 ia ∂i
+        la_str = """c = int_1^2 ia 𝕕i
         where 
         a: scalar """
         func_info = self.gen_func_info(la_str)
@@ -33,7 +33,7 @@ class TestOthers(BasePythonTest):
 
     def test_nested_integral(self):
         # no return symbol
-        la_str = """c = int_0^3  int_[1, 2] ia ∂i ∂j
+        la_str = """c = int_0^3  int_[1, 2] ia 𝕕i 𝕕j
         where 
         a: scalar """
         func_info = self.gen_func_info(la_str)
