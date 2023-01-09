@@ -451,7 +451,7 @@ class CodeGenLatex(CodeGen):
             extra_list = []
             for et in node.tex_list:
                 extra_list.append(self.visit(et, **kwargs))
-            content += ' \\text{{ where }}  ' + ', '.join(extra_list)
+            content += ' \\qquad \\text{{ where }}  ' + ', '.join(extra_list)
         self.pop_scope()
         self.visiting_sum = False
         return content
