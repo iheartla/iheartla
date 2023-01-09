@@ -397,8 +397,9 @@ class IRVisitor(IRBaseVisitor):
             '𝟘': 'bb_0', '𝟙': 'bb_1', '𝟚': 'bb_2', '𝟛': 'bb_3', '𝟜': 'bb_4', '𝟝': 'bb_5', '𝟞': 'bb_6', '𝟟': 'bb_7', '𝟠': 'bb_8', '𝟡': 'bb_9',
             '𝟢': 'ss_0', '𝟣': 'ss_1', '𝟤': 'ss_2', '𝟥': 'ss_3', '𝟦': 'ss_4', '𝟧': 'ss_5', '𝟨': 'ss_6', '𝟩': 'ss_7', '𝟪': 'ss_8', '𝟫': 'ss_9',
             '𝟬': 'ss_bf_0', '𝟭': 'ss_bf_1', '𝟮': 'ss_bf_2', '𝟯': 'ss_bf_3', '𝟰': 'ss_bf_4', '𝟱': 'ss_bf_5', '𝟲': 'ss_bf_6', '𝟳': 'ss_bf_7', '𝟴': 'ss_bf_8', '𝟵': 'ss_bf_9',
-            '𝟶': 'mono_0', '𝟷': 'mono_1', '𝟸': 'mono_2', '𝟹': 'mono_3', '𝟺': 'mono_4', '𝟻': 'mono_5', '𝟼': 'mono_6', '𝟽': 'mono_7', '𝟾': 'mono_8', '𝟿': 'mono_9',
+            '𝟶': 'mono_0', '𝟷': 'mono_1', '𝟸': 'mono_2', '𝟹': 'mono_3', '𝟺': 'mono_4', '𝟻': 'mono_5', '𝟼': 'mono_6', '𝟽': 'mono_7', '𝟾': 'mono_8', '𝟿': 'mono_9'
             }
+        self.special_symbol_dict = {'∂':'dee'}  # Python and MATLAB can use some Unicode symbols, the symbols from this dict must be converted by all backends
         self.declared_symbols = set()
         self.used_params = []
         self.opt_syms = []
@@ -703,7 +704,7 @@ class IRVisitor(IRBaseVisitor):
         return name
 
     def convert_unicode(self, name):
-        if '`' not in name and self.parse_type != ParserTypeEnum.MATLAB:
+        if not self.has_special_symbol(name) and '`' not in name and self.parse_type != ParserTypeEnum.MATLAB:
             return name
         remove_list = ['`$', '$`', '`', '(', ')', '{', '}', '\\', '-']
         for rm in remove_list:
@@ -713,6 +714,9 @@ class IRVisitor(IRBaseVisitor):
         if name.isnumeric() or name[0].isnumeric():
             name = "num{}".format(name)
         for e in name:
+            if e in self.special_symbol_dict:
+                new_list.append(self.special_symbol_dict[e])
+                continue
             if self.parse_type == ParserTypeEnum.NUMPY or self.parse_type == ParserTypeEnum.MATLAB:
                 # make sure identifier is valid in numpy
                 if e.isnumeric() and e in self.uni_num_dict:
@@ -746,6 +750,11 @@ class IRVisitor(IRBaseVisitor):
             content = content.replace(k, v)
         return content
 
+    def has_special_symbol(self, target):
+        for k in list(self.special_symbol_dict.keys()):
+            if k in target:
+                return True
+        return True
     def trim_content(self, content):
         # convert special string in identifiers
         res = content
@@ -763,22 +772,28 @@ class IRVisitor(IRBaseVisitor):
         # than the variable name level. If one name appears in another (e.g., φ
         # in `x(φ)` then this leads to clashes, hence the awkward sort.
         ids_list.sort(key=len,reverse=True)
-        for special in ids_list:
-            if '`' not in special and self.parse_type != ParserTypeEnum.MATLAB:
-                continue
-            # don't convert numbers...
-            if special.isnumeric():
-                continue
-            new_str = self.convert_unicode(special)
+        def replace_str(full, target):
+            new_str = self.convert_unicode(target)
             new_str = new_str.replace('-', '_')
-            if new_str != special:
+            if new_str != target:
                 while new_str in names_dict or new_str in self.symtable.keys() or self.is_keyword(new_str):
                     if self.parse_type == ParserTypeEnum.MATLAB:
                         new_str = new_str + '_'
                     else:
                         new_str = '_' + new_str
                 names_dict.append(new_str)
-                res = res.replace(special, new_str)
+                full = full.replace(target, new_str)
+            return full
+        for special in ids_list:
+            if self.has_special_symbol(special):
+                res = replace_str(res, special)
+                continue
+            if '`' not in special and self.parse_type != ParserTypeEnum.MATLAB:
+                continue
+            # don't convert numbers...
+            if special.isnumeric():
+                continue
+            res = replace_str(res, special)
         return self.fill_comment(res)
 
     def filter_symbol(self, symbol):
