@@ -40,7 +40,8 @@ class CodeGenEigen(CodeGen):
         check_list = []
         if len(self.get_cur_param_data().set_checking) > 0:
             for key, value in self.get_cur_param_data().set_checking.items():
-                check_list = ['    assert( {}.find({}) != {}.end() );'.format(value, key, value)]
+                # check_list = ['    assert( {}.find({}) != {}.end() );'.format(value, key, value)]
+                check_list = ['    assert( std::binary_search({}.begin(), {}.end(), {}) );'.format(value, value, key)]
         return check_list
 
     def get_set_item_str(self, set_type):
@@ -148,7 +149,7 @@ class CodeGenEigen(CodeGen):
             else:
                 type_str = "double"
         elif la_type.is_set():
-            type_str = "std::set<{} >".format(self.get_set_item_str(la_type))
+            type_str = "std::vector<{} >".format(self.get_set_item_str(la_type))
         elif la_type.is_tuple():
             type_str = self.get_tuple_str(la_type)
         elif la_type.is_function():
@@ -1469,6 +1470,7 @@ class CodeGenEigen(CodeGen):
             pre_list.append('    {} {};\n'.format(self.get_ctype(node.la_type), cur_m_id))
             #
             range_info = self.visit(node.range, **kwargs)
+            pre_list.append('    {}.reserve({}.size());\n'.format(cur_m_id, range_info.content))
             if len(node.enum_list) == 1:
                 pre_list.append(
                     '    for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), node.enum_list[0],
@@ -1505,10 +1507,10 @@ class CodeGenEigen(CodeGen):
                         exp_pre_list.append(list_content[index] + '\n')
             pre_list += exp_pre_list
             if node.cond:
-                pre_list.append("            {}.insert({});\n".format(cur_m_id, exp_info.content))
+                pre_list.append("            {}.push_back({});\n".format(cur_m_id, exp_info.content))
                 pre_list.append("        }\n")
             else:
-                pre_list.append("        {}.insert({});\n".format(cur_m_id, exp_info.content))
+                pre_list.append("        {}.push_back({});\n".format(cur_m_id, exp_info.content))
             pre_list.append("    }\n")
         else:
             # {a, b, c}
@@ -1518,6 +1520,8 @@ class CodeGenEigen(CodeGen):
                 pre_list += item_info.pre_list
             content = '    {} {}({{{}}});\n'.format(self.get_ctype(node.la_type), cur_m_id, ", ".join(ret))
             pre_list.append(content)
+        pre_list.append("    sort({}.begin(), {}.end());\n".format(cur_m_id, cur_m_id))
+        pre_list.append("    {}.erase(unique({}.begin(), {}.end() ), {}.end());\n".format(cur_m_id, cur_m_id, cur_m_id, cur_m_id))
         self.pop_scope()
         return CodeNodeInfo(cur_m_id, pre_list=pre_list)
 
@@ -2136,12 +2140,17 @@ class CodeGenEigen(CodeGen):
             if node.set.node_type != IRNodeType.Id:
                 set_name = self.generate_var_name('set')
                 pre_list.append('{} {} = {};\n'.format(self.get_ctype(node.set.la_type), set_name, right_info.content))
-                content = '{}.find({}({})) != {}.end()'.format(set_name, self.get_set_item_str(node.set.la_type),
-                                                               ', '.join(item_list), set_name)
+                # content = '{}.find({}({})) != {}.end()'.format(set_name, self.get_set_item_str(node.set.la_type),
+                #                                                ', '.join(item_list), set_name)
+                content = 'std::binary_search({}.begin(), {}.end(), {}({}))'.format(set_name, set_name, self.get_set_item_str(node.set.la_type),
+                                                               ', '.join(item_list))
+
             else:
-                content = '{}.find({}({})) != {}.end()'.format(right_info.content,
-                                                               self.get_set_item_str(node.set.la_type),
-                                                               ', '.join(item_list), right_info.content)
+                # content = '{}.find({}({})) != {}.end()'.format(right_info.content,
+                #                                                self.get_set_item_str(node.set.la_type),
+                #                                                ', '.join(item_list), right_info.content)
+                content = 'std::binary_search({}.begin(), {}.end(), {}({}))'.format(right_info.content, right_info.content, self.get_set_item_str(node.set.la_type),
+                                                               ', '.join(item_list))
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_not_in(self, node, **kwargs):
@@ -2163,9 +2172,12 @@ class CodeGenEigen(CodeGen):
                 else:
                     item_content = "{}+1".format(item_info.content)
                 item_list.append(item_content)
-        content = '{}.find({}({})) == {}.end()'.format(right_info.content,
+        # content = '{}.find({}({})) == {}.end()'.format(right_info.content,
+        #                                                self.get_set_item_str(self.get_sym_type(right_info.content)),
+        #                                                ', '.join(item_list), right_info.content)
+        content = 'std::binary_search({}.begin(), {}.end(), {}({}))'.format(right_info.content, right_info.content,
                                                        self.get_set_item_str(self.get_sym_type(right_info.content)),
-                                                       ', '.join(item_list), right_info.content)
+                                                       ', '.join(item_list))
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_bin_comp(self, node, **kwargs):
