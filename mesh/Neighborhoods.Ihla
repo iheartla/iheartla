@@ -3,27 +3,27 @@ MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, ValueSet, Indica
 Vertices, Edges, Faces from FundamentalMeshAccessors(M)
 M ∈ mesh 
 V, E, F = MeshSets( M )
-ve, ef = BoundaryMatrices(M) 
-uve, uef = UnsignedBoundaryMatrices(M)
+∂1, ∂2 = BoundaryMatrices(M) 
+B0, B1 = UnsignedBoundaryMatrices(M)
 
 
-VertexOneRing(v) = vertexset(NonZeros(uve uveᵀ IndicatorVector(M, {v})))-{v} where v ∈ V
-VertexOneRing(v) = vertexset(NonZeros(uve uveᵀ IndicatorVector(M, v)))-v where v ∈ {ℤ} vertices
+VertexOneRing(v) = vertexset(NonZeros(B0 B0ᵀ IndicatorVector(M, {v}))) - {v} where v ∈ V
+VertexOneRing(v) = vertexset(NonZeros(B0 B0ᵀ IndicatorVector(M, v))) - v where v ∈ {ℤ} vertices
 
-FaceNeighbors(v) = faceset(NonZeros((uve uef)ᵀ IndicatorVector(M, {v}))) where v ∈ V
-FaceNeighbors(e) = faceset(NonZeros(uefᵀ IndicatorVector(M, {e}))) where e ∈ E
+FaceNeighbors(v) = faceset(NonZeros((B0 B1)ᵀ IndicatorVector(M, {v}))) where v ∈ V
+FaceNeighbors(e) = faceset(NonZeros(B1ᵀ IndicatorVector(M, {e}))) where e ∈ E
 
 GetEdgeIndex(i, j) = evec_1 where i,j ∈ V,
-evec = vec(edgeset(NonZeros(veᵀ IndicatorVector(M, {i}))) ∩ vertexset(NonZeros(veᵀ IndicatorVector(M, {j}))))
+evec = vec(edgeset(NonZeros(∂1ᵀ IndicatorVector(M, {i}))) ∩ vertexset(NonZeros(∂1ᵀ IndicatorVector(M, {j}))))
 
 GetNeighborVerticesInFace(f, v) = tuple(vvec1_1, vvec2_1) where v ∈ V, f ∈ F,
-es = edgeset(NonZeros(ef IndicatorVector(M, {f}))),
-nes = { s for s ∈ es if ve_v,s != 0 },
-eset1 = { e for e ∈ nes if ef_e,f ve_v,e == -1},
-vset1 = vertexset(NonZeros(uve IndicatorVector(M, eset1))),
+es = edgeset(NonZeros(∂2 IndicatorVector(M, {f}))),
+nes = { s for s ∈ es if ∂1_v,s != 0 },
+eset1 = { e for e ∈ nes if ∂2_e,f ∂1_v,e == -1},
+vset1 = vertexset(NonZeros(B0 IndicatorVector(M, eset1))),
 vvec1 = vec(vset1 - {v}),
-eset2 = { e for e ∈ nes if ef_e,f ve_v,e == 1 },
-vset2 = vertexset(NonZeros(uve IndicatorVector(M, eset2))),
+eset2 = { e for e ∈ nes if ∂2_e,f ∂1_v,e == 1 },
+vset2 = vertexset(NonZeros(B0 IndicatorVector(M, eset2))),
 vvec2 = vec(vset2 - {v})
 
 GetOrientedVertices(f) = tuple(vvec_1, i, j)    where f ∈ F,
@@ -37,7 +37,7 @@ OppositeVertices(e) = tuple(evec_1, evec_2) where e ∈ E,
 evec = vec(Vertices(FaceNeighbors(e)) \ Vertices(e))
 
 GetFaceIndex(i,j,k) = fvec_1  where i,j,k ∈ V,
-ufv = (uve uef)ᵀ,
+ufv = (B0 B1)ᵀ,
 iface = faceset(NonZeros(ufv  IndicatorVector(M, {i}))),
 jface = faceset(NonZeros(ufv  IndicatorVector(M, {j}))),
 kface = faceset(NonZeros(ufv IndicatorVector(M, {k}))),
