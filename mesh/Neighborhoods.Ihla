@@ -1,0 +1,47 @@
+vec from linearalgebra
+MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, ValueSet, IndicatorVector  from MeshConnectivity
+Vertices, Edges, Faces from FundamentalMeshAccessors(M)
+M ∈ mesh 
+V, E, F = MeshSets( M )
+ve, ef = BoundaryMatrices(M) 
+uve, uef = UnsignedBoundaryMatrices(M)
+
+
+VertexOneRing(v) = vertexset(NonZeros(uve uveᵀ IndicatorVector(M, {v})))-{v} where v ∈ V
+VertexOneRing(v) = vertexset(NonZeros(uve uveᵀ IndicatorVector(M, v)))-v where v ∈ {ℤ} vertices
+
+FaceNeighbors(v) = faceset(NonZeros((uve uef)ᵀ IndicatorVector(M, {v}))) where v ∈ V
+FaceNeighbors(e) = faceset(NonZeros(uefᵀ IndicatorVector(M, {e}))) where e ∈ E
+
+GetEdgeIndex(i, j) = evec_1 where i,j ∈ V,
+evec = vec(edgeset(NonZeros(veᵀ IndicatorVector(M, {i}))) ∩ vertexset(NonZeros(veᵀ IndicatorVector(M, {j}))))
+
+GetNeighborVerticesInFace(f, v) = tuple(vvec1_1, vvec2_1) where v ∈ V, f ∈ F,
+es = edgeset(NonZeros(ef IndicatorVector(M, {f}))),
+nes = { s for s ∈ es if ve_v,s != 0 },
+eset1 = { e for e ∈ nes if ef_e,f ve_v,e == -1},
+vset1 = vertexset(NonZeros(uve IndicatorVector(M, eset1))),
+vvec1 = vec(vset1 - {v}),
+eset2 = { e for e ∈ nes if ef_e,f ve_v,e == 1 },
+vset2 = vertexset(NonZeros(uve IndicatorVector(M, eset2))),
+vvec2 = vec(vset2 - {v})
+
+GetOrientedVertices(f) = tuple(vvec_1, i, j)    where f ∈ F,
+vs = Vertices(f),
+vvec = vec(vs),
+i,j = GetNeighborVerticesInFace(f, vvec_1)
+
+Diamond(e) = SimplicialSet(Vertices(e), {e}, FaceNeighbors(e)) where e ∈ E
+
+OppositeVertices(e) = tuple(evec_1, evec_2) where e ∈ E,
+evec = vec(Vertices(FaceNeighbors(e)) \ Vertices(e))
+
+GetFaceIndex(i,j,k) = fvec_1  where i,j,k ∈ V,
+ufv = (uve uef)ᵀ,
+iface = faceset(NonZeros(ufv  IndicatorVector(M, {i}))),
+jface = faceset(NonZeros(ufv  IndicatorVector(M, {j}))),
+kface = faceset(NonZeros(ufv IndicatorVector(M, {k}))),
+fvec = vec(iface ∩ jface ∩ kface)
+
+OrientedVertices(i,j,k) = GetNeighborVerticesInFace(f, i)  where i,j,k ∈ V,
+f = GetFaceIndex(i, j, k)
