@@ -497,7 +497,7 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
                 code_frame.include += "#include <igl/readOFF.h>\n"
             res = code_frame.desc + code_frame.include + code_frame.struct
         else:
-            res = walk_model(parser_type, type_walker, start_node, func_name)
+            res = walk_model(parser_type, type_walker, start_node, func_name, class_only=True)
         return res, 0
     if DEBUG_MODE:
         result = get_parse_result(parser_type)
