@@ -1470,15 +1470,17 @@ class CodeGenEigen(CodeGen):
             pre_list.append('    {} {};\n'.format(self.get_ctype(node.la_type), cur_m_id))
             #
             range_info = self.visit(node.range, **kwargs)
-            pre_list.append('    {}.reserve({}.size());\n'.format(cur_m_id, range_info.content))
+            range_name = self.generate_var_name('range')
+            pre_list.append('    {} {} = {};\n'.format(self.get_ctype(node.range.la_type), range_name, range_info.content))
+            pre_list.append('    {}.reserve({}.size());\n'.format(cur_m_id, range_name))
             if len(node.enum_list) == 1:
                 pre_list.append(
                     '    for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), node.enum_list[0],
-                                                 range_info.content))
+                                                 range_name))
             else:
                 tuple_name = self.generate_var_name("tuple")
                 pre_list.append('    for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), tuple_name,
-                                                            range_info.content))
+                                                            range_name))
                 extra_content = ''
                 if node.use_tuple:
                     pre_list.append('        {} {} = {};\n'.format(self.get_ctype(self.get_sym_type(node.enum_list[0])),
