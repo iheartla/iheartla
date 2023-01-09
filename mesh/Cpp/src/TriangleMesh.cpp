@@ -38,9 +38,8 @@ void TriangleMesh::initialize(const Eigen::MatrixXd &V, Matrix &T){
         this->T = T;
         Vector maxVal = T.rowwise().maxCoeff();
         this->num_v = maxVal.maxCoeff()+1;
-        // this->create_edges();
         this->create_faces();
-        this->create_edges_from_faces();
+        this->create_edges();
         //
         this->build_boundary_mat1();
         this->build_boundary_mat2();
@@ -52,11 +51,10 @@ void TriangleMesh::initialize(const Eigen::MatrixXd &V, Matrix &T){
         // std::cout<<"this->F:\n"<<this->F<<std::endl;
         Vector maxVal = this->F.rowwise().maxCoeff();
         this->num_v = maxVal.maxCoeff()+1;
-        this->create_edges_from_faces();
+        this->create_edges();
         // boundary mat
         this->build_boundary_mat1();
         this->build_boundary_mat2();
-        this->build_nonboundary_edges();
     }
     this->init_mesh_indices();
     std::cout<<"Total vertices:"<<this->num_v<<", edges:"<<this->E.rows()<<", faces:"<<this->F.rows()<<", tets:"<<this->T.rows()<<std::endl;
@@ -116,20 +114,7 @@ std::set<int> TriangleMesh::ValueSet(Eigen::SparseMatrix<int> &target, int value
       }
     } 
     return result;
-}
-
-int TriangleMesh::n_edges() const{
-    return this->E.rows();
-}
-int TriangleMesh::n_vertices() const{
-    return this->num_v;
-}
-int TriangleMesh::n_faces() const{
-    return this->F.rows();
-}
-int TriangleMesh::n_tets() const{
-    return this->T.rows();
-}
+} 
 
 int TriangleMesh::get_edge_index(int i, int j, int &sign){
     if (i < j)
@@ -176,30 +161,6 @@ int TriangleMesh::get_face_index(int i, int j, int k){
 } 
 
 void TriangleMesh::create_edges(){
-    Matrix E(6*T.rows(), 2);
-    for (int i=0; i<this->T.rows(); i++) {
-        Vector v0(2); v0 << this->T(i,0), this->T(i,1);
-        E.row(6*i) = sort_vector(v0);
-        Vector v1(2); v1 << this->T(i,0), this->T(i,2);
-        E.row(6*i+1) = sort_vector(v1);
-        Vector v2(2); v2 << this->T(i,0), this->T(i,3);
-        E.row(6*i+2) = sort_vector(v2);
-        Vector v3(2); v3 << this->T(i,1), this->T(i,2);
-        E.row(6*i+3) = sort_vector(v3);
-        Vector v4(2); v4 << this->T(i,1), this->T(i,3);
-        E.row(6*i+4) = sort_vector(v4);
-        Vector v5(2); v5 << this->T(i,2), this->T(i,3);
-        E.row(6*i+5) = sort_vector(v5);
-    }
-    this->E = remove_duplicate_rows(sort_matrix(E));
-    // std::cout<<"this->E:\n"<<this->E<<std::endl;
-    // create the mapping
-    for (int i=0; i<this->E.rows(); i++) {
-        this->map_e.insert(std::pair<key_e, int>(std::make_tuple(this->E(i,0), this->E(i,1)), i));
-    }
-}
-
-void TriangleMesh::create_edges_from_faces(){
     Matrix E(3*this->F.rows(), 2);
     for (int i=0; i<this->F.rows(); i++) {
         if (this->numerical_order)
@@ -332,309 +293,17 @@ void TriangleMesh::build_boundary_mat1(){
     // std::cout<<"this->pos_bm1:\n"<<this->pos_bm1<<std::endl;
 }
 
-void TriangleMesh::build_nonboundary_edges(){
-    VectorXi f_cnt = VectorXi::Zero(this->E.rows());
-    nonboundary_edges.resize(this->E.rows(), 2);
-    for (int k=0; k<this->pos_bm2.outerSize(); ++k){
-        for (SparseMatrix<int>::InnerIterator it(this->pos_bm2,k); it; ++it) {
-            f_cnt(it.row())++;
-        }
-    } 
-    int cnt = 0;
-    for (int k=0; k<this->E.rows(); ++k){
-        if (f_cnt(k) == 2)
-        {
-            nonboundary_edges.row(cnt) = this->E.row(k);
-            cnt++;
-            this->nEi.insert(k);
-        }
-    }
-    nonboundary_edges.conservativeResize(cnt, 2);
+int TriangleMesh::n_edges() const{
+    return this->E.rows();
 }
-
-// v as input
-std::set<int> TriangleMesh::get_adjacent_vertices_v(int vindex){
-    // simplex API
-    // SimplicialSet verts;
-    // verts.addVertex(vindex);
-    // SimplicialSet result = link(verts);
-    // std::set<int> neighbors = result.vertices;
-    // print_set(neighbors);
-    // return neighbors;
-    // matrix API
-    SparseMatrix<int> vv = this->pos_bm1 * this->pos_bm1.transpose();
-    std::set<int> result;
-    for (int k=0; k<vv.outerSize(); ++k){
-      for (SparseMatrix<int>::InnerIterator it(vv,k); it; ++it) {
-        if (it.row() == vindex && it.col() != vindex)
-        {
-            result.insert(it.col());
-        }
-      }
-    } 
-    print_set(result);
-    return result;
+int TriangleMesh::n_vertices() const{
+    return this->num_v;
 }
-
-std::set<int> TriangleMesh::get_incident_edges_v(int vindex){
-    std::set<int> result;
-    for (int k=0; k<this->pos_bm1.outerSize(); ++k){
-      for (SparseMatrix<int>::InnerIterator it(this->pos_bm1,k); it; ++it) {
-        if (it.row() == vindex)
-        {
-            result.insert(it.col());
-        }
-      }
-    } 
-    print_set(result);
-    return result;
+int TriangleMesh::n_faces() const{
+    return this->F.rows();
 }
-
-std::set<int> TriangleMesh::get_incident_faces_v(int vindex){
-    SparseMatrix<int> vf = this->pos_bm1 * this->pos_bm2;
-    std::set<int> result;
-    for (int k=0; k<vf.outerSize(); ++k){
-      for (SparseMatrix<int>::InnerIterator it(vf,k); it; ++it) {
-        if (it.row() == vindex)
-        {
-            result.insert(it.col());
-        }
-      }
-    } 
-    print_set(result);
-    return result;
-}
-// e as input
-std::set<int> TriangleMesh::get_incident_vertices_e(int eindex){
-    std::set<int> result;
-    for (int k=0; k<this->pos_bm1.outerSize(); ++k){
-      for (SparseMatrix<int>::InnerIterator it(this->pos_bm1,k); it; ++it) {
-        if (it.col() == eindex)
-        {
-            result.insert(it.row());
-        }
-      }
-    } 
-    print_set(result);
-    return result;
-}
-std::set<int> TriangleMesh::get_incident_faces_e(int eindex){
-    std::set<int> result;
-    for (int k=0; k<this->pos_bm2.outerSize(); ++k){
-      for (SparseMatrix<int>::InnerIterator it(this->pos_bm2,k); it; ++it) {
-        if (it.row() == eindex)
-        {
-            result.insert(it.col());
-        }
-      }
-    } 
-    print_set(result);
-    return result;
-}
-//
-std::set<int> TriangleMesh::get_diamond_vertices_e(int eindex){
-    SimplicialSet edges;
-    edges.addEdge(eindex);
-    SimplicialSet result = closure(star(edges));
-    std::set<int> ver = result.vertices;
-    // ver.erase(this->E(eindex, 0));
-    // ver.erase(this->E(eindex, 1));
-    print_set(ver);
-    return ver;
-}
-
-SetTuple TriangleMesh::diamond(int eindex){
-    SimplicialSet edges;
-    edges.addEdge(eindex);
-    SimplicialSet result = closure(star(edges));
-    return result.getTuple();
-}
-
-
-std::tuple< int, int > TriangleMesh::get_diamond_faces_e(int eindex){
-    int start = this->E(eindex, 0);
-    int end = this->E(eindex, 1);
-    int first_face = 0;
-    int second_face = 0;
-    for (int k=0; k< this->bm2.outerSize(); ++k){
-        for (SparseMatrix<int>::InnerIterator it(this->bm2,k); it; ++it) {
-            if (it.row() == eindex)
-            {
-                if (it.value() == 1)
-                {
-                    first_face = it.col();
-                }
-                else if (it.value() == -1)
-                {
-                    second_face = it.col();
-                }
-            }
-      }
-    } 
-    // std::cout<<"get_diamond_faces_e, first face:"<<first_face<<", second face:"<<second_face<<std::endl;
-    return std::tuple< int, int >(first_face, second_face);
-}
-//
-std::tuple< int, int > TriangleMesh::get_vertices_e(int eindex){
-    return std::tuple<int, int>{this->E(eindex, 0), this->E(eindex, 1)};
-}
-
-int TriangleMesh::get_opposite_vertex(const RowVector& f, int start, int end){
-    int res = 0;
-    for (int i = 0; i < f.cols(); ++i)
-    {
-        if (f(i) != start && f(i) != end)
-        {
-            res = f(i);
-            break;
-        }
-    }
-    return res;
-}
-
-
-std::tuple< int, int > TriangleMesh::get_diamond_vertices_e(int start, int end){
-    key_e key = std::make_tuple(start, end);
-    bool reverse = false;
-    auto search = this->map_e.find(key);
-    if (search == this->map_e.end()){
-        search = this->map_e.find(std::make_tuple(end, start));
-        reverse = true;
-    }
-    int index = search->second;
-    int first_face = 0;
-    int second_face = 0;
-    for (int k=0; k<this->bm2.outerSize(); ++k){
-        for (SparseMatrix<int>::InnerIterator it(this->bm2,k); it; ++it) {
-            if (it.row() == index)
-            {
-                if (it.value() == 1)
-                {
-                    first_face = get_opposite_vertex(this->F.row(it.col()), start, end);
-                }
-                else if (it.value() == -1)
-                {
-                    second_face = get_opposite_vertex(this->F.row(it.col()), start, end);
-                }
-            }
-      }
-    } 
-    if (reverse)
-    {
-        return std::tuple<int, int>{second_face, first_face};
-    }
-    return std::tuple<int, int>{first_face, second_face};
-}
-
-// f as input
-std::set<int> TriangleMesh::get_incident_vertices_f(int findex){
-    SparseMatrix<int> vf = this->pos_bm1 * this->pos_bm2;
-    std::set<int> result;
-    for (int k=0; k<vf.outerSize(); ++k){
-      for (SparseMatrix<int>::InnerIterator it(vf,k); it; ++it) {
-        if (it.col() == findex)
-        {
-            result.insert(it.row());
-        }
-      }
-    } 
-    print_set(result);
-    return result;
-}
-std::set<int> TriangleMesh::get_incident_edges_f(int findex){ 
-    std::set<int> result;
-    for (int k=0; k<this->pos_bm2.outerSize(); ++k){
-      for (SparseMatrix<int>::InnerIterator it(this->pos_bm2,k); it; ++it) {
-        if (it.col() == findex)
-        {
-            result.insert(it.row());
-        }
-      }
-    } 
-    print_set(result);
-    return result;
-}
-std::set<int> TriangleMesh::get_adjacent_faces_f(int findex){
-    SparseMatrix<int> ff = (this->pos_bm2).transpose()*this->pos_bm2;
-    std::set<int> result;
-    for (int k=0; k<ff.outerSize(); ++k){
-      for (SparseMatrix<int>::InnerIterator it(ff,k); it; ++it) {
-        if (it.row() == findex && it.col() != findex)
-        {
-            result.insert(it.col());
-        }
-      }
-    }
-    print_set(result);
-    return result;
-}
-
-std::set<int> TriangleMesh::get_adjacent_faces_f2(int findex){
-    SparseMatrix<int> ff = (this->pos_bm1*this->pos_bm2).transpose()*(this->pos_bm1*this->pos_bm2);
-    std::set<int> result;
-    for (int k=0; k<ff.outerSize(); ++k){
-      for (SparseMatrix<int>::InnerIterator it(ff,k); it; ++it) {
-        if (it.row() == findex && it.col() != findex)
-        {
-            result.insert(it.col());
-        }
-      }
-    }
-    print_set(result);
-    return result;
-}
-
-
-std::tuple< int, int, int > TriangleMesh::get_edges_f(int findex){
-    // get edge indices in a face
-    VectorXi res(3);
-    for (int i = 0; i < 3; ++i)
-    {
-        key_e key = std::make_tuple(this->F(findex,i%3), this->F(findex,(i+1)%3));
-        auto search = this->map_e.find(key);
-        if (search == this->map_e.end()){
-            search = this->map_e.find(std::make_tuple(this->F(findex,(i+1)%3), this->F(findex,i%3)));
-        } 
-        res(i) = search->second;
-    }
-    return std::tuple< int, int, int >{res(0), res(1), res(2)};
-}
-
-std::tuple< int, int, int > TriangleMesh::get_vertices_f(int findex){
-    // std::cout<<"findex:"<<findex<<std::endl;
-    return std::tuple< int, int, int >{this->F(findex,0), this->F(findex,1), this->F(findex,2)};;
-}
-SparseMatrix<int> TriangleMesh::vertices_to_vector(const SimplicialSet& subset) const{
-    SparseMatrix<int> v(this->num_v, 1);
-    std::vector<Eigen::Triplet<int> > tripletList; 
-    for (int idx : subset.vertices)
-    {
-        tripletList.push_back(Eigen::Triplet<int>(idx, 0, 1));
-    }
-    v.setFromTriplets(tripletList.begin(), tripletList.end());
-    return v;
-}
-
-SparseMatrix<int> TriangleMesh::edges_to_vector(const SimplicialSet& subset) const{
-    SparseMatrix<int> e(this->E.rows(), 1);
-    std::vector<Eigen::Triplet<int> > tripletList; 
-    for (int idx : subset.edges)
-    {
-        tripletList.push_back(Eigen::Triplet<int>(idx, 0, 1));
-    }
-    e.setFromTriplets(tripletList.begin(), tripletList.end());
-    return e;
-}
-
-SparseMatrix<int> TriangleMesh::faces_to_vector(const SimplicialSet& subset) const{
-    SparseMatrix<int> f(this->F.rows(), 1);
-    std::vector<Eigen::Triplet<int> > tripletList; 
-    for (int idx : subset.faces)
-    {
-        tripletList.push_back(Eigen::Triplet<int>(idx, 0, 1));
-    }
-    f.setFromTriplets(tripletList.begin(), tripletList.end());
-    return f;
+int TriangleMesh::n_tets() const{
+    return this->T.rows();
 }
 SparseMatrix<int> TriangleMesh::vertices_to_vector(const std::set<int>& vset) const{
     SparseMatrix<int> v(this->num_v, 1);
@@ -679,225 +348,7 @@ SparseMatrix<int> TriangleMesh::tets_to_vector(const std::set<int>& tset) const{
     t.setFromTriplets(tripletList.begin(), tripletList.end());
     return t;
 }
-std::set<int> TriangleMesh::vector_to_vertices(SparseMatrix<int>& vi){
-    return nonzeros(vi);
-}
-std::set<int> TriangleMesh::vector_to_edges(SparseMatrix<int>& ei){
-    return nonzeros(ei);
-}
-std::set<int> TriangleMesh::vector_to_faces(SparseMatrix<int>& fi){
-    return nonzeros(fi);
-}
-std::set<int> TriangleMesh::vector_to_tets(SparseMatrix<int>& ti){
-    return nonzeros(ti);
-}
-
-
-SetTuple  TriangleMesh::star(SetTuple& subset) const{
-    SimplicialSet param;
-    param.addVertices(std::get<0>(subset));
-    param.addEdges(std::get<1>(subset));
-    param.addFaces(std::get<2>(subset));
-    SimplicialSet res = star(param);
-    return SetTuple{res.vertices, res.edges, res.faces, res.tets};;
-}
-
-SimplicialSet TriangleMesh::star(const SimplicialSet& subset) const{
-    SimplicialSet newSet = subset.deepCopy();
-    SparseMatrix<int> v = this->vertices_to_vector(subset);
-    std::cout<<"v:"<<v<<std::endl;
-    SparseMatrix<int> e = this->edges_to_vector(subset);
-    // std::cout<<"pos_bm1:"<<pos_bm1<<std::endl;
-    // std::cout<<"pos_bm2:"<<pos_bm2<<std::endl;
-    SparseMatrix<int> fv = (this->pos_bm1*this->pos_bm2).transpose();
-    std::cout<<"fv:"<<fv<<std::endl;
-    SparseMatrix<int> extraE = this->pos_bm1.transpose() * v;
-    // for (int i = 0; i < extraE.size(); ++i)
-    // {
-    //     if (extraE[i])
-    //     {
-    //         newSet.addEdge(i);
-    //     }
-    // }
-    newSet.addEdges(nonzeros(extraE));
-    SparseMatrix<int> extraF = this->pos_bm2.transpose() * e + fv * v;
-    // for (int i = 0; i < extraF.size(); ++i)
-    // {
-    //     if (extraF[i])
-    //     {
-    //         newSet.addFace(i);
-    //     }
-    // }
-    newSet.addFaces(nonzeros(extraF));
-    std::cout<<"extraF:"<<extraF<<std::endl;
-    return newSet;
-}
-SimplicialSet TriangleMesh::closure(const SimplicialSet& subset) const{
-    SimplicialSet newSet = subset.deepCopy();
-    SparseMatrix<int> f = this->faces_to_vector(subset);
-    SparseMatrix<int> extraE = this->pos_bm2 * f;
-    // for (int i = 0; i < extraE.size(); ++i)
-    // {
-    //     if (extraE[i])
-    //     {
-    //         newSet.addEdge(i);
-    //     }
-    // }
-    newSet.addEdges(nonzeros(extraE));
-    SparseMatrix<int> e = this->edges_to_vector(newSet);
-    SparseMatrix<int> extraV = this->pos_bm1 * e;
-    // for (int i = 0; i < extraV.size(); ++i)
-    // {
-    //     if (extraV[i])
-    //     {
-    //         newSet.addVertex(i);
-    //     }
-    // }
-    newSet.addVertices(nonzeros(extraV));
-    return newSet;
-}
-SimplicialSet TriangleMesh::link(const SimplicialSet& subset) const{
-    SimplicialSet newSet = this->closure(this->star(subset));
-    newSet.deleteSubset(this->star(this->closure(subset)));
-    return newSet;
-}
-bool TriangleMesh::is_complex(const SimplicialSet& subset) const{
-    SimplicialSet newSet = this->closure(subset);
-    return newSet.equals(subset);
-}
-int TriangleMesh::is_pure_complex(const SimplicialSet& subset) const{
-    int degree = -1;
-    SparseMatrix<int> fv = (this->pos_bm1*this->pos_bm2).transpose();
-    if (this->is_complex(subset))
-    {
-        if (subset.faces.size() > 0)
-        {
-            degree = 2;
-            // check edges
-            for (int e : subset.edges)
-            {
-                bool found = false;
-                for (int f : subset.faces)
-                {
-                    if (this->pos_bm2.coeff(e, f) > 0)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (not found)
-                {
-                    degree = -1;
-                    break;
-                }
-            }
-            // check vertices
-            for (int v : subset.vertices)
-            {
-                bool found = false;
-                for (int f : subset.faces)
-                {
-                    if (fv.coeff(f, v) > 0)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (not found)
-                {
-                    degree = -1;
-                    break;
-                }
-            }
-        }
-        else if(subset.edges.size() > 0){
-            degree = 1;
-            // check vertices
-            for (int v : subset.vertices)
-            {
-                bool found = false;
-                for (int e : subset.edges)
-                {
-                    if (this->pos_bm1.coeff(v, e) > 0)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (not found)
-                {
-                    degree = -1;
-                    break;
-                }
-            }
-        }
-        else if(subset.vertices.size() > 0){
-            degree = 0;
-        }
-    }
-    return degree;
-} 
-SimplicialSet TriangleMesh::boundary(const SimplicialSet& subset) const{
-    SimplicialSet newSet;
-    SparseMatrix<int> fv = (this->pos_bm1*this->pos_bm2).transpose();
-    if (this->is_pure_complex(subset))
-    {
-        // check edges
-        for (int e : subset.edges)
-        {
-            int degree = 0;
-            for (int f : subset.faces)
-            {
-                if (this->pos_bm2.coeff(e, f) > 0)
-                {
-                    degree++;
-                }
-            }
-            if (degree == 1)
-            {
-                newSet.addEdge(e);
-            }
-        }
-        // check vertices
-        for (int v : subset.vertices)
-        {
-            int degree = 0;
-            for (int f : subset.faces)
-            {
-                if (fv.coeff(f, v) > 0)
-                {
-                    degree++;
-                }
-            }
-            for (int e : subset.edges)
-            {
-                if (this->pos_bm1.coeff(v, e) > 0)
-                {
-                    degree++;
-                }
-            }
-            if (degree == 1)
-            {
-                newSet.addVertex(v);
-            }
-        }
-    }
-    return this->closure(newSet);
-}
-
-std::set<int> TriangleMesh::vertices(const SetTuple& sset){
-    return std::get<0>(sset);
-}
-std::set<int> TriangleMesh::edges(const SetTuple& sset){
-    return std::get<1>(sset);
-}
-std::set<int> TriangleMesh::faces(const SetTuple& sset){
-    return std::get<2>(sset);
-}
-std::set<int> TriangleMesh::tets(const SetTuple& sset){
-    return std::get<3>(sset);
-}
-
+  
 std::tuple<std::set<int>, std::set<int>, std::set<int>> TriangleMesh::MeshSets() const{
     return std::tuple<std::set<int>, std::set<int>, std::set<int>>(this->Vi, this->Ei, this->Fi);
 }
@@ -909,5 +360,3 @@ std::tuple<Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > TriangleMesh::Bo
 std::tuple<Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > TriangleMesh::UnsignedBoundaryMatrices() const{
     return std::tuple< Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> >(this->pos_bm1, this->pos_bm2);
 }
-
-    
