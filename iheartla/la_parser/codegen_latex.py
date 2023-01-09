@@ -738,7 +738,7 @@ class CodeGenLatex(CodeGen):
             del kwargs['is_sub']
             range = self.visit(node.range, **kwargs)
             sub += "\\in " + range
-            content += '| {}'.format(sub)
+            content += ' \mid {}'.format(sub)
             if node.cond:
                 content += ', {}'.format(self.visit(node.cond, **kwargs))
         self.pop_scope()
