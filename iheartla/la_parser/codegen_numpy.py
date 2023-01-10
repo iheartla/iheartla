@@ -220,9 +220,9 @@ class CodeGenNumpy(CodeGen):
                 if key in CLASS_PACKAGES:
                     class_name = key
                     if key == MESH_HELPER:
-                        self.code_frame.include += 'from TriangleMesh import *\n'
+                        self.code_frame.include += 'from triangle_mesh import *\n'
                         class_name = "TriangleMesh"
-                    init_var += "        self.{} = {}({})\n".format(module_data.instance_name, class_name, ','.join(module_data.params_list))
+                    # init_var += "        self.{} = {}({})\n".format(module_data.instance_name, class_name, ','.join(module_data.params_list))
         content = ["class {}:".format(self.get_result_type()),
                    "    def __init__(self,{}".format(def_str[3:]),
                    self.get_used_params_content(),
@@ -535,7 +535,8 @@ class CodeGenNumpy(CodeGen):
             self.get_param_content(main_content, type_declare, test_generated_sym_set, dim_defined_dict)
         #
         test_content += param_test_content
-        content = ', '.join(self.parameters) + '):\n'
+        init_def_str = ', '.join(self.parameters) + '):\n'
+        content = ''
         if show_doc:
             content += '    \"\"\"\n' + '\n'.join(doc) + '\n    \"\"\"\n'
         # merge content
@@ -549,9 +550,11 @@ class CodeGenNumpy(CodeGen):
             content += '\n'.join(type_checks) + '\n\n'
         #
         # statements
+        mesh_content = ""
         stats_content = ""
         for index in range(len(node.stmts)):
             ret_str = ''
+            cur_stats_content = ''
             if index == len(node.stmts) - 1:
                 if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Equation):
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
@@ -572,12 +575,24 @@ class CodeGenNumpy(CodeGen):
                     continue
             stat_info = self.visit(node.stmts[index], **kwargs)
             if stat_info.pre_list:
-                stats_content += "".join(stat_info.pre_list)
-            stats_content += ret_str + stat_info.content + '\n'
+                cur_stats_content += "".join(stat_info.pre_list)
+            cur_stats_content += ret_str + stat_info.content + '\n'
+            if index in node.meshset_list:
+                mesh_content += cur_stats_content
+            else:
+                stats_content += cur_stats_content
 
         # content += stats_content
         # content += '    return ' + self.get_ret_struct()
         # content += '\n'
+        mesh_dim_list = []
+        for mesh, data in self.mesh_dict.items():
+            mesh_dim_list.append("    {} = {}.n_vertices()\n".format(data.la_type.vi_size, mesh))
+            mesh_dim_list.append("    {} = {}.n_edges()\n".format(data.la_type.ei_size, mesh))
+            mesh_dim_list.append("    {} = {}.n_faces()\n".format(data.la_type.fi_size, mesh))
+        # content += stats_content
+        # content += '\n}\n'
+        content = init_def_str + mesh_content + ''.join(mesh_dim_list) + content  # mesh content before dims checking
         content = self.get_struct_definition(self.update_prelist_str([content], '    '), stats_content)
         # content = self.get_struct_definition(self.update_prelist_str([content], '    ')) + '\n'
         # test
@@ -1009,6 +1024,35 @@ class CodeGenNumpy(CodeGen):
         f_info = self.visit(node.value, **kwargs)
         f_info.content = "np.sqrt({})".format(f_info.content)
         return f_info
+
+    def visit_element_convert(self, node, **kwargs):
+        pre_list = []
+        if node.to_type == EleConvertType.EleToSimplicialSet or node.to_type == EleConvertType.EleToTuple or node.to_type == EleConvertType.EleToSequence:
+            # tuple
+            params = []
+            for param in node.params:
+                param_info = self.visit(param, **kwargs)
+                params.append(param_info.content)
+                pre_list += param_info.pre_list
+            if node.to_type == EleConvertType.EleToSimplicialSet or node.to_type == EleConvertType.EleToTuple:
+                if node.to_type == EleConvertType.EleToSimplicialSet and len(node.params) == 3:
+                    # add extra empty tet set
+                    params.append("[]")
+                content = "[{}]".format(",".join(params))
+            elif node.to_type == EleConvertType.EleToSequence:
+                seq_n = self.generate_var_name("seq")
+                if node.params[0].la_type.is_sequence():
+                    # append new
+                    pre_list.append("    {} = {}\n".format(seq_n, params[0]))
+                    pre_list += ["    {}.append({})".format(seq_n, p) for p in params[1:]]
+                else:
+                    pre_list.append("    {} = [{}]\n".format(seq_n, ",".join(params)))
+                content = seq_n
+        else:
+            param_info = self.visit(node.params[0], **kwargs)
+            pre_list += param_info.pre_list
+            content = param_info.content
+        return CodeNodeInfo(content, pre_list)
 
     def visit_power(self, node, **kwargs):
         base_info = self.visit(node.base, **kwargs)
