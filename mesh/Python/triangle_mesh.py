@@ -5,7 +5,7 @@ from scipy import sparse
 from util import *
 
 
-def NonZeros(target):
+def nonzeros(target):
     return set(target.nonzero()[0])
 
 
