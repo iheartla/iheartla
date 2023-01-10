@@ -219,7 +219,11 @@ class CodeGenNumpy(CodeGen):
                     init_struct += "        _{} = self.{}()\n".format(module.name, module.name)
                 for cur_index in range(len(module.syms)):
                     sym = module.syms[cur_index]
-                    init_var += "        self.{} = _{}.{}\n".format(module.r_syms[cur_index], module.name, sym)
+                    if self.symtable[module.r_syms[cur_index]].is_function():
+                        init_var += self.copy_func_impl(sym, module.r_syms[cur_index], module.name,
+                                                                 self.symtable[module.r_syms[cur_index]])
+                    else:
+                        init_var += "        self.{} = _{}.{}\n".format(module.r_syms[cur_index], module.name, sym)
         if len(self.builtin_module_dict) > 0: # builtin module initialization
             for key, module_data in self.builtin_module_dict.items():
                 if key in CLASS_PACKAGES:
@@ -238,6 +242,19 @@ class CodeGenNumpy(CodeGen):
         if end_str != '':
             end_str = '\n' + end_str
         return "\n".join(content) + init_struct + init_var + stat_str + self.get_opt_syms_content() + end_str
+
+    def copy_func_impl(self, sym, r_syms, module_name, func_type):
+        """implement function from other modules"""
+        content_list = []
+        if not func_type.is_overloaded():
+            content_list.append("        self.{} = _{}.{}\n".format(r_syms, module_name, sym))
+        else:
+            for c_index in range(len(func_type.func_list)):
+                c_type = func_type.func_list[c_index]
+                c_name = func_type.fname_list[c_index]
+                p_name = func_type.pre_fname_list[c_index]
+                content_list.append("        self.{} = _{}.{}\n".format(c_name, module_name, p_name))
+        return ''.join(content_list)
 
     def get_ret_struct(self):
         return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list))
@@ -1277,9 +1294,9 @@ class CodeGenNumpy(CodeGen):
                 cond_info = self.visit(node.cond, **kwargs)
                 cond_content = "        if(" + cond_info.content + "):\n"
                 pre_list += cond_content
-                pre_list.append("            {}.insert({})\n".format(cur_m_id, exp_info.content))
+                pre_list.append("            {}.append({})\n".format(cur_m_id, exp_info.content))
             else:
-                pre_list.append("        {}.insert({})\n".format(cur_m_id, exp_info.content))
+                pre_list.append("        {}.append({})\n".format(cur_m_id, exp_info.content))
             content = cur_m_id
         else:
             for item in node.items:
