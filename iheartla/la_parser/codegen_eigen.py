@@ -1825,6 +1825,8 @@ class CodeGenEigen(CodeGen):
         left_info.pre_list.append(
             "    {} {} = {};\n".format(self.get_ctype(node.left.la_type), rhs_name, right_info.content))
         left_info.pre_list.append(
+            "    {}.reserve({}.size()+{}.size());\n".format(name, lhs_name, rhs_name))
+        left_info.pre_list.append(
             "    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
                 lhs_name, lhs_name, rhs_name, rhs_name, name))
         left_info.content = name
@@ -1843,6 +1845,8 @@ class CodeGenEigen(CodeGen):
         left_info.pre_list.append(
             "    {} {} = {};\n".format(self.get_ctype(node.left.la_type), rhs_name, right_info.content))
         left_info.pre_list.append(
+            "    {}.reserve(std::min({}.size(), {}.size()));\n".format(name, lhs_name, rhs_name))
+        left_info.pre_list.append(
             "    std::set_intersection({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
                 lhs_name, lhs_name, rhs_name, rhs_name, name))
         left_info.content = name
@@ -1859,6 +1863,8 @@ class CodeGenEigen(CodeGen):
         rhs_name = self.generate_var_name('rhs_diff')
         left_info.pre_list.append("    {} {} = {};\n".format(self.get_ctype(node.left.la_type), lhs_name, left_info.content))
         left_info.pre_list.append("    {} {} = {};\n".format(self.get_ctype(node.left.la_type), rhs_name, right_info.content))
+        left_info.pre_list.append(
+            "    {}.reserve({}.size());\n".format(name, lhs_name))
         left_info.pre_list.append("    std::set_difference({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
             lhs_name, lhs_name, rhs_name, rhs_name, name))
         left_info.content = name
