@@ -1274,7 +1274,7 @@ class CodeGenNumpy(CodeGen):
         ret = []
         pre_list = []
         if node.enum_list and len(node.enum_list) > 0:
-            pre_list.append('    {} = frozenset()\n'.format(cur_m_id))
+            pre_list.append('    {} = set()\n'.format(cur_m_id))
             #
             range_info = self.visit(node.range, **kwargs)
             index_name = self.generate_var_name('tuple')
@@ -1301,16 +1301,16 @@ class CodeGenNumpy(CodeGen):
                 cond_info = self.visit(node.cond, **kwargs)
                 cond_content = "        if(" + cond_info.content + "):\n"
                 pre_list += cond_content
-                pre_list.append("            {}.append({})\n".format(cur_m_id, exp_info.content))
+                pre_list.append("            {}.add({})\n".format(cur_m_id, exp_info.content))
             else:
-                pre_list.append("        {}.append({})\n".format(cur_m_id, exp_info.content))
+                pre_list.append("        {}.add({})\n".format(cur_m_id, exp_info.content))
             content = cur_m_id
         else:
             for item in node.items:
                 item_info = self.visit(item, **kwargs)
                 ret.append(item_info.content)
                 pre_list += item_info.pre_list
-            content = 'frozenset({{{}}})'.format(", ".join(ret))
+            content = '{{{}}}'.format(", ".join(ret))
         self.pop_scope()
         return CodeNodeInfo(content, pre_list=pre_list)
 
