@@ -3,7 +3,7 @@ MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, ValueSet, Indica
 Vertices, Edges, Faces from FundamentalMeshAccessors(M)
 M ∈ mesh 
 V, E, F = MeshSets( M )
-∂1, ∂2 = BoundaryMatrices(M) 
+∂0, ∂1 = BoundaryMatrices(M) 
 B0, B1 = UnsignedBoundaryMatrices(M)
 
 
@@ -13,35 +13,35 @@ VertexOneRing(v) = vertexset(NonZeros(B0 B0ᵀ IndicatorVector(M, v))) - v where
 FaceNeighbors(v) = faceset(NonZeros((B0 B1)ᵀ IndicatorVector(M, {v}))) where v ∈ V
 FaceNeighbors(e) = faceset(NonZeros(B1ᵀ IndicatorVector(M, {e}))) where e ∈ E
 
-GetEdgeIndex(i, j) = evec_1 where i,j ∈ V,
-evec = vec(edgeset(NonZeros(∂1ᵀ IndicatorVector(M, {i}))) ∩ vertexset(NonZeros(∂1ᵀ IndicatorVector(M, {j}))))
+EdgeIndex(i, j) = evec_1 where i,j ∈ V,
+evec = vec(edgeset(NonZeros(∂0ᵀ IndicatorVector(M, {i}))) ∩ vertexset(NonZeros(∂0ᵀ IndicatorVector(M, {j}))))
 
-GetNeighborVerticesInFace(f, v) = tuple(vvec1_1, vvec2_1) where v ∈ V, f ∈ F,
-es = edgeset(NonZeros(∂2 IndicatorVector(M, {f}))),
-nes = { s for s ∈ es if ∂1_v,s != 0 },
-eset1 = { e for e ∈ nes if ∂2_e,f ∂1_v,e == -1},
+NeighborVerticesInFace(f, v) = tuple(vvec1_1, vvec2_1) where v ∈ V, f ∈ F,
+es = edgeset(NonZeros(∂1 IndicatorVector(M, {f}))),
+nes = { s for s ∈ es if ∂0_v,s != 0 },
+eset1 = { e for e ∈ nes if ∂1_e,f ∂0_v,e == -1},
 vset1 = vertexset(NonZeros(B0 IndicatorVector(M, eset1))),
 vvec1 = vec(vset1 - {v}),
-eset2 = { e for e ∈ nes if ∂2_e,f ∂1_v,e == 1 },
+eset2 = { e for e ∈ nes if ∂1_e,f ∂0_v,e == 1 },
 vset2 = vertexset(NonZeros(B0 IndicatorVector(M, eset2))),
 vvec2 = vec(vset2 - {v})
 
-GetOrientedVertices(f) = tuple(vvec_1, i, j)    where f ∈ F,
+OrientedVertices(f) = tuple(vvec_1, i, j)    where f ∈ F,
 vs = Vertices(f),
 vvec = vec(vs),
-i,j = GetNeighborVerticesInFace(f, vvec_1)
+i,j = NeighborVerticesInFace(f, vvec_1)
 
 Diamond(e) = SimplicialSet(Vertices(e), {e}, FaceNeighbors(e)) where e ∈ E
 
 OppositeVertices(e) = tuple(evec_1, evec_2) where e ∈ E,
 evec = vec(Vertices(FaceNeighbors(e)) \ Vertices(e))
 
-GetFaceIndex(i,j,k) = fvec_1  where i,j,k ∈ V,
+FaceIndex(i,j,k) = fvec_1  where i,j,k ∈ V,
 ufv = (B0 B1)ᵀ,
 iface = faceset(NonZeros(ufv  IndicatorVector(M, {i}))),
 jface = faceset(NonZeros(ufv  IndicatorVector(M, {j}))),
 kface = faceset(NonZeros(ufv IndicatorVector(M, {k}))),
 fvec = vec(iface ∩ jface ∩ kface)
 
-OrientedVertices(i,j,k) = GetNeighborVerticesInFace(f, i)  where i,j,k ∈ V,
-f = GetFaceIndex(i, j, k)
+OrientedVertices(i,j,k) = NeighborVerticesInFace(f, i)  where i,j,k ∈ V,
+f = FaceIndex(i, j, k)
