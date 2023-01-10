@@ -929,7 +929,7 @@ class CodeGenNumpy(CodeGen):
             if self.visiting_diff_init:
                 return CodeNodeInfo(','.join(params), pre_list)
             return name_info
-        if (func_name in self.lhs_list or func_name in self.local_func_dict or self.is_module_sym(func_name)) and not func_name.startswith("self."):
+        if (func_name in self.lhs_list or func_name in self.local_func_dict or self.is_module_sym(func_name) or self.is_module_sym(node.name.get_main_id())) and not func_name.startswith("self."):
             func_name = 'self.' + func_name
         content = "{}({})".format(func_name, ', '.join(params))
         return CodeNodeInfo(content, pre_list)
