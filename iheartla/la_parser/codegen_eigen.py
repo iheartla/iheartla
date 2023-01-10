@@ -1322,9 +1322,11 @@ class CodeGenEigen(CodeGen):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         if assign_node is not None:
             name = self.visit(assign_node.left[0], **kwargs).content
+            func_ret = False
         else:
             func_node = node.get_ancestor(IRNodeType.LocalFunc)
             name = self.visit(func_node.name, **kwargs).content
+            func_ret = True
         type_info = node
         cur_m_id = ''
         pre_list = []
@@ -1334,7 +1336,10 @@ class CodeGenEigen(CodeGen):
             other_info = self.visit(node.other, **kwargs)
             pre_list.append('    else{\n')
             pre_list += ["    " + pre for pre in other_info.pre_list]
-            pre_list.append('        {}_ret = {};\n'.format(name, other_info.content))
+            if func_ret:
+                pre_list.append('        {}_ret = {};\n'.format(name, other_info.content))
+            else:
+                pre_list.append('        {} = {};\n'.format(name, other_info.content))
             pre_list.append('    }\n')
         return CodeNodeInfo(cur_m_id, pre_list)
 
@@ -2055,6 +2060,8 @@ class CodeGenEigen(CodeGen):
                     if type(node.right[cur_index]).__name__ == 'SparseMatrix':
                         content = right_info.content
                     elif node.right[cur_index].is_node(IRNodeType.MultiConds):
+                        if not self.is_main_scope():
+                            content = "    {} {};\n".format(self.get_ctype(self.get_sym_type(node.left[cur_index].get_main_id())), node.left[cur_index].get_main_id()) + content
                         pass
                     else:
                         op = ' = '
@@ -2528,9 +2535,9 @@ class CodeGenEigen(CodeGen):
                 content = '{}'.format(vec_name)
                 if node.param.la_type.is_set():
                     std_vec = self.generate_var_name("stdv")
-                    op_n = self.generate_var_name("op")
-                    pre_list.append('    {} {} = {};\n'.format(self.get_ctype(node.param.la_type), op_n, params_content))
-                    pre_list.append('    std::vector<{}> {}({}.begin(), {}.end());\n'.format(self.get_ctype(node.param.la_type.element_type), std_vec, op_n, op_n))
+                    # op_n = self.generate_var_name("op")
+                    pre_list.append('    {}& {} = {};\n'.format(self.get_ctype(node.param.la_type), std_vec, params_content))
+                    # pre_list.append('    std::vector<{}> {}({}.begin(), {}.end());\n'.format(self.get_ctype(node.param.la_type.element_type), std_vec, op_n, op_n))
                     pre_list.append(
                         '    {} {}(Eigen::Map<{}>(&{}[0], {}.size()));\n'.format(c_type, vec_name, c_type, std_vec, std_vec))
                 else:

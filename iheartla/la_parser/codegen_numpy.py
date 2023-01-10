@@ -1050,9 +1050,11 @@ class CodeGenNumpy(CodeGen):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         if assign_node is not None:
             name = self.visit(assign_node.left[0], **kwargs).content
+            func_ret = False
         else:
             func_node = node.get_ancestor(IRNodeType.LocalFunc)
             name = self.visit(func_node.name, **kwargs).content
+            func_ret = True
         type_info = node
         cur_m_id = ''
         pre_list = []
@@ -1061,7 +1063,10 @@ class CodeGenNumpy(CodeGen):
         if node.other:
             other_info = self.visit(node.other, **kwargs)
             pre_list.append('    else:\n')
-            pre_list.append('        {}_ret = {}\n'.format(name, other_info.content))
+            if func_ret:
+                pre_list.append('        {}_ret = {}\n'.format(name, other_info.content))
+            else:
+                pre_list.append('        {} = {}\n'.format(name, other_info.content))
         return CodeNodeInfo(cur_m_id, pre_list)
 
 

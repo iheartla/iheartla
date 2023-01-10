@@ -1056,10 +1056,12 @@ class CodeGenMatlab(CodeGen):
     def visit_multi_conditionals(self, node, **kwargs):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         if assign_node is not None:
-            name = self.visit(assign_node.left, **kwargs).content
+            name = self.visit(assign_node.left[0], **kwargs).content
+            func_ret = False
         else:
             func_node = node.get_ancestor(IRNodeType.LocalFunc)
             name = self.visit(func_node.name, **kwargs).content
+            func_ret = True
         type_info = node
         cur_m_id = ''
         pre_list = []
@@ -1068,7 +1070,10 @@ class CodeGenMatlab(CodeGen):
         if node.other:
             other_info = self.visit(node.other, **kwargs)
             pre_list.append('    else\n')
-            pre_list.append('        {} = {};\n'.format('ret', other_info.content))
+            if func_ret:
+                pre_list.append('        {} = {};\n'.format('ret', other_info.content))
+            else:
+                pre_list.append('        {} = {};\n'.format(name, other_info.content))
         pre_list.append('    end\n')
         return CodeNodeInfo(cur_m_id, pre_list)
 
@@ -1655,7 +1660,8 @@ class CodeGenMatlab(CodeGen):
                         op = ' += '
                     if not node.right[cur_index].is_node(IRNodeType.MultiConds):
                         right_exp += '    ' + self.get_main_id(left_id) + op + right_info.content
-                    content += right_exp + ';\n'
+                    if right_exp != '':
+                        content += right_exp + ';\n'
                 la_remove_key(LHS, **kwargs)
         return CodeNodeInfo(content)
 
