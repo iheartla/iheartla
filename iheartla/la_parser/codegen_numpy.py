@@ -34,7 +34,8 @@ class CodeGenNumpy(CodeGen):
         check_list = []
         if len(self.get_cur_param_data().set_checking) > 0:
             for key, value in self.get_cur_param_data().set_checking.items():
-                check_list = ['    assert {} in {}'.format(key, value)]
+                check_list = ['    assert {} in {}'.format(key, self.prefix_sym(value))]
+
         return check_list
 
     def get_rand_test_str(self, la_type, rand_int_max):
@@ -155,6 +156,12 @@ class CodeGenNumpy(CodeGen):
                     exist = True
                     break
         return exist
+
+    def prefix_sym(self, sym):
+        # for usage only, not initialization
+        if (sym in self.lhs_list or sym in self.local_func_dict or self.is_module_sym(sym)) and not sym.startswith("self."):
+            return 'self.' + sym
+        return sym
 
     def visit_id(self, node, **kwargs):
         content = node.get_name()
@@ -1066,7 +1073,7 @@ class CodeGenNumpy(CodeGen):
                 if node.params[0].la_type.is_sequence():
                     # append new
                     pre_list.append("    {} = {}\n".format(seq_n, params[0]))
-                    pre_list += ["    {}.append({})".format(seq_n, p) for p in params[1:]]
+                    pre_list += ["    {}.add({})".format(seq_n, p) for p in params[1:]]
                 else:
                     pre_list.append("    {} = [{}]\n".format(seq_n, ",".join(params)))
                 content = seq_n
