@@ -713,14 +713,17 @@ class CodeGenNumpy(CodeGen):
             content.append("{} = 0\n".format(assign_id))
         if node.enum_list:
             range_info = self.visit(node.range, **kwargs)
-            index_name = self.generate_var_name('tuple')
-            content.append('for {} in {}:\n'.format(index_name, range_info.content))
-            extra_content = ''
-            for i in range(len(node.enum_list)):
-                if node.range.la_type.index_type:
-                    content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
-                else:
-                    content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+            if len(node.enum_list) == 1:
+                content.append('for {} in {}:\n'.format(node.enum_list[0], range_info.content))
+            else:
+                index_name = self.generate_var_name('tuple')
+                content.append('for {} in {}:\n'.format(index_name, range_info.content))
+                extra_content = ''
+                for i in range(len(node.enum_list)):
+                    if node.range.la_type.index_type:
+                        content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+                    else:
+                        content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
             exp_pre_list = []
             if exp_info.pre_list:  # catch pre_list
                 list_content = "".join(exp_info.pre_list)
@@ -1277,16 +1280,19 @@ class CodeGenNumpy(CodeGen):
             pre_list.append('    {} = set()\n'.format(cur_m_id))
             #
             range_info = self.visit(node.range, **kwargs)
-            index_name = self.generate_var_name('tuple')
-            pre_list.append('    for {} in {}:\n'.format(index_name, range_info.content))
-            extra_content = ''
-            for i in range(len(node.enum_list)):
-                if node.range.la_type.index_type:
-                    pre_list.append(
-                        '        {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
-                else:
-                    pre_list.append(
-                        '        {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+            if len(node.enum_list) == 1:
+                pre_list.append('    for {} in {}:\n'.format(node.enum_list[0], range_info.content))
+            else:
+                index_name = self.generate_var_name('tuple')
+                pre_list.append('    for {} in {}:\n'.format(index_name, range_info.content))
+                extra_content = ''
+                for i in range(len(node.enum_list)):
+                    if node.range.la_type.index_type:
+                        pre_list.append(
+                            '        {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+                    else:
+                        pre_list.append(
+                            '        {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
             exp_pre_list = []
             exp_info = self.visit(node.items[0], **kwargs)
             if exp_info.pre_list:  # catch pre_list
