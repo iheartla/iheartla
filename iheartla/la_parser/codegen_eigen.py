@@ -1255,7 +1255,13 @@ class CodeGenEigen(CodeGen):
                 content = "std::tuple<{} >{{ {} }}".format(",".join(type_list), ",".join(params))
             elif node.to_type == EleConvertType.EleToSequence:
                 seq_n = self.generate_var_name("seq")
-                pre_list.append("    {} {}{{{}}};\n".format(self.get_ctype(node.la_type), seq_n, ",".join(params)))
+                if node.params[0].la_type.is_sequence():
+                    # append new
+                    pre_list.append("    {} {} = {};\n".format(self.get_ctype(node.la_type), seq_n, params[0]))
+                    pre_list.append("    {}.reserve({}.size()+{});\n".format(seq_n, seq_n, len(node.params)-1))
+                    pre_list += ["    {}.push_back({});".format(seq_n, p) for p in params[1:]]
+                else:
+                    pre_list.append("    {} {}{{{}}};\n".format(self.get_ctype(node.la_type), seq_n, ",".join(params)))
                 content = seq_n
         else:
             param_info = self.visit(node.params[0], **kwargs)
