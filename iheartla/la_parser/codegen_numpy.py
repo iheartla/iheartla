@@ -147,6 +147,15 @@ class CodeGenNumpy(CodeGen):
         test_content = ['{}{}'.format(pre, line) for line in test_content]
         return test_content
 
+    def is_module_sym(self, sym):
+        exist = False
+        if len(self.module_list) > 0:
+            for module in self.module_list:
+                if len(module.syms) > 0 and sym in module.syms:
+                    exist = True
+                    break
+        return exist
+
     def visit_id(self, node, **kwargs):
         content = node.get_name()
         prefix = False
@@ -170,15 +179,11 @@ class CodeGenNumpy(CodeGen):
             if not is_param and content in self.used_params:
                 prefix = True
             if not is_param:
-                if len(self.module_list) > 0:
-                    for module in self.module_list:
-                        if len(module.syms) > 0 and content in module.syms:
-                            prefix = True
+                if self.is_module_sym(content):
+                    prefix = True
         else:
-            if len(self.module_list) > 0:
-                for module in self.module_list:
-                    if len(module.syms) > 0 and content in module.syms:
-                        prefix = True
+            if self.is_module_sym(content):
+                prefix = True
         content = self.filter_symbol(content)
         if content in self.name_convention_dict:
             content = self.name_convention_dict[content]
@@ -907,7 +912,7 @@ class CodeGenNumpy(CodeGen):
             if self.visiting_diff_init:
                 return CodeNodeInfo(','.join(params), pre_list)
             return name_info
-        if (func_name in self.lhs_list or func_name in self.local_func_dict) and not func_name.startswith("self."):
+        if (func_name in self.lhs_list or func_name in self.local_func_dict or self.is_module_sym(func_name)) and not func_name.startswith("self."):
             func_name = 'self.' + func_name
         content = "{}({})".format(func_name, ', '.join(params))
         return CodeNodeInfo(content, pre_list)
