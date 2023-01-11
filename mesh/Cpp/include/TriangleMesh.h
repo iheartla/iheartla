@@ -22,10 +22,10 @@ typedef Eigen::Matrix< int, 1, Eigen::Dynamic> RowVector;
 typedef Eigen::Matrix< int, Eigen::Dynamic, Eigen::Dynamic> Matrix;
 class TriangleMesh {
 public:
-    TriangleMesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &T);
+    TriangleMesh(const Eigen::MatrixXi &T);
     TriangleMesh();
-    void initialize(const Eigen::MatrixXd &V, Eigen::MatrixXi &T);
-    void initialize(const Eigen::MatrixXd &V, const Matrix &T);
+    void initialize(Eigen::MatrixXi &T);
+    void initialize(const Matrix &T);
     void create_edges();
     void create_faces();
     void build_boundary_mat3(); // T -> F, size: |F|x|T|, boundary of tets
@@ -57,7 +57,6 @@ public:
 // private:
     int num_v;
     bool numerical_order;       // whether the indices are stored as numerical order in edges/faces
-    Eigen::MatrixXd V;
     Matrix T;
     Matrix E;
     Matrix F;
