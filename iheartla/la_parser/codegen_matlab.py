@@ -233,8 +233,26 @@ class CodeGenMatlab(CodeGen):
                 else:
                     init_struct += "    {}_ = {}();\n".format(module.name, module.name)
                 for cur_index in range(len(module.syms)):
-                    init_var += "    {} = {}_.{};\n".format(module.r_syms[cur_index], module.name, module.syms[cur_index])
+                    sym = module.syms[cur_index]
+                    if self.symtable[module.r_syms[cur_index]].is_function():
+                        init_var += self.copy_func_impl(sym, module.r_syms[cur_index], module.name,
+                                                                 self.symtable[module.r_syms[cur_index]])
+                    else:
+                        init_var += "        {} = {}_.{};\n".format(module.r_syms[cur_index], module.name, sym)
         return def_struct + init_struct + init_var
+
+    def copy_func_impl(self, sym, r_syms, module_name, func_type):
+        """implement function from other modules"""
+        content_list = []
+        if not func_type.is_overloaded():
+            content_list.append("    {} = {}_.{};\n".format(r_syms, module_name, sym))
+        else:
+            for c_index in range(len(func_type.func_list)):
+                c_type = func_type.func_list[c_index]
+                c_name = func_type.fname_list[c_index]
+                p_name = func_type.pre_fname_list[c_index]
+                content_list.append("    {} = {}_.{};\n".format(c_name, module_name, p_name))
+        return ''.join(content_list)
 
     def get_struct_definition(self, init_content):
         ret_name = self.get_result_name()
