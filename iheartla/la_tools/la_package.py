@@ -306,7 +306,7 @@ NonZeros:'nonzeros',
         '{}_3'.format(IndicatorVector): 'tets_to_vector',
     },
     ParserTypeEnum.MATLAB : {
-NonZeros:'nonzeros',
+NonZeros:'NonZeros',
         '{}_0'.format(NonZeros): '{}_0'.format(NonZeros),
         '{}_1'.format(NonZeros): '{}_1'.format(NonZeros),
         '{}_2'.format(NonZeros): '{}_2'.format(NonZeros),
