@@ -994,13 +994,26 @@ class CodeGenMatlab(CodeGen):
         content += extra_expr
         name_list = []
         for cur_index in range(len(node.expr)):
-            cur_ret_name = self.generate_var_name('ret')
-            name_list.append(cur_ret_name)
+            ret_n_list = []
+            if node.expr[cur_index].la_type.is_tuple():
+                for i in range(node.expr[cur_index].la_type.size):
+                    ret_n_list.append(self.generate_var_name('ret'))
+                name_list += ret_n_list
+            else:
+                cur_ret_name = self.generate_var_name('ret')
+                ret_n_list.append(cur_ret_name)
+                name_list.append(cur_ret_name)
             expr_info = self.visit(node.expr[cur_index], **kwargs)
             if len(expr_info.pre_list) > 0:
                 content += self.update_prelist_str(expr_info.pre_list, "    ")
             if not node.expr[0].is_node(IRNodeType.MultiConds):
-                content += '        {} = {};\n'.format(cur_ret_name, expr_info.content)
+                if node.expr[cur_index].la_type.is_tuple():
+                    tuple_name = self.generate_var_name('tuple')
+                    content += '        {} = {};\n'.format(tuple_name, expr_info.content)
+                    for i in range(node.expr[cur_index].la_type.size):
+                        content += '        {} = {}({});\n'.format(ret_n_list[i], tuple_name, i+1)
+                else:
+                    content += '        {} = {};\n'.format(','.join(ret_n_list), expr_info.content)
         content += '    end\n\n'
         self.local_func_def += "    function [{}] = {}({})\n".format(', '.join(name_list), node.identity_name, ", ".join(param_list)) + content
         self.local_func_parsing = False
