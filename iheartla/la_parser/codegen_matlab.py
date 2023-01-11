@@ -31,7 +31,8 @@ class CodeGenMatlab(CodeGen):
         check_list = []
         if len(self.get_cur_param_data().set_checking) > 0:
             for key, value in self.get_cur_param_data().set_checking.items():
-                check_list = ['    assert( ismember({}, {}) );'.format(key, value)]
+                # check_list = ['    assert( ismember({}, {}) );'.format(key, value)]
+                pass
         return check_list
 
     def randn_str(self,sizes=[]):
@@ -1277,7 +1278,7 @@ class CodeGenMatlab(CodeGen):
         ret = []
         pre_list = []
         if node.enum_list and len(node.enum_list) > 0:
-            pre_list.append('    {} = []\n'.format(cur_m_id))
+            pre_list.append('    {} = [];\n'.format(cur_m_id))
             #
             range_info = self.visit(node.range, **kwargs)
             range_name = self.generate_var_name('range')
@@ -1614,11 +1615,14 @@ class CodeGenMatlab(CodeGen):
                 right_info = self.visit(rhs_node, **kwargs)
                 if right_info.pre_list:
                     content += self.update_prelist_str(right_info.pre_list, "    ")
-                content += "    {} = {};\n".format(tuple_name, right_info.content)
+                # content += "    {} = {};\n".format(tuple_name, right_info.content)
+                var_list = []
                 for cur_index in range(len(node.left)):
                     left_info = self.visit(node.left[cur_index], **kwargs)
-                    content += "    {} = {}({});\n".format(left_info.content, tuple_name, cur_index+1)
+                    var_list.append(left_info.content)
+                    # content += "    {} = {}({});\n".format(left_info.content, tuple_name, cur_index+1)
                     self.declared_symbols.add(node.left[cur_index].get_main_id())
+                content += "    [{}] = {};\n".format(','.join(var_list), right_info.content)
                 la_remove_key(LHS, **kwargs)
                 return CodeNodeInfo(content)
             for cur_index in range(len(node.left)):
