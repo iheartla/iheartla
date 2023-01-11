@@ -592,13 +592,14 @@ class CodeGenMatlab(CodeGen):
         # test
         test_function += test_content
         test_function.append(test_indent+'end')
-        if len(self.parameters) > 0:
-            content += '    if nargin==0\n'
-            content += "        warning('generating random input data');\n"
-            content += "        [{}] = {}();\n".format(', '.join(self.parameters), rand_func_name)
-            content += '    end\n'
-            content += '\n'.join(test_function)
-            content += '\n\n'
+        if not self.class_only:
+            if len(self.parameters) > 0:
+                content += '    if nargin==0\n'
+                content += "        warning('generating random input data');\n"
+                content += "        [{}] = {}();\n".format(', '.join(self.parameters), rand_func_name)
+                content += '    end\n'
+                content += '\n'.join(test_function)
+                content += '\n\n'
         #else:
         #    # Alec: I don't understand what/when this would be doing something 
         #    content += "        {}();\n".format(rand_func_name)
