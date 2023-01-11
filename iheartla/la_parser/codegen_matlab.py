@@ -1297,11 +1297,11 @@ class CodeGenMatlab(CodeGen):
             range_name = self.generate_var_name('range')
             pre_list.append('    {} = {};\n'.format(range_name, range_info.content))
             index_name = self.generate_var_name('index')
-            pre_list.append('    for {} = 1:size({}, 1)\n'.format(index_name, range_name))
+            pre_list.append('    for {} = 1:length({})\n'.format(index_name, range_name))
             extra_content = ''
             for i in range(len(node.enum_list)):
                 pre_list.append(
-                    '        {} = {}({}, {});\n'.format(node.enum_list[i], range_name, index_name, i + 1))
+                    '        {} = {}({});\n'.format(node.enum_list[i], range_name, index_name))
             exp_pre_list = []
             exp_info = self.visit(node.items[0], **kwargs)
             if exp_info.pre_list:  # catch pre_list
