@@ -306,6 +306,15 @@ NonZeros:'nonzeros',
         '{}_3'.format(IndicatorVector): 'tets_to_vector',
     },
     ParserTypeEnum.MATLAB : {
+NonZeros:'nonzeros',
+        '{}_0'.format(NonZeros): '{}_0'.format(NonZeros),
+        '{}_1'.format(NonZeros): '{}_1'.format(NonZeros),
+        '{}_2'.format(NonZeros): '{}_2'.format(NonZeros),
+        '{}_3'.format(NonZeros): '{}_3'.format(NonZeros),
+        '{}_0'.format(IndicatorVector): 'vertices_to_vector',
+        '{}_1'.format(IndicatorVector): 'edges_to_vector',
+        '{}_2'.format(IndicatorVector): 'faces_to_vector',
+        '{}_3'.format(IndicatorVector): 'tets_to_vector',
     },
 }
 
