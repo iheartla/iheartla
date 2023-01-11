@@ -679,8 +679,8 @@ class CodeGenMatlab(CodeGen):
         # convert special string in identifiers
         declaration_content = self.trim_content(declaration_content)
         content = self.trim_content(content)
-        self.code_frame.struct = declaration_content + comment_content + ''.join(mesh_dim_list) + content
-        return declaration_content + comment_content + ''.join(mesh_dim_list) + mesh_content + content
+        self.code_frame.struct = declaration_content + comment_content + ''.join(mesh_dim_list) + self.trim_content(mesh_content) + content
+        return declaration_content + comment_content + ''.join(mesh_dim_list) + self.trim_content(mesh_content) + content
 
     def visit_summation(self, node, **kwargs):
         self.push_scope(node.scope_name)
