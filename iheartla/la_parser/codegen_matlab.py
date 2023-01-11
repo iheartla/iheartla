@@ -1617,7 +1617,7 @@ class CodeGenMatlab(CodeGen):
                 content += "    {} = {};\n".format(tuple_name, right_info.content)
                 for cur_index in range(len(node.left)):
                     left_info = self.visit(node.left[cur_index], **kwargs)
-                    content += "    {} = {}({});\n".format(left_info.content, tuple_name, cur_index)
+                    content += "    {} = {}({});\n".format(left_info.content, tuple_name, cur_index+1)
                     self.declared_symbols.add(node.left[cur_index].get_main_id())
                 la_remove_key(LHS, **kwargs)
                 return CodeNodeInfo(content)
