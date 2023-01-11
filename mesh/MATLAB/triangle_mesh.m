@@ -321,6 +321,22 @@ function mesh = triangle_mesh(T)
         output = sparse(index_list(1,:), index_list(2,:), value_list, size(mesh.T, 1), 1);
     end
 
+    function output = n_vertices()
+        output = length(mesh.V);
+    end
+
+    function output = n_edges()
+        output = length(mesh.Ei);
+    end
+
+    function output = n_faces()
+        output = length(mesh.Fi);
+    end
+
+    function output = n_tets()
+        output = length(mesh.Ti);
+    end
+
     function ret_set = NonZeros(target)
         output = nonzeros(target);
         [row, col] = find(output);

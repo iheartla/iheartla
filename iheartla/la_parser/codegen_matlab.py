@@ -614,16 +614,18 @@ class CodeGenMatlab(CodeGen):
             content += '\n'.join(type_checks) + '\n\n'
         #
         # statements
+        mesh_content = ""
         stats_content = self.get_module_str()
         for index in range(len(node.stmts)):
             ret_str = ''
+            cur_stats_content = ''
             if index == len(node.stmts) - 1:
                 if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Equation):
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
                         continue
                     elif node.stmts[index].is_node(IRNodeType.OdeFirstOrder):
-                        stats_content += self.visit(node.stmts[index], **kwargs).content
+                        cur_stats_content += self.visit(node.stmts[index], **kwargs).content
                         continue
                     kwargs[LHS] = self.ret_symbol
                     ret_str = "    " + self.ret_symbol + ' = '
@@ -633,16 +635,24 @@ class CodeGenMatlab(CodeGen):
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
                     elif node.stmts[index].is_node(IRNodeType.OdeFirstOrder):
-                        stats_content += self.visit(node.stmts[index], **kwargs).content
+                        cur_stats_content += self.visit(node.stmts[index], **kwargs).content
                     continue
             stat_info = self.visit(node.stmts[index], **kwargs)
             if stat_info.pre_list:
-                stats_content += "".join(stat_info.pre_list)
-            stats_content += ret_str + stat_info.content
+                cur_stats_content += "".join(stat_info.pre_list)
+            cur_stats_content += ret_str + stat_info.content
+            if index in node.meshset_list:
+                mesh_content += cur_stats_content
+            else:
+                stats_content += cur_stats_content
             if index == len(node.stmts) - 1:
                 if type(node.stmts[index]).__name__ != 'AssignNode':
                     stats_content += ';\n'
-
+        mesh_dim_list = []
+        for mesh, data in self.mesh_dict.items():
+            mesh_dim_list.append("    {} = {}.n_vertices();\n".format(data.la_type.vi_size, mesh))
+            mesh_dim_list.append("    {} = {}.n_edges();\n".format(data.la_type.ei_size, mesh))
+            mesh_dim_list.append("    {} = {}.n_faces();\n".format(data.la_type.fi_size, mesh))
         stats_content += self.local_func_def + self.get_struct_definition('')
         content += stats_content
 
@@ -650,8 +660,8 @@ class CodeGenMatlab(CodeGen):
         # convert special string in identifiers
         declaration_content = self.trim_content(declaration_content)
         content = self.trim_content(content)
-        self.code_frame.struct = declaration_content + comment_content + content
-        return declaration_content + comment_content + content
+        self.code_frame.struct = declaration_content + comment_content + ''.join(mesh_dim_list) + content
+        return declaration_content + comment_content + ''.join(mesh_dim_list) + mesh_content + content
 
     def visit_summation(self, node, **kwargs):
         self.push_scope(node.scope_name)
@@ -1025,6 +1035,35 @@ class CodeGenMatlab(CodeGen):
         f_info = self.visit(node.value, **kwargs)
         f_info.content = "sqrt({})".format(f_info.content)
         return f_info
+
+    def visit_element_convert(self, node, **kwargs):
+        pre_list = []
+        if node.to_type == EleConvertType.EleToSimplicialSet or node.to_type == EleConvertType.EleToTuple or node.to_type == EleConvertType.EleToSequence:
+            # tuple
+            params = []
+            for param in node.params:
+                param_info = self.visit(param, **kwargs)
+                params.append(param_info.content)
+                pre_list += param_info.pre_list
+            if node.to_type == EleConvertType.EleToSimplicialSet or node.to_type == EleConvertType.EleToTuple:
+                if node.to_type == EleConvertType.EleToSimplicialSet and len(node.params) == 3:
+                    # add extra empty tet set
+                    params.append("[]")
+                content = "[{}]".format(",".join(params))
+            elif node.to_type == EleConvertType.EleToSequence:
+                seq_n = self.generate_var_name("seq")
+                if node.params[0].la_type.is_sequence():
+                    # append new
+                    pre_list.append("    {} = {}\n".format(seq_n, params[0]))
+                    pre_list += ["    {}.add({})".format(seq_n, p) for p in params[1:]]
+                else:
+                    pre_list.append("    {} = [{}]\n".format(seq_n, ",".join(params)))
+                content = seq_n
+        else:
+            param_info = self.visit(node.params[0], **kwargs)
+            pre_list += param_info.pre_list
+            content = param_info.content
+        return CodeNodeInfo(content, pre_list)
 
     def visit_power(self, node, **kwargs):
         base_info = self.visit(node.base, **kwargs)
@@ -1541,6 +1580,20 @@ class CodeGenMatlab(CodeGen):
                 lhs_content = "[{}]".format(lhs_content)
             content += "    {} = {};\n".format(lhs_content, right_info.content)
         else:
+            if len(node.left) > 1 and len(node.right) == 1:
+                # only accept direct assignment, without subscript
+                rhs_node = node.right[0]
+                tuple_name = self.generate_var_name("tuple")
+                right_info = self.visit(rhs_node, **kwargs)
+                if right_info.pre_list:
+                    content += self.update_prelist_str(right_info.pre_list, "    ")
+                content += "    {} = {};\n".format(tuple_name, right_info.content)
+                for cur_index in range(len(node.left)):
+                    left_info = self.visit(node.left[cur_index], **kwargs)
+                    content += "    {} = {}({});\n".format(left_info.content, tuple_name, cur_index)
+                    self.declared_symbols.add(node.left[cur_index].get_main_id())
+                la_remove_key(LHS, **kwargs)
+                return CodeNodeInfo(content)
             for cur_index in range(len(node.left)):
                 left_info = self.visit(node.left[cur_index], **kwargs)
                 left_id = left_info.content
