@@ -734,11 +734,16 @@ class CodeGenMatlab(CodeGen):
             content.append("{} = 0;\n".format(assign_id))
         if node.enum_list:
             range_info = self.visit(node.range, **kwargs)
+            range_name = self.generate_var_name('range')
             index_name = self.generate_var_name('index')
-            content.append('for {} = 1:size({}, 1)\n'.format(index_name, range_info.content))
+            content.append('{} = {};\n'.format(range_name, range_info.content))
+            content.append('for {} = 1:size({}, 1)\n'.format(index_name, range_name))
             extra_content = ''
-            for i in range(len(node.enum_list)):
-                content.append('    {} = {}({}, {});\n'.format(node.enum_list[i], range_info.content, index_name, i+1))
+            if len(node.enum_list) == 1:
+                content.append('    {} = {}({});\n'.format(node.enum_list[0], range_name, index_name))
+            else:
+                for i in range(len(node.enum_list)):
+                    content.append('    {} = {}({}, {});\n'.format(node.enum_list[i], range_name, index_name, i+1))
             exp_pre_list = []
             if exp_info.pre_list:  # catch pre_list
                 list_content = "".join(exp_info.pre_list)
@@ -753,8 +758,9 @@ class CodeGenMatlab(CodeGen):
                 for et in node.extra_list:
                     extra_info = self.visit(et, **kwargs)
                     content += [self.update_prelist_str([extra_info.content], '    ')]
-            content.append(str("    " + assign_id + " += " + exp_str + ';\n'))
+            content.append(str("    " + assign_id + " = " + assign_id + " + " + exp_str + ';\n'))
             content[0] = "    " + content[0]
+            content.append('end\n')
             self.del_name_conventions(name_convention)
             self.pop_scope()
             return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
@@ -1274,12 +1280,14 @@ class CodeGenMatlab(CodeGen):
             pre_list.append('    {} = []\n'.format(cur_m_id))
             #
             range_info = self.visit(node.range, **kwargs)
+            range_name = self.generate_var_name('range')
+            pre_list.append('    {} = {};\n'.format(range_name, range_info.content))
             index_name = self.generate_var_name('index')
-            pre_list.append('    for {} = 1:size({}, 1)\n'.format(index_name, range_info.content))
+            pre_list.append('    for {} = 1:size({}, 1)\n'.format(index_name, range_name))
             extra_content = ''
             for i in range(len(node.enum_list)):
                 pre_list.append(
-                    '        {} = {}({}, {});\n'.format(node.enum_list[i], range_info.content, index_name, i + 1))
+                    '        {} = {}({}, {});\n'.format(node.enum_list[i], range_name, index_name, i + 1))
             exp_pre_list = []
             exp_info = self.visit(node.items[0], **kwargs)
             if exp_info.pre_list:  # catch pre_list

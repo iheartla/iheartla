@@ -1280,11 +1280,13 @@ class CodeGenNumpy(CodeGen):
             pre_list.append('    {} = set()\n'.format(cur_m_id))
             #
             range_info = self.visit(node.range, **kwargs)
+            range_name = self.generate_var_name('range')
+            pre_list.append('    {} = {}\n'.format(range_name, range_info.content))
             if len(node.enum_list) == 1:
-                pre_list.append('    for {} in {}:\n'.format(node.enum_list[0], range_info.content))
+                pre_list.append('    for {} in {}:\n'.format(node.enum_list[0], range_name))
             else:
                 index_name = self.generate_var_name('tuple')
-                pre_list.append('    for {} in {}:\n'.format(index_name, range_info.content))
+                pre_list.append('    for {} in {}:\n'.format(index_name, range_name))
                 extra_content = ''
                 for i in range(len(node.enum_list)):
                     if node.range.la_type.index_type:
