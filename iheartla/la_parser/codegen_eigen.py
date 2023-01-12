@@ -835,7 +835,9 @@ class CodeGenEigen(CodeGen):
         exp_str = exp_info.content
         assign_id_type = self.get_sym_type(assign_id)
         # set declaration
+        tmp_id = self.generate_var_name("tmp")
         content.append("{} {};\n".format(self.get_ctype(assign_id_type), assign_id))
+        content.append("{} {};\n".format(self.get_ctype(assign_id_type), tmp_id))
         if node.enum_list:
             range_info = self.visit(node.range, **kwargs)
             if len(node.enum_list) == 1:
@@ -873,11 +875,11 @@ class CodeGenEigen(CodeGen):
                 for et in node.extra_list:
                     extra_info = self.visit(et, **kwargs)
                     content += [self.update_prelist_str([extra_info.content], '    ')]
-            content.append(
-                "    {}.reserve({}.size()+{}.size());\n".format(assign_id, assign_id, exp_str))
             content.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
             assign_id, assign_id, exp_str, exp_str, assign_id))
-            content.append("    sort({}.begin(), {}.end());\n".format(assign_id, assign_id))
+            content.append("    {}.assign({}.begin(), {}.end());\n".format(assign_id, tmp_id, tmp_id))
+            content.append("    {}.clear();\n".format(tmp_id))
+            # content.append("    sort({}.begin(), {}.end());\n".format(assign_id, assign_id))
             content[0] = "    " + content[0]
             content.append("}\n")
             self.del_name_conventions(name_convention)
@@ -914,19 +916,22 @@ class CodeGenEigen(CodeGen):
             content += ["    " + pre for pre in cond_info.pre_list]
             content.append("    " + cond_content)
             content += ["    " + pre for pre in exp_pre_list]
-            content.append(
-                "    {}.reserve({}.size()+{}.size());\n".format(assign_id, assign_id, exp_str))
+            # content.append("    {}.reserve({}.size()+{}.size());\n".format(assign_id, assign_id, exp_str))
             content.append("        std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
-            assign_id, assign_id, exp_str, exp_str, assign_id))
-            content.append("        sort({}.begin(), {}.end());\n".format(assign_id, assign_id))
+            assign_id, assign_id, exp_str, exp_str, tmp_id))
+            content.append("        {}.assign({}.begin(), {}.end());\n".format(assign_id, tmp_id, tmp_id))
+            content.append("        {}.clear();\n".format(tmp_id))
+            # content.append("        sort({}.begin(), {}.end());\n".format(assign_id, assign_id))
             content.append("    }\n")
         else:
             content += exp_pre_list
-            content.append(
-                "    {}.reserve({}.size()+{}.size());\n".format(assign_id, assign_id, exp_str))
+            # content.append(
+                # "    {}.reserve({}.size()+{}.size());\n".format(assign_id, assign_id, exp_str))
             content.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
-            assign_id, assign_id, exp_str, exp_str, assign_id))
-            content.append("    sort({}.begin(), {}.end());\n".format(assign_id, assign_id))
+            assign_id, assign_id, exp_str, exp_str, tmp_id))
+            content.append("    {}.assign({}.begin(), {}.end());\n".format(assign_id, tmp_id, tmp_id))
+            content.append("    {}.clear();\n".format(tmp_id))
+            # content.append("    sort({}.begin(), {}.end());\n".format(assign_id, assign_id))
         content[0] = "    " + content[0]
 
         content.append("}\n")
@@ -1849,8 +1854,8 @@ class CodeGenEigen(CodeGen):
         left_info.pre_list.append(
             "    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
                 lhs_name, lhs_name, rhs_name, rhs_name, name))
-        left_info.pre_list.append(
-            "    sort({}.begin(), {}.end());\n".format(name, name))
+        # left_info.pre_list.append(
+        #     "    sort({}.begin(), {}.end());\n".format(name, name))
         left_info.content = name
         return left_info
 
