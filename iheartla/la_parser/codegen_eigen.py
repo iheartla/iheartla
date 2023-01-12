@@ -875,6 +875,7 @@ class CodeGenEigen(CodeGen):
                     content += [self.update_prelist_str([extra_info.content], '    ')]
             content.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
             assign_id, assign_id, exp_str, exp_str, assign_id))
+            content.append("    sort({}.begin(), {}.end());\n".format(assign_id, assign_id))
             content[0] = "    " + content[0]
             content.append("}\n")
             self.del_name_conventions(name_convention)
@@ -913,11 +914,13 @@ class CodeGenEigen(CodeGen):
             content += ["    " + pre for pre in exp_pre_list]
             content.append("        std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
             assign_id, assign_id, exp_str, exp_str, assign_id))
+            content.append("    sort({}.begin(), {}.end());\n".format(assign_id, assign_id))
             content.append("    }\n")
         else:
             content += exp_pre_list
             content.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
             assign_id, assign_id, exp_str, exp_str, assign_id))
+            content.append("    sort({}.begin(), {}.end());\n".format(assign_id, assign_id))
         content[0] = "    " + content[0]
 
         content.append("}\n")
@@ -1840,6 +1843,8 @@ class CodeGenEigen(CodeGen):
         left_info.pre_list.append(
             "    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
                 lhs_name, lhs_name, rhs_name, rhs_name, name))
+        left_info.pre_list.append(
+            "    sort({}.begin(), {}.end());\n".format(name, name))
         left_info.content = name
         return left_info
 
