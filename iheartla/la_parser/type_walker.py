@@ -4354,7 +4354,11 @@ class TypeWalker(NodeWalker):
             ir_node.name = node.tu
         elif node.se:
             ir_node.to_type = EleConvertType.EleToSequence
-            ir_node.la_type = SequenceType(size=len(param_type_list), element_type=param_type_list[0])
+            if param_type_list[0].is_sequence():
+                # append new
+                ir_node.la_type = SequenceType(size=add_syms(param_type_list[0].size, len(param_type_list)-1), element_type=param_type_list[0].element_type)
+            else:
+                ir_node.la_type = SequenceType(size=len(param_type_list), element_type=param_type_list[0])
             ir_node.name = node.se
         elif node.s:
             ir_node.to_type = EleConvertType.EleToSimplicialSet

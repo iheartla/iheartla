@@ -5,6 +5,10 @@ from scipy import sparse
 from util import *
 
 
+def nonzeros(target):
+    return set(target.nonzero()[0])
+
+
 class TriangleMesh:
     def __init__(self, T):
         self.V = None
@@ -134,6 +138,17 @@ class TriangleMesh:
         self.bm3 = scipy.sparse.coo_matrix((value_list, np.asarray(index_list).T), shape=(self.F.shape[0], self.T.shape[0]), dtype=int)
         self.pos_bm3 = scipy.sparse.coo_matrix(([abs(v) for v in value_list], np.asarray(index_list).T), shape=(self.F.shape[0], self.T.shape[0]), dtype=int)
 
+    def n_vertices(self):
+        return len(self.Vi)
+
+    def n_edges(self):
+        return len(self.Ei)
+
+    def n_faces(self):
+        return len(self.Fi)
+
+    def n_tets(self):
+        return len(self.Ti)
 
     def nonzeros(self, target):
         return set(target.nonzero()[0])

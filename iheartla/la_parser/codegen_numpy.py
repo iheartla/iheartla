@@ -34,7 +34,8 @@ class CodeGenNumpy(CodeGen):
         check_list = []
         if len(self.get_cur_param_data().set_checking) > 0:
             for key, value in self.get_cur_param_data().set_checking.items():
-                check_list = ['    assert {} in {}'.format(key, value)]
+                check_list = ['    assert {} in {}'.format(key, self.prefix_sym(value))]
+
         return check_list
 
     def get_rand_test_str(self, la_type, rand_int_max):
@@ -147,6 +148,21 @@ class CodeGenNumpy(CodeGen):
         test_content = ['{}{}'.format(pre, line) for line in test_content]
         return test_content
 
+    def is_module_sym(self, sym):
+        exist = False
+        if len(self.module_list) > 0:
+            for module in self.module_list:
+                if len(module.syms) > 0 and sym in module.syms:
+                    exist = True
+                    break
+        return exist
+
+    def prefix_sym(self, sym):
+        # for usage only, not initialization
+        if (sym in self.lhs_list or sym in self.local_func_dict or self.is_module_sym(sym)) and not sym.startswith("self."):
+            return 'self.' + sym
+        return sym
+
     def visit_id(self, node, **kwargs):
         content = node.get_name()
         prefix = False
@@ -170,15 +186,11 @@ class CodeGenNumpy(CodeGen):
             if not is_param and content in self.used_params:
                 prefix = True
             if not is_param:
-                if len(self.module_list) > 0:
-                    for module in self.module_list:
-                        if len(module.syms) > 0 and content in module.syms:
-                            prefix = True
+                if self.is_module_sym(content):
+                    prefix = True
         else:
-            if len(self.module_list) > 0:
-                for module in self.module_list:
-                    if len(module.syms) > 0 and content in module.syms:
-                        prefix = True
+            if self.is_module_sym(content):
+                prefix = True
         content = self.filter_symbol(content)
         if content in self.name_convention_dict:
             content = self.name_convention_dict[content]
@@ -214,15 +226,19 @@ class CodeGenNumpy(CodeGen):
                     init_struct += "        _{} = self.{}()\n".format(module.name, module.name)
                 for cur_index in range(len(module.syms)):
                     sym = module.syms[cur_index]
-                    init_var += "        self.{} = _{}.{}\n".format(module.r_syms[cur_index], module.name, sym)
+                    if self.symtable[module.r_syms[cur_index]].is_function():
+                        init_var += self.copy_func_impl(sym, module.r_syms[cur_index], module.name,
+                                                                 self.symtable[module.r_syms[cur_index]])
+                    else:
+                        init_var += "        self.{} = _{}.{}\n".format(module.r_syms[cur_index], module.name, sym)
         if len(self.builtin_module_dict) > 0: # builtin module initialization
             for key, module_data in self.builtin_module_dict.items():
                 if key in CLASS_PACKAGES:
                     class_name = key
                     if key == MESH_HELPER:
-                        self.code_frame.include += 'from TriangleMesh import *\n'
+                        self.code_frame.include += 'from triangle_mesh import *\n'
                         class_name = "TriangleMesh"
-                    init_var += "        self.{} = {}({})\n".format(module_data.instance_name, class_name, ','.join(module_data.params_list))
+                    # init_var += "        self.{} = {}({})\n".format(module_data.instance_name, class_name, ','.join(module_data.params_list))
         content = ["class {}:".format(self.get_result_type()),
                    "    def __init__(self,{}".format(def_str[3:]),
                    self.get_used_params_content(),
@@ -233,6 +249,19 @@ class CodeGenNumpy(CodeGen):
         if end_str != '':
             end_str = '\n' + end_str
         return "\n".join(content) + init_struct + init_var + stat_str + self.get_opt_syms_content() + end_str
+
+    def copy_func_impl(self, sym, r_syms, module_name, func_type):
+        """implement function from other modules"""
+        content_list = []
+        if not func_type.is_overloaded():
+            content_list.append("        self.{} = _{}.{}\n".format(r_syms, module_name, sym))
+        else:
+            for c_index in range(len(func_type.func_list)):
+                c_type = func_type.func_list[c_index]
+                c_name = func_type.fname_list[c_index]
+                p_name = func_type.pre_fname_list[c_index]
+                content_list.append("        self.{} = _{}.{}\n".format(c_name, module_name, p_name))
+        return ''.join(content_list)
 
     def get_ret_struct(self):
         return "{}({})".format(self.get_result_type(), ', '.join(self.lhs_list))
@@ -535,7 +564,8 @@ class CodeGenNumpy(CodeGen):
             self.get_param_content(main_content, type_declare, test_generated_sym_set, dim_defined_dict)
         #
         test_content += param_test_content
-        content = ', '.join(self.parameters) + '):\n'
+        init_def_str = ', '.join(self.parameters) + '):\n'
+        content = ''
         if show_doc:
             content += '    \"\"\"\n' + '\n'.join(doc) + '\n    \"\"\"\n'
         # merge content
@@ -549,9 +579,11 @@ class CodeGenNumpy(CodeGen):
             content += '\n'.join(type_checks) + '\n\n'
         #
         # statements
+        mesh_content = ""
         stats_content = ""
         for index in range(len(node.stmts)):
             ret_str = ''
+            cur_stats_content = ''
             if index == len(node.stmts) - 1:
                 if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Equation):
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
@@ -572,12 +604,24 @@ class CodeGenNumpy(CodeGen):
                     continue
             stat_info = self.visit(node.stmts[index], **kwargs)
             if stat_info.pre_list:
-                stats_content += "".join(stat_info.pre_list)
-            stats_content += ret_str + stat_info.content + '\n'
+                cur_stats_content += "".join(stat_info.pre_list)
+            cur_stats_content += ret_str + stat_info.content + '\n'
+            if index in node.meshset_list:
+                mesh_content += cur_stats_content
+            else:
+                stats_content += cur_stats_content
 
         # content += stats_content
         # content += '    return ' + self.get_ret_struct()
         # content += '\n'
+        mesh_dim_list = []
+        for mesh, data in self.mesh_dict.items():
+            mesh_dim_list.append("    {} = {}.n_vertices()\n".format(data.la_type.vi_size, mesh))
+            mesh_dim_list.append("    {} = {}.n_edges()\n".format(data.la_type.ei_size, mesh))
+            mesh_dim_list.append("    {} = {}.n_faces()\n".format(data.la_type.fi_size, mesh))
+        # content += stats_content
+        # content += '\n}\n'
+        content = init_def_str + mesh_content + ''.join(mesh_dim_list) + content  # mesh content before dims checking
         content = self.get_struct_definition(self.update_prelist_str([content], '    '), stats_content)
         # content = self.get_struct_definition(self.update_prelist_str([content], '    ')) + '\n'
         # test
@@ -669,14 +713,17 @@ class CodeGenNumpy(CodeGen):
             content.append("{} = 0\n".format(assign_id))
         if node.enum_list:
             range_info = self.visit(node.range, **kwargs)
-            index_name = self.generate_var_name('tuple')
-            content.append('for {} in {}:\n'.format(index_name, range_info.content))
-            extra_content = ''
-            for i in range(len(node.enum_list)):
-                if node.range.la_type.index_type:
-                    content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
-                else:
-                    content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+            if len(node.enum_list) == 1:
+                content.append('for {} in {}:\n'.format(node.enum_list[0], range_info.content))
+            else:
+                index_name = self.generate_var_name('tuple')
+                content.append('for {} in {}:\n'.format(index_name, range_info.content))
+                extra_content = ''
+                for i in range(len(node.enum_list)):
+                    if node.range.la_type.index_type:
+                        content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+                    else:
+                        content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
             exp_pre_list = []
             if exp_info.pre_list:  # catch pre_list
                 list_content = "".join(exp_info.pre_list)
@@ -892,7 +939,7 @@ class CodeGenNumpy(CodeGen):
             if self.visiting_diff_init:
                 return CodeNodeInfo(','.join(params), pre_list)
             return name_info
-        if (func_name in self.lhs_list or func_name in self.local_func_dict) and not func_name.startswith("self."):
+        if (func_name in self.lhs_list or func_name in self.local_func_dict or self.is_module_sym(func_name) or self.is_module_sym(node.name.get_main_id())) and not func_name.startswith("self."):
             func_name = 'self.' + func_name
         content = "{}({})".format(func_name, ', '.join(params))
         return CodeNodeInfo(content, pre_list)
@@ -1010,6 +1057,35 @@ class CodeGenNumpy(CodeGen):
         f_info.content = "np.sqrt({})".format(f_info.content)
         return f_info
 
+    def visit_element_convert(self, node, **kwargs):
+        pre_list = []
+        if node.to_type == EleConvertType.EleToSimplicialSet or node.to_type == EleConvertType.EleToTuple or node.to_type == EleConvertType.EleToSequence:
+            # tuple
+            params = []
+            for param in node.params:
+                param_info = self.visit(param, **kwargs)
+                params.append(param_info.content)
+                pre_list += param_info.pre_list
+            if node.to_type == EleConvertType.EleToSimplicialSet or node.to_type == EleConvertType.EleToTuple:
+                if node.to_type == EleConvertType.EleToSimplicialSet and len(node.params) == 3:
+                    # add extra empty tet set
+                    params.append("[]")
+                content = "[{}]".format(",".join(params))
+            elif node.to_type == EleConvertType.EleToSequence:
+                seq_n = self.generate_var_name("seq")
+                if node.params[0].la_type.is_sequence():
+                    # append new
+                    pre_list.append("    {} = {}\n".format(seq_n, params[0]))
+                    pre_list += ["    {}.add({})".format(seq_n, p) for p in params[1:]]
+                else:
+                    pre_list.append("    {} = [{}]\n".format(seq_n, ",".join(params)))
+                content = seq_n
+        else:
+            param_info = self.visit(node.params[0], **kwargs)
+            pre_list += param_info.pre_list
+            content = param_info.content
+        return CodeNodeInfo(content, pre_list)
+
     def visit_power(self, node, **kwargs):
         base_info = self.visit(node.base, **kwargs)
         if node.t:
@@ -1050,9 +1126,11 @@ class CodeGenNumpy(CodeGen):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         if assign_node is not None:
             name = self.visit(assign_node.left[0], **kwargs).content
+            func_ret = False
         else:
             func_node = node.get_ancestor(IRNodeType.LocalFunc)
             name = self.visit(func_node.name, **kwargs).content
+            func_ret = True
         type_info = node
         cur_m_id = ''
         pre_list = []
@@ -1061,7 +1139,10 @@ class CodeGenNumpy(CodeGen):
         if node.other:
             other_info = self.visit(node.other, **kwargs)
             pre_list.append('    else:\n')
-            pre_list.append('        {}_ret = {}\n'.format(name, other_info.content))
+            if func_ret:
+                pre_list.append('        {}_ret = {}\n'.format(name, other_info.content))
+            else:
+                pre_list.append('        {} = {}\n'.format(name, other_info.content))
         return CodeNodeInfo(cur_m_id, pre_list)
 
 
@@ -1196,19 +1277,24 @@ class CodeGenNumpy(CodeGen):
         ret = []
         pre_list = []
         if node.enum_list and len(node.enum_list) > 0:
-            pre_list.append('    {} = frozenset()\n'.format(cur_m_id))
+            pre_list.append('    {} = set()\n'.format(cur_m_id))
             #
             range_info = self.visit(node.range, **kwargs)
-            index_name = self.generate_var_name('tuple')
-            pre_list.append('    for {} in {}:\n'.format(index_name, range_info.content))
-            extra_content = ''
-            for i in range(len(node.enum_list)):
-                if node.range.la_type.index_type:
-                    pre_list.append(
-                        '        {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
-                else:
-                    pre_list.append(
-                        '        {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+            range_name = self.generate_var_name('range')
+            pre_list.append('    {} = {}\n'.format(range_name, range_info.content))
+            if len(node.enum_list) == 1:
+                pre_list.append('    for {} in {}:\n'.format(node.enum_list[0], range_name))
+            else:
+                index_name = self.generate_var_name('tuple')
+                pre_list.append('    for {} in {}:\n'.format(index_name, range_name))
+                extra_content = ''
+                for i in range(len(node.enum_list)):
+                    if node.range.la_type.index_type:
+                        pre_list.append(
+                            '        {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+                    else:
+                        pre_list.append(
+                            '        {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
             exp_pre_list = []
             exp_info = self.visit(node.items[0], **kwargs)
             if exp_info.pre_list:  # catch pre_list
@@ -1223,16 +1309,16 @@ class CodeGenNumpy(CodeGen):
                 cond_info = self.visit(node.cond, **kwargs)
                 cond_content = "        if(" + cond_info.content + "):\n"
                 pre_list += cond_content
-                pre_list.append("            {}.insert({})\n".format(cur_m_id, exp_info.content))
+                pre_list.append("            {}.add({})\n".format(cur_m_id, exp_info.content))
             else:
-                pre_list.append("        {}.insert({})\n".format(cur_m_id, exp_info.content))
+                pre_list.append("        {}.add({})\n".format(cur_m_id, exp_info.content))
             content = cur_m_id
         else:
             for item in node.items:
                 item_info = self.visit(item, **kwargs)
                 ret.append(item_info.content)
                 pre_list += item_info.pre_list
-            content = 'frozenset({{{}}})'.format(", ".join(ret))
+            content = '{{{}}}'.format(", ".join(ret))
         self.pop_scope()
         return CodeNodeInfo(content, pre_list=pre_list)
 

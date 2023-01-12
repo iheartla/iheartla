@@ -31,7 +31,8 @@ class CodeGenMatlab(CodeGen):
         check_list = []
         if len(self.get_cur_param_data().set_checking) > 0:
             for key, value in self.get_cur_param_data().set_checking.items():
-                check_list = ['    assert( ismember({}, {}) );'.format(key, value)]
+                # check_list = ['    assert( ismember({}, {}) );'.format(key, value)]
+                pass
         return check_list
 
     def randn_str(self,sizes=[]):
@@ -233,8 +234,26 @@ class CodeGenMatlab(CodeGen):
                 else:
                     init_struct += "    {}_ = {}();\n".format(module.name, module.name)
                 for cur_index in range(len(module.syms)):
-                    init_var += "    {} = {}_.{};\n".format(module.r_syms[cur_index], module.name, module.syms[cur_index])
+                    sym = module.syms[cur_index]
+                    if self.symtable[module.r_syms[cur_index]].is_function():
+                        init_var += self.copy_func_impl(sym, module.r_syms[cur_index], module.name,
+                                                                 self.symtable[module.r_syms[cur_index]])
+                    else:
+                        init_var += "        {} = {}_.{};\n".format(module.r_syms[cur_index], module.name, sym)
         return def_struct + init_struct + init_var
+
+    def copy_func_impl(self, sym, r_syms, module_name, func_type):
+        """implement function from other modules"""
+        content_list = []
+        if not func_type.is_overloaded():
+            content_list.append("    {} = {}_.{};\n".format(r_syms, module_name, sym))
+        else:
+            for c_index in range(len(func_type.func_list)):
+                c_type = func_type.func_list[c_index]
+                c_name = func_type.fname_list[c_index]
+                p_name = func_type.pre_fname_list[c_index]
+                content_list.append("    {} = {}_.{};\n".format(c_name, module_name, p_name))
+        return ''.join(content_list)
 
     def get_struct_definition(self, init_content):
         ret_name = self.get_result_name()
@@ -592,13 +611,14 @@ class CodeGenMatlab(CodeGen):
         # test
         test_function += test_content
         test_function.append(test_indent+'end')
-        if len(self.parameters) > 0:
-            content += '    if nargin==0\n'
-            content += "        warning('generating random input data');\n"
-            content += "        [{}] = {}();\n".format(', '.join(self.parameters), rand_func_name)
-            content += '    end\n'
-            content += '\n'.join(test_function)
-            content += '\n\n'
+        if not self.class_only:
+            if len(self.parameters) > 0:
+                content += '    if nargin==0\n'
+                content += "        warning('generating random input data');\n"
+                content += "        [{}] = {}();\n".format(', '.join(self.parameters), rand_func_name)
+                content += '    end\n'
+                content += '\n'.join(test_function)
+                content += '\n\n'
         #else:
         #    # Alec: I don't understand what/when this would be doing something 
         #    content += "        {}();\n".format(rand_func_name)
@@ -614,16 +634,18 @@ class CodeGenMatlab(CodeGen):
             content += '\n'.join(type_checks) + '\n\n'
         #
         # statements
+        mesh_content = ""
         stats_content = self.get_module_str()
         for index in range(len(node.stmts)):
             ret_str = ''
+            cur_stats_content = ''
             if index == len(node.stmts) - 1:
                 if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Equation):
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
                         continue
                     elif node.stmts[index].is_node(IRNodeType.OdeFirstOrder):
-                        stats_content += self.visit(node.stmts[index], **kwargs).content
+                        cur_stats_content += self.visit(node.stmts[index], **kwargs).content
                         continue
                     kwargs[LHS] = self.ret_symbol
                     ret_str = "    " + self.ret_symbol + ' = '
@@ -633,16 +655,24 @@ class CodeGenMatlab(CodeGen):
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
                     elif node.stmts[index].is_node(IRNodeType.OdeFirstOrder):
-                        stats_content += self.visit(node.stmts[index], **kwargs).content
+                        cur_stats_content += self.visit(node.stmts[index], **kwargs).content
                     continue
             stat_info = self.visit(node.stmts[index], **kwargs)
             if stat_info.pre_list:
-                stats_content += "".join(stat_info.pre_list)
-            stats_content += ret_str + stat_info.content
+                cur_stats_content += "".join(stat_info.pre_list)
+            cur_stats_content += ret_str + stat_info.content
+            if index in node.meshset_list:
+                mesh_content += cur_stats_content
+            else:
+                stats_content += cur_stats_content
             if index == len(node.stmts) - 1:
                 if type(node.stmts[index]).__name__ != 'AssignNode':
                     stats_content += ';\n'
-
+        mesh_dim_list = []
+        for mesh, data in self.mesh_dict.items():
+            mesh_dim_list.append("    {} = {}.n_vertices();\n".format(data.la_type.vi_size, mesh))
+            mesh_dim_list.append("    {} = {}.n_edges();\n".format(data.la_type.ei_size, mesh))
+            mesh_dim_list.append("    {} = {}.n_faces();\n".format(data.la_type.fi_size, mesh))
         stats_content += self.local_func_def + self.get_struct_definition('')
         content += stats_content
 
@@ -650,8 +680,8 @@ class CodeGenMatlab(CodeGen):
         # convert special string in identifiers
         declaration_content = self.trim_content(declaration_content)
         content = self.trim_content(content)
-        self.code_frame.struct = declaration_content + comment_content + content
-        return declaration_content + comment_content + content
+        self.code_frame.struct = declaration_content + comment_content + ''.join(mesh_dim_list) + self.trim_content(mesh_content) + content
+        return declaration_content + comment_content + ''.join(mesh_dim_list) + self.trim_content(mesh_content) + content
 
     def visit_summation(self, node, **kwargs):
         self.push_scope(node.scope_name)
@@ -705,11 +735,16 @@ class CodeGenMatlab(CodeGen):
             content.append("{} = 0;\n".format(assign_id))
         if node.enum_list:
             range_info = self.visit(node.range, **kwargs)
+            range_name = self.generate_var_name('range')
             index_name = self.generate_var_name('index')
-            content.append('for {} = 1:size({}, 1)\n'.format(index_name, range_info.content))
+            content.append('{} = {};\n'.format(range_name, range_info.content))
+            content.append('for {} = 1:size({}, 1)\n'.format(index_name, range_name))
             extra_content = ''
-            for i in range(len(node.enum_list)):
-                content.append('    {} = {}({}, {});\n'.format(node.enum_list[i], range_info.content, index_name, i+1))
+            if len(node.enum_list) == 1:
+                content.append('    {} = {}({});\n'.format(node.enum_list[0], range_name, index_name))
+            else:
+                for i in range(len(node.enum_list)):
+                    content.append('    {} = {}({}, {});\n'.format(node.enum_list[i], range_name, index_name, i+1))
             exp_pre_list = []
             if exp_info.pre_list:  # catch pre_list
                 list_content = "".join(exp_info.pre_list)
@@ -724,8 +759,9 @@ class CodeGenMatlab(CodeGen):
                 for et in node.extra_list:
                     extra_info = self.visit(et, **kwargs)
                     content += [self.update_prelist_str([extra_info.content], '    ')]
-            content.append(str("    " + assign_id + " += " + exp_str + ';\n'))
+            content.append(str("    " + assign_id + " = " + assign_id + " + " + exp_str + ';\n'))
             content[0] = "    " + content[0]
+            content.append('end\n')
             self.del_name_conventions(name_convention)
             self.pop_scope()
             return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
@@ -958,13 +994,26 @@ class CodeGenMatlab(CodeGen):
         content += extra_expr
         name_list = []
         for cur_index in range(len(node.expr)):
-            cur_ret_name = self.generate_var_name('ret')
-            name_list.append(cur_ret_name)
+            ret_n_list = []
+            if node.expr[cur_index].la_type.is_tuple():
+                for i in range(node.expr[cur_index].la_type.size):
+                    ret_n_list.append(self.generate_var_name('ret'))
+                name_list += ret_n_list
+            else:
+                cur_ret_name = self.generate_var_name('ret')
+                ret_n_list.append(cur_ret_name)
+                name_list.append(cur_ret_name)
             expr_info = self.visit(node.expr[cur_index], **kwargs)
             if len(expr_info.pre_list) > 0:
                 content += self.update_prelist_str(expr_info.pre_list, "    ")
             if not node.expr[0].is_node(IRNodeType.MultiConds):
-                content += '        {} = {};\n'.format(cur_ret_name, expr_info.content)
+                if node.expr[cur_index].la_type.is_tuple():
+                    tuple_name = self.generate_var_name('tuple')
+                    content += '        {} = {};\n'.format(tuple_name, expr_info.content)
+                    for i in range(node.expr[cur_index].la_type.size):
+                        content += '        {} = {}({});\n'.format(ret_n_list[i], tuple_name, i+1)
+                else:
+                    content += '        {} = {};\n'.format(','.join(ret_n_list), expr_info.content)
         content += '    end\n\n'
         self.local_func_def += "    function [{}] = {}({})\n".format(', '.join(name_list), node.identity_name, ", ".join(param_list)) + content
         self.local_func_parsing = False
@@ -1026,6 +1075,35 @@ class CodeGenMatlab(CodeGen):
         f_info.content = "sqrt({})".format(f_info.content)
         return f_info
 
+    def visit_element_convert(self, node, **kwargs):
+        pre_list = []
+        if node.to_type == EleConvertType.EleToSimplicialSet or node.to_type == EleConvertType.EleToTuple or node.to_type == EleConvertType.EleToSequence:
+            # tuple
+            params = []
+            for param in node.params:
+                param_info = self.visit(param, **kwargs)
+                params.append(param_info.content)
+                pre_list += param_info.pre_list
+            if node.to_type == EleConvertType.EleToSimplicialSet or node.to_type == EleConvertType.EleToTuple:
+                if node.to_type == EleConvertType.EleToSimplicialSet and len(node.params) == 3:
+                    # add extra empty tet set
+                    params.append("[]")
+                content = "[{}]".format(",".join(params))
+            elif node.to_type == EleConvertType.EleToSequence:
+                seq_n = self.generate_var_name("seq")
+                if node.params[0].la_type.is_sequence():
+                    # append new
+                    pre_list.append("    {} = {}\n".format(seq_n, params[0]))
+                    pre_list += ["    {}.add({})".format(seq_n, p) for p in params[1:]]
+                else:
+                    pre_list.append("    {} = [{}]\n".format(seq_n, ",".join(params)))
+                content = seq_n
+        else:
+            param_info = self.visit(node.params[0], **kwargs)
+            pre_list += param_info.pre_list
+            content = param_info.content
+        return CodeNodeInfo(content, pre_list)
+
     def visit_power(self, node, **kwargs):
         base_info = self.visit(node.base, **kwargs)
         if node.t:
@@ -1056,10 +1134,12 @@ class CodeGenMatlab(CodeGen):
     def visit_multi_conditionals(self, node, **kwargs):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         if assign_node is not None:
-            name = self.visit(assign_node.left, **kwargs).content
+            name = self.visit(assign_node.left[0], **kwargs).content
+            func_ret = False
         else:
             func_node = node.get_ancestor(IRNodeType.LocalFunc)
             name = self.visit(func_node.name, **kwargs).content
+            func_ret = True
         type_info = node
         cur_m_id = ''
         pre_list = []
@@ -1068,7 +1148,10 @@ class CodeGenMatlab(CodeGen):
         if node.other:
             other_info = self.visit(node.other, **kwargs)
             pre_list.append('    else\n')
-            pre_list.append('        {} = {};\n'.format('ret', other_info.content))
+            if func_ret:
+                pre_list.append('        {} = {};\n'.format('ret', other_info.content))
+            else:
+                pre_list.append('        {} = {};\n'.format(name, other_info.content))
         pre_list.append('    end\n')
         return CodeNodeInfo(cur_m_id, pre_list)
 
@@ -1208,15 +1291,17 @@ class CodeGenMatlab(CodeGen):
         ret = []
         pre_list = []
         if node.enum_list and len(node.enum_list) > 0:
-            pre_list.append('    {} = []\n'.format(cur_m_id))
+            pre_list.append('    {} = [];\n'.format(cur_m_id))
             #
             range_info = self.visit(node.range, **kwargs)
+            range_name = self.generate_var_name('range')
+            pre_list.append('    {} = {};\n'.format(range_name, range_info.content))
             index_name = self.generate_var_name('index')
-            pre_list.append('    for {} = 1:size({}, 1)\n'.format(index_name, range_info.content))
+            pre_list.append('    for {} = 1:length({})\n'.format(index_name, range_name))
             extra_content = ''
             for i in range(len(node.enum_list)):
                 pre_list.append(
-                    '        {} = {}({}, {});\n'.format(node.enum_list[i], range_info.content, index_name, i + 1))
+                    '        {} = {}({});\n'.format(node.enum_list[i], range_name, index_name))
             exp_pre_list = []
             exp_info = self.visit(node.items[0], **kwargs)
             if exp_info.pre_list:  # catch pre_list
@@ -1536,6 +1621,23 @@ class CodeGenMatlab(CodeGen):
                 lhs_content = "[{}]".format(lhs_content)
             content += "    {} = {};\n".format(lhs_content, right_info.content)
         else:
+            if len(node.left) > 1 and len(node.right) == 1:
+                # only accept direct assignment, without subscript
+                rhs_node = node.right[0]
+                tuple_name = self.generate_var_name("tuple")
+                right_info = self.visit(rhs_node, **kwargs)
+                if right_info.pre_list:
+                    content += self.update_prelist_str(right_info.pre_list, "    ")
+                # content += "    {} = {};\n".format(tuple_name, right_info.content)
+                var_list = []
+                for cur_index in range(len(node.left)):
+                    left_info = self.visit(node.left[cur_index], **kwargs)
+                    var_list.append(left_info.content)
+                    # content += "    {} = {}({});\n".format(left_info.content, tuple_name, cur_index+1)
+                    self.declared_symbols.add(node.left[cur_index].get_main_id())
+                content += "    [{}] = {};\n".format(','.join(var_list), right_info.content)
+                la_remove_key(LHS, **kwargs)
+                return CodeNodeInfo(content)
             for cur_index in range(len(node.left)):
                 left_info = self.visit(node.left[cur_index], **kwargs)
                 left_id = left_info.content
@@ -1655,7 +1757,8 @@ class CodeGenMatlab(CodeGen):
                         op = ' += '
                     if not node.right[cur_index].is_node(IRNodeType.MultiConds):
                         right_exp += '    ' + self.get_main_id(left_id) + op + right_info.content
-                    content += right_exp + ';\n'
+                    if right_exp != '':
+                        content += right_exp + ';\n'
                 la_remove_key(LHS, **kwargs)
         return CodeNodeInfo(content)
 

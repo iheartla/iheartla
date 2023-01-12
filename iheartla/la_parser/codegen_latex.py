@@ -16,7 +16,7 @@ class CodeGenLatex(CodeGen):
                                  '𝐤': '\\textbf{k}', '𝐥': '\\textbf{l}', '𝐦': '\\textbf{m}', '𝐧': '\\textbf{n}', '𝐨': '\\textbf{o}',
                                  '𝐩': '\\textbf{p}', '𝐪': '\\textbf{q}', '𝐫': '\\textbf{r}', '𝐬': '\\textbf{s}', '𝐭': '\\textbf{t}',
                                  '𝐮': '\\textbf{u}', '𝐯': '\\textbf{v}', '𝐰': '\\textbf{w}', '𝐱': '\\textbf{x}', '𝐲': '\\textbf{y}',
-                                 '𝐳': '\\textbf{z}', '⩽': '\\leq', '⩾': '\\geq'}
+                                 '𝐳': '\\textbf{z}', '⩽': '\\leq', '⩾': '\\geq', 'σ':'\\sigma', 'α':'\\alpha', 'β':'\\beta'}
         self.pre_str = r'''
 \documentclass[12pt]{article}
 \usepackage{mathdots}
@@ -1025,7 +1025,7 @@ class CodeGenLatex(CodeGen):
             content = 'atan2'
             param_info += node.separator + ' ' + self.visit(node.remain_params[0], **kwargs)
         elif node.func_type == MathFuncType.MathFuncExp:
-            content = 'exp'
+            return "e^{{{}}}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncLog:
             return " \log{{ {} }}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncLog2:
@@ -1035,7 +1035,7 @@ class CodeGenLatex(CodeGen):
         elif node.func_type == MathFuncType.MathFuncLn:
             return " \ln{{ {} }}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncSqrt:
-            content = 'sqrt'
+            return " \\sqrt{{ {} }}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncTrace:
             content = node.func_name
         elif node.func_type == MathFuncType.MathFuncDiag:

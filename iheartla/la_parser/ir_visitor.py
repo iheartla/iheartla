@@ -619,6 +619,7 @@ class IRVisitor(IRBaseVisitor):
         self.builtin_module_dict = type_walker.builtin_module_dict
         self.opt_syms = type_walker.opt_syms
         self.mesh_dict = type_walker.mesh_dict
+        self.class_only = type_walker.class_only
         if func_name is not None:
             self.func_name = func_name.replace(' ','')
         else:

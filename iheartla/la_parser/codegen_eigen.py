@@ -40,7 +40,8 @@ class CodeGenEigen(CodeGen):
         check_list = []
         if len(self.get_cur_param_data().set_checking) > 0:
             for key, value in self.get_cur_param_data().set_checking.items():
-                check_list = ['    assert( {}.find({}) != {}.end() );'.format(value, key, value)]
+                # check_list = ['    assert( {}.find({}) != {}.end() );'.format(value, key, value)]
+                check_list = ['    assert( std::binary_search({}.begin(), {}.end(), {}) );'.format(value, value, key)]
         return check_list
 
     def get_set_item_str(self, set_type):
@@ -148,7 +149,7 @@ class CodeGenEigen(CodeGen):
             else:
                 type_str = "double"
         elif la_type.is_set():
-            type_str = "std::set<{} >".format(self.get_set_item_str(la_type))
+            type_str = "std::vector<{} >".format(self.get_set_item_str(la_type))
         elif la_type.is_tuple():
             type_str = self.get_tuple_str(la_type)
         elif la_type.is_function():
@@ -843,7 +844,7 @@ class CodeGenEigen(CodeGen):
                                                  range_info.content))
             else:
                 tuple_name = self.generate_var_name("tuple")
-                content.append('for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), tuple_name,
+                content.append('for(const {}& {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), tuple_name,
                                                             range_info.content))
                 extra_content = ''
                 if node.use_tuple:
@@ -872,8 +873,8 @@ class CodeGenEigen(CodeGen):
                 for et in node.extra_list:
                     extra_info = self.visit(et, **kwargs)
                     content += [self.update_prelist_str([extra_info.content], '    ')]
-            content.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::inserter({}, {}.begin()));\n".format(
-            assign_id, assign_id, exp_str, exp_str, assign_id, assign_id))
+            content.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
+            assign_id, assign_id, exp_str, exp_str, assign_id))
             content[0] = "    " + content[0]
             content.append("}\n")
             self.del_name_conventions(name_convention)
@@ -910,13 +911,13 @@ class CodeGenEigen(CodeGen):
             content += ["    " + pre for pre in cond_info.pre_list]
             content.append("    " + cond_content)
             content += ["    " + pre for pre in exp_pre_list]
-            content.append("        std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::inserter({}, {}.begin()));\n".format(
-            assign_id, assign_id, exp_str, exp_str, assign_id, assign_id))
+            content.append("        std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
+            assign_id, assign_id, exp_str, exp_str, assign_id))
             content.append("    }\n")
         else:
             content += exp_pre_list
-            content.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::inserter({}, {}.begin()));\n".format(
-            assign_id, assign_id, exp_str, exp_str, assign_id, assign_id))
+            content.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
+            assign_id, assign_id, exp_str, exp_str, assign_id))
         content[0] = "    " + content[0]
 
         content.append("}\n")
@@ -988,7 +989,7 @@ class CodeGenEigen(CodeGen):
                                                            range_info.content))
             else:
                 tuple_name = self.generate_var_name("tuple")
-                content.append('for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), tuple_name, range_info.content))
+                content.append('for(const {}& {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), tuple_name, range_info.content))
                 extra_content = ''
                 if node.use_tuple:
                     content.append('    {} {} = {};\n'.format(self.get_ctype(self.get_sym_type(node.enum_list[0])), node.enum_list[0], tuple_name))
@@ -1254,7 +1255,13 @@ class CodeGenEigen(CodeGen):
                 content = "std::tuple<{} >{{ {} }}".format(",".join(type_list), ",".join(params))
             elif node.to_type == EleConvertType.EleToSequence:
                 seq_n = self.generate_var_name("seq")
-                pre_list.append("    {} {}{{{}}};\n".format(self.get_ctype(node.la_type), seq_n, ",".join(params)))
+                if node.params[0].la_type.is_sequence():
+                    # append new
+                    pre_list.append("    {} {} = {};\n".format(self.get_ctype(node.la_type), seq_n, params[0]))
+                    pre_list.append("    {}.reserve({}.size()+{});\n".format(seq_n, seq_n, len(node.params)-1))
+                    pre_list += ["    {}.push_back({});".format(seq_n, p) for p in params[1:]]
+                else:
+                    pre_list.append("    {} {}{{{}}};\n".format(self.get_ctype(node.la_type), seq_n, ",".join(params)))
                 content = seq_n
         else:
             param_info = self.visit(node.params[0], **kwargs)
@@ -1321,9 +1328,11 @@ class CodeGenEigen(CodeGen):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         if assign_node is not None:
             name = self.visit(assign_node.left[0], **kwargs).content
+            func_ret = False
         else:
             func_node = node.get_ancestor(IRNodeType.LocalFunc)
             name = self.visit(func_node.name, **kwargs).content
+            func_ret = True
         type_info = node
         cur_m_id = ''
         pre_list = []
@@ -1333,7 +1342,10 @@ class CodeGenEigen(CodeGen):
             other_info = self.visit(node.other, **kwargs)
             pre_list.append('    else{\n')
             pre_list += ["    " + pre for pre in other_info.pre_list]
-            pre_list.append('        {}_ret = {};\n'.format(name, other_info.content))
+            if func_ret:
+                pre_list.append('        {}_ret = {};\n'.format(name, other_info.content))
+            else:
+                pre_list.append('        {} = {};\n'.format(name, other_info.content))
             pre_list.append('    }\n')
         return CodeNodeInfo(cur_m_id, pre_list)
 
@@ -1469,14 +1481,17 @@ class CodeGenEigen(CodeGen):
             pre_list.append('    {} {};\n'.format(self.get_ctype(node.la_type), cur_m_id))
             #
             range_info = self.visit(node.range, **kwargs)
+            range_name = self.generate_var_name('range')
+            pre_list.append('    const {}& {} = {};\n'.format(self.get_ctype(node.range.la_type), range_name, range_info.content))
+            pre_list.append('    {}.reserve({}.size());\n'.format(cur_m_id, range_name))
             if len(node.enum_list) == 1:
                 pre_list.append(
                     '    for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), node.enum_list[0],
-                                                 range_info.content))
+                                                 range_name))
             else:
                 tuple_name = self.generate_var_name("tuple")
-                pre_list.append('    for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), tuple_name,
-                                                            range_info.content))
+                pre_list.append('    for(const {}& {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), tuple_name,
+                                                            range_name))
                 extra_content = ''
                 if node.use_tuple:
                     pre_list.append('        {} {} = {};\n'.format(self.get_ctype(self.get_sym_type(node.enum_list[0])),
@@ -1505,10 +1520,10 @@ class CodeGenEigen(CodeGen):
                         exp_pre_list.append(list_content[index] + '\n')
             pre_list += exp_pre_list
             if node.cond:
-                pre_list.append("            {}.insert({});\n".format(cur_m_id, exp_info.content))
+                pre_list.append("            {}.push_back({});\n".format(cur_m_id, exp_info.content))
                 pre_list.append("        }\n")
             else:
-                pre_list.append("        {}.insert({});\n".format(cur_m_id, exp_info.content))
+                pre_list.append("        {}.push_back({});\n".format(cur_m_id, exp_info.content))
             pre_list.append("    }\n")
         else:
             # {a, b, c}
@@ -1518,6 +1533,10 @@ class CodeGenEigen(CodeGen):
                 pre_list += item_info.pre_list
             content = '    {} {}({{{}}});\n'.format(self.get_ctype(node.la_type), cur_m_id, ", ".join(ret))
             pre_list.append(content)
+        pre_list.append("    if({}.size() > 1){{\n".format(cur_m_id))
+        pre_list.append("        sort({}.begin(), {}.end());\n".format(cur_m_id, cur_m_id))
+        pre_list.append("        {}.erase(unique({}.begin(), {}.end() ), {}.end());\n".format(cur_m_id, cur_m_id, cur_m_id, cur_m_id))
+        pre_list.append("    }\n")
         self.pop_scope()
         return CodeNodeInfo(cur_m_id, pre_list=pre_list)
 
@@ -1813,12 +1832,14 @@ class CodeGenEigen(CodeGen):
         lhs_name = self.generate_var_name('lhs')
         rhs_name = self.generate_var_name('rhs')
         left_info.pre_list.append(
-            "    {} {} = {};\n".format(self.get_ctype(node.left.la_type), lhs_name, left_info.content))
+            "    const {}& {} = {};\n".format(self.get_ctype(node.left.la_type), lhs_name, left_info.content))
         left_info.pre_list.append(
-            "    {} {} = {};\n".format(self.get_ctype(node.left.la_type), rhs_name, right_info.content))
+            "    const {}& {} = {};\n".format(self.get_ctype(node.left.la_type), rhs_name, right_info.content))
         left_info.pre_list.append(
-            "    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::inserter({}, {}.begin()));\n".format(
-                lhs_name, lhs_name, rhs_name, rhs_name, name, name))
+            "    {}.reserve({}.size()+{}.size());\n".format(name, lhs_name, rhs_name))
+        left_info.pre_list.append(
+            "    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
+                lhs_name, lhs_name, rhs_name, rhs_name, name))
         left_info.content = name
         return left_info
 
@@ -1831,12 +1852,14 @@ class CodeGenEigen(CodeGen):
         lhs_name = self.generate_var_name('lhs')
         rhs_name = self.generate_var_name('rhs')
         left_info.pre_list.append(
-            "    {} {} = {};\n".format(self.get_ctype(node.left.la_type), lhs_name, left_info.content))
+            "    const {}& {} = {};\n".format(self.get_ctype(node.left.la_type), lhs_name, left_info.content))
         left_info.pre_list.append(
-            "    {} {} = {};\n".format(self.get_ctype(node.left.la_type), rhs_name, right_info.content))
+            "    const {}& {} = {};\n".format(self.get_ctype(node.left.la_type), rhs_name, right_info.content))
         left_info.pre_list.append(
-            "    std::set_intersection({}.begin(), {}.end(), {}.begin(), {}.end(), std::inserter({}, {}.begin()));\n".format(
-                lhs_name, lhs_name, rhs_name, rhs_name, name, name))
+            "    {}.reserve(std::min({}.size(), {}.size()));\n".format(name, lhs_name, rhs_name))
+        left_info.pre_list.append(
+            "    std::set_intersection({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
+                lhs_name, lhs_name, rhs_name, rhs_name, name))
         left_info.content = name
         return left_info
 
@@ -1849,10 +1872,12 @@ class CodeGenEigen(CodeGen):
         left_info.pre_list.append("    {} {};\n".format(self.get_ctype(node.left.la_type), name))
         lhs_name = self.generate_var_name('lhs_diff')
         rhs_name = self.generate_var_name('rhs_diff')
-        left_info.pre_list.append("    {} {} = {};\n".format(self.get_ctype(node.left.la_type), lhs_name, left_info.content))
-        left_info.pre_list.append("    {} {} = {};\n".format(self.get_ctype(node.left.la_type), rhs_name, right_info.content))
-        left_info.pre_list.append("    std::set_difference({}.begin(), {}.end(), {}.begin(), {}.end(), std::inserter({}, {}.begin()));\n".format(
-            lhs_name, lhs_name, rhs_name, rhs_name, name, name))
+        left_info.pre_list.append("    const {}& {} = {};\n".format(self.get_ctype(node.left.la_type), lhs_name, left_info.content))
+        left_info.pre_list.append("    const {}& {} = {};\n".format(self.get_ctype(node.left.la_type), rhs_name, right_info.content))
+        left_info.pre_list.append(
+            "    {}.reserve({}.size());\n".format(name, lhs_name))
+        left_info.pre_list.append("    std::set_difference({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
+            lhs_name, lhs_name, rhs_name, rhs_name, name))
         left_info.content = name
         return left_info
 
@@ -2041,6 +2066,8 @@ class CodeGenEigen(CodeGen):
                     if type(node.right[cur_index]).__name__ == 'SparseMatrix':
                         content = right_info.content
                     elif node.right[cur_index].is_node(IRNodeType.MultiConds):
+                        if not self.is_main_scope():
+                            content = "    {} {};\n".format(self.get_ctype(self.get_sym_type(node.left[cur_index].get_main_id())), node.left[cur_index].get_main_id()) + content
                         pass
                     else:
                         op = ' = '
@@ -2109,10 +2136,10 @@ class CodeGenEigen(CodeGen):
                     extra_list.append(extra_content)
             if node.set.node_type != IRNodeType.Id:
                 set_name = self.generate_var_name('set')
-                pre_list.append('{} {} = {};\n'.format(self.get_ctype(node.set.la_type), set_name, right_info.content))
-                content = 'for({} tuple : {}){{\n'.format(self.get_set_item_str(node.set.la_type), set_name)
+                pre_list.append('const {}& {} = {};\n'.format(self.get_ctype(node.set.la_type), set_name, right_info.content))
+                content = 'for(const {}& tuple : {}){{\n'.format(self.get_set_item_str(node.set.la_type), set_name)
             else:
-                content = 'for({} tuple : {}){{\n'.format(self.get_set_item_str(node.set.la_type), right_info.content)
+                content = 'for(const {}& tuple : {}){{\n'.format(self.get_set_item_str(node.set.la_type), right_info.content)
             content += '    int {} = std::get<0>(tuple){};\n'.format(item_list[0], extra_list[0])
             content += '    int {} = std::get<1>(tuple){};\n'.format(item_list[1], extra_list[1])
         else:
@@ -2135,13 +2162,18 @@ class CodeGenEigen(CodeGen):
                     pre_list += item_info.pre_list
             if node.set.node_type != IRNodeType.Id:
                 set_name = self.generate_var_name('set')
-                pre_list.append('{} {} = {};\n'.format(self.get_ctype(node.set.la_type), set_name, right_info.content))
-                content = '{}.find({}({})) != {}.end()'.format(set_name, self.get_set_item_str(node.set.la_type),
-                                                               ', '.join(item_list), set_name)
+                pre_list.append('const {}& {} = {};\n'.format(self.get_ctype(node.set.la_type), set_name, right_info.content))
+                # content = '{}.find({}({})) != {}.end()'.format(set_name, self.get_set_item_str(node.set.la_type),
+                #                                                ', '.join(item_list), set_name)
+                content = 'std::binary_search({}.begin(), {}.end(), {}({}))'.format(set_name, set_name, self.get_set_item_str(node.set.la_type),
+                                                               ', '.join(item_list))
+
             else:
-                content = '{}.find({}({})) != {}.end()'.format(right_info.content,
-                                                               self.get_set_item_str(node.set.la_type),
-                                                               ', '.join(item_list), right_info.content)
+                # content = '{}.find({}({})) != {}.end()'.format(right_info.content,
+                #                                                self.get_set_item_str(node.set.la_type),
+                #                                                ', '.join(item_list), right_info.content)
+                content = 'std::binary_search({}.begin(), {}.end(), {}({}))'.format(right_info.content, right_info.content, self.get_set_item_str(node.set.la_type),
+                                                               ', '.join(item_list))
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_not_in(self, node, **kwargs):
@@ -2163,9 +2195,12 @@ class CodeGenEigen(CodeGen):
                 else:
                     item_content = "{}+1".format(item_info.content)
                 item_list.append(item_content)
-        content = '{}.find({}({})) == {}.end()'.format(right_info.content,
+        # content = '{}.find({}({})) == {}.end()'.format(right_info.content,
+        #                                                self.get_set_item_str(self.get_sym_type(right_info.content)),
+        #                                                ', '.join(item_list), right_info.content)
+        content = 'std::binary_search({}.begin(), {}.end(), {}({}))'.format(right_info.content, right_info.content,
                                                        self.get_set_item_str(self.get_sym_type(right_info.content)),
-                                                       ', '.join(item_list), right_info.content)
+                                                       ', '.join(item_list))
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
     def visit_bin_comp(self, node, **kwargs):
@@ -2506,9 +2541,9 @@ class CodeGenEigen(CodeGen):
                 content = '{}'.format(vec_name)
                 if node.param.la_type.is_set():
                     std_vec = self.generate_var_name("stdv")
-                    op_n = self.generate_var_name("op")
-                    pre_list.append('    {} {} = {};\n'.format(self.get_ctype(node.param.la_type), op_n, params_content))
-                    pre_list.append('    std::vector<{}> {}({}.begin(), {}.end());\n'.format(self.get_ctype(node.param.la_type.element_type), std_vec, op_n, op_n))
+                    # op_n = self.generate_var_name("op")
+                    pre_list.append('    {}& {} = {};\n'.format(self.get_ctype(node.param.la_type), std_vec, params_content))
+                    # pre_list.append('    std::vector<{}> {}({}.begin(), {}.end());\n'.format(self.get_ctype(node.param.la_type.element_type), std_vec, op_n, op_n))
                     pre_list.append(
                         '    {} {}(Eigen::Map<{}>(&{}[0], {}.size()));\n'.format(c_type, vec_name, c_type, std_vec, std_vec))
                 else:

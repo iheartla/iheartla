@@ -77,7 +77,7 @@ def walk_model(parser_type, type_walker, node_info, func_name=None, struct=False
     gen = get_codegen(parser_type)
     #
     gen.init_type(type_walker, func_name)
-    gen.class_only = class_only
+    # gen.class_only = class_only
     code_frame = gen.visit_code(node_info)
     if parser_type != ParserTypeEnum.LATEX:  # print once
         gen.print_symbols()
@@ -228,7 +228,7 @@ def get_start_node(model):
     return type_walker, start_node
 
 
-def get_new_parser(start_node, current_content, type_walker, skipped_module=False, parser_type=ParserTypeEnum.EIGEN):
+def get_new_parser(start_node, current_content, type_walker, skipped_module=False, parser_type=ParserTypeEnum.EIGEN, class_only=False):
     """
     Get the new parser based on information from start_node
     :param start_node:
@@ -320,7 +320,7 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
                 # Init parser
                 parser = get_default_parser()
                 new_model = parser.parse(module_content, parseinfo=True)
-                tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model, parser_type)
+                tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model, parser_type, class_only=class_only)
                 pre_frame = walk_model_frame(parser_type, tmp_type_walker, tmp_start_node, module.module.get_name())
                 name_list = []
                 r_name_list = []
@@ -417,7 +417,7 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
     return parser, existed_syms_dict, module_list, dependent_modules, module_param_list, module_sym_list
 
 
-def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=None, type_walker=None):
+def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=None, type_walker=None, class_only=False):
     record("parse_ir_node")
     global _grammar_content
     current_content = _grammar_content
@@ -425,15 +425,17 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
         record("parse_ir_node, start_node")
         # type walker
         type_walker = get_type_walker()
+        type_walker.class_only = class_only
         start_node = type_walker.walk(model, pre_walk=True)
     # get new parser
-    parser, existed_syms_dict, module_list, dependent_modules, module_param_list, module_sym_list = get_new_parser(start_node, current_content, type_walker, False, parser_type)
+    parser, existed_syms_dict, module_list, dependent_modules, module_param_list, module_sym_list = get_new_parser(start_node, current_content, type_walker, False, parser_type, class_only=class_only)
     record("Second Parsing, before")
     model = parser.parse(content, parseinfo=True)
     record("Second type walker, before")
     # second parsing
     type_walker.reset_state(content)  # reset
     type_walker.symtable.update(existed_syms_dict)
+    type_walker.class_only = class_only
     # add signatures before parsing
     if len(dependent_modules) > 0:
         # check parameters type for imported custom modules
@@ -470,6 +472,7 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
                 assert par.get_name() in type_walker.symtable, get_err_msg_info(par.parse_info, "Symbol {} is not defined".format(par.get_name()))
                 assert type_walker.symtable[par.get_name()].is_same_type(cur_symtable[params[param_index]]), \
                     get_err_msg_info(par.parse_info, "Parameter {} does not match the type".format(par.get_name()))
+    type_walker.class_only = class_only
     return type_walker, start_node
 
 
@@ -484,7 +487,7 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
         #
         model = parser.parse(content, parseinfo=True)
         # type walker
-        type_walker, start_node = parse_ir_node(content, model, parser_type)
+        type_walker, start_node = parse_ir_node(content, model, parser_type, class_only=True)
         # parsing Latex at the same time
         latex_thread = threading.Thread(target=generate_latex_code, args=(type_walker, start_node, frame,))
         latex_thread.start()
@@ -492,7 +495,7 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
         if parser_type is None:
             parser_type = ParserTypeEnum.NUMPY
         if ConfMgr.getInstance().has_de:
-            code_frame = walk_model(parser_type, type_walker, start_node, func_name, struct=True)
+            code_frame = walk_model(parser_type, type_walker, start_node, func_name, struct=True, class_only=True)
             if parser_type == ParserTypeEnum.EIGEN:
                 code_frame.include += "#include <igl/readOFF.h>\n"
             res = code_frame.desc + code_frame.include + code_frame.struct
