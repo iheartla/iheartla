@@ -873,6 +873,8 @@ class CodeGenEigen(CodeGen):
                 for et in node.extra_list:
                     extra_info = self.visit(et, **kwargs)
                     content += [self.update_prelist_str([extra_info.content], '    ')]
+            content.append(
+                "    {}.reserve({}.size()+{}.size());\n".format(assign_id, assign_id, exp_str))
             content.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
             assign_id, assign_id, exp_str, exp_str, assign_id))
             content.append("    sort({}.begin(), {}.end());\n".format(assign_id, assign_id))
@@ -912,12 +914,16 @@ class CodeGenEigen(CodeGen):
             content += ["    " + pre for pre in cond_info.pre_list]
             content.append("    " + cond_content)
             content += ["    " + pre for pre in exp_pre_list]
+            content.append(
+                "    {}.reserve({}.size()+{}.size());\n".format(assign_id, assign_id, exp_str))
             content.append("        std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
             assign_id, assign_id, exp_str, exp_str, assign_id))
-            content.append("    sort({}.begin(), {}.end());\n".format(assign_id, assign_id))
+            content.append("        sort({}.begin(), {}.end());\n".format(assign_id, assign_id))
             content.append("    }\n")
         else:
             content += exp_pre_list
+            content.append(
+                "    {}.reserve({}.size()+{}.size());\n".format(assign_id, assign_id, exp_str))
             content.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
             assign_id, assign_id, exp_str, exp_str, assign_id))
             content.append("    sort({}.begin(), {}.end());\n".format(assign_id, assign_id))
