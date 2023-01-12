@@ -1,4 +1,4 @@
-MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, ValueSet, IndicatorVector  from MeshConnectivity
+MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, IndicatorVector  from MeshConnectivity
 
 M ∈ mesh 
 
