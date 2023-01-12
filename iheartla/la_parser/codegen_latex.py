@@ -16,13 +16,14 @@ class CodeGenLatex(CodeGen):
                                  '𝐤': '\\textbf{k}', '𝐥': '\\textbf{l}', '𝐦': '\\textbf{m}', '𝐧': '\\textbf{n}', '𝐨': '\\textbf{o}',
                                  '𝐩': '\\textbf{p}', '𝐪': '\\textbf{q}', '𝐫': '\\textbf{r}', '𝐬': '\\textbf{s}', '𝐭': '\\textbf{t}',
                                  '𝐮': '\\textbf{u}', '𝐯': '\\textbf{v}', '𝐰': '\\textbf{w}', '𝐱': '\\textbf{x}', '𝐲': '\\textbf{y}',
-                                 '𝐳': '\\textbf{z}', '⩽': '\\leq', '⩾': '\\geq', 'σ':'\\sigma', 'α':'\\alpha', 'β':'\\beta'}
+                                 '𝐳': '\\textbf{z}', '⩽': '\\leq', '⩾': '\\geq'}
         self.pre_str = r'''
 \documentclass[12pt]{article}
 \usepackage{mathdots}
 \usepackage[bb=boondox]{mathalfa}
 \usepackage{mathtools}
 \usepackage{amssymb}
+\usepackage{unicode-math}
 '''[1:]
         self.pre_str += r'''
 \usepackage{libertine}
