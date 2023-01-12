@@ -241,7 +241,7 @@ class CodeGenLatex(CodeGen):
         id_list = [self.visit(id0, **kwargs) for id0 in node.id]
         type_content = self.visit(node.type, **kwargs)
         if self.local_func_parsing:
-            content = "{} \\in {}".format(','.join(id_list), type_content)
+            content = "{} & \\in {}".format(','.join(id_list), type_content)
         else:
             content = "{} & \\in {}".format(','.join(id_list), type_content)
         if node.attrib:
@@ -550,17 +550,19 @@ class CodeGenLatex(CodeGen):
         content = f_name + def_params + " & = " + ', '.join(expr_list)
         self.code_frame.expr += content + '\n'
         self.code_frame.expr_dict[node.raw_text] = content
+        content += "\\\\ & \\begin{aligned}[t]"
         if len(node.defs) > 0:
             par_list = []
             for par in node.defs:
                 par_list.append(self.visit(par, **kwargs))
             # content += "\\intertext{{{}}} ".format('where') + ', '.join(par_list)
-            content += ' \\text{{ where }}  ' + ', '.join(par_list)
+            content += ' \\text{ where }& \\\\ ' + '\\\\ '.join(par_list)
         if len(node.tex_list) > 0:
             extra_list = []
             for et in node.tex_list:
                 extra_list.append(self.visit(et, **kwargs))
-            content += ', \\\\' + ', \\\\'.join(extra_list)
+            content += '\\\\' + '\\\\'.join(extra_list)
+        content += "\\end{aligned} "
         self.local_func_parsing = False
         self.pop_scope()
         return content
