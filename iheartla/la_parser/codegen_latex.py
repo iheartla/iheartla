@@ -353,7 +353,11 @@ class CodeGenLatex(CodeGen):
         else:
             rhs_list = []
             for cur_index in range(len(node.right)):
-                rhs_list.append(self.visit(node.right[cur_index], **kwargs))
+                if node.right[cur_index].value.is_node(IRNodeType.Factor) and node.right[cur_index].value.sub:  # sub expression
+                    # skip parenthesis in sub expression
+                    rhs_list.append(self.visit(node.right[cur_index].value.sub.value, **kwargs))
+                else:
+                    rhs_list.append(self.visit(node.right[cur_index], **kwargs))
             # if self.is_main_scope() and not self.local_func_parsing:
             #     content = ','.join(lhs_list) + " & = " + ','.join(rhs_list)
             # else:
