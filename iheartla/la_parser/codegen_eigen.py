@@ -1526,7 +1526,7 @@ class CodeGenEigen(CodeGen):
                 cond_content = "        if(" + cond_info.content + "){\n"
                 pre_list.append(cond_content)
             if exp_info.pre_list:  # catch pre_list
-                list_content = "".join(exp_info.pre_list)
+                list_content = "    " + "    ".join(exp_info.pre_list)
                 # content += exp_info.pre_list
                 list_content = list_content.split('\n')
                 for index in range(len(list_content)):
@@ -2558,7 +2558,7 @@ class CodeGenEigen(CodeGen):
                 if node.param.la_type.is_set():
                     std_vec = self.generate_var_name("stdv")
                     # op_n = self.generate_var_name("op")
-                    pre_list.append('    {}& {} = {};\n'.format(self.get_ctype(node.param.la_type), std_vec, params_content))
+                    pre_list.append('    {} {} = {};\n'.format(self.get_ctype(node.param.la_type), std_vec, params_content))
                     # pre_list.append('    std::vector<{}> {}({}.begin(), {}.end());\n'.format(self.get_ctype(node.param.la_type.element_type), std_vec, op_n, op_n))
                     pre_list.append(
                         '    {} {}(Eigen::Map<{}>(&{}[0], {}.size()));\n'.format(c_type, vec_name, c_type, std_vec, std_vec))
