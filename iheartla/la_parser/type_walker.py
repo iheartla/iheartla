@@ -3070,7 +3070,13 @@ class TypeWalker(NodeWalker):
         set_info = self.walk(node.right, **kwargs)
         ir_node.set = set_info.ir
         self.assert_expr(set_info.la_type.is_set(), get_err_msg_info(set_info.ir.parse_info, "Must be set type"))
-        self.assert_expr(len(item_node) == len(set_info.la_type.type_list), get_err_msg_info(node.parseinfo, "Size doesn't match for set: {} vs {}".format(len(item_node), len(set_info.la_type.type_list))))
+        if set_info.la_type.element_type.is_tuple():
+            self.assert_expr(len(item_node) == len(set_info.la_type.element_type.type_list), get_err_msg_info(node.parseinfo,
+                                                                                                 "Size doesn't match for set: {} vs {}".format(
+                                                                                                     len(item_node),
+                                                                                                     len(set_info.la_type.type_list))))
+        else:
+            self.assert_expr(len(item_node) == len(set_info.la_type.type_list), get_err_msg_info(node.parseinfo, "Size doesn't match for set: {} vs {}".format(len(item_node), len(set_info.la_type.type_list))))
         return NodeInfo(ir=ir_node)
 
     def walk_NotInCondition(self, node, **kwargs):
@@ -3084,7 +3090,17 @@ class TypeWalker(NodeWalker):
         set_info = self.walk(node.right, **kwargs)
         ir_node.set = set_info.ir
         self.assert_expr(set_info.la_type.is_set(), get_err_msg_info(set_info.ir.parse_info, "Must be set type"))
-        self.assert_expr(len(item_node) == set_info.la_type.size, get_err_msg_info(node.parseinfo, "Size doesn't match for set"))
+        if set_info.la_type.element_type.is_tuple():
+            self.assert_expr(len(item_node) == len(set_info.la_type.element_type.type_list),
+                             get_err_msg_info(node.parseinfo,
+                                              "Size doesn't match for set: {} vs {}".format(
+                                                  len(item_node),
+                                                  len(set_info.la_type.type_list))))
+        else:
+            self.assert_expr(len(item_node) == len(set_info.la_type.type_list), get_err_msg_info(node.parseinfo,
+                                                                                                 "Size doesn't match for set: {} vs {}".format(
+                                                                                                     len(item_node),
+                                                                                                     len(set_info.la_type.type_list))))
         return NodeInfo(VarTypeEnum.SCALAR, ir=ir_node)
 
     def walk_NeCondition(self, node, **kwargs):
