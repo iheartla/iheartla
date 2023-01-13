@@ -756,7 +756,7 @@ class IRVisitor(IRBaseVisitor):
         for k in list(self.special_symbol_dict.keys()):
             if k in target:
                 return True
-        return True
+        return False
     def trim_content(self, content):
         # convert special string in identifiers
         res = content
