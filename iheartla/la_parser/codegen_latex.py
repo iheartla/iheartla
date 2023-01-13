@@ -457,10 +457,13 @@ class CodeGenLatex(CodeGen):
                 content = "\\sum_{" + sub + "} "
         content += self.visit(node.exp, **kwargs)
         if len(node.tex_list) > 0:
+            # content += "\\\\ & \\begin{aligned}[t]"
             extra_list = []
             for et in node.tex_list:
                 extra_list.append(self.visit(et, **kwargs))
             content += ' \\qquad \\text{{ where }}  ' + ', '.join(extra_list)
+            # content += ' \\text{ where }& \\\\ ' + '\\\\ '.join(extra_list)
+            # content += "\\end{aligned} "
         self.pop_scope()
         self.visiting_sum = False
         return content
@@ -696,6 +699,12 @@ class CodeGenLatex(CodeGen):
         return "{}_{{{}, {}}}".format(main_info, row_info, col_info)
 
     def visit_vector_index(self, node, **kwargs):
+        main_info = self.visit(node.main, **kwargs)
+        kwargs['is_sub'] = True
+        index_info = self.visit(node.row_index, **kwargs)
+        return "{}_{{ {} }}".format(main_info, index_info)
+
+    def visit_set_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
         kwargs['is_sub'] = True
         index_info = self.visit(node.row_index, **kwargs)

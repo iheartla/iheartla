@@ -3070,7 +3070,7 @@ class TypeWalker(NodeWalker):
         set_info = self.walk(node.right, **kwargs)
         ir_node.set = set_info.ir
         self.assert_expr(set_info.la_type.is_set(), get_err_msg_info(set_info.ir.parse_info, "Must be set type"))
-        self.assert_expr(len(item_node) == set_info.la_type.size, get_err_msg_info(node.parseinfo, "Size doesn't match for set"))
+        self.assert_expr(len(item_node) == len(set_info.la_type.type_list), get_err_msg_info(node.parseinfo, "Size doesn't match for set: {} vs {}".format(len(item_node), len(set_info.la_type.type_list))))
         return NodeInfo(ir=ir_node)
 
     def walk_NotInCondition(self, node, **kwargs):
@@ -3332,6 +3332,22 @@ class TypeWalker(NodeWalker):
                     self.assert_expr(index_info.la_type.is_scalar(), get_err_msg_info(index_info.ir.parse_info,
                                                                                         "Subscript must be scalar"))
                     ir_node = VectorIndexNode(parse_info=node.parseinfo, raw_text=node.text)
+                    ir_node.main = left_info.ir
+                    ir_node.row_index = index_info.ir
+                    ir_node.la_type = self.get_sym_type(left_info.content).element_type
+                    ir_node.process_subs_dict(self.lhs_sub_dict)
+                    node_info = NodeInfo(self.get_sym_type(left_info.content).element_type, content_symbol, {node.text}, ir_node)
+                    return node_info
+                elif self.get_sym_type(left_info.content).is_set():
+                    self.assert_expr(len(node.right) == 1, get_err_msg_info(left_info.ir.parse_info,
+                                                                                        "Only one subscript is allowed"))
+                    self.assert_expr(node.right[0] != '*', get_err_msg(get_line_info(node.parseinfo),
+                                                                  get_line_info(node.parseinfo).text.find('*'),
+                                                                  "Subscript can't be *"))
+                    index_info = self.walk(node.right[0])
+                    self.assert_expr(index_info.la_type.is_scalar(), get_err_msg_info(index_info.ir.parse_info,
+                                                                                        "Subscript must be scalar"))
+                    ir_node = SetIndexNode(parse_info=node.parseinfo, raw_text=node.text)
                     ir_node.main = left_info.ir
                     ir_node.row_index = index_info.ir
                     ir_node.la_type = self.get_sym_type(left_info.content).element_type

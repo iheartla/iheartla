@@ -1759,6 +1759,14 @@ class CodeGenEigen(CodeGen):
         else:
             return CodeNodeInfo("{}[{}-1]".format(main_info.content, index_info.content))
 
+    def visit_set_index(self, node, **kwargs):
+        main_info = self.visit(node.main, **kwargs)
+        index_info = self.visit(node.row_index, **kwargs)
+        if node.row_index.la_type.index_type:
+            return CodeNodeInfo("{}[{}]".format(main_info.content, index_info.content))
+        else:
+            return CodeNodeInfo("{}[{}-1]".format(main_info.content, index_info.content))
+
     def visit_tuple_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
         index_info = self.visit(node.row_index, **kwargs)
