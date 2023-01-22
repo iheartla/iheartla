@@ -13,7 +13,8 @@ from .set_ebnf import SET_OPERATORS
 GRAMMAR = r"""
 @@grammar::LA
 """
-SIMPLIFIED = GRAMMAR + START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + GEOMETRY + SHARED + ARITHMETIC + TYPES + SET_OPERATORS
+SIMPLIFIED_LIST = [GRAMMAR, START, KEYWORDS, NUMBER, OPERATORS, MATRIX, BASE, TRIGONOMETRY, SHARED, ARITHMETIC, TYPES, SET_OPERATORS]
+SIMPLIFIED = "\n\n".join(SIMPLIFIED_LIST) + "\n\n"
 #include :: "keywords.ebnf"
 #include :: "number.ebnf"
 #include :: "operators.ebnf"
@@ -23,7 +24,10 @@ SIMPLIFIED = GRAMMAR + START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + T
 #include :: "shared.ebnf"
 
 SIMPLIFIED += r"""
-func_id=identifier_alone {'_' identifier_alone | unicode_subscript};
+func_id
+    =
+    identifier_alone {'_' identifier_alone | unicode_subscript}
+    ;
 
 identifier_alone::IdentifierAlone
     = !KEYWORDS(  value:(/[∂A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*/) | '`' id:/[^`]*/ '`')
@@ -31,14 +35,16 @@ identifier_alone::IdentifierAlone
     ;
 
 identifier
-    = identifier_with_multi_subscript
+    = 
+    identifier_with_multi_subscript
     | identifier_with_subscript
     | identifier_alone
     ;
     
 # handle _ in identifier
 identifier_with_multi_subscript::IdentifierSubscript
-    = left:identifier_alone {'_' right+:(identifier_alone | BUILTIN_KEYWORDS) }+ ({
+    = 
+    left:identifier_alone {'_' right+:(identifier_alone | BUILTIN_KEYWORDS) }+ ({
     (',' right+:'*')
     | ({','} right+:(integer | identifier_alone)) }
     |
@@ -48,13 +54,15 @@ identifier_with_multi_subscript::IdentifierSubscript
     ); 
     
 function_operator::Function
-    = name:func_id '_' subs+:(integer|identifier_alone) {{','} subs+:(integer|identifier_alone)} {p:'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'}
+    = 
+    name:func_id '_' subs+:(integer|identifier_alone) {{','} subs+:(integer|identifier_alone)} {p:'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'}
     | name:func_id p:'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
     | name:func_id  subs+:(sub_integer|unicode_subscript) {{','} subs+:(sub_integer|unicode_subscript)} {p:'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'}
     ;
     
 local_func::LocalFunc
-    = (
+    = 
+    (
     name:identifier {def_p:/\(/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'} 
     | name:identifier {def_s:/\[/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']'}
     ) 

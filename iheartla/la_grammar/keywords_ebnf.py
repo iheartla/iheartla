@@ -137,7 +137,8 @@ BUILTIN_KEYWORDS
     ;
     
 NOT_PREFIX_KEYWORD
-    = POUND
+    = 
+    POUND
     | DELTA
     | NABLA
     | IN
@@ -145,6 +146,7 @@ NOT_PREFIX_KEYWORD
     ;
     
 PREFIX_KEYWORD 
-    = !NOT_PREFIX_KEYWORD( KEYWORDS )
+    = 
+    !NOT_PREFIX_KEYWORD( KEYWORDS )
     ;
 """

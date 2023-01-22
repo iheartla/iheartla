@@ -56,38 +56,49 @@ division::Divide
     ;
 
 derivative::Derivative
-    = DERIVATIVE [uorder:sup_integer | '^' uorder:(identifier|number)] upper:factor f:'/' DERIVATIVE lower:identifier [lorder:sup_integer | '^' lorder:(identifier|number)]
+    = 
+    DERIVATIVE [uorder:sup_integer | '^' uorder:(identifier|number)] upper:factor f:'/' DERIVATIVE lower:identifier [lorder:sup_integer | '^' lorder:(identifier|number)]
     | DERIVATIVE [uorder:sup_integer | '^' uorder:(identifier|number)] s:'/' DERIVATIVE lower:identifier [lorder:sup_integer | '^' lorder:(identifier|number)] {hspace}+ upper:factor 
     ;
     
 partial::Partial
-    = PARTIAL [uorder:sup_integer | '^' uorder:(identifier|number)] upper:factor f:'/' l:{PARTIAL lower+:identifier [lorder+:sup_integer | '^' lorder+:(identifier|number)]}+
+    = 
+    PARTIAL [uorder:sup_integer | '^' uorder:(identifier|number)] upper:factor f:'/' l:{PARTIAL lower+:identifier [lorder+:sup_integer | '^' lorder+:(identifier|number)]}+
     | PARTIAL [uorder:sup_integer | '^' uorder:(identifier|number)] s:'/' l:{PARTIAL lower+:identifier [lorder+:sup_integer | '^' lorder+:(identifier|number)]}+ {hspace}+ upper:factor 
     ;
 
 divergence::Divergence
-    = name:NABLA {hspace} '⋅' {hspace} value:factor;
+    = 
+    name:NABLA {hspace} '⋅' {hspace} value:factor
+    ;
 
 gradient::Gradient
-    = name:NABLA {hspace} value:factor;
+    = 
+    name:NABLA {hspace} value:factor
+    ;
     
 laplacian::Laplace
-    = name:DELTA {hspace} value:factor;
+    = 
+    name:DELTA {hspace} value:factor
+    ;
 
 power_operator::Power
-    = base:factor t:'^T'
+    = 
+    base:factor t:'^T'
     | base:factor r:('^(-1)' | '⁻¹')
     | base:factor '^' power:factor
     | base:factor power:(sup_integer|unicode_superscript)
     ;
 
 solver_operator::Solver
-    = left:factor {hspace} '\' {hspace} right:factor
+    = 
+    left:factor {hspace} '\' {hspace} right:factor
     | left:factor {hspace} p:('^(-1)' | '⁻¹') {hspace} right:factor
     ;
 
 sum_operator::Summation
-    = ((SUM | u:'∪') '_' sub:identifier_alone {hspace}+ exp:term
+    = 
+    ((SUM | u:'∪') '_' sub:identifier_alone {hspace}+ exp:term
     | (SUM | u:'∪') '_' sub:identifier_alone &'(' {hspace} exp:term
     | (SUM | u:'∪') '_(' {hspace} id:identifier_alone {hspace} 'for' {hspace} cond:if_condition {hspace} ')' {hspace}+ exp:term
     | (SUM | u:'∪') '_(' {hspace} id:identifier_alone {hspace} '=' {hspace} lower:expression {hspace}')^' upper:(identifier_alone|integer) {hspace}+ exp:term
@@ -105,20 +116,24 @@ optimize_operator::Optimize
     ;
 
 multi_cond::MultiCond
-    = {hspace} m_cond:multi_cond separator_with_space cond:atom_condition {hspace}
+    = 
+    {hspace} m_cond:multi_cond separator_with_space cond:atom_condition {hspace}
     | {hspace} cond:atom_condition {hspace}
     ;
 
 integral_operator::Integral
-    = (INT|'∫') '_' (d:domain | (lower:sub_factor {hspace} '^' {hspace} upper:sub_factor )) {hspace} exp:expression {hspace} DERIVATIVE id:identifier_alone
+    = 
+    (INT|'∫') '_' (d:domain | (lower:sub_factor {hspace} '^' {hspace} upper:sub_factor )) {hspace} exp:expression {hspace} DERIVATIVE id:identifier_alone
     ;
 
 domain::Domain
-    = '[' {hspace} lower:expression {hspace} ',' {hspace} upper:expression ']'
+    = 
+    '[' {hspace} lower:expression {hspace} ',' {hspace} upper:expression ']'
     ;
 
 norm_operator::Norm
-    = (double:'||' {hspace} value:expression {hspace} '||'
+    = 
+    (double:'||' {hspace} value:expression {hspace} '||'
     | double:'‖' {hspace} value:expression {hspace} '‖'
     | single:'|' {hspace} value:expression {hspace} '|')
     [
@@ -129,37 +144,46 @@ norm_operator::Norm
     ;
 
 inner_product_operator::InnerProduct
-    = (('<' {hspace} left:expression {hspace} ',' {hspace}  right:expression {hspace} '>')
+    = 
+    (('<' {hspace} left:expression {hspace} ',' {hspace}  right:expression {hspace} '>')
     | ('⟨' {hspace} left:expression {hspace} ',' {hspace}  right:expression {hspace} '⟩'))
     {'_' sub:identifier}
     ;
 
 frobenius_product_operator::FroProduct
-    = left:factor {hspace} ':' {hspace}  right:factor
+    = 
+    left:factor {hspace} ':' {hspace}  right:factor
     ;
 
 hadamard_product_operator::HadamardProduct
-    = left:factor {hspace} '∘' {hspace}  right:factor
+    = 
+    left:factor {hspace} '∘' {hspace}  right:factor
     ;
 
 cross_product_operator::CrossProduct
-    = left:factor {hspace} '×' {hspace}  right:factor
+    = 
+    left:factor {hspace} '×' {hspace}  right:factor
     ;
 
 kronecker_product_operator::KroneckerProduct
-    = left:factor {hspace} '⊗' {hspace}  right:factor
+    = 
+    left:factor {hspace} '⊗' {hspace}  right:factor
     ;
 
 trans_operator::Transpose
-    = f:factor /ᵀ/
+    = 
+    f:factor /ᵀ/
     ;
 
 pseudoinverse_operator::PseudoInverse
-    = f:factor /⁺/
+    = 
+    f:factor /⁺/
     ;
     
 sqrt_operator::Squareroot
-    = /√/ f:factor;
+    = 
+    /√/ f:factor
+    ;
 
 predefined_built_operators
     =
@@ -172,29 +196,35 @@ predefined_built_operators
     ;
     
 element_convert_func::ElementConvertFunc
-    = (vs:VERTEXSET | es:EDGESET | fs:FACESET | ts:TETSET | s:SIMPLICIALSET | tu:TUPLE | se:SEQUENCE
+    = 
+    (vs:VERTEXSET | es:EDGESET | fs:FACESET | ts:TETSET | s:SIMPLICIALSET | tu:TUPLE | se:SEQUENCE
     | v:VERTICES | e:EDGES | f:FACES | t:TETS) 
     '(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
     ;
 
 exp_func::ExpFunc
-    = EXP '(' {hspace} param:expression {hspace} ')'
+    = 
+    EXP '(' {hspace} param:expression {hspace} ')'
     ;
     
 minmax_func::MinmaxFunc
-    = (min:MIN|max:MAX) '(' {hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression} {hspace} ')'
+    = 
+    (min:MIN|max:MAX) '(' {hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression} {hspace} ')'
     ;
 
 log_func::LogFunc
-    = ( (f:/log[\u2082]/ | s: /log[\u2081][\u2080]/) '(' {hspace} param:expression {hspace} ')')
+    = 
+    ( (f:/log[\u2082]/ | s: /log[\u2081][\u2080]/) '(' {hspace} param:expression {hspace} ')')
     | ( LOG [f:'_2' | s:'_10'] '(' {hspace} param:expression {hspace} ')')
     ;
 
 ln_func::LnFunc
-    = LN '(' {hspace} param:expression {hspace} ')'
+    = 
+    LN '(' {hspace} param:expression {hspace} ')'
     ;
 
 sqrt_func::SqrtFunc
-    = SQRT '(' {hspace} param:expression {hspace} ')'
+    = 
+    SQRT '(' {hspace} param:expression {hspace} ')'
     ;
 """

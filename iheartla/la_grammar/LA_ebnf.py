@@ -17,10 +17,12 @@ START = r"""
 @@left_recursion::True
 
 start::Start
-    = {{separator_with_space} {hspace} vblock+:valid_block {separator_with_space}}+ {blank} $
+    = 
+    {{separator_with_space} {hspace} vblock+:valid_block {separator_with_space}}+ {blank} $
     ;
 """
-LA = GRAMMAR + START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOMETRY + GEOMETRY + SHARED + ARITHMETIC + TYPES + SET_OPERATORS
+LA_LIST = [GRAMMAR, START, KEYWORDS, NUMBER, OPERATORS, MATRIX, BASE, TRIGONOMETRY, SHARED, ARITHMETIC, TYPES, SET_OPERATORS]
+LA = "\n\n".join(LA_LIST) + "\n\n"
 #include :: "keywords.ebnf"
 #include :: "number.ebnf"
 #include :: "operators.ebnf"
@@ -29,28 +31,35 @@ LA = GRAMMAR + START + KEYWORDS + NUMBER + OPERATORS + MATRIX + BASE + TRIGONOME
 #include :: "trigonometry.ebnf"
 #include :: "shared.ebnf"
 LA += r"""
-func_id='!!!';
+func_id
+    =
+    '!!!'
+    ;
 
 identifier_alone::IdentifierAlone
-    = !KEYWORDS( value:(/[∂A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*/) | '`' id:/[^`]*/ '`')
+    = 
+    !KEYWORDS( value:(/[∂A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*/) | '`' id:/[^`]*/ '`')
     | value:(PREFIX_KEYWORD (/[∂A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*/))
     #= const:('abc'|'sss') | (!(KEYWORDS |'abc'|'sss' ) value:/[A-Za-z\p{Ll}|\p{Lu}|\p{Lo}]/ | '`' id:/[^`]*/ '`')
     ;
 
 identifier
-    = identifier_with_subscript
+    = 
+    identifier_with_subscript
     | identifier_alone
     ;
 
 function_operator::Function
-    = name:func_id '_' subs+:(integer|identifier_alone) {{','} subs+:(integer|identifier_alone)} {p:'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'}
+    = 
+    name:func_id '_' subs+:(integer|identifier_alone) {{','} subs+:(integer|identifier_alone)} {p:'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'}
     | name:func_id p:'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'
     | name:func_id  subs+:(sub_integer|unicode_subscript) {{','} subs+:(sub_integer|unicode_subscript)} {p:'(' {{hspace} params+:expression {{hspace} separators+:params_separator {hspace} params+:expression}} {hspace}')'}
     ;
     
 # It's so weird that the commented rules below won't work, I guess identifier_alone and unicode_subscript must be combined
 local_func::LocalFunc
-    = (
+    = 
+    (
     name:identifier_with_unicode_subscript {def_p:/\(/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'}
     | name:identifier_with_unicode_subscript {def_s:/\[/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']'}
     | name:identifier_alone {'_' subs+:identifier_alone {{','} subs+:identifier_alone}} {def_p:/\(/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'} 
