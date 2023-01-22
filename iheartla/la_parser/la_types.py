@@ -464,8 +464,8 @@ class VectorType(LaVarType):
 
 
 class SetType(LaVarType):
-    def __init__(self, size=0, length=None, desc=None, element_type=None, symbol=None, int_list=None, type_list=None, dynamic=DynamicTypeEnum.DYN_INVALID, cur_type=SetTypeEnum.DEFAULT):
-        LaVarType.__init__(self, VarTypeEnum.SET, desc, element_type, symbol, dynamic=dynamic)
+    def __init__(self, size=0, length=None, desc=None, element_type=None, symbol=None, int_list=None, type_list=None, index_type=False, dynamic=DynamicTypeEnum.DYN_INVALID, cur_type=SetTypeEnum.DEFAULT):
+        LaVarType.__init__(self, VarTypeEnum.SET, desc, element_type, symbol, dynamic=dynamic, index_type=index_type)
         self.size = size
         self.int_list = int_list     # whether the element is real number or integer
         self.type_list = type_list   # subtypes in a set
@@ -542,8 +542,8 @@ class TetSetType(SetType):
         return self.get_raw_text()
 
 class TupleType(LaVarType):
-    def __init__(self, desc=None, element_type=None, symbol=None, type_list=None, dynamic=DynamicTypeEnum.DYN_INVALID):
-        LaVarType.__init__(self, VarTypeEnum.TUPLE, desc, element_type, symbol, dynamic=dynamic)
+    def __init__(self, desc=None, element_type=None, symbol=None, type_list=None, index_type=False, dynamic=DynamicTypeEnum.DYN_INVALID):
+        LaVarType.__init__(self, VarTypeEnum.TUPLE, desc, element_type, symbol, dynamic=dynamic, index_type=index_type)
         self.type_list = type_list   # subtypes in a set
         self.size = 0 if type_list is None else len(type_list)
 

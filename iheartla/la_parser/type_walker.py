@@ -1477,11 +1477,13 @@ class TypeWalker(NodeWalker):
         ir_node = TupleTypeNode(parse_info=node.parseinfo, raw_text=node.text)
         type_list = []
         ir_node.sub_types = []
+        index_type = False
         for sub_type in node.sub_types:
             type_info = self.walk(sub_type, **kwargs)
             type_list.append(type_info.la_type)
             ir_node.sub_types.append(type_info)
-        ir_node.la_type = TupleType(type_list=type_list)
+            index_type = type_info.la_type.index_type
+        ir_node.la_type = TupleType(type_list=type_list, index_type=index_type)
         return ir_node
 
     def walk_FunctionType(self, node, **kwargs):
@@ -3821,7 +3823,7 @@ class TypeWalker(NodeWalker):
         elif f_type.is_tet_type():
             ir_node.la_type = TetSetType()
         else:
-            ir_node.la_type = SetType(size=1, int_list=[True], type_list=[f_type], element_type=f_type)
+            ir_node.la_type = SetType(size=1, int_list=[True], type_list=[f_type], element_type=f_type, index_type=f_type.index_type)
         ir_node.la_type.length = len(node.exp)
         node_info = NodeInfo(ir=ir_node, la_type=ir_node.la_type, symbols=symbols)
         self.pop_scope()
@@ -4325,11 +4327,13 @@ class TypeWalker(NodeWalker):
     def walk_ElementConvertFunc(self, node, **kwargs):
         param_node_list = []
         param_type_list = []
+        index_type = False
         # params inside parentheses
         for index in range(len(node.params)):
             c_node = self.walk(node.params[index], **kwargs).ir
             param_node_list.append(c_node)
             param_type_list.append(c_node.la_type)
+            index_type = c_node.la_type.index_type
         ir_node = ElementConvertNode(params=param_node_list, parse_info=node.parseinfo, raw_text=node.text)
         ir_node.separators = node.separators
         if node.v:
@@ -4382,7 +4386,7 @@ class TypeWalker(NodeWalker):
                                                                      "Function error. Can't find function with current parameter types."))
         elif node.tu:
             ir_node.to_type = EleConvertType.EleToTuple
-            ir_node.la_type = TupleType(type_list=param_type_list)
+            ir_node.la_type = TupleType(type_list=param_type_list, index_type = index_type)
             ir_node.name = node.tu
         elif node.se:
             ir_node.to_type = EleConvertType.EleToSequence
