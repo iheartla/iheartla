@@ -125,7 +125,7 @@ def get_type_walker():
     return _type_walker
 
 
-def get_ir_mutator(type_walker, func_name='iheartla'):
+def get_ir_mutator(type_walker, func_name='iheartmesh'):
     global _ir_mutator
     if not _ir_mutator:
         _ir_mutator = IRMutator()
@@ -616,7 +616,7 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
     ConfMgr.getInstance().parse()
     if la_file == "-":
         content = "\n".join(sys.stdin.readlines())
-        base_name = "iheartla"
+        base_name = "iheartmesh"
     else:
         content = read_from_file(la_file)
         base_name = get_file_name(la_file)
