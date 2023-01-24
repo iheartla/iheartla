@@ -32,7 +32,7 @@ KEYWORDS_CONTENT_RE = re.compile(
 
 # annotation for rules:
 ANNOTATE_RE = re.compile(
-        dedent(r'''(?<=[ *=|])[a-zA-Z_+]*:'''),
+        dedent(r'''(?<=[ *=|{(])[a-zA-Z_+]*:'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
 
@@ -80,70 +80,90 @@ OUTER_CURLY_RE = re.compile(
 
 # squre brace [name]
 OUTER_SQUARE_RE = re.compile(
-        dedent(r'''\[(?P<name>[^{}]*)\]'''),
+        dedent(r'''\[(?P<name>[^{}\[\]]*)\]'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
 
-if __name__ == '__main__':
-    # LA = START
-    result = LA
-    for m in COMMAND_RE.finditer(LA):
-        result = result.replace(m.group(), '')
-    for m in COMMENT_RE.finditer(LA):
-        result = result.replace(m.group(), '')
-    LA = result
-    for m in RULE_RE.finditer(LA):
+# regular expression in TatSu: /name/
+REGULAR_RE = re.compile(
+        dedent(r'''\/(?P<name>[^\/]*)\/'''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
+
+unicode_symbol = []
+
+special_symbol = ['∂', '𝕕', '∑', '∈', 'Δ', '∇', '⊂', '#', 'ℝ', 'ℤ', '±']
+
+mapping_dict = {
+    """/\(/""" : """'('""",
+    """/\[/""" : """'['""",
+}
+
+def process_multi_line(result):
+    new_result = result
+    for m in RULE_RE.finditer(result):
         # print(m.group())
         body = m.group('body')
         new_body = body
         for annotate in ANNOTATE_RE.finditer(body):
             # print(annotate.group())
             new_body = new_body.replace(annotate.group(), '')
-        # internal {name}+
-        body = new_body
-        for curly in INTERNAL_CURLY_PLUS_RE.finditer(body):
-            new_body = new_body.replace(curly.group(), '({})+'.format(curly.group('name')))
-        # internal {name}
-        body = new_body
-        for curly in INTERNAL_CURLY_RE.finditer(body):
-            new_body = new_body.replace(curly.group(), '({})*'.format(curly.group('name')))
-        # internal [name]
-        body = new_body
-        for curly in INTERNAL_CURLY_RE.finditer(body):
-            new_body = new_body.replace(curly.group(), '({})?'.format(curly.group('name')))
-        # outer {name}+
-        body = new_body
-        found = True
-        while found:
-            found = False
-            for curly in OUTER_CURLY_PLUS_RE.finditer(body):
-                new_body = new_body.replace(curly.group(), '({})+'.format(curly.group('name')))
-                found = True
-                break
-            body = new_body
-        # outer {name}
-        found = True
-        while found:
-            found = False
-            for curly in OUTER_CURLY_RE.finditer(body):
-                new_body = new_body.replace(curly.group(), '({})*'.format(curly.group('name')))
-                found = True
-                break
-            body = new_body
-        # outer [name]
-        found = True
-        while found:
-            found = False
-            for curly in OUTER_SQUARE_RE.finditer(body):
-                new_body = new_body.replace(curly.group(), '({})?'.format(curly.group('name')))
-                found = True
-                break
-            body = new_body
+        # curly brace
+        new_body = process_curly_brace(new_body)
+        # square brace
+        new_body = process_square_brace(new_body)
         # final result
-        result = result.replace(m.group(), "{} ::= {}".format(m.group('name'), new_body.strip()))
-        # print("name is: {}".format(m.group('name')))
-        # print("class is: {}".format(m.group('class')))
-    result = result.replace('$', 'EOF')
+        new_result = new_result.replace(m.group(), "{} ::= {}".format(m.group('name'), new_body.strip()))
+    return new_result
+
+
+def process_square_brace(result):
+    # internal [name]
+    new_result = result
+    for curly in INTERNAL_SQUARE_RE.finditer(result):
+        new_result = new_result.replace(curly.group(), '({})?'.format(curly.group('name')))
+    # outer [name]
+    found = True
+    while found:
+        found = False
+        for curly in OUTER_SQUARE_RE.finditer(result):
+            new_result = new_result.replace(curly.group(), '({})?'.format(curly.group('name')))
+            found = True
+            break
+        result = new_result
+    return new_result
+
+def process_curly_brace(result):
+    # internal {name}+
+    new_result = result
+    for curly in INTERNAL_CURLY_PLUS_RE.finditer(result):
+        new_result = new_result.replace(curly.group(), '({})+'.format(curly.group('name')))
+    # internal {name}
+    result = new_result
+    for curly in INTERNAL_CURLY_RE.finditer(result):
+        new_result = new_result.replace(curly.group(), '({})*'.format(curly.group('name')))
+    # outer {name}+
+    result = new_result
+    found = True
+    while found:
+        found = False
+        for curly in OUTER_CURLY_PLUS_RE.finditer(result):
+            new_result = new_result.replace(curly.group(), '({})+'.format(curly.group('name')))
+            found = True
+            break
+        result = new_result
+    # outer {name}
+    found = True
+    while found:
+        found = False
+        for curly in OUTER_CURLY_RE.finditer(result):
+            new_result = new_result.replace(curly.group(), '({})*'.format(curly.group('name')))
+            found = True
+            break
+        result = new_result
+    return new_result
+
+def process_single_line(result):
     # ; in a single line
     new_result = result
     for key_line in KEYWORDS_LINE_RE.finditer(result):
@@ -152,5 +172,30 @@ if __name__ == '__main__':
         for key_content in KEYWORDS_CONTENT_RE.finditer(content):
             new_content = new_content.replace(key_content.group(), key_content.group('content'))
         # print(key_line.group())
-        new_result = new_result.replace(key_line.group(), "{} ::= {}\n".format(key_line.group('name'), new_content.strip()))
-    print(new_result)
+        new_result = new_result.replace(key_line.group(),
+                                        "{} ::= {}\n".format(key_line.group('name'), new_content.strip()))
+    return new_result
+
+def process_mapping_dict(result):
+    for k,v in mapping_dict.items():
+        result = result.replace(k, v)
+    return result
+
+def transform_ebnf(origin):
+    result = origin
+    for m in COMMAND_RE.finditer(origin):
+        result = result.replace(m.group(), '')
+    for m in COMMENT_RE.finditer(origin):
+        result = result.replace(m.group(), '')
+    result = process_multi_line(result)
+    result = result.replace('$', 'EOF')
+    # ; in a single line
+    result = process_single_line(result)
+    result = process_mapping_dict(result)
+    return result
+
+
+if __name__ == '__main__':
+    # LA = START
+    result = transform_ebnf(LA)
+    print(result)

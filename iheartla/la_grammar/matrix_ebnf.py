@@ -167,7 +167,8 @@ kronecker_product_in_matrix_operator::KroneckerProduct
     ;
 
 trans_in_matrix_operator::Transpose
-    = f:factor_in_matrix /ᵀ/
+    = 
+    f:factor_in_matrix /ᵀ/
     ;
 
 pseudoinverse_in_matrix_operator::PseudoInverse
