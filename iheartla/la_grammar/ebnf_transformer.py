@@ -124,8 +124,16 @@ def process_rule_body(body):
     new_body = process_square_brace(new_body)
     # revert re
     new_body = revert_regular_expr(new_body, name_dict)
+    # process re
+    new_body = process_regular_expr(new_body)
     return new_body
 
+def convert_re_content(content):
+    if content == "'":
+        new_name = r'''"'"'''
+    else:
+        new_name = "'{}'".format(content)
+    return new_name
 
 def convert_regular_expr(result):
     new_result = result
@@ -137,6 +145,13 @@ def convert_regular_expr(result):
         new_result = new_result.replace(reg.group(), new_name)
         name_dict[new_name] = reg.group()
     return new_result, name_dict
+
+def process_regular_expr(result):
+    new_result = result
+    for reg in REGULAR_RE.finditer(result):
+        new_name = convert_re_content(reg.group('name'))
+        new_result = new_result.replace(reg.group(), new_name)
+    return new_result
 
 def revert_regular_expr(result, name_dict):
     for k,v in name_dict.items():
@@ -196,8 +211,8 @@ def process_single_line(result):
         content = key_line.group('content')
         new_content = content
         for key_content in KEYWORDS_CONTENT_RE.finditer(content):
-            new_content = new_content.replace(key_content.group(), key_content.group('content'))
-        # print(key_line.group())
+            new_c = convert_re_content(key_content.group('content'))
+            new_content = new_content.replace(key_content.group(), new_c)
         new_result = new_result.replace(key_line.group(),
                                         "{} ::= {}\n".format(key_line.group('name'), new_content.strip()))
     return new_result
