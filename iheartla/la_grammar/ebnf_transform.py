@@ -1,7 +1,7 @@
 from iheartla.la_grammar.LA_ebnf import *
 import regex as re
 from textwrap import dedent
-
+# This file is used to convert TatSu ebnf to other formats
 
 # rules that contain ';' are: params_separator, description, separator, assignment
 RULE_RE = re.compile(
@@ -60,7 +60,7 @@ INTERNAL_CURLY_RE = re.compile(
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
 
-# squre brace [name]
+# squre brace [name], only filter TatSu grammar
 INTERNAL_SQUARE_RE = re.compile(
         dedent(r'''\[(?P<name>[a-zA-Z_]*)\]'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
@@ -78,15 +78,15 @@ OUTER_CURLY_RE = re.compile(
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
 
-# squre brace [name]
+# squre brace [name], only filter TatSu grammar
 OUTER_SQUARE_RE = re.compile(
         dedent(r'''\[(?P<name>[^{}\[\]]*)\]'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
 
-# regular expression in TatSu: /name/
+# regular expression in TatSu: /name/, avoid '/'
 REGULAR_RE = re.compile(
-        dedent(r'''\/(?P<name>[^\/]*)\/'''),
+        dedent(r'''(?<!['"])\/(?P<name>[^\/]*)\/(?!['"])'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
 
@@ -110,12 +110,31 @@ def process_multi_line(result):
             new_body = new_body.replace(annotate.group(), '')
         # curly brace
         new_body = process_curly_brace(new_body)
-        # square brace
+        # save re in TatSu
+        new_body, name_dict = convert_regular_expr(new_body)
+        # square brace in TatSu
         new_body = process_square_brace(new_body)
+        # revert re
+        new_body = revert_regular_expr(new_body, name_dict)
         # final result
         new_result = new_result.replace(m.group(), "{} ::= {}".format(m.group('name'), new_body.strip()))
     return new_result
 
+def convert_regular_expr(result):
+    new_result = result
+    cnt = 0
+    name_dict = {}
+    for reg in REGULAR_RE.finditer(result):
+        new_name = "EBNFBLOCK{}".format(cnt)
+        cnt += 1
+        new_result = new_result.replace(reg.group(), new_name)
+        name_dict[new_name] = reg.group()
+    return new_result, name_dict
+
+def revert_regular_expr(result, name_dict):
+    for k,v in name_dict.items():
+        result = result.replace(k, v)
+    return result
 
 def process_square_brace(result):
     # internal [name]
