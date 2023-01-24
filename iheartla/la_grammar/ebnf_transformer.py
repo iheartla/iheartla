@@ -97,6 +97,12 @@ NEGATIVE_LOOKBEHIND_RE = re.compile(
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
 
+# & in TatSu
+AMPERSAND_RE = re.compile(
+        dedent(r'''&(?P<name>['"(]+)'''),
+        re.MULTILINE | re.DOTALL | re.VERBOSE
+    )
+
 unicode_symbol = []
 
 special_symbol = ['∂', '𝕕', '∑', '∈', 'Δ', '∇', '⊂', '#', 'ℝ', 'ℤ', '±']
@@ -134,6 +140,8 @@ def process_rule_body(body):
     new_body = process_regular_expr(new_body)
     # process !
     new_body = process_negative_lookbehind(new_body)
+    # process &
+    new_body = process_ampersand(new_body)
     return new_body
 
 def convert_re_content(content):
@@ -164,6 +172,12 @@ def process_regular_expr(result):
 def process_negative_lookbehind(result):
     new_result = result
     for look in NEGATIVE_LOOKBEHIND_RE.finditer(result):
+        new_result = new_result.replace(look.group(), look.group('name'))
+    return new_result
+
+def process_ampersand(result):
+    new_result = result
+    for look in AMPERSAND_RE.finditer(result):
         new_result = new_result.replace(look.group(), look.group('name'))
     return new_result
 
