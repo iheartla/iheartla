@@ -4,11 +4,12 @@ from textwrap import dedent
 # This file is used to convert TatSu ebnf to other formats
 
 # rules that contain ';' are: params_separator, description, separator, assignment
+# allow body to contain ;, non-greedy match
 RULE_RE = re.compile(
         dedent(r'''(?<=\n)
             (?P<name>[a-z0-9A-Z_]+)(::(?P<class>[^:\n=();]*))?[ \t]*\n
             [ \t]*=[ \t]*\n     
-            (?P<body>[^;]*)
+            (?P<body>.*?)
             [ \t]*;[ \t]*\n                                            
         '''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
@@ -104,21 +105,27 @@ def process_multi_line(result):
     for m in RULE_RE.finditer(result):
         # print(m.group())
         body = m.group('body')
-        new_body = body
-        for annotate in ANNOTATE_RE.finditer(body):
-            # print(annotate.group())
-            new_body = new_body.replace(annotate.group(), '')
-        # curly brace
-        new_body = process_curly_brace(new_body)
-        # save re in TatSu
-        new_body, name_dict = convert_regular_expr(new_body)
-        # square brace in TatSu
-        new_body = process_square_brace(new_body)
-        # revert re
-        new_body = revert_regular_expr(new_body, name_dict)
+        new_body = process_rule_body(body)
         # final result
         new_result = new_result.replace(m.group(), "{} ::= {}".format(m.group('name'), new_body.strip()))
     return new_result
+
+
+def process_rule_body(body):
+    new_body = body
+    for annotate in ANNOTATE_RE.finditer(body):
+        # print(annotate.group())
+        new_body = new_body.replace(annotate.group(), '')
+    # curly brace
+    new_body = process_curly_brace(new_body)
+    # save re in TatSu
+    new_body, name_dict = convert_regular_expr(new_body)
+    # square brace in TatSu
+    new_body = process_square_brace(new_body)
+    # revert re
+    new_body = revert_regular_expr(new_body, name_dict)
+    return new_body
+
 
 def convert_regular_expr(result):
     new_result = result
