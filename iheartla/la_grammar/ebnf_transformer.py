@@ -33,7 +33,7 @@ KEYWORDS_CONTENT_RE = re.compile(
 
 # annotation for rules:
 ANNOTATE_RE = re.compile(
-        dedent(r'''(?<=[ *=|{(])[a-zA-Z_+]*:'''),
+        dedent(r'''(?<=[ *=|{(])[a-z0-9A-Z_+]*:'''),
         re.MULTILINE | re.DOTALL | re.VERBOSE
     )
 
