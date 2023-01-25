@@ -853,6 +853,7 @@ class SummationNode(ExprNode):
         self.scope_name = None
         self.lower = None
         self.upper = None
+        self.sign = None
 
 
 class UnionSequence(ExprNode):

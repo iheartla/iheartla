@@ -1605,10 +1605,13 @@ class grammardefaultParser(Parser):
                     def block4():
                         self._hspace_()
                     self._positive_closure(block4)
+                    with self._optional():
+                        self._token('-')
+                    self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['u', 'sub', 'exp'],
+                        ['u', 'sub', 'sign', 'exp'],
                         []
                     )
                 with self._option():
@@ -1633,13 +1636,16 @@ class grammardefaultParser(Parser):
                     with self._if():
                         self._token('(')
 
-                    def block9():
+                    def block10():
                         self._hspace_()
-                    self._closure(block9)
+                    self._closure(block10)
+                    with self._optional():
+                        self._token('-')
+                    self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['u', 'sub', 'exp'],
+                        ['u', 'sub', 'sign', 'exp'],
                         []
                     )
                 with self._option():
@@ -1659,36 +1665,39 @@ class grammardefaultParser(Parser):
                                 "<SUM> '∪'"
                             )
                     self._token('_(')
-
-                    def block13():
-                        self._hspace_()
-                    self._closure(block13)
-                    self._identifier_alone_()
-                    self.name_last_node('id')
 
                     def block15():
                         self._hspace_()
                     self._closure(block15)
-                    self._token('for')
+                    self._identifier_alone_()
+                    self.name_last_node('id')
 
-                    def block16():
+                    def block17():
                         self._hspace_()
-                    self._closure(block16)
-                    self._if_condition_()
-                    self.name_last_node('cond')
+                    self._closure(block17)
+                    self._token('for')
 
                     def block18():
                         self._hspace_()
                     self._closure(block18)
+                    self._if_condition_()
+                    self.name_last_node('cond')
+
+                    def block20():
+                        self._hspace_()
+                    self._closure(block20)
                     self._token(')')
 
-                    def block19():
+                    def block21():
                         self._hspace_()
-                    self._positive_closure(block19)
+                    self._positive_closure(block21)
+                    with self._optional():
+                        self._token('-')
+                    self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['u', 'id', 'cond', 'exp'],
+                        ['u', 'id', 'cond', 'sign', 'exp'],
                         []
                     )
                 with self._option():
@@ -1709,26 +1718,26 @@ class grammardefaultParser(Parser):
                             )
                     self._token('_(')
 
-                    def block23():
-                        self._hspace_()
-                    self._closure(block23)
-                    self._identifier_alone_()
-                    self.name_last_node('id')
-
-                    def block25():
-                        self._hspace_()
-                    self._closure(block25)
-                    self._token('=')
-
                     def block26():
                         self._hspace_()
                     self._closure(block26)
-                    self._expression_()
-                    self.name_last_node('lower')
+                    self._identifier_alone_()
+                    self.name_last_node('id')
 
                     def block28():
                         self._hspace_()
                     self._closure(block28)
+                    self._token('=')
+
+                    def block29():
+                        self._hspace_()
+                    self._closure(block29)
+                    self._expression_()
+                    self.name_last_node('lower')
+
+                    def block31():
+                        self._hspace_()
+                    self._closure(block31)
                     self._token(')^')
                     with self._group():
                         with self._choice():
@@ -1742,13 +1751,16 @@ class grammardefaultParser(Parser):
                             )
                     self.name_last_node('upper')
 
-                    def block31():
+                    def block34():
                         self._hspace_()
-                    self._positive_closure(block31)
+                    self._positive_closure(block34)
+                    with self._optional():
+                        self._token('-')
+                    self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['u', 'id', 'lower', 'upper', 'exp'],
+                        ['u', 'id', 'lower', 'upper', 'sign', 'exp'],
                         []
                     )
                 with self._option():
@@ -1769,46 +1781,49 @@ class grammardefaultParser(Parser):
                             )
                     self._token('_(')
 
-                    def block35():
+                    def block39():
                         self._hspace_()
-                    self._closure(block35)
+                    self._closure(block39)
                     self._identifier_alone_()
                     self.name_last_node('id')
-
-                    def block37():
-                        self._hspace_()
-                    self._closure(block37)
-                    self._token('=')
-
-                    def block38():
-                        self._hspace_()
-                    self._closure(block38)
-                    self._expression_()
-                    self.name_last_node('lower')
-
-                    def block40():
-                        self._hspace_()
-                    self._closure(block40)
-                    self._token(')^(')
 
                     def block41():
                         self._hspace_()
                     self._closure(block41)
-                    self._expression_()
-                    self.name_last_node('upper')
+                    self._token('=')
 
-                    def block43():
+                    def block42():
                         self._hspace_()
-                    self._closure(block43)
-                    self._token(')')
+                    self._closure(block42)
+                    self._expression_()
+                    self.name_last_node('lower')
 
                     def block44():
                         self._hspace_()
-                    self._positive_closure(block44)
+                    self._closure(block44)
+                    self._token(')^(')
+
+                    def block45():
+                        self._hspace_()
+                    self._closure(block45)
+                    self._expression_()
+                    self.name_last_node('upper')
+
+                    def block47():
+                        self._hspace_()
+                    self._closure(block47)
+                    self._token(')')
+
+                    def block48():
+                        self._hspace_()
+                    self._positive_closure(block48)
+                    with self._optional():
+                        self._token('-')
+                    self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['u', 'id', 'lower', 'upper', 'exp'],
+                        ['u', 'id', 'lower', 'upper', 'sign', 'exp'],
                         []
                     )
                 with self._option():
@@ -1829,37 +1844,37 @@ class grammardefaultParser(Parser):
                             )
                     self._token('_(')
 
-                    def block48():
+                    def block53():
                         self._hspace_()
-                    self._closure(block48)
+                    self._closure(block53)
                     self._identifier_alone_()
                     self.add_last_node_to_name('enum')
 
-                    def block50():
+                    def block55():
 
-                        def block51():
+                        def block56():
                             self._hspace_()
-                        self._closure(block51)
+                        self._closure(block56)
 
-                        def block52():
+                        def block57():
                             self._token(',')
-                        self._closure(block52)
+                        self._closure(block57)
 
-                        def block53():
+                        def block58():
                             self._hspace_()
-                        self._closure(block53)
+                        self._closure(block58)
                         self._identifier_alone_()
                         self.add_last_node_to_name('enum')
-                    self._closure(block50)
-
-                    def block55():
-                        self._hspace_()
                     self._closure(block55)
+
+                    def block60():
+                        self._hspace_()
+                    self._closure(block60)
                     self._IN_()
 
-                    def block56():
+                    def block61():
                         self._hspace_()
-                    self._closure(block56)
+                    self._closure(block61)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -1875,18 +1890,21 @@ class grammardefaultParser(Parser):
                             )
                     self.name_last_node('range')
 
-                    def block59():
+                    def block64():
                         self._hspace_()
-                    self._closure(block59)
+                    self._closure(block64)
                     self._token(')')
 
-                    def block60():
+                    def block65():
                         self._hspace_()
-                    self._positive_closure(block60)
+                    self._positive_closure(block65)
+                    with self._optional():
+                        self._token('-')
+                    self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['u', 'range', 'exp'],
+                        ['u', 'range', 'sign', 'exp'],
                         ['enum']
                     )
                 self._error(
@@ -1894,17 +1912,17 @@ class grammardefaultParser(Parser):
                     "<SUM> '∪'"
                 )
 
-        def block62():
+        def block68():
             with self._optional():
 
-                def block63():
+                def block69():
                     self._hspace_()
-                self._closure(block63)
+                self._closure(block69)
                 self._line_()
 
-            def block64():
+            def block70():
                 self._hspace_()
-            self._closure(block64)
+            self._closure(block70)
             with self._group():
                 with self._choice():
                     with self._option():
@@ -1916,34 +1934,34 @@ class grammardefaultParser(Parser):
                         '<WHERE> <WITH>'
                     )
 
-            def block66():
+            def block72():
                 self._hspace_()
-            self._closure(block66)
+            self._closure(block72)
             self._general_assignment_()
             self.add_last_node_to_name('extra')
 
-            def block68():
+            def block74():
 
-                def block69():
+                def block75():
                     self._hspace_()
-                self._closure(block69)
+                self._closure(block75)
                 self._token(',')
 
-                def block70():
+                def block76():
                     self._hspace_()
-                self._closure(block70)
+                self._closure(block76)
                 with self._optional():
                     self._line_()
 
-                def block71():
+                def block77():
                     self._hspace_()
-                self._closure(block71)
+                self._closure(block77)
                 self._general_assignment_()
                 self.add_last_node_to_name('extra')
-            self._closure(block68)
-        self._closure(block62)
+            self._closure(block74)
+        self._closure(block68)
         self._define(
-            ['u', 'sub', 'exp', 'id', 'cond', 'lower', 'upper', 'range'],
+            ['u', 'sub', 'sign', 'exp', 'id', 'cond', 'lower', 'upper', 'range'],
             ['enum', 'extra']
         )
 
@@ -10118,6 +10136,7 @@ class Summation(ModelBase):
     id: Any = None
     lower: Any = None
     range: Any = None
+    sign: Any = None
     sub: Any = None
     u: Any = None
     upper: Any = None

@@ -654,6 +654,7 @@ class CodeGenNumpy(CodeGen):
     def visit_summation(self, node, **kwargs):
         target_var = []
         self.push_scope(node.scope_name)
+        expr_sign = '-' if node.sign else ''
         # sub = self.visit(node.id).content
         def set_name_conventions(sub):
             # name convention
@@ -738,7 +739,7 @@ class CodeGenNumpy(CodeGen):
                 for et in node.extra_list:
                     extra_info = self.visit(et, **kwargs)
                 content += [self.update_prelist_str([extra_info.content], '    ')]
-            content.append(str("    " + assign_id + " += " + exp_str + '\n'))
+            content.append(str("    " + assign_id + " += " + expr_sign + exp_str + '\n'))
             content[0] = "    " + content[0]
             self.del_name_conventions(name_convention)
             self.pop_scope()
@@ -795,10 +796,10 @@ class CodeGenNumpy(CodeGen):
             content += ["    " + pre for pre in cond_info.pre_list]
             content.append("    " + cond_content)
             content += ["    " + pre for pre in exp_pre_list]
-            content.append(str("        " + assign_id + " += " + exp_str + '\n'))
+            content.append(str("        " + assign_id + " += " + expr_sign + exp_str + '\n'))
         else:
             content += exp_pre_list
-            content.append(str("    " + assign_id + " += " + exp_str + '\n'))
+            content.append(str("    " + assign_id + " += " + expr_sign + exp_str + '\n'))
         content[0] = "    " + content[0]
         self.pop_scope()
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])

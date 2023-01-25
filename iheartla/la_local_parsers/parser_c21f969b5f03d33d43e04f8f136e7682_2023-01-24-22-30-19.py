@@ -24,7 +24,7 @@ from tatsu.util import re, generic_main  # noqa
 KEYWORDS = {}  # type: ignore
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
+class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
     def __init__(self, text, /, config: ParserConfig = None, **settings):
         base_config = ParserConfig.new(
             owner=self,
@@ -41,7 +41,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Buffer(Buffer):
         super().__init__(text, config=config)
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
+class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
     def __init__(self, config: ParserConfig = None, **settings):
         base_config = ParserConfig.new(
             owner=self,
@@ -776,8 +776,8 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 "<set_operators> sum ∑ <SUM> '∪'"
                 "<sum_operator> int <INT> '∫'"
                 '<integral_operator> <trans_operator> √'
-                '<sqrt_operator> <identifier_alone>'
-                '<func_id> <function_operator> <exp_func>'
+                "<sqrt_operator> '!!!' <func_id>"
+                '<function_operator> <exp_func>'
                 '<log_func> <ln_func> <sqrt_func>'
                 '<element_convert_func> <minmax_func>'
                 '<predefined_built_operators>'
@@ -1507,10 +1507,13 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                     def block4():
                         self._hspace_()
                     self._positive_closure(block4)
+                    with self._optional():
+                        self._token('-')
+                    self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['u', 'sub', 'exp'],
+                        ['u', 'sub', 'sign', 'exp'],
                         []
                     )
                 with self._option():
@@ -1535,13 +1538,16 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                     with self._if():
                         self._token('(')
 
-                    def block9():
+                    def block10():
                         self._hspace_()
-                    self._closure(block9)
+                    self._closure(block10)
+                    with self._optional():
+                        self._token('-')
+                    self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['u', 'sub', 'exp'],
+                        ['u', 'sub', 'sign', 'exp'],
                         []
                     )
                 with self._option():
@@ -1561,36 +1567,39 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                                 "<SUM> '∪'"
                             )
                     self._token('_(')
-
-                    def block13():
-                        self._hspace_()
-                    self._closure(block13)
-                    self._identifier_alone_()
-                    self.name_last_node('id')
 
                     def block15():
                         self._hspace_()
                     self._closure(block15)
-                    self._token('for')
+                    self._identifier_alone_()
+                    self.name_last_node('id')
 
-                    def block16():
+                    def block17():
                         self._hspace_()
-                    self._closure(block16)
-                    self._if_condition_()
-                    self.name_last_node('cond')
+                    self._closure(block17)
+                    self._token('for')
 
                     def block18():
                         self._hspace_()
                     self._closure(block18)
+                    self._if_condition_()
+                    self.name_last_node('cond')
+
+                    def block20():
+                        self._hspace_()
+                    self._closure(block20)
                     self._token(')')
 
-                    def block19():
+                    def block21():
                         self._hspace_()
-                    self._positive_closure(block19)
+                    self._positive_closure(block21)
+                    with self._optional():
+                        self._token('-')
+                    self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['u', 'id', 'cond', 'exp'],
+                        ['u', 'id', 'cond', 'sign', 'exp'],
                         []
                     )
                 with self._option():
@@ -1611,26 +1620,26 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                             )
                     self._token('_(')
 
-                    def block23():
-                        self._hspace_()
-                    self._closure(block23)
-                    self._identifier_alone_()
-                    self.name_last_node('id')
-
-                    def block25():
-                        self._hspace_()
-                    self._closure(block25)
-                    self._token('=')
-
                     def block26():
                         self._hspace_()
                     self._closure(block26)
-                    self._expression_()
-                    self.name_last_node('lower')
+                    self._identifier_alone_()
+                    self.name_last_node('id')
 
                     def block28():
                         self._hspace_()
                     self._closure(block28)
+                    self._token('=')
+
+                    def block29():
+                        self._hspace_()
+                    self._closure(block29)
+                    self._expression_()
+                    self.name_last_node('lower')
+
+                    def block31():
+                        self._hspace_()
+                    self._closure(block31)
                     self._token(')^')
                     with self._group():
                         with self._choice():
@@ -1644,13 +1653,16 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                             )
                     self.name_last_node('upper')
 
-                    def block31():
+                    def block34():
                         self._hspace_()
-                    self._positive_closure(block31)
+                    self._positive_closure(block34)
+                    with self._optional():
+                        self._token('-')
+                    self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['u', 'id', 'lower', 'upper', 'exp'],
+                        ['u', 'id', 'lower', 'upper', 'sign', 'exp'],
                         []
                     )
                 with self._option():
@@ -1671,46 +1683,49 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                             )
                     self._token('_(')
 
-                    def block35():
+                    def block39():
                         self._hspace_()
-                    self._closure(block35)
+                    self._closure(block39)
                     self._identifier_alone_()
                     self.name_last_node('id')
-
-                    def block37():
-                        self._hspace_()
-                    self._closure(block37)
-                    self._token('=')
-
-                    def block38():
-                        self._hspace_()
-                    self._closure(block38)
-                    self._expression_()
-                    self.name_last_node('lower')
-
-                    def block40():
-                        self._hspace_()
-                    self._closure(block40)
-                    self._token(')^(')
 
                     def block41():
                         self._hspace_()
                     self._closure(block41)
-                    self._expression_()
-                    self.name_last_node('upper')
+                    self._token('=')
 
-                    def block43():
+                    def block42():
                         self._hspace_()
-                    self._closure(block43)
-                    self._token(')')
+                    self._closure(block42)
+                    self._expression_()
+                    self.name_last_node('lower')
 
                     def block44():
                         self._hspace_()
-                    self._positive_closure(block44)
+                    self._closure(block44)
+                    self._token(')^(')
+
+                    def block45():
+                        self._hspace_()
+                    self._closure(block45)
+                    self._expression_()
+                    self.name_last_node('upper')
+
+                    def block47():
+                        self._hspace_()
+                    self._closure(block47)
+                    self._token(')')
+
+                    def block48():
+                        self._hspace_()
+                    self._positive_closure(block48)
+                    with self._optional():
+                        self._token('-')
+                    self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['u', 'id', 'lower', 'upper', 'exp'],
+                        ['u', 'id', 'lower', 'upper', 'sign', 'exp'],
                         []
                     )
                 with self._option():
@@ -1731,37 +1746,37 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                             )
                     self._token('_(')
 
-                    def block48():
+                    def block53():
                         self._hspace_()
-                    self._closure(block48)
+                    self._closure(block53)
                     self._identifier_alone_()
                     self.add_last_node_to_name('enum')
 
-                    def block50():
+                    def block55():
 
-                        def block51():
+                        def block56():
                             self._hspace_()
-                        self._closure(block51)
+                        self._closure(block56)
 
-                        def block52():
+                        def block57():
                             self._token(',')
-                        self._closure(block52)
+                        self._closure(block57)
 
-                        def block53():
+                        def block58():
                             self._hspace_()
-                        self._closure(block53)
+                        self._closure(block58)
                         self._identifier_alone_()
                         self.add_last_node_to_name('enum')
-                    self._closure(block50)
-
-                    def block55():
-                        self._hspace_()
                     self._closure(block55)
+
+                    def block60():
+                        self._hspace_()
+                    self._closure(block60)
                     self._IN_()
 
-                    def block56():
+                    def block61():
                         self._hspace_()
-                    self._closure(block56)
+                    self._closure(block61)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -1777,18 +1792,21 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                             )
                     self.name_last_node('range')
 
-                    def block59():
+                    def block64():
                         self._hspace_()
-                    self._closure(block59)
+                    self._closure(block64)
                     self._token(')')
 
-                    def block60():
+                    def block65():
                         self._hspace_()
-                    self._positive_closure(block60)
+                    self._positive_closure(block65)
+                    with self._optional():
+                        self._token('-')
+                    self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
                     self._define(
-                        ['u', 'range', 'exp'],
+                        ['u', 'range', 'sign', 'exp'],
                         ['enum']
                     )
                 self._error(
@@ -1796,17 +1814,17 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                     "<SUM> '∪'"
                 )
 
-        def block62():
+        def block68():
             with self._optional():
 
-                def block63():
+                def block69():
                     self._hspace_()
-                self._closure(block63)
+                self._closure(block69)
                 self._line_()
 
-            def block64():
+            def block70():
                 self._hspace_()
-            self._closure(block64)
+            self._closure(block70)
             with self._group():
                 with self._choice():
                     with self._option():
@@ -1818,34 +1836,34 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                         '<WHERE> <WITH>'
                     )
 
-            def block66():
+            def block72():
                 self._hspace_()
-            self._closure(block66)
+            self._closure(block72)
             self._general_assignment_()
             self.add_last_node_to_name('extra')
 
-            def block68():
+            def block74():
 
-                def block69():
+                def block75():
                     self._hspace_()
-                self._closure(block69)
+                self._closure(block75)
                 self._token(',')
 
-                def block70():
+                def block76():
                     self._hspace_()
-                self._closure(block70)
+                self._closure(block76)
                 with self._optional():
                     self._line_()
 
-                def block71():
+                def block77():
                     self._hspace_()
-                self._closure(block71)
+                self._closure(block77)
                 self._general_assignment_()
                 self.add_last_node_to_name('extra')
-            self._closure(block68)
-        self._closure(block62)
+            self._closure(block74)
+        self._closure(block68)
         self._define(
-            ['u', 'sub', 'exp', 'id', 'cond', 'lower', 'upper', 'range'],
+            ['u', 'sub', 'sign', 'exp', 'id', 'cond', 'lower', 'upper', 'range'],
             ['enum', 'extra']
         )
 
@@ -3898,12 +3916,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<pseudoinverse_in_matrix_operator>'
                 "<operations_in_matrix> '('"
                 "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
-                '<number_matrix>'
-                '<identifier_with_multi_subscript>'
-                '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
-                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
-                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
+                '<number_matrix> <identifier_alone>'
+                '<identifier_with_subscript>'
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
                 "<integer> '.' <digit> <mantissa>"
                 '<floating_point> <double>'
@@ -3970,9 +3985,8 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 'sum ∑ <SUM> <sum_in_matrix_operator> int'
                 "<INT> '∫' <integral_operator>"
                 '<trans_in_matrix_operator> √'
-                '<sqrt_in_matrix_operator>'
-                '<identifier_alone> <func_id>'
-                '<function_operator> <exp_func>'
+                "<sqrt_in_matrix_operator> '!!!'"
+                '<func_id> <function_operator> <exp_func>'
                 '<log_func> <ln_func> <sqrt_func>'
                 '<element_convert_func> <minmax_func>'
                 '<predefined_built_operators>'
@@ -4053,11 +4067,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<sqrt_in_matrix_operator>'
                 '<function_operator> <builtin_operators>'
                 '<pseudoinverse_in_matrix_operator>'
-                '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
-                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
-                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
+                '<identifier_with_subscript>'
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> \\d π <pi>'
                 '<factor_in_matrix>'
             )
@@ -4207,11 +4219,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<sqrt_in_matrix_operator>'
                 '<function_operator> <builtin_operators>'
                 '<pseudoinverse_in_matrix_operator>'
-                '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
-                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
-                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
+                '<identifier_with_subscript>'
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> \\d π <pi>'
                 '<factor_in_matrix>'
             )
@@ -4543,8 +4553,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
-                "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD>'
                 '<identifier_alone>'
             )
@@ -5932,1280 +5941,6 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         )
 
     @tatsumasu()
-    def _FACES_OF_EDGE_(self):  # noqa
-        self._pattern('faces_of_edge')
-
-    @tatsumasu()
-    def _DIHEDRAL_(self):  # noqa
-        self._pattern('dihedral')
-
-    @tatsumasu()
-    def _FACE_NORMAL_(self):  # noqa
-        self._pattern('face_normal')
-
-    @tatsumasu()
-    def _GET_ADJACENT_VERTICES_V_(self):  # noqa
-        self._pattern('get_adjacent_vertices_v')
-
-    @tatsumasu()
-    def _GET_INCIDENT_EDGES_V_(self):  # noqa
-        self._pattern('get_incident_edges_v')
-
-    @tatsumasu()
-    def _GET_INCIDENT_FACES_V_(self):  # noqa
-        self._pattern('get_incident_faces_v')
-
-    @tatsumasu()
-    def _GET_INCIDENT_VERTICES_E_(self):  # noqa
-        self._pattern('get_incident_vertices_e')
-
-    @tatsumasu()
-    def _GET_INCIDENT_FACES_E_(self):  # noqa
-        self._pattern('get_incident_faces_e')
-
-    @tatsumasu()
-    def _GET_DIAMOND_VERTICES_E_(self):  # noqa
-        self._pattern('get_diamond_vertices_e')
-
-    @tatsumasu()
-    def _GET_DIAMOND_FACES_E_(self):  # noqa
-        self._pattern('get_diamond_faces_e')
-
-    @tatsumasu()
-    def _GET_INCIDENT_VERTICES_F_(self):  # noqa
-        self._pattern('get_incident_vertices_f')
-
-    @tatsumasu()
-    def _GET_INCIDENT_EDGES_F_(self):  # noqa
-        self._pattern('get_incident_edges_f')
-
-    @tatsumasu()
-    def _GET_ADJACENT_FACES_F_(self):  # noqa
-        self._pattern('get_adjacent_faces_f')
-
-    @tatsumasu()
-    def _BUILD_VERTEX_VECTOR_(self):  # noqa
-        self._pattern('build_vertex_vector')
-
-    @tatsumasu()
-    def _BUILD_EDGE_VECTOR_(self):  # noqa
-        self._pattern('build_edge_vector')
-
-    @tatsumasu()
-    def _BUILD_FACE_VECTOR_(self):  # noqa
-        self._pattern('build_face_vector')
-
-    @tatsumasu()
-    def _STAR_(self):  # noqa
-        self._pattern('star')
-
-    @tatsumasu()
-    def _CLOSURE_(self):  # noqa
-        self._pattern('closure')
-
-    @tatsumasu()
-    def _LINK_(self):  # noqa
-        self._pattern('link')
-
-    @tatsumasu()
-    def _BOUNDARY_(self):  # noqa
-        self._pattern('boundary')
-
-    @tatsumasu()
-    def _IS_COMPLEX_(self):  # noqa
-        self._pattern('is_complex')
-
-    @tatsumasu()
-    def _IS_PURE_COMPLEX_(self):  # noqa
-        self._pattern('is_pure_complex')
-
-    @tatsumasu()
-    def _GET_VERTICES_E_(self):  # noqa
-        self._pattern('get_vertices_e')
-
-    @tatsumasu()
-    def _GET_VERTICES_F_(self):  # noqa
-        self._pattern('get_vertices_f')
-
-    @tatsumasu()
-    def _GET_EDGES_F_(self):  # noqa
-        self._pattern('get_edges_f')
-
-    @tatsumasu()
-    def _DIAMOND_(self):  # noqa
-        self._pattern('diamond')
-
-    @tatsumasu('FacesOfEdgeFunc')
-    def _faces_of_edge_func_(self):  # noqa
-        self._FACES_OF_EDGE_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('DihedralFunc')
-    def _dihedral_func_(self):  # noqa
-        self._DIHEDRAL_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('FaceNormalFunc')
-    def _face_normal_func_(self):  # noqa
-        self._FACE_NORMAL_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('GetAdjacentVerticesVFunc')
-    def _get_adjacent_vertices_v_func_(self):  # noqa
-        self._GET_ADJACENT_VERTICES_V_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('GetIncidentEdgesVFunc')
-    def _get_incident_edges_v_func_(self):  # noqa
-        self._GET_INCIDENT_EDGES_V_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('GetIncidentFacesVFunc')
-    def _get_incident_faces_v_func_(self):  # noqa
-        self._GET_INCIDENT_FACES_V_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('GetIncidentVerticesEFunc')
-    def _get_incident_vertices_e_func_(self):  # noqa
-        self._GET_INCIDENT_VERTICES_E_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('GetIncidentFacesEFunc')
-    def _get_incident_faces_e_func_(self):  # noqa
-        self._GET_INCIDENT_FACES_E_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('GetDiamondVerticesEFunc')
-    def _get_diamond_vertices_e_func_(self):  # noqa
-        self._GET_DIAMOND_VERTICES_E_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('GetDiamondFacesEFunc')
-    def _get_diamond_faces_e_func_(self):  # noqa
-        self._GET_DIAMOND_FACES_E_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('GetIncidentVerticesFFunc')
-    def _get_incident_vertices_f_func_(self):  # noqa
-        self._GET_INCIDENT_VERTICES_F_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('GetIncidentEdgesFFunc')
-    def _get_incident_edges_f_func_(self):  # noqa
-        self._GET_INCIDENT_EDGES_F_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('GetAdjacentFacesFFunc')
-    def _get_adjacent_faces_f_func_(self):  # noqa
-        self._GET_ADJACENT_FACES_F_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('BuildVertexVectorFunc')
-    def _build_vertex_vector_func_(self):  # noqa
-        self._BUILD_VERTEX_VECTOR_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('BuildEdgeVectorFunc')
-    def _build_edge_vector_func_(self):  # noqa
-        self._BUILD_EDGE_VECTOR_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('BuildFaceVectorFunc')
-    def _build_face_vector_func_(self):  # noqa
-        self._BUILD_FACE_VECTOR_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('StarFunc')
-    def _star_func_(self):  # noqa
-        self._STAR_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('ClosureFunc')
-    def _closure_func_(self):  # noqa
-        self._CLOSURE_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('LinkFunc')
-    def _link_func_(self):  # noqa
-        self._LINK_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('BoundaryFunc')
-    def _boundary_func_(self):  # noqa
-        self._BOUNDARY_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('IsComplexFunc')
-    def _isComplex_func_(self):  # noqa
-        self._IS_COMPLEX_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('IsPureComplexFunc')
-    def _isPureComplex_func_(self):  # noqa
-        self._IS_PURE_COMPLEX_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('GetVerticesEFunc')
-    def _get_vertices_e_func_(self):  # noqa
-        self._GET_VERTICES_E_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('GetVerticesFFunc')
-    def _get_vertices_f_func_(self):  # noqa
-        self._GET_VERTICES_F_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('GetEdgesFFunc')
-    def _get_edges_f_func_(self):  # noqa
-        self._GET_EDGES_F_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('VerticesFunc')
-    def _vertices_func_(self):  # noqa
-        self._VERTICES_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('EdgesFunc')
-    def _edges_func_(self):  # noqa
-        self._EDGES_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('FacesFunc')
-    def _faces_func_(self):  # noqa
-        self._FACES_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('TetsFunc')
-    def _tets_func_(self):  # noqa
-        self._TETS_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu('DiamondFunc')
-    def _diamond_func_(self):  # noqa
-        self._DIAMOND_()
-        self.name_last_node('name')
-        self._token('(')
-
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._closure(block2)
-            self._expression_()
-            self.add_last_node_to_name('params')
-
-            def block4():
-
-                def block5():
-                    self._hspace_()
-                self._closure(block5)
-                self._params_separator_()
-                self.add_last_node_to_name('separators')
-
-                def block7():
-                    self._hspace_()
-                self._closure(block7)
-                self._expression_()
-                self.add_last_node_to_name('params')
-            self._closure(block4)
-        self._closure(block1)
-
-        def block9():
-            self._hspace_()
-        self._closure(block9)
-        self._token(')')
-        self._define(
-            ['name'],
-            ['params', 'separators']
-        )
-
-    @tatsumasu()
     def _Directive_(self):  # noqa
         self._import_()
 
@@ -7631,13 +6366,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 self._right_hand_side_()
             self._error(
                 'expecting one of: '
-                '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
-                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
-                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
-                '<local_func> <assignment> <expression>'
+                '<identifier_with_unicode_subscript>'
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                '<KEYWORDS> <PREFIX_KEYWORD> <local_func>'
+                '<identifier> <assignment> <expression>'
                 '<addition> <subtraction>'
                 "<add_sub_operator> <term> '-' min <MIN>"
                 'max <MAX> argmin <ARGMIN> argmax'
@@ -7762,11 +6495,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
-                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
-                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
+                '<identifier_with_subscript>'
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
             )
         self._define(
@@ -7840,11 +6571,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 self._matrix_()
             self._error(
                 'expecting one of: '
-                '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
-                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
-                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
+                '<identifier_with_subscript>'
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
                 "'(' <vector> '[' '⎡' <matrix>"
             )
@@ -7965,17 +6694,15 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 "<pseudoinverse_operator> <factor> '||'"
                 "'‖' '|' '<' '⟨' <union_operator>"
                 "<intersect_operator> sum ∑ <SUM> '∪' int"
-                "<INT> '∫' √ <identifier_alone> <func_id>"
-                '<exp_func> <log_func> <ln_func>'
-                '<sqrt_func> <element_convert_func>'
-                '<minmax_func>'
+                "<INT> '∫' √ '!!!' <func_id> <exp_func>"
+                '<log_func> <ln_func> <sqrt_func>'
+                '<element_convert_func> <minmax_func>'
                 '<predefined_built_operators>'
                 "<operations> '(' <subexpression> '0' '1'"
                 "'𝟙' [01\\u1D7D9] <number_matrix>"
-                '<identifier_with_multi_subscript>'
-                '<identifier_with_subscript> [∂A-Za-'
-                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
-                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
+                '<identifier_alone>'
+                '<identifier_with_subscript>'
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
                 "<integer> '.' <digit> <mantissa>"
                 '<floating_point> <double>'
@@ -8001,9 +6728,8 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 self._constant_()
             self._error(
                 'expecting one of: '
-                "'(' <subexpression> [∂A-Za-"
-                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
-                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
+                "'(' <subexpression>"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD>'
                 "<identifier_alone> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
@@ -8783,12 +7509,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             self._error(
                 'expecting one of: '
                 "'(' <arithmetic_subexpression> # <POUND>"
-                '<size_op>'
-                '<identifier_with_multi_subscript>'
-                '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
-                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
-                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
+                '<size_op> <identifier_alone>'
+                '<identifier_with_subscript>'
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
                 "<integer> '.' <digit> <mantissa>"
                 '<floating_point> <double>'
@@ -9471,11 +8194,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
-                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
-                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
+                '<identifier_with_subscript>'
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
             )
         self._define(
@@ -9598,20 +8319,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
 
     @tatsumasu()
     def _func_id_(self):  # noqa
-        self._identifier_alone_()
-
-        def block0():
-            with self._choice():
-                with self._option():
-                    self._token('_')
-                    self._identifier_alone_()
-                with self._option():
-                    self._unicode_subscript_()
-                self._error(
-                    'expecting one of: '
-                    "'_' <unicode_subscript>"
-                )
-        self._closure(block0)
+        self._token('!!!')
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
@@ -9623,7 +8331,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                     with self._choice():
                         with self._option():
                             with self._group():
-                                self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
+                                self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                             self.name_last_node('value')
                             self._define(
                                 ['value'],
@@ -9640,8 +8348,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                             )
                         self._error(
                             'expecting one of: '
-                            '[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
-                            "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
+                            "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                         )
                 self._define(
                     ['value', 'id'],
@@ -9651,7 +8358,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 with self._group():
                     self._PREFIX_KEYWORD_()
                     with self._group():
-                        self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
+                        self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                 self.name_last_node('value')
                 self._define(
                     ['value'],
@@ -9659,8 +8366,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
-                "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> where <WHERE> given <GIVEN>'
                 'sum min <MIN> max <MAX> argmin <ARGMIN>'
                 'argmax <ARGMAX> int <INT> if <IF>'
@@ -9692,18 +8398,14 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
     def _identifier_(self):  # noqa
         with self._choice():
             with self._option():
-                self._identifier_with_multi_subscript_()
-            with self._option():
                 self._identifier_with_subscript_()
             with self._option():
                 self._identifier_alone_()
             self._error(
                 'expecting one of: '
-                '[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
-                "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD>'
                 '<identifier_alone>'
-                '<identifier_with_multi_subscript>'
+                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                '<KEYWORDS> <PREFIX_KEYWORD>'
                 '<identifier_with_subscript> where'
                 '<WHERE> given <GIVEN> sum min <MIN> max'
                 '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
@@ -9726,123 +8428,6 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<TUPLE> sequence <SEQUENCE>'
                 '<BUILTIN_KEYWORDS>'
             )
-
-    @tatsumasu('IdentifierSubscript')
-    def _identifier_with_multi_subscript_(self):  # noqa
-        self._identifier_alone_()
-        self.name_last_node('left')
-
-        def block1():
-            self._token('_')
-            with self._group():
-                with self._choice():
-                    with self._option():
-                        self._identifier_alone_()
-                    with self._option():
-                        self._BUILTIN_KEYWORDS_()
-                    self._error(
-                        'expecting one of: '
-                        '<identifier_alone> <BUILTIN_KEYWORDS>'
-                    )
-            self.add_last_node_to_name('right')
-        self._positive_closure(block1)
-        with self._group():
-            with self._choice():
-                with self._option():
-
-                    def block5():
-                        with self._choice():
-                            with self._option():
-                                with self._group():
-                                    self._token(',')
-                                    self._token('*')
-                                    self.add_last_node_to_name('right')
-                                self._define(
-                                    [],
-                                    ['right']
-                                )
-                            with self._option():
-                                with self._group():
-
-                                    def block8():
-                                        self._token(',')
-                                    self._closure(block8)
-                                    with self._group():
-                                        with self._choice():
-                                            with self._option():
-                                                self._integer_()
-                                            with self._option():
-                                                self._identifier_alone_()
-                                            self._error(
-                                                'expecting one of: '
-                                                '<integer> <identifier_alone>'
-                                            )
-                                    self.add_last_node_to_name('right')
-                                self._define(
-                                    [],
-                                    ['right']
-                                )
-                            self._error(
-                                'expecting one of: '
-                                "',' <integer> <identifier_alone>"
-                            )
-                    self._closure(block5)
-                    self._define(
-                        [],
-                        ['right']
-                    )
-                with self._option():
-
-                    def block11():
-                        with self._choice():
-                            with self._option():
-                                with self._group():
-                                    self._token(',')
-                                    self._token('*')
-                                    self.add_last_node_to_name('right')
-                                self._define(
-                                    [],
-                                    ['right']
-                                )
-                            with self._option():
-                                with self._group():
-
-                                    def block14():
-                                        self._token(',')
-                                    self._closure(block14)
-                                    with self._group():
-                                        with self._choice():
-                                            with self._option():
-                                                self._sub_integer_()
-                                            with self._option():
-                                                self._unicode_subscript_()
-                                            self._error(
-                                                'expecting one of: '
-                                                '<sub_integer> <unicode_subscript>'
-                                            )
-                                    self.add_last_node_to_name('right')
-                                self._define(
-                                    [],
-                                    ['right']
-                                )
-                            self._error(
-                                'expecting one of: '
-                                "',' <sub_integer> <unicode_subscript>"
-                            )
-                    self._closure(block11)
-                    self._define(
-                        [],
-                        ['right']
-                    )
-                self._error(
-                    'expecting one of: '
-                    "',' <integer> <identifier_alone>"
-                    '<sub_integer> <unicode_subscript>'
-                )
-        self._define(
-            ['left'],
-            ['right']
-        )
 
     @tatsumasu('Function')
     def _function_operator_(self):  # noqa
@@ -10028,10 +8613,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '<identifier_alone> [∂A-Za-'
-                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
-                "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD> <func_id>'
+                "'!!!' <func_id>"
             )
         self._define(
             ['name', 'p'],
@@ -10043,7 +8625,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
         with self._group():
             with self._choice():
                 with self._option():
-                    self._identifier_()
+                    self._identifier_with_unicode_subscript_()
                     self.name_last_node('name')
 
                     def block2():
@@ -10084,7 +8666,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                         ['params', 'separators']
                     )
                 with self._option():
-                    self._identifier_()
+                    self._identifier_with_unicode_subscript_()
                     self.name_last_node('name')
 
                     def block14():
@@ -10124,32 +8706,145 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                         ['name', 'def_s'],
                         ['params', 'separators']
                     )
+                with self._option():
+                    self._identifier_alone_()
+                    self.name_last_node('name')
+
+                    def block26():
+                        self._token('_')
+                        self._identifier_alone_()
+                        self.add_last_node_to_name('subs')
+
+                        def block28():
+
+                            def block29():
+                                self._token(',')
+                            self._closure(block29)
+                            self._identifier_alone_()
+                            self.add_last_node_to_name('subs')
+                        self._closure(block28)
+                    self._closure(block26)
+
+                    def block31():
+                        self._pattern('\\(')
+                        self.name_last_node('def_p')
+
+                        def block33():
+
+                            def block34():
+                                self._hspace_()
+                            self._closure(block34)
+                            self._identifier_alone_()
+                            self.add_last_node_to_name('params')
+
+                            def block36():
+
+                                def block37():
+                                    self._hspace_()
+                                self._closure(block37)
+                                self._params_separator_()
+                                self.add_last_node_to_name('separators')
+
+                                def block39():
+                                    self._hspace_()
+                                self._closure(block39)
+                                self._identifier_alone_()
+                                self.add_last_node_to_name('params')
+                            self._closure(block36)
+                        self._closure(block33)
+
+                        def block41():
+                            self._hspace_()
+                        self._closure(block41)
+                        self._token(')')
+                    self._closure(block31)
+                    self._define(
+                        ['name', 'def_p'],
+                        ['subs', 'params', 'separators']
+                    )
+                with self._option():
+                    self._identifier_alone_()
+                    self.name_last_node('name')
+
+                    def block43():
+                        self._token('_')
+                        self._identifier_alone_()
+                        self.add_last_node_to_name('subs')
+
+                        def block45():
+
+                            def block46():
+                                self._token(',')
+                            self._closure(block46)
+                            self._identifier_alone_()
+                            self.add_last_node_to_name('subs')
+                        self._closure(block45)
+                    self._closure(block43)
+
+                    def block48():
+                        self._pattern('\\[')
+                        self.name_last_node('def_s')
+
+                        def block50():
+
+                            def block51():
+                                self._hspace_()
+                            self._closure(block51)
+                            self._identifier_alone_()
+                            self.add_last_node_to_name('params')
+
+                            def block53():
+
+                                def block54():
+                                    self._hspace_()
+                                self._closure(block54)
+                                self._params_separator_()
+                                self.add_last_node_to_name('separators')
+
+                                def block56():
+                                    self._hspace_()
+                                self._closure(block56)
+                                self._identifier_alone_()
+                                self.add_last_node_to_name('params')
+                            self._closure(block53)
+                        self._closure(block50)
+
+                        def block58():
+                            self._hspace_()
+                        self._closure(block58)
+                        self._token(']')
+                    self._closure(block48)
+                    self._define(
+                        ['name', 'def_s'],
+                        ['subs', 'params', 'separators']
+                    )
                 self._error(
                     'expecting one of: '
-                    '<identifier>'
+                    '<identifier_with_unicode_subscript>'
+                    '<identifier_alone>'
                 )
 
-        def block25():
+        def block59():
             self._hspace_()
-        self._closure(block25)
+        self._closure(block59)
         self._token('=')
         self.name_last_node('op')
 
-        def block27():
+        def block61():
             self._hspace_()
-        self._closure(block27)
+        self._closure(block61)
         self._right_hand_side_()
         self.add_last_node_to_name('expr')
         with self._optional():
 
-            def block29():
+            def block63():
                 self._hspace_()
-            self._closure(block29)
+            self._closure(block63)
             self._line_()
 
-        def block30():
+        def block64():
             self._hspace_()
-        self._closure(block30)
+        self._closure(block64)
         with self._group():
             with self._choice():
                 with self._option():
@@ -10161,52 +8856,52 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                     '<WHERE> <GIVEN>'
                 )
 
-        def block32():
+        def block66():
             self._hspace_()
-        self._closure(block32)
+        self._closure(block66)
         self._where_condition_()
         self.add_last_node_to_name('defs')
 
-        def block34():
+        def block68():
 
-            def block35():
+            def block69():
                 self._hspace_()
-            self._closure(block35)
+            self._closure(block69)
             self._token(',')
 
-            def block36():
+            def block70():
                 self._hspace_()
-            self._closure(block36)
+            self._closure(block70)
             self._where_condition_()
             self.add_last_node_to_name('defs')
-        self._closure(block34)
+        self._closure(block68)
 
-        def block38():
+        def block72():
 
-            def block39():
+            def block73():
                 self._hspace_()
-            self._closure(block39)
+            self._closure(block73)
             self._token(',')
 
-            def block40():
+            def block74():
                 self._hspace_()
-            self._closure(block40)
+            self._closure(block74)
             with self._optional():
                 self._line_()
 
-            def block41():
+            def block75():
                 self._hspace_()
-            self._closure(block41)
+            self._closure(block75)
             self._general_assignment_()
             self.add_last_node_to_name('extra')
-        self._closure(block38)
+        self._closure(block72)
         self._define(
             ['name', 'def_p', 'def_s', 'op'],
-            ['params', 'separators', 'expr', 'defs', 'extra']
+            ['params', 'separators', 'subs', 'expr', 'defs', 'extra']
         )
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics:
+class grammarc21f969b5f03d33d43e04f8f136e7682Semantics:
     def start(self, ast):  # noqa
         return ast
 
@@ -10819,174 +9514,6 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics:
     def inv_func(self, ast):  # noqa
         return ast
 
-    def FACES_OF_EDGE(self, ast):  # noqa
-        return ast
-
-    def DIHEDRAL(self, ast):  # noqa
-        return ast
-
-    def FACE_NORMAL(self, ast):  # noqa
-        return ast
-
-    def GET_ADJACENT_VERTICES_V(self, ast):  # noqa
-        return ast
-
-    def GET_INCIDENT_EDGES_V(self, ast):  # noqa
-        return ast
-
-    def GET_INCIDENT_FACES_V(self, ast):  # noqa
-        return ast
-
-    def GET_INCIDENT_VERTICES_E(self, ast):  # noqa
-        return ast
-
-    def GET_INCIDENT_FACES_E(self, ast):  # noqa
-        return ast
-
-    def GET_DIAMOND_VERTICES_E(self, ast):  # noqa
-        return ast
-
-    def GET_DIAMOND_FACES_E(self, ast):  # noqa
-        return ast
-
-    def GET_INCIDENT_VERTICES_F(self, ast):  # noqa
-        return ast
-
-    def GET_INCIDENT_EDGES_F(self, ast):  # noqa
-        return ast
-
-    def GET_ADJACENT_FACES_F(self, ast):  # noqa
-        return ast
-
-    def BUILD_VERTEX_VECTOR(self, ast):  # noqa
-        return ast
-
-    def BUILD_EDGE_VECTOR(self, ast):  # noqa
-        return ast
-
-    def BUILD_FACE_VECTOR(self, ast):  # noqa
-        return ast
-
-    def STAR(self, ast):  # noqa
-        return ast
-
-    def CLOSURE(self, ast):  # noqa
-        return ast
-
-    def LINK(self, ast):  # noqa
-        return ast
-
-    def BOUNDARY(self, ast):  # noqa
-        return ast
-
-    def IS_COMPLEX(self, ast):  # noqa
-        return ast
-
-    def IS_PURE_COMPLEX(self, ast):  # noqa
-        return ast
-
-    def GET_VERTICES_E(self, ast):  # noqa
-        return ast
-
-    def GET_VERTICES_F(self, ast):  # noqa
-        return ast
-
-    def GET_EDGES_F(self, ast):  # noqa
-        return ast
-
-    def DIAMOND(self, ast):  # noqa
-        return ast
-
-    def faces_of_edge_func(self, ast):  # noqa
-        return ast
-
-    def dihedral_func(self, ast):  # noqa
-        return ast
-
-    def face_normal_func(self, ast):  # noqa
-        return ast
-
-    def get_adjacent_vertices_v_func(self, ast):  # noqa
-        return ast
-
-    def get_incident_edges_v_func(self, ast):  # noqa
-        return ast
-
-    def get_incident_faces_v_func(self, ast):  # noqa
-        return ast
-
-    def get_incident_vertices_e_func(self, ast):  # noqa
-        return ast
-
-    def get_incident_faces_e_func(self, ast):  # noqa
-        return ast
-
-    def get_diamond_vertices_e_func(self, ast):  # noqa
-        return ast
-
-    def get_diamond_faces_e_func(self, ast):  # noqa
-        return ast
-
-    def get_incident_vertices_f_func(self, ast):  # noqa
-        return ast
-
-    def get_incident_edges_f_func(self, ast):  # noqa
-        return ast
-
-    def get_adjacent_faces_f_func(self, ast):  # noqa
-        return ast
-
-    def build_vertex_vector_func(self, ast):  # noqa
-        return ast
-
-    def build_edge_vector_func(self, ast):  # noqa
-        return ast
-
-    def build_face_vector_func(self, ast):  # noqa
-        return ast
-
-    def star_func(self, ast):  # noqa
-        return ast
-
-    def closure_func(self, ast):  # noqa
-        return ast
-
-    def link_func(self, ast):  # noqa
-        return ast
-
-    def boundary_func(self, ast):  # noqa
-        return ast
-
-    def isComplex_func(self, ast):  # noqa
-        return ast
-
-    def isPureComplex_func(self, ast):  # noqa
-        return ast
-
-    def get_vertices_e_func(self, ast):  # noqa
-        return ast
-
-    def get_vertices_f_func(self, ast):  # noqa
-        return ast
-
-    def get_edges_f_func(self, ast):  # noqa
-        return ast
-
-    def vertices_func(self, ast):  # noqa
-        return ast
-
-    def edges_func(self, ast):  # noqa
-        return ast
-
-    def faces_func(self, ast):  # noqa
-        return ast
-
-    def tets_func(self, ast):  # noqa
-        return ast
-
-    def diamond_func(self, ast):  # noqa
-        return ast
-
     def Directive(self, ast):  # noqa
         return ast
 
@@ -11185,9 +9712,6 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Semantics:
     def identifier(self, ast):  # noqa
         return ast
 
-    def identifier_with_multi_subscript(self, ast):  # noqa
-        return ast
-
     def function_operator(self, ast):  # noqa
         return ast
 
@@ -11203,7 +9727,7 @@ def main(filename, start=None, **kwargs):
     else:
         with open(filename) as f:
             text = f.read()
-    parser = grammare37f0136aa3ffaf149b351f6a4c948e9Parser()
+    parser = grammarc21f969b5f03d33d43e04f8f136e7682Parser()
     return parser.parse(
         text,
         rule_name=start,
@@ -11216,7 +9740,7 @@ if __name__ == '__main__':
     import json
     from tatsu.util import asjson
 
-    ast = generic_main(main, grammare37f0136aa3ffaf149b351f6a4c948e9Parser, name='grammare37f0136aa3ffaf149b351f6a4c948e9')
+    ast = generic_main(main, grammarc21f969b5f03d33d43e04f8f136e7682Parser, name='grammarc21f969b5f03d33d43e04f8f136e7682')
     data = asjson(ast)
     print(json.dumps(data, indent=2))
 #!/usr/bin/env python
@@ -11244,13 +9768,13 @@ class ModelBase(Node):
     pass
 
 
-class grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics(ModelBuilderSemantics):
+class grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics(ModelBuilderSemantics):
     def __init__(self, context=None, types=None):
         types = [
             t for t in globals().values()
             if type(t) is type and issubclass(t, ModelBase)
         ] + (types or [])
-        super(grammare37f0136aa3ffaf149b351f6a4c948e9ModelBuilderSemantics, self).__init__(context=context, types=types)
+        super(grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics, self).__init__(context=context, types=types)
 
 
 @dataclass(eq=False)
@@ -11386,6 +9910,7 @@ class Summation(ModelBase):
     id: Any = None
     lower: Any = None
     range: Any = None
+    sign: Any = None
     sub: Any = None
     u: Any = None
     upper: Any = None
@@ -11781,216 +10306,6 @@ class InvFunc(ModelBase):
 
 
 @dataclass(eq=False)
-class FacesOfEdgeFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class DihedralFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class FaceNormalFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class GetAdjacentVerticesVFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class GetIncidentEdgesVFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class GetIncidentFacesVFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class GetIncidentVerticesEFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class GetIncidentFacesEFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class GetDiamondVerticesEFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class GetDiamondFacesEFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class GetIncidentVerticesFFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class GetIncidentEdgesFFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class GetAdjacentFacesFFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class BuildVertexVectorFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class BuildEdgeVectorFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class BuildFaceVectorFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class StarFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class ClosureFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class LinkFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class BoundaryFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class IsComplexFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class IsPureComplexFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class GetVerticesEFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class GetVerticesFFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class GetEdgesFFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class VerticesFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class EdgesFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class FacesFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class TetsFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
-class DiamondFunc(ModelBase):
-    name: Any = None
-    params: Any = None
-    separators: Any = None
-
-
-@dataclass(eq=False)
 class Import(ModelBase):
     names: Any = None
     package: Any = None
@@ -12293,3 +10608,4 @@ class LocalFunc(ModelBase):
     op: Any = None
     params: Any = None
     separators: Any = None
+    subs: Any = None

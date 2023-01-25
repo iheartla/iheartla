@@ -2206,6 +2206,7 @@ class TypeWalker(NodeWalker):
             new_id = self.generate_var_name("union")
         else:
             ir_node = SummationNode(parse_info=node.parseinfo, raw_text=node.text)
+            ir_node.sign = node.sign
             new_id = self.generate_var_name("sum")
         self.push_scope(new_id)
         self.logger.debug("cur sum_subs:{}, sum_conds:{}".format(self.sum_subs, self.sum_conds))

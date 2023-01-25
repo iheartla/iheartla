@@ -942,6 +942,7 @@ class CodeGenEigen(CodeGen):
     def visit_summation(self, node, **kwargs):
         target_var = []
         self.push_scope(node.scope_name)
+        expr_sign = '-' if node.sign else ''
         def set_name_conventions(sub):
             # name convention
             name_convention = {}
@@ -1027,7 +1028,7 @@ class CodeGenEigen(CodeGen):
                 for et in node.extra_list:
                     extra_info = self.visit(et, **kwargs)
                     content += [self.update_prelist_str([extra_info.content], '    ')]
-            content.append(str("    " + assign_id + " += " + exp_str + ';\n'))
+            content.append(str("    " + assign_id + " += " + expr_sign + exp_str + ';\n'))
             content[0] = "    " + content[0]
             content.append("}\n")
             self.del_name_conventions(name_convention)
@@ -1088,11 +1089,11 @@ class CodeGenEigen(CodeGen):
             content += ["    " + pre for pre in cond_info.pre_list]
             content.append("    " + cond_content)
             content += ["    " + pre for pre in exp_pre_list]
-            content.append(str("        " + assign_id + " += " + exp_str + ';\n'))
+            content.append(str("        " + assign_id + " += " + expr_sign + exp_str + ';\n'))
             content.append("    }\n")
         else:
             content += exp_pre_list
-            content.append(str("    " + assign_id + " += " + exp_str + ';\n'))
+            content.append(str("    " + assign_id + " += " + expr_sign + exp_str + ';\n'))
         content[0] = "    " + content[0]
 
         content.append("}\n")

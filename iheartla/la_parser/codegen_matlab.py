@@ -685,6 +685,7 @@ class CodeGenMatlab(CodeGen):
 
     def visit_summation(self, node, **kwargs):
         self.push_scope(node.scope_name)
+        expr_sign = '-' if node.sign else ''
         target_var = []
         # sub = self.visit(node.id).content
         def set_name_conventions(sub):
@@ -759,7 +760,7 @@ class CodeGenMatlab(CodeGen):
                 for et in node.extra_list:
                     extra_info = self.visit(et, **kwargs)
                     content += [self.update_prelist_str([extra_info.content], '    ')]
-            content.append(str("    " + assign_id + " = " + assign_id + " + " + exp_str + ';\n'))
+            content.append(str("    " + assign_id + " = " + assign_id + " + " + expr_sign + exp_str + ';\n'))
             content[0] = "    " + content[0]
             content.append('end\n')
             self.del_name_conventions(name_convention)
@@ -816,7 +817,7 @@ class CodeGenMatlab(CodeGen):
         if node.cond:
             content.append("    " + cond_content)
             indent += "  "
-        content.append(str(indent + assign_id + " = " + assign_id + " + " + exp_str + ';\n'))
+        content.append(str(indent + assign_id + " = " + assign_id + " + " + expr_sign + exp_str + ';\n'))
         content[0] = "    " + content[0]
         if node.cond:
             content.append("    end\n")
