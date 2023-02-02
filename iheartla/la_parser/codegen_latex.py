@@ -57,6 +57,9 @@ class CodeGenLatex(CodeGen):
         for mark in ['̃', '̂', '̄']:
             if mark in name:
                 return "\\textit{{{}}}".format(name)
+        if '∂' in name:
+            # "\mathit{∂}" is invalid
+            return name
         return "\\mathit{{{}}}".format(name)
 
     def convert_special_syms(self, param):
