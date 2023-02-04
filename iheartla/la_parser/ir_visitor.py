@@ -624,7 +624,7 @@ class IRVisitor(IRBaseVisitor):
         if func_name is not None:
             self.func_name = func_name.replace(' ','')
         else:
-            self.func_name = 'iheartla'
+            self.func_name = CLASS_NAME
         # self.print_symbols()
         self.declared_symbols.clear()
         self.local_func_def = ''
