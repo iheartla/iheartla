@@ -23,6 +23,11 @@ eset2 = { e for e ∈ nes if ∂1_e,f ∂0_v,e == 1 },
 vset2 = vertexset(NonZeros(B0 IndicatorVector(M, eset2))),
 vvec2 = vec(vset2 - {v})
 
+NextVerticeInFace(f, v) = vset_1 where v ∈ V, f ∈ F,
+eset = { e for e ∈ Edges(f) if ∂1_e,f ∂0_v,e == -1},
+vset = Vertices(eset) - {v}
+
+
 OrientedVertices(f) = tuple(vvec_1, i, j)    where f ∈ F,
 vs = Vertices(f),
 vvec = vec(vs),

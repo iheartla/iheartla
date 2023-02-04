@@ -23,19 +23,20 @@ TriangleMesh::TriangleMesh(const Matrix &T){
     this->initialize(T);
 }
 
-void TriangleMesh::initialize(const Matrix &T){
-    Matrix new_T = preprocess_matrix(T);
+void TriangleMesh::initialize(const Matrix &T){ 
+    Matrix new_T = T; 
     this->initialize(new_T);
 }
 void TriangleMesh::initialize(Matrix &T){
-    std::cout<<"T cols:"<<T.cols()<<std::endl;
+    // std::cout<<"T:"<<T<<std::endl;
+    Matrix new_T = preprocess_matrix(T);
     this->numerical_order = true;
-    this->T = T;
-    // std::cout<<"T:\n"<<this->T<<std::endl;
-    if (T.cols() == 4) {
+    this->T = new_T;
+    // std::cout<<"this->T:\n"<<this->T<<std::endl;
+    if (new_T.cols() == 4) {
         // tets, assume each row (tet) already has the positive orientation
-        this->T = T;
-        Vector maxVal = T.rowwise().maxCoeff();
+        this->T = new_T;
+        Vector maxVal = this->T.rowwise().maxCoeff();
         this->num_v = maxVal.maxCoeff()+1;
         this->create_faces();
         this->create_edges();
@@ -44,9 +45,9 @@ void TriangleMesh::initialize(Matrix &T){
         this->build_boundary_mat2();
         this->build_boundary_mat3();
         }
-    else if(T.cols() == 3){
+    else if(new_T.cols() == 3){
         // faces, assume each row (face) already has the positive orientation
-        this->F = T;
+        this->F = new_T;
         // std::cout<<"this->F:\n"<<this->F<<std::endl;
         Vector maxVal = this->F.rowwise().maxCoeff();
         this->num_v = maxVal.maxCoeff()+1;
