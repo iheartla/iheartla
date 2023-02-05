@@ -37,7 +37,7 @@ class SetTypeEnum(Enum):
     TET = 4
 
 class LaVarType(object):
-    def __init__(self, var_type=VarTypeEnum.INVALID, desc=None, element_type=None, symbol=None, index_type=False, dynamic=DynamicTypeEnum.DYN_INVALID):
+    def __init__(self, var_type=VarTypeEnum.INVALID, desc=None, element_type=None, symbol=None, index_type=False, dynamic=DynamicTypeEnum.DYN_INVALID, owner=None):
         super().__init__()
         self.var_type = var_type if var_type else VarTypeEnum.INVALID
         self.desc = desc   # only parameters need description
@@ -45,6 +45,7 @@ class LaVarType(object):
         self.symbol = symbol
         self.index_type = index_type
         self.dynamic = dynamic  # related to type inference, no need to check if True
+        self.owner = owner  # track mesh element
 
     def is_valid(self):
         return self.var_type != VarTypeEnum.INVALID
@@ -234,8 +235,8 @@ class LaVarType(object):
 
 
 class ScalarType(LaVarType):
-    def __init__(self, is_int=False, desc=None, element_type=None, symbol=None, index_type=False, is_constant=False, dynamic=DynamicTypeEnum.DYN_INVALID, cur_type=SetTypeEnum.DEFAULT):
-        LaVarType.__init__(self, VarTypeEnum.SCALAR, desc, element_type, symbol, index_type=index_type, dynamic=dynamic)
+    def __init__(self, is_int=False, desc=None, element_type=None, symbol=None, index_type=False, is_constant=False, dynamic=DynamicTypeEnum.DYN_INVALID, cur_type=SetTypeEnum.DEFAULT, owner=None):
+        LaVarType.__init__(self, VarTypeEnum.SCALAR, desc, element_type, symbol, index_type=index_type, dynamic=dynamic, owner=owner)
         self.is_int = is_int
         self.is_constant = is_constant  # constant number
         self.cur_type = cur_type
@@ -256,15 +257,15 @@ class ScalarType(LaVarType):
         return 'ℤ' if self.is_int else 'ℝ'
 
 class IntType(ScalarType):
-    def __init__(self):
-        ScalarType.__init__(self, is_int=True)
+    def __init__(self, owner=None):
+        ScalarType.__init__(self, is_int=True, owner=owner)
 
     def get_raw_text(self):
         return 'ℤ'
 
 class VertexType(ScalarType):
-    def __init__(self):
-        ScalarType.__init__(self, is_int=True, index_type=True, cur_type=SetTypeEnum.VERTEX)
+    def __init__(self, owner=None):
+        ScalarType.__init__(self, is_int=True, index_type=True, cur_type=SetTypeEnum.VERTEX, owner=owner)
         # self.var_type = VarTypeEnum.VERTEXTYPE
 
     def get_raw_text(self):
@@ -274,8 +275,8 @@ class VertexType(ScalarType):
         return 'ℤ'
 
 class EdgeType(ScalarType):
-    def __init__(self):
-        ScalarType.__init__(self, is_int=True, index_type=True, cur_type=SetTypeEnum.EDGE)
+    def __init__(self, owner=None):
+        ScalarType.__init__(self, is_int=True, index_type=True, cur_type=SetTypeEnum.EDGE, owner=owner)
         # self.var_type = VarTypeEnum.EDGETYPE
 
     def get_raw_text(self):
@@ -285,8 +286,8 @@ class EdgeType(ScalarType):
         return 'ℤ'
 
 class FaceType(ScalarType):
-    def __init__(self):
-        ScalarType.__init__(self, is_int=True, index_type=True, cur_type=SetTypeEnum.FACE)
+    def __init__(self, owner=None):
+        ScalarType.__init__(self, is_int=True, index_type=True, cur_type=SetTypeEnum.FACE, owner=owner)
         # self.var_type = VarTypeEnum.FACETYPE
 
     def get_raw_text(self):
@@ -296,8 +297,8 @@ class FaceType(ScalarType):
         return 'ℤ'
 
 class TetType(ScalarType):
-    def __init__(self):
-        ScalarType.__init__(self, is_int=True, index_type=True, cur_type=SetTypeEnum.TET)
+    def __init__(self, owner=None):
+        ScalarType.__init__(self, is_int=True, index_type=True, cur_type=SetTypeEnum.TET, owner=owner)
         # self.var_type = VarTypeEnum.TETTYPE
 
     def get_raw_text(self):
@@ -307,8 +308,8 @@ class TetType(ScalarType):
         return 'ℤ'
 
 class MeshType(LaVarType):
-    def __init__(self, dim_dict=None, desc=None):
-        LaVarType.__init__(self, VarTypeEnum.MESH, desc)
+    def __init__(self, dim_dict=None, desc=None, owner=None):
+        LaVarType.__init__(self, VarTypeEnum.MESH, desc=desc, owner=owner)
         self.init_dims(dim_dict)
 
     def init_dims(self, dim_dict=None):
@@ -327,8 +328,8 @@ class MeshType(LaVarType):
         return self.get_raw_text()
 
 class SequenceType(LaVarType):
-    def __init__(self, size=0, check_dim=True, desc=None, element_type=None, symbol=None, dynamic=False):
-        LaVarType.__init__(self, VarTypeEnum.SEQUENCE, desc, element_type, symbol, dynamic=dynamic)
+    def __init__(self, size=0, check_dim=True, desc=None, element_type=None, symbol=None, dynamic=False, owner=None):
+        LaVarType.__init__(self, VarTypeEnum.SEQUENCE, desc, element_type, symbol, dynamic=dynamic, owner=owner)
         self.size = size
         self.check_dim = check_dim    # whether output assertion for dim checking
 
@@ -349,8 +350,8 @@ class SequenceType(LaVarType):
 
 
 class MatrixType(LaVarType):
-    def __init__(self, rows=0, cols=0, desc=None, element_type=ScalarType(), symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=None, list_dim=None, index_var=None, value_var=None, item_types=None, index_type=False,dynamic=DynamicTypeEnum.DYN_INVALID,rows_ir=None,cols_ir=None):
-        LaVarType.__init__(self, VarTypeEnum.MATRIX, desc, element_type, symbol,index_type=index_type, dynamic=dynamic)
+    def __init__(self, rows=0, cols=0, desc=None, element_type=ScalarType(), symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=None, list_dim=None, index_var=None, value_var=None, item_types=None, index_type=False,dynamic=DynamicTypeEnum.DYN_INVALID,rows_ir=None,cols_ir=None, owner=None):
+        LaVarType.__init__(self, VarTypeEnum.MATRIX, desc, element_type, symbol,index_type=index_type, dynamic=dynamic, owner=owner)
         self.rows = rows
         self.cols = cols
         self.rows_ir = rows_ir
@@ -414,8 +415,8 @@ class MatrixType(LaVarType):
 
 
 class VectorType(LaVarType):
-    def __init__(self, rows=0, desc=None, element_type=ScalarType(), sparse=False,symbol=None, dynamic=DynamicTypeEnum.DYN_INVALID, rows_ir=None):
-        LaVarType.__init__(self, VarTypeEnum.VECTOR, desc, element_type, symbol, dynamic=dynamic)
+    def __init__(self, rows=0, desc=None, element_type=ScalarType(), sparse=False,symbol=None, dynamic=DynamicTypeEnum.DYN_INVALID, rows_ir=None, owner=None):
+        LaVarType.__init__(self, VarTypeEnum.VECTOR, desc, element_type, symbol, dynamic=dynamic, owner=owner)
         self.rows = rows
         self.rows_ir = rows_ir
         self.cols = 1
@@ -464,8 +465,8 @@ class VectorType(LaVarType):
 
 
 class SetType(LaVarType):
-    def __init__(self, size=0, length=None, desc=None, element_type=None, symbol=None, int_list=None, type_list=None, index_type=False, dynamic=DynamicTypeEnum.DYN_INVALID, cur_type=SetTypeEnum.DEFAULT):
-        LaVarType.__init__(self, VarTypeEnum.SET, desc, element_type, symbol, dynamic=dynamic, index_type=index_type)
+    def __init__(self, size=0, length=None, desc=None, element_type=None, symbol=None, int_list=None, type_list=None, index_type=False, dynamic=DynamicTypeEnum.DYN_INVALID, cur_type=SetTypeEnum.DEFAULT, owner=None):
+        LaVarType.__init__(self, VarTypeEnum.SET, desc, element_type, symbol, dynamic=dynamic, index_type=index_type, owner=owner)
         self.size = size
         self.int_list = int_list     # whether the element is real number or integer
         self.type_list = type_list   # subtypes in a set
@@ -512,38 +513,38 @@ class SetType(LaVarType):
 
 
 class VertexSetType(SetType):
-    def __init__(self, length=None):
-        SetType.__init__(self, size=1, length=length, int_list=[True], type_list=[VertexType()], cur_type=SetTypeEnum.VERTEX)
+    def __init__(self, length=None, owner=None):
+        SetType.__init__(self, size=1, length=length, int_list=[True], type_list=[VertexType()], cur_type=SetTypeEnum.VERTEX, owner=owner)
     def get_signature(self):
         return 'vertexset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
 
     def get_cpp_signature(self):
         return self.get_raw_text()
 class EdgeSetType(SetType):
-    def __init__(self, length=None):
-        SetType.__init__(self, size=1, length=length, int_list=[True], type_list=[EdgeType()], cur_type=SetTypeEnum.EDGE)
+    def __init__(self, length=None, owner=None):
+        SetType.__init__(self, size=1, length=length, int_list=[True], type_list=[EdgeType()], cur_type=SetTypeEnum.EDGE, owner=owner)
     def get_signature(self):
         return 'edgeset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
     def get_cpp_signature(self):
         return self.get_raw_text()
 class FaceSetType(SetType):
-    def __init__(self, length=None):
-        SetType.__init__(self, size=1, length=length, int_list=[True], type_list=[FaceType()], cur_type=SetTypeEnum.FACE)
+    def __init__(self, length=None, owner=None):
+        SetType.__init__(self, size=1, length=length, int_list=[True], type_list=[FaceType()], cur_type=SetTypeEnum.FACE, owner=owner)
     def get_signature(self):
         return 'faceset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
     def get_cpp_signature(self):
         return self.get_raw_text()
 class TetSetType(SetType):
-    def __init__(self, length=None):
-        SetType.__init__(self, size=1, length=length, int_list=[True], type_list=[TetType()], cur_type=SetTypeEnum.TET)
+    def __init__(self, length=None, owner=None):
+        SetType.__init__(self, size=1, length=length, int_list=[True], type_list=[TetType()], cur_type=SetTypeEnum.TET, owner=owner)
     def get_signature(self):
         return 'tetset:' + ','.join([c_type.get_signature() for c_type in self.type_list])
     def get_cpp_signature(self):
         return self.get_raw_text()
 
 class TupleType(LaVarType):
-    def __init__(self, desc=None, element_type=None, symbol=None, type_list=None, index_type=False, dynamic=DynamicTypeEnum.DYN_INVALID):
-        LaVarType.__init__(self, VarTypeEnum.TUPLE, desc, element_type, symbol, dynamic=dynamic, index_type=index_type)
+    def __init__(self, desc=None, element_type=None, symbol=None, type_list=None, index_type=False, dynamic=DynamicTypeEnum.DYN_INVALID, owner=None):
+        LaVarType.__init__(self, VarTypeEnum.TUPLE, desc, element_type, symbol, dynamic=dynamic, index_type=index_type, owner=owner)
         self.type_list = type_list   # subtypes in a set
         self.size = 0 if type_list is None else len(type_list)
 
@@ -551,13 +552,13 @@ class TupleType(LaVarType):
         return 'tuple:' + ','.join([c_type.get_signature() for c_type in self.type_list])
 
 class SimplicialSetType(TupleType):
-    def __init__(self, desc=None):
-        TupleType.__init__(self, desc=desc, type_list=[VertexSetType(), EdgeSetType(), FaceSetType(), TetSetType()])
+    def __init__(self, desc=None, owner=None):
+        TupleType.__init__(self, desc=desc, type_list=[VertexSetType(), EdgeSetType(), FaceSetType(), TetSetType()], owner=owner)
 
 
 class IndexType(LaVarType):
-    def __init__(self, desc=None, symbol=None):
-        LaVarType.__init__(self, VarTypeEnum.INDEX, desc, symbol)
+    def __init__(self, desc=None, symbol=None, owner=None):
+        LaVarType.__init__(self, VarTypeEnum.INDEX, desc, symbol, owner=owner)
 
 
 
@@ -668,8 +669,8 @@ class OverloadingFunctionType(LaVarType):
             cpp_sig_list.append(cpp_sig)
         return ret
 class MappingType(LaVarType):
-    def __init__(self, desc=None, symbol=None, src=None, dst=None, ele_set=None, subset=False):
-        LaVarType.__init__(self, VarTypeEnum.MAPPING, desc, symbol)
+    def __init__(self, desc=None, symbol=None, src=None, dst=None, ele_set=None, subset=False, owner=None):
+        LaVarType.__init__(self, VarTypeEnum.MAPPING, desc, symbol, owner=owner)
         self.src = src
         self.dst = dst
         self.ele_set = ele_set
