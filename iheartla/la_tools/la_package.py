@@ -360,10 +360,10 @@ def get_sym_type_from_pkg(sym, pkg, mesh_type=None):
                             MatrixType(rows=mesh_type.ei_size, cols=2, element_type=EdgeType()),
                             MatrixType(rows=mesh_type.fi_size, cols=3, element_type=FaceType())])
                     elif sym == IndicatorVector:
-                        ret = OverloadingFunctionType(func_list=[make_function_type([MeshType(), VertexSetType()], [MatrixType(rows=mesh_type.vi_size, cols=1, sparse=True, element_type=VertexType(), owner=mesh_type.owner)]),
-                                              make_function_type([MeshType(), EdgeSetType()], [MatrixType(rows=mesh_type.ei_size, cols=1, sparse=True, element_type=EdgeType(), owner=mesh_type.owner)]),
-                                              make_function_type([MeshType(), FaceSetType()], [MatrixType(rows=mesh_type.fi_size, cols=1, sparse=True, element_type=FaceType(), owner=mesh_type.owner)]),
-                                              make_function_type([MeshType(), TetSetType()], [MatrixType(rows=mesh_type.ti_size, cols=1, sparse=True, element_type=TetType(), owner=mesh_type.owner)])],
+                        ret = OverloadingFunctionType(func_list=[make_function_type([VertexSetType()], [MatrixType(rows=mesh_type.vi_size, cols=1, sparse=True, element_type=VertexType(), owner=mesh_type.owner)]),
+                                              make_function_type([EdgeSetType()], [MatrixType(rows=mesh_type.ei_size, cols=1, sparse=True, element_type=EdgeType(), owner=mesh_type.owner)]),
+                                              make_function_type([FaceSetType()], [MatrixType(rows=mesh_type.fi_size, cols=1, sparse=True, element_type=FaceType(), owner=mesh_type.owner)]),
+                                              make_function_type([TetSetType()], [MatrixType(rows=mesh_type.ti_size, cols=1, sparse=True, element_type=TetType(), owner=mesh_type.owner)])],
                                    fname_list=['{}_0'.format(IndicatorVector),
                                                '{}_1'.format(IndicatorVector),
                                                '{}_2'.format(IndicatorVector),

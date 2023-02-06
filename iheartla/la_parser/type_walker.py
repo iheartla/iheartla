@@ -2880,10 +2880,18 @@ class TypeWalker(NodeWalker):
             # get dynamic func type based on parameters
             if builtin_name in MESH_HELPER_FUNC_MAPPING:
                 if builtin_name in MESH_HELPER_DYNAMIC_TYPE_LIST:
-                    # dynamic func type, the first parameter must be mesh type
-                    self.assert_expr(param_type_list[0].is_mesh(), get_err_msg_info(node.parseinfo,
-                                                                                    "Function error. The first parameter must be mesh type"))
-                    name_type = get_sym_type_from_pkg(builtin_name, MESH_HELPER, param_type_list[0])
+                    if builtin_name == IndicatorVector:
+                        # IndicatorVector can get mesh element from type owner
+                        err_msg = get_err_msg_info(node.parseinfo, "Function IndicatorVector error. Can not get mesh info from the parameter")
+                        self.assert_expr(param_type_list[0].owner, err_msg)
+                        self.check_sym_existence(param_type_list[0].owner, err_msg)
+                        mesh_t = self.get_sym_type(param_type_list[0].owner)
+                    else:
+                        # dynamic func type, the first parameter must be mesh type,
+                        self.assert_expr(param_type_list[0].is_mesh(), get_err_msg_info(node.parseinfo,
+                                                                                        "Function error. The first parameter must be mesh type"))
+                        mesh_t = param_type_list[0]
+                    name_type = get_sym_type_from_pkg(builtin_name, MESH_HELPER, mesh_t)
             # check overloading
             if name_type.is_overloaded():
                 # get correct type for current parameters
