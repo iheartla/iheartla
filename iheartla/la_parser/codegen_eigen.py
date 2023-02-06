@@ -40,8 +40,7 @@ class CodeGenEigen(CodeGen):
         check_list = []
         if len(self.get_cur_param_data().set_checking) > 0:
             for key, value in self.get_cur_param_data().set_checking.items():
-                # check_list = ['    assert( {}.find({}) != {}.end() );'.format(value, key, value)]
-                check_list = ['    assert( std::binary_search({}.begin(), {}.end(), {}) );'.format(value, value, key)]
+                check_list.append('    assert( std::binary_search({}.begin(), {}.end(), {}) );'.format(value, value, key))
         return check_list
 
     def get_set_item_str(self, set_type):

@@ -31,8 +31,7 @@ class CodeGenMatlab(CodeGen):
         check_list = []
         if len(self.get_cur_param_data().set_checking) > 0:
             for key, value in self.get_cur_param_data().set_checking.items():
-                # check_list = ['    assert( ismember({}, {}) );'.format(key, value)]
-                pass
+                check_list.append('    assert( ismember({}, {}) );'.format(key, value))
         return check_list
 
     def randn_str(self,sizes=[]):

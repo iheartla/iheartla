@@ -34,8 +34,7 @@ class CodeGenNumpy(CodeGen):
         check_list = []
         if len(self.get_cur_param_data().set_checking) > 0:
             for key, value in self.get_cur_param_data().set_checking.items():
-                check_list = ['    assert {} in {}'.format(key, self.prefix_sym(value))]
-
+                check_list.append('    assert {} in {}'.format(key, self.prefix_sym(value)))
         return check_list
 
     def get_rand_test_str(self, la_type, rand_int_max):
