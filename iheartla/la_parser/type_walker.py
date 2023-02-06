@@ -959,10 +959,11 @@ class TypeWalker(NodeWalker):
                     self.get_cur_param_data().symtable[k] = SequenceType(size=src_type.length, element_type=v.dst)
                     la_debug("mapping conversion: {}, type:{}, length:{}".format(k, self.get_cur_param_data().symtable[k].get_signature(), self.get_cur_param_data().symtable[v.src].length))
                 else:
-                    # mapping from element in a set
+                    # mapping from element in a set, f ∈ F
                     self.check_sym_existence(v.ele_set, "Symbol {} is not defined".format(v.ele_set))
                     set_type = self.get_sym_type(v.ele_set)
                     la_type = set_type.element_type
+                    la_type.owner = set_type.owner
                     if v.subset:
                         la_type = set_type
                     else:
@@ -2901,6 +2902,11 @@ class TypeWalker(NodeWalker):
                 param_info = param_node_list[index]
                 symbols = symbols.union(param_info.symbols)
                 param_list.append(param_info.ir)
+                # owner checking
+                if name_type.params[index].owner:
+                    self.assert_expr(name_type.params[index].owner == param_info.ir.la_type.owner,
+                                     get_err_msg_info(param_info.ir.parse_info,
+                                                      "Function error. Parameter comes from different mesh: function requires {} while param is {}".format(name_type.params[index].owner, param_info.ir.la_type.owner)))
                 if len(name_type.template_symbols) == 0:
                     self.assert_expr(name_type.params[index].is_same_type(param_info.ir.la_type, True), get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch: {} vs {}".format(name_type.params[index].get_signature(), param_info.ir.la_type.get_signature())))
                     continue

@@ -46,6 +46,9 @@ class LaVarType(object):
         self.index_type = index_type
         self.dynamic = dynamic  # related to type inference, no need to check if True
         self.owner = owner  # track mesh element
+        if self.element_type and (self.owner and self.element_type.owner is None):
+            # set owner for element type
+            self.element_type.owner = self.owner
 
     def is_valid(self):
         return self.var_type != VarTypeEnum.INVALID
@@ -475,6 +478,7 @@ class SetType(LaVarType):
                 self.element_type = TupleType(type_list=self.type_list)
             elif len(type_list) == 1:
                 self.element_type = self.type_list[0]
+            self.element_type.owner = self.owner
         self.cur_type = cur_type
         self.length = length
 
