@@ -325,11 +325,11 @@ def get_sym_type_from_pkg(sym, pkg, mesh_type=None):
             if sym in MESH_HELPER_DYNAMIC_TYPE_LIST:
                 if mesh_type:
                     if sym == BM1:
-                        ret = MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True))
+                        ret = MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner)
                     elif sym == BM2:
-                        ret = MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True))
+                        ret = MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner)
                     elif sym == BM3:
-                        ret = MatrixType(rows=mesh_type.fi_size, cols=mesh_type.ti_size, sparse=True, element_type=ScalarType(is_int=True))
+                        ret = MatrixType(rows=mesh_type.fi_size, cols=mesh_type.ti_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner)
                     elif sym == VERTICES_TO_VECTOR:
                         ret = make_function_type([MeshType(),VertexSetType()], [VectorType(rows=mesh_type.vi_size)])
                     elif sym == EDGES_TO_VECTOR:
@@ -347,23 +347,23 @@ def get_sym_type_from_pkg(sym, pkg, mesh_type=None):
                     elif sym == FACE_MATRIX:
                         ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.fi_size, cols=3)])
                     elif sym == MeshSets:
-                        ret = make_function_type([MeshType()], [VertexSetType(length=mesh_type.vi_size), EdgeSetType(length=mesh_type.ei_size), FaceSetType(length=mesh_type.fi_size)])
+                        ret = make_function_type([MeshType()], [VertexSetType(length=mesh_type.vi_size, owner=mesh_type.owner), EdgeSetType(length=mesh_type.ei_size, owner=mesh_type.owner), FaceSetType(length=mesh_type.fi_size, owner=mesh_type.owner)])
                     elif sym == BoundaryMatrices:
-                        ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True)),
-                                                                MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True))])
+                        ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner),
+                                                                MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner)])
                     elif sym == UnsignedBoundaryMatrices:
-                        ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True)),
-                                                                MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True))])
+                        ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner),
+                                                                MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner)])
                     elif sym == CanonicalVertexOrderings:
                         ret = make_function_type([MeshType()], [
                             VectorType(rows=mesh_type.vi_size, element_type=VertexType()),
                             MatrixType(rows=mesh_type.ei_size, cols=2, element_type=EdgeType()),
                             MatrixType(rows=mesh_type.fi_size, cols=3, element_type=FaceType())])
                     elif sym == IndicatorVector:
-                        ret = OverloadingFunctionType(func_list=[make_function_type([MeshType(), VertexSetType()], [MatrixType(rows=mesh_type.vi_size, cols=1, sparse=True, element_type=VertexType())]),
-                                              make_function_type([MeshType(), EdgeSetType()], [MatrixType(rows=mesh_type.ei_size, cols=1, sparse=True, element_type=EdgeType())]),
-                                              make_function_type([MeshType(), FaceSetType()], [MatrixType(rows=mesh_type.fi_size, cols=1, sparse=True, element_type=FaceType())]),
-                                              make_function_type([MeshType(), TetSetType()], [MatrixType(rows=mesh_type.ti_size, cols=1, sparse=True, element_type=TetType())])],
+                        ret = OverloadingFunctionType(func_list=[make_function_type([MeshType(), VertexSetType()], [MatrixType(rows=mesh_type.vi_size, cols=1, sparse=True, element_type=VertexType(), owner=mesh_type.owner)]),
+                                              make_function_type([MeshType(), EdgeSetType()], [MatrixType(rows=mesh_type.ei_size, cols=1, sparse=True, element_type=EdgeType(), owner=mesh_type.owner)]),
+                                              make_function_type([MeshType(), FaceSetType()], [MatrixType(rows=mesh_type.fi_size, cols=1, sparse=True, element_type=FaceType(), owner=mesh_type.owner)]),
+                                              make_function_type([MeshType(), TetSetType()], [MatrixType(rows=mesh_type.ti_size, cols=1, sparse=True, element_type=TetType(), owner=mesh_type.owner)])],
                                    fname_list=['{}_0'.format(IndicatorVector),
                                                '{}_1'.format(IndicatorVector),
                                                '{}_2'.format(IndicatorVector),
