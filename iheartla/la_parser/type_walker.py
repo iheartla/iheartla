@@ -4783,6 +4783,10 @@ class TypeWalker(NodeWalker):
                     ret_type = MatrixType(rows=left_type.rows, cols=right_type.cols)
                     if left_type.sparse and right_type.sparse:
                         ret_type.sparse = True
+                        # check boundary matrix operations
+                        if left_type.owner and right_type.owner:
+                            self.assert_expr(left_type.owner == right_type.owner, get_err_msg("Matrices are not from the same mesh"))
+                            ret_type.owner = left_type.owner
                     # if left_type.rows == 1 and right_type.cols == 1:
                     #     ret_type = ScalarType()
                     ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
@@ -4944,6 +4948,7 @@ class TypeWalker(NodeWalker):
                         EI_SIZE: self.generate_var_name('dime'),
                         FI_SIZE: self.generate_var_name('dimf'),
                         TI_SIZE: self.generate_var_name('dimt')})
+                id_type.owner = identifier
                 self.mesh_dict[identifier] = MeshData(la_type=id_type)
             self.add_sym_type(identifier, id_type, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier)))
             # self.check_sym_existence(identifier, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier)), False)
