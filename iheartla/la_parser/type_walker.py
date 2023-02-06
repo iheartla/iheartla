@@ -3830,15 +3830,15 @@ class TypeWalker(NodeWalker):
             ir_node.items.append(exp_info.ir)
             symbols = symbols.union(exp_info.symbols)
         if f_type.is_vertex_type():
-            ir_node.la_type = VertexSetType()
+            ir_node.la_type = VertexSetType(owner=f_type.owner)
         elif f_type.is_edge_type():
-            ir_node.la_type = EdgeSetType()
+            ir_node.la_type = EdgeSetType(owner=f_type.owner)
         elif f_type.is_face_type():
-            ir_node.la_type = FaceSetType()
+            ir_node.la_type = FaceSetType(owner=f_type.owner)
         elif f_type.is_tet_type():
-            ir_node.la_type = TetSetType()
+            ir_node.la_type = TetSetType(owner=f_type.owner)
         else:
-            ir_node.la_type = SetType(size=1, int_list=[True], type_list=[f_type], element_type=f_type, index_type=f_type.index_type)
+            ir_node.la_type = SetType(size=1, int_list=[True], type_list=[f_type], element_type=f_type, index_type=f_type.index_type, owner=f_type.owner)
         ir_node.la_type.length = len(node.exp)
         node_info = NodeInfo(ir=ir_node, la_type=ir_node.la_type, symbols=symbols)
         self.pop_scope()
