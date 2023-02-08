@@ -2697,7 +2697,7 @@ class TypeWalker(NodeWalker):
                 sparse = False
                 if base_info.la_type.is_matrix():
                     sparse = base_info.la_type.sparse
-                ir_node.la_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows, sparse=sparse, element_type=copy.deepcopy(base_info.la_type.element_type))
+                ir_node.la_type = MatrixType(rows=base_info.la_type.cols, cols=base_info.la_type.rows, sparse=sparse, element_type=copy.deepcopy(base_info.la_type.element_type), owner=base_info.la_type.owner)
         elif node.r:
             ir_node.r = node.r
             if base_info.la_type.is_matrix():
@@ -2766,13 +2766,13 @@ class TypeWalker(NodeWalker):
         ir_node.f = f_info.ir
         self.assert_expr(f_info.la_type.is_matrix() or f_info.la_type.is_vector(), get_err_msg_info(f_info.ir.parse_info,"Transpose error. The base must be a matrix or vector"))
         if f_info.la_type.is_matrix():
-            node_type = MatrixType(rows=f_info.la_type.cols, cols=f_info.la_type.rows, sparse=f_info.la_type.sparse)
+            node_type = MatrixType(rows=f_info.la_type.cols, cols=f_info.la_type.rows, sparse=f_info.la_type.sparse, owner=f_info.la_type.owner)
             if f_info.la_type.is_dynamic_row():
                 node_type.set_dynamic_type(DynamicTypeEnum.DYN_COL)
             if f_info.la_type.is_dynamic_col():
                 node_type.set_dynamic_type(DynamicTypeEnum.DYN_ROW)
         elif f_info.la_type.is_vector():
-            node_type = MatrixType(rows=1, cols=f_info.la_type.rows)
+            node_type = MatrixType(rows=1, cols=f_info.la_type.rows, owner=f_info.la_type.owner)
         node_info = NodeInfo(node_type, symbols=f_info.symbols)
         node_info.ir = ir_node
         node_info.la_type = node_type
