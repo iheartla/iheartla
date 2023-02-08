@@ -10,13 +10,13 @@ Vertices(S) = S₁ where S: SimplicialSet
 Edges(S)    = S₂ where S: SimplicialSet 
 Faces(S)    = S₃ where S: SimplicialSet
  
-Vertices(f) = vertexset(NonZeros(B0 B1 IndicatorVector(M, {f}))) where f ∈ F
-Vertices(G) = vertexset(NonZeros(B0 B1 IndicatorVector(M, G))) where G ∈ {ℤ} faces
-Vertices(e) = vertexset(NonZeros(B0 IndicatorVector(M, {e}))) where e ∈ E
-Vertices(H) = vertexset(NonZeros(B0 IndicatorVector(M, H))) where H ∈ {ℤ} edges
+Vertices(f) = vertexset(NonZeros(B0 B1 IndicatorVector({f}))) where f ∈ F
+Vertices(G) = vertexset(NonZeros(B0 B1 IndicatorVector(G))) where G ⊂ F
+Vertices(e) = vertexset(NonZeros(B0 IndicatorVector({e}))) where e ∈ E
+Vertices(H) = vertexset(NonZeros(B0 IndicatorVector(H))) where H ⊂ E
  
-Edges(v) = edgeset(NonZeros(B0ᵀ IndicatorVector(M, {v}))) where v ∈ V
-Edges(f) = faceset(NonZeros(B1 IndicatorVector(M, {f}))) where f ∈ F
+Edges(v) = edgeset(NonZeros(B0ᵀ IndicatorVector({v}))) where v ∈ V
+Edges(f) = faceset(NonZeros(B1 IndicatorVector({f}))) where f ∈ F
 
-Faces(v) = faceset(NonZeros((B0 B1)ᵀ IndicatorVector(M, {v}))) where v ∈ V
-Faces(e) = faceset(NonZeros(B1ᵀ IndicatorVector(M, {e}))) where e ∈ E
+Faces(v) = faceset(NonZeros((B0 B1)ᵀ IndicatorVector({v}))) where v ∈ V
+Faces(e) = faceset(NonZeros(B1ᵀ IndicatorVector({e}))) where e ∈ E
