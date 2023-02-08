@@ -78,6 +78,8 @@ class LaVarType(object):
         if self.owner and self.owner in mapping_dict:
             # mesh
             self.owner = mapping_dict[self.owner]
+        if self.element_type:
+            self.element_type.replace_sym_dims(mapping_dict)
 
     def set_dynamic_type(self, dynamic_type):
         self.dynamic = dynamic_type
