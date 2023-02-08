@@ -334,7 +334,7 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
                     par = module.params[cur_index]
                     par_list.append(par.get_name())
                     par_mapping_dict[tmp_type_walker.parameters[cur_index]] = par.get_name()
-                # check whether the dimensions depend on parameters
+                # check whether the dimensions or other properties (mesh owner) depend on parameters
                 replace_sym_dims(tmp_type_walker.symtable, par_mapping_dict)
                 sig_dict = {}
                 # check import all

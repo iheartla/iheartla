@@ -75,7 +75,9 @@ class LaVarType(object):
         return self.dynamic & DynamicTypeEnum.DYN_DIM
 
     def replace_sym_dims(self, mapping_dict):
-        pass
+        if self.owner and self.owner in mapping_dict:
+            # mesh
+            self.owner = mapping_dict[self.owner]
 
     def set_dynamic_type(self, dynamic_type):
         self.dynamic = dynamic_type
@@ -346,6 +348,7 @@ class SequenceType(LaVarType):
         return self.element_type.is_dynamic()
 
     def replace_sym_dims(self, mapping_dict):
+        super(SequenceType, self).replace_sym_dims(mapping_dict)
         self.element_type.replace_sym_dims(mapping_dict)
 
     def get_json_content(self):
@@ -404,6 +407,7 @@ class MatrixType(LaVarType):
         return self.element_type.is_integer_element()
 
     def replace_sym_dims(self, mapping_dict):
+        super(MatrixType, self).replace_sym_dims(mapping_dict)
         if self.rows in mapping_dict:
             self.rows = mapping_dict[self.rows]
         if self.cols in mapping_dict:
@@ -456,6 +460,7 @@ class VectorType(LaVarType):
         return self.element_type.is_integer_element()
 
     def replace_sym_dims(self, mapping_dict):
+        super(VectorType, self).replace_sym_dims(mapping_dict)
         if self.rows in mapping_dict:
             self.rows = mapping_dict[self.rows]
 
@@ -616,6 +621,16 @@ class FunctionType(LaVarType):
     def same_as(self, target):
         return target.is_function() and self.get_signature() == target.get_signature()
 
+    def replace_sym_dims(self, mapping_dict):
+        super(FunctionType, self).replace_sym_dims(mapping_dict)
+        for index in range(len(self.params)):
+            self.params[index].replace_sym_dims(mapping_dict)
+        if isinstance(self.ret, list):
+            for cur_index in range(len(self.ret)):
+                self.ret[cur_index].replace_sym_dims(mapping_dict)
+        else:
+            self.ret.replace_sym_dims(mapping_dict)
+
 
 class OverloadingFunctionType(LaVarType):
     def __init__(self, desc=None, symbol=None, func_list=None, fname_list=None, pre_fname_list=None):
@@ -672,6 +687,11 @@ class OverloadingFunctionType(LaVarType):
                 break
             cpp_sig_list.append(cpp_sig)
         return ret
+
+    def replace_sym_dims(self, mapping_dict):
+        super(OverloadingFunctionType, self).replace_sym_dims(mapping_dict)
+        for index in range(len(self.func_list)):
+            self.func_list[index].replace_sym_dims(mapping_dict)
 class MappingType(LaVarType):
     def __init__(self, desc=None, symbol=None, src=None, dst=None, ele_set=None, subset=False, owner=None):
         LaVarType.__init__(self, VarTypeEnum.MAPPING, desc, symbol, owner=owner)
