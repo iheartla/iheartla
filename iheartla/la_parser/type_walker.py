@@ -2892,6 +2892,14 @@ class TypeWalker(NodeWalker):
                                                                                         "Function error. The first parameter must be mesh type"))
                         mesh_t = param_type_list[0]
                     name_type = get_sym_type_from_pkg(builtin_name, MESH_HELPER, mesh_t)
+                else:
+                    # Not dynamic list
+                    if builtin_name == NonZeros:
+                        # NonZeros requires mesh element
+                        err_msg = get_err_msg_info(node.parseinfo,
+                                                   "Function NonZeros error. Can not get mesh info from the parameter")
+                        self.assert_expr(param_type_list[0].owner, err_msg)
+                        self.check_sym_existence(param_type_list[0].owner, err_msg)
             # check overloading
             if name_type.is_overloaded():
                 # get correct type for current parameters
@@ -2973,6 +2981,9 @@ class TypeWalker(NodeWalker):
             node_info.ir = ir_node
             # Builtin function call
             if builtin_name in MESH_HELPER_FUNC_MAPPING:
+                if builtin_name == NonZeros:
+                    # track mesh
+                    ret_type.owner = param_type_list[0].owner
                 tri_node = GPFuncNode(param_list, MESH_HELPER_FUNC_MAPPING[builtin_name], builtin_name, identity_name=ir_node.identity_name)
                 node_info = NodeInfo(ret_type, symbols=symbols)
                 tri_node.la_type = ret_type
