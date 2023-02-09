@@ -202,5 +202,9 @@ class CodeGen(IRPrinter):
             # if the first param is a mesh
             content = "{}.{}({})".format(params_content_list[0], self.get_builtin_func_name(content), ', '.join(params_content_list[1:]))
         else:
-            content = "{}({})".format(self.get_builtin_func_name(content), ', '.join(params_content_list))
+            if node.func_type == GPType.NonZeros:
+                content = "{}({})".format(self.get_builtin_func_name(content), ', '.join(params_content_list))
+            else:
+                # mesh is still necessary
+                content = "{}.{}({})".format(node.params[0].la_type.owner, self.get_builtin_func_name(content), ', '.join(params_content_list))
         return CodeNodeInfo(content, pre_list=pre_list)
