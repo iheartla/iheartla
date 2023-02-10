@@ -4975,6 +4975,7 @@ class TypeWalker(NodeWalker):
                         TI_SIZE: self.generate_var_name('dimt')})
                 id_type.owner = identifier
                 self.mesh_dict[identifier] = MeshData(la_type=id_type)
+                self.used_params.append(identifier)
             self.add_sym_type(identifier, id_type, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier)))
             # self.check_sym_existence(identifier, get_err_msg_info(id_node.parse_info, "Parameter {} has been defined.".format(identifier)), False)
             # self.get_cur_param_data().symtable[identifier] = id_type
