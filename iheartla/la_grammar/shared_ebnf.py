@@ -73,6 +73,7 @@ statements::Statements
 statement
     =
     | local_func
+    | destructure
     | assignment
     | right_hand_side
     ;
@@ -87,6 +88,11 @@ expression::Expression
     ;
 
 
+destructure::Destructure
+    = 
+    left+:identifier_alone {{hspace} ',' {hspace} left+:identifier_alone}+ {hspace} op:'=' {hspace} right+:simplified_right_hand_side
+    ;
+
 assignment::Assignment
     =
     left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'=' {hspace} right+:right_hand_side
@@ -100,6 +106,12 @@ general_assignment::GeneralAssignment
     left+:left_hand_side {{hspace} ',' {hspace} left+:left_hand_side} {hspace} op:'=' {hspace} right+:right_hand_side
     ;
    
+simplified_right_hand_side
+    =
+    | expression
+    #| optimize_operator
+    | multi_cond_expr
+    ;
 
 right_hand_side
     =

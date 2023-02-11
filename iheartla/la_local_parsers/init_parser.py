@@ -6370,6 +6370,8 @@ class grammarinitParser(Parser):
             with self._option():
                 self._local_func_()
             with self._option():
+                self._destructure_()
+            with self._option():
                 self._assignment_()
             with self._option():
                 self._right_hand_side_()
@@ -6381,8 +6383,8 @@ class grammarinitParser(Parser):
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
-                '<local_func> <assignment> <expression>'
-                '<addition> <subtraction>'
+                '<local_func> <destructure> <assignment>'
+                '<expression> <addition> <subtraction>'
                 "<add_sub_operator> <term> '-' min <MIN>"
                 'max <MAX> argmin <ARGMIN> argmax'
                 "<ARGMAX> 'with' <optimize_operator> '{'"
@@ -6433,6 +6435,41 @@ class grammarinitParser(Parser):
         self._define(
             ['value', 'sign'],
             []
+        )
+
+    @tatsumasu('Destructure')
+    def _destructure_(self):  # noqa
+        self._identifier_alone_()
+        self.add_last_node_to_name('left')
+
+        def block1():
+
+            def block2():
+                self._hspace_()
+            self._closure(block2)
+            self._token(',')
+
+            def block3():
+                self._hspace_()
+            self._closure(block3)
+            self._identifier_alone_()
+            self.add_last_node_to_name('left')
+        self._positive_closure(block1)
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._token('=')
+        self.name_last_node('op')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
+        self._simplified_right_hand_side_()
+        self.add_last_node_to_name('right')
+        self._define(
+            ['op'],
+            ['left', 'right']
         )
 
     @tatsumasu('Assignment')
@@ -6552,6 +6589,21 @@ class grammarinitParser(Parser):
             ['op'],
             ['left', 'right']
         )
+
+    @tatsumasu()
+    def _simplified_right_hand_side_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._expression_()
+            with self._option():
+                self._multi_cond_expr_()
+            self._error(
+                'expecting one of: '
+                '<expression> <addition> <subtraction>'
+                "<add_sub_operator> <term> '-'"
+                "<multiplication> <division> <factor> '{'"
+                '<multi_cond_expr>'
+            )
 
     @tatsumasu()
     @nomemo
@@ -9608,10 +9660,16 @@ class grammarinitSemantics:
     def expression(self, ast):  # noqa
         return ast
 
+    def destructure(self, ast):  # noqa
+        return ast
+
     def assignment(self, ast):  # noqa
         return ast
 
     def general_assignment(self, ast):  # noqa
+        return ast
+
+    def simplified_right_hand_side(self, ast):  # noqa
         return ast
 
     def right_hand_side(self, ast):  # noqa
@@ -10410,6 +10468,13 @@ class Statements(ModelBase):
 class Expression(ModelBase):
     sign: Any = None
     value: Any = None
+
+
+@dataclass(eq=False)
+class Destructure(ModelBase):
+    left: Any = None
+    op: Any = None
+    right: Any = None
 
 
 @dataclass(eq=False)
