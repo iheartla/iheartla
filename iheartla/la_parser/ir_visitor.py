@@ -30,6 +30,7 @@ class IRBaseVisitor(object):
             IRNodeType.Function: "visit_function",
             IRNodeType.LocalFunc: "visit_local_func",
             IRNodeType.Equation: "visit_equation",
+            IRNodeType.Destructuring: "visit_destructuring",
             # if condition
             IRNodeType.Condition: "visit_condition",
             IRNodeType.In: "visit_in",

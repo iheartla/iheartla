@@ -389,6 +389,9 @@ class CodeGenLatex(CodeGen):
             rhs = self.visit(node.right[l_index], **kwargs)
         return lhs + " & = " + rhs
 
+    def visit_destructuring(self, node, **kwargs):
+        return self.visit_assignment(node, **kwargs)
+
     def visit_expression(self, node, **kwargs):
         value = self.visit(node.value, **kwargs)
         if node.sign:

@@ -23,6 +23,7 @@ class IRNodeType(Enum):
     Function = 54
     LocalFunc = 55
     Equation = 56
+    Destructuring = 57
     # if condition
     Condition = 99
     In = 100
@@ -417,6 +418,27 @@ class LocalFuncNode(StmtNode):
         self.extra_list = []  # extra assignments
         self.tex_list = []    # extra assignments for tex output
         self.scope_name = None
+
+
+class DestructuringType(IntEnum):
+    DestructuringTypeInvalid = -1
+    DestructuringSet = 0
+    DestructuringSequence = 1
+    DestructuringVector = 2
+    DestructuringTuple = 3
+
+
+class DestructuringNode(StmtNode):
+    def __init__(self, left=None, right=None, op=None, la_type=None, parse_info=None, raw_text=None, cur_type=DestructuringType.DestructuringSet):
+        super().__init__(IRNodeType.Destructuring, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
+        self.left = left   # IdNode 
+        self.right = right
+        self.op = op 
+        self.cur_type = cur_type
+
+    def get_lhs_list(self):
+        # get all new symbols
+        return [lhs.get_main_id() for lhs in self.left]
 
 
 class AssignType(IntEnum):

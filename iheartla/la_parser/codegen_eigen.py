@@ -1917,6 +1917,24 @@ class CodeGenEigen(CodeGen):
     def visit_equation(self, node, **kwargs):
         return CodeNodeInfo("")
 
+    def visit_destructuring(self, node, **kwargs):
+        right_info = self.visit(node.right, **kwargs)
+        rhs = self.generate_var_name("rhs")
+        content = "    {} {} = {};\n".format(self.get_ctype(node.right.la_type), rhs, right_info.content)
+        for cur_index in range(len(node.left)):
+            id0_info = self.walk(node.left[cur_index], **kwargs)
+            expr = ''
+            if node.cur_type == DestructuringType.DestructuringSet:
+                expr = '{}[{}]'.format(rhs, cur_index)
+            elif node.cur_type == DestructuringType.DestructuringSequence:
+                expr = '{}[{}]'.format(rhs, cur_index)
+            elif node.cur_type == DestructuringType.DestructuringVector:
+                expr = '{}({})'.format(rhs, cur_index)
+            elif node.cur_type == DestructuringType.DestructuringTuple:
+                expr = 'std::get<{}>({})'.format(cur_index, rhs)
+            content += "    {} {} = {};".format(self.get_ctype(node.left.la_type[cur_index]), id0_info.content, expr)
+        return CodeNodeInfo(content, right_info.pre_list)
+
     def visit_assignment(self, node, **kwargs):
         type_info = node
         # visit matrix first

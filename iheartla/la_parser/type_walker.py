@@ -1940,6 +1940,39 @@ class TypeWalker(NodeWalker):
         eq_node.eq_type = self.cur_eq_type
         return NodeInfo(None, ir=eq_node, symbols=eq_node.symbols)
 
+    def walk_Destructure(self, node, **kwargs):
+        # multiple lhs and single rhs, rhs type doesn't depend on lhs, lhs has no subscripts
+        dest_node = DestructuringNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
+        right_info = self.walk(node.right[0], **kwargs)
+        if isinstance(right_info.la_type, list):
+            # return a list by some builtin funcs
+            rhs_type_list = right_info.la_type
+        elif right_info.la_type.is_tuple():
+            cur_type = DestructuringType.DestructuringTuple
+            if len(node.left) == len(right_info.la_type.type_list):
+                # unpack tuple type
+                rhs_type_list = right_info.la_type.type_list
+        elif right_info.la_type.is_set():
+            # set destructuring
+            cur_type = DestructuringType.DestructuringSet
+            rhs_type_list = len(node.left) * [right_info.la_type.element_type]
+        elif right_info.la_type.is_sequence():
+            # sequence destructuring
+            cur_type = DestructuringType.DestructuringSequence
+            rhs_type_list = len(node.left) * [right_info.la_type.element_type]
+        elif right_info.la_type.is_vector():
+            # vector destructuring
+            cur_type = DestructuringType.DestructuringVector
+            rhs_type_list = len(node.left) * [right_info.la_type.element_type]
+        for cur_index in range(len(node.left)):
+            id0_info = self.walk(node.left[cur_index], **kwargs)
+            id0 = id0_info.content
+            dest_node.left.append(id0_info.ir)
+            self.get_cur_param_data().symtable[id0] = rhs_type_list[cur_index]
+        dest_node.cur_type = cur_type
+        return NodeInfo(None, ir=dest_node, symbols=right_info.symbols)
+
+
     def walk_Assignment(self, node, **kwargs):
         # ir
         if hasattr(node, 'lexpr') and node.lexpr:
