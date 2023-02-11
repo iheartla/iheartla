@@ -195,7 +195,7 @@ class CodeGenLatex(CodeGen):
                 # elif pre_exp:
                 #     content += " \\\\\n"
                 block_content = self.visit(vblock, **kwargs)
-                if vblock.node_type != IRNodeType.Assignment and vblock.node_type != IRNodeType.Equation and vblock.node_type != IRNodeType.LocalFunc:
+                if vblock.node_type != IRNodeType.Assignment and vblock.node_type != IRNodeType.Destructuring and vblock.node_type != IRNodeType.Equation and vblock.node_type != IRNodeType.LocalFunc:
                     # single expression
                     block_content = " \\omit \\span " + block_content
                 content += block_content + " \\\\\n"

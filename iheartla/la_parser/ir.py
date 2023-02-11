@@ -426,6 +426,7 @@ class DestructuringType(IntEnum):
     DestructuringSequence = 1
     DestructuringVector = 2
     DestructuringTuple = 3
+    DestructuringList = 4
 
 
 class DestructuringNode(StmtNode):
@@ -435,6 +436,7 @@ class DestructuringNode(StmtNode):
         self.right = right
         self.op = op 
         self.cur_type = cur_type
+        self.la_list = None
 
     def get_lhs_list(self):
         # get all new symbols

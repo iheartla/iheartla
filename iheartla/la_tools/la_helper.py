@@ -186,6 +186,10 @@ def split_sub_string(identifier):
         return results
     return identifier.split('_')
 
+def is_ast_assignment(node):
+    # check the original node from tatsu
+    return type(node).__name__ == 'Assignment' or type(node).__name__ == 'Destructure'
+
 
 # BLOCK_RE = re.compile(
 #         dedent(r'''(?P<main>(`[^`]*`)|([A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)(\_)(?P<sub>((`[^`]*`)|([A-Za-z0-9\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*)?)+)'''),

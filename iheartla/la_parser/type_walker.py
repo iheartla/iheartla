@@ -702,7 +702,7 @@ class TypeWalker(NodeWalker):
                 vblock_info = self.walk(vblock, **kwargs)
             vblock_list.append(vblock_info)
             if isinstance(vblock_info, list) and len(vblock_info) > 0:  # statement list with single statement
-                if type(vblock_info[0]).__name__ == 'Assignment':
+                if is_ast_assignment(vblock_info[0]):
                     handle_assignment(vblock_info[0])
                     # assignment inside summation, e.g.: a = sum_* ***
                     for cur_index in range(len(vblock_info[0].right)):
@@ -777,7 +777,7 @@ class TypeWalker(NodeWalker):
         # check function assignment
         if self.pre_walk:
             for index in range(len(stat_list)):
-                if type(stat_list[index]).__name__ == 'Assignment':
+                if is_ast_assignment(stat_list[index]):
                     if stat_list[index].right:
                         # check whether rhs is function type
                         rhs = stat_list[index].right[0]
@@ -937,7 +937,7 @@ class TypeWalker(NodeWalker):
         ret = []
         name = []
         for index in range(len(stat_list)):
-            if type(stat_list[index]).__name__ == 'Assignment':
+            if is_ast_assignment(stat_list[index]):
                 if stat_list[index].right:
                     rhs = stat_list[index].right[0]
                     if type(rhs).__name__ == 'Expression' and type(rhs.value).__name__ == 'Factor' and type(rhs.value.op).__name__ == 'Function':
@@ -1003,7 +1003,7 @@ class TypeWalker(NodeWalker):
                             update_ret_type = False
                             if cur_index == len(stat_list) - 1:
                                 # last statment
-                                if type(cur_stat).__name__ == 'Assignment':
+                                if is_ast_assignment(cur_stat):
                                     kwargs[SET_RET_SYMBOL] = True
                                 elif type(cur_stat).__name__ != 'LocalFunc' and type(cur_stat).__name__ != 'MultiCondExpr':
                                     # new symbol for return value
@@ -1038,7 +1038,7 @@ class TypeWalker(NodeWalker):
             for index in range(len(stat_list)):
                 update_ret_type = False
                 if index == len(stat_list) - 1:
-                    if type(stat_list[index]).__name__ == 'Assignment':
+                    if is_ast_assignment(stat_list[index]):
                         kwargs[SET_RET_SYMBOL] = True
                     elif type(stat_list[index]).__name__ != 'LocalFunc' and type(stat_list[index]).__name__ != 'MultiCondExpr':
                         # new symbol for return value
@@ -1942,9 +1942,10 @@ class TypeWalker(NodeWalker):
 
     def walk_Destructure(self, node, **kwargs):
         # multiple lhs and single rhs, rhs type doesn't depend on lhs, lhs has no subscripts
-        dest_node = DestructuringNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
         right_info = self.walk(node.right[0], **kwargs)
+        dest_node = DestructuringNode([], [right_info.ir], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
         if isinstance(right_info.la_type, list):
+            cur_type = DestructuringType.DestructuringList
             # return a list by some builtin funcs
             rhs_type_list = right_info.la_type
         elif right_info.la_type.is_tuple():
@@ -1969,7 +1970,12 @@ class TypeWalker(NodeWalker):
             id0 = id0_info.content
             dest_node.left.append(id0_info.ir)
             self.get_cur_param_data().symtable[id0] = rhs_type_list[cur_index]
+            if cur_index == len(node.left)-1:
+                if SET_RET_SYMBOL in kwargs:
+                    if self.is_main_scope():
+                        self.ret_symbol = id0
         dest_node.cur_type = cur_type
+        dest_node.la_list = rhs_type_list
         return NodeInfo(None, ir=dest_node, symbols=right_info.symbols)
 
 

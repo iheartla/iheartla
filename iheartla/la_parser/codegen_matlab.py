@@ -639,7 +639,7 @@ class CodeGenMatlab(CodeGen):
             ret_str = ''
             cur_stats_content = ''
             if index == len(node.stmts) - 1:
-                if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Equation):
+                if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Destructuring) and not node.stmts[index].is_node(IRNodeType.Equation):
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
                         continue
@@ -649,7 +649,7 @@ class CodeGenMatlab(CodeGen):
                     kwargs[LHS] = self.ret_symbol
                     ret_str = "    " + self.ret_symbol + ' = '
             else:
-                if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Equation):
+                if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Destructuring) and not node.stmts[index].is_node(IRNodeType.Equation):
                     # meaningless
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
@@ -1608,11 +1608,11 @@ class CodeGenMatlab(CodeGen):
         return CodeNodeInfo("")
 
     def visit_destructuring(self, node, **kwargs):
-        right_info = self.visit(node.right, **kwargs)
+        right_info = self.visit(node.right[0], **kwargs)
         rhs = self.generate_var_name("rhs")
         content = "    {} = {}\n".format(rhs, right_info.content)
         for cur_index in range(len(node.left)):
-            id0_info = self.walk(node.left[cur_index], **kwargs)
+            id0_info = self.visit(node.left[cur_index], **kwargs)
             expr = ''
             if node.cur_type == DestructuringType.DestructuringSet:
                 expr = '{}({})'.format(rhs, cur_index)
@@ -1620,9 +1620,9 @@ class CodeGenMatlab(CodeGen):
                 expr = '{}({})'.format(rhs, cur_index)
             elif node.cur_type == DestructuringType.DestructuringVector:
                 expr = '{}({})'.format(rhs, cur_index)
-            elif node.cur_type == DestructuringType.DestructuringTuple:
+            elif node.cur_type == DestructuringType.DestructuringTuple or node.cur_type == DestructuringType.DestructuringList:
                 expr = '{}({})'.format(rhs, cur_index)
-            content += "    {} = {}".format(id0_info.content, expr)
+            content += "    {} = {}\n".format(id0_info.content, expr)
         return CodeNodeInfo(content, right_info.pre_list)
 
     def visit_assignment(self, node, **kwargs):

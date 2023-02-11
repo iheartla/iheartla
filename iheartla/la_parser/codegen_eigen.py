@@ -731,7 +731,7 @@ class CodeGenEigen(CodeGen):
             cur_stats_content = ''
             need_semicolon = False
             if index == len(node.stmts) - 1:
-                if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Equation):
+                if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Destructuring) and not node.stmts[index].is_node(IRNodeType.Equation):
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
                         continue
@@ -742,7 +742,7 @@ class CodeGenEigen(CodeGen):
                     ret_str = "    " + self.ret_symbol + ' = '
                     need_semicolon = True
             else:
-                if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Equation):
+                if not node.stmts[index].is_node(IRNodeType.Assignment) and not node.stmts[index].is_node(IRNodeType.Destructuring) and not node.stmts[index].is_node(IRNodeType.Equation):
                     # meaningless
                     if node.stmts[index].is_node(IRNodeType.LocalFunc):
                         self.visit(node.stmts[index], **kwargs)
@@ -1918,11 +1918,17 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo("")
 
     def visit_destructuring(self, node, **kwargs):
-        right_info = self.visit(node.right, **kwargs)
+        rhs_node = node.right[0]
+        right_info = self.visit(rhs_node, **kwargs)
         rhs = self.generate_var_name("rhs")
-        content = "    {} {} = {};\n".format(self.get_ctype(node.right.la_type), rhs, right_info.content)
+        if isinstance(rhs_node.la_type, list):
+            ltype_list = rhs_node.la_type
+            type_decl = "std::tuple< {} >".format(", ".join([self.get_ctype(t) for t in ltype_list]))
+        else:
+            type_decl = self.get_ctype(rhs_node.la_type)
+        content = "    {} {} = {};\n".format(type_decl, rhs, right_info.content)
         for cur_index in range(len(node.left)):
-            id0_info = self.walk(node.left[cur_index], **kwargs)
+            id0_info = self.visit(node.left[cur_index], **kwargs)
             expr = ''
             if node.cur_type == DestructuringType.DestructuringSet:
                 expr = '{}[{}]'.format(rhs, cur_index)
@@ -1930,9 +1936,9 @@ class CodeGenEigen(CodeGen):
                 expr = '{}[{}]'.format(rhs, cur_index)
             elif node.cur_type == DestructuringType.DestructuringVector:
                 expr = '{}({})'.format(rhs, cur_index)
-            elif node.cur_type == DestructuringType.DestructuringTuple:
+            elif node.cur_type == DestructuringType.DestructuringTuple or node.cur_type == DestructuringType.DestructuringList:
                 expr = 'std::get<{}>({})'.format(cur_index, rhs)
-            content += "    {} {} = {};".format(self.get_ctype(node.left.la_type[cur_index]), id0_info.content, expr)
+            content += "    {} {} = {};\n".format(self.get_ctype(node.la_list[cur_index]), id0_info.content, expr)
         return CodeNodeInfo(content, right_info.pre_list)
 
     def visit_assignment(self, node, **kwargs):
