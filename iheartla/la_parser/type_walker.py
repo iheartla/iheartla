@@ -1946,22 +1946,32 @@ class TypeWalker(NodeWalker):
         dest_node = DestructuringNode([], [right_info.ir], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
         if isinstance(right_info.la_type, list):
             cur_type = DestructuringType.DestructuringList
+            self.assert_expr(len(node.left) == len(right_info.la_type), get_err_msg_info(node.right[0].parseinfo, "Can only unpack all items from list: {} lhs and {} list items ".format(len(node.left), len(right_info.la_type))))
             # return a list by some builtin funcs
             rhs_type_list = right_info.la_type
         elif right_info.la_type.is_tuple():
             cur_type = DestructuringType.DestructuringTuple
-            if len(node.left) == len(right_info.la_type.type_list):
-                # unpack tuple type
-                rhs_type_list = right_info.la_type.type_list
+            self.assert_expr(len(node.left) == len(right_info.la_type.type_list), get_err_msg_info(node.right[0].parseinfo, "Can only unpack all items from tuple: {} lhs and {} tuple items ".format(len(node.left), len(right_info.la_type.type_list))))
+            # unpack tuple type
+            rhs_type_list = right_info.la_type.type_list
         elif right_info.la_type.is_set():
+            if right_info.la_type.length and isinstance(right_info.la_type.length, int):
+                self.assert_expr(len(node.left) == right_info.la_type.length, 
+                get_err_msg_info(node.right[0].parseinfo, "Can only unpack all items from set: {} lhs and {} set items ".format(len(node.left), right_info.la_type.length)))
             # set destructuring
             cur_type = DestructuringType.DestructuringSet
             rhs_type_list = len(node.left) * [right_info.la_type.element_type]
         elif right_info.la_type.is_sequence():
+            if right_info.la_type.size and isinstance(right_info.la_type.size, int):
+                self.assert_expr(len(node.left) == right_info.la_type.size, 
+                get_err_msg_info(node.right[0].parseinfo, "Can only unpack all items from sequence: {} lhs and {} sequence items ".format(len(node.left), right_info.la_type.size)))
             # sequence destructuring
             cur_type = DestructuringType.DestructuringSequence
             rhs_type_list = len(node.left) * [right_info.la_type.element_type]
         elif right_info.la_type.is_vector():
+            if right_info.la_type.rows and isinstance(right_info.la_type.rows, int):
+                self.assert_expr(len(node.left) == right_info.la_type.rows, 
+                get_err_msg_info(node.right[0].parseinfo, "Can only unpack all items from vector: {} lhs and {} vector items ".format(len(node.left), right_info.la_type.rows)))
             # vector destructuring
             cur_type = DestructuringType.DestructuringVector
             rhs_type_list = len(node.left) * [right_info.la_type.element_type]
