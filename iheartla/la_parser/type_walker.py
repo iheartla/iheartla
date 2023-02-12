@@ -1978,6 +1978,11 @@ class TypeWalker(NodeWalker):
         for cur_index in range(len(node.left)):
             id0_info = self.walk(node.left[cur_index], **kwargs)
             id0 = id0_info.content
+            if self.is_sym_existed(id0):  #
+                err_msg = "{} has been assigned before".format(id0)
+                if sequence in self.parameters:
+                    err_msg = "{} is a parameter, can not be assigned".format(sequence)
+                self.assert_expr(False, get_err_msg_info(id0_info.ir.parse_info, err_msg))
             dest_node.left.append(id0_info.ir)
             self.get_cur_param_data().symtable[id0] = rhs_type_list[cur_index]
             if cur_index == len(node.left)-1:
