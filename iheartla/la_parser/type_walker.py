@@ -3962,7 +3962,7 @@ class TypeWalker(NodeWalker):
         if LHS in kwargs:
             lhs = kwargs[LHS]
             new_id = self.generate_var_name(lhs)
-            self.symtable[new_id] = MatrixType(rows=rows, cols=cols, element_type=ScalarType(is_int=is_int), block=block, sparse=sparse, list_dim=list_dim, item_types=node_info.content)
+            self.get_cur_param_data().symtable[new_id] = MatrixType(rows=rows, cols=cols, element_type=ScalarType(is_int=is_int), block=block, sparse=sparse, list_dim=list_dim, item_types=node_info.content)
             ret_node_info.symbol = new_id
             ir_node.symbol = new_id
         elif self.local_func_parsing:
@@ -3971,9 +3971,9 @@ class TypeWalker(NodeWalker):
                                                item_types=node_info.content)
             ret_node_info.symbol = new_id
             ir_node.symbol = new_id
-        ir_node.la_type = self.symtable[new_id]
+        ir_node.la_type = self.get_sym_type(new_id)
         ret_node_info.ir = ir_node
-        ret_node_info.la_type = self.symtable[new_id]
+        ret_node_info.la_type = ir_node.la_type
         return ret_node_info
 
     def walk_MatrixRows(self, node, **kwargs):
