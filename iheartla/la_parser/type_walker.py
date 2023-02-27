@@ -950,7 +950,11 @@ class TypeWalker(NodeWalker):
 
     def convert_mapping_type(self):
         # Handle mapping type in current scope
-        for k, v in self.get_cur_param_data().symtable.items():
+        for k, c_type in self.get_cur_param_data().symtable.items():
+            if c_type.is_sequence():
+                v = c_type.element_type
+            else:
+                v = c_type
             if v.is_mapping():
                 if v.src:
                     # mapping from mesh V,E,F
@@ -965,11 +969,15 @@ class TypeWalker(NodeWalker):
                     la_type = set_type.element_type
                     la_type.owner = set_type.owner
                     if v.subset:
+                        # f ⊂ F
                         la_type = set_type
                     else:
                         self.get_cur_param_data().set_checking[k] = v.ele_set
                     self.assert_expr(set_type.is_set(), "Symbol {} should be a set".format(v.ele_set))
-                    self.get_cur_param_data().symtable[k] = la_type
+                    if c_type.is_sequence():
+                        self.get_cur_param_data().symtable[k].element_type = la_type
+                    else:
+                        self.get_cur_param_data().symtable[k] = la_type
     def gen_block_node(self, stat_list, index_list, ir_node, **kwargs):
         meshset_list, name_list = self.get_meshset_assign(stat_list)
         block_node = BlockNode()
