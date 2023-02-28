@@ -185,6 +185,10 @@ class CodeGen(IRPrinter):
         if name in cur_dict:
             return cur_dict[name]
         return name
+    
+    def get_mesh_str(self, mesh):
+        # prepend self. if necessary
+        return mesh
 
     def visit_gp_func(self, node, **kwargs):
         if node.func_name not in self.code_frame.extra_funcs:
@@ -200,11 +204,11 @@ class CodeGen(IRPrinter):
         # content = "{}.{}({})".format(self.get_func_prefix(), self.get_builtin_func_name(content), ', '.join(params_content_list))
         if node.params[0].la_type.is_mesh():
             # if the first param is a mesh
-            content = "{}.{}({})".format(params_content_list[0], self.get_builtin_func_name(content), ', '.join(params_content_list[1:]))
+            content = "{}.{}({})".format(self.get_mesh_str(params_content_list[0]), self.get_builtin_func_name(content), ', '.join(params_content_list[1:]))
         else:
             if node.func_type == GPType.NonZeros:
                 content = "{}({})".format(self.get_builtin_func_name(content), ', '.join(params_content_list))
             else:
                 # mesh is still necessary
-                content = "{}.{}({})".format(node.params[0].la_type.owner, self.get_builtin_func_name(content), ', '.join(params_content_list))
+                content = "{}.{}({})".format(self.get_mesh_str(node.params[0].la_type.owner), self.get_builtin_func_name(content), ', '.join(params_content_list))
         return CodeNodeInfo(content, pre_list=pre_list)

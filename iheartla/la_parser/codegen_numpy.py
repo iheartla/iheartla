@@ -161,10 +161,38 @@ class CodeGenNumpy(CodeGen):
         if (sym in self.lhs_list or sym in self.local_func_dict or self.is_module_sym(sym)) and not sym.startswith("self."):
             return 'self.' + sym
         return sym
+    
+    def get_mesh_str(self, mesh):
+        # prepend self. if necessary
+        prefix = self.check_prefix(mesh)
+        if prefix:
+            return 'self.' + mesh
+        return mesh
+    
+    def check_prefix(self, sym):
+        # given a symbol, check whether we need to add self.
+        prefix = False
+        if sym in self.lhs_list:
+            prefix = True
+        elif self.local_func_parsing:
+            is_param = False
+            if self.local_func_name != '':
+                for key, value in self.func_data_dict.items():
+                    if sym in value.params_data.parameters:
+                        is_param = True
+                        break
+            if not is_param and sym in self.used_params:
+                prefix = True
+            if not is_param:
+                if self.is_module_sym(sym):
+                    prefix = True
+        else:
+            if self.is_module_sym(sym):
+                prefix = True
+        return prefix
 
     def visit_id(self, node, **kwargs):
-        content = node.get_name()
-        prefix = False
+        content = node.get_name() 
         # if not self.is_local_param(content) and content not in self.parameters and content not in self.local_func_syms:
         # if self.local_func_parsing:
         #     if self.local_func_name != '':
@@ -173,23 +201,7 @@ class CodeGenNumpy(CodeGen):
         # else:
         #     if content not in self.main_param.parameters:
         #         prefix = True
-        if content in self.lhs_list:
-            prefix = True
-        elif self.local_func_parsing:
-            is_param = False
-            if self.local_func_name != '':
-                for key, value in self.func_data_dict.items():
-                    if content in value.params_data.parameters:
-                        is_param = True
-                        break
-            if not is_param and content in self.used_params:
-                prefix = True
-            if not is_param:
-                if self.is_module_sym(content):
-                    prefix = True
-        else:
-            if self.is_module_sym(content):
-                prefix = True
+        prefix = self.check_prefix(content)
         content = self.filter_symbol(content)
         if content in self.name_convention_dict:
             content = self.name_convention_dict[content]
