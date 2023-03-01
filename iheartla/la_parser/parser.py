@@ -20,6 +20,7 @@ from ..la_tools.la_msg import *
 from ..la_tools.config_manager import *
 from ..la_tools.la_helper import *
 from ..la_tools.parser_manager import ParserManager
+from ..la_tools.babyheartdown import heartdown2lines
 import subprocess
 import threading
 import regex as re
@@ -622,6 +623,7 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
         base_name = get_file_name(la_file)
         global _module_path
         _module_path = os.path.dirname(Path(la_file))
+    content = heartdown2lines(content)
     # print("head:", head, ", name:", name, "parser_type", parser_type, ", base_name:", base_name)
     try:
         def write_output(content, file_name):
@@ -689,7 +691,7 @@ def parse_in_background(content, frame, parse_type, path_name=None):
     func_name = None
     if path_name is not None:
         func_name = get_file_name(path_name)
-    latex_thread = threading.Thread(target=parse_and_translate, args=(content, frame, parse_type, func_name,))
+    latex_thread = threading.Thread(target=parse_and_translate, args=(heartdown2lines(content), frame, parse_type, func_name,))
     latex_thread.start()
 
 
