@@ -1938,7 +1938,11 @@ class CodeGenEigen(CodeGen):
                 expr = '{}({})'.format(rhs, cur_index)
             elif node.cur_type == DestructuringType.DestructuringTuple or node.cur_type == DestructuringType.DestructuringList:
                 expr = 'std::get<{}>({})'.format(cur_index, rhs)
-            content += "    {} {} = {};\n".format(self.get_ctype(node.la_list[cur_index]), id0_info.content, expr)
+            if self.is_main_scope():
+                type_def = ""
+            else:
+                type_def = self.get_ctype(node.la_list[cur_index]) + ' '
+            content += "    {}{} = {};\n".format(type_def, id0_info.content, expr)
         return CodeNodeInfo(content, right_info.pre_list)
 
     def visit_assignment(self, node, **kwargs):
