@@ -830,6 +830,16 @@ class grammardefaultParser(Parser):
     def _operations_(self):  # noqa
         with self._choice():
             with self._option():
+                self._derivative_()
+            with self._option():
+                self._partial_()
+            with self._option():
+                self._divergence_()
+            with self._option():
+                self._gradient_()
+            with self._option():
+                self._laplacian_()
+            with self._option():
                 self._solver_operator_()
             with self._option():
                 self._norm_operator_()
@@ -863,6 +873,9 @@ class grammardefaultParser(Parser):
                 self._pseudoinverse_operator_()
             self._error(
                 'expecting one of: '
+                '𝕕 <DERIVATIVE> <derivative> ∂ <PARTIAL>'
+                '<partial> ∇ <NABLA> <divergence>'
+                '<gradient> [Δ] <DELTA> <laplacian>'
                 "<factor> <solver_operator> '||' '‖' '|'"
                 "<norm_operator> <power_operator> '<' '⟨'"
                 '<inner_product_operator>'
@@ -1478,8 +1491,9 @@ class grammardefaultParser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '<solver_operator> <norm_operator>'
-                '<power_operator>'
+                '<derivative> <partial> <divergence>'
+                '<gradient> <laplacian> <solver_operator>'
+                '<norm_operator> <power_operator>'
                 '<inner_product_operator>'
                 '<frobenius_product_operator>'
                 '<hadamard_product_operator>'
@@ -1554,8 +1568,9 @@ class grammardefaultParser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '<solver_operator> <norm_operator>'
-                '<power_operator>'
+                '<derivative> <partial> <divergence>'
+                '<gradient> <laplacian> <solver_operator>'
+                '<norm_operator> <power_operator>'
                 '<inner_product_operator>'
                 '<frobenius_product_operator>'
                 '<hadamard_product_operator>'
@@ -4016,7 +4031,7 @@ class grammardefaultParser(Parser):
                 "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
                 '<number_matrix> <identifier_alone>'
                 '<identifier_with_subscript>'
-                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
                 "<integer> '.' <digit> <mantissa>"
                 '<floating_point> <double>'
@@ -4167,7 +4182,7 @@ class grammardefaultParser(Parser):
                 '<pseudoinverse_in_matrix_operator>'
                 '<identifier_alone>'
                 '<identifier_with_subscript>'
-                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> \\d π <pi>'
                 '<factor_in_matrix>'
             )
@@ -4319,7 +4334,7 @@ class grammardefaultParser(Parser):
                 '<pseudoinverse_in_matrix_operator>'
                 '<identifier_alone>'
                 '<identifier_with_subscript>'
-                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> \\d π <pi>'
                 '<factor_in_matrix>'
             )
@@ -4651,7 +4666,7 @@ class grammardefaultParser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD>'
                 '<identifier_alone>'
             )
@@ -6478,7 +6493,7 @@ class grammardefaultParser(Parser):
                 'expecting one of: '
                 '<identifier_alone>'
                 '<identifier_with_unicode_subscript>'
-                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <local_func>'
                 '<destructure> <identifier> <assignment>'
                 '<expression> <addition> <subtraction>'
@@ -6642,7 +6657,7 @@ class grammardefaultParser(Parser):
                 'expecting one of: '
                 '<identifier_alone>'
                 '<identifier_with_subscript>'
-                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
             )
         self._define(
@@ -6733,7 +6748,7 @@ class grammardefaultParser(Parser):
                 'expecting one of: '
                 '<identifier_alone>'
                 '<identifier_with_subscript>'
-                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
                 "'(' <vector> '[' '⎡' <matrix>"
             )
@@ -6751,8 +6766,10 @@ class grammardefaultParser(Parser):
             self._error(
                 'expecting one of: '
                 '<term> <multiplication> <division>'
-                '<factor> <solver_operator>'
-                '<norm_operator> <power_operator>'
+                '<factor> <derivative> <partial>'
+                '<divergence> <gradient> <laplacian>'
+                '<solver_operator> <norm_operator>'
+                '<power_operator>'
                 '<inner_product_operator>'
                 '<frobenius_product_operator>'
                 '<hadamard_product_operator>'
@@ -6840,8 +6857,9 @@ class grammardefaultParser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '<solver_operator> <norm_operator>'
-                '<power_operator>'
+                '<derivative> <partial> <divergence>'
+                '<gradient> <laplacian> <solver_operator>'
+                '<norm_operator> <power_operator>'
                 '<inner_product_operator>'
                 '<frobenius_product_operator>'
                 '<hadamard_product_operator>'
@@ -6851,18 +6869,20 @@ class grammardefaultParser(Parser):
                 '<integral_operator> <trans_operator>'
                 '<sqrt_operator> <function_operator>'
                 '<builtin_operators>'
-                "<pseudoinverse_operator> <factor> '||'"
-                "'‖' '|' '<' '⟨' <union_operator>"
-                "<intersect_operator> sum ∑ <SUM> '∪' int"
-                "<INT> '∫' √ '!!!' <func_id> <exp_func>"
-                '<log_func> <ln_func> <sqrt_func>'
+                '<pseudoinverse_operator> 𝕕 <DERIVATIVE>'
+                '∂ <PARTIAL> ∇ <NABLA> [Δ] <DELTA>'
+                "<factor> '||' '‖' '|' '<' '⟨'"
+                '<union_operator> <intersect_operator>'
+                "sum ∑ <SUM> '∪' int <INT> '∫' √ '!!!'"
+                '<func_id> <exp_func> <log_func>'
+                '<ln_func> <sqrt_func>'
                 '<element_convert_func> <minmax_func>'
                 '<predefined_built_operators>'
                 "<operations> '(' <subexpression> '0' '1'"
                 "'𝟙' [01\\u1D7D9] <number_matrix>"
                 '<identifier_alone>'
                 '<identifier_with_subscript>'
-                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
                 "<integer> '.' <digit> <mantissa>"
                 '<floating_point> <double>'
@@ -6889,7 +6909,7 @@ class grammardefaultParser(Parser):
             self._error(
                 'expecting one of: '
                 "'(' <subexpression>"
-                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD>'
                 "<identifier_alone> <integer> '.' <digit>"
                 '<mantissa> <floating_point> <double>'
@@ -7687,7 +7707,7 @@ class grammardefaultParser(Parser):
                 "'(' <arithmetic_subexpression> # <POUND>"
                 '<size_op> <identifier_alone>'
                 '<identifier_with_subscript>'
-                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
                 "<integer> '.' <digit> <mantissa>"
                 '<floating_point> <double>'
@@ -8372,7 +8392,7 @@ class grammardefaultParser(Parser):
                 'expecting one of: '
                 '<identifier_alone>'
                 '<identifier_with_subscript>'
-                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
             )
         self._define(
@@ -8430,8 +8450,9 @@ class grammardefaultParser(Parser):
                 self._intersect_operator_()
             self._error(
                 'expecting one of: '
-                '<solver_operator> <norm_operator>'
-                '<power_operator>'
+                '<derivative> <partial> <divergence>'
+                '<gradient> <laplacian> <solver_operator>'
+                '<norm_operator> <power_operator>'
                 '<inner_product_operator>'
                 '<frobenius_product_operator>'
                 '<hadamard_product_operator>'
@@ -8531,7 +8552,7 @@ class grammardefaultParser(Parser):
                         with self._choice():
                             with self._option():
                                 with self._group():
-                                    self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                                 self.name_last_node('value')
                                 self._define(
                                     ['value'],
@@ -8548,7 +8569,7 @@ class grammardefaultParser(Parser):
                                 )
                             self._error(
                                 'expecting one of: '
-                                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                             )
                     self._define(
                         ['value', 'id'],
@@ -8564,7 +8585,7 @@ class grammardefaultParser(Parser):
                                     self._pattern(new_id)
                             self._error('no available options')
                         with self._group():
-                            self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
                     self._define(
                         ['value'],
@@ -8572,7 +8593,7 @@ class grammardefaultParser(Parser):
                     )
                 self._error(
                     'expecting one of: '
-                    "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                    "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                     '<KEYWORDS> where <WHERE> given <GIVEN>'
                     'sum min <MIN> max <MAX> argmin <ARGMIN>'
                     'argmax <ARGMAX> int <INT> if <IF>'
@@ -8609,7 +8630,7 @@ class grammardefaultParser(Parser):
                         with self._choice():
                             with self._option():
                                 with self._group():
-                                    self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                                 self.name_last_node('value')
                                 self._define(
                                     ['value'],
@@ -8626,7 +8647,7 @@ class grammardefaultParser(Parser):
                                 )
                             self._error(
                                 'expecting one of: '
-                                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                             )
                     self._define(
                         ['value', 'id'],
@@ -8636,7 +8657,7 @@ class grammardefaultParser(Parser):
                     with self._group():
                         self._PREFIX_KEYWORD_()
                         with self._group():
-                            self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
                     self._define(
                         ['value'],
@@ -8644,7 +8665,7 @@ class grammardefaultParser(Parser):
                     )
                 self._error(
                     'expecting one of: '
-                    "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                    "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                     '<KEYWORDS> where <WHERE> given <GIVEN>'
                     'sum min <MIN> max <MAX> argmin <ARGMIN>'
                     'argmax <ARGMAX> int <INT> if <IF>'
@@ -8682,7 +8703,7 @@ class grammardefaultParser(Parser):
             self._error(
                 'expecting one of: '
                 '<identifier_alone>'
-                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD>'
                 '<identifier_with_subscript> where'
                 '<WHERE> given <GIVEN> sum min <MIN> max'

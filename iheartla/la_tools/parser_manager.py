@@ -298,7 +298,7 @@ class ParserFileManager(object):
         with self._group():
             with self._choice():
                 with self._option():
-                    self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
                 with self._option():
                     self._token('`')
@@ -334,7 +334,7 @@ class ParserFileManager(object):
                                         with self._option():
                                             self._KEYWORDS_()""" + '\n' + '\n'.join(option_list) + r"""
                                         self._error('no available options')
-                            self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                             self.name_last_node('value')
                         with self._option():
                             self._token('`')
@@ -476,7 +476,7 @@ class ParserFileManager(object):
                     with self._choice():
                         with self._option():
                             with self._group():
-                                self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                             self.name_last_node('value')
                             self._define(
                                 ['value'],
@@ -493,7 +493,7 @@ class ParserFileManager(object):
                             )
                         self._error(
                             'expecting one of: '
-                            "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                            "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                         )
                 self._define(
                     ['value', 'id'],
@@ -503,7 +503,7 @@ class ParserFileManager(object):
                 with self._group():
                     self._PREFIX_KEYWORD_()
                     with self._group():
-                        self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                 self.name_last_node('value')
                 self._define(
                     ['value'],
@@ -511,7 +511,7 @@ class ParserFileManager(object):
                 )
             self._error(
                 'expecting one of: '
-                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                 '<KEYWORDS> where <WHERE> given <GIVEN>'
                 'sum min <MIN> max <MAX> argmin <ARGMIN>'
                 'argmax <ARGMAX> int <INT> if <IF>'
@@ -564,7 +564,7 @@ class ParserFileManager(object):
                         with self._choice():
                             with self._option():
                                 with self._group():
-                                    self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                                 self.name_last_node('value')
                                 self._define(
                                     ['value'],
@@ -581,7 +581,7 @@ class ParserFileManager(object):
                                 )
                             self._error(
                                 'expecting one of: '
-                                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                             )
                     self._define(
                         ['value', 'id'],
@@ -597,7 +597,7 @@ class ParserFileManager(object):
                                     self._pattern(new_id)
                             self._error('no available options')
                         with self._group():
-                            self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
                     self._define(
                         ['value'],
@@ -605,7 +605,7 @@ class ParserFileManager(object):
                     )
                 self._error(
                     'expecting one of: '
-                    "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                    "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                     '<KEYWORDS> where <WHERE> given <GIVEN>'
                     'sum min <MIN> max <MAX> argmin <ARGMIN>'
                     'argmax <ARGMAX> int <INT> if <IF>'
@@ -642,7 +642,7 @@ class ParserFileManager(object):
                         with self._choice():
                             with self._option():
                                 with self._group():
-                                    self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                                 self.name_last_node('value')
                                 self._define(
                                     ['value'],
@@ -659,7 +659,7 @@ class ParserFileManager(object):
                                 )
                             self._error(
                                 'expecting one of: '
-                                "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                             )
                     self._define(
                         ['value', 'id'],
@@ -669,7 +669,7 @@ class ParserFileManager(object):
                     with self._group():
                         self._PREFIX_KEYWORD_()
                         with self._group():
-                            self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
                     self._define(
                         ['value'],
@@ -677,7 +677,7 @@ class ParserFileManager(object):
                     )
                 self._error(
                     'expecting one of: '
-                    "[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                    "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
                     '<KEYWORDS> where <WHERE> given <GIVEN>'
                     'sum min <MIN> max <MAX> argmin <ARGMIN>'
                     'argmax <ARGMAX> int <INT> if <IF>'

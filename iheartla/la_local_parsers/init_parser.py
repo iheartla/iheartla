@@ -732,6 +732,16 @@ class grammarinitParser(Parser):
     def _operations_(self):  # noqa
         with self._choice():
             with self._option():
+                self._derivative_()
+            with self._option():
+                self._partial_()
+            with self._option():
+                self._divergence_()
+            with self._option():
+                self._gradient_()
+            with self._option():
+                self._laplacian_()
+            with self._option():
                 self._solver_operator_()
             with self._option():
                 self._norm_operator_()
@@ -765,6 +775,9 @@ class grammarinitParser(Parser):
                 self._pseudoinverse_operator_()
             self._error(
                 'expecting one of: '
+                '𝕕 <DERIVATIVE> <derivative> ∂ <PARTIAL>'
+                '<partial> ∇ <NABLA> <divergence>'
+                '<gradient> [Δ] <DELTA> <laplacian>'
                 "<factor> <solver_operator> '||' '‖' '|'"
                 "<norm_operator> <power_operator> '<' '⟨'"
                 '<inner_product_operator>'
@@ -1380,8 +1393,9 @@ class grammarinitParser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '<solver_operator> <norm_operator>'
-                '<power_operator>'
+                '<derivative> <partial> <divergence>'
+                '<gradient> <laplacian> <solver_operator>'
+                '<norm_operator> <power_operator>'
                 '<inner_product_operator>'
                 '<frobenius_product_operator>'
                 '<hadamard_product_operator>'
@@ -1456,8 +1470,9 @@ class grammarinitParser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '<solver_operator> <norm_operator>'
-                '<power_operator>'
+                '<derivative> <partial> <divergence>'
+                '<gradient> <laplacian> <solver_operator>'
+                '<norm_operator> <power_operator>'
                 '<inner_product_operator>'
                 '<frobenius_product_operator>'
                 '<hadamard_product_operator>'
@@ -3919,7 +3934,7 @@ class grammarinitParser(Parser):
                 '<number_matrix>'
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
+                '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
@@ -4073,7 +4088,7 @@ class grammarinitParser(Parser):
                 '<pseudoinverse_in_matrix_operator>'
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
+                '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> \\d π <pi>'
@@ -4227,7 +4242,7 @@ class grammarinitParser(Parser):
                 '<pseudoinverse_in_matrix_operator>'
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
+                '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> \\d π <pi>'
@@ -4561,7 +4576,7 @@ class grammarinitParser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
+                '[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
                 "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD>'
                 '<identifier_alone>'
@@ -6379,7 +6394,7 @@ class grammarinitParser(Parser):
                 'expecting one of: '
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
+                '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
@@ -6545,7 +6560,7 @@ class grammarinitParser(Parser):
                 'expecting one of: '
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
+                '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
@@ -6638,7 +6653,7 @@ class grammarinitParser(Parser):
                 'expecting one of: '
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
+                '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
@@ -6658,8 +6673,10 @@ class grammarinitParser(Parser):
             self._error(
                 'expecting one of: '
                 '<term> <multiplication> <division>'
-                '<factor> <solver_operator>'
-                '<norm_operator> <power_operator>'
+                '<factor> <derivative> <partial>'
+                '<divergence> <gradient> <laplacian>'
+                '<solver_operator> <norm_operator>'
+                '<power_operator>'
                 '<inner_product_operator>'
                 '<frobenius_product_operator>'
                 '<hadamard_product_operator>'
@@ -6747,8 +6764,9 @@ class grammarinitParser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '<solver_operator> <norm_operator>'
-                '<power_operator>'
+                '<derivative> <partial> <divergence>'
+                '<gradient> <laplacian> <solver_operator>'
+                '<norm_operator> <power_operator>'
                 '<inner_product_operator>'
                 '<frobenius_product_operator>'
                 '<hadamard_product_operator>'
@@ -6758,18 +6776,19 @@ class grammarinitParser(Parser):
                 '<integral_operator> <trans_operator>'
                 '<sqrt_operator> <function_operator>'
                 '<builtin_operators>'
-                "<pseudoinverse_operator> <factor> '||'"
-                "'‖' '|' '<' '⟨' <union_operator>"
-                "<intersect_operator> sum ∑ <SUM> '∪' int"
-                "<INT> '∫' √ <identifier_alone> <func_id>"
-                '<exp_func> <log_func> <ln_func>'
-                '<sqrt_func> <element_convert_func>'
-                '<minmax_func>'
+                '<pseudoinverse_operator> 𝕕 <DERIVATIVE>'
+                '∂ <PARTIAL> ∇ <NABLA> [Δ] <DELTA>'
+                "<factor> '||' '‖' '|' '<' '⟨'"
+                '<union_operator> <intersect_operator>'
+                "sum ∑ <SUM> '∪' int <INT> '∫' √"
+                '<identifier_alone> <func_id> <exp_func>'
+                '<log_func> <ln_func> <sqrt_func>'
+                '<element_convert_func> <minmax_func>'
                 '<predefined_built_operators>'
                 "<operations> '(' <subexpression> '0' '1'"
                 "'𝟙' [01\\u1D7D9] <number_matrix>"
                 '<identifier_with_multi_subscript>'
-                '<identifier_with_subscript> [∂A-Za-'
+                '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
@@ -6797,7 +6816,7 @@ class grammarinitParser(Parser):
                 self._constant_()
             self._error(
                 'expecting one of: '
-                "'(' <subexpression> [∂A-Za-"
+                "'(' <subexpression> [A-Za-"
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD>'
@@ -7582,7 +7601,7 @@ class grammarinitParser(Parser):
                 '<size_op>'
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
+                '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
@@ -8269,7 +8288,7 @@ class grammarinitParser(Parser):
                 'expecting one of: '
                 '<identifier_with_multi_subscript>'
                 '<identifier_alone>'
-                '<identifier_with_subscript> [∂A-Za-'
+                '<identifier_with_subscript> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
@@ -8329,8 +8348,9 @@ class grammarinitParser(Parser):
                 self._intersect_operator_()
             self._error(
                 'expecting one of: '
-                '<solver_operator> <norm_operator>'
-                '<power_operator>'
+                '<derivative> <partial> <divergence>'
+                '<gradient> <laplacian> <solver_operator>'
+                '<norm_operator> <power_operator>'
                 '<inner_product_operator>'
                 '<frobenius_product_operator>'
                 '<hadamard_product_operator>'
@@ -8419,7 +8439,7 @@ class grammarinitParser(Parser):
                     with self._choice():
                         with self._option():
                             with self._group():
-                                self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                             self.name_last_node('value')
                             self._define(
                                 ['value'],
@@ -8436,7 +8456,7 @@ class grammarinitParser(Parser):
                             )
                         self._error(
                             'expecting one of: '
-                            '[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
+                            '[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
                             "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                         )
                 self._define(
@@ -8447,7 +8467,7 @@ class grammarinitParser(Parser):
                 with self._group():
                     self._PREFIX_KEYWORD_()
                     with self._group():
-                        self._pattern('[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
+                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                 self.name_last_node('value')
                 self._define(
                     ['value'],
@@ -8455,7 +8475,7 @@ class grammarinitParser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
+                '[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
                 "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 '<KEYWORDS> where <WHERE> given <GIVEN>'
                 'sum min <MIN> max <MAX> argmin <ARGMIN>'
@@ -8495,7 +8515,7 @@ class grammarinitParser(Parser):
                 self._identifier_alone_()
             self._error(
                 'expecting one of: '
-                '[∂A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
+                '[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
                 "9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD>'
                 '<identifier_alone>'
@@ -8824,7 +8844,7 @@ class grammarinitParser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                '<identifier_alone> [∂A-Za-'
+                '<identifier_alone> [A-Za-'
                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-'
                 "z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
                 '<KEYWORDS> <PREFIX_KEYWORD> <func_id>'
