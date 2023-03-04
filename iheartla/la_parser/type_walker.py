@@ -2698,21 +2698,29 @@ class TypeWalker(NodeWalker):
     def walk_Partial(self, node, **kwargs):
         self.cur_eq_type &= EqTypeEnum.PDE
         upper_info = self.walk(node.upper, **kwargs)
+        self.assert_expr(upper_info.la_type.is_function(), get_err_msg_info(upper_info.ir.parse_info,"Symbol {} isn't a function".format(node.upper.text)))
         lower_list = []
         lorder_list = []
+        lorder_value_list = [] 
         for l in node.l:
             lower_info = self.walk(l[1], **kwargs)
             lower_list.append(lower_info.ir)
             if len(l) > 2:
                 lorder_info = self.walk(l[-1], **kwargs)
                 lorder_list.append(lorder_info.ir)
+                lorder_value_list.append(l[-1].text)
             else:
                 int_node = IntegerNode(value=1)
                 int_node.la_type = ScalarType(is_int=True)
                 lorder_list.append(int_node)
+                lorder_value_list.append(str(1))
         ir_node = PartialNode(parse_info=node.parseinfo, raw_text=node.text, upper=upper_info.ir, lower_list=lower_list, lorder_list=lorder_list)
         if node.uorder:
             ir_node.order = self.walk(node.uorder, **kwargs).ir
+            uorder_value = node.uorder.text
+        else:
+            uorder_value = str(1)
+        self.assert_expr(is_same_expr("+".join(lorder_value_list), uorder_value), get_err_msg_info(node.parseinfo,"Order doesn't match"))
         if node.f:
             ir_node.d_type = DerivativeType.DerivativeFraction
         else:
