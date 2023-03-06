@@ -1116,7 +1116,7 @@ class CodeGenNumpy(CodeGen):
         else:
             power_info = self.visit(node.power, **kwargs)
             if node.base.la_type.is_scalar():
-                base_info.content = "np.power(float({}), {})".format(base_info.content, power_info.content)
+                base_info.content = "np.power(({}).astype(float), {})".format(base_info.content, power_info.content)
             else:
                 if node.base.la_type.sparse:
                     base_info.content = "({})**({})".format(base_info.content, power_info.content)
