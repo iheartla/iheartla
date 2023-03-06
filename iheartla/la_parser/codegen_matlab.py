@@ -251,7 +251,7 @@ class CodeGenMatlab(CodeGen):
                 c_type = func_type.func_list[c_index]
                 c_name = func_type.fname_list[c_index]
                 p_name = func_type.pre_fname_list[c_index]
-                content_list.append("    {} = {}_.{};\n".format(c_name, module_name, p_name))
+                content_list.append("    {} = @{}_.{};\n".format(c_name, module_name, p_name))
         return ''.join(content_list)
 
     def get_struct_definition(self, init_content):
@@ -1610,19 +1610,19 @@ class CodeGenMatlab(CodeGen):
     def visit_destructuring(self, node, **kwargs):
         right_info = self.visit(node.right[0], **kwargs)
         rhs = self.generate_var_name("rhs")
-        content = "    {} = {}\n".format(rhs, right_info.content)
+        content = "    {} = {};\n".format(rhs, right_info.content)
         for cur_index in range(len(node.left)):
             id0_info = self.visit(node.left[cur_index], **kwargs)
             expr = ''
             if node.cur_type == DestructuringType.DestructuringSet:
-                expr = '{}({})'.format(rhs, cur_index)
+                expr = '{}({})'.format(rhs, cur_index+1)
             elif node.cur_type == DestructuringType.DestructuringSequence:
-                expr = '{}({})'.format(rhs, cur_index)
+                expr = '{}({})'.format(rhs, cur_index+1)
             elif node.cur_type == DestructuringType.DestructuringVector:
-                expr = '{}({})'.format(rhs, cur_index)
+                expr = '{}({})'.format(rhs, cur_index+1)
             elif node.cur_type == DestructuringType.DestructuringTuple or node.cur_type == DestructuringType.DestructuringList:
-                expr = '{}({})'.format(rhs, cur_index)
-            content += "    {} = {}\n".format(id0_info.content, expr)
+                expr = '{}({})'.format(rhs, cur_index+1)
+            content += "    {} = {};\n".format(id0_info.content, expr)
         return CodeNodeInfo(content, right_info.pre_list)
 
     def visit_assignment(self, node, **kwargs):
