@@ -61,7 +61,7 @@ class TriangleMesh:
             E[3 * i + 2, :] = sort_vector([self.F[i, 1], self.F[i, 2]])
         self.E = np.asarray(remove_duplicate_rows(sort_matrix(E)), dtype=int)
         for i in range(self.E.shape[0]):
-            self.map_e[(self.E[i, 0], self.E[i, 1])] = i
+            self.map_e[self.edge_key(self.E[i, 0], self.E[i, 1])] = i
 
     def create_faces(self):
         F = np.zeros((4*self.T.shape[0], 3), dtype=int)
@@ -72,23 +72,29 @@ class TriangleMesh:
             F[4 * i + 3, :] = sort_vector([self.T[i, 1], self.T[i, 2], self.T[i, 3]])
         self.F = np.asarray(remove_duplicate_rows(sort_matrix(F)), dtype=int)
         for i in range(self.F.shape[0]):
-            self.map_f[(self.F[i, 0], self.F[i, 1], self.F[i, 2])] = i
+            self.map_f[self.face_key(self.F[i, 0], self.F[i, 1], self.F[i, 2])] = i
+
+    def face_key(self, i, j, k):
+        return hash("i{}j{}k{}".format(i, j, k))
+
+    def edge_key(self, i, j):
+        return hash("i{}j{}".format(i, j))
 
     def get_face_index(self, i, j, k):
         sign = -1
         p = permute_rvector([i, j, k])
-        key = (p[0], p[1], p[2])
+        key = self.face_key(p[0], p[1], p[2])
         if key in self.map_f:
             sign = 1
             return self.map_f[key], sign
-        return self.map_f[(p[0], p[2], p[1])], sign
+        return self.map_f[self.face_key(p[0], p[2], p[1])], sign
 
     def get_edge_index(self, i, j):
         sign = -1
         if i < j:
             sign = 1
-            return self.map_e[(i, j)], sign
-        return self.map_e[(j, i)], sign
+            return self.map_e[self.edge_key(i, j)], sign
+        return self.map_e[self.edge_key(j, i)], sign
 
     def build_boundary_mat1(self):
         index_list = []
