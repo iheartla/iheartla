@@ -738,7 +738,7 @@ class CodeGenMatlab(CodeGen):
             range_name = self.generate_var_name('range')
             index_name = self.generate_var_name('index')
             content.append('{} = {};\n'.format(range_name, range_info.content))
-            content.append('for {} = 1:size({}, 1)\n'.format(index_name, range_name))
+            content.append('for {} = 1:length({})\n'.format(index_name, range_name))
             extra_content = ''
             if len(node.enum_list) == 1:
                 content.append('    {} = {}({});\n'.format(node.enum_list[0], range_name, index_name))
@@ -1610,19 +1610,21 @@ class CodeGenMatlab(CodeGen):
     def visit_destructuring(self, node, **kwargs):
         right_info = self.visit(node.right[0], **kwargs)
         rhs = self.generate_var_name("rhs")
-        content = "    {} = {};\n".format(rhs, right_info.content)
+        lhs_list = []
         for cur_index in range(len(node.left)):
             id0_info = self.visit(node.left[cur_index], **kwargs)
-            expr = ''
-            if node.cur_type == DestructuringType.DestructuringSet:
-                expr = '{}({})'.format(rhs, cur_index+1)
-            elif node.cur_type == DestructuringType.DestructuringSequence:
-                expr = '{}({})'.format(rhs, cur_index+1)
-            elif node.cur_type == DestructuringType.DestructuringVector:
-                expr = '{}({})'.format(rhs, cur_index+1)
-            elif node.cur_type == DestructuringType.DestructuringTuple or node.cur_type == DestructuringType.DestructuringList:
-                expr = '{}({})'.format(rhs, cur_index+1)
-            content += "    {} = {};\n".format(id0_info.content, expr)
+            lhs_list.append(id0_info.content)
+            # expr = ''
+            # if node.cur_type == DestructuringType.DestructuringSet:
+            #     expr = '{}({})'.format(rhs, cur_index+1)
+            # elif node.cur_type == DestructuringType.DestructuringSequence:
+            #     expr = '{}({})'.format(rhs, cur_index+1)
+            # elif node.cur_type == DestructuringType.DestructuringVector:
+            #     expr = '{}({})'.format(rhs, cur_index+1)
+            # elif node.cur_type == DestructuringType.DestructuringTuple or node.cur_type == DestructuringType.DestructuringList:
+            #     expr = '{}({})'.format(rhs, cur_index+1)
+            # content += "    {} = {};\n".format(id0_info.content, expr)
+        content = "    [{}] = {};\n".format(', '.join(lhs_list), right_info.content)
         return CodeNodeInfo(content, right_info.pre_list)
 
     def visit_assignment(self, node, **kwargs):
