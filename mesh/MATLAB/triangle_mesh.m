@@ -276,9 +276,9 @@ function mesh = triangle_mesh(T)
 
     function init_mesh_indices
         mesh.Vi = 1:length(mesh.V);
-        mesh.Ei = 1:length(mesh.E);
-        mesh.Fi = 1:length(mesh.F);
-        mesh.Ti = 1:length(mesh.T);
+        mesh.Ei = 1:size(mesh.E, 1);
+        mesh.Fi = 1:size(mesh.F, 1);
+        mesh.Ti = 1:size(mesh.T, 1);
     end
 
     function output = vertices_to_vector(vset)
