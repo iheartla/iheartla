@@ -919,5 +919,27 @@ def get_derived_type(op, left_type, right_type):
         ret_type = copy.deepcopy(left_type)
     return ret_type
 
+def get_derivative_type(upper_type, lower_type):
+    # get the type of derivatives
+    ret_type = ScalarType()
+    if upper_type.is_scalar():
+        if lower_type.is_vector():
+            ret_type = VectorType(rows=lower_type.rows)
+        elif lower_type.is_matrix():
+            ret_type = MatrixType(rows=lower_type.rows, cols=lower_type.cols)
+        elif lower_type.is_sequence():
+            ret_type = VectorType(rows=lower_type.size)
+    return ret_type
+
+def get_hessian_type(upper_type, lower_type):
+    # get the type of hessian
+    ret_type = ScalarType()
+    if upper_type.is_scalar():
+        if lower_type.is_vector():
+            ret_type = MatrixType(rows=lower_type.rows, cols=lower_type.rows)
+        elif lower_type.is_sequence():
+            ret_type = MatrixType(rows=lower_type.size, cols=lower_type.size)
+    return ret_type
+
 def make_function_type(params=[], ret=[]):
     return FunctionType(params=params, ret=ret)

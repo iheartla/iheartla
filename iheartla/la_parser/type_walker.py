@@ -2700,15 +2700,20 @@ class TypeWalker(NodeWalker):
         upper_info = self.walk(node.upper, **kwargs)
         self.assert_expr(upper_info.la_type.is_function(), get_err_msg_info(upper_info.ir.parse_info,"Symbol {} isn't a function".format(node.upper.text)))
         lower_list = []
+        lower_type_list = []
         lorder_list = []
         lorder_value_list = [] 
+        func_param_dict = self.local_func_dict[node.upper.text]
         for l in node.l:
             lower_info = self.walk(l[1], **kwargs)
             lower_list.append(lower_info.ir)
+            self.assert_expr(l[1].text in func_param_dict, get_err_msg_info(lower_info.ir.parse_info,"Symbol {} isn't a param of function {}".format(l[1].text, 
+                                                                                                                                                     node.upper.text)))
+            lower_type_list.append(func_param_dict[l[1].text])
             if len(l) > 2:
                 lorder_info = self.walk(l[-1], **kwargs)
                 lorder_list.append(lorder_info.ir)
-                lorder_value_list.append(l[-1].text)
+                lorder_value_list.append(str(get_unicode_number(lorder_info.content)))
             else:
                 int_node = IntegerNode(value=1)
                 int_node.la_type = ScalarType(is_int=True)
@@ -2717,15 +2722,25 @@ class TypeWalker(NodeWalker):
         ir_node = PartialNode(parse_info=node.parseinfo, raw_text=node.text, upper=upper_info.ir, lower_list=lower_list, lorder_list=lorder_list)
         if node.uorder:
             ir_node.order = self.walk(node.uorder, **kwargs).ir
-            uorder_value = node.uorder.text
+            uorder_value = get_unicode_number(node.uorder.text)
         else:
             uorder_value = str(1)
+        ret_type = ScalarType()
+        if is_same_expr(uorder_value, '1'):
+            # first order
+            ret_type = get_derivative_type(upper_info.la_type.ret[0], lower_type_list[0])
+        elif is_same_expr(uorder_value, '2'):
+            # second order
+            if len(lorder_list) == 1:
+                # hessian
+                ret_type = get_hessian_type(upper_info.la_type.ret[0], lower_type_list[0])
+            pass
         self.assert_expr(is_same_expr("+".join(lorder_value_list), uorder_value), get_err_msg_info(node.parseinfo,"Order doesn't match"))
         if node.f:
             ir_node.d_type = DerivativeType.DerivativeFraction
         else:
             ir_node.d_type = DerivativeType.DerivativeSFraction
-        ir_node.la_type = ScalarType()
+        ir_node.la_type = ret_type
         return NodeInfo(ir_node.la_type, ir=ir_node)
 
     def walk_Divergence(self, node, **kwargs):
