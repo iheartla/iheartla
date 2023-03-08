@@ -2,7 +2,7 @@ MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, IndicatorVector 
 Vertices, Edges, Faces from FundamentalMeshAccessors(M)
 M ∈ mesh 
 V, E, F = MeshSets( M )
-∂0, ∂1 = BoundaryMatrices(M) 
+`∂0`, `∂1` = BoundaryMatrices(M) 
 B0, B1 = UnsignedBoundaryMatrices(M)
 
 
@@ -10,18 +10,18 @@ VertexOneRing(v) = vertexset(NonZeros(B0 B0ᵀ IndicatorVector({v}))) - {v} wher
 VertexOneRing(v) = vertexset(NonZeros(B0 B0ᵀ IndicatorVector(v))) - v where v ⊂  V
 
 EdgeIndex(i, j) = eset_1 where i,j ∈ V,
-eset = edgeset(NonZeros(∂0ᵀ IndicatorVector({i}))) ∩ vertexset(NonZeros(∂0ᵀ IndicatorVector({j})))
+eset = edgeset(NonZeros(`∂0`ᵀ IndicatorVector({i}))) ∩ vertexset(NonZeros(`∂0`ᵀ IndicatorVector({j})))
 
 NeighborVerticesInFace(f, v) = tuple(vset1_1, vset2_1) where v ∈ V, f ∈ F,
-es = edgeset(NonZeros(∂1 IndicatorVector({f}))),
-nes = { s for s ∈ es if ∂0_v,s != 0 },
-eset1 = { e for e ∈ nes if ∂1_e,f ∂0_v,e == -1},
+es = edgeset(NonZeros(`∂1` IndicatorVector({f}))),
+nes = { s for s ∈ es if `∂0`_v,s != 0 },
+eset1 = { e for e ∈ nes if `∂1`_e,f `∂0`_v,e = -1},
 vset1 = vertexset(NonZeros(B0 IndicatorVector(eset1))) - {v},
-eset2 = { e for e ∈ nes if ∂1_e,f ∂0_v,e == 1 },
+eset2 = { e for e ∈ nes if `∂1`_e,f `∂0`_v,e = 1 },
 vset2 = vertexset(NonZeros(B0 IndicatorVector(eset2))) - {v}
 
 NextVerticeInFace(f, v) = vset_1 where v ∈ V, f ∈ F,
-eset = { e for e ∈ Edges(f) if ∂1_e,f ∂0_v,e == -1},
+eset = { e for e ∈ Edges(f) if `∂1`_e,f `∂0`_v,e = -1},
 vset = Vertices(eset) - {v}
 
 

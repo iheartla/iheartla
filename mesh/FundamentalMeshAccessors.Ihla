@@ -3,7 +3,7 @@ MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, IndicatorVector 
 M ∈ mesh 
 
 V, E, F = MeshSets( M )
-∂0, ∂1 = BoundaryMatrices(M) 
+`∂0`, `∂1` = BoundaryMatrices(M) 
 B0, B1 = UnsignedBoundaryMatrices(M)
 
 Vertices(S) = S₁ where S: SimplicialSet
