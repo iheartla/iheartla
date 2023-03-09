@@ -1402,16 +1402,57 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('Gradient')
     def _gradient_(self):  # noqa
-        self._NABLA_()
-        self.name_last_node('name')
+        with self._choice():
+            with self._option():
+                self._NABLA_()
+                self.name_last_node('name')
+                self._token('_')
+                self._identifier_alone_()
+                self.name_last_node('sub')
 
-        def block1():
-            self._hspace_()
-        self._closure(block1)
-        self._factor_()
-        self.name_last_node('value')
+                def block3():
+                    self._hspace_()
+                self._positive_closure(block3)
+                self._factor_()
+                self.name_last_node('value')
+                self._define(
+                    ['name', 'sub', 'value'],
+                    []
+                )
+            with self._option():
+                self._NABLA_()
+                self.name_last_node('name')
+                self._unicode_subscript_()
+                self.name_last_node('sub')
+
+                def block7():
+                    self._hspace_()
+                self._closure(block7)
+                self._factor_()
+                self.name_last_node('value')
+                self._define(
+                    ['name', 'sub', 'value'],
+                    []
+                )
+            with self._option():
+                self._NABLA_()
+                self.name_last_node('name')
+
+                def block10():
+                    self._hspace_()
+                self._closure(block10)
+                self._factor_()
+                self.name_last_node('value')
+                self._define(
+                    ['name', 'value'],
+                    []
+                )
+            self._error(
+                'expecting one of: '
+                '∇ <NABLA>'
+            )
         self._define(
-            ['name', 'value'],
+            ['name', 'sub', 'value'],
             []
         )
 
@@ -10182,6 +10223,7 @@ class Divergence(ModelBase):
 @dataclass(eq=False)
 class Gradient(ModelBase):
     name: Any = None
+    sub: Any = None
     value: Any = None
 
 

@@ -74,7 +74,9 @@ divergence::Divergence
 
 gradient::Gradient
     = 
-    name:NABLA {hspace} value:factor
+    name:NABLA '_' sub:identifier_alone {hspace}+ value:factor
+    | name:NABLA sub:unicode_subscript {hspace} value:factor
+    | name:NABLA {hspace} value:factor
     ;
     
 laplacian::Laplace
