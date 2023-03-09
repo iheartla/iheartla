@@ -1025,9 +1025,10 @@ class DivergenceNode(ExprNode):
 
 
 class GradientNode(ExprNode):
-    def __init__(self, la_type=None, parse_info=None, raw_text=None, value=None):
+    def __init__(self, la_type=None, sub=None, parse_info=None, raw_text=None, value=None):
         super().__init__(IRNodeType.Gradient, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.value = value
+        self.sub = sub
 
 
 class LaplaceNode(ExprNode):
