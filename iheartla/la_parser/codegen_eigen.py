@@ -12,6 +12,7 @@ class CodeGenEigen(CodeGen):
         self.post_str = ''''''
         self.ret = 'ret'
         self.pre_str += '#include <algorithm>\n'
+        self.pre_str += '#include <algorithm>\n'
         if self.unofficial_method:
             self.pre_str += '#include <unsupported/Eigen/MatrixFunctions>\n'
         if self.has_opt:
@@ -21,6 +22,9 @@ class CodeGenEigen(CodeGen):
             self.pre_str += 'using namespace boost::numeric::odeint;\n'
         self.code_frame.desc = '/*\n{}\n*/\n'''.format(self.la_content)
         self.code_frame.include = self.pre_str
+        self.double_type = "DT"          # double type
+        self.matrixd_type = "MatrixXd"   # matrix double type
+        self.vectord_type = "VectorXd"   # vector double type
 
     def get_dim_check_str(self):
         check_list = []
@@ -82,24 +86,24 @@ class CodeGenEigen(CodeGen):
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::SparseMatrix<int>"
                     else:
-                        type_str = "Eigen::SparseMatrix<double>"
+                        type_str = "Eigen::SparseMatrix<{}>".format(self.double_type)
                 else:
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::SparseMatrix<int>"
                     else:
-                        type_str = "Eigen::SparseMatrix<double>"
+                        type_str = "Eigen::SparseMatrix<{}>".format(self.double_type)
             else:
                 if la_type.is_dynamic():
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::MatrixXi"
                     else:
-                        type_str = "Eigen::MatrixXd"
+                        type_str = "Eigen::{}".format(self.matrixd_type)
                 else:
                     if la_type.is_dim_constant() and la_type.rows != 0 and la_type.cols != 0:
                         if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                             type_str = "Eigen::Matrix<int, {}, {}>".format(la_type.rows, la_type.cols)
                         else:
-                            type_str = "Eigen::Matrix<double, {}, {}>".format(la_type.rows, la_type.cols)
+                            type_str = "Eigen::Matrix<{}, {}, {}>".format(self.double_type, la_type.rows, la_type.cols)
                     else:
                         if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                             type_str = "Eigen::MatrixXi"
@@ -108,45 +112,45 @@ class CodeGenEigen(CodeGen):
                             elif isinstance(la_type.cols, int):
                                 type_str = "Eigen::Matrix<int, Eigen::Dynamic, {}>".format(la_type.cols)
                         else:
-                            type_str = "Eigen::MatrixXd"
+                            type_str = "Eigen::{}".format(self.matrixd_type)
                             if isinstance(la_type.rows, int):
-                                type_str = "Eigen::Matrix<double, {}, Eigen::Dynamic>".format(la_type.rows)
+                                type_str = "Eigen::Matrix<{}, {}, Eigen::Dynamic>".format(self.double_type, la_type.rows)
                             elif isinstance(la_type.cols, int):
-                                type_str = "Eigen::Matrix<double, Eigen::Dynamic, {}>".format(la_type.cols)
+                                type_str = "Eigen::Matrix<{}, Eigen::Dynamic, {}>".format(self.double_type, la_type.cols)
         elif la_type.is_vector():
             if la_type.sparse:
                 if la_type.is_dim_constant() and la_type.rows != 0:
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::SparseVector<int>"
                     else:
-                        type_str = "Eigen::SparseVector<double>"
+                        type_str = "Eigen::SparseVector<{}>".format(self.double_type)
                 else:
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::SparseVector<int>"
                     else:
-                        type_str = "Eigen::SparseVector<double>"
+                        type_str = "Eigen::SparseVector<{}>".format(self.double_type)
             else:
                 if la_type.is_dynamic():
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::VectorXi"
                     else:
-                        type_str = "Eigen::VectorXd"
+                        type_str = "Eigen::{}".format(self.vectord_type)
                 else:
                     if la_type.is_dim_constant() and la_type.rows != 0:
                         if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                             type_str = "Eigen::Matrix<int, {}, 1>".format(la_type.rows)
                         else:
-                            type_str = "Eigen::Matrix<double, {}, 1>".format(la_type.rows)
+                            type_str = "Eigen::Matrix<{}, {}, 1>".format(self.double_type, la_type.rows)
                     else:
                         if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                             type_str = "Eigen::VectorXi"
                         else:
-                            type_str = "Eigen::VectorXd"
+                            type_str = "Eigen::{}".format(self.vectord_type)
         elif la_type.is_scalar():
             if la_type.is_scalar() and la_type.is_int:
                 type_str = "int"
             else:
-                type_str = "double"
+                type_str = self.double_type
         elif la_type.is_set():
             type_str = "std::vector<{} >".format(self.get_set_item_str(la_type))
         elif la_type.is_tuple():
@@ -166,13 +170,13 @@ class CodeGenEigen(CodeGen):
             if isinstance(element_type, LaVarType) and element_type.is_scalar() and element_type.is_int:
                 rand_test = 'Eigen::MatrixXi::Random({}, {});'.format(la_type.rows, la_type.cols)
             else:
-                rand_test = 'Eigen::MatrixXd::Random({}, {});'.format(la_type.rows, la_type.cols)
+                rand_test = 'Eigen::{}::Random({}, {});'.format(self.matrixd_type, la_type.rows, la_type.cols)
         elif la_type.is_vector():
             element_type = la_type.element_type
             if isinstance(element_type, LaVarType) and element_type.is_scalar() and element_type.is_int:
                 rand_test = 'Eigen::VectorXi::Random({});'.format(la_type.rows)
             else:
-                rand_test = 'Eigen::VectorXd::Random({});'.format(la_type.rows)
+                rand_test = 'Eigen::{}::Random({});'.format(self.vectord_type, la_type.rows)
         elif la_type.is_scalar():
             rand_test = 'rand() % {};'.format(rand_int_max)
         return rand_test
@@ -227,18 +231,18 @@ class CodeGenEigen(CodeGen):
                 if element_type.is_scalar() and element_type.is_int:
                     test_content.append('Eigen::MatrixXi::Random({}, {}){}'.format(ele_type.rows, ele_type.cols, sparse_view))
                 else:
-                    test_content.append('Eigen::MatrixXd::Random({}, {}){}'.format(ele_type.rows, ele_type.cols, sparse_view))
+                    test_content.append('Eigen::{}::Random({}, {}){}'.format(self.matrixd_type, ele_type.rows, ele_type.cols, sparse_view))
             else:
-                    test_content.append('Eigen::MatrixXd::Random({}, {}){}'.format(ele_type.rows, ele_type.cols, sparse_view))
+                    test_content.append('Eigen::{}::Random({}, {}){}'.format(self.matrixd_type, ele_type.rows, ele_type.cols, sparse_view))
         elif ele_type.is_vector():
             element_type = ele_type.element_type
             if isinstance(element_type, LaVarType):
                 if element_type.is_scalar() and element_type.is_int:
                     test_content.append('Eigen::VectorXi::Random({})'.format(ele_type.rows))
                 else:
-                    test_content.append('Eigen::VectorXd::Random({})'.format(ele_type.rows))
+                    test_content.append('Eigen::{}::Random({})'.format(self.vectord_type, ele_type.rows))
             else:
-                    test_content.append('Eigen::VectorXd::Random({})'.format(ele_type.rows))
+                    test_content.append('Eigen::{}::Random({})'.format(self.vectord_type, ele_type.rows))
         elif ele_type.is_scalar():
             if ele_type.is_int:
                 test_content.append('rand()%{}'.format(rand_int_max))
@@ -346,7 +350,8 @@ class CodeGenEigen(CodeGen):
                         class_name = MESH_HELPER
                     # item_list.append("    {} {};\n".format(class_name, module_data.instance_name))
                     # init_var += "        {}.initialize({});\n".format(module_data.instance_name, ', '.join(module_data.params_list))
-        content = ["struct {} {{".format(self.get_result_type()),
+        content = ["template<class {} = double>".format(self.double_type),
+                   "struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),
                    init_content,
                    self.local_func_def,
@@ -465,7 +470,7 @@ class CodeGenEigen(CodeGen):
                         sparse_view = ''
                         if ele_type.sparse:
                             sparse_view = '.sparseView()'
-                        matrix_type_str = 'MatrixXi' if integer_type else 'MatrixXd'
+                        matrix_type_str = 'MatrixXi' if integer_type else self.matrixd_type
                         row_str = ele_type.rows if not ele_type.is_dynamic_row() else 'rand()%{}'.format(rand_int_max)
                         col_str = ele_type.cols if not ele_type.is_dynamic_col() else 'rand()%{}'.format(rand_int_max)
                         test_content.append(
@@ -477,7 +482,7 @@ class CodeGenEigen(CodeGen):
                             type_checks.append('    for( const auto& el : {} ) {{'.format(parameter))
                             type_checks.append('        assert( el.size() == {} );'.format(ele_type.rows))
                             type_checks.append('    }')
-                        vector_type_str = 'VectorXi' if integer_type else 'VectorXd'
+                        vector_type_str = 'VectorXi' if integer_type else self.vectord_type
                         row_str = ele_type.rows if not ele_type.is_dynamic_row() else 'rand()%{}'.format(rand_int_max)
                         test_content.append(
                             '        {}[i] = Eigen::{}::Random({});'.format(parameter, vector_type_str, row_str))
@@ -509,13 +514,13 @@ class CodeGenEigen(CodeGen):
                                                                                  sparse_view))
                     else:
                         test_content.append(
-                            '    {} = Eigen::MatrixXd::Random({}, {}){};'.format(parameter,
+                            '    {} = Eigen::{}::Random({}, {}){};'.format(parameter, self.matrixd_type,
                                                                                  self.get_sym_type(parameter).rows,
                                                                                  self.get_sym_type(parameter).cols,
                                                                                  sparse_view))
                 else:
                     test_content.append(
-                        '    {} = Eigen::MatrixXd::Random({}, {}){};'.format(parameter,
+                        '    {} = Eigen::{}::Random({}, {}){};'.format(parameter, self.matrixd_type,
                                                                              self.get_sym_type(parameter).rows,
                                                                              self.get_sym_type(parameter).cols,
                                                                              sparse_view))
@@ -535,11 +540,11 @@ class CodeGenEigen(CodeGen):
                                                                            self.get_sym_type(parameter).rows))
                     else:
                         test_content.append(
-                            '    {} = Eigen::VectorXd::Random({});'.format(parameter,
+                            '    {} = Eigen::{}::Random({});'.format(parameter, self.vectord_type,
                                                                            self.get_sym_type(parameter).rows))
                 else:
                     test_content.append(
-                        '    {} = Eigen::VectorXd::Random({});'.format(parameter, self.get_sym_type(parameter).rows))
+                        '    {} = Eigen::{}::Random({});'.format(parameter, self.vectord_type, self.get_sym_type(parameter).rows))
                 if not self.get_sym_type(parameter).is_dim_constant():
                     if not (parameter in dim_defined_dict and dim_defined_dict[parameter] == 0):
                         type_checks.append(
@@ -649,7 +654,7 @@ class CodeGenEigen(CodeGen):
                     defined_content.append('    {}.resize({});'.format(cur_sym, self.get_sym_type(cur_sym).size))
                     if self.get_sym_type(cur_sym).element_type.is_vector():
                         vector_type_str = 'VectorXi' if self.get_sym_type(
-                            cur_sym).element_type.is_integer_element() else 'VectorXd'
+                            cur_sym).element_type.is_integer_element() else self.vectord_type
                         # determined
                         cur_block_content.append(
                             '        {}[i] = Eigen::{}::Random({});'.format(cur_sym, vector_type_str,
@@ -660,7 +665,7 @@ class CodeGenEigen(CodeGen):
                         if self.get_sym_type(cur_sym).element_type.sparse:
                             sparse_view = '.sparseView()'
                         matrix_type_str = 'MatrixXi' if self.get_sym_type(
-                            cur_sym).element_type.is_integer_element() else 'MatrixXd'
+                            cur_sym).element_type.is_integer_element() else self.matrixd_type
                         row_str = self.get_sym_type(cur_sym).element_type.rows if not self.get_sym_type(
                             cur_sym).element_type.is_dynamic_row() else rand_name_dict[dim_dict[1]]
                         col_str = self.get_sym_type(cur_sym).element_type.cols if not self.get_sym_type(
@@ -984,18 +989,18 @@ class CodeGenEigen(CodeGen):
                                                          assign_id_type.cols))
             else:
                 content.append(
-                    "Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, {});\n".format(assign_id, assign_id_type.rows,
+                    "Eigen::{} {} = Eigen::{}::Zero({}, {});\n".format(self.matrixd_type, assign_id, self.matrixd_type, assign_id_type.rows,
                                                                                    assign_id_type.cols))
         elif assign_id_type.is_vector():
             content.append(
-                "Eigen::MatrixXd {} = Eigen::MatrixXd::Zero({}, 1);\n".format(assign_id, assign_id_type.rows))
+                "Eigen::{} {} = Eigen::{}::Zero({}, 1);\n".format(self.matrixd_type, assign_id, self.matrixd_type, assign_id_type.rows))
         elif assign_id_type.is_sequence():
             ele_type = assign_id_type.element_type
             content.append(
-                "Eigen::MatrixXd {} = np.zeros(({}, {}, {}))\n".format(assign_id, assign_id_type.size,
+                "Eigen::{} {} = np.zeros(({}, {}, {}))\n".format(self.matrixd_type, assign_id, assign_id_type.size,
                                                                        ele_type.rows, ele_type.cols))
         else:
-            content.append("double {} = 0;\n".format(assign_id))
+            content.append("{} {} = 0;\n".format(self.double_type, assign_id))
         if node.enum_list:
             range_info = self.visit(node.range, **kwargs)
             if len(node.enum_list) == 1:
@@ -1227,7 +1232,7 @@ class CodeGenEigen(CodeGen):
                 svd_name = self.generate_var_name("svd")
                 content = "{}.singularValues().sum()".format(svd_name)
                 pre_list.append(
-                    "    Eigen::JacobiSVD<Eigen::MatrixXd> {}(T, Eigen::ComputeThinU | Eigen::ComputeThinV);\n".format(
+                    "    Eigen::JacobiSVD<Eigen::{}> {}(T, Eigen::ComputeThinU | Eigen::ComputeThinV);\n".format(self.matrixd_type, 
                         svd_name))
         elif type_info.la_type.is_set():
             content = "({}).size()".format(value)
@@ -1442,14 +1447,14 @@ class CodeGenEigen(CodeGen):
             if node.loop:
                 content += stat_info.pre_list
                 content.append(cond_info.content)
-                content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(
-                    assign_node.left[0].main.main_id, subs[0], subs[1], stat_content))
+                content.append('    tripletList_{}.push_back(Eigen::Triplet<{}>({}-1, {}-1, {}));\n'.format(
+                    assign_node.left[0].main.main_id, self.double_type, subs[0], subs[1], stat_content))
                 content.append('}\n')
             else:
                 content.append('{}({}){{\n'.format("if" if node.first_in_list else "else if", cond_info.content))
                 content += stat_info.pre_list
-                content.append('    tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(
-                    assign_node.left[0].main.main_id, subs[0], subs[1], stat_content))
+                content.append('    tripletList_{}.push_back(Eigen::Triplet<{}>({}-1, {}-1, {}));\n'.format(
+                    assign_node.left[0].main.main_id, self.double_type, subs[0], subs[1], stat_content))
                 content.append('}\n')
             self.convert_matrix = False
         else:
@@ -1572,17 +1577,17 @@ class CodeGenEigen(CodeGen):
                             # scalar value
                             continue
                         if ret[i][j] == '0':
-                            func_name = 'Eigen::MatrixXd::Zero'
+                            func_name = 'Eigen::{}::Zero'.format(self.matrixd_type)
                         elif ret[i][j] == '1':
-                            func_name = 'Eigen::MatrixXd::Ones'
+                            func_name = 'Eigen::{}::Ones'.format(self.matrixd_type)
                         elif 'I' in ret[i][j] and 'I' not in self.symtable:
                             # todo: assert in type checker
                             assert dims[0] == dims[1], "I must be square matrix"
                             ret[i][j] = ret[i][j].replace('I',
-                                                          'Eigen::MatrixXd::Identity({}, {})'.format(dims[0], dims[0]))
+                                                          'Eigen::{}::Identity({}, {})'.format(self.matrixd_type, dims[0], dims[0]))
                             continue
                         else:
-                            func_name = ret[i][j] + ' * Eigen::MatrixXd::Ones'
+                            func_name = ret[i][j] + ' * Eigen::{}::Ones'.format(self.matrixd_type)
                         if dims[1] == 1:
                             # vector
                             ret[i][j] = '{}({}, 1)'.format(func_name, dims[0])
@@ -1595,9 +1600,9 @@ class CodeGenEigen(CodeGen):
             sparse_id = "{}".format(cur_m_id)
             sparse_triplet = "tripletList{}".format(cur_m_id)
             tmp_sparse_name = self.generate_var_name("tmp")
-            content += 'Eigen::SparseMatrix<double> {}({}, {});\n'.format(cur_m_id, self.get_sym_type(cur_m_id).rows,
+            content += 'Eigen::SparseMatrix<{}> {}({}, {});\n'.format(self.double_type, cur_m_id, self.get_sym_type(cur_m_id).rows,
                                                                           self.get_sym_type(cur_m_id).cols)
-            content += '    std::vector<Eigen::Triplet<double> > {};\n'.format(sparse_triplet)
+            content += '    std::vector<Eigen::Triplet<{}> > {};\n'.format(self.double_type, sparse_triplet)
             first_item = True
             for i in range(len(ret)):
                 col_index = 0
@@ -1614,7 +1619,7 @@ class CodeGenEigen(CodeGen):
                             j].la_type.is_vector():
                             cur_col_size = type_info.la_type.item_types[i][j].la_type.cols
                             cur_row_size = type_info.la_type.item_types[i][j].la_type.rows
-                    if 'Eigen::MatrixXd::Zero' in ret[i][j]:
+                    if 'Eigen::{}::Zero'.format(self.matrixd_type) in ret[i][j]:
                         # no need to handle zero
                         col_index += cur_col_size
                         continue
@@ -1642,29 +1647,29 @@ class CodeGenEigen(CodeGen):
                     if first_item:
                         first_item = False
                         # declaration
-                        content += '    Eigen::SparseMatrix<double> {} = {};\n'.format(tmp_sparse_name, item_content)
+                        content += '    Eigen::SparseMatrix<{}> {} = {};\n'.format(self.double_type, tmp_sparse_name, item_content)
                         if cur_scalar:
-                            content += '    {}.push_back(Eigen::Triplet<double>({}, {}, {}));\n'.format(
-                                sparse_triplet, row_index, col_index, item_content)
+                            content += '    {}.push_back(Eigen::Triplet<{}>({}, {}, {}));\n'.format(
+                                sparse_triplet, self.double_type, row_index, col_index, item_content)
                             col_index += cur_col_size
                             continue
                     else:
                         if cur_scalar:
-                            content += '    {}.push_back(Eigen::Triplet<double>({}, {}, {}));\n'.format(
-                                sparse_triplet, row_index, col_index, item_content)
+                            content += '    {}.push_back(Eigen::Triplet<{}>({}, {}, {}));\n'.format(
+                                sparse_triplet, self.double_type, row_index, col_index, item_content)
                             col_index += cur_col_size
                             continue
                         content += '    {} = {};\n'.format(tmp_sparse_name, item_content)
                     content += '    for (int k=0; k < {}.outerSize(); ++k){{\n'.format(tmp_sparse_name)
-                    content += '        for (Eigen::SparseMatrix<double>::InnerIterator it({}, k); it; ++it){{\n'.format(
+                    content += '        for (Eigen::SparseMatrix<{}>::InnerIterator it({}, k); it; ++it){{\n'.format(self.double_type, 
                         tmp_sparse_name)
                     row_str = ''
                     col_str = ''
                     if not first_item:
                         row_str = "+{}".format(row_index)
                         col_str = "+{}".format(col_index)
-                    content += '            {}.push_back(Eigen::Triplet<double>((int)it.row(){}, (int)it.col(){}, it.value()));\n'.format(
-                        sparse_triplet, row_str, col_str)
+                    content += '            {}.push_back(Eigen::Triplet<{}>((int)it.row(){}, (int)it.col(){}, it.value()));\n'.format(
+                        sparse_triplet, self.double_type, row_str, col_str)
                     content += '        }\n'
                     content += '    }\n'
                     # update col index
@@ -1678,10 +1683,10 @@ class CodeGenEigen(CodeGen):
         else:
             # dense
             if self.get_sym_type(cur_m_id).is_dim_constant():
-                content += 'Eigen::Matrix<{}, {}, {}> {};\n'.format("int" if self.get_sym_type(cur_m_id).is_integer_element() else "double", self.get_sym_type(cur_m_id).rows,
+                content += 'Eigen::Matrix<{}, {}, {}> {};\n'.format("int" if self.get_sym_type(cur_m_id).is_integer_element() else self.double_type, self.get_sym_type(cur_m_id).rows,
                                                                         self.get_sym_type(cur_m_id).cols, cur_m_id)
             else:
-                content += '{} {}({}, {});\n'.format("Eigen::MatrixXi" if self.get_sym_type(cur_m_id).is_integer_element() else "Eigen::MatrixXd", cur_m_id, self.get_sym_type(cur_m_id).rows,
+                content += '{} {}({}, {});\n'.format("Eigen::MatrixXi" if self.get_sym_type(cur_m_id).is_integer_element() else "Eigen::{}".format(self.matrixd_type), cur_m_id, self.get_sym_type(cur_m_id).rows,
                                                                   self.get_sym_type(cur_m_id).cols)
             if type_info.la_type:
                 all_rows = []
@@ -1705,12 +1710,12 @@ class CodeGenEigen(CodeGen):
     def visit_num_matrix(self, node, **kwargs):
         post_s = ''
         if node.id:
-            func_name = "Eigen::MatrixXd::Identity"
+            func_name = "Eigen::{}::Identity".format(self.matrixd_type)
         else:
             if node.left == '0':
-                func_name = "Eigen::MatrixXd::Zero"
+                func_name = "Eigen::{}::Zero".format(self.matrixd_type)
             elif node.left == '1' or node.left == '𝟙':
-                func_name = "Eigen::MatrixXd::Ones"
+                func_name = "Eigen::{}::Ones".format(self.matrixd_type)
             # else:
             #     func_name = "({} * Eigen::MatrixXd::Ones".format(left_info.content)
             #     post_s = ')'
@@ -1841,7 +1846,7 @@ class CodeGenEigen(CodeGen):
     def visit_div(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
         right_info = self.visit(node.right, **kwargs)
-        left_info.content = "{} / double({})".format(left_info.content, right_info.content)
+        left_info.content = "{} / {}({})".format(left_info.content, self.double_type, right_info.content)
         left_info.pre_list += right_info.pre_list
         return left_info
 
@@ -1911,7 +1916,7 @@ class CodeGenEigen(CodeGen):
             if node.la_type.is_integer_element():
                 value_info.content = "(int)({})".format(value_info.content)
             else:
-                value_info.content = "(double)({})".format(value_info.content)
+                value_info.content = "({})({})".format(self.double_type, value_info.content)
         return value_info
 
     def visit_equation(self, node, **kwargs):
@@ -2005,7 +2010,7 @@ class CodeGenEigen(CodeGen):
                                         content += "    {}.resize({}, {});\n".format(sequence,
                                                                                      self.get_sym_type(sequence).rows,
                                                                                      self.get_sym_type(sequence).cols)
-                                        content += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(sequence)
+                                        content += '    std::vector<Eigen::Triplet<{}> > tripletList_{};\n'.format(self.double_type, sequence)
                                     else:
                                         content += '    tripletList_{}.clear();\n'.format(sequence)
                                 content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
@@ -2013,8 +2018,8 @@ class CodeGenEigen(CodeGen):
                                                                                          left_subs[0])
                                 if right_info.pre_list:
                                     content += self.update_prelist_str(right_info.pre_list, "    ")
-                                content += '        tripletList_{}.push_back(Eigen::Triplet<double>({}-1, {}-1, {}));\n'.format(
-                                    sequence, left_subs[0], left_subs[0], right_info.content)
+                                content += '        tripletList_{}.push_back(Eigen::Triplet<{}>({}-1, {}-1, {}));\n'.format(
+                                    sequence, self.double_type, left_subs[0], left_subs[0], right_info.content)
                                 content += "    }\n"
                                 content += '    {}.setFromTriplets(tripletList_{}.begin(), tripletList_{}.end());\n'.format(
                                     sequence, sequence,
@@ -2033,7 +2038,7 @@ class CodeGenEigen(CodeGen):
                                                                                         node.left[cur_index].get_main_id()).rows,
                                                                                     self.get_sym_type(
                                                                                         node.left[cur_index].get_main_id()).cols)
-                                        def_str += '    std::vector<Eigen::Triplet<double> > tripletList_{};\n'.format(
+                                        def_str += '    std::vector<Eigen::Triplet<{}> > tripletList_{};\n'.format(self.double_type,
                                             node.left[cur_index].get_main_id())
                                     else:
                                         content += '    tripletList_{}.clear();\n'.format(node.left[cur_index].get_main_id())
@@ -2065,7 +2070,7 @@ class CodeGenEigen(CodeGen):
                                 if node.op == '=':
                                     # declare
                                     if sequence not in self.declared_symbols:
-                                        content += "    {} = Eigen::MatrixXd::Zero({}, {});\n".format(sequence,
+                                        content += "    {} = Eigen::{}::Zero({}, {});\n".format(sequence, self.matrixd_type,
                                                                                                       self.get_sym_type(
                                                                                                           sequence).rows,
                                                                                                       self.get_sym_type(
@@ -2276,6 +2281,7 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo(value)
 
     def visit_derivative(self, node, **kwargs):
+        # if node.d_type == 
         return CodeNodeInfo("")
 
     def visit_divergence(self, node, **kwargs):
@@ -2312,9 +2318,8 @@ class CodeGenEigen(CodeGen):
             self.visiting_diff_init = False
             x = self.generate_var_name("x")
             content += "    {\n"
-            content += "        double {} = {};\n".format(x, rhs[0])
-            content += "        integrate_adaptive(make_controlled(1E-12, 1E-12, runge_kutta_dopri5<double>()), {}::{}, {}, double({}), d{}, 0.1);\n".format(self.func_name, target_name, x,
-                                                                               lhs[0], node.param)
+            content += "        {} {} = {};\n".format(self.double_type, x, rhs[0])
+            content += "        integrate_adaptive(make_controlled(1E-12, 1E-12, runge_kutta_dopri5<{}>()), {}::{}, {}, {}({}), d{}, 0.1);\n".format(self.double_type, self.func_name, target_name, x, self.double_type, lhs[0], node.param)
             content += "        return {};\n".format(x)
             content += "    }\n"
         self.visiting_diff_eq = False
@@ -2351,9 +2356,9 @@ class CodeGenEigen(CodeGen):
                 unpack_str = "        {} = {}(Eigen::seqN({}, {}));\n".format(id_info.content, param_name, cur_len, cur_la_type.rows)
                 cur_len = add_syms(cur_len, cur_la_type.rows)
             elif cur_la_type.is_matrix():
-                pack_str = "Eigen::Map<Eigen::VectorXd>({}.data(), {}.cols()*{}.rows())".format(id_info.content, id_info.content, id_info.content)
+                pack_str = "Eigen::Map<Eigen::{}>({}.data(), {}.cols()*{}.rows())".format(self.vectord_type, id_info.content, id_info.content, id_info.content)
                 init_value = "np.zeros({}*{})".format(cur_la_type.rows, cur_la_type.cols)
-                unpack_str = "        double* a = {}(Eigen::seqN({}, {})).data();\n".format(param_name, cur_len, mul_syms(cur_la_type.rows, cur_la_type.cols))
+                unpack_str = "        {}* a = {}(Eigen::seqN({}, {})).data();\n".format(self.double_type, param_name, cur_len, mul_syms(cur_la_type.rows, cur_la_type.cols))
                 unpack_str += "        {} = Eigen::Map<{} >(a);\n".format(id_info.content, self.get_ctype(cur_la_type))
                 cur_len = add_syms(cur_len, mul_syms(cur_la_type.rows, cur_la_type.cols))
             init_list.append(init_value)
@@ -2370,18 +2375,18 @@ class CodeGenEigen(CodeGen):
         join_vec_name = self.generate_var_name('vec_joined')
         pre_list += ["    auto pack = [&]({})\n".format(', '.join(param_list)),
                      "    {\n",
-                     "        Eigen::VectorXd {}({});\n".format(join_vec_name, cur_len),
+                     "        Eigen::{} {}({});\n".format(self.vectord_type, join_vec_name, cur_len),
                      "        {} << {};\n".format(join_vec_name, ', '.join(pack_list)),
                      "        return {};\n".format(join_vec_name),
                      "    };\n",
-                     "    auto unpack = [&](Eigen::VectorXd & {}, {})\n".format(param_name, ', '.join(param_list)),
+                     "    auto unpack = [&](Eigen::{} & {}, {})\n".format(self.vectord_type, param_name, ', '.join(param_list)),
                      "    {\n",
                      "{}\n".format(''.join(unpack_list)),
                      "    };\n",
-                     "    LBFGSpp::LBFGSParam<double> {};\n".format(bfgs_param_name),
+                     "    LBFGSpp::LBFGSParam<{}> {};\n".format(self.double_type, bfgs_param_name),
                      "    {}.epsilon = 1e-6;\n".format(bfgs_param_name),
                      "    {}.max_iterations = 100;\n".format(bfgs_param_name),
-                     "    LBFGSpp::LBFGSSolver<double> {}({}); \n".format(solver_name, bfgs_param_name),
+                     "    LBFGSpp::LBFGSSolver<{}> {}({}); \n".format(self.double_type, solver_name, bfgs_param_name),
                      ]
         target_func = self.generate_var_name('target')
         exp = exp_info.content
@@ -2389,7 +2394,7 @@ class CodeGenEigen(CodeGen):
         if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
             exp = "-({})".format(exp)
         # target function
-        pre_list.append("    auto {} = [&](Eigen::VectorXd & {})\n".format(target_func, param_name))
+        pre_list.append("    auto {} = [&](Eigen::{} & {})\n".format(target_func, self.vectord_type, param_name))
         pre_list.append("    {\n")
         pre_list.append("        {};\n".format(';\n        '.join(decl_list)))
         pre_list.append("        unpack({}, {});\n".format(param_name, ', '.join(id_list)))
@@ -2405,7 +2410,7 @@ class CodeGenEigen(CodeGen):
         helper_func = self.generate_var_name("helper")
         eps_name = self.generate_var_name("eps")
         pre_list.append("    double {} = 1e-6;\n".format(eps_name))
-        pre_list.append("    auto {} = [&](Eigen::VectorXd & {}, Eigen::VectorXd & grad)\n".format(helper_func, param_name))
+        pre_list.append("    auto {} = [&](Eigen::{} & {}, Eigen::{} & grad)\n".format(helper_func, self.vectord_type, param_name, self.vectord_type))
         pre_list.append("    {\n")
         pre_list.append("        double f_X = {}({});\n".format(target_func, param_name))
         pre_list.append("        for(int i = 0; i < grad.size(); ++i )\n")
@@ -2418,7 +2423,7 @@ class CodeGenEigen(CodeGen):
         pre_list.append("        return f_X;\n")
         pre_list.append("    };\n")
         #
-        pre_list.append("    Eigen::VectorXd {} = Eigen::VectorXd::Zero({});\n".format(init_var, cur_len))
+        pre_list.append("    Eigen::{} {} = Eigen::{}::Zero({});\n".format(self.vectord_type, init_var, self.vectord_type, cur_len))
         pre_list.append("    double fx;\n")
         #
         content = ''
@@ -2443,9 +2448,9 @@ class CodeGenEigen(CodeGen):
     def visit_to_double(self, node, **kwargs):
         node_info = self.visit(node.item, **kwargs)
         if node.la_type.is_scalar():
-            node_info.content = "double({})".format(node_info.content)
+            node_info.content = "{}({})".format(self.double_type, node_info.content)
         else:
-            node_info.content = "({}).cast<double>()".format(node_info.content)
+            node_info.content = "({}).cast<{}>()".format(node_info.content, self.double_type)
         return node_info
 
     def visit_inner_product(self, node, **kwargs):
@@ -2571,13 +2576,13 @@ class CodeGenEigen(CodeGen):
             if node.param.la_type.is_scalar():
                 content = "{}({})".format(content, params_content)
             else:
-                content = "{}.unaryExpr<double(*)(double)>(&std::{})".format(params_content, content)
+                content = "{}.unaryExpr<{}(*)({})>(&std::{})".format(params_content, self.double_type, self.double_type, content)
                 if node.func_type == MathFuncType.MathFuncCot:
-                    content = "{}.unaryExpr<double(*)(double)>(&std::tan).cwiseInverse()".format(params_content)
+                    content = "{}.unaryExpr<{}(*)({})>(&std::tan).cwiseInverse()".format(params_content, self.double_type, self.double_type)
                 elif node.func_type == MathFuncType.MathFuncSec:
-                    content = "{}.unaryExpr<double(*)(double)>(&std::cos).cwiseInverse()".format(params_content)
+                    content = "{}.unaryExpr<{}(*)({})>(&std::cos).cwiseInverse()".format(params_content, self.double_type, self.double_type)
                 elif node.func_type == MathFuncType.MathFuncCsc:
-                    content = "{}.unaryExpr<double(*)(double)>(&std::sin).cwiseInverse()".format(params_content)
+                    content = "{}.unaryExpr<{}(*)({})>(&std::sin).cwiseInverse()".format(params_content, self.double_type, self.double_type)
         else:
             # linear algebra
             if node.func_type == MathFuncType.MathFuncTrace:
@@ -2600,18 +2605,18 @@ class CodeGenEigen(CodeGen):
                         '    {} {}(Eigen::Map<{}>(&{}[0], {}.size()));\n'.format(c_type, vec_name, c_type, std_vec, std_vec))
                 else:
                     pre_list.append(
-                        '    Eigen::VectorXd {}(Eigen::Map<Eigen::VectorXd>(((Eigen::MatrixXd)({})).data(), ({}).cols()*({}).rows()));;\n'.format(
-                            vec_name, params_content, params_content, params_content))
+                        '    Eigen::{} {}(Eigen::Map<Eigen::{}>(((Eigen::{})({})).data(), ({}).cols()*({}).rows()));;\n'.format(self.vectord_type,
+                            vec_name, self.vectord_type, self.matrixd_type, params_content, params_content, params_content))
             elif node.func_type == MathFuncType.MathFuncDet:
                 content = "({}).determinant()".format(params_content)
             elif node.func_type == MathFuncType.MathFuncRank:
                 rank_name = self.generate_var_name("rank")
                 content = '{}.rank()'.format(rank_name)
-                pre_list.append('    Eigen::FullPivLU<Eigen::MatrixXd> {}({});\n'.format(rank_name, params_content))
+                pre_list.append('    Eigen::FullPivLU<Eigen::{}> {}({});\n'.format(self.matrixd_type, rank_name, params_content))
             elif node.func_type == MathFuncType.MathFuncNull:
                 null_name = self.generate_var_name("null")
                 content = '{}.kernel()'.format(null_name)
-                pre_list.append('    Eigen::FullPivLU<Eigen::MatrixXd> {}({});\n'.format(null_name, params_content))
+                pre_list.append('    Eigen::FullPivLU<Eigen::{}> {}({});\n'.format(self.matrixd_type, null_name, params_content))
             elif node.func_type == MathFuncType.MathFuncOrth:
                 content = 'orth'
             elif node.func_type == MathFuncType.MathFuncInv:
@@ -2635,7 +2640,7 @@ class CodeGenEigen(CodeGen):
                             all_int = False
                     if not all_int and has_int:
                         # convert some int value to double so that max/min won't complain
-                        param_list = ["double({})".format(c_param) for c_param in param_list]
+                        param_list = ["{}({})".format(self.double_type, c_param) for c_param in param_list]
                     content = "{}({{{}}})".format(f_name, ', '.join(param_list))
                 else:
                     # one param
@@ -2662,7 +2667,7 @@ class CodeGenEigen(CodeGen):
         return self.builtin_module_dict[MESH_HELPER].instance_name
 
     def visit_fraction(self, node, **kwargs):
-        return CodeNodeInfo("({}/double({}))".format(node.numerator, node.denominator))
+        return CodeNodeInfo("({}/{}({}))".format(node.numerator, self.double_type, node.denominator))
 
     def visit_constant(self, node, **kwargs):
         content = ''
