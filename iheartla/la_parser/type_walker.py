@@ -610,6 +610,18 @@ class TypeWalker(NodeWalker):
                 existed = True
         return existed
 
+    def is_sym_parameter(self, sym):
+        # check whether the sym is a parameter in currect scope: local func params or main params
+        is_param = False
+        cur_scope = self.get_cur_scope()
+        if cur_scope == 'global':
+            if sym in self.parameters:
+                is_param = True
+        else:
+            if sym in self.func_data_dict[cur_scope].params_data.parameters:
+                is_param = True
+        return is_param
+
     def check_sym_existence(self, sym, msg, existed=True):
         """
         :param sym: symbol name
@@ -2698,18 +2710,18 @@ class TypeWalker(NodeWalker):
     def walk_Partial(self, node, **kwargs):
         self.cur_eq_type &= EqTypeEnum.PDE
         upper_info = self.walk(node.upper, **kwargs)
-        self.assert_expr(upper_info.la_type.is_function(), get_err_msg_info(upper_info.ir.parse_info,"Symbol {} isn't a function".format(node.upper.text)))
+        # self.assert_expr(upper_info.la_type.is_function(), get_err_msg_info(upper_info.ir.parse_info,"Symbol {} isn't a function".format(node.upper.text)))
+        self.assert_expr(upper_info.la_type.is_scalar() or upper_info.la_type.is_vector(), get_err_msg_info(upper_info.ir.parse_info,"Only support scalar or vector types"))
         lower_list = []
         lower_type_list = []
         lorder_list = []
         lorder_value_list = [] 
-        func_param_dict = self.local_func_dict[node.upper.text]
         for l in node.l:
             lower_info = self.walk(l[1], **kwargs)
             lower_list.append(lower_info.ir)
-            self.assert_expr(l[1].text in func_param_dict, get_err_msg_info(lower_info.ir.parse_info,"Symbol {} isn't a param of function {}".format(l[1].text, 
-                                                                                                                                                     node.upper.text)))
-            lower_type_list.append(func_param_dict[l[1].text])
+            # self.assert_expr(l[1].text in func_param_dict, get_err_msg_info(lower_info.ir.parse_info,"Symbol {} isn't a param of function {}".format(l[1].text, node.upper.text)))
+            self.assert_expr(self.is_sym_parameter(l[1].text), get_err_msg_info(lower_info.ir.parse_info,"Symbol {} isn't a param".format(l[1].text)))
+            lower_type_list.append(lower_info.la_type)
             if len(l) > 2:
                 lorder_info = self.walk(l[-1], **kwargs)
                 lorder_list.append(lorder_info.ir)
@@ -2728,12 +2740,12 @@ class TypeWalker(NodeWalker):
         ret_type = ScalarType()
         if is_same_expr(uorder_value, '1'):
             # first order
-            ret_type = get_derivative_type(upper_info.la_type.ret[0], lower_type_list[0])
+            ret_type = get_derivative_type(upper_info.la_type, lower_type_list[0])
         elif is_same_expr(uorder_value, '2'):
             # second order
             if len(lorder_list) == 1:
                 # hessian
-                ret_type = get_hessian_type(upper_info.la_type.ret[0], lower_type_list[0])
+                ret_type = get_hessian_type(upper_info.la_type, lower_type_list[0])
             pass
         self.assert_expr(is_same_expr("+".join(lorder_value_list), uorder_value), get_err_msg_info(node.parseinfo,"Order doesn't match"))
         if node.f:
