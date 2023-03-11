@@ -488,7 +488,7 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
         #
         model = parser.parse(content, parseinfo=True)
         # type walker
-        type_walker, start_node = parse_ir_node(content, model, parser_type, class_only=True)
+        type_walker, start_node = parse_ir_node(content, model, parser_type, class_only=CLASS_ONLY)
         # parsing Latex at the same time
         latex_thread = threading.Thread(target=generate_latex_code, args=(type_walker, start_node, frame,))
         latex_thread.start()
@@ -496,12 +496,12 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
         if parser_type is None:
             parser_type = ParserTypeEnum.NUMPY
         if ConfMgr.getInstance().has_de:
-            code_frame = walk_model(parser_type, type_walker, start_node, func_name, struct=True, class_only=True)
+            code_frame = walk_model(parser_type, type_walker, start_node, func_name, struct=True, class_only=CLASS_ONLY)
             if parser_type == ParserTypeEnum.EIGEN:
                 code_frame.include += "#include <igl/readOFF.h>\n"
             res = code_frame.desc + code_frame.include + code_frame.struct
         else:
-            res = walk_model(parser_type, type_walker, start_node, func_name, class_only=True)
+            res = walk_model(parser_type, type_walker, start_node, func_name, class_only=CLASS_ONLY)
         return res, 0
     if DEBUG_MODE:
         result = get_parse_result(parser_type)
