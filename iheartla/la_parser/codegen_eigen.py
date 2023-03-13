@@ -17,6 +17,9 @@ class CodeGenEigen(CodeGen):
             self.pre_str += '#include <unsupported/Eigen/MatrixFunctions>\n'
         if self.has_opt:
             self.pre_str += '#include <LBFGS.h>\n'
+        if self.has_derivative:
+            self.pre_str += '#include <autodiff/reverse/var.hpp>\n'
+            self.pre_str += '#include <autodiff/reverse/var/eigen.hpp>\n'
         if self.need_mutator:
             self.pre_str += '#include <boost/numeric/odeint.hpp>\n'
             self.pre_str += 'using namespace boost::numeric::odeint;\n'
@@ -350,7 +353,14 @@ class CodeGenEigen(CodeGen):
                         class_name = MESH_HELPER
                     # item_list.append("    {} {};\n".format(class_name, module_data.instance_name))
                     # init_var += "        {}.initialize({});\n".format(module_data.instance_name, ', '.join(module_data.params_list))
-        content = ["template<class {} = double, class {} = Eigen::MatrixXd, class {} = Eigen::VectorXd>".format(self.double_type, self.matrixd_type, self.vectord_type),
+        original_dtype = "double"
+        original_mdtype = "Eigen::MatrixXd"
+        original_vdtype = "Eigen::VectorXd"
+        if self.has_derivative:
+            original_dtype = "var"
+            original_mdtype = "Eigen::Matrix<var, Eigen::Dynamic, Eigen::Dynamic>"
+            original_vdtype = "Eigen::Matrix<var, Eigen::Dynamic, 1>"
+        content = ["template<class {} = {}, class {} = {}, class {} = {}>".format(self.double_type, original_dtype, self.matrixd_type, original_mdtype, self.vectord_type, original_vdtype),
                    "struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),
                    init_content,
