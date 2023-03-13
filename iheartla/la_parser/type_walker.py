@@ -234,6 +234,7 @@ class TypeWalker(NodeWalker):
         self.def_use_mode = True
         self.unofficial_method = False
         self.has_opt = False
+        self.has_derivative = False  # whether hessian or gradient is used
         self.is_param_block = False  # where or given block
         self.visualizer = LaVisualizer()
         self.logger = LaLogger.getInstance().get_logger(LoggerTypeEnum.DEFAULT)
@@ -394,6 +395,7 @@ class TypeWalker(NodeWalker):
         self.is_generate_ret = False
         self.unofficial_method = False
         self.has_opt = False
+        self.has_derivative = False
         self.sum_subs.clear()
         self.sum_sym_list.clear()
         self.multi_lhs_list.clear()
@@ -2708,6 +2710,7 @@ class TypeWalker(NodeWalker):
         return NodeInfo(ir_node.la_type, ir=ir_node)
 
     def walk_Partial(self, node, **kwargs):
+        self.has_derivative = True
         self.cur_eq_type &= EqTypeEnum.PDE
         upper_info = self.walk(node.upper, **kwargs)
         # self.assert_expr(upper_info.la_type.is_function(), get_err_msg_info(upper_info.ir.parse_info,"Symbol {} isn't a function".format(node.upper.text)))

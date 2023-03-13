@@ -333,6 +333,7 @@ class IRVisitor(IRBaseVisitor):
         self.unofficial_method = False  # matrix pow only(eigen)
         self.has_opt = False  # whether opt expr exists
         self.need_mutator = False
+        self.has_derivative = False
         self.content = ''
         self.local_func_def = ''
         self.local_func_syms = []
@@ -610,6 +611,7 @@ class IRVisitor(IRBaseVisitor):
         self.ret_symbol = type_walker.ret_symbol
         self.unofficial_method = type_walker.unofficial_method
         self.has_opt = type_walker.has_opt
+        self.has_derivative = type_walker.has_derivative
         self.need_mutator = type_walker.need_mutator
         self.lhs_list = type_walker.lhs_list
         self.la_content = type_walker.la_content
