@@ -1343,10 +1343,16 @@ class ConstantNode(ExprNode):
 
 class DerivativeType(IntEnum):
     DerivativeInvalid = -1
-    DerivativeFraction = 0  # dy/dt
-    DerivativeSFraction = 1  # d/dt y
-    DerivativePrime = 2     # y'
-    DerivativeDot = 3       # ä
+    DerivativeFraction = 0   # dy/dt    ∂y/∂t
+    DerivativeSFraction = 1  # d/dt y   ∂/∂t y
+    DerivativePrime = 2      # y'
+    DerivativeDot = 3        # ä
+
+
+class PartialOrderType(IntEnum):
+    PartialInvalid = -1
+    PartialNormal = 0     # ∂y/∂t
+    PartialHessian = 1    # ∂²y/∂t²
 
 
 class DerivativeNode(ExprNode):
@@ -1371,13 +1377,14 @@ class DerivativeNode(ExprNode):
             return self.order.raw_text == '1'
 
 class PartialNode(ExprNode):
-    def __init__(self, la_type=None, parse_info=None, raw_text=None, upper=None, lower_list=[], order=None, lorder_list=[], d_type=DerivativeType.DerivativeFraction):
+    def __init__(self, la_type=None, parse_info=None, raw_text=None, upper=None, lower_list=[], order=None, lorder_list=[], d_type=DerivativeType.DerivativeFraction, order_type=PartialOrderType.PartialNormal):
         super().__init__(IRNodeType.Partial, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.d_type = d_type
         self.upper = upper
         self.lower_list = lower_list
         self.lorder_list = lorder_list
         self.order = order
+        self.order_type = order_type
 
 class SizeNode(ExprNode):
     def __init__(self, param=None, la_type=None, parse_info=None, raw_text=None):

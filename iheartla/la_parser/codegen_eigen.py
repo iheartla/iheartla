@@ -2304,7 +2304,12 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo("")
 
     def visit_partial(self, node, **kwargs):
-        return CodeNodeInfo("")
+        content = ""
+        if node.order_type == PartialOrderType.PartialHessian:
+            upper_info = self.visit(node.upper, **kwargs)
+            lower_info = self.visit(node.lower_list[0], **kwargs)
+            content = "hessian({}, wrt({}))".format(upper_info.content, lower_info.content)
+        return CodeNodeInfo(content)
 
     def visit_first_order_ode(self, node, **kwargs):
         self.visiting_diff_eq = True

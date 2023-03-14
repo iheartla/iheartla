@@ -2744,11 +2744,13 @@ class TypeWalker(NodeWalker):
         if is_same_expr(uorder_value, '1'):
             # first order
             ret_type = get_derivative_type(upper_info.la_type, lower_type_list[0])
+            ir_node.order_type = PartialOrderType.PartialNormal
         elif is_same_expr(uorder_value, '2'):
             # second order
             if len(lorder_list) == 1:
                 # hessian
                 ret_type = get_hessian_type(upper_info.la_type, lower_type_list[0])
+                ir_node.order_type = PartialOrderType.PartialHessian
             pass
         self.assert_expr(is_same_expr("+".join(lorder_value_list), uorder_value), get_err_msg_info(node.parseinfo,"Order doesn't match"))
         if node.f:
