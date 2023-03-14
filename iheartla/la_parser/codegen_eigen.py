@@ -2298,7 +2298,12 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo("")
 
     def visit_gradient(self, node, **kwargs):
-        return CodeNodeInfo("")
+        content = ""
+        if node.sub:
+            value_info = self.visit(node.value, **kwargs)
+            sub_info = self.visit(node.sub, **kwargs)
+            content = "gradient({}, {})".format(value_info.content, sub_info.content)
+        return CodeNodeInfo(content)
 
     def visit_laplace(self, node, **kwargs):
         return CodeNodeInfo("")

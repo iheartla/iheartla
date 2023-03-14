@@ -2768,21 +2768,23 @@ class TypeWalker(NodeWalker):
 
     def walk_Gradient(self, node, **kwargs):
         value_info = self.walk(node.value, **kwargs)
-        self.assert_expr(value_info.la_type.is_function(), get_err_msg_info(value_info.ir.parse_info,"Symbol {} isn't a function".format(node.value.text)))
+        # self.assert_expr(value_info.la_type.is_function(), get_err_msg_info(value_info.ir.parse_info,"Symbol {} isn't a function".format(node.value.text)))
+        self.assert_expr(value_info.la_type.is_scalar() or value_info.la_type.is_vector(), get_err_msg_info(value_info.ir.parse_info,"Only support scalar or vector types"))
         sub = None
-        func_param_dict = self.local_func_dict[node.value.text]
+        # func_param_dict = self.local_func_dict[node.value.text]
         if node.sub:
             sub_info = self.walk(node.sub, **kwargs)
             sub_text = get_unicode_subscript(node.sub.text)
-            self.assert_expr(sub_text in func_param_dict, get_err_msg_info(sub_info.ir.parse_info,"Symbol {} isn't a param of function {}".format(sub_text, node.value.text)))
+            # self.assert_expr(sub_text in func_param_dict, get_err_msg_info(sub_info.ir.parse_info,"Symbol {} isn't a param of function {}".format(sub_text, node.value.text)))
+            self.assert_expr(self.is_sym_parameter(sub_text), get_err_msg_info(sub_info.ir.parse_info,"Symbol {} isn't a param".format(sub_text)))
             sub = sub_info.ir
-            sub_la_type = func_param_dict[sub_text]
-        else:
-            # check func only has one param
-            self.assert_expr(value_info.la_type.is_function(), get_err_msg_info(value_info.ir.parse_info,"Symbol {} isn't a function".format(node.value.text)))
-            sub_la_type = value_info.la_type.params[0]
+            sub_la_type = sub_info.la_type
+        # else:
+        #     # check func only has one param
+        #     self.assert_expr(value_info.la_type.is_function(), get_err_msg_info(value_info.ir.parse_info,"Symbol {} isn't a function".format(node.value.text)))
+        #     sub_la_type = value_info.la_type.params[0]
         ir_node = GradientNode(parse_info=node.parseinfo, sub=sub, value=value_info.ir, raw_text=node.text)
-        ir_node.la_type = get_derivative_type(value_info.la_type.ret[0], sub_la_type)
+        ir_node.la_type = get_derivative_type(value_info.la_type, sub_la_type)
         return NodeInfo(ir_node.la_type, ir=ir_node, symbols=value_info.symbols)
 
     def walk_Laplace(self, node, **kwargs):
