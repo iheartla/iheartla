@@ -9,7 +9,11 @@ class CodeGenNumpy(CodeGen):
 
     def init_type(self, type_walker, func_name):
         super().init_type(type_walker, func_name)
-        self.pre_str = '''import numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\n'''
+        if self.has_derivative:
+            self.pre_str = "import jax.numpy as np\n"
+        else:
+            self.pre_str = "import numpy as np\n"
+        self.pre_str += '''import scipy\nimport scipy.linalg\nfrom scipy import sparse\n'''
         self.pre_str += "from scipy.integrate import quad, solve_ivp\n"
         self.pre_str += "from scipy.optimize import minimize\n"
         # self.pre_str += "\n\n"
@@ -1881,13 +1885,23 @@ class CodeGenNumpy(CodeGen):
         return CodeNodeInfo("")
 
     def visit_gradient(self, node, **kwargs):
-        return CodeNodeInfo("")
+        content = ""
+        if node.sub:
+            value_info = self.visit(node.value, **kwargs)
+            sub_info = self.visit(node.sub, **kwargs)
+            content = "jax.grad({})({})".format(value_info.content, sub_info.content)
+        return CodeNodeInfo(content)
 
     def visit_laplace(self, node, **kwargs):
         return CodeNodeInfo("")
 
     def visit_partial(self, node, **kwargs):
-        return CodeNodeInfo("")
+        content = ""
+        if node.order_type == PartialOrderType.PartialHessian:
+            upper_info = self.visit(node.upper, **kwargs)
+            lower_info = self.visit(node.lower_list[0], **kwargs)
+            content = "jax.hessian({})({})".format(upper_info.content, lower_info.content)
+        return CodeNodeInfo(content)
 
     def visit_first_order_ode(self, node, **kwargs):
         self.visiting_diff_eq = True
