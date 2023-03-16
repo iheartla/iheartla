@@ -941,7 +941,11 @@ class CodeGenLatex(CodeGen):
         return "\\nabla \\cdot" + self.visit(node.value, **kwargs)
 
     def visit_gradient(self, node, **kwargs):
-        return "\\nabla" + self.visit(node.value, **kwargs)
+        content = "\\nabla" 
+        if node.sub:
+            content += "_{" + self.visit(node.sub, **kwargs) + "}"
+        content += self.visit(node.value, **kwargs)
+        return content
 
     def visit_laplace(self, node, **kwargs):
         return "\\delta" + self.visit(node.value, **kwargs)
