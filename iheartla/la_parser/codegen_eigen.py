@@ -2302,7 +2302,7 @@ class CodeGenEigen(CodeGen):
         if node.sub:
             value_info = self.visit(node.value, **kwargs)
             sub_info = self.visit(node.sub, **kwargs)
-            content = "gradient({}, {})".format(value_info.content, sub_info.content)
+            content = "gradient({}, this->{})".format(value_info.content, sub_info.content)
         return CodeNodeInfo(content)
 
     def visit_laplace(self, node, **kwargs):
@@ -2313,7 +2313,7 @@ class CodeGenEigen(CodeGen):
         if node.order_type == PartialOrderType.PartialHessian:
             upper_info = self.visit(node.upper, **kwargs)
             lower_info = self.visit(node.lower_list[0], **kwargs)
-            content = "hessian({}, wrt({}))".format(upper_info.content, lower_info.content)
+            content = "hessian({}, this->{})".format(upper_info.content, lower_info.content)
         return CodeNodeInfo(content)
 
     def visit_first_order_ode(self, node, **kwargs):
