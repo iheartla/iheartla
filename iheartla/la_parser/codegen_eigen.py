@@ -12,7 +12,6 @@ class CodeGenEigen(CodeGen):
         self.post_str = ''''''
         self.ret = 'ret'
         self.pre_str += '#include <algorithm>\n'
-        self.pre_str += '#include <algorithm>\n'
         if self.unofficial_method:
             self.pre_str += '#include <unsupported/Eigen/MatrixFunctions>\n'
         if self.has_opt:
@@ -1220,11 +1219,11 @@ class CodeGenEigen(CodeGen):
                     content = "({}).array().count()".format(value)
                 else:
                     if node.sub is None:
-                        content = "({}).lpNorm<{}>()".format(value, 2)
+                        content = "({}).template lpNorm<{}>()".format(value, 2)
                     else:
-                        content = "({}).lpNorm<{}>()".format(value, node.sub)
+                        content = "({}).template lpNorm<{}>()".format(value, node.sub)
             elif node.norm_type == NormType.NormMax:
-                content = "({}).lpNorm<Eigen::Infinity>()".format(value)
+                content = "({}).template lpNorm<Eigen::Infinity>()".format(value)
             elif node.norm_type == NormType.NormIdentifier:
                 sub_info = self.visit(node.sub, **kwargs)
                 pre_list += sub_info.pre_list
