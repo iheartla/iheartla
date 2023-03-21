@@ -1993,7 +1993,7 @@ class grammardefaultParser(Parser):
             def block72():
                 self._hspace_()
             self._closure(block72)
-            self._general_assignment_()
+            self._general_assign_()
             self.add_last_node_to_name('extra')
 
             def block74():
@@ -2012,7 +2012,7 @@ class grammardefaultParser(Parser):
                 def block77():
                     self._hspace_()
                 self._closure(block77)
-                self._general_assignment_()
+                self._general_assign_()
                 self.add_last_node_to_name('extra')
             self._closure(block74)
         self._closure(block68)
@@ -6706,6 +6706,22 @@ class grammardefaultParser(Parser):
             ['left', 'right']
         )
 
+    @tatsumasu()
+    def _general_assign_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._destructure_()
+            with self._option():
+                self._general_assignment_()
+            self._error(
+                'expecting one of: '
+                '<identifier_alone>'
+                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                '<KEYWORDS> <PREFIX_KEYWORD>'
+                '<destructure> <left_hand_side>'
+                '<general_assignment>'
+            )
+
     @tatsumasu('GeneralAssignment')
     def _general_assignment_(self):  # noqa
         self._left_hand_side_()
@@ -9232,7 +9248,7 @@ class grammardefaultParser(Parser):
             def block75():
                 self._hspace_()
             self._closure(block75)
-            self._general_assignment_()
+            self._general_assign_()
             self.add_last_node_to_name('extra')
         self._closure(block72)
         self._define(
@@ -9903,6 +9919,9 @@ class grammardefaultSemantics:
         return ast
 
     def assignment(self, ast):  # noqa
+        return ast
+
+    def general_assign(self, ast):  # noqa
         return ast
 
     def general_assignment(self, ast):  # noqa

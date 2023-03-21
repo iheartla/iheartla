@@ -100,6 +100,12 @@ assignment::Assignment
     #| {SOLVE '_(' {hspace} v+:where_condition_terse {hspace} {',' {hspace} v+:where_condition_terse {hspace}} ')' {hspace}} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression 
     #{{hspace} ';' {hspace} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression }
     ;
+
+general_assign
+    =
+    destructure
+    | general_assignment
+    ;
     
 general_assignment::GeneralAssignment
     = 
