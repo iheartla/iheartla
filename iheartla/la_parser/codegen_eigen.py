@@ -1932,6 +1932,9 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo("")
 
     def visit_destructuring(self, node, **kwargs):
+        placeholder = "{}_{}\n".format(self.comment_placeholder, node.parse_info.line)
+        self.comment_dict[placeholder] = self.update_prelist_str([node.raw_text], '    // ')
+        content = placeholder
         rhs_node = node.right[0]
         right_info = self.visit(rhs_node, **kwargs)
         rhs = self.generate_var_name("rhs")
@@ -1940,7 +1943,7 @@ class CodeGenEigen(CodeGen):
             type_decl = "std::tuple< {} >".format(", ".join([self.get_ctype(t) for t in ltype_list]))
         else:
             type_decl = self.get_ctype(rhs_node.la_type)
-        content = "    {} {} = {};\n".format(type_decl, rhs, right_info.content)
+        content += "    {} {} = {};\n".format(type_decl, rhs, right_info.content)
         for cur_index in range(len(node.left)):
             id0_info = self.visit(node.left[cur_index], **kwargs)
             expr = ''
