@@ -329,7 +329,7 @@ class CodeGenEigen(CodeGen):
                 if not self.symtable[parameter].is_function():
                     item_list.append("    {} {};".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
             for module in self.module_list:
-                def_struct += self.update_prelist_str([module.frame.struct], '    ')
+                def_struct += remove_submodule_template(self.update_prelist_str([module.frame.struct], '    '))
                 declare_modules += "    {} _{};\n".format(module.name, module.name)
                 if len(module.params) > 0:
                     init_struct_list.append("    _{}({})".format(module.name, ', '.join(module.params)))

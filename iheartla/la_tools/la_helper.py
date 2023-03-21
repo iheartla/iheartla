@@ -42,6 +42,20 @@ class ParserTypeEnum(Flag):
 ## TODO: Q: Do we want to store lists or sets instead of using bitwise enum functionality?
 ParserTypeEnumDefaults = ParserTypeEnum.LATEX | ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.MATLAB
 
+TEMPLATE_RE = re.compile(
+        dedent(
+            r'''template<class[^\n]*\n'''),
+        re.DOTALL | re.VERBOSE
+    )
+
+def remove_submodule_template(text):
+    # remove template in nested struct
+    result = text
+    for m in TEMPLATE_RE.finditer(text):
+        result = result.replace(m.group(), '')
+    return result
+
+
 def is_keyword(name, parser_type=ParserTypeEnumDefaults):
     if parser_type == ParserTypeEnum.NUMPY:
         return keyword.iskeyword(name)
