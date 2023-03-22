@@ -291,6 +291,7 @@ class CodeGenEigen(CodeGen):
 
     def visit_id(self, node, **kwargs):
         content = node.get_name()
+        prefix = self.check_prefix(content)
         content = self.filter_symbol(content)
         [is_property, new_name] = self.is_triangle_property(content)
         if is_property:
@@ -304,6 +305,9 @@ class CodeGenEigen(CodeGen):
                         content = "{}.coeff({}, {})".format(node.main_id, node.subs[0], node.subs[1])
                     else:
                         content = "{}({}, {})".format(node.main_id, node.subs[0], node.subs[1])
+        
+        if prefix:
+            content = 'this->' + content
         return CodeNodeInfo(content)
 
     def get_struct_definition(self, pre_str, def_str, stat_str):
@@ -2285,6 +2289,14 @@ class CodeGenEigen(CodeGen):
         left_info.pre_list += right_info.pre_list
         return left_info
 
+    def check_prefix(self, sym):
+        # given a symbol, check whether we need to add this->
+        # only the variables in derivatives need
+        prefix = False
+        if sym in self.used_params:
+            prefix = True
+        return prefix
+    
     def visit_IdentifierAlone(self, node, **kwargs):
         if node.value:
             value = node.value
@@ -2304,7 +2316,7 @@ class CodeGenEigen(CodeGen):
         if node.sub:
             value_info = self.visit(node.value, **kwargs)
             sub_info = self.visit(node.sub, **kwargs)
-            content = "gradient({}, this->{})".format(value_info.content, sub_info.content)
+            content = "gradient({}, {})".format(value_info.content, sub_info.content)
         return CodeNodeInfo(content)
 
     def visit_laplace(self, node, **kwargs):
@@ -2315,7 +2327,7 @@ class CodeGenEigen(CodeGen):
         if node.order_type == PartialOrderType.PartialHessian:
             upper_info = self.visit(node.upper, **kwargs)
             lower_info = self.visit(node.lower_list[0], **kwargs)
-            content = "hessian({}, this->{})".format(upper_info.content, lower_info.content)
+            content = "hessian({}, {})".format(upper_info.content, lower_info.content)
         return CodeNodeInfo(content)
 
     def visit_first_order_ode(self, node, **kwargs):
