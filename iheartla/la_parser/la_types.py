@@ -359,7 +359,7 @@ class SequenceType(LaVarType):
 
 class MatrixType(LaVarType):
     def __init__(self, rows=0, cols=0, desc=None, element_type=ScalarType(), symbol=None, need_exp=False, diagonal=False, sparse=False, block=False, subs=None, list_dim=None, index_var=None, value_var=None, item_types=None, index_type=False,dynamic=DynamicTypeEnum.DYN_INVALID,rows_ir=None,cols_ir=None, owner=None):
-        LaVarType.__init__(self, VarTypeEnum.MATRIX, desc, element_type, symbol,index_type=index_type, dynamic=dynamic, owner=owner)
+        LaVarType.__init__(self, VarTypeEnum.MATRIX, desc, element_type, symbol=symbol,index_type=index_type, dynamic=dynamic, owner=owner)
         self.rows = rows
         self.cols = cols
         self.rows_ir = rows_ir
@@ -936,7 +936,7 @@ def get_hessian_type(upper_type, lower_type):
     ret_type = ScalarType()
     if upper_type.is_scalar():
         if lower_type.is_vector():
-            ret_type = MatrixType(rows=lower_type.rows, cols=lower_type.rows)
+            ret_type = MatrixType(rows=lower_type.rows, cols=lower_type.rows, element_type=ScalarType())
         elif lower_type.is_sequence():
             ret_type = MatrixType(rows=lower_type.size, cols=lower_type.size)
     return ret_type
