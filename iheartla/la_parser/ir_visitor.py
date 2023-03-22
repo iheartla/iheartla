@@ -405,6 +405,7 @@ class IRVisitor(IRBaseVisitor):
         self.special_symbol_dict = {'∂':'dee'}  # Python and MATLAB can use some Unicode symbols, the symbols from this dict must be converted by all backends
         self.declared_symbols = set()
         self.used_params = []
+        self.der_vars = []
         self.opt_syms = []
         self.mesh_dict = {}
         self.duplicate_func_list = []    # overloaded func types incompatible in cpp
@@ -598,6 +599,7 @@ class IRVisitor(IRBaseVisitor):
             self.logger.info("same_dim_list: {}".format(param_data.same_dim_list, hex(id(param_data.same_dim_list))))
             self.logger.info("sub_name_dict: {}\n".format(param_data.sub_name_dict, hex(id(param_data.sub_name_dict))))
         self.logger.info("used params:{}".format(self.used_params))
+        self.logger.info("der vars:{}".format(self.der_vars))
         self.logger.info("optimized variables:{}".format(self.opt_syms))
 
     def init_type(self, type_walker, func_name):
@@ -620,6 +622,7 @@ class IRVisitor(IRBaseVisitor):
         self.extra_symtable = type_walker.extra_symtable
         self.opt_dict = type_walker.opt_dict
         self.used_params = type_walker.used_params
+        self.der_vars = type_walker.der_vars
         self.builtin_module_dict = type_walker.builtin_module_dict
         self.opt_syms = type_walker.opt_syms
         self.mesh_dict = type_walker.mesh_dict

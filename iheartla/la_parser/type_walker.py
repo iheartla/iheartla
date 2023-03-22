@@ -291,6 +291,7 @@ class TypeWalker(NodeWalker):
         self.mesh_dict = {}
         self.main_param = ParamsData()
         self.used_params = []
+        self.der_vars = []   # variables in derivatives
         self.opt_syms = []
         self.expr_dict = {}        # lhs id -> symbols in current expr
         self.smooth_dict = {}
@@ -429,6 +430,7 @@ class TypeWalker(NodeWalker):
         self.mesh_dict.clear()
         self.main_param.reset()
         self.used_params.clear()
+        self.der_vars.clear()
         self.opt_syms.clear()
         self.expr_dict.clear()
         self.visiting_opt = False
@@ -874,6 +876,7 @@ class TypeWalker(NodeWalker):
         self.saved_local_func_dict = copy.deepcopy(self.local_func_dict)
         self.saved_extra_symtable = copy.deepcopy(self.extra_symtable)
         self.saved_used_params = copy.deepcopy(self.used_params)
+        self.saved_der_vars = copy.deepcopy(self.der_vars)
         self.saved_opt_syms = copy.deepcopy(self.opt_syms)
         self.saved_opt_dict = copy.deepcopy(self.opt_dict)
         # start from main scope
@@ -897,6 +900,7 @@ class TypeWalker(NodeWalker):
         self.extra_symtable = self.saved_extra_symtable
         self.opt_dict = self.saved_opt_dict
         self.used_params = self.saved_used_params
+        self.der_vars = self.saved_der_vars
         self.opt_syms = self.saved_opt_syms
         self.local_func_parsing = False
         self.is_param_block = False
@@ -2726,6 +2730,8 @@ class TypeWalker(NodeWalker):
             self.assert_expr(self.is_sym_parameter(l[1].text), get_err_msg_info(lower_info.ir.parse_info,"Symbol {} isn't a param".format(l[1].text)))
             if l[1].text not in self.used_params:
                 self.used_params.append(l[1].text)
+            if l[1].text not in self.der_vars:
+                self.der_vars.append(l[1].text)
             lower_type_list.append(lower_info.la_type)
             if len(l) > 2:
                 lorder_info = self.walk(l[-1], **kwargs)
@@ -2781,6 +2787,8 @@ class TypeWalker(NodeWalker):
             self.assert_expr(self.is_sym_parameter(sub_text), get_err_msg_info(sub_info.ir.parse_info,"Symbol {} isn't a param".format(sub_text)))
             if sub_text not in self.used_params:
                 self.used_params.append(sub_text)
+            if sub_text not in self.der_vars:
+                self.der_vars.append(sub_text)
             sub = sub_info.ir
             sub_la_type = sub_info.la_type
         # else:

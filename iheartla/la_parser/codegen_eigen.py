@@ -2293,7 +2293,7 @@ class CodeGenEigen(CodeGen):
         # given a symbol, check whether we need to add this->
         # only the variables in derivatives need
         prefix = False
-        if sym in self.used_params:
+        if sym in self.der_vars:
             prefix = True
         return prefix
     
