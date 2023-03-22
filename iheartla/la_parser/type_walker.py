@@ -2724,6 +2724,8 @@ class TypeWalker(NodeWalker):
             lower_list.append(lower_info.ir)
             # self.assert_expr(l[1].text in func_param_dict, get_err_msg_info(lower_info.ir.parse_info,"Symbol {} isn't a param of function {}".format(l[1].text, node.upper.text)))
             self.assert_expr(self.is_sym_parameter(l[1].text), get_err_msg_info(lower_info.ir.parse_info,"Symbol {} isn't a param".format(l[1].text)))
+            if l[1].text not in self.used_params:
+                self.used_params.append(l[1].text)
             lower_type_list.append(lower_info.la_type)
             if len(l) > 2:
                 lorder_info = self.walk(l[-1], **kwargs)
@@ -2777,6 +2779,8 @@ class TypeWalker(NodeWalker):
             sub_text = get_unicode_subscript(node.sub.text)
             # self.assert_expr(sub_text in func_param_dict, get_err_msg_info(sub_info.ir.parse_info,"Symbol {} isn't a param of function {}".format(sub_text, node.value.text)))
             self.assert_expr(self.is_sym_parameter(sub_text), get_err_msg_info(sub_info.ir.parse_info,"Symbol {} isn't a param".format(sub_text)))
+            if sub_text not in self.used_params:
+                self.used_params.append(sub_text)
             sub = sub_info.ir
             sub_la_type = sub_info.la_type
         # else:
