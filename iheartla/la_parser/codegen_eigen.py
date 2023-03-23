@@ -1971,7 +1971,7 @@ class CodeGenEigen(CodeGen):
         # visit matrix first
         placeholder = "{}_{}\n".format(self.comment_placeholder, node.parse_info.line)
         self.comment_dict[placeholder] = self.update_prelist_str([node.raw_text], '    // ')
-        content = placeholder
+        content = ''
         if node.optimize_param:
             pass
         else:
@@ -1998,7 +1998,7 @@ class CodeGenEigen(CodeGen):
                         content += "    {} = std::get<{}>({});\n".format(left_info.content, cur_index, tuple_name)
                     self.declared_symbols.add(node.left[cur_index].get_main_id())
                 la_remove_key(LHS, **kwargs)
-                return CodeNodeInfo(content)
+                return CodeNodeInfo(placeholder+content)
             for cur_index in range(len(node.left)):
                 left_info = self.visit(node.left[cur_index], **kwargs)
                 left_id = left_info.content
@@ -2157,7 +2157,7 @@ class CodeGenEigen(CodeGen):
                         content += right_exp + '\n'
                 la_remove_key(LHS, **kwargs)
                 self.declared_symbols.add(node.left[cur_index].get_main_id())
-        return CodeNodeInfo(content)
+        return CodeNodeInfo(placeholder+content)
 
     def visit_if(self, node, **kwargs):
         ret_info = self.visit(node.cond)
