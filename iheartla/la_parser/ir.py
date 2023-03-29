@@ -1375,6 +1375,13 @@ class DerivativeNode(ExprNode):
             return self.order.value == 1
         else:
             return self.order.raw_text == '1'
+        
+class HessianInfo(object):
+     # mark hessian definitions
+     def __init__(self, upper=None, lower=None):
+         self.upper = upper
+         self.lower = lower
+
 
 class PartialNode(ExprNode):
     def __init__(self, la_type=None, parse_info=None, raw_text=None, upper=None, lower_list=[], order=None, lorder_list=[], d_type=DerivativeType.DerivativeFraction, order_type=PartialOrderType.PartialNormal):

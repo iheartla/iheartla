@@ -255,6 +255,7 @@ class TypeWalker(NodeWalker):
         self.sum_conds = []
         self.la_content = ''
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
+        self.hessian_list = []  # save hessian definitions, try to check them in the end
         self.visiting_lhs = False
         self.visiting_solver_eq = False  # e.g: Ax = b
         self.cur_eq_type = EqTypeEnum.DEFAULT
@@ -392,6 +393,7 @@ class TypeWalker(NodeWalker):
         self.symtable.clear()
         self.parameters.clear()
         self.name_cnt_dict.clear()
+        self.hessian_list.clear()
         self.ret_symbol = None
         self.is_generate_ret = False
         self.unofficial_method = False
@@ -2720,12 +2722,14 @@ class TypeWalker(NodeWalker):
         # self.assert_expr(upper_info.la_type.is_function(), get_err_msg_info(upper_info.ir.parse_info,"Symbol {} isn't a function".format(node.upper.text)))
         self.assert_expr(upper_info.la_type.is_scalar() or upper_info.la_type.is_vector(), get_err_msg_info(upper_info.ir.parse_info,"Only support scalar or vector types"))
         lower_list = []
+        lower_name_list = []
         lower_type_list = []
         lorder_list = []
         lorder_value_list = [] 
         for l in node.l:
             lower_info = self.walk(l[1], **kwargs)
             lower_list.append(lower_info.ir)
+            lower_name_list.append(l[1].text)
             # self.assert_expr(l[1].text in func_param_dict, get_err_msg_info(lower_info.ir.parse_info,"Symbol {} isn't a param of function {}".format(l[1].text, node.upper.text)))
             self.assert_expr(self.is_sym_parameter(l[1].text), get_err_msg_info(lower_info.ir.parse_info,"Symbol {} isn't a param".format(l[1].text)))
             if l[1].text not in self.used_params:
@@ -2759,6 +2763,7 @@ class TypeWalker(NodeWalker):
                 # hessian
                 ret_type = get_hessian_type(upper_info.la_type, lower_type_list[0])
                 ir_node.order_type = PartialOrderType.PartialHessian
+                self.hessian_list.append(HessianInfo(node.upper.text, lower_name_list[0]))
             pass
         self.assert_expr(is_same_expr("+".join(lorder_value_list), uorder_value), get_err_msg_info(node.parseinfo,"Order doesn't match"))
         if node.f:
