@@ -821,6 +821,7 @@ class TypeWalker(NodeWalker):
         self.gen_block_node(stat_list, index_list, ir_node, **kwargs)
         self.convert_parameters()
         self.fill_func_names()
+        self.check_sparse_hessian(ir_node.vblock)
         # set properties
         self.main_param.parameters = self.parameters
         self.main_param.symtable = self.symtable
@@ -844,6 +845,19 @@ class TypeWalker(NodeWalker):
                 if v.fname_list is None or len(v.fname_list) != len(v.func_list):
                     # refill
                     self.symtable[k].fname_list = [self.func_sig_dict[get_func_signature(k, c_type)] for c_type in v.func_list]
+
+    def check_sparse_hessian(self, stat_list):
+        for hess in self.hessian_list:
+            node = self.get_assign_node(hess.upper, stat_list)
+            print(node)
+
+    def get_assign_node(self, lhs, stat_list):
+        res = None
+        for node in stat_list:
+            if node.is_node(IRNodeType.Assignment):
+                if node.left[0].raw_text == lhs:
+                    res = node.right[0]
+        return res
 
     def print_all(self):
         la_debug("TypeWalker end ==================================================================================================================")
