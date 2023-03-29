@@ -27,6 +27,9 @@ class CodeGenEigen(CodeGen):
         self.double_type = "DT"          # double type
         self.matrixd_type = "MatrixD"   # matrix double type
         self.vectord_type = "VectorD"   # vector double type
+        self.sum_replace_var = False
+        self.sum_new_sym = ''
+        self.sum_original_sym = ''
 
     def get_dim_check_str(self):
         check_list = []
@@ -957,6 +960,8 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
     def visit_summation(self, node, **kwargs):
+        self.sum_new_sym = self.generate_var_name('local_x')  # new
+        self.sum_index_list = ['i', 'j', 'k']
         target_var = []
         self.push_scope(node.scope_name)
         expr_sign = '-' if node.sign else ''
@@ -1045,11 +1050,41 @@ class CodeGenEigen(CodeGen):
                 for et in node.extra_list:
                     extra_info = self.visit(et, **kwargs)
                     content += [self.update_prelist_str([extra_info.content], '    ')]
-            content.append(str("    " + assign_id + " += " + expr_sign + exp_str + ';\n'))
+            #
+            if self.sum_replace_var:
+                # Init new local variable
+                content.append("    ArrayXvar {}({});\n".format(self.sum_new_sym, len(self.sum_index_list)))
+                content.append("    {} << {};\n".format(self.sum_new_sym, ', '.join(["{}[{}]".format(self.sum_original_sym, sub) for sub in self.sum_index_list])))
+                # Save index mapping
+                index_name = 'index'
+                content.append("    std::vector<int> {};\n".format(index_name))
+                for sum_index in self.sum_index_list:
+                    content.append("    {}.push_back({});\n".format(index_name, sum_index))
+                # 
+                new_objective_name = self.generate_var_name('objective')
+            if self.sum_replace_var:
+                content.append(str("    var " + new_objective_name + " = " + expr_sign + exp_str + ';\n'))
+                content.append(str("    " + assign_id + " += " + new_objective_name + ';\n'))
+            else:
+                content.append(str("    " + assign_id + " += " + expr_sign + exp_str + ';\n'))
             content[0] = "    " + content[0]
+            if self.sum_replace_var:
+                # Get local hessian
+                local_hessian = self.generate_var_name('local_hessian')
+                content.append("    auto {} = hessian({}, {});\n".format(local_hessian, new_objective_name, self.sum_new_sym))
+                # Add to global hessian
+                content.append("    for (int i = 0; i < {}.size(); ++i)\n".format(self.sum_new_sym))
+                content.append("    {\n")
+                content.append("        for (int j = 0; j < {}.size(); ++j)\n".format(self.sum_new_sym))
+                content.append("        {\n")
+                content.append("            {}.push_back(Eigen::Triplet<double>({}[i], {}[j], {}(i, j)));\n".format(self.sum_hessian_triplet, index_name, index_name, local_hessian))
+                content.append("        }\n")
+                content.append("    }\n")
+            # end sum
             content.append("}\n")
             self.del_name_conventions(name_convention)
             self.pop_scope()
+            self.sum_replace_var = False
             return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
         sym_info = node.sym_dict[target_var[0]]
         if node.lower:
@@ -1116,6 +1151,7 @@ class CodeGenEigen(CodeGen):
         content.append("}\n")
         self.del_name_conventions(name_convention)
         self.pop_scope()
+        self.sum_replace_var = False
         return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
 
     def visit_function(self, node, **kwargs):
@@ -1773,9 +1809,19 @@ class CodeGenEigen(CodeGen):
         main_info = self.visit(node.main, **kwargs)
         index_info = self.visit(node.row_index, **kwargs)
         if node.row_index.la_type.index_type:
-            return CodeNodeInfo("{}[{}]".format(main_info.content, index_info.content))
+            if self.sum_replace_var:
+                if node.main.get_main_id() == self.sum_original_sym:
+                    return CodeNodeInfo("{}[{}]".format(self.sum_new_sym, self.sum_index_list.index(index_info.content)))
+                return CodeNodeInfo("{}[{}]".format(main_info.content, index_info.content))
+            else:
+                return CodeNodeInfo("{}[{}]".format(main_info.content, index_info.content))
         else:
-            return CodeNodeInfo("{}[{}-1]".format(main_info.content, index_info.content))
+            if self.sum_replace_var:
+                if node.main.get_main_id() == self.sum_original_sym:
+                    return CodeNodeInfo("{}[{}-1]".format(self.sum_new_sym, self.sum_index_list.index(index_info.content)))
+                return CodeNodeInfo("{}[{}-1]".format(main_info.content, index_info.content))
+            else:
+                return CodeNodeInfo("{}[{}-1]".format(main_info.content, index_info.content))
 
     def visit_set_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
@@ -1967,6 +2013,11 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo(content, right_info.pre_list)
 
     def visit_assignment(self, node, **kwargs):
+        if node.need_sparse_hessian:
+            self.calculating_sparse_hessian = True
+            self.sum_replace_var = True
+            self.sum_hessian_triplet = 'hessian_triplets'
+            self.sum_original_sym = node.hessian_var
         type_info = node
         # visit matrix first
         placeholder = "{}_{}\n".format(self.comment_placeholder, node.parse_info.line)
@@ -2153,8 +2204,16 @@ class CodeGenEigen(CodeGen):
                         if node.left[cur_index].get_main_id() in self.def_dict and not self.def_dict[node.left[0].get_main_id()]:
                             # type_def = self.get_ctype(self.get_sym_type(node.left.get_main_id())) + ' '
                             self.def_dict[node.left[cur_index].get_main_id()] = True
+                        extra_def = ''
+                        if node.need_sparse_hessian:
+                            hessian_name = self.generate_var_name("hess")
+                            extra_def += "    Eigen::SparseMatrix<double> {}({}.size(), {}.size());\n".format(hessian_name, node.hessian_var, node.hessian_var)
+                            extra_def += "    std::vector<Eigen::Triplet<double>> {};\n".format(self.sum_hessian_triplet)
                         right_exp += '    ' + type_def + node.left[cur_index].get_main_id() + op + right_info.content + ';'
                         content += right_exp + '\n'
+                        content = extra_def + content
+                        if node.need_sparse_hessian:
+                            content += "    {}.setFromTriplets({}.begin(), {}.end());\n".format(hessian_name, self.sum_hessian_triplet, self.sum_hessian_triplet) 
                 la_remove_key(LHS, **kwargs)
                 self.declared_symbols.add(node.left[cur_index].get_main_id())
         return CodeNodeInfo(placeholder+content)

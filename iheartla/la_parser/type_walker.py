@@ -849,6 +849,10 @@ class TypeWalker(NodeWalker):
     def check_sparse_hessian(self, stat_list):
         for hess in self.hessian_list:
             node = self.get_assign_node(hess.upper, stat_list)
+            need_sparse = False
+            if need_sparse:
+                node.need_sparse_hessian = True
+                node.hessian_var = hess.lower
             print(node)
 
     def get_assign_node(self, lhs, stat_list):
@@ -856,7 +860,7 @@ class TypeWalker(NodeWalker):
         for node in stat_list:
             if node.is_node(IRNodeType.Assignment):
                 if node.left[0].raw_text == lhs:
-                    res = node.right[0]
+                    res = node
         return res
 
     def print_all(self):

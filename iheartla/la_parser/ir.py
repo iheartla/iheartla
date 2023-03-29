@@ -461,6 +461,8 @@ class AssignNode(StmtNode):
         self.cur_type = cur_type
         self.unknown_id = None
         self.change_ele_only = False   # change an element inside a matrix/vector/sequence
+        self.need_sparse_hessian = False   # whether we need a sparse hessian for the current assignment
+        self.hessian_var = ""              # variable in current hessian
 
     def get_lhs_list(self):
         # get all new symbols
@@ -878,6 +880,7 @@ class SummationNode(ExprNode):
         self.lower = None
         self.upper = None
         self.sign = None
+
 
     def iter_mesh_ele(self):
         # check whether the summation is based on mesh elements: vertices, edges, faces, tets
