@@ -58,7 +58,8 @@ class IRIterator(IRVisitor):
         pass
 
     def visit_vector(self, node, **kwargs):
-        pass
+        for item in node.items:
+            self.visit(item, **kwargs)
 
     def visit_to_matrix(self, node, **kwargs):
         pass
@@ -70,6 +71,8 @@ class IRIterator(IRVisitor):
         if node.cond:
             self.visit(node.cond, **kwargs)
         self.visit(node.exp)
+        for extra in node.extra_list:
+            self.visit(extra, **kwargs)
 
     def visit_determinant(self, node, **kwargs):
         pass
@@ -118,6 +121,8 @@ class IRIterator(IRVisitor):
         self.visit(node.name, **kwargs)
         for parameter in node.params:
             self.visit(parameter, **kwargs)
+        for extra in node.extra_list:
+            self.visit(extra, **kwargs)
 
     def visit_sparse_other(self, node, **kwargs):
         pass
@@ -234,7 +239,8 @@ class IRIterator(IRVisitor):
         pass
 
     def visit_assignment(self, node, **kwargs):
-        pass
+        for rhs in node.right:
+            self.visit(rhs, **kwargs)
 
     def visit_equation(self, node, **kwargs):
         pass
