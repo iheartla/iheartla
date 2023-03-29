@@ -879,6 +879,10 @@ class SummationNode(ExprNode):
         self.upper = None
         self.sign = None
 
+    def iter_mesh_ele(self):
+        # check whether the summation is based on mesh elements: vertices, edges, faces, tets
+        res = self.la_type.is_mesh_ele_set()
+        return res
 
 class UnionSequence(ExprNode):
     def __init__(self, la_type=None, parse_info=None, raw_text=None):

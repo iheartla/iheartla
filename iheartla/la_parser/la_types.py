@@ -183,6 +183,9 @@ class LaVarType(object):
 
     def is_tet_set(self):
         return self.is_set() and self.cur_type == SetTypeEnum.TET
+    
+    def is_mesh_ele_set(self):
+        return self.is_set() and (self.cur_type == SetTypeEnum.VERTEX or self.cur_type == SetTypeEnum.EDGE or self.cur_type == SetTypeEnum.FACE or self.cur_type == SetTypeEnum.TET)
 
     def is_tuple(self):
         return self.var_type == VarTypeEnum.TUPLE
