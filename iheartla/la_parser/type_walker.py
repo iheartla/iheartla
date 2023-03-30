@@ -849,12 +849,33 @@ class TypeWalker(NodeWalker):
     def check_sparse_hessian(self, stat_list):
         for hess in self.hessian_list:
             node = self.get_assign_node(hess.upper, stat_list)
-            need_sparse = False
+            need_sparse = self.check_assign_node(node)
             if need_sparse:
                 node.need_sparse_hessian = True
                 node.hessian_var = hess.lower
             print(node)
 
+    def check_assign_node(self, node):
+        # check whether the current assignment consists of a list of summations
+        return self.check_expr_node(node.right[0])
+    
+    def check_expr_node(self, node):
+        # check whether the current expression/factor node consists of a list of summations
+        factor = node
+        if factor.is_node(IRNodeType.Subexpression):
+            factor = factor.value
+        if factor.is_node(IRNodeType.Expression):
+            factor = factor.value
+        if factor.is_node(IRNodeType.Factor):
+            if factor.op:
+                if factor.op.is_node(IRNodeType.Summation):
+                    return True
+            elif factor.sub:
+                return self.check_expr_node(factor.sub)
+        elif factor.is_node(IRNodeType.Add):
+            return self.check_expr_node(factor.left) and self.check_expr_node(factor.right)
+        return False
+    
     def get_assign_node(self, lhs, stat_list):
         res = None
         for node in stat_list:
