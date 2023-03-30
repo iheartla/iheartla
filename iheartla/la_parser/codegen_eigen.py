@@ -1084,7 +1084,6 @@ class CodeGenEigen(CodeGen):
             content.append("}\n")
             self.del_name_conventions(name_convention)
             self.pop_scope()
-            self.sum_replace_var = False
             return CodeNodeInfo(assign_id, pre_list=["    ".join(content)])
         sym_info = node.sym_dict[target_var[0]]
         if node.lower:
@@ -2016,7 +2015,7 @@ class CodeGenEigen(CodeGen):
         if node.need_sparse_hessian:
             self.calculating_sparse_hessian = True
             self.sum_replace_var = True
-            self.sum_hessian_triplet = 'hessian_triplets'
+            self.sum_hessian_triplet = self.generate_var_name("hessian_triplets")
             self.sum_original_sym = node.hessian_var
         type_info = node
         # visit matrix first
