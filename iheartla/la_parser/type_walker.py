@@ -857,6 +857,7 @@ class TypeWalker(NodeWalker):
 
     def check_assign_node(self, node):
         # check whether the current assignment consists of a list of summations
+        return False
         return self.check_expr_node(node.right[0])
     
     def check_expr_node(self, node):
