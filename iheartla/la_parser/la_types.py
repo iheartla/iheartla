@@ -926,12 +926,38 @@ def get_derivative_type(upper_type, lower_type):
     # get the type of derivatives
     ret_type = ScalarType()
     if upper_type.is_scalar():
-        if lower_type.is_vector():
+        if lower_type.is_scalar():
+            ret_type = ScalarType()
+        elif lower_type.is_vector():
             ret_type = VectorType(rows=lower_type.rows)
         elif lower_type.is_matrix():
             ret_type = MatrixType(rows=lower_type.rows, cols=lower_type.cols)
         elif lower_type.is_sequence():
-            ret_type = VectorType(rows=lower_type.size)
+            if lower_type.element_type.is_scalar():
+                ret_type = VectorType(rows=lower_type.size)
+            elif lower_type.element_type.is_vector():
+                ret_type = MatrixType(rows=lower_type.size, cols=lower_type.element_type.rows)
+    elif upper_type.is_vector():
+        if lower_type.is_scalar():
+            ret_type = VectorType(rows=lower_type.rows)
+        elif lower_type.is_vector():
+            ret_type = MatrixType(rows=upper_type.rows, cols=lower_type.rows)
+        elif lower_type.is_sequence():
+            if lower_type.element_type.is_scalar():
+                ret_type = MatrixType(rows=upper_type.rows, cols=lower_type.size)
+    elif upper_type.is_matrix():
+        if lower_type.is_scalar():
+            ret_type = MatrixType(rows=upper_type.rows, cols=upper_type.cols)
+    elif upper_type.is_sequence():
+        if upper_type.element_type.is_scalar():
+            if lower_type.is_scalar():
+                ret_type = VectorType(rows=upper_type.size)
+            elif lower_type.is_vector():
+                ret_type = MatrixType(rows=upper_type.size, cols=lower_type.rows)
+            elif lower_type.is_sequence() and lower_type.element_type.is_scalar():
+                ret_type = MatrixType(rows=upper_type.size, cols=lower_type.size)
+        elif upper_type.element_type.is_vector():
+            ret_type = MatrixType(rows=upper_type.size, cols=upper_type.element_type.rows)
     return ret_type
 
 def get_hessian_type(upper_type, lower_type):
