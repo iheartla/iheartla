@@ -2386,6 +2386,10 @@ class CodeGenEigen(CodeGen):
             upper_info = self.visit(node.upper, **kwargs)
             lower_info = self.visit(node.lower_list[0], **kwargs)
             content = "hessian({}, {})".format(upper_info.content, lower_info.content)
+        elif node.order_type == PartialOrderType.PartialNormal:
+            upper_info = self.visit(node.upper, **kwargs)
+            lower_info = self.visit(node.lower_list[0], **kwargs)
+            content = "gradient({}, {})".format(upper_info.content, lower_info.content)
         return CodeNodeInfo(content)
 
     def visit_first_order_ode(self, node, **kwargs):
