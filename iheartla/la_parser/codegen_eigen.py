@@ -441,8 +441,32 @@ class CodeGenEigen(CodeGen):
         init_list = []
         assign_list = []
         for param in self.used_params:
-            init_list.append("    {} {};".format(self.get_ctype(self.get_sym_type(param)), param))
+            param_type = self.get_sym_type(param)
+            init_list.append("    {} {};".format(self.get_ctype(param_type), param))
             assign_list.append("        this->{} = {};\n".format(param, param))
+            if param in self.der_vars:
+                extra_param_name = self.generate_var_name("new_{}".format(param))    # new variable with var type
+                # derived var
+                if param_type.is_vector():
+                    pass
+                elif param_type.is_sequence():
+                    if param_type.element_type.is_scalar():
+                        assign_list.append("        this->{} = {};\n".format(param, param))
+                    elif param_type.element_type.is_vector():
+                        init_list.append("    ArrayXvar {};".format(extra_param_name))
+                        assign_list.append("        {}.resize({}*{});\n".format(extra_param_name, param_type.size, param_type.element_type.rows))
+                        # Init ArrayXvar with original parameter
+                        assign_list.append("        for (int i = 0; i < {}.size(); ++i)\n".format(param))
+                        assign_list.append("        {\n")
+                        assign_list.append("            {}.segment({}*i, {}) = {}[i];\n".format(extra_param_name, param_type.element_type.rows, param_type.element_type.rows, param))
+                        assign_list.append("        }\n")
+                        # Init class param with ArrayXvar
+                        assign_list.append("        this->{}.resize({}.size());\n".format(param, param))
+                        assign_list.append("        for (int i = 0; i < {}.size(); ++i)\n".format(param))
+                        assign_list.append("        {\n")
+                        assign_list.append("            this->{}[i] = {}.segment({}*i, {});\n".format(param, extra_param_name, param_type.element_type.rows, param_type.element_type.rows, param))
+                        assign_list.append("        }\n")
+
         return '\n'.join(init_list), ''.join(assign_list)
 
     def get_param_content(self, main_declaration, test_generated_sym_set, dim_defined_dict):
