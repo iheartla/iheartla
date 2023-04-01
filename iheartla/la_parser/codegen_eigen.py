@@ -81,22 +81,25 @@ class CodeGenEigen(CodeGen):
             param_list.append(self.get_ctype(la_type.params[index]) + name_str)
         return ', '.join(param_list)
 
-    def get_ctype(self, la_type):
+    def get_ctype(self, la_type, omit_template=False):
+        cur_double_type = self.double_type    # used in current function only
+        if omit_template:
+            cur_double_type = "double"
         type_str = ""
         if la_type.is_sequence():
-            type_str = "std::vector<{}>".format(self.get_ctype(la_type.element_type))
+            type_str = "std::vector<{}>".format(self.get_ctype(la_type.element_type, omit_template))
         elif la_type.is_matrix():
             if la_type.sparse:
                 if la_type.is_dim_constant() and la_type.rows != 0 and la_type.cols != 0:
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::SparseMatrix<int>"
                     else:
-                        type_str = "Eigen::SparseMatrix<{}>".format(self.double_type)
+                        type_str = "Eigen::SparseMatrix<{}>".format(cur_double_type)
                 else:
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::SparseMatrix<int>"
                     else:
-                        type_str = "Eigen::SparseMatrix<{}>".format(self.double_type)
+                        type_str = "Eigen::SparseMatrix<{}>".format(cur_double_type)
             else:
                 if la_type.is_dynamic():
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
@@ -108,7 +111,7 @@ class CodeGenEigen(CodeGen):
                         if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                             type_str = "Eigen::Matrix<int, {}, {}>".format(la_type.rows, la_type.cols)
                         else:
-                            type_str = "Eigen::Matrix<{}, {}, {}>".format(self.double_type, la_type.rows, la_type.cols)
+                            type_str = "Eigen::Matrix<{}, {}, {}>".format(cur_double_type, la_type.rows, la_type.cols)
                     else:
                         if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                             type_str = "Eigen::MatrixXi"
@@ -119,21 +122,21 @@ class CodeGenEigen(CodeGen):
                         else:
                             type_str = "{}".format(self.matrixd_type)
                             if isinstance(la_type.rows, int):
-                                type_str = "Eigen::Matrix<{}, {}, Eigen::Dynamic>".format(self.double_type, la_type.rows)
+                                type_str = "Eigen::Matrix<{}, {}, Eigen::Dynamic>".format(cur_double_type, la_type.rows)
                             elif isinstance(la_type.cols, int):
-                                type_str = "Eigen::Matrix<{}, Eigen::Dynamic, {}>".format(self.double_type, la_type.cols)
+                                type_str = "Eigen::Matrix<{}, Eigen::Dynamic, {}>".format(cur_double_type, la_type.cols)
         elif la_type.is_vector():
             if la_type.sparse:
                 if la_type.is_dim_constant() and la_type.rows != 0:
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::SparseVector<int>"
                     else:
-                        type_str = "Eigen::SparseVector<{}>".format(self.double_type)
+                        type_str = "Eigen::SparseVector<{}>".format(cur_double_type)
                 else:
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::SparseVector<int>"
                     else:
-                        type_str = "Eigen::SparseVector<{}>".format(self.double_type)
+                        type_str = "Eigen::SparseVector<{}>".format(cur_double_type)
             else:
                 if la_type.is_dynamic():
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
@@ -145,7 +148,7 @@ class CodeGenEigen(CodeGen):
                         if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                             type_str = "Eigen::Matrix<int, {}, 1>".format(la_type.rows)
                         else:
-                            type_str = "Eigen::Matrix<{}, {}, 1>".format(self.double_type, la_type.rows)
+                            type_str = "Eigen::Matrix<{}, {}, 1>".format(cur_double_type, la_type.rows)
                     else:
                         if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                             type_str = "Eigen::VectorXi"
@@ -155,13 +158,13 @@ class CodeGenEigen(CodeGen):
             if la_type.is_scalar() and la_type.is_int:
                 type_str = "int"
             else:
-                type_str = self.double_type
+                type_str = cur_double_type
         elif la_type.is_set():
             type_str = "std::vector<{} >".format(self.get_set_item_str(la_type))
         elif la_type.is_tuple():
             type_str = self.get_tuple_str(la_type)
         elif la_type.is_function():
-            type_str = "std::function<{}({})>".format(self.get_ctype(la_type.ret[0]), self.get_func_params_str(la_type))
+            type_str = "std::function<{}({})>".format(self.get_ctype(la_type.ret[0], omit_template), self.get_func_params_str(la_type))
         elif la_type.is_mesh():
             type_str = MESH_CLASS
         else:
@@ -322,7 +325,7 @@ class CodeGenEigen(CodeGen):
             if parameter in self.symtable and self.get_sym_type(parameter) is not None:
                 # not local func
                 item_list.append("    {} {};".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
-                def_list.append("const {} & {}".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
+                def_list.append("const {} & {}".format(self.get_ctype(self.get_sym_type(parameter), True), parameter))
                 # assign_list.append("{}({})".format(parameter, parameter))
         def_struct = ''
         declare_modules = ''
@@ -443,13 +446,14 @@ class CodeGenEigen(CodeGen):
         for param in self.used_params:
             param_type = self.get_sym_type(param)
             init_list.append("    {} {};".format(self.get_ctype(param_type), param))
-            assign_list.append("        this->{} = {};\n".format(param, param))
+            has_assigned = False
             if param in self.der_vars:
                 extra_param_name = self.generate_var_name("new_{}".format(param))    # new variable with var type
                 # derived var
                 if param_type.is_vector():
                     pass
                 elif param_type.is_sequence():
+                    has_assigned = True
                     if param_type.element_type.is_scalar():
                         assign_list.append("        this->{} = {};\n".format(param, param))
                     elif param_type.element_type.is_vector():
@@ -466,7 +470,8 @@ class CodeGenEigen(CodeGen):
                         assign_list.append("        {\n")
                         assign_list.append("            this->{}[i] = {}.segment({}*i, {});\n".format(param, extra_param_name, param_type.element_type.rows, param_type.element_type.rows, param))
                         assign_list.append("        }\n")
-
+            if not has_assigned:
+                assign_list.append("        this->{} = {};\n".format(param, param))
         return '\n'.join(init_list), ''.join(assign_list)
 
     def get_param_content(self, main_declaration, test_generated_sym_set, dim_defined_dict):
@@ -480,7 +485,7 @@ class CodeGenEigen(CodeGen):
         test_par_list = []
         for parameter in self.parameters:
             main_declaration.append("    {} {};".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
-            par_des_list.append("const {} & {}".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
+            par_des_list.append("const {} & {}".format(self.get_ctype(self.get_sym_type(parameter), True), parameter))
             test_par_list.append("{} & {}".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
             if self.get_sym_type(parameter).desc:
                 # show_doc = True
