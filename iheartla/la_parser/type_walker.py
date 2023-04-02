@@ -4243,6 +4243,18 @@ class TypeWalker(NodeWalker):
                     ret_type = VectorType(element_type=param.la_type.element_type.element_type, rows=mul_dims(param.la_type.size, param.la_type.element_type.rows))
                 elif param.la_type.element_type.is_matrix():
                     ret_type = VectorType(element_type=param.la_type.element_type.element_type, rows=mul_dims(mul_dims(param.la_type.size, param.la_type.element_type.rows), param.la_type.element_type.cols))
+        elif func_type == MathFuncType.MathFuncInverseVec:
+            self.assert_expr(param.la_type.is_vector(), get_err_msg_info(param.parse_info, "Parameter must be valid vector type"))
+            if remains[0].la_type.is_matrix():
+                self.assert_expr(is_same_expr(param.la_type.rows, mul_dims(remains[0].la_type.rows, remains[0].la_type.cols)), get_err_msg_info(param.parse_info, "Size mismatch"))
+            elif remains[0].la_type.is_sequence():
+                if remains[0].la_type.element_type.is_scalar():
+                    self.assert_expr(is_same_expr(param.la_type.rows, remains[0].la_type.size), get_err_msg_info(param.parse_info, "Size mismatch"))
+                elif remains[0].la_type.element_type.is_vector():
+                    self.assert_expr(is_same_expr(param.la_type.rows, mul_dims(remains[0].la_type.size, remains[0].la_type.element_type.rows)), get_err_msg_info(param.parse_info, "Size mismatch"))
+            ret_type = remains[0].la_type
+            remain_list.append(remains[0].ir)
+            symbols = symbols.union(remains[0].symbols)
         elif func_type == MathFuncType.MathFuncDet:
             self.assert_expr(param.la_type.is_matrix(), get_err_msg_info(param.parse_info, "Parameter must be valid matrix type"))
             ret_type = ScalarType()
@@ -4453,6 +4465,11 @@ class TypeWalker(NodeWalker):
 
     def walk_VecFunc(self, node, **kwargs):
         return self.create_math_node_info(MathFuncType.MathFuncVec, self.walk(node.param, **kwargs))
+
+    def walk_InverseVecFunc(self, node, **kwargs):
+        node_info = self.create_math_node_info(MathFuncType.MathFuncInverseVec, self.walk(node.param, **kwargs), [self.walk(node.origin, **kwargs)])
+        node_info.ir.separator = node.separator
+        return node_info
 
     def walk_DetFunc(self, node, **kwargs):
         return self.create_math_node_info(MathFuncType.MathFuncDet, self.walk(node.param, **kwargs))
