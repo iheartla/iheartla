@@ -2728,6 +2728,19 @@ class CodeGenEigen(CodeGen):
                     # pre_list.append('    std::vector<{}> {}({}.begin(), {}.end());\n'.format(self.get_ctype(node.param.la_type.element_type), std_vec, op_n, op_n))
                     pre_list.append(
                         '    {} {}(Eigen::Map<{}>(&{}[0], {}.size()));\n'.format(c_type, vec_name, c_type, std_vec, std_vec))
+                elif node.param.la_type.is_sequence():
+                    if node.param.la_type.element_type.is_scalar():
+                        pass
+                    elif node.param.la_type.element_type.is_vector(): 
+                        pre_list.append('    {} {}({}*{});\n'.format(self.get_ctype(node.la_type), vec_name, node.param.la_type.size, node.param.la_type.element_type.rows))
+                        # pre_list.append("        {}.resize({}*{});\n".format(extra_param_name, param_type.size, param_type.element_type.rows))
+                        # Init ArrayXvar with original parameter
+                        pre_list.append("    for (int i = 0; i < {}.size(); ++i)\n".format(params_content))
+                        pre_list.append("    {\n")
+                        pre_list.append("        {}.segment({}*i, {}) = {}[i];\n".format(vec_name, node.param.la_type.element_type.rows, node.param.la_type.element_type.rows, params_content))
+                        pre_list.append("    }\n")
+                    elif node.param.la_type.element_type.is_matrix():
+                        pass
                 else:
                     pre_list.append(
                         '    {} {}(Eigen::Map<{}>((({})({})).data(), ({}).cols()*({}).rows()));;\n'.format(self.vectord_type,

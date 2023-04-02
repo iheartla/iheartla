@@ -936,7 +936,8 @@ def get_derivative_type(upper_type, lower_type):
             if lower_type.element_type.is_scalar():
                 ret_type = VectorType(rows=lower_type.size)
             elif lower_type.element_type.is_vector():
-                ret_type = MatrixType(rows=lower_type.size, cols=lower_type.element_type.rows)
+                # ret_type = MatrixType(rows=lower_type.size, cols=lower_type.element_type.rows)
+                ret_type = VectorType(rows=mul_dims(lower_type.size, lower_type.element_type.rows))
     elif upper_type.is_vector():
         if lower_type.is_scalar():
             ret_type = VectorType(rows=lower_type.rows)
@@ -968,6 +969,12 @@ def get_hessian_type(upper_type, lower_type):
             ret_type = MatrixType(rows=lower_type.rows, cols=lower_type.rows, element_type=ScalarType())
         elif lower_type.is_sequence():
             ret_type = MatrixType(rows=lower_type.size, cols=lower_type.size)
+            if lower_type.element_type.is_scalar():
+                ret_type = MatrixType(rows=lower_type.size, cols=lower_type.size)
+            elif lower_type.element_type.is_vector():
+                # ret_type = MatrixType(rows=lower_type.size, cols=lower_type.element_type.rows)
+                size = mul_dims(lower_type.size, lower_type.element_type.rows)
+                ret_type = MatrixType(rows=size, cols=size)
     return ret_type
 
 def make_function_type(params=[], ret=[]):

@@ -405,7 +405,7 @@ class IRVisitor(IRBaseVisitor):
         self.special_symbol_dict = {'∂':'dee'}  # Python and MATLAB can use some Unicode symbols, the symbols from this dict must be converted by all backends
         self.declared_symbols = set()
         self.used_params = []
-        self.der_vars = []
+        self.der_vars = [] # variables in derivatives
         self.opt_syms = []
         self.mesh_dict = {}
         self.duplicate_func_list = []    # overloaded func types incompatible in cpp
