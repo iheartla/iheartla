@@ -2,6 +2,7 @@ KEYS = r"""
 TRACE = /trace/;
 TR = /tr/;
 VEC = /vec/;
+INVERSEVEC = /inversevec/;
 DIAG = /diag/;
 INV = /inv/;
 DET = /det/;

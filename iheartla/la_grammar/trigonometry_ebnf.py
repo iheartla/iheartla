@@ -132,6 +132,11 @@ vec_func::VecFunc
     VEC '(' {hspace} param:expression {hspace} ')'
     ;
 
+inversevec_func::InverseVecFunc
+    =
+    INVERSEVEC '(' {hspace} param:expression {hspace} separator:params_separator {hspace} origin:expression {hspace} ')'
+    ;
+
 det_func::DetFunc
     = 
     DET '(' {hspace} param:expression {hspace} ')'

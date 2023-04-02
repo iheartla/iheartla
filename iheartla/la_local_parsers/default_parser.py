@@ -115,6 +115,13 @@ class grammardefaultParser(Parser):
             self._pattern('vec')
 
     @tatsumasu()
+    def _INVERSEVEC_(self):  # noqa
+        if 'inversevec' in self.conversion_dict:
+            self._pattern(self.conversion_dict['inversevec'])
+        else:
+            self._pattern('inversevec')
+
+    @tatsumasu()
     def _DIAG_(self):  # noqa
         if 'diag' in self.conversion_dict:
             self._pattern(self.conversion_dict['diag'])
@@ -5994,6 +6001,38 @@ class grammardefaultParser(Parser):
             []
         )
 
+    @tatsumasu('InverseVecFunc')
+    def _inversevec_func_(self):  # noqa
+        self._INVERSEVEC_()
+        self._token('(')
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._params_separator_()
+        self.name_last_node('separator')
+
+        def block4():
+            self._hspace_()
+        self._closure(block4)
+        self._expression_()
+        self.name_last_node('origin')
+
+        def block6():
+            self._hspace_()
+        self._closure(block6)
+        self._token(')')
+        self._define(
+            ['param', 'separator', 'origin'],
+            []
+        )
+
     @tatsumasu('DetFunc')
     def _det_func_(self):  # noqa
         self._DET_()
@@ -9270,6 +9309,9 @@ class grammardefaultSemantics:
     def VEC(self, ast):  # noqa
         return ast
 
+    def INVERSEVEC(self, ast):  # noqa
+        return ast
+
     def DIAG(self, ast):  # noqa
         return ast
 
@@ -9853,6 +9895,9 @@ class grammardefaultSemantics:
         return ast
 
     def vec_func(self, ast):  # noqa
+        return ast
+
+    def inversevec_func(self, ast):  # noqa
         return ast
 
     def det_func(self, ast):  # noqa
@@ -10644,6 +10689,13 @@ class DiagFunc(ModelBase):
 @dataclass(eq=False)
 class VecFunc(ModelBase):
     param: Any = None
+
+
+@dataclass(eq=False)
+class InverseVecFunc(ModelBase):
+    origin: Any = None
+    param: Any = None
+    separator: Any = None
 
 
 @dataclass(eq=False)
