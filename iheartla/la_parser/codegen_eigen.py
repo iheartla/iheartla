@@ -448,7 +448,7 @@ class CodeGenEigen(CodeGen):
             init_list.append("    {} {};".format(self.get_ctype(param_type), param))
             has_assigned = False
             if param in self.der_vars:
-                extra_param_name = self.generate_var_name("new_{}".format(param))    # new variable with var type
+                extra_param_name = self.der_vars_mapping[param]
                 # derived var
                 if param_type.is_vector():
                     pass
@@ -2403,7 +2403,10 @@ class CodeGenEigen(CodeGen):
         if node.sub:
             value_info = self.visit(node.value, **kwargs)
             sub_info = self.visit(node.sub, **kwargs)
-            content = "gradient({}, {})".format(value_info.content, sub_info.content)
+            if node.sub.get_main_id() in self.der_vars_mapping:
+                content = "gradient({}, this->{})".format(value_info.content, self.der_vars_mapping[node.sub.get_main_id()])
+            else:
+                content = "gradient({}, {})".format(value_info.content, sub_info.content)
         return CodeNodeInfo(content)
 
     def visit_laplace(self, node, **kwargs):
@@ -2414,11 +2417,17 @@ class CodeGenEigen(CodeGen):
         if node.order_type == PartialOrderType.PartialHessian:
             upper_info = self.visit(node.upper, **kwargs)
             lower_info = self.visit(node.lower_list[0], **kwargs)
-            content = "hessian({}, {})".format(upper_info.content, lower_info.content)
+            if node.lower_list[0].get_main_id() in self.der_vars_mapping:
+                content = "hessian({}, this->{})".format(upper_info.content, self.der_vars_mapping[node.lower_list[0].get_main_id()])
+            else:
+                content = "hessian({}, {})".format(upper_info.content, lower_info.content)
         elif node.order_type == PartialOrderType.PartialNormal:
             upper_info = self.visit(node.upper, **kwargs)
             lower_info = self.visit(node.lower_list[0], **kwargs)
-            content = "gradient({}, {})".format(upper_info.content, lower_info.content)
+            if node.lower_list[0].get_main_id() in self.der_vars_mapping:
+                content = "gradient({}, this->{})".format(upper_info.content, self.der_vars_mapping[node.lower_list[0].get_main_id()])
+            else:
+                content = "gradient({}, {})".format(upper_info.content, lower_info.content)
         return CodeNodeInfo(content)
 
     def visit_first_order_ode(self, node, **kwargs):

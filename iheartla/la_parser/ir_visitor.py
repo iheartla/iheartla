@@ -406,6 +406,7 @@ class IRVisitor(IRBaseVisitor):
         self.declared_symbols = set()
         self.used_params = []
         self.der_vars = [] # variables in derivatives
+        self.der_vars_mapping = {}  # mapping to new names
         self.opt_syms = []
         self.mesh_dict = {}
         self.duplicate_func_list = []    # overloaded func types incompatible in cpp
@@ -623,6 +624,9 @@ class IRVisitor(IRBaseVisitor):
         self.opt_dict = type_walker.opt_dict
         self.used_params = type_walker.used_params
         self.der_vars = type_walker.der_vars
+        self.der_vars_mapping.clear()
+        for param in self.der_vars:
+                self.der_vars_mapping[param] = self.generate_var_name("new_{}".format(param))    # new variable with var type
         self.builtin_module_dict = type_walker.builtin_module_dict
         self.opt_syms = type_walker.opt_syms
         self.mesh_dict = type_walker.mesh_dict
