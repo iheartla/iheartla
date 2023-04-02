@@ -612,6 +612,14 @@ class ExpressionNode(ExprNode):
         else:
             child_node = self.value.get_child(node_type)
         return child_node
+    
+    def is_id_node(self):
+        # whether the current node can be simplified as an id node
+        is_id = False
+        if self.value.is_node(IRNodeType.Factor):
+            if self.value.id:
+                is_id = True
+        return is_id
 
 
 class CastNode(ExprNode):

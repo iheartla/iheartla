@@ -2766,9 +2766,14 @@ class CodeGenEigen(CodeGen):
                 elif node.la_type.is_sequence():
                     if node.la_type.element_type.is_vector():
                         pre_list.append('    {} {}({});\n'.format(self.get_ctype(node.la_type), vec_name, node.remain_params[0].la_type.size))
+                        if node.param.is_node(IRNodeType.Expression) and node.param.is_id_node():
+                            new_param_name = params_content
+                        else:
+                            new_param_name = self.generate_var_name("param")
+                            pre_list.append("    {} {} = {};\n".format(self.get_ctype(node.param.la_type), new_param_name, params_content))
                         pre_list.append("    for (int i = 0; i < {}.size(); ++i)\n".format(remain_content))
                         pre_list.append("    {\n")
-                        pre_list.append("        {}[i] = {}.segment({}*i, {});\n".format(vec_name, params_content, node.remain_params[0].la_type.element_type.rows, node.remain_params[0].la_type.element_type.rows))
+                        pre_list.append("        {}[i] = {}.segment({}*i, {});\n".format(vec_name, new_param_name, node.remain_params[0].la_type.element_type.rows, node.remain_params[0].la_type.element_type.rows))
                         pre_list.append("    }\n")
             elif node.func_type == MathFuncType.MathFuncDet:
                 content = "({}).determinant()".format(params_content)
