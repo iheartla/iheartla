@@ -2380,8 +2380,10 @@ class CodeGenEigen(CodeGen):
         # given a symbol, check whether we need to add this->
         # only the variables in derivatives need
         prefix = False
-        if sym in self.der_vars:
-            prefix = True
+        if self.is_main_scope():
+            # only in main scope
+            if sym in self.der_vars:
+                prefix = True
         return prefix
     
     def visit_IdentifierAlone(self, node, **kwargs):
