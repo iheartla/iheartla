@@ -366,9 +366,9 @@ class CodeGenEigen(CodeGen):
         original_mdtype = "Eigen::MatrixXd"
         original_vdtype = "Eigen::VectorXd"
         if self.has_derivative:
-            original_dtype = "var"
-            original_mdtype = "Eigen::Matrix<var, Eigen::Dynamic, Eigen::Dynamic>"
-            original_vdtype = "Eigen::Matrix<var, Eigen::Dynamic, 1>"
+            original_dtype = "autodiff::var"
+            original_mdtype = "Eigen::Matrix<autodiff::var, Eigen::Dynamic, Eigen::Dynamic>"
+            original_vdtype = "Eigen::Matrix<autodiff::var, Eigen::Dynamic, 1>"
         content = ["template<class {} = {}, class {} = {}, class {} = {}>".format(self.double_type, original_dtype, self.matrixd_type, original_mdtype, self.vectord_type, original_vdtype),
                    "struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),
@@ -457,7 +457,7 @@ class CodeGenEigen(CodeGen):
                     if param_type.element_type.is_scalar():
                         assign_list.append("        this->{} = {};\n".format(param, param))
                     elif param_type.element_type.is_vector():
-                        init_list.append("    ArrayXvar {};".format(extra_param_name))
+                        init_list.append("    autodiff::ArrayXvar {};".format(extra_param_name))
                         assign_list.append("        {}.resize({}*{});\n".format(extra_param_name, param_type.size, param_type.element_type.rows))
                         # Init ArrayXvar with original parameter
                         assign_list.append("        for (int i = 0; i < {}.size(); ++i)\n".format(param))
@@ -1082,7 +1082,7 @@ class CodeGenEigen(CodeGen):
             #
             if self.sum_replace_var:
                 # Init new local variable
-                content.append("    ArrayXvar {}({});\n".format(self.sum_new_sym, len(self.sum_index_list)))
+                content.append("    autodiff::ArrayXvar {}({});\n".format(self.sum_new_sym, len(self.sum_index_list)))
                 content.append("    {} << {};\n".format(self.sum_new_sym, ', '.join(["{}[{}]".format(self.sum_original_sym, sub) for sub in self.sum_index_list])))
                 # Save index mapping
                 index_name = 'index'
