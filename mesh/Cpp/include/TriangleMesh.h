@@ -11,7 +11,7 @@
 #include <Eigen/Sparse>
 #include <map>
 #include "simplicial_set.h"
-// using Eigen::Matrix;
+using Eigen::MatrixXi;
 // using Eigen::VectorXi;
 using Eigen::SparseMatrix;
 typedef std::tuple<std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int> > SetTuple;
@@ -19,13 +19,13 @@ typedef std::tuple<int, int, int> key_f;
 typedef std::tuple<int, int> key_e;
 typedef Eigen::Matrix< int, Eigen::Dynamic, 1> Vector;
 typedef Eigen::Matrix< int, 1, Eigen::Dynamic> RowVector;
-typedef Eigen::Matrix< int, Eigen::Dynamic, Eigen::Dynamic> Matrix;
+// typedef Eigen::Matrix< int, Eigen::Dynamic, Eigen::Dynamic> Matrix;
 class TriangleMesh {
 public:
     TriangleMesh(const Eigen::MatrixXi &T);
     TriangleMesh();
     void initialize(Eigen::MatrixXi &T);
-    void initialize(const Matrix &T);
+    void initialize(const MatrixXi &T);
     void create_edges();
     void create_faces();
     void build_boundary_mat3(); // T -> F, size: |F|x|T|, boundary of tets
@@ -57,9 +57,9 @@ public:
 // private:
     int num_v;
     bool numerical_order;       // whether the indices are stored as numerical order in edges/faces
-    Matrix T;
-    Matrix E;
-    Matrix F;
+    MatrixXi T;
+    MatrixXi E;
+    MatrixXi F;
     std::vector<int> Vi;
     std::vector<int> Ei;
     std::vector<int> nEi;   // non-boundary edges
