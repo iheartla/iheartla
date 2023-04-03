@@ -445,9 +445,9 @@ class CodeGenEigen(CodeGen):
         assign_list = []
         for param in self.used_params:
             param_type = self.get_sym_type(param)
-            init_list.append("    {} {};".format(self.get_ctype(param_type), param))
             has_assigned = False
             if param in self.der_vars:
+                init_list.append("    {} {};".format(self.get_ctype(param_type), param))
                 extra_param_name = self.der_vars_mapping[param]
                 # derived var
                 if param_type.is_vector():
@@ -470,6 +470,9 @@ class CodeGenEigen(CodeGen):
                         assign_list.append("        {\n")
                         assign_list.append("            this->{}[i] = {}.segment({}*i, {});\n".format(param, extra_param_name, param_type.element_type.rows, param_type.element_type.rows, param))
                         assign_list.append("        }\n")
+            else:
+                # normal double type definition
+                init_list.append("    {} {};".format(self.get_ctype(param_type, True), param))
             if not has_assigned:
                 assign_list.append("        this->{} = {};\n".format(param, param))
         return '\n'.join(init_list), ''.join(assign_list)
