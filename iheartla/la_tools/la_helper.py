@@ -18,6 +18,7 @@ DEBUG_PARSER = False  # used for new grammer files
 DEBUG_TIME = False    # used for time recoding (to optimize)
 TEST_MATLAB = False   # used for running tests for MATLAB
 CLASS_ONLY = True     # output class without random data and main func
+CACHE_MODULE = True   # whether to cache compiled module into local files
 start_time = None
 # constants used as folder name
 INPUT_HISTORY = "input_history"
@@ -41,6 +42,14 @@ class ParserTypeEnum(Flag):
     MACROMATHJAX = 1024
 ## TODO: Q: Do we want to store lists or sets instead of using bitwise enum functionality?
 ParserTypeEnumDefaults = ParserTypeEnum.LATEX | ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.MATLAB
+ParserTypeDict = {ParserTypeEnum.LATEX: "latex",
+                  ParserTypeEnum.NUMPY: "numpy",
+                  ParserTypeEnum.EIGEN: "eigen",
+                  ParserTypeEnum.MATLAB: "matlab",
+                  ParserTypeEnum.JULIA: "julia",
+                  ParserTypeEnum.PYTORCH: "pytorch",
+                  ParserTypeEnum.MATHJAX: "mathjax",
+                  ParserTypeEnum.MACROMATHJAX: "macromathjax"}
 
 TEMPLATE_RE = re.compile(
         dedent(
