@@ -228,6 +228,14 @@ def get_start_node(model):
     start_node = type_walker.walk(model, pre_walk=True)
     return type_walker, start_node
 
+def get_compiled_module(module_content, module_name, parser_type, class_only):
+    # compile module content
+    # Init parser
+    parser = get_default_parser()
+    new_model = parser.parse(module_content, parseinfo=True)
+    tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model, parser_type, class_only=class_only)
+    pre_frame = walk_model_frame(parser_type, tmp_type_walker, tmp_start_node, module_name)
+    return tmp_type_walker, pre_frame
 
 def get_new_parser(start_node, current_content, type_walker, skipped_module=False, parser_type=ParserTypeEnum.EIGEN, class_only=False):
     """
@@ -318,11 +326,8 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
                 err_msg = "Invalid module:{}".format(module.module.get_name())
                 module_file = "{}/{}.ihla".format(_module_path, module.module.get_name())
                 module_content = read_from_file(module_file)
-                # Init parser
-                parser = get_default_parser()
-                new_model = parser.parse(module_content, parseinfo=True)
-                tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model, parser_type, class_only=class_only)
-                pre_frame = walk_model_frame(parser_type, tmp_type_walker, tmp_start_node, module.module.get_name())
+                # get compiled content
+                tmp_type_walker, pre_frame = get_compiled_module(module_content, module.module.get_name(), parser_type, class_only)
                 name_list = []
                 r_name_list = []
                 par_list = []
