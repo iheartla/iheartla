@@ -3037,11 +3037,12 @@ class TypeWalker(NodeWalker):
             param_node_list = []
             param_type_list = []
             # params from subscripts
-            for index in range(len(node.subs)):
-                c_node = self.walk(node.subs[index], **kwargs)
-                param_node_list.append(c_node)
-                param_type_list.append(c_node.la_type)
-            ir_node.n_subs = len(node.subs)
+            if node.subs:
+                for index in range(len(node.subs)):
+                    c_node = self.walk(node.subs[index], **kwargs)
+                    param_node_list.append(c_node)
+                    param_type_list.append(c_node.la_type)
+                ir_node.n_subs = len(node.subs)
             # params inside parentheses
             for index in range(len(node.params)):
                 c_node = self.walk(node.params[index], **kwargs)
