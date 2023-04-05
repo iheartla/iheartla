@@ -18,7 +18,8 @@ from tatsu.parsing import Parser
 from tatsu.parsing import tatsumasu
 from tatsu.parsing import leftrec, nomemo, isname # noqa
 from tatsu.infos import ParserConfig
-from tatsu.util import re, generic_main  # noqa
+from tatsu.util import generic_main  # noqa
+import regex as re
 
 
 KEYWORDS = {}  # type: ignore
@@ -4752,7 +4753,7 @@ class grammarinitParser(Parser):
                 )
             with self._option():
                 with self._group():
-                    self._KEYWORDS_()
+                    self._PREFIX_KEYWORD_()
                     with self._group():
                         self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                 self.name_last_node('value')
@@ -4764,20 +4765,22 @@ class grammarinitParser(Parser):
                 '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
                 '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
                 '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
-                '<NABLA> <OR> <OTHERWISE> <PI> <POUND>'
-                '<PRIME> <SCALAR> <SEQUENCE>'
-                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
-                '<SUBJECT_TO> <SUBSET> <TETS> <TETSET>'
-                '<TUPLE> <VECTOR> <VERTEXSET> <VERTICES>'
-                '<WHERE> <WITH> Mesh SOLVE Solve'
-                '[Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
-                'edges exp faces for from given if index'
-                'initial int ln log matrix max mesh min'
-                'or otherwise s.t. scalar sequence solve'
-                'sparse sqrt subject to sum tets tuple'
-                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                '<OTHERWISE> <PI> <POUND>'
+                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
+                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
+                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
+                '<TETS> <TETSET> <TUPLE> <VECTOR>'
+                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
+                'Mesh SOLVE Solve [Ee]dge[Ss]et'
+                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Vv]ertex[Ss]et [Δ] and'
+                'argmax argmin as edges exp faces for'
+                'from given if index initial int ln log'
+                'matrix max mesh min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tets tuple vector'
+                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu()

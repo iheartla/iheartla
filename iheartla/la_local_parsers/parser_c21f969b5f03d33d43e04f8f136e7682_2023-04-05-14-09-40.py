@@ -1452,14 +1452,14 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._factor_()
                 self.name_last_node('left')
 
-                def block2():
+                def block45():
                     self._hspace_()
-                self._closure(block2)
+                self._closure(block45)
                 self._token('\\')
 
-                def block3():
+                def block46():
                     self._hspace_()
-                self._closure(block3)
+                self._closure(block46)
                 self._factor_()
                 self.name_last_node('right')
 
@@ -1471,9 +1471,9 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._factor_()
                 self.name_last_node('left')
 
-                def block6():
+                def block49():
                     self._hspace_()
-                self._closure(block6)
+                self._closure(block49)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -1486,9 +1486,9 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         )
                 self.name_last_node('p')
 
-                def block9():
+                def block52():
                     self._hspace_()
-                self._closure(block9)
+                self._closure(block52)
                 self._factor_()
                 self.name_last_node('right')
 
@@ -4747,7 +4747,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 )
             with self._option():
                 with self._group():
-                    self._KEYWORDS_()
+                    self._PREFIX_KEYWORD_()
                     with self._group():
                         self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                 self.name_last_node('value')
@@ -4759,20 +4759,22 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
                 '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
                 '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
-                '<NABLA> <OR> <OTHERWISE> <PI> <POUND>'
-                '<PRIME> <SCALAR> <SEQUENCE>'
-                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
-                '<SUBJECT_TO> <SUBSET> <TETS> <TETSET>'
-                '<TUPLE> <VECTOR> <VERTEXSET> <VERTICES>'
-                '<WHERE> <WITH> Mesh SOLVE Solve'
-                '[Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
-                'edges exp faces for from given if index'
-                'initial int ln log matrix max mesh min'
-                'or otherwise s.t. scalar sequence solve'
-                'sparse sqrt subject to sum tets tuple'
-                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                '<OTHERWISE> <PI> <POUND>'
+                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
+                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
+                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
+                '<TETS> <TETSET> <TUPLE> <VECTOR>'
+                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
+                'Mesh SOLVE Solve [Ee]dge[Ss]et'
+                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Vv]ertex[Ss]et [Δ] and'
+                'argmax argmin as edges exp faces for'
+                'from given if index initial int ln log'
+                'matrix max mesh min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tets tuple vector'
+                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu()
