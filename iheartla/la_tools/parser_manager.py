@@ -422,7 +422,9 @@ class ParserFileManager(object):
                 def_parser = read_from_file(la_local_parsers / f)
                 def_parser = def_parser.replace(self.default_hash_value, 'default')
                 # extra elements
-                original_class = r"""base_config = ParserConfig.new(
+                original_class = r"""def __init__(self, /, config: ParserConfig = None, **settings):
+        config = ParserConfig.new(
+            config,
             owner=self,
             whitespace=re.compile('(?!.*)'),
             nameguard=None,
@@ -432,11 +434,13 @@ class ParserFileManager(object):
             namechars='',
             parseinfo=False,
             keywords=KEYWORDS,
+            start='start',
         )
-        config = base_config.replace_config(config)
-        config = config.merge(**settings)
+        config = config.replace(**settings)
         super().__init__(config=config)"""
-                new_class = r"""base_config = ParserConfig.new(
+                new_class = r"""def __init__(self, /, config: ParserConfig = None, **settings):
+        config = ParserConfig.new(
+            config,
             owner=self,
             whitespace=re.compile('(?!.*)'),
             nameguard=None,
@@ -446,9 +450,9 @@ class ParserFileManager(object):
             namechars='',
             parseinfo=False,
             keywords=KEYWORDS,
+            start='start',
         )
-        config = base_config.replace_config(config)
-        config = config.merge(**settings)
+        config = config.replace(**settings)
         super().__init__(config=config)
         self.new_id_list = []
         self.new_func_list = []
@@ -458,12 +462,10 @@ class ParserFileManager(object):
                 def_parser = def_parser.replace(original_class, new_class)
                 # ids
                 id_alone_original_rule = r"""class IdentifierAlone(ModelBase):
-    id = None
-    value = None"""
+    value: Any = None"""
                 id_alone_cur_rule = r"""class IdentifierAlone(ModelBase):
-    id = None
-    value = None
-    const = None"""
+    value: Any = None
+    const: Any = None"""
                 def_parser = def_parser.replace(id_alone_original_rule, id_alone_cur_rule)
                 #
                 id_original_rule = r"""@tatsumasu('IdentifierAlone')
@@ -478,25 +480,23 @@ class ParserFileManager(object):
                             with self._group():
                                 self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                             self.name_last_node('value')
-                            self._define(
-                                ['value'],
-                                []
-                            )
                         with self._option():
                             self._token('`')
                             self._pattern('[^`]*')
                             self.name_last_node('id')
                             self._token('`')
+
                             self._define(
                                 ['id'],
                                 []
                             )
                         self._error(
                             'expecting one of: '
-                            "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                            "'`' [A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*"
                         )
+
                 self._define(
-                    ['value', 'id'],
+                    ['id', 'value'],
                     []
                 )
             with self._option():
@@ -505,39 +505,31 @@ class ParserFileManager(object):
                     with self._group():
                         self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                 self.name_last_node('value')
-                self._define(
-                    ['value'],
-                    []
-                )
             self._error(
                 'expecting one of: '
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                '<KEYWORDS> where <WHERE> given <GIVEN>'
-                'sum min <MIN> max <MAX> argmin <ARGMIN>'
-                'argmax <ARGMAX> int <INT> if <IF>'
-                'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
-                'log <LOG> ln <LN> sqrt <SQRT> s.t.'
-                'subject to <SUBJECT_TO> from <FROM> π'
-                '<PI> ℝ ℤ scalar <SCALAR> vector <VECTOR>'
-                'matrix <MATRIX> with <WITH> initial'
-                '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
-                "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                '<AS> # <POUND> for <FOR> [Vv]ertex[Ss]et'
-                '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
-                '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
-                '<TETSET> [Ss]implicial[Ss]et'
-                '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
-                '<SPARSE> index <INDEX> vertices'
-                '<VERTICES> edges <EDGES> faces <FACES>'
-                'tets <TETS> tuple <TUPLE> sequence'
-                '<SEQUENCE> <BUILTIN_KEYWORDS>'
-                '<PREFIX_KEYWORD>'
-            )
-        self._define(
-            ['value', 'id'],
-            []
-        )"""
+                "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                '<EDGES> <EDGESET> <EXP> <FACES>'
+                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                '<OTHERWISE> <PI> <POUND>'
+                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
+                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
+                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
+                '<TETS> <TETSET> <TUPLE> <VECTOR>'
+                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
+                'Mesh SOLVE Solve [Ee]dge[Ss]et'
+                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Vv]ertex[Ss]et [Δ] and'
+                'argmax argmin as edges exp faces for'
+                'from given if index initial int ln log'
+                'matrix max mesh min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tets tuple vector'
+                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+            )"""
                 id_rule = r"""@tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
         if len(self.new_id_list) > 0:
@@ -566,25 +558,23 @@ class ParserFileManager(object):
                                 with self._group():
                                     self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                                 self.name_last_node('value')
-                                self._define(
-                                    ['value'],
-                                    []
-                                )
                             with self._option():
                                 self._token('`')
                                 self._pattern('[^`]*')
                                 self.name_last_node('id')
                                 self._token('`')
+
                                 self._define(
                                     ['id'],
                                     []
                                 )
                             self._error(
                                 'expecting one of: '
-                                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                                "'`' [A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*"
                             )
+
                     self._define(
-                        ['value', 'id'],
+                        ['id', 'value'],
                         []
                     )
                 with self._option():
@@ -599,34 +589,30 @@ class ParserFileManager(object):
                         with self._group():
                             self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
-                    self._define(
-                        ['value'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
-                    "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                    '<KEYWORDS> where <WHERE> given <GIVEN>'
-                    'sum min <MIN> max <MAX> argmin <ARGMIN>'
-                    'argmax <ARGMAX> int <INT> if <IF>'
-                    'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
-                    'log <LOG> ln <LN> sqrt <SQRT> s.t.'
-                    'subject to <SUBJECT_TO> from <FROM> π'
-                    '<PI> ℝ ℤ scalar <SCALAR> vector <VECTOR>'
-                    'matrix <MATRIX> with <WITH> initial'
-                    '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                    '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
-                    "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                    '<AS> # <POUND> for <FOR> [Vv]ertex[Ss]et'
-                    '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
-                    '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
-                    '<TETSET> [Ss]implicial[Ss]et'
-                    '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
-                    '<SPARSE> index <INDEX> vertices'
-                    '<VERTICES> edges <EDGES> faces <FACES>'
-                    'tets <TETS> tuple <TUPLE> sequence'
-                    '<SEQUENCE> <BUILTIN_KEYWORDS>'
-                    '<PREFIX_KEYWORD>'
+                    "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                    '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                    '<EDGES> <EDGESET> <EXP> <FACES>'
+                    '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                    '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                    '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                    '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                    '<OTHERWISE> <PI> <POUND>'
+                    '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
+                    '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
+                    '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
+                    '<TETS> <TETSET> <TUPLE> <VECTOR>'
+                    '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
+                    'Mesh SOLVE Solve [Ee]dge[Ss]et'
+                    '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
+                    '[Tt]et[Ss]et [Vv]ertex[Ss]et [Δ] and'
+                    'argmax argmin as edges exp faces for'
+                    'from given if index initial int ln log'
+                    'matrix max mesh min or otherwise s.t.'
+                    'scalar sequence solve sparse sqrt'
+                    'subject to sum tets tuple vector'
+                    'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
                 )
             self._define(
                 ['const', 'id', 'value'],
@@ -644,25 +630,23 @@ class ParserFileManager(object):
                                 with self._group():
                                     self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                                 self.name_last_node('value')
-                                self._define(
-                                    ['value'],
-                                    []
-                                )
                             with self._option():
                                 self._token('`')
                                 self._pattern('[^`]*')
                                 self.name_last_node('id')
                                 self._token('`')
+
                                 self._define(
                                     ['id'],
                                     []
                                 )
                             self._error(
                                 'expecting one of: '
-                                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                                "'`' [A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*"
                             )
+
                     self._define(
-                        ['value', 'id'],
+                        ['id', 'value'],
                         []
                     )
                 with self._option():
@@ -671,39 +655,31 @@ class ParserFileManager(object):
                         with self._group():
                             self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
-                    self._define(
-                        ['value'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
-                    "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                    '<KEYWORDS> where <WHERE> given <GIVEN>'
-                    'sum min <MIN> max <MAX> argmin <ARGMIN>'
-                    'argmax <ARGMAX> int <INT> if <IF>'
-                    'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
-                    'log <LOG> ln <LN> sqrt <SQRT> s.t.'
-                    'subject to <SUBJECT_TO> from <FROM> π'
-                    '<PI> ℝ ℤ scalar <SCALAR> vector <VECTOR>'
-                    'matrix <MATRIX> with <WITH> initial'
-                    '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                    '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
-                    "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                    '<AS> # <POUND> for <FOR> [Vv]ertex[Ss]et'
-                    '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
-                    '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
-                    '<TETSET> [Ss]implicial[Ss]et'
-                    '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
-                    '<SPARSE> index <INDEX> vertices'
-                    '<VERTICES> edges <EDGES> faces <FACES>'
-                    'tets <TETS> tuple <TUPLE> sequence'
-                    '<SEQUENCE> <BUILTIN_KEYWORDS>'
-                    '<PREFIX_KEYWORD>'
-                )
-            self._define(
-                ['value', 'id'],
-                []
-            )"""
+                    "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                    '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                    '<EDGES> <EDGESET> <EXP> <FACES>'
+                    '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                    '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                    '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                    '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                    '<OTHERWISE> <PI> <POUND>'
+                    '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
+                    '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
+                    '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
+                    '<TETS> <TETSET> <TUPLE> <VECTOR>'
+                    '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
+                    'Mesh SOLVE Solve [Ee]dge[Ss]et'
+                    '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
+                    '[Tt]et[Ss]et [Vv]ertex[Ss]et [Δ] and'
+                    'argmax argmin as edges exp faces for'
+                    'from given if index initial int ln log'
+                    'matrix max mesh min or otherwise s.t.'
+                    'scalar sequence solve sparse sqrt'
+                    'subject to sum tets tuple vector'
+                    'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                )"""
                 def_parser = def_parser.replace(id_original_rule, id_rule)
                 #
                 funcs_original_rule = r"""@tatsumasu()

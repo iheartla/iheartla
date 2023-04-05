@@ -26,7 +26,8 @@ KEYWORDS = {}  # type: ignore
 
 class grammardefaultBuffer(Buffer):
     def __init__(self, text, /, config: ParserConfig = None, **settings):
-        base_config = ParserConfig.new(
+        config = ParserConfig.new(
+            config,
             owner=self,
             whitespace=re.compile('(?!.*)'),
             nameguard=None,
@@ -36,14 +37,14 @@ class grammardefaultBuffer(Buffer):
             namechars='',
             parseinfo=False,
         )
-        config = base_config.replace_config(config)
-        config = config.merge(**settings)
+        config = config.replace(**settings)
         super().__init__(text, config=config)
 
 
 class grammardefaultParser(Parser):
-    def __init__(self, config: ParserConfig = None, **settings):
-        base_config = ParserConfig.new(
+    def __init__(self, /, config: ParserConfig = None, **settings):
+        config = ParserConfig.new(
+            config,
             owner=self,
             whitespace=re.compile('(?!.*)'),
             nameguard=None,
@@ -53,9 +54,9 @@ class grammardefaultParser(Parser):
             namechars='',
             parseinfo=False,
             keywords=KEYWORDS,
+            start='start',
         )
-        config = base_config.replace_config(config)
-        config = config.merge(**settings)
+        config = config.replace(**settings)
         super().__init__(config=config)
         self.new_id_list = []
         self.new_func_list = []
@@ -82,12 +83,18 @@ class grammardefaultParser(Parser):
             def block4():
                 self._separator_with_space_()
             self._closure(block4)
+
+            self._define(
+                [],
+                ['vblock']
+            )
         self._positive_closure(block0)
 
         def block5():
             self._blank_()
         self._closure(block5)
         self._check_eof()
+
         self._define(
             [],
             ['vblock']
@@ -468,7 +475,7 @@ class grammardefaultParser(Parser):
                 self._pattern('SOLVE')
             self._error(
                 'expecting one of: '
-                'solve Solve SOLVE'
+                'SOLVE Solve solve'
             )
 
     @tatsumasu()
@@ -528,7 +535,7 @@ class grammardefaultParser(Parser):
                 self._pattern('Mesh')
             self._error(
                 'expecting one of: '
-                'mesh Mesh'
+                'Mesh mesh'
             )
 
     @tatsumasu()
@@ -664,25 +671,25 @@ class grammardefaultParser(Parser):
                 self._SEQUENCE_()
             self._error(
                 'expecting one of: '
-                'where <WHERE> given <GIVEN> sum min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ'
-                'scalar <SCALAR> vector <VECTOR> matrix'
-                '<MATRIX> with <WITH> initial <INITIAL>'
-                'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
-                '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
-                "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
-                'for <FOR> [Vv]ertex[Ss]et <VERTEXSET>'
-                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
-                '<FACESET> [Tt]et[Ss]et <TETSET>'
-                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH> sparse <SPARSE> index'
-                '<INDEX> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS> tuple'
-                '<TUPLE> sequence <SEQUENCE>'
+                "# ' <AND> <ARGMAX> <ARGMIN> <AS> <DELTA>"
+                '<DERIVATIVE> <EDGES> <EDGESET> <EXP>'
+                '<FACES> <FACESET> <FOR> <FROM> <GIVEN>'
+                '<IF> <IN> <INDEX> <INITIAL> <INT> <LN>'
+                '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                '<NABLA> <OR> <OTHERWISE> <PI> <POUND>'
+                '<PRIME> <SCALAR> <SEQUENCE>'
+                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
+                '<SUBJECT_TO> <SUBSET> <TETS> <TETSET>'
+                '<TUPLE> <VECTOR> <VERTEXSET> <VERTICES>'
+                '<WHERE> <WITH> Mesh SOLVE Solve'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                'edges exp faces for from given if index'
+                'initial int ln log matrix max mesh min'
+                'or otherwise s.t. scalar sequence solve'
+                'sparse sqrt subject to sum tets tuple'
+                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -700,8 +707,8 @@ class grammardefaultParser(Parser):
                 self._DERIVATIVE_()
             self._error(
                 'expecting one of: '
-                '# <POUND> [Δ] <DELTA> ∇ <NABLA> ∈ <IN> 𝕕'
-                '<DERIVATIVE>'
+                '# <DELTA> <DERIVATIVE> <IN> <NABLA>'
+                '<POUND> [Δ] ∇ ∈ 𝕕'
             )
 
     @tatsumasu()
@@ -720,6 +727,7 @@ class grammardefaultParser(Parser):
             self._digit_()
         self._positive_closure(block2)
         self.name_last_node('pow')
+
         self._define(
             ['exp', 'pow'],
             []
@@ -741,10 +749,11 @@ class grammardefaultParser(Parser):
                         self._digit_()
                     self._positive_closure(block4)
                     self.name_last_node('f')
-                self._define(
-                    ['d', 'f'],
-                    []
-                )
+
+                    self._define(
+                        ['d', 'f'],
+                        []
+                    )
             with self._option():
                 with self._group():
 
@@ -753,18 +762,15 @@ class grammardefaultParser(Parser):
                     self._positive_closure(block6)
                     self.name_last_node('d')
                     self._token('.')
-                self._define(
-                    ['d'],
-                    []
-                )
+
+                    self._define(
+                        ['d'],
+                        []
+                    )
             self._error(
                 'expecting one of: '
-                "'.' \\d <digit>"
+                "'.' <digit> \\d"
             )
-        self._define(
-            ['d', 'f'],
-            []
-        )
 
     @tatsumasu('Float')
     def _floating_point_(self):  # noqa
@@ -773,8 +779,9 @@ class grammardefaultParser(Parser):
         with self._optional():
             self._exponent_()
         self.name_last_node('e')
+
         self._define(
-            ['m', 'e'],
+            ['e', 'm'],
             []
         )
 
@@ -786,35 +793,24 @@ class grammardefaultParser(Parser):
                 self.name_last_node('i')
                 self._exponent_()
                 self.name_last_node('exp')
+
                 self._define(
-                    ['i', 'exp'],
+                    ['exp', 'i'],
                     []
                 )
             with self._option():
                 self._floating_point_()
                 self.name_last_node('f')
-                self._define(
-                    ['f'],
-                    []
-                )
             self._error(
                 'expecting one of: '
-                "<digit> <integer> '.' <mantissa> \\d"
-                '<floating_point>'
+                "'.' <digit> <floating_point> <integer>"
+                '<mantissa> \\d'
             )
-        self._define(
-            ['i', 'exp', 'f'],
-            []
-        )
 
     @tatsumasu('Fraction')
     def _fraction_(self):  # noqa
         self._pattern('[\\u00BC-\\u00BE\\u2150-\\u215E]')
         self.name_last_node('value')
-        self._define(
-            ['value'],
-            []
-        )
 
     @tatsumasu()
     def _number_(self):  # noqa
@@ -827,9 +823,9 @@ class grammardefaultParser(Parser):
                 self._integer_()
             self._error(
                 'expecting one of: '
-                "<integer> '.' <digit> <mantissa>"
-                '<floating_point> \\d <double>'
-                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
+                "'.' <digit> <double> <floating_point>"
+                '<fraction> <integer> <mantissa>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] \\d'
             )
 
     @tatsumasu()
@@ -880,27 +876,27 @@ class grammardefaultParser(Parser):
                 self._pseudoinverse_operator_()
             self._error(
                 'expecting one of: '
-                '𝕕 <DERIVATIVE> <derivative> ∂ <PARTIAL>'
-                '<partial> ∇ <NABLA> <divergence>'
-                '<gradient> [Δ] <DELTA> <laplacian>'
-                "<factor> <solver_operator> '||' '‖' '|'"
-                "<norm_operator> <power_operator> '<' '⟨'"
-                '<inner_product_operator>'
-                '<frobenius_product_operator>'
+                "'!!!' '<' '|' '||' '‖' '∪' '∫' '⟨'"
+                '<DELTA> <DERIVATIVE> <INT> <NABLA>'
+                '<PARTIAL> <SUM> <builtin_operators>'
+                '<cross_product_operator> <derivative>'
+                '<divergence> <element_convert_func>'
+                '<exp_func> <factor>'
+                '<frobenius_product_operator> <func_id>'
+                '<function_operator> <gradient>'
                 '<hadamard_product_operator>'
-                '<cross_product_operator>'
-                '<kronecker_product_operator>'
-                '<union_operator> <intersect_operator>'
-                "<set_operators> sum ∑ <SUM> '∪'"
-                "<sum_operator> int <INT> '∫'"
-                '<integral_operator> <trans_operator> √'
-                "<sqrt_operator> '!!!' <func_id>"
-                '<function_operator> <exp_func>'
-                '<log_func> <ln_func> <sqrt_func>'
-                '<element_convert_func> <minmax_func>'
+                '<inner_product_operator>'
+                '<integral_operator> <intersect_operator>'
+                '<kronecker_product_operator> <laplacian>'
+                '<ln_func> <log_func> <minmax_func>'
+                '<norm_operator> <partial>'
+                '<power_operator>'
                 '<predefined_built_operators>'
-                '<builtin_operators>'
-                '<pseudoinverse_operator>'
+                '<pseudoinverse_operator> <set_operators>'
+                '<solver_operator> <sqrt_func>'
+                '<sqrt_operator> <sum_operator>'
+                '<trans_operator> <union_operator> [Δ]'
+                'int sum ∂ ∇ ∑ √ 𝕕'
             )
 
     @tatsumasu('Add')
@@ -920,6 +916,7 @@ class grammardefaultParser(Parser):
         self._closure(block3)
         self._term_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -942,6 +939,7 @@ class grammardefaultParser(Parser):
         self._closure(block3)
         self._term_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -973,6 +971,7 @@ class grammardefaultParser(Parser):
         self._closure(block4)
         self._term_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -997,6 +996,7 @@ class grammardefaultParser(Parser):
                 self._closure(block4)
                 self._factor_()
                 self.name_last_node('right')
+
                 self._define(
                     ['left', 'op', 'right'],
                     []
@@ -1010,19 +1010,16 @@ class grammardefaultParser(Parser):
                 self._closure(block7)
                 self._factor_()
                 self.name_last_node('right')
+
                 self._define(
                     ['left', 'right'],
                     []
                 )
             self._error(
                 'expecting one of: '
-                '<term> <multiplication> <division>'
-                '<factor>'
+                '<division> <factor> <multiplication>'
+                '<term>'
             )
-        self._define(
-            ['left', 'op', 'right'],
-            []
-        )
 
     @tatsumasu('Divide')
     @nomemo
@@ -1050,6 +1047,7 @@ class grammardefaultParser(Parser):
         self._closure(block4)
         self._factor_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -1065,10 +1063,6 @@ class grammardefaultParser(Parser):
                         with self._option():
                             self._sup_integer_()
                             self.name_last_node('uorder')
-                            self._define(
-                                ['uorder'],
-                                []
-                            )
                         with self._option():
                             self._token('^')
                             with self._group():
@@ -1082,13 +1076,14 @@ class grammardefaultParser(Parser):
                                         '<identifier> <number>'
                                     )
                             self.name_last_node('uorder')
+
                             self._define(
                                 ['uorder'],
                                 []
                             )
                         self._error(
                             'expecting one of: '
-                            "<sup_integer> '^'"
+                            "'^' <sup_integer>"
                         )
                 self._factor_()
                 self.name_last_node('upper')
@@ -1102,10 +1097,6 @@ class grammardefaultParser(Parser):
                         with self._option():
                             self._sup_integer_()
                             self.name_last_node('lorder')
-                            self._define(
-                                ['lorder'],
-                                []
-                            )
                         with self._option():
                             self._token('^')
                             with self._group():
@@ -1119,16 +1110,18 @@ class grammardefaultParser(Parser):
                                         '<identifier> <number>'
                                     )
                             self.name_last_node('lorder')
+
                             self._define(
                                 ['lorder'],
                                 []
                             )
                         self._error(
                             'expecting one of: '
-                            "<sup_integer> '^'"
+                            "'^' <sup_integer>"
                         )
+
                 self._define(
-                    ['uorder', 'upper', 'f', 'lower', 'lorder'],
+                    ['f', 'lorder', 'lower', 'uorder', 'upper'],
                     []
                 )
             with self._option():
@@ -1138,10 +1131,6 @@ class grammardefaultParser(Parser):
                         with self._option():
                             self._sup_integer_()
                             self.name_last_node('uorder')
-                            self._define(
-                                ['uorder'],
-                                []
-                            )
                         with self._option():
                             self._token('^')
                             with self._group():
@@ -1155,13 +1144,14 @@ class grammardefaultParser(Parser):
                                         '<identifier> <number>'
                                     )
                             self.name_last_node('uorder')
+
                             self._define(
                                 ['uorder'],
                                 []
                             )
                         self._error(
                             'expecting one of: '
-                            "<sup_integer> '^'"
+                            "'^' <sup_integer>"
                         )
                 self._token('/')
                 self.name_last_node('s')
@@ -1173,10 +1163,6 @@ class grammardefaultParser(Parser):
                         with self._option():
                             self._sup_integer_()
                             self.name_last_node('lorder')
-                            self._define(
-                                ['lorder'],
-                                []
-                            )
                         with self._option():
                             self._token('^')
                             with self._group():
@@ -1190,13 +1176,14 @@ class grammardefaultParser(Parser):
                                         '<identifier> <number>'
                                     )
                             self.name_last_node('lorder')
+
                             self._define(
                                 ['lorder'],
                                 []
                             )
                         self._error(
                             'expecting one of: '
-                            "<sup_integer> '^'"
+                            "'^' <sup_integer>"
                         )
 
                 def block22():
@@ -1204,18 +1191,15 @@ class grammardefaultParser(Parser):
                 self._positive_closure(block22)
                 self._factor_()
                 self.name_last_node('upper')
+
                 self._define(
-                    ['uorder', 's', 'lower', 'lorder', 'upper'],
+                    ['lorder', 'lower', 's', 'uorder', 'upper'],
                     []
                 )
             self._error(
                 'expecting one of: '
-                '𝕕 <DERIVATIVE>'
+                '<DERIVATIVE> 𝕕'
             )
-        self._define(
-            ['uorder', 'upper', 'f', 'lower', 'lorder', 's'],
-            []
-        )
 
     @tatsumasu('Partial')
     def _partial_(self):  # noqa
@@ -1227,10 +1211,6 @@ class grammardefaultParser(Parser):
                         with self._option():
                             self._sup_integer_()
                             self.name_last_node('uorder')
-                            self._define(
-                                ['uorder'],
-                                []
-                            )
                         with self._option():
                             self._token('^')
                             with self._group():
@@ -1244,13 +1224,14 @@ class grammardefaultParser(Parser):
                                         '<identifier> <number>'
                                     )
                             self.name_last_node('uorder')
+
                             self._define(
                                 ['uorder'],
                                 []
                             )
                         self._error(
                             'expecting one of: '
-                            "<sup_integer> '^'"
+                            "'^' <sup_integer>"
                         )
                 self._factor_()
                 self.name_last_node('upper')
@@ -1266,10 +1247,6 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 self._sup_integer_()
                                 self.add_last_node_to_name('lorder')
-                                self._define(
-                                    [],
-                                    ['lorder']
-                                )
                             with self._option():
                                 self._token('^')
                                 with self._group():
@@ -1283,19 +1260,26 @@ class grammardefaultParser(Parser):
                                             '<identifier> <number>'
                                         )
                                 self.add_last_node_to_name('lorder')
+
                                 self._define(
                                     [],
                                     ['lorder']
                                 )
                             self._error(
                                 'expecting one of: '
-                                "<sup_integer> '^'"
+                                "'^' <sup_integer>"
                             )
+
+                    self._define(
+                        [],
+                        ['lorder', 'lower']
+                    )
                 self._positive_closure(block8)
                 self.name_last_node('l')
+
                 self._define(
-                    ['uorder', 'upper', 'f', 'l'],
-                    ['lower', 'lorder']
+                    ['f', 'l', 'uorder', 'upper'],
+                    ['lorder', 'lower']
                 )
             with self._option():
                 self._PARTIAL_()
@@ -1304,10 +1288,6 @@ class grammardefaultParser(Parser):
                         with self._option():
                             self._sup_integer_()
                             self.name_last_node('uorder')
-                            self._define(
-                                ['uorder'],
-                                []
-                            )
                         with self._option():
                             self._token('^')
                             with self._group():
@@ -1321,13 +1301,14 @@ class grammardefaultParser(Parser):
                                         '<identifier> <number>'
                                     )
                             self.name_last_node('uorder')
+
                             self._define(
                                 ['uorder'],
                                 []
                             )
                         self._error(
                             'expecting one of: '
-                            "<sup_integer> '^'"
+                            "'^' <sup_integer>"
                         )
                 self._token('/')
                 self.name_last_node('s')
@@ -1341,10 +1322,6 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 self._sup_integer_()
                                 self.add_last_node_to_name('lorder')
-                                self._define(
-                                    [],
-                                    ['lorder']
-                                )
                             with self._option():
                                 self._token('^')
                                 with self._group():
@@ -1358,14 +1335,20 @@ class grammardefaultParser(Parser):
                                             '<identifier> <number>'
                                         )
                                 self.add_last_node_to_name('lorder')
+
                                 self._define(
                                     [],
                                     ['lorder']
                                 )
                             self._error(
                                 'expecting one of: '
-                                "<sup_integer> '^'"
+                                "'^' <sup_integer>"
                             )
+
+                    self._define(
+                        [],
+                        ['lorder', 'lower']
+                    )
                 self._positive_closure(block20)
                 self.name_last_node('l')
 
@@ -1374,18 +1357,15 @@ class grammardefaultParser(Parser):
                 self._positive_closure(block26)
                 self._factor_()
                 self.name_last_node('upper')
+
                 self._define(
-                    ['uorder', 's', 'l', 'upper'],
-                    ['lower', 'lorder']
+                    ['l', 's', 'uorder', 'upper'],
+                    ['lorder', 'lower']
                 )
             self._error(
                 'expecting one of: '
-                '∂ <PARTIAL>'
+                '<PARTIAL> ∂'
             )
-        self._define(
-            ['uorder', 'upper', 'f', 'l', 's'],
-            ['lower', 'lorder']
-        )
 
     @tatsumasu('Divergence')
     def _divergence_(self):  # noqa
@@ -1402,6 +1382,7 @@ class grammardefaultParser(Parser):
         self._closure(block2)
         self._factor_()
         self.name_last_node('value')
+
         self._define(
             ['name', 'value'],
             []
@@ -1422,6 +1403,7 @@ class grammardefaultParser(Parser):
                 self._positive_closure(block3)
                 self._factor_()
                 self.name_last_node('value')
+
                 self._define(
                     ['name', 'sub', 'value'],
                     []
@@ -1437,6 +1419,7 @@ class grammardefaultParser(Parser):
                 self._closure(block7)
                 self._factor_()
                 self.name_last_node('value')
+
                 self._define(
                     ['name', 'sub', 'value'],
                     []
@@ -1450,18 +1433,15 @@ class grammardefaultParser(Parser):
                 self._closure(block10)
                 self._factor_()
                 self.name_last_node('value')
+
                 self._define(
                     ['name', 'value'],
                     []
                 )
             self._error(
                 'expecting one of: '
-                '∇ <NABLA>'
+                '<NABLA> ∇'
             )
-        self._define(
-            ['name', 'sub', 'value'],
-            []
-        )
 
     @tatsumasu('Laplace')
     def _laplacian_(self):  # noqa
@@ -1473,6 +1453,7 @@ class grammardefaultParser(Parser):
         self._closure(block1)
         self._factor_()
         self.name_last_node('value')
+
         self._define(
             ['name', 'value'],
             []
@@ -1487,6 +1468,7 @@ class grammardefaultParser(Parser):
                 self.name_last_node('base')
                 self._token('^T')
                 self.name_last_node('t')
+
                 self._define(
                     ['base', 't'],
                     []
@@ -1505,6 +1487,7 @@ class grammardefaultParser(Parser):
                             "'^(-1)' '⁻¹'"
                         )
                 self.name_last_node('r')
+
                 self._define(
                     ['base', 'r'],
                     []
@@ -1515,6 +1498,7 @@ class grammardefaultParser(Parser):
                 self._token('^')
                 self._factor_()
                 self.name_last_node('power')
+
                 self._define(
                     ['base', 'power'],
                     []
@@ -1533,36 +1517,33 @@ class grammardefaultParser(Parser):
                             '<sup_integer> <unicode_superscript>'
                         )
                 self.name_last_node('power')
+
                 self._define(
                     ['base', 'power'],
                     []
                 )
             self._error(
                 'expecting one of: '
-                '<derivative> <partial> <divergence>'
-                '<gradient> <laplacian> <solver_operator>'
-                '<norm_operator> <power_operator>'
-                '<inner_product_operator>'
+                "'(' '.' '0' '1' '[' '{' '⎡' '𝟙'"
+                '<builtin_operators> <constant>'
+                '<cross_product_operator> <derivative>'
+                '<digit> <divergence> <double> <factor>'
+                '<floating_point> <fraction>'
                 '<frobenius_product_operator>'
-                '<hadamard_product_operator>'
-                '<cross_product_operator>'
-                '<kronecker_product_operator>'
-                '<set_operators> <sum_operator>'
-                '<integral_operator> <trans_operator>'
-                '<sqrt_operator> <function_operator>'
-                '<builtin_operators>'
-                '<pseudoinverse_operator> <operations>'
-                "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
-                '<number_matrix> <identifier> <integer>'
-                "'.' <digit> <mantissa> <floating_point>"
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                "<fraction> <number> '[' '⎡' <matrix> '('"
-                "<vector> '{' <set> <constant> <factor>"
+                '<function_operator> <gradient>'
+                '<hadamard_product_operator> <identifier>'
+                '<inner_product_operator> <integer>'
+                '<integral_operator>'
+                '<kronecker_product_operator> <laplacian>'
+                '<mantissa> <matrix> <norm_operator>'
+                '<number> <number_matrix> <operations>'
+                '<partial> <power_operator>'
+                '<pseudoinverse_operator> <set>'
+                '<set_operators> <solver_operator>'
+                '<sqrt_operator> <subexpression>'
+                '<sum_operator> <trans_operator> <vector>'
+                '[01\\u1D7D9] [\\u00BC-\\u00BE\\u2150-\\u215E]'
             )
-        self._define(
-            ['base', 't', 'r', 'power'],
-            []
-        )
 
     @tatsumasu('Solver')
     @nomemo
@@ -1582,6 +1563,7 @@ class grammardefaultParser(Parser):
                 self._closure(block3)
                 self._factor_()
                 self.name_last_node('right')
+
                 self._define(
                     ['left', 'right'],
                     []
@@ -1610,36 +1592,33 @@ class grammardefaultParser(Parser):
                 self._closure(block9)
                 self._factor_()
                 self.name_last_node('right')
+
                 self._define(
                     ['left', 'p', 'right'],
                     []
                 )
             self._error(
                 'expecting one of: '
-                '<derivative> <partial> <divergence>'
-                '<gradient> <laplacian> <solver_operator>'
-                '<norm_operator> <power_operator>'
-                '<inner_product_operator>'
+                "'(' '.' '0' '1' '[' '{' '⎡' '𝟙'"
+                '<builtin_operators> <constant>'
+                '<cross_product_operator> <derivative>'
+                '<digit> <divergence> <double> <factor>'
+                '<floating_point> <fraction>'
                 '<frobenius_product_operator>'
-                '<hadamard_product_operator>'
-                '<cross_product_operator>'
-                '<kronecker_product_operator>'
-                '<set_operators> <sum_operator>'
-                '<integral_operator> <trans_operator>'
-                '<sqrt_operator> <function_operator>'
-                '<builtin_operators>'
-                '<pseudoinverse_operator> <operations>'
-                "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
-                '<number_matrix> <identifier> <integer>'
-                "'.' <digit> <mantissa> <floating_point>"
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                "<fraction> <number> '[' '⎡' <matrix> '('"
-                "<vector> '{' <set> <constant> <factor>"
+                '<function_operator> <gradient>'
+                '<hadamard_product_operator> <identifier>'
+                '<inner_product_operator> <integer>'
+                '<integral_operator>'
+                '<kronecker_product_operator> <laplacian>'
+                '<mantissa> <matrix> <norm_operator>'
+                '<number> <number_matrix> <operations>'
+                '<partial> <power_operator>'
+                '<pseudoinverse_operator> <set>'
+                '<set_operators> <solver_operator>'
+                '<sqrt_operator> <subexpression>'
+                '<sum_operator> <trans_operator> <vector>'
+                '[01\\u1D7D9] [\\u00BC-\\u00BE\\u2150-\\u215E]'
             )
-        self._define(
-            ['left', 'right', 'p'],
-            []
-        )
 
     @tatsumasu('Summation')
     def _sum_operator_(self):  # noqa
@@ -1653,13 +1632,9 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 self._token('∪')
                                 self.name_last_node('u')
-                                self._define(
-                                    ['u'],
-                                    []
-                                )
                             self._error(
                                 'expecting one of: '
-                                "<SUM> '∪'"
+                                "'∪' <SUM>"
                             )
                     self._token('_')
                     self._identifier_alone_()
@@ -1673,8 +1648,9 @@ class grammardefaultParser(Parser):
                     self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
+
                     self._define(
-                        ['u', 'sub', 'sign', 'exp'],
+                        ['exp', 'sign', 'sub', 'u'],
                         []
                     )
                 with self._option():
@@ -1685,13 +1661,9 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 self._token('∪')
                                 self.name_last_node('u')
-                                self._define(
-                                    ['u'],
-                                    []
-                                )
                             self._error(
                                 'expecting one of: '
-                                "<SUM> '∪'"
+                                "'∪' <SUM>"
                             )
                     self._token('_')
                     self._identifier_alone_()
@@ -1707,8 +1679,9 @@ class grammardefaultParser(Parser):
                     self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
+
                     self._define(
-                        ['u', 'sub', 'sign', 'exp'],
+                        ['exp', 'sign', 'sub', 'u'],
                         []
                     )
                 with self._option():
@@ -1719,13 +1692,9 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 self._token('∪')
                                 self.name_last_node('u')
-                                self._define(
-                                    ['u'],
-                                    []
-                                )
                             self._error(
                                 'expecting one of: '
-                                "<SUM> '∪'"
+                                "'∪' <SUM>"
                             )
                     self._token('_(')
 
@@ -1759,8 +1728,9 @@ class grammardefaultParser(Parser):
                     self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
+
                     self._define(
-                        ['u', 'id', 'cond', 'sign', 'exp'],
+                        ['cond', 'exp', 'id', 'sign', 'u'],
                         []
                     )
                 with self._option():
@@ -1771,13 +1741,9 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 self._token('∪')
                                 self.name_last_node('u')
-                                self._define(
-                                    ['u'],
-                                    []
-                                )
                             self._error(
                                 'expecting one of: '
-                                "<SUM> '∪'"
+                                "'∪' <SUM>"
                             )
                     self._token('_(')
 
@@ -1822,8 +1788,9 @@ class grammardefaultParser(Parser):
                     self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
+
                     self._define(
-                        ['u', 'id', 'lower', 'upper', 'sign', 'exp'],
+                        ['exp', 'id', 'lower', 'sign', 'u', 'upper'],
                         []
                     )
                 with self._option():
@@ -1834,13 +1801,9 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 self._token('∪')
                                 self.name_last_node('u')
-                                self._define(
-                                    ['u'],
-                                    []
-                                )
                             self._error(
                                 'expecting one of: '
-                                "<SUM> '∪'"
+                                "'∪' <SUM>"
                             )
                     self._token('_(')
 
@@ -1885,8 +1848,9 @@ class grammardefaultParser(Parser):
                     self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
+
                     self._define(
-                        ['u', 'id', 'lower', 'upper', 'sign', 'exp'],
+                        ['exp', 'id', 'lower', 'sign', 'u', 'upper'],
                         []
                     )
                 with self._option():
@@ -1897,13 +1861,9 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 self._token('∪')
                                 self.name_last_node('u')
-                                self._define(
-                                    ['u'],
-                                    []
-                                )
                             self._error(
                                 'expecting one of: '
-                                "<SUM> '∪'"
+                                "'∪' <SUM>"
                             )
                     self._token('_(')
 
@@ -1928,6 +1888,11 @@ class grammardefaultParser(Parser):
                         self._closure(block58)
                         self._identifier_alone_()
                         self.add_last_node_to_name('enum')
+
+                        self._define(
+                            [],
+                            ['enum']
+                        )
                     self._closure(block55)
 
                     def block60():
@@ -1948,7 +1913,7 @@ class grammardefaultParser(Parser):
                                 self._identifier_alone_()
                             self._error(
                                 'expecting one of: '
-                                '<function_operator> <builtin_operators>'
+                                '<builtin_operators> <function_operator>'
                                 '<identifier_alone>'
                             )
                     self.name_last_node('range')
@@ -1966,13 +1931,14 @@ class grammardefaultParser(Parser):
                     self.name_last_node('sign')
                     self._term_()
                     self.name_last_node('exp')
+
                     self._define(
-                        ['u', 'range', 'sign', 'exp'],
+                        ['exp', 'range', 'sign', 'u'],
                         ['enum']
                     )
                 self._error(
                     'expecting one of: '
-                    "<SUM> '∪'"
+                    "'∪' <SUM>"
                 )
 
         def block68():
@@ -2021,10 +1987,21 @@ class grammardefaultParser(Parser):
                 self._closure(block77)
                 self._general_assign_()
                 self.add_last_node_to_name('extra')
+
+                self._define(
+                    [],
+                    ['extra']
+                )
             self._closure(block74)
+
+            self._define(
+                [],
+                ['extra']
+            )
         self._closure(block68)
+
         self._define(
-            ['u', 'sub', 'sign', 'exp', 'id', 'cond', 'lower', 'upper', 'range'],
+            ['cond', 'exp', 'id', 'lower', 'range', 'sign', 'sub', 'u', 'upper'],
             ['enum', 'extra']
         )
 
@@ -2057,46 +2034,40 @@ class grammardefaultParser(Parser):
                 self._closure(block6)
                 self._statement_()
                 self.add_last_node_to_name('init')
+
+                self._define(
+                    [],
+                    ['init']
+                )
             self._closure(block4)
 
             def block8():
                 self._hspace_()
             self._closure(block8)
             self._token('\n')
+
+            self._define(
+                [],
+                ['init']
+            )
         self._closure(block0)
         with self._group():
             with self._choice():
                 with self._option():
                     self._MIN_()
                     self.name_last_node('min')
-                    self._define(
-                        ['min'],
-                        []
-                    )
                 with self._option():
                     self._MAX_()
                     self.name_last_node('max')
-                    self._define(
-                        ['max'],
-                        []
-                    )
                 with self._option():
                     self._ARGMIN_()
                     self.name_last_node('amin')
-                    self._define(
-                        ['amin'],
-                        []
-                    )
                 with self._option():
                     self._ARGMAX_()
                     self.name_last_node('amax')
-                    self._define(
-                        ['amax'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
-                    '<MIN> <MAX> <ARGMIN> <ARGMAX>'
+                    '<ARGMAX> <ARGMIN> <MAX> <MIN>'
                 )
         self._token('_(')
 
@@ -2118,6 +2089,11 @@ class grammardefaultParser(Parser):
             self._closure(block18)
             self._where_condition_terse_()
             self.add_last_node_to_name('defs')
+
+            self._define(
+                [],
+                ['defs']
+            )
         self._closure(block16)
 
         def block20():
@@ -2159,10 +2135,16 @@ class grammardefaultParser(Parser):
             self._closure(block29)
             self._multi_cond_()
             self.name_last_node('cond')
+
+            self._define(
+                ['cond'],
+                []
+            )
         self._closure(block23)
+
         self._define(
-            ['min', 'max', 'amin', 'amax', 'exp', 'cond'],
-            ['init', 'defs']
+            ['amax', 'amin', 'cond', 'exp', 'max', 'min'],
+            ['defs', 'init']
         )
 
     @tatsumasu('MultiCond')
@@ -2183,8 +2165,9 @@ class grammardefaultParser(Parser):
                 def block4():
                     self._hspace_()
                 self._closure(block4)
+
                 self._define(
-                    ['m_cond', 'cond'],
+                    ['cond', 'm_cond'],
                     []
                 )
             with self._option():
@@ -2198,21 +2181,18 @@ class grammardefaultParser(Parser):
                 def block7():
                     self._hspace_()
                 self._closure(block7)
+
                 self._define(
                     ['cond'],
                     []
                 )
             self._error(
                 'expecting one of: '
-                '<multi_cond> <hspace> <atom_condition> ['
-                "\\t] '(' <not_equal> <equal> <in>"
-                '<not_in> <greater> <greater_equal>'
-                '<less> <less_equal>'
+                "'(' <atom_condition> <equal> <greater>"
+                '<greater_equal> <hspace> <in> <less>'
+                '<less_equal> <multi_cond> <not_equal>'
+                '<not_in> [ \\t]'
             )
-        self._define(
-            ['m_cond', 'cond'],
-            []
-        )
 
     @tatsumasu('Integral')
     def _integral_operator_(self):  # noqa
@@ -2224,7 +2204,7 @@ class grammardefaultParser(Parser):
                     self._token('∫')
                 self._error(
                     'expecting one of: '
-                    "<INT> '∫'"
+                    "'∫' <INT>"
                 )
         self._token('_')
         with self._group():
@@ -2232,10 +2212,6 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._domain_()
                     self.name_last_node('d')
-                    self._define(
-                        ['d'],
-                        []
-                    )
                 with self._option():
                     with self._group():
                         self._sub_factor_()
@@ -2251,10 +2227,11 @@ class grammardefaultParser(Parser):
                         self._closure(block5)
                         self._sub_factor_()
                         self.name_last_node('upper')
-                    self._define(
-                        ['lower', 'upper'],
-                        []
-                    )
+
+                        self._define(
+                            ['lower', 'upper'],
+                            []
+                        )
                 self._error(
                     'expecting one of: '
                     '<domain> <sub_factor>'
@@ -2272,8 +2249,9 @@ class grammardefaultParser(Parser):
         self._DERIVATIVE_()
         self._identifier_alone_()
         self.name_last_node('id')
+
         self._define(
-            ['d', 'lower', 'upper', 'exp', 'id'],
+            ['d', 'exp', 'id', 'lower', 'upper'],
             []
         )
 
@@ -2298,6 +2276,7 @@ class grammardefaultParser(Parser):
         self._expression_()
         self.name_last_node('upper')
         self._token(']')
+
         self._define(
             ['lower', 'upper'],
             []
@@ -2321,6 +2300,7 @@ class grammardefaultParser(Parser):
                         self._hspace_()
                     self._closure(block4)
                     self._token('||')
+
                     self._define(
                         ['double', 'value'],
                         []
@@ -2339,6 +2319,7 @@ class grammardefaultParser(Parser):
                         self._hspace_()
                     self._closure(block8)
                     self._token('‖')
+
                     self._define(
                         ['double', 'value'],
                         []
@@ -2357,13 +2338,14 @@ class grammardefaultParser(Parser):
                         self._hspace_()
                     self._closure(block12)
                     self._token('|')
+
                     self._define(
                         ['single', 'value'],
                         []
                     )
                 self._error(
                     'expecting one of: '
-                    "'||' '‖' '|'"
+                    "'|' '||' '‖'"
                 )
         with self._optional():
             with self._choice():
@@ -2385,9 +2367,10 @@ class grammardefaultParser(Parser):
                                                 self._identifier_alone_()
                                             self._error(
                                                 'expecting one of: '
-                                                "<integer> '*' '∞' <identifier_alone>"
+                                                "'*' '∞' <identifier_alone> <integer>"
                                             )
                                     self.name_last_node('sub')
+
                                     self._define(
                                         ['sub'],
                                         []
@@ -2395,10 +2378,6 @@ class grammardefaultParser(Parser):
                                 with self._option():
                                     self._sub_integer_()
                                     self.name_last_node('sub')
-                                    self._define(
-                                        ['sub'],
-                                        []
-                                    )
                                 self._error(
                                     'expecting one of: '
                                     "'_' <sub_integer>"
@@ -2409,6 +2388,7 @@ class grammardefaultParser(Parser):
                                     self._token('^')
                                     self._factor_()
                                     self.name_last_node('power')
+
                                     self._define(
                                         ['power'],
                                         []
@@ -2416,18 +2396,15 @@ class grammardefaultParser(Parser):
                                 with self._option():
                                     self._sup_integer_()
                                     self.name_last_node('power')
-                                    self._define(
-                                        ['power'],
-                                        []
-                                    )
                                 self._error(
                                     'expecting one of: '
                                     "'^' <sup_integer>"
                                 )
-                    self._define(
-                        ['sub', 'power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power', 'sub'],
+                            []
+                        )
                 with self._option():
                     with self._group():
                         self._token('_(')
@@ -2443,7 +2420,7 @@ class grammardefaultParser(Parser):
                                     self._identifier_()
                                 self._error(
                                     'expecting one of: '
-                                    "<integer> '*' '∞' <identifier>"
+                                    "'*' '∞' <identifier> <integer>"
                                 )
                         self.name_last_node('sub')
                         self._token(')')
@@ -2453,6 +2430,7 @@ class grammardefaultParser(Parser):
                                     self._token('^')
                                     self._factor_()
                                     self.name_last_node('power')
+
                                     self._define(
                                         ['power'],
                                         []
@@ -2460,18 +2438,15 @@ class grammardefaultParser(Parser):
                                 with self._option():
                                     self._sup_integer_()
                                     self.name_last_node('power')
-                                    self._define(
-                                        ['power'],
-                                        []
-                                    )
                                 self._error(
                                     'expecting one of: '
                                     "'^' <sup_integer>"
                                 )
-                    self._define(
-                        ['sub', 'power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power', 'sub'],
+                            []
+                        )
                 with self._option():
                     with self._group():
                         with self._group():
@@ -2480,6 +2455,7 @@ class grammardefaultParser(Parser):
                                     self._token('^')
                                     self._factor_()
                                     self.name_last_node('power')
+
                                     self._define(
                                         ['power'],
                                         []
@@ -2487,10 +2463,6 @@ class grammardefaultParser(Parser):
                                 with self._option():
                                     self._sup_integer_()
                                     self.name_last_node('power')
-                                    self._define(
-                                        ['power'],
-                                        []
-                                    )
                                 self._error(
                                     'expecting one of: '
                                     "'^' <sup_integer>"
@@ -2511,9 +2483,10 @@ class grammardefaultParser(Parser):
                                                 self._identifier_alone_()
                                             self._error(
                                                 'expecting one of: '
-                                                "<integer> '*' '∞' <identifier_alone>"
+                                                "'*' '∞' <identifier_alone> <integer>"
                                             )
                                     self.name_last_node('sub')
+
                                     self._define(
                                         ['sub'],
                                         []
@@ -2521,24 +2494,22 @@ class grammardefaultParser(Parser):
                                 with self._option():
                                     self._sub_integer_()
                                     self.name_last_node('sub')
-                                    self._define(
-                                        ['sub'],
-                                        []
-                                    )
                                 self._error(
                                     'expecting one of: '
                                     "'_' <sub_integer>"
                                 )
-                    self._define(
-                        ['power', 'sub'],
-                        []
-                    )
+
+                        self._define(
+                            ['power', 'sub'],
+                            []
+                        )
                 self._error(
                     'expecting one of: '
-                    "'_' <sub_integer> '_(' '^' <sup_integer>"
+                    "'^' '_' '_(' <sub_integer> <sup_integer>"
                 )
+
         self._define(
-            ['double', 'value', 'single', 'sub', 'power'],
+            ['double', 'power', 'single', 'sub', 'value'],
             []
         )
 
@@ -2571,10 +2542,11 @@ class grammardefaultParser(Parser):
                             self._hspace_()
                         self._closure(block6)
                         self._token('>')
-                    self._define(
-                        ['left', 'right'],
-                        []
-                    )
+
+                        self._define(
+                            ['left', 'right'],
+                            []
+                        )
                 with self._option():
                     with self._group():
                         self._token('⟨')
@@ -2600,10 +2572,11 @@ class grammardefaultParser(Parser):
                             self._hspace_()
                         self._closure(block12)
                         self._token('⟩')
-                    self._define(
-                        ['left', 'right'],
-                        []
-                    )
+
+                        self._define(
+                            ['left', 'right'],
+                            []
+                        )
                 self._error(
                     'expecting one of: '
                     "'<' '⟨'"
@@ -2613,7 +2586,13 @@ class grammardefaultParser(Parser):
             self._token('_')
             self._identifier_()
             self.name_last_node('sub')
+
+            self._define(
+                ['sub'],
+                []
+            )
         self._closure(block13)
+
         self._define(
             ['left', 'right', 'sub'],
             []
@@ -2635,6 +2614,7 @@ class grammardefaultParser(Parser):
         self._closure(block2)
         self._factor_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'right'],
             []
@@ -2656,6 +2636,7 @@ class grammardefaultParser(Parser):
         self._closure(block2)
         self._factor_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'right'],
             []
@@ -2677,6 +2658,7 @@ class grammardefaultParser(Parser):
         self._closure(block2)
         self._factor_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'right'],
             []
@@ -2698,6 +2680,7 @@ class grammardefaultParser(Parser):
         self._closure(block2)
         self._factor_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'right'],
             []
@@ -2709,6 +2692,7 @@ class grammardefaultParser(Parser):
         self._factor_()
         self.name_last_node('f')
         self._pattern('ᵀ')
+
         self._define(
             ['f'],
             []
@@ -2720,6 +2704,7 @@ class grammardefaultParser(Parser):
         self._factor_()
         self.name_last_node('f')
         self._pattern('⁺')
+
         self._define(
             ['f'],
             []
@@ -2730,6 +2715,7 @@ class grammardefaultParser(Parser):
         self._pattern('√')
         self._factor_()
         self.name_last_node('f')
+
         self._define(
             ['f'],
             []
@@ -2752,18 +2738,17 @@ class grammardefaultParser(Parser):
                 self._minmax_func_()
             self._error(
                 'expecting one of: '
-                'exp <EXP> <exp_func> log[\\u2082]'
-                'log[\\u2081][\\u2080] log <LOG> <log_func>'
-                'ln <LN> <ln_func> sqrt <SQRT>'
-                '<sqrt_func> [Vv]ertex[Ss]et <VERTEXSET>'
-                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
-                '<FACESET> [Tt]et[Ss]et <TETSET>'
-                '[Ss]implicial[Ss]et <SIMPLICIALSET>'
-                'tuple <TUPLE> sequence <SEQUENCE>'
-                'vertices <VERTICES> edges <EDGES> faces'
-                '<FACES> tets <TETS>'
-                '<element_convert_func> min <MIN> max'
-                '<MAX> <minmax_func>'
+                '<EDGES> <EDGESET> <EXP> <FACES>'
+                '<FACESET> <LN> <LOG> <MAX> <MIN>'
+                '<SEQUENCE> <SIMPLICIALSET> <SQRT> <TETS>'
+                '<TETSET> <TUPLE> <VERTEXSET> <VERTICES>'
+                '<element_convert_func> <exp_func>'
+                '<ln_func> <log_func> <minmax_func>'
+                '<sqrt_func> [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Vv]ertex[Ss]et edges exp faces ln log'
+                'log[\\u2081][\\u2080] log[\\u2082] max min'
+                'sequence sqrt tets tuple vertices'
             )
 
     @tatsumasu('ElementConvertFunc')
@@ -2773,85 +2758,41 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._VERTEXSET_()
                     self.name_last_node('vs')
-                    self._define(
-                        ['vs'],
-                        []
-                    )
                 with self._option():
                     self._EDGESET_()
                     self.name_last_node('es')
-                    self._define(
-                        ['es'],
-                        []
-                    )
                 with self._option():
                     self._FACESET_()
                     self.name_last_node('fs')
-                    self._define(
-                        ['fs'],
-                        []
-                    )
                 with self._option():
                     self._TETSET_()
                     self.name_last_node('ts')
-                    self._define(
-                        ['ts'],
-                        []
-                    )
                 with self._option():
                     self._SIMPLICIALSET_()
                     self.name_last_node('s')
-                    self._define(
-                        ['s'],
-                        []
-                    )
                 with self._option():
                     self._TUPLE_()
                     self.name_last_node('tu')
-                    self._define(
-                        ['tu'],
-                        []
-                    )
                 with self._option():
                     self._SEQUENCE_()
                     self.name_last_node('se')
-                    self._define(
-                        ['se'],
-                        []
-                    )
                 with self._option():
                     self._VERTICES_()
                     self.name_last_node('v')
-                    self._define(
-                        ['v'],
-                        []
-                    )
                 with self._option():
                     self._EDGES_()
                     self.name_last_node('e')
-                    self._define(
-                        ['e'],
-                        []
-                    )
                 with self._option():
                     self._FACES_()
                     self.name_last_node('f')
-                    self._define(
-                        ['f'],
-                        []
-                    )
                 with self._option():
                     self._TETS_()
                     self.name_last_node('t')
-                    self._define(
-                        ['t'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
-                    '<VERTEXSET> <EDGESET> <FACESET> <TETSET>'
-                    '<SIMPLICIALSET> <TUPLE> <SEQUENCE>'
-                    '<VERTICES> <EDGES> <FACES> <TETS>'
+                    '<EDGES> <EDGESET> <FACES> <FACESET>'
+                    '<SEQUENCE> <SIMPLICIALSET> <TETS>'
+                    '<TETSET> <TUPLE> <VERTEXSET> <VERTICES>'
                 )
         self._token('(')
 
@@ -2876,15 +2817,26 @@ class grammardefaultParser(Parser):
                 self._closure(block18)
                 self._expression_()
                 self.add_last_node_to_name('params')
+
+                self._define(
+                    [],
+                    ['params', 'separators']
+                )
             self._closure(block15)
+
+            self._define(
+                [],
+                ['params', 'separators']
+            )
         self._closure(block12)
 
         def block20():
             self._hspace_()
         self._closure(block20)
         self._token(')')
+
         self._define(
-            ['vs', 'es', 'fs', 'ts', 's', 'tu', 'se', 'v', 'e', 'f', 't'],
+            ['e', 'es', 'f', 'fs', 's', 'se', 't', 'ts', 'tu', 'v', 'vs'],
             ['params', 'separators']
         )
 
@@ -2903,6 +2855,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
+
         self._define(
             ['param'],
             []
@@ -2915,20 +2868,12 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._MIN_()
                     self.name_last_node('min')
-                    self._define(
-                        ['min'],
-                        []
-                    )
                 with self._option():
                     self._MAX_()
                     self.name_last_node('max')
-                    self._define(
-                        ['max'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
-                    '<MIN> <MAX>'
+                    '<MAX> <MIN>'
                 )
         self._token('(')
 
@@ -2951,14 +2896,20 @@ class grammardefaultParser(Parser):
             self._closure(block8)
             self._expression_()
             self.add_last_node_to_name('params')
+
+            self._define(
+                [],
+                ['params', 'separators']
+            )
         self._closure(block5)
 
         def block10():
             self._hspace_()
         self._closure(block10)
         self._token(')')
+
         self._define(
-            ['min', 'max'],
+            ['max', 'min'],
             ['params', 'separators']
         )
 
@@ -2972,20 +2923,12 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 self._pattern('log[\\u2082]')
                                 self.name_last_node('f')
-                                self._define(
-                                    ['f'],
-                                    []
-                                )
                             with self._option():
                                 self._pattern('log[\\u2081][\\u2080]')
                                 self.name_last_node('s')
-                                self._define(
-                                    ['s'],
-                                    []
-                                )
                             self._error(
                                 'expecting one of: '
-                                'log[\\u2082] log[\\u2081][\\u2080]'
+                                'log[\\u2081][\\u2080] log[\\u2082]'
                             )
                     self._token('(')
 
@@ -2999,10 +2942,11 @@ class grammardefaultParser(Parser):
                         self._hspace_()
                     self._closure(block6)
                     self._token(')')
-                self._define(
-                    ['f', 's', 'param'],
-                    []
-                )
+
+                    self._define(
+                        ['f', 'param', 's'],
+                        []
+                    )
             with self._option():
                 with self._group():
                     self._LOG_()
@@ -3011,20 +2955,12 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 self._token('_2')
                                 self.name_last_node('f')
-                                self._define(
-                                    ['f'],
-                                    []
-                                )
                             with self._option():
                                 self._token('_10')
                                 self.name_last_node('s')
-                                self._define(
-                                    ['s'],
-                                    []
-                                )
                             self._error(
                                 'expecting one of: '
-                                "'_2' '_10'"
+                                "'_10' '_2'"
                             )
                     self._token('(')
 
@@ -3038,19 +2974,16 @@ class grammardefaultParser(Parser):
                         self._hspace_()
                     self._closure(block12)
                     self._token(')')
-                self._define(
-                    ['f', 's', 'param'],
-                    []
-                )
+
+                    self._define(
+                        ['f', 'param', 's'],
+                        []
+                    )
             self._error(
                 'expecting one of: '
-                'log[\\u2082] log[\\u2081][\\u2080] log'
-                '<LOG>'
+                '<LOG> log log[\\u2081][\\u2080]'
+                'log[\\u2082]'
             )
-        self._define(
-            ['f', 's', 'param'],
-            []
-        )
 
     @tatsumasu('LnFunc')
     def _ln_func_(self):  # noqa
@@ -3067,6 +3000,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
+
         self._define(
             ['param'],
             []
@@ -3087,6 +3021,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
+
         self._define(
             ['param'],
             []
@@ -3108,6 +3043,7 @@ class grammardefaultParser(Parser):
                     self._hspace_()
                 self._closure(block3)
                 self._token(']')
+
                 self._define(
                     ['value'],
                     []
@@ -3125,6 +3061,7 @@ class grammardefaultParser(Parser):
                     self._hspace_()
                 self._closure(block6)
                 self._token('⎦')
+
                 self._define(
                     ['value'],
                     []
@@ -3133,10 +3070,6 @@ class grammardefaultParser(Parser):
                 'expecting one of: '
                 "'[' '⎡'"
             )
-        self._define(
-            ['value'],
-            []
-        )
 
     @tatsumasu('Vector')
     def _vector_(self):  # noqa
@@ -3160,12 +3093,18 @@ class grammardefaultParser(Parser):
             self._closure(block4)
             self._expression_()
             self.add_last_node_to_name('exp')
+
+            self._define(
+                [],
+                ['exp']
+            )
         self._positive_closure(block2)
 
         def block6():
             self._hspace_()
         self._closure(block6)
         self._token(')')
+
         self._define(
             [],
             ['exp']
@@ -3195,12 +3134,18 @@ class grammardefaultParser(Parser):
                     self._closure(block5)
                     self._expression_()
                     self.add_last_node_to_name('exp')
+
+                    self._define(
+                        [],
+                        ['exp']
+                    )
                 self._closure(block3)
 
                 def block7():
                     self._hspace_()
                 self._closure(block7)
                 self._token('}')
+
                 self._define(
                     [],
                     ['exp']
@@ -3250,6 +3195,11 @@ class grammardefaultParser(Parser):
                     self._closure(block18)
                     self._identifier_alone_()
                     self.add_last_node_to_name('enum')
+
+                    self._define(
+                        [],
+                        ['enum']
+                    )
                 self._closure(block15)
 
                 def block20():
@@ -3270,7 +3220,7 @@ class grammardefaultParser(Parser):
                             self._identifier_alone_()
                         self._error(
                             'expecting one of: '
-                            '<function_operator> <builtin_operators>'
+                            '<builtin_operators> <function_operator>'
                             '<identifier_alone>'
                         )
                 self.name_last_node('range')
@@ -3291,11 +3241,17 @@ class grammardefaultParser(Parser):
                     def block28():
                         self._hspace_()
                     self._closure(block28)
+
+                    self._define(
+                        ['cond'],
+                        []
+                    )
                 self._closure(block25)
                 self._token('}')
+
                 self._define(
-                    ['f', 'range', 'cond'],
-                    ['exp', 'enum']
+                    ['cond', 'f', 'range'],
+                    ['enum', 'exp']
                 )
             with self._option():
                 self._token('{')
@@ -3333,6 +3289,11 @@ class grammardefaultParser(Parser):
                     self._closure(block38)
                     self._identifier_alone_()
                     self.add_last_node_to_name('enum')
+
+                    self._define(
+                        [],
+                        ['enum']
+                    )
                 self._closure(block35)
 
                 def block40():
@@ -3353,7 +3314,7 @@ class grammardefaultParser(Parser):
                             self._identifier_alone_()
                         self._error(
                             'expecting one of: '
-                            '<function_operator> <builtin_operators>'
+                            '<builtin_operators> <function_operator>'
                             '<identifier_alone>'
                         )
                 self.name_last_node('range')
@@ -3374,20 +3335,22 @@ class grammardefaultParser(Parser):
                     def block48():
                         self._hspace_()
                     self._closure(block48)
+
+                    self._define(
+                        ['cond'],
+                        []
+                    )
                 self._closure(block45)
                 self._token('}')
+
                 self._define(
-                    ['o', 'range', 'cond'],
-                    ['exp', 'enum']
+                    ['cond', 'o', 'range'],
+                    ['enum', 'exp']
                 )
             self._error(
                 'expecting one of: '
                 "'{'"
             )
-        self._define(
-            ['f', 'range', 'cond', 'o'],
-            ['exp', 'enum']
-        )
 
     @tatsumasu('MultiCondExpr')
     def _multi_cond_expr_(self):  # noqa
@@ -3414,6 +3377,12 @@ class grammardefaultParser(Parser):
                 self._hspace_()
             self._closure(block5)
             self._OTHERWISE_()
+
+            self._define(
+                ['other'],
+                []
+            )
+
         self._define(
             ['ifs', 'other'],
             []
@@ -3432,6 +3401,7 @@ class grammardefaultParser(Parser):
                 self._positive_closure(block2)
                 self._single_if_condition_()
                 self.name_last_node('value')
+
                 self._define(
                     ['ifs', 'value'],
                     []
@@ -3439,20 +3409,12 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._single_if_condition_()
                 self.name_last_node('value')
-                self._define(
-                    ['value'],
-                    []
-                )
             self._error(
                 'expecting one of: '
+                '<expression> <if_condition>'
                 '<multi_if_conditions>'
-                '<single_if_condition> <expression>'
-                '<if_condition>'
+                '<single_if_condition>'
             )
-        self._define(
-            ['ifs', 'value'],
-            []
-        )
 
     @tatsumasu('SingleIf')
     @nomemo
@@ -3472,8 +3434,9 @@ class grammardefaultParser(Parser):
                 self._closure(block3)
                 self._if_condition_()
                 self.name_last_node('cond')
+
                 self._define(
-                    ['stat', 'cond'],
+                    ['cond', 'stat'],
                     []
                 )
             with self._option():
@@ -3490,20 +3453,17 @@ class grammardefaultParser(Parser):
                 self._closure(block7)
                 self._expression_()
                 self.name_last_node('stat')
+
                 self._define(
                     ['cond', 'stat'],
                     []
                 )
             self._error(
                 'expecting one of: '
-                '<expression> <addition> <subtraction>'
-                "<add_sub_operator> <term> '-'"
-                '<if_condition> <and_condition>'
+                "'-' <add_sub_operator> <addition>"
+                '<and_condition> <expression>'
+                '<if_condition> <subtraction> <term>'
             )
-        self._define(
-            ['stat', 'cond'],
-            []
-        )
 
     @tatsumasu('MatrixRows')
     @leftrec
@@ -3522,8 +3482,9 @@ class grammardefaultParser(Parser):
                 def block4():
                     self._hspace_()
                 self._closure(block4)
+
                 self._define(
-                    ['rs', 'r'],
+                    ['r', 'rs'],
                     []
                 )
             with self._option():
@@ -3533,6 +3494,7 @@ class grammardefaultParser(Parser):
                 def block6():
                     self._separator_with_space_()
                 self._positive_closure(block6)
+
                 self._define(
                     ['rs'],
                     []
@@ -3544,19 +3506,16 @@ class grammardefaultParser(Parser):
                 def block8():
                     self._hspace_()
                 self._closure(block8)
+
                 self._define(
                     ['r'],
                     []
                 )
             self._error(
                 'expecting one of: '
-                "<rows> <row> '|' <row_with_commas>"
-                '<expr_in_matrix>'
+                "'|' <expr_in_matrix> <row>"
+                '<row_with_commas> <rows>'
             )
-        self._define(
-            ['rs', 'r'],
-            []
-        )
 
     @tatsumasu('MatrixRow')
     @nomemo
@@ -3575,6 +3534,7 @@ class grammardefaultParser(Parser):
                     self._hspace_()
                 self._closure(block3)
                 self._token('|')
+
                 self._define(
                     [],
                     ['value']
@@ -3588,35 +3548,24 @@ class grammardefaultParser(Parser):
                 self._closure(block5)
                 self._expr_in_matrix_()
                 self.name_last_node('exp')
+
                 self._define(
-                    ['rc', 'exp'],
+                    ['exp', 'rc'],
                     []
                 )
             with self._option():
                 self._row_with_commas_()
                 self.name_last_node('rc')
-                self._define(
-                    ['rc'],
-                    []
-                )
             with self._option():
                 self._expr_in_matrix_()
                 self.name_last_node('exp')
-                self._define(
-                    ['exp'],
-                    []
-                )
             self._error(
                 'expecting one of: '
-                "'|' <row_with_commas> <expr_in_matrix>"
-                '<hspace> <addition_in_matrix>'
+                "'-' '|' <addition_in_matrix>"
+                '<expr_in_matrix> <hspace>'
+                '<row_with_commas>'
                 '<subtraction_in_matrix> <term_in_matrix>'
-                "'-'"
             )
-        self._define(
-            ['rc', 'exp'],
-            ['value']
-        )
 
     @tatsumasu('MatrixRowCommas')
     @leftrec
@@ -3648,8 +3597,9 @@ class grammardefaultParser(Parser):
                             'expecting one of: '
                             "',' <hspace>"
                         )
+
                 self._define(
-                    ['value', 'exp'],
+                    ['exp', 'value'],
                     []
                 )
             with self._option():
@@ -3676,21 +3626,19 @@ class grammardefaultParser(Parser):
                             'expecting one of: '
                             "',' <hspace>"
                         )
+
                 self._define(
                     ['exp'],
                     []
                 )
             self._error(
                 'expecting one of: '
-                '<row_with_commas> <expr_in_matrix>'
-                '<hspace> <addition_in_matrix>'
+                "'-' <addition_in_matrix>"
+                '<expr_in_matrix> <hspace>'
+                '<row_with_commas>'
                 '<subtraction_in_matrix> <term_in_matrix>'
-                "'-' [ \\t]"
+                '[ \\t]'
             )
-        self._define(
-            ['value', 'exp'],
-            []
-        )
 
     @tatsumasu('ExpInMatrix')
     @leftrec
@@ -3699,39 +3647,28 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._addition_in_matrix_()
                 self.name_last_node('value')
-                self._define(
-                    ['value'],
-                    []
-                )
             with self._option():
                 self._subtraction_in_matrix_()
                 self.name_last_node('value')
-                self._define(
-                    ['value'],
-                    []
-                )
             with self._option():
                 with self._optional():
                     self._token('-')
                 self.name_last_node('sign')
                 self._term_in_matrix_()
                 self.name_last_node('value')
+
                 self._define(
                     ['sign', 'value'],
                     []
                 )
             self._error(
                 'expecting one of: '
-                '<addition_in_matrix>'
-                '<subtraction_in_matrix> <term_in_matrix>'
-                "'-' <expr_in_matrix>"
+                "'-' <addition_in_matrix>"
+                '<division_in_matrix> <expr_in_matrix>'
+                '<factor_in_matrix>'
                 '<multiplication_in_matrix>'
-                '<division_in_matrix> <factor_in_matrix>'
+                '<subtraction_in_matrix> <term_in_matrix>'
             )
-        self._define(
-            ['value', 'sign'],
-            []
-        )
 
     @tatsumasu('Add')
     @nomemo
@@ -3742,6 +3679,7 @@ class grammardefaultParser(Parser):
         self.name_last_node('op')
         self._term_in_matrix_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -3756,6 +3694,7 @@ class grammardefaultParser(Parser):
         self.name_last_node('op')
         self._term_in_matrix_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -3773,15 +3712,16 @@ class grammardefaultParser(Parser):
                 self._factor_in_matrix_()
             self._error(
                 'expecting one of: '
-                '<multiplication_in_matrix>'
-                '<division_in_matrix> <factor_in_matrix>'
-                '<term_in_matrix> <operations_in_matrix>'
-                "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
-                '<number_matrix> <identifier> <integer>'
-                "'.' <digit> <mantissa> <floating_point>"
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                "<fraction> <number> '[' '⎡' <matrix> '('"
-                "<vector> '{' <set> <constant>"
+                "'(' '.' '0' '1' '[' '{' '⎡' '𝟙'"
+                '<constant> <digit> <division_in_matrix>'
+                '<double> <factor_in_matrix>'
+                '<floating_point> <fraction> <identifier>'
+                '<integer> <mantissa> <matrix>'
+                '<multiplication_in_matrix> <number>'
+                '<number_matrix> <operations_in_matrix>'
+                '<set> <subexpression> <term_in_matrix>'
+                '<vector> [01\\u1D7D9]'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E]'
             )
 
     @tatsumasu('Multiply')
@@ -3795,6 +3735,7 @@ class grammardefaultParser(Parser):
                 self.name_last_node('op')
                 self._factor_in_matrix_()
                 self.name_last_node('right')
+
                 self._define(
                     ['left', 'op', 'right'],
                     []
@@ -3804,26 +3745,24 @@ class grammardefaultParser(Parser):
                 self.name_last_node('left')
                 self._factor_in_matrix_()
                 self.name_last_node('right')
+
                 self._define(
                     ['left', 'right'],
                     []
                 )
             self._error(
                 'expecting one of: '
-                '<multiplication_in_matrix>'
-                '<division_in_matrix> <factor_in_matrix>'
-                '<term_in_matrix> <operations_in_matrix>'
-                "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
-                '<number_matrix> <identifier> <integer>'
-                "'.' <digit> <mantissa> <floating_point>"
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                "<fraction> <number> '[' '⎡' <matrix> '('"
-                "<vector> '{' <set> <constant>"
+                "'(' '.' '0' '1' '[' '{' '⎡' '𝟙'"
+                '<constant> <digit> <division_in_matrix>'
+                '<double> <factor_in_matrix>'
+                '<floating_point> <fraction> <identifier>'
+                '<integer> <mantissa> <matrix>'
+                '<multiplication_in_matrix> <number>'
+                '<number_matrix> <operations_in_matrix>'
+                '<set> <subexpression> <term_in_matrix>'
+                '<vector> [01\\u1D7D9]'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E]'
             )
-        self._define(
-            ['left', 'op', 'right'],
-            []
-        )
 
     @tatsumasu('Divide')
     @nomemo
@@ -3843,6 +3782,7 @@ class grammardefaultParser(Parser):
         self.name_last_node('op')
         self._factor_in_matrix_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -3874,7 +3814,7 @@ class grammardefaultParser(Parser):
                             self._identifier_()
                         self._error(
                             'expecting one of: '
-                            '<integer> <identifier>'
+                            '<identifier> <integer>'
                         )
                 self.name_last_node('id1')
 
@@ -3888,12 +3828,18 @@ class grammardefaultParser(Parser):
                                 self._identifier_()
                             self._error(
                                 'expecting one of: '
-                                '<integer> <identifier>'
+                                '<identifier> <integer>'
                             )
                     self.name_last_node('id2')
+
+                    self._define(
+                        ['id2'],
+                        []
+                    )
                 self._closure(block5)
+
                 self._define(
-                    ['left', 'id1', 'id2'],
+                    ['id1', 'id2', 'left'],
                     []
                 )
             with self._option():
@@ -3906,9 +3852,15 @@ class grammardefaultParser(Parser):
                     self._token(',')
                     self._sub_integer_()
                     self.name_last_node('id2')
+
+                    self._define(
+                        ['id2'],
+                        []
+                    )
                 self._closure(block10)
+
                 self._define(
-                    ['left', 'id1', 'id2'],
+                    ['id1', 'id2', 'left'],
                     []
                 )
             with self._option():
@@ -3939,7 +3891,7 @@ class grammardefaultParser(Parser):
                             self._identifier_()
                         self._error(
                             'expecting one of: '
-                            '<integer> <identifier>'
+                            '<identifier> <integer>'
                         )
                 self.name_last_node('id1')
 
@@ -3970,27 +3922,29 @@ class grammardefaultParser(Parser):
                                 self._identifier_()
                             self._error(
                                 'expecting one of: '
-                                '<integer> <identifier>'
+                                '<identifier> <integer>'
                             )
                     self.name_last_node('id2')
+
+                    self._define(
+                        ['id2'],
+                        []
+                    )
                 self._closure(block17)
 
                 def block23():
                     self._hspace_()
                 self._closure(block23)
                 self._token(')')
+
                 self._define(
-                    ['left', 'id1', 'id2'],
+                    ['id1', 'id2', 'left'],
                     []
                 )
             self._error(
                 'expecting one of: '
                 "'0' '1' '𝟙' [01\\u1D7D9]"
             )
-        self._define(
-            ['left', 'id1', 'id2'],
-            []
-        )
 
     @tatsumasu('Factor')
     @leftrec
@@ -3999,98 +3953,78 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._operations_in_matrix_()
                 self.name_last_node('op')
-                self._define(
-                    ['op'],
-                    []
-                )
             with self._option():
                 self._subexpression_()
                 self.name_last_node('sub')
-                self._define(
-                    ['sub'],
-                    []
-                )
             with self._option():
                 self._number_matrix_()
                 self.name_last_node('nm')
-                self._define(
-                    ['nm'],
-                    []
-                )
             with self._option():
                 self._identifier_()
                 self.name_last_node('id0')
-                self._define(
-                    ['id0'],
-                    []
-                )
             with self._option():
                 self._number_()
                 self.name_last_node('num')
-                self._define(
-                    ['num'],
-                    []
-                )
             with self._option():
                 self._matrix_()
                 self.name_last_node('m')
-                self._define(
-                    ['m'],
-                    []
-                )
             with self._option():
                 self._vector_()
                 self.name_last_node('v')
-                self._define(
-                    ['v'],
-                    []
-                )
             with self._option():
                 self._set_()
                 self.name_last_node('s')
-                self._define(
-                    ['s'],
-                    []
-                )
             with self._option():
                 self._constant_()
                 self.name_last_node('c')
-                self._define(
-                    ['c'],
-                    []
-                )
             self._error(
                 'expecting one of: '
-                "<solver_in_matrix_operator> '||' '‖' '|'"
-                '<norm_operator>'
-                "<power_in_matrix_operator> '<' '⟨'"
-                '<inner_product_operator>'
-                '<frobenius_product_in_matrix_operator>'
-                '<hadamard_product_in_matrix_operator>'
+                "# ' '(' '.' '0' '1' '<' '[' '{' '|' '||'"
+                "'‖' '∫' '⎡' '⟨' '𝟙' <AND> <ARGMAX>"
+                '<ARGMIN> <AS> <BUILTIN_KEYWORDS> <DELTA>'
+                '<DERIVATIVE> <EDGES> <EDGESET> <EXP>'
+                '<FACES> <FACESET> <FOR> <FROM> <GIVEN>'
+                '<IF> <IN> <INDEX> <INITIAL> <INT>'
+                '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
+                '<MESH> <MIN> <NABLA>'
+                '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
+                '<PI> <POUND> <PREFIX_KEYWORD> <PRIME>'
+                '<SCALAR> <SEQUENCE> <SIMPLICIALSET>'
+                '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
+                '<SUBSET> <TETS> <TETSET> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> <builtin_operators> <constant>'
                 '<cross_product_in_matrix_operator>'
-                '<kronecker_product_in_matrix_operator>'
-                "<sum_in_matrix_operator> int <INT> '∫'"
-                '<integral_operator>'
-                '<trans_in_matrix_operator>'
-                '<sqrt_in_matrix_operator>'
-                '<function_operator> <builtin_operators>'
-                '<pseudoinverse_in_matrix_operator>'
-                "<operations_in_matrix> '('"
-                "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
-                '<number_matrix> <identifier_alone>'
+                '<digit> <double> <floating_point>'
+                '<fraction>'
+                '<frobenius_product_in_matrix_operator>'
+                '<function_operator>'
+                '<hadamard_product_in_matrix_operator>'
+                '<identifier> <identifier_alone>'
                 '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
-                "<integer> '.' <digit> <mantissa>"
-                '<floating_point> <double>'
-                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
-                "\\d <number> '[' '⎡' <matrix> <vector>"
-                "'{' <set> π <pi> <constant>"
+                '<inner_product_operator> <integer>'
+                '<integral_operator>'
+                '<kronecker_product_in_matrix_operator>'
+                '<mantissa> <matrix> <norm_operator>'
+                '<number> <number_matrix>'
+                '<operations_in_matrix> <pi>'
+                '<power_in_matrix_operator>'
+                '<pseudoinverse_in_matrix_operator> <set>'
+                '<solver_in_matrix_operator>'
+                '<sqrt_in_matrix_operator>'
+                '<subexpression> <sum_in_matrix_operator>'
+                '<trans_in_matrix_operator> <vector> Mesh'
+                'SOLVE Solve [01\\u1D7D9] [Ee]dge[Ss]et'
+                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Vv]ertex[Ss]et'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
+                'argmax argmin as edges exp faces for'
+                'from given if index initial int ln log'
+                'matrix max mesh min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tets tuple vector'
+                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
-        self._define(
-            ['op', 'sub', 'nm', 'id0', 'num', 'm', 'v', 's', 'c'],
-            []
-        )
 
     @tatsumasu()
     @nomemo
@@ -4128,31 +4062,31 @@ class grammardefaultParser(Parser):
                 self._pseudoinverse_in_matrix_operator_()
             self._error(
                 'expecting one of: '
-                '<operations_in_matrix> <subexpression>'
-                "'0' '1' '𝟙' [01\\u1D7D9] <number_matrix>"
-                "<identifier> <integer> '.' <digit>"
-                '<mantissa> <floating_point> <double>'
-                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
-                "<number> '[' '⎡' <matrix> '(' <vector>"
-                "'{' <set> <constant> <factor_in_matrix>"
-                "<solver_in_matrix_operator> '||' '‖' '|'"
-                '<norm_operator>'
-                "<power_in_matrix_operator> '<' '⟨'"
-                '<inner_product_operator>'
-                '<frobenius_product_in_matrix_operator>'
-                '<hadamard_product_in_matrix_operator>'
+                "'!!!' '(' '.' '0' '1' '<' '[' '{' '|'"
+                "'||' '‖' '∫' '⎡' '⟨' '𝟙' <INT> <SUM>"
+                '<builtin_operators> <constant>'
                 '<cross_product_in_matrix_operator>'
+                '<digit> <double> <element_convert_func>'
+                '<exp_func> <factor_in_matrix>'
+                '<floating_point> <fraction>'
+                '<frobenius_product_in_matrix_operator>'
+                '<func_id> <function_operator>'
+                '<hadamard_product_in_matrix_operator>'
+                '<identifier> <inner_product_operator>'
+                '<integer> <integral_operator>'
                 '<kronecker_product_in_matrix_operator>'
-                'sum ∑ <SUM> <sum_in_matrix_operator> int'
-                "<INT> '∫' <integral_operator>"
-                '<trans_in_matrix_operator> √'
-                "<sqrt_in_matrix_operator> '!!!'"
-                '<func_id> <function_operator> <exp_func>'
-                '<log_func> <ln_func> <sqrt_func>'
-                '<element_convert_func> <minmax_func>'
+                '<ln_func> <log_func> <mantissa> <matrix>'
+                '<minmax_func> <norm_operator> <number>'
+                '<number_matrix> <operations_in_matrix>'
+                '<power_in_matrix_operator>'
                 '<predefined_built_operators>'
-                '<builtin_operators>'
-                '<pseudoinverse_in_matrix_operator>'
+                '<pseudoinverse_in_matrix_operator> <set>'
+                '<solver_in_matrix_operator> <sqrt_func>'
+                '<sqrt_in_matrix_operator>'
+                '<subexpression> <sum_in_matrix_operator>'
+                '<trans_in_matrix_operator> <vector>'
+                '[01\\u1D7D9] [\\u00BC-\\u00BE\\u2150-\\u215E]'
+                'int sum ∑ √'
             )
 
     @tatsumasu('Power')
@@ -4164,6 +4098,7 @@ class grammardefaultParser(Parser):
                 self.name_last_node('base')
                 self._token('^T')
                 self.name_last_node('t')
+
                 self._define(
                     ['base', 't'],
                     []
@@ -4182,6 +4117,7 @@ class grammardefaultParser(Parser):
                             "'^(-1)' '⁻¹'"
                         )
                 self.name_last_node('r')
+
                 self._define(
                     ['base', 'r'],
                     []
@@ -4192,6 +4128,7 @@ class grammardefaultParser(Parser):
                 self._token('^')
                 self._factor_in_matrix_()
                 self.name_last_node('power')
+
                 self._define(
                     ['base', 'power'],
                     []
@@ -4201,43 +4138,59 @@ class grammardefaultParser(Parser):
                 self.name_last_node('base')
                 self._sup_integer_()
                 self.name_last_node('power')
+
                 self._define(
                     ['base', 'power'],
                     []
                 )
             self._error(
                 'expecting one of: '
-                '<operations_in_matrix> <subexpression>'
-                "'0' '1' '𝟙' [01\\u1D7D9] <number_matrix>"
-                "<identifier> <integer> '.' <digit>"
-                '<mantissa> <floating_point> <double>'
-                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
-                "<number> '[' '⎡' <matrix> '(' <vector>"
-                "'{' <set> <constant>"
-                "<solver_in_matrix_operator> '||' '‖' '|'"
-                '<norm_operator>'
-                "<power_in_matrix_operator> '<' '⟨'"
-                '<inner_product_operator>'
-                '<frobenius_product_in_matrix_operator>'
-                '<hadamard_product_in_matrix_operator>'
+                "# ' '(' '.' '0' '1' '<' '[' '{' '|' '||'"
+                "'‖' '∫' '⎡' '⟨' '𝟙' <AND> <ARGMAX>"
+                '<ARGMIN> <AS> <BUILTIN_KEYWORDS> <DELTA>'
+                '<DERIVATIVE> <EDGES> <EDGESET> <EXP>'
+                '<FACES> <FACESET> <FOR> <FROM> <GIVEN>'
+                '<IF> <IN> <INDEX> <INITIAL> <INT>'
+                '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
+                '<MESH> <MIN> <NABLA>'
+                '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
+                '<PI> <POUND> <PREFIX_KEYWORD> <PRIME>'
+                '<SCALAR> <SEQUENCE> <SIMPLICIALSET>'
+                '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
+                '<SUBSET> <TETS> <TETSET> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> <builtin_operators> <constant>'
                 '<cross_product_in_matrix_operator>'
-                '<kronecker_product_in_matrix_operator>'
-                "<sum_in_matrix_operator> int <INT> '∫'"
-                '<integral_operator>'
-                '<trans_in_matrix_operator>'
-                '<sqrt_in_matrix_operator>'
-                '<function_operator> <builtin_operators>'
-                '<pseudoinverse_in_matrix_operator>'
-                '<identifier_alone>'
+                '<digit> <double> <factor_in_matrix>'
+                '<floating_point> <fraction>'
+                '<frobenius_product_in_matrix_operator>'
+                '<function_operator>'
+                '<hadamard_product_in_matrix_operator>'
+                '<identifier> <identifier_alone>'
                 '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD> \\d π <pi>'
-                '<factor_in_matrix>'
+                '<inner_product_operator> <integer>'
+                '<integral_operator>'
+                '<kronecker_product_in_matrix_operator>'
+                '<mantissa> <matrix> <norm_operator>'
+                '<number> <number_matrix>'
+                '<operations_in_matrix> <pi>'
+                '<power_in_matrix_operator>'
+                '<pseudoinverse_in_matrix_operator> <set>'
+                '<solver_in_matrix_operator>'
+                '<sqrt_in_matrix_operator>'
+                '<subexpression> <sum_in_matrix_operator>'
+                '<trans_in_matrix_operator> <vector> Mesh'
+                'SOLVE Solve [01\\u1D7D9] [Ee]dge[Ss]et'
+                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Vv]ertex[Ss]et'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
+                'argmax argmin as edges exp faces for'
+                'from given if index initial int ln log'
+                'matrix max mesh min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tets tuple vector'
+                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
-        self._define(
-            ['base', 't', 'r', 'power'],
-            []
-        )
 
     @tatsumasu('FroProduct')
     @nomemo
@@ -4247,6 +4200,7 @@ class grammardefaultParser(Parser):
         self._token(':')
         self._factor_in_matrix_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'right'],
             []
@@ -4260,6 +4214,7 @@ class grammardefaultParser(Parser):
         self._token('∘')
         self._factor_in_matrix_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'right'],
             []
@@ -4273,6 +4228,7 @@ class grammardefaultParser(Parser):
         self._token('×')
         self._factor_in_matrix_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'right'],
             []
@@ -4286,6 +4242,7 @@ class grammardefaultParser(Parser):
         self._token('⊗')
         self._factor_in_matrix_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'right'],
             []
@@ -4297,6 +4254,7 @@ class grammardefaultParser(Parser):
         self._factor_in_matrix_()
         self.name_last_node('f')
         self._pattern('ᵀ')
+
         self._define(
             ['f'],
             []
@@ -4308,6 +4266,7 @@ class grammardefaultParser(Parser):
         self._factor_in_matrix_()
         self.name_last_node('f')
         self._pattern('⁺')
+
         self._define(
             ['f'],
             []
@@ -4318,6 +4277,7 @@ class grammardefaultParser(Parser):
         self._pattern('√')
         self._factor_in_matrix_()
         self.name_last_node('f')
+
         self._define(
             ['f'],
             []
@@ -4333,6 +4293,7 @@ class grammardefaultParser(Parser):
                 self._token('\\')
                 self._factor_in_matrix_()
                 self.name_last_node('right')
+
                 self._define(
                     ['left', 'right'],
                     []
@@ -4353,43 +4314,59 @@ class grammardefaultParser(Parser):
                 self.name_last_node('p')
                 self._factor_in_matrix_()
                 self.name_last_node('right')
+
                 self._define(
                     ['left', 'p', 'right'],
                     []
                 )
             self._error(
                 'expecting one of: '
-                '<operations_in_matrix> <subexpression>'
-                "'0' '1' '𝟙' [01\\u1D7D9] <number_matrix>"
-                "<identifier> <integer> '.' <digit>"
-                '<mantissa> <floating_point> <double>'
-                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
-                "<number> '[' '⎡' <matrix> '(' <vector>"
-                "'{' <set> <constant>"
-                "<solver_in_matrix_operator> '||' '‖' '|'"
-                '<norm_operator>'
-                "<power_in_matrix_operator> '<' '⟨'"
-                '<inner_product_operator>'
-                '<frobenius_product_in_matrix_operator>'
-                '<hadamard_product_in_matrix_operator>'
+                "# ' '(' '.' '0' '1' '<' '[' '{' '|' '||'"
+                "'‖' '∫' '⎡' '⟨' '𝟙' <AND> <ARGMAX>"
+                '<ARGMIN> <AS> <BUILTIN_KEYWORDS> <DELTA>'
+                '<DERIVATIVE> <EDGES> <EDGESET> <EXP>'
+                '<FACES> <FACESET> <FOR> <FROM> <GIVEN>'
+                '<IF> <IN> <INDEX> <INITIAL> <INT>'
+                '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
+                '<MESH> <MIN> <NABLA>'
+                '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
+                '<PI> <POUND> <PREFIX_KEYWORD> <PRIME>'
+                '<SCALAR> <SEQUENCE> <SIMPLICIALSET>'
+                '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
+                '<SUBSET> <TETS> <TETSET> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> <builtin_operators> <constant>'
                 '<cross_product_in_matrix_operator>'
-                '<kronecker_product_in_matrix_operator>'
-                "<sum_in_matrix_operator> int <INT> '∫'"
-                '<integral_operator>'
-                '<trans_in_matrix_operator>'
-                '<sqrt_in_matrix_operator>'
-                '<function_operator> <builtin_operators>'
-                '<pseudoinverse_in_matrix_operator>'
-                '<identifier_alone>'
+                '<digit> <double> <factor_in_matrix>'
+                '<floating_point> <fraction>'
+                '<frobenius_product_in_matrix_operator>'
+                '<function_operator>'
+                '<hadamard_product_in_matrix_operator>'
+                '<identifier> <identifier_alone>'
                 '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD> \\d π <pi>'
-                '<factor_in_matrix>'
+                '<inner_product_operator> <integer>'
+                '<integral_operator>'
+                '<kronecker_product_in_matrix_operator>'
+                '<mantissa> <matrix> <norm_operator>'
+                '<number> <number_matrix>'
+                '<operations_in_matrix> <pi>'
+                '<power_in_matrix_operator>'
+                '<pseudoinverse_in_matrix_operator> <set>'
+                '<solver_in_matrix_operator>'
+                '<sqrt_in_matrix_operator>'
+                '<subexpression> <sum_in_matrix_operator>'
+                '<trans_in_matrix_operator> <vector> Mesh'
+                'SOLVE Solve [01\\u1D7D9] [Ee]dge[Ss]et'
+                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Vv]ertex[Ss]et'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
+                'argmax argmin as edges exp faces for'
+                'from given if index initial int ln log'
+                'matrix max mesh min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tets tuple vector'
+                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
-        self._define(
-            ['left', 'right', 'p'],
-            []
-        )
 
     @tatsumasu('Summation')
     def _sum_in_matrix_operator_(self):  # noqa
@@ -4407,8 +4384,9 @@ class grammardefaultParser(Parser):
                 self._closure(block2)
                 self._term_in_matrix_()
                 self.name_last_node('exp')
+
                 self._define(
-                    ['sub', 'exp'],
+                    ['exp', 'sub'],
                     []
                 )
             with self._option():
@@ -4438,8 +4416,9 @@ class grammardefaultParser(Parser):
                 self._token(')')
                 self._term_in_matrix_()
                 self.name_last_node('exp')
+
                 self._define(
-                    ['id', 'cond', 'exp'],
+                    ['cond', 'exp', 'id'],
                     []
                 )
             with self._option():
@@ -4464,6 +4443,11 @@ class grammardefaultParser(Parser):
                     self._closure(block15)
                     self._identifier_alone_()
                     self.add_last_node_to_name('enum')
+
+                    self._define(
+                        [],
+                        ['enum']
+                    )
                 self._closure(block13)
 
                 def block17():
@@ -4492,18 +4476,15 @@ class grammardefaultParser(Parser):
                 self._token(')')
                 self._term_()
                 self.name_last_node('exp')
+
                 self._define(
-                    ['range', 'exp'],
+                    ['exp', 'range'],
                     ['enum']
                 )
             self._error(
                 'expecting one of: '
-                'sum ∑ <SUM>'
+                '<SUM> sum ∑'
             )
-        self._define(
-            ['sub', 'exp', 'id', 'cond', 'range'],
-            ['enum']
-        )
 
     @tatsumasu()
     def _hspace_(self):  # noqa
@@ -4548,7 +4529,7 @@ class grammardefaultParser(Parser):
                                 self._identifier_alone_()
                             self._error(
                                 'expecting one of: '
-                                "<integer> '*' <identifier_alone>"
+                                "'*' <identifier_alone> <integer>"
                             )
                     self.add_last_node_to_name('right')
 
@@ -4559,10 +4540,11 @@ class grammardefaultParser(Parser):
                                     self._token(',')
                                     self._token('*')
                                     self.add_last_node_to_name('right')
-                                self._define(
-                                    [],
-                                    ['right']
-                                )
+
+                                    self._define(
+                                        [],
+                                        ['right']
+                                    )
                             with self._option():
                                 with self._group():
 
@@ -4577,22 +4559,24 @@ class grammardefaultParser(Parser):
                                                 self._identifier_alone_()
                                             self._error(
                                                 'expecting one of: '
-                                                '<integer> <identifier_alone>'
+                                                '<identifier_alone> <integer>'
                                             )
                                     self.add_last_node_to_name('right')
-                                self._define(
-                                    [],
-                                    ['right']
-                                )
+
+                                    self._define(
+                                        [],
+                                        ['right']
+                                    )
                             self._error(
                                 'expecting one of: '
-                                "',' <integer> <identifier_alone>"
+                                "',' <identifier_alone> <integer>"
                             )
                     self._closure(block4)
-                self._define(
-                    ['left'],
-                    ['right']
-                )
+
+                    self._define(
+                        ['left'],
+                        ['right']
+                    )
             with self._option():
                 with self._group():
                     self._identifier_alone_()
@@ -4609,7 +4593,7 @@ class grammardefaultParser(Parser):
                                 self._identifier_alone_()
                             self._error(
                                 'expecting one of: '
-                                "<integer> '*' <identifier_alone>"
+                                "'*' <identifier_alone> <integer>"
                             )
                     self.add_last_node_to_name('right')
 
@@ -4620,10 +4604,11 @@ class grammardefaultParser(Parser):
                                     self._token(',')
                                     self._token('*')
                                     self.add_last_node_to_name('right')
-                                self._define(
-                                    [],
-                                    ['right']
-                                )
+
+                                    self._define(
+                                        [],
+                                        ['right']
+                                    )
                             with self._option():
                                 with self._group():
 
@@ -4638,23 +4623,25 @@ class grammardefaultParser(Parser):
                                                 self._identifier_alone_()
                                             self._error(
                                                 'expecting one of: '
-                                                '<integer> <identifier_alone>'
+                                                '<identifier_alone> <integer>'
                                             )
                                     self.add_last_node_to_name('right')
-                                self._define(
-                                    [],
-                                    ['right']
-                                )
+
+                                    self._define(
+                                        [],
+                                        ['right']
+                                    )
                             self._error(
                                 'expecting one of: '
-                                "',' <integer> <identifier_alone>"
+                                "',' <identifier_alone> <integer>"
                             )
                     self._closure(block14)
                     self._token(')')
-                self._define(
-                    ['left', 'p'],
-                    ['right']
-                )
+
+                    self._define(
+                        ['left', 'p'],
+                        ['right']
+                    )
             with self._option():
                 with self._group():
                     self._identifier_alone_()
@@ -4678,10 +4665,11 @@ class grammardefaultParser(Parser):
                                     self._token(',')
                                     self._token('*')
                                     self.add_last_node_to_name('right')
-                                self._define(
-                                    [],
-                                    ['right']
-                                )
+
+                                    self._define(
+                                        [],
+                                        ['right']
+                                    )
                             with self._option():
                                 with self._group():
 
@@ -4699,29 +4687,46 @@ class grammardefaultParser(Parser):
                                                 '<sub_integer> <unicode_subscript>'
                                             )
                                     self.add_last_node_to_name('right')
-                                self._define(
-                                    [],
-                                    ['right']
-                                )
+
+                                    self._define(
+                                        [],
+                                        ['right']
+                                    )
                             self._error(
                                 'expecting one of: '
                                 "',' <sub_integer> <unicode_subscript>"
                             )
                     self._closure(block23)
-                self._define(
-                    ['left'],
-                    ['right']
-                )
+
+                    self._define(
+                        ['left'],
+                        ['right']
+                    )
             self._error(
                 'expecting one of: '
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD>'
-                '<identifier_alone>'
+                "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                '<EDGES> <EDGESET> <EXP> <FACES>'
+                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                '<OTHERWISE> <PI> <POUND>'
+                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
+                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
+                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
+                '<TETS> <TETSET> <TUPLE> <VECTOR>'
+                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
+                '<identifier_alone> Mesh SOLVE Solve'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                'edges exp faces for from given if index'
+                'initial int ln log matrix max mesh min'
+                'or otherwise s.t. scalar sequence solve'
+                'sparse sqrt subject to sum tets tuple'
+                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
-        self._define(
-            ['left', 'p'],
-            ['right']
-        )
 
     @tatsumasu('IdentifierSubscript')
     def _identifier_with_unicode_subscript_(self):  # noqa
@@ -4746,10 +4751,11 @@ class grammardefaultParser(Parser):
                         self._token(',')
                         self._token('*')
                         self.add_last_node_to_name('right')
-                    self._define(
-                        [],
-                        ['right']
-                    )
+
+                        self._define(
+                            [],
+                            ['right']
+                        )
                 with self._option():
                     with self._group():
 
@@ -4767,15 +4773,17 @@ class grammardefaultParser(Parser):
                                     '<sub_integer> <unicode_subscript>'
                                 )
                         self.add_last_node_to_name('right')
-                    self._define(
-                        [],
-                        ['right']
-                    )
+
+                        self._define(
+                            [],
+                            ['right']
+                        )
                 self._error(
                     'expecting one of: '
                     "',' <sub_integer> <unicode_subscript>"
                 )
         self._closure(block3)
+
         self._define(
             ['left'],
             ['right']
@@ -4785,25 +4793,18 @@ class grammardefaultParser(Parser):
     def _unicode_subscript_(self):  # noqa
         self._pattern('[\\u2090-\\u209C\\u1D62\\u2C7C]')
         self.name_last_node('value')
-        self._define(
-            ['value'],
-            []
-        )
 
     @tatsumasu('IdentifierAlone')
     def _unicode_superscript_(self):  # noqa
         self._pattern('[\\u1D43\\u1D47\\u1D9C\\u1D48\\u1D49\\u1DA0\\u1D4D\\u02B0\\u2071\\u02B2\\u1D4F\\u02E1\\u1D50\\u207F\\u1D52\\u1D56\\u02B3\\u02E2\\u1D57\\u1D58\\u1D5B\\u02B7\\u02E3\\u02B8\\u1DBB\\u1DA6\\u1DAB\\u1DB0\\u1DB8\\u1D2C\\u1D2E\\u1D30\\u1D31\\u1D33\\u1D34\\u1D35\\u1D36\\u1D37\\u1D38\\u1D39\\u1D3A\\u1D3C\\u1D3E\\u1D3F\\u1D40\\u1D41\\u2C7D\\u1D42]')
         self.name_last_node('value')
-        self._define(
-            ['value'],
-            []
-        )
 
     @tatsumasu('SizeOp')
     def _size_op_(self):  # noqa
         self._POUND_()
         self._identifier_()
         self.name_last_node('i')
+
         self._define(
             ['i'],
             []
@@ -4825,26 +4826,24 @@ class grammardefaultParser(Parser):
                             with self._group():
                                 self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                             self.name_last_node('value')
-                            self._define(
-                                ['value'],
-                                []
-                            )
                         with self._option():
                             self._token('`')
                             self._pattern('[^`]*')
                             self.name_last_node('id')
                             self._token('`')
+
                             self._define(
                                 ['id'],
                                 []
                             )
                         self._error(
                             'expecting one of: '
-                            '[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
-                            "9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
+                            "'`' [A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A"
+                            '-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*'
                         )
+
                 self._define(
-                    ['value', 'id'],
+                    ['id', 'value'],
                     []
                 )
             with self._option():
@@ -4853,39 +4852,29 @@ class grammardefaultParser(Parser):
                     with self._group():
                         self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                 self.name_last_node('value')
-                self._define(
-                    ['value'],
-                    []
-                )
             self._error(
                 'expecting one of: '
-                '[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-'
-                "9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)* '`'"
-                'where <WHERE> given <GIVEN> sum min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                '<ARGMAX> int <INT> if <IF> otherwise'
-                '<OTHERWISE> ∈ <IN> exp <EXP> log <LOG>'
-                'ln <LN> sqrt <SQRT> s.t. subject to'
-                '<SUBJECT_TO> from <FROM> π <PI> ℝ ℤ'
-                'scalar <SCALAR> vector <VECTOR> matrix'
-                '<MATRIX> with <WITH> initial <INITIAL>'
-                'and <AND> or <OR> [Δ] <DELTA> ∇ <NABLA>'
-                '𝕕 <DERIVATIVE> solve Solve SOLVE <SOLVE>'
-                "' <PRIME> ⊂ <SUBSET> as <AS> # <POUND>"
-                'for <FOR> [Vv]ertex[Ss]et <VERTEXSET>'
-                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
-                '<FACESET> [Tt]et[Ss]et <TETSET>'
-                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH> sparse <SPARSE> index'
-                '<INDEX> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS> tuple'
-                '<TUPLE> sequence <SEQUENCE>'
-                '<BUILTIN_KEYWORDS> <KEYWORDS>'
+                "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                '<EDGES> <EDGESET> <EXP> <FACES>'
+                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                '<NABLA> <OR> <OTHERWISE> <PI> <POUND>'
+                '<PRIME> <SCALAR> <SEQUENCE>'
+                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
+                '<SUBJECT_TO> <SUBSET> <TETS> <TETSET>'
+                '<TUPLE> <VECTOR> <VERTEXSET> <VERTICES>'
+                '<WHERE> <WITH> Mesh SOLVE Solve'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                'edges exp faces for from given if index'
+                'initial int ln log matrix max mesh min'
+                'or otherwise s.t. scalar sequence solve'
+                'sparse sqrt subject to sum tets tuple'
+                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
-        self._define(
-            ['value', 'id'],
-            []
-        )
 
     @tatsumasu()
     def _description_(self):  # noqa
@@ -4908,7 +4897,7 @@ class grammardefaultParser(Parser):
                 self._token(';')
             self._error(
                 'expecting one of: '
-                "'\\n' '\\r' '\\x0c' <line> ';'"
+                "';' '\\n' '\\r' '\\x0c' <line>"
             )
 
     @tatsumasu()
@@ -4962,17 +4951,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -4990,8 +4976,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
+
         self._define(
-            ['power', 'param'],
+            ['param', 'power'],
             []
         )
 
@@ -5007,17 +4994,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5035,8 +5019,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
+
         self._define(
-            ['name', 'power', 'param'],
+            ['name', 'param', 'power'],
             []
         )
 
@@ -5052,17 +5037,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5080,8 +5062,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
+
         self._define(
-            ['name', 'power', 'param'],
+            ['name', 'param', 'power'],
             []
         )
 
@@ -5096,17 +5079,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5124,8 +5104,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
+
         self._define(
-            ['power', 'param'],
+            ['param', 'power'],
             []
         )
 
@@ -5141,17 +5122,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5169,8 +5147,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
+
         self._define(
-            ['name', 'power', 'param'],
+            ['name', 'param', 'power'],
             []
         )
 
@@ -5186,17 +5165,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5214,8 +5190,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
+
         self._define(
-            ['name', 'power', 'param'],
+            ['name', 'param', 'power'],
             []
         )
 
@@ -5230,17 +5207,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5258,8 +5232,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
+
         self._define(
-            ['power', 'param'],
+            ['param', 'power'],
             []
         )
 
@@ -5275,17 +5250,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5303,8 +5275,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
+
         self._define(
-            ['name', 'power', 'param'],
+            ['name', 'param', 'power'],
             []
         )
 
@@ -5320,17 +5293,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5348,8 +5318,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
+
         self._define(
-            ['name', 'power', 'param'],
+            ['name', 'param', 'power'],
             []
         )
 
@@ -5364,17 +5335,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5392,8 +5360,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
+
         self._define(
-            ['power', 'param'],
+            ['param', 'power'],
             []
         )
 
@@ -5409,17 +5378,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5437,8 +5403,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
+
         self._define(
-            ['name', 'power', 'param'],
+            ['name', 'param', 'power'],
             []
         )
 
@@ -5454,17 +5421,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5482,8 +5446,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
+
         self._define(
-            ['name', 'power', 'param'],
+            ['name', 'param', 'power'],
             []
         )
 
@@ -5498,17 +5463,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5526,8 +5488,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
+
         self._define(
-            ['power', 'param'],
+            ['param', 'power'],
             []
         )
 
@@ -5543,17 +5506,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5571,8 +5531,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
+
         self._define(
-            ['name', 'power', 'param'],
+            ['name', 'param', 'power'],
             []
         )
 
@@ -5588,17 +5549,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5616,8 +5574,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
+
         self._define(
-            ['name', 'power', 'param'],
+            ['name', 'param', 'power'],
             []
         )
 
@@ -5632,17 +5591,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5660,8 +5616,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
+
         self._define(
-            ['power', 'param'],
+            ['param', 'power'],
             []
         )
 
@@ -5677,17 +5634,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5705,8 +5659,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
+
         self._define(
-            ['name', 'power', 'param'],
+            ['name', 'param', 'power'],
             []
         )
 
@@ -5722,17 +5677,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5750,8 +5702,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block7)
         self._token(')')
+
         self._define(
-            ['name', 'power', 'param'],
+            ['name', 'param', 'power'],
             []
         )
 
@@ -5766,17 +5719,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5794,8 +5744,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
+
         self._define(
-            ['power', 'param'],
+            ['param', 'power'],
             []
         )
 
@@ -5810,17 +5761,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5838,8 +5786,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
+
         self._define(
-            ['power', 'param'],
+            ['param', 'power'],
             []
         )
 
@@ -5854,17 +5803,14 @@ class grammardefaultParser(Parser):
                         self._token('^')
                         self._integer_()
                         self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
+
+                        self._define(
+                            ['power'],
+                            []
+                        )
                 with self._option():
                     self._sup_integer_()
                     self.name_last_node('power')
-                    self._define(
-                        ['power'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "'^' <sup_integer>"
@@ -5882,8 +5828,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
+
         self._define(
-            ['power', 'param'],
+            ['param', 'power'],
             []
         )
 
@@ -5914,8 +5861,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
+
         self._define(
-            ['param', 'separator', 'second'],
+            ['param', 'second', 'separator'],
             []
         )
 
@@ -5935,6 +5883,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block3)
         self._token(')')
+
         self._define(
             ['name', 'param'],
             []
@@ -5956,6 +5905,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block3)
         self._token(')')
+
         self._define(
             ['name', 'param'],
             []
@@ -5976,6 +5926,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
+
         self._define(
             ['param'],
             []
@@ -5996,6 +5947,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
+
         self._define(
             ['param'],
             []
@@ -6028,8 +5980,9 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block6)
         self._token(')')
+
         self._define(
-            ['param', 'separator', 'origin'],
+            ['origin', 'param', 'separator'],
             []
         )
 
@@ -6048,6 +6001,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
+
         self._define(
             ['param'],
             []
@@ -6068,6 +6022,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
+
         self._define(
             ['param'],
             []
@@ -6088,6 +6043,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
+
         self._define(
             ['param'],
             []
@@ -6108,6 +6064,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
+
         self._define(
             ['param'],
             []
@@ -6128,6 +6085,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
+
         self._define(
             ['param'],
             []
@@ -6157,7 +6115,13 @@ class grammardefaultParser(Parser):
                         self._closure(block4)
                         self._import_var_()
                         self.add_last_node_to_name('names')
+
+                        self._define(
+                            [],
+                            ['names']
+                        )
                     self._closure(block2)
+
                     self._define(
                         [],
                         ['names']
@@ -6165,13 +6129,9 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._token('*')
                     self.name_last_node('star')
-                    self._define(
-                        ['star'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
-                    "<import_var> '*'"
+                    "'*' <import_var>"
                 )
 
         def block7():
@@ -6213,20 +6173,36 @@ class grammardefaultParser(Parser):
                     self._closure(block18)
                     self._identifier_alone_()
                     self.add_last_node_to_name('params')
+
+                    self._define(
+                        [],
+                        ['params', 'separators']
+                    )
                 self._closure(block15)
+
+                self._define(
+                    [],
+                    ['params', 'separators']
+                )
             self._closure(block12)
 
             def block20():
                 self._hspace_()
             self._closure(block20)
             self._token(')')
+
+            self._define(
+                [],
+                ['params', 'separators']
+            )
         self._closure(block11)
 
         def block21():
             self._hspace_()
         self._closure(block21)
+
         self._define(
-            ['star', 'package'],
+            ['package', 'star'],
             ['names', 'params', 'separators']
         )
 
@@ -6247,7 +6223,13 @@ class grammardefaultParser(Parser):
             self._positive_closure(block3)
             self._multi_str_()
             self.name_last_node('r')
+
+            self._define(
+                ['r'],
+                []
+            )
         self._closure(block1)
+
         self._define(
             ['name', 'r'],
             []
@@ -6269,7 +6251,13 @@ class grammardefaultParser(Parser):
             self._positive_closure(block3)
             self._where_condition_()
             self.add_last_node_to_name('value')
+
+            self._define(
+                [],
+                ['value']
+            )
         self._closure(block2)
+
         self._define(
             [],
             ['value']
@@ -6294,7 +6282,7 @@ class grammardefaultParser(Parser):
                 self._pattern('tets')
             self._error(
                 'expecting one of: '
-                'index vertices edges faces tets'
+                'edges faces index tets vertices'
             )
 
     @tatsumasu('WhereCondition')
@@ -6314,6 +6302,11 @@ class grammardefaultParser(Parser):
             self._closure(block3)
             self._identifier_()
             self.add_last_node_to_name('id')
+
+            self._define(
+                [],
+                ['id']
+            )
         self._closure(block1)
 
         def block5():
@@ -6328,10 +6321,6 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._SUBSET_()
                     self.name_last_node('subset')
-                    self._define(
-                        ['subset'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "':' <IN> <SUBSET>"
@@ -6350,6 +6339,11 @@ class grammardefaultParser(Parser):
             self._closure(block11)
             self._attribute_()
             self.name_last_node('attrib')
+
+            self._define(
+                ['attrib'],
+                []
+            )
         self._closure(block10)
 
         def block13():
@@ -6364,9 +6358,15 @@ class grammardefaultParser(Parser):
             self._closure(block15)
             self._description_()
             self.name_last_node('desc')
+
+            self._define(
+                ['desc'],
+                []
+            )
         self._closure(block13)
+
         self._define(
-            ['subset', 'type', 'attrib', 'desc'],
+            ['attrib', 'desc', 'subset', 'type'],
             ['id']
         )
 
@@ -6387,6 +6387,11 @@ class grammardefaultParser(Parser):
             self._closure(block3)
             self._identifier_()
             self.add_last_node_to_name('id')
+
+            self._define(
+                [],
+                ['id']
+            )
         self._closure(block1)
 
         def block5():
@@ -6408,6 +6413,11 @@ class grammardefaultParser(Parser):
             self._closure(block10)
             self._attribute_()
             self.name_last_node('attrib')
+
+            self._define(
+                ['attrib'],
+                []
+            )
         self._closure(block9)
 
         def block12():
@@ -6422,9 +6432,15 @@ class grammardefaultParser(Parser):
             self._closure(block14)
             self._description_()
             self.name_last_node('desc')
+
+            self._define(
+                ['desc'],
+                []
+            )
         self._closure(block12)
+
         self._define(
-            ['subset', 'type', 'attrib', 'desc'],
+            ['attrib', 'desc', 'subset', 'type'],
             ['id']
         )
 
@@ -6445,6 +6461,11 @@ class grammardefaultParser(Parser):
             self._closure(block3)
             self._identifier_()
             self.add_last_node_to_name('id')
+
+            self._define(
+                [],
+                ['id']
+            )
         self._closure(block1)
 
         def block5():
@@ -6459,10 +6480,6 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._SUBSET_()
                     self.name_last_node('subset')
-                    self._define(
-                        ['subset'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
                     "':' <IN> <SUBSET>"
@@ -6481,9 +6498,15 @@ class grammardefaultParser(Parser):
             self._closure(block11)
             self._attribute_()
             self.name_last_node('attrib')
+
+            self._define(
+                ['attrib'],
+                []
+            )
         self._closure(block10)
+
         self._define(
-            ['subset', 'type', 'attrib'],
+            ['attrib', 'subset', 'type'],
             ['id']
         )
 
@@ -6499,11 +6522,11 @@ class grammardefaultParser(Parser):
                 self._statements_()
             self._error(
                 'expecting one of: '
-                "<import> <import_var> '*' <Directive>"
-                '<where_condition> [ \\t] <hspace>'
-                '<where_conditions> where <WHERE> given'
-                '<GIVEN> <params_block> <statement>'
-                '<statements>'
+                "'*' <Directive> <GIVEN> <WHERE> <hspace>"
+                '<import> <import_var> <params_block>'
+                '<statement> <statements>'
+                '<where_condition> <where_conditions> ['
+                '\\t] given where'
             )
 
     @tatsumasu('ParamsBlock')
@@ -6518,16 +6541,22 @@ class grammardefaultParser(Parser):
                         self._GIVEN_()
                     self._error(
                         'expecting one of: '
-                        '<WHERE> <GIVEN>'
+                        '<GIVEN> <WHERE>'
                     )
             self.name_last_node('annotation')
 
             def block3():
                 self._separator_with_space_()
             self._positive_closure(block3)
+
+            self._define(
+                ['annotation'],
+                []
+            )
         self._closure(block0)
         self._where_conditions_()
         self.name_last_node('conds')
+
         self._define(
             ['annotation', 'conds'],
             []
@@ -6552,10 +6581,6 @@ class grammardefaultParser(Parser):
     def _statements_(self):  # noqa
         self._statement_()
         self.name_last_node('stat')
-        self._define(
-            ['stat'],
-            []
-        )
 
     @tatsumasu()
     @nomemo
@@ -6571,16 +6596,34 @@ class grammardefaultParser(Parser):
                 self._right_hand_side_()
             self._error(
                 'expecting one of: '
-                '<identifier_alone>'
+                "# ' '-' 'with' '{' <AND> <ARGMAX>"
+                '<ARGMIN> <AS> <BUILTIN_KEYWORDS> <DELTA>'
+                '<DERIVATIVE> <EDGES> <EDGESET> <EXP>'
+                '<FACES> <FACESET> <FOR> <FROM> <GIVEN>'
+                '<IF> <IN> <INDEX> <INITIAL> <INT>'
+                '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
+                '<MESH> <MIN> <NABLA>'
+                '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
+                '<PI> <POUND> <PREFIX_KEYWORD> <PRIME>'
+                '<SCALAR> <SEQUENCE> <SIMPLICIALSET>'
+                '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
+                '<SUBSET> <TETS> <TETSET> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> <add_sub_operator> <addition>'
+                '<assignment> <destructure> <expression>'
+                '<identifier> <identifier_alone>'
                 '<identifier_with_unicode_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD> <local_func>'
-                '<destructure> <identifier> <assignment>'
-                '<expression> <addition> <subtraction>'
-                "<add_sub_operator> <term> '-' min <MIN>"
-                'max <MAX> argmin <ARGMIN> argmax'
-                "<ARGMAX> 'with' <optimize_operator> '{'"
-                '<multi_cond_expr> <right_hand_side>'
+                '<local_func> <multi_cond_expr>'
+                '<optimize_operator> <right_hand_side>'
+                '<subtraction> <term> Mesh SOLVE Solve'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                'edges exp faces for from given if index'
+                'initial int ln log matrix max mesh min'
+                'or otherwise s.t. scalar sequence solve'
+                'sparse sqrt subject to sum tets tuple'
+                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu('Expression')
@@ -6590,44 +6633,29 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._addition_()
                 self.name_last_node('value')
-                self._define(
-                    ['value'],
-                    []
-                )
             with self._option():
                 self._subtraction_()
                 self.name_last_node('value')
-                self._define(
-                    ['value'],
-                    []
-                )
             with self._option():
                 self._add_sub_operator_()
                 self.name_last_node('value')
-                self._define(
-                    ['value'],
-                    []
-                )
             with self._option():
                 with self._optional():
                     self._token('-')
                 self.name_last_node('sign')
                 self._term_()
                 self.name_last_node('value')
+
                 self._define(
                     ['sign', 'value'],
                     []
                 )
             self._error(
                 'expecting one of: '
-                '<expression> <addition> <subtraction>'
-                "<add_sub_operator> <term> '-'"
-                '<multiplication> <division> <factor>'
+                "'-' <add_sub_operator> <addition>"
+                '<division> <expression> <factor>'
+                '<multiplication> <subtraction> <term>'
             )
-        self._define(
-            ['value', 'sign'],
-            []
-        )
 
     @tatsumasu('Destructure')
     def _destructure_(self):  # noqa
@@ -6646,6 +6674,11 @@ class grammardefaultParser(Parser):
             self._closure(block3)
             self._identifier_alone_()
             self.add_last_node_to_name('left')
+
+            self._define(
+                [],
+                ['left']
+            )
         self._positive_closure(block1)
 
         def block5():
@@ -6659,6 +6692,7 @@ class grammardefaultParser(Parser):
         self._closure(block7)
         self._simplified_right_hand_side_()
         self.add_last_node_to_name('right')
+
         self._define(
             ['op'],
             ['left', 'right']
@@ -6683,6 +6717,11 @@ class grammardefaultParser(Parser):
                     self._closure(block4)
                     self._identifier_()
                     self.add_last_node_to_name('left')
+
+                    self._define(
+                        [],
+                        ['left']
+                    )
                 self._closure(block2)
 
                 def block6():
@@ -6696,6 +6735,7 @@ class grammardefaultParser(Parser):
                 self._closure(block8)
                 self._right_hand_side_()
                 self.add_last_node_to_name('right')
+
                 self._define(
                     ['op'],
                     ['left', 'right']
@@ -6716,6 +6756,11 @@ class grammardefaultParser(Parser):
                     self._closure(block13)
                     self._identifier_()
                     self.add_last_node_to_name('left')
+
+                    self._define(
+                        [],
+                        ['left']
+                    )
                 self._closure(block11)
 
                 def block15():
@@ -6729,21 +6774,37 @@ class grammardefaultParser(Parser):
                 self._closure(block17)
                 self._right_hand_side_()
                 self.add_last_node_to_name('right')
+
                 self._define(
                     ['op'],
                     ['left', 'right']
                 )
             self._error(
                 'expecting one of: '
-                '<identifier_alone>'
-                '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
+                "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                '<EDGES> <EDGESET> <EXP> <FACES>'
+                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                '<OTHERWISE> <PI> <POUND>'
+                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
+                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
+                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
+                '<TETS> <TETSET> <TUPLE> <VECTOR>'
+                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
+                '<identifier> <identifier_alone>'
+                '<identifier_with_subscript> Mesh SOLVE'
+                'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                'edges exp faces for from given if index'
+                'initial int ln log matrix max mesh min'
+                'or otherwise s.t. scalar sequence solve'
+                'sparse sqrt subject to sum tets tuple'
+                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
-        self._define(
-            ['op'],
-            ['left', 'right']
-        )
 
     @tatsumasu()
     def _general_assign_(self):  # noqa
@@ -6754,11 +6815,29 @@ class grammardefaultParser(Parser):
                 self._general_assignment_()
             self._error(
                 'expecting one of: '
-                '<identifier_alone>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD>'
-                '<destructure> <left_hand_side>'
-                '<general_assignment>'
+                "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                '<EDGES> <EDGESET> <EXP> <FACES>'
+                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                '<OTHERWISE> <PI> <POUND>'
+                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
+                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
+                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
+                '<TETS> <TETSET> <TUPLE> <VECTOR>'
+                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
+                '<destructure> <general_assignment>'
+                '<identifier_alone> <left_hand_side> Mesh'
+                'SOLVE Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                'edges exp faces for from given if index'
+                'initial int ln log matrix max mesh min'
+                'or otherwise s.t. scalar sequence solve'
+                'sparse sqrt subject to sum tets tuple'
+                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu('GeneralAssignment')
@@ -6778,6 +6857,11 @@ class grammardefaultParser(Parser):
             self._closure(block3)
             self._left_hand_side_()
             self.add_last_node_to_name('left')
+
+            self._define(
+                [],
+                ['left']
+            )
         self._closure(block1)
 
         def block5():
@@ -6791,6 +6875,7 @@ class grammardefaultParser(Parser):
         self._closure(block7)
         self._right_hand_side_()
         self.add_last_node_to_name('right')
+
         self._define(
             ['op'],
             ['left', 'right']
@@ -6805,10 +6890,10 @@ class grammardefaultParser(Parser):
                 self._multi_cond_expr_()
             self._error(
                 'expecting one of: '
-                '<expression> <addition> <subtraction>'
-                "<add_sub_operator> <term> '-'"
-                "<multiplication> <division> <factor> '{'"
-                '<multi_cond_expr>'
+                "'-' '{' <add_sub_operator> <addition>"
+                '<division> <expression> <factor>'
+                '<multi_cond_expr> <multiplication>'
+                '<subtraction> <term>'
             )
 
     @tatsumasu()
@@ -6823,12 +6908,12 @@ class grammardefaultParser(Parser):
                 self._multi_cond_expr_()
             self._error(
                 'expecting one of: '
-                '<expression> <addition> <subtraction>'
-                "<add_sub_operator> <term> '-'"
-                '<multiplication> <division> <factor> min'
-                '<MIN> max <MAX> argmin <ARGMIN> argmax'
-                "<ARGMAX> 'with' <optimize_operator> '{'"
-                '<multi_cond_expr>'
+                "'-' 'with' '{' <ARGMAX> <ARGMIN> <MAX>"
+                '<MIN> <add_sub_operator> <addition>'
+                '<division> <expression> <factor>'
+                '<multi_cond_expr> <multiplication>'
+                '<optimize_operator> <subtraction> <term>'
+                'argmax argmin max min'
             )
 
     @tatsumasu()
@@ -6842,11 +6927,30 @@ class grammardefaultParser(Parser):
                 self._matrix_()
             self._error(
                 'expecting one of: '
-                '<identifier_alone>'
-                '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
-                "'(' <vector> '[' '⎡' <matrix>"
+                "# ' '(' '[' '⎡' <AND> <ARGMAX> <ARGMIN>"
+                '<AS> <BUILTIN_KEYWORDS> <DELTA>'
+                '<DERIVATIVE> <EDGES> <EDGESET> <EXP>'
+                '<FACES> <FACESET> <FOR> <FROM> <GIVEN>'
+                '<IF> <IN> <INDEX> <INITIAL> <INT>'
+                '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
+                '<MESH> <MIN> <NABLA>'
+                '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
+                '<PI> <POUND> <PREFIX_KEYWORD> <PRIME>'
+                '<SCALAR> <SEQUENCE> <SIMPLICIALSET>'
+                '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
+                '<SUBSET> <TETS> <TETSET> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> <identifier> <identifier_alone>'
+                '<identifier_with_subscript> <matrix>'
+                '<vector> Mesh SOLVE Solve [Ee]dge[Ss]et'
+                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Vv]ertex[Ss]et [Δ] and'
+                'argmax argmin as edges exp faces for'
+                'from given if index initial int ln log'
+                'matrix max mesh min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tets tuple vector'
+                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -6861,27 +6965,26 @@ class grammardefaultParser(Parser):
                 self._factor_()
             self._error(
                 'expecting one of: '
-                '<term> <multiplication> <division>'
-                '<factor> <derivative> <partial>'
-                '<divergence> <gradient> <laplacian>'
-                '<solver_operator> <norm_operator>'
-                '<power_operator>'
-                '<inner_product_operator>'
+                "'(' '.' '0' '1' '[' '{' '⎡' '𝟙'"
+                '<builtin_operators> <constant>'
+                '<cross_product_operator> <derivative>'
+                '<digit> <divergence> <division> <double>'
+                '<factor> <floating_point> <fraction>'
                 '<frobenius_product_operator>'
-                '<hadamard_product_operator>'
-                '<cross_product_operator>'
-                '<kronecker_product_operator>'
-                '<set_operators> <sum_operator>'
-                '<integral_operator> <trans_operator>'
-                '<sqrt_operator> <function_operator>'
-                '<builtin_operators>'
-                '<pseudoinverse_operator> <operations>'
-                "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
-                '<number_matrix> <identifier> <integer>'
-                "'.' <digit> <mantissa> <floating_point>"
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                "<fraction> <number> '[' '⎡' <matrix> '('"
-                "<vector> '{' <set> <constant>"
+                '<function_operator> <gradient>'
+                '<hadamard_product_operator> <identifier>'
+                '<inner_product_operator> <integer>'
+                '<integral_operator>'
+                '<kronecker_product_operator> <laplacian>'
+                '<mantissa> <matrix> <multiplication>'
+                '<norm_operator> <number> <number_matrix>'
+                '<operations> <partial> <power_operator>'
+                '<pseudoinverse_operator> <set>'
+                '<set_operators> <solver_operator>'
+                '<sqrt_operator> <subexpression>'
+                '<sum_operator> <term> <trans_operator>'
+                '<vector> [01\\u1D7D9]'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E]'
             )
 
     @tatsumasu('Factor')
@@ -6891,105 +6994,82 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._operations_()
                 self.name_last_node('op')
-                self._define(
-                    ['op'],
-                    []
-                )
             with self._option():
                 self._subexpression_()
                 self.name_last_node('sub')
-                self._define(
-                    ['sub'],
-                    []
-                )
             with self._option():
                 self._number_matrix_()
                 self.name_last_node('nm')
-                self._define(
-                    ['nm'],
-                    []
-                )
             with self._option():
                 self._identifier_()
                 self.name_last_node('id0')
-                self._define(
-                    ['id0'],
-                    []
-                )
             with self._option():
                 self._number_()
                 self.name_last_node('num')
-                self._define(
-                    ['num'],
-                    []
-                )
             with self._option():
                 self._matrix_()
                 self.name_last_node('m')
-                self._define(
-                    ['m'],
-                    []
-                )
             with self._option():
                 self._vector_()
                 self.name_last_node('v')
-                self._define(
-                    ['v'],
-                    []
-                )
             with self._option():
                 self._set_()
                 self.name_last_node('s')
-                self._define(
-                    ['s'],
-                    []
-                )
             with self._option():
                 self._constant_()
                 self.name_last_node('c')
-                self._define(
-                    ['c'],
-                    []
-                )
             self._error(
                 'expecting one of: '
-                '<derivative> <partial> <divergence>'
-                '<gradient> <laplacian> <solver_operator>'
-                '<norm_operator> <power_operator>'
-                '<inner_product_operator>'
-                '<frobenius_product_operator>'
-                '<hadamard_product_operator>'
-                '<cross_product_operator>'
-                '<kronecker_product_operator>'
-                '<set_operators> <sum_operator>'
-                '<integral_operator> <trans_operator>'
-                '<sqrt_operator> <function_operator>'
-                '<builtin_operators>'
-                '<pseudoinverse_operator> 𝕕 <DERIVATIVE>'
-                '∂ <PARTIAL> ∇ <NABLA> [Δ] <DELTA>'
-                "<factor> '||' '‖' '|' '<' '⟨'"
-                '<union_operator> <intersect_operator>'
-                "sum ∑ <SUM> '∪' int <INT> '∫' √ '!!!'"
-                '<func_id> <exp_func> <log_func>'
-                '<ln_func> <sqrt_func>'
-                '<element_convert_func> <minmax_func>'
-                '<predefined_built_operators>'
-                "<operations> '(' <subexpression> '0' '1'"
-                "'𝟙' [01\\u1D7D9] <number_matrix>"
+                "# ' '!!!' '(' '.' '0' '1' '<' '[' '{'"
+                "'|' '||' '‖' '∪' '∫' '⎡' '⟨' '𝟙' <AND>"
+                '<ARGMAX> <ARGMIN> <AS>'
+                '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                '<EDGES> <EDGESET> <EXP> <FACES>'
+                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                '<OTHERWISE> <PARTIAL> <PI> <POUND>'
+                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
+                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
+                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
+                '<SUM> <TETS> <TETSET> <TUPLE> <VECTOR>'
+                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
+                '<builtin_operators> <constant>'
+                '<cross_product_operator> <derivative>'
+                '<digit> <divergence> <double>'
+                '<element_convert_func> <exp_func>'
+                '<factor> <floating_point> <fraction>'
+                '<frobenius_product_operator> <func_id>'
+                '<function_operator> <gradient>'
+                '<hadamard_product_operator> <identifier>'
                 '<identifier_alone>'
                 '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
-                "<integer> '.' <digit> <mantissa>"
-                '<floating_point> <double>'
-                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
-                "\\d <number> '[' '⎡' <matrix> <vector>"
-                "'{' <set> π <pi> <constant>"
+                '<inner_product_operator> <integer>'
+                '<integral_operator> <intersect_operator>'
+                '<kronecker_product_operator> <laplacian>'
+                '<ln_func> <log_func> <mantissa> <matrix>'
+                '<minmax_func> <norm_operator> <number>'
+                '<number_matrix> <operations> <partial>'
+                '<pi> <power_operator>'
+                '<predefined_built_operators>'
+                '<pseudoinverse_operator> <set>'
+                '<set_operators> <solver_operator>'
+                '<sqrt_func> <sqrt_operator>'
+                '<subexpression> <sum_operator>'
+                '<trans_operator> <union_operator>'
+                '<vector> Mesh SOLVE Solve [01\\u1D7D9]'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Vv]ertex[Ss]et'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
+                'argmax argmin as edges exp faces for'
+                'from given if index initial int ln log'
+                'matrix max mesh min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tets tuple vector'
+                'vertices where with π ℝ ℤ ∂ ∇ ∈ ∑ √ ⊂ 𝕕'
             )
-        self._define(
-            ['op', 'sub', 'nm', 'id0', 'num', 'm', 'v', 's', 'c'],
-            []
-        )
 
     @tatsumasu()
     def _sub_factor_(self):  # noqa
@@ -7004,13 +7084,33 @@ class grammardefaultParser(Parser):
                 self._constant_()
             self._error(
                 'expecting one of: '
-                "'(' <subexpression>"
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD>'
-                "<identifier_alone> <integer> '.' <digit>"
-                '<mantissa> <floating_point> <double>'
-                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
-                '\\d <number> π <pi> <constant>'
+                "# ' '(' '.' <AND> <ARGMAX> <ARGMIN> <AS>"
+                '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                '<EDGES> <EDGESET> <EXP> <FACES>'
+                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                '<OTHERWISE> <PI> <POUND>'
+                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
+                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
+                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
+                '<TETS> <TETSET> <TUPLE> <VECTOR>'
+                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
+                '<constant> <digit> <double>'
+                '<floating_point> <fraction>'
+                '<identifier_alone> <integer> <mantissa>'
+                '<number> <pi> <subexpression> Mesh SOLVE'
+                'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Vv]ertex[Ss]et'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
+                'argmax argmin as edges exp faces for'
+                'from given if index initial int ln log'
+                'matrix max mesh min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tets tuple vector'
+                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -7051,6 +7151,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
+
         self._define(
             ['value'],
             []
@@ -7074,26 +7175,19 @@ class grammardefaultParser(Parser):
                 self._closure(block3)
                 self._and_condition_()
                 self.name_last_node('other')
+
                 self._define(
-                    ['se', 'other'],
+                    ['other', 'se'],
                     []
                 )
             with self._option():
                 self._and_condition_()
                 self.name_last_node('single')
-                self._define(
-                    ['single'],
-                    []
-                )
             self._error(
                 'expecting one of: '
-                '<if_condition> <and_condition>'
-                '<atom_condition>'
+                '<and_condition> <atom_condition>'
+                '<if_condition>'
             )
-        self._define(
-            ['se', 'other', 'single'],
-            []
-        )
 
     @tatsumasu('AndCondition')
     @leftrec
@@ -7113,28 +7207,20 @@ class grammardefaultParser(Parser):
                 self._closure(block3)
                 self._atom_condition_()
                 self.name_last_node('other')
+
                 self._define(
-                    ['se', 'other'],
+                    ['other', 'se'],
                     []
                 )
             with self._option():
                 self._atom_condition_()
                 self.name_last_node('atom')
-                self._define(
-                    ['atom'],
-                    []
-                )
             self._error(
                 'expecting one of: '
-                "<and_condition> <atom_condition> '('"
-                '<not_equal> <equal> <in> <not_in>'
-                '<greater> <greater_equal> <less>'
-                '<less_equal>'
+                "'(' <and_condition> <atom_condition>"
+                '<equal> <greater> <greater_equal> <in>'
+                '<less> <less_equal> <not_equal> <not_in>'
             )
-        self._define(
-            ['se', 'other', 'atom'],
-            []
-        )
 
     @tatsumasu('AtomCondition')
     def _atom_condition_(self):  # noqa
@@ -7152,6 +7238,7 @@ class grammardefaultParser(Parser):
                     self._hspace_()
                 self._closure(block3)
                 self._token(')')
+
                 self._define(
                     ['p'],
                     []
@@ -7159,71 +7246,35 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._not_equal_()
                 self.name_last_node('cond')
-                self._define(
-                    ['cond'],
-                    []
-                )
             with self._option():
                 self._equal_()
                 self.name_last_node('cond')
-                self._define(
-                    ['cond'],
-                    []
-                )
             with self._option():
                 self._in_()
                 self.name_last_node('cond')
-                self._define(
-                    ['cond'],
-                    []
-                )
             with self._option():
                 self._not_in_()
                 self.name_last_node('cond')
-                self._define(
-                    ['cond'],
-                    []
-                )
             with self._option():
                 self._greater_()
                 self.name_last_node('cond')
-                self._define(
-                    ['cond'],
-                    []
-                )
             with self._option():
                 self._greater_equal_()
                 self.name_last_node('cond')
-                self._define(
-                    ['cond'],
-                    []
-                )
             with self._option():
                 self._less_()
                 self.name_last_node('cond')
-                self._define(
-                    ['cond'],
-                    []
-                )
             with self._option():
                 self._less_equal_()
                 self.name_last_node('cond')
-                self._define(
-                    ['cond'],
-                    []
-                )
             self._error(
                 'expecting one of: '
-                "'(' <expression> <addition>"
-                '<subtraction> <add_sub_operator> <term>'
-                "'-' <not_equal> <equal> <in> <not_in>"
-                '<greater> <greater_equal> <less>'
-                '<less_equal>'
+                "'(' '-' <add_sub_operator> <addition>"
+                '<equal> <expression> <greater>'
+                '<greater_equal> <in> <less> <less_equal>'
+                '<not_equal> <not_in> <subtraction>'
+                '<term>'
             )
-        self._define(
-            ['p', 'cond'],
-            []
-        )
 
     @tatsumasu('InCondition')
     def _in_(self):  # noqa
@@ -7253,6 +7304,11 @@ class grammardefaultParser(Parser):
                     def block7():
                         self._hspace_()
                     self._closure(block7)
+
+                    self._define(
+                        [],
+                        ['left']
+                    )
                 self._closure(block4)
                 self._token(')')
 
@@ -7275,6 +7331,7 @@ class grammardefaultParser(Parser):
                             '<function_operator> <identifier>'
                         )
                 self.name_last_node('right')
+
                 self._define(
                     ['right'],
                     ['left']
@@ -7302,20 +7359,17 @@ class grammardefaultParser(Parser):
                             '<function_operator> <identifier>'
                         )
                 self.name_last_node('right')
+
                 self._define(
                     ['right'],
                     ['left']
                 )
             self._error(
                 'expecting one of: '
-                "'(' <expression> <addition>"
-                '<subtraction> <add_sub_operator> <term>'
-                "'-' <multiplication> <division> <factor>"
+                "'(' '-' <add_sub_operator> <addition>"
+                '<division> <expression> <factor>'
+                '<multiplication> <subtraction> <term>'
             )
-        self._define(
-            ['right'],
-            ['left']
-        )
 
     @tatsumasu('NotInCondition')
     def _not_in_(self):  # noqa
@@ -7345,6 +7399,11 @@ class grammardefaultParser(Parser):
                     def block7():
                         self._hspace_()
                     self._closure(block7)
+
+                    self._define(
+                        [],
+                        ['left']
+                    )
                 self._closure(block4)
                 self._token(')')
 
@@ -7367,6 +7426,7 @@ class grammardefaultParser(Parser):
                             '<function_operator> <identifier>'
                         )
                 self.name_last_node('right')
+
                 self._define(
                     ['right'],
                     ['left']
@@ -7394,20 +7454,17 @@ class grammardefaultParser(Parser):
                             '<function_operator> <identifier>'
                         )
                 self.name_last_node('right')
+
                 self._define(
                     ['right'],
                     ['left']
                 )
             self._error(
                 'expecting one of: '
-                "'(' <expression> <addition>"
-                '<subtraction> <add_sub_operator> <term>'
-                "'-' <multiplication> <division> <factor>"
+                "'(' '-' <add_sub_operator> <addition>"
+                '<division> <expression> <factor>'
+                '<multiplication> <subtraction> <term>'
             )
-        self._define(
-            ['right'],
-            ['left']
-        )
 
     @tatsumasu('NeCondition')
     def _not_equal_(self):  # noqa
@@ -7425,7 +7482,7 @@ class grammardefaultParser(Parser):
                     self._token('!=')
                 self._error(
                     'expecting one of: '
-                    "'≠' '!='"
+                    "'!=' '≠'"
                 )
         self.name_last_node('op')
 
@@ -7434,6 +7491,7 @@ class grammardefaultParser(Parser):
         self._closure(block4)
         self._expression_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -7455,7 +7513,7 @@ class grammardefaultParser(Parser):
                     self._token('=')
                 self._error(
                     'expecting one of: '
-                    "'==' '='"
+                    "'=' '=='"
                 )
         self.name_last_node('op')
 
@@ -7464,6 +7522,7 @@ class grammardefaultParser(Parser):
         self._closure(block4)
         self._expression_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -7485,6 +7544,7 @@ class grammardefaultParser(Parser):
         self._closure(block3)
         self._expression_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -7517,6 +7577,7 @@ class grammardefaultParser(Parser):
         self._closure(block4)
         self._expression_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -7538,6 +7599,7 @@ class grammardefaultParser(Parser):
         self._closure(block3)
         self._expression_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -7570,6 +7632,7 @@ class grammardefaultParser(Parser):
         self._closure(block4)
         self._expression_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -7582,41 +7645,30 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._arithmetic_addition_()
                 self.name_last_node('value')
-                self._define(
-                    ['value'],
-                    []
-                )
             with self._option():
                 self._arithmetic_subtraction_()
                 self.name_last_node('value')
-                self._define(
-                    ['value'],
-                    []
-                )
             with self._option():
                 with self._optional():
                     self._token('-')
                 self.name_last_node('sign')
                 self._arithmetic_term_()
                 self.name_last_node('value')
+
                 self._define(
                     ['sign', 'value'],
                     []
                 )
             self._error(
                 'expecting one of: '
-                '<arithmetic_addition>'
-                '<arithmetic_subtraction>'
-                "<arithmetic_term> '-'"
-                '<arithmetic_expression>'
-                '<arithmetic_multiplication>'
+                "'-' <arithmetic_addition>"
                 '<arithmetic_division>'
+                '<arithmetic_expression>'
                 '<arithmetic_factor>'
+                '<arithmetic_multiplication>'
+                '<arithmetic_subtraction>'
+                '<arithmetic_term>'
             )
-        self._define(
-            ['value', 'sign'],
-            []
-        )
 
     @tatsumasu('ArithAdd')
     @nomemo
@@ -7635,6 +7687,7 @@ class grammardefaultParser(Parser):
         self._closure(block3)
         self._arithmetic_term_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -7657,6 +7710,7 @@ class grammardefaultParser(Parser):
         self._closure(block3)
         self._arithmetic_term_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -7674,14 +7728,14 @@ class grammardefaultParser(Parser):
                 self._arithmetic_factor_()
             self._error(
                 'expecting one of: '
+                "# '.' <POUND> <arithmetic_division>"
+                '<arithmetic_factor>'
                 '<arithmetic_multiplication>'
-                '<arithmetic_division>'
-                '<arithmetic_factor> <arithmetic_term>'
-                '<arithmetic_subexpression> # <POUND>'
-                "<size_op> <identifier> <integer> '.'"
-                '<digit> <mantissa> <floating_point>'
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                '<fraction> <number>'
+                '<arithmetic_subexpression>'
+                '<arithmetic_term> <digit> <double>'
+                '<floating_point> <fraction> <identifier>'
+                '<integer> <mantissa> <number> <size_op>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E]'
             )
 
     @tatsumasu('ArithMultiply')
@@ -7703,6 +7757,7 @@ class grammardefaultParser(Parser):
                 self._closure(block4)
                 self._arithmetic_factor_()
                 self.name_last_node('right')
+
                 self._define(
                     ['left', 'op', 'right'],
                     []
@@ -7716,25 +7771,22 @@ class grammardefaultParser(Parser):
                 self._closure(block7)
                 self._arithmetic_factor_()
                 self.name_last_node('right')
+
                 self._define(
                     ['left', 'right'],
                     []
                 )
             self._error(
                 'expecting one of: '
+                "# '.' <POUND> <arithmetic_division>"
+                '<arithmetic_factor>'
                 '<arithmetic_multiplication>'
-                '<arithmetic_division>'
-                '<arithmetic_factor> <arithmetic_term>'
-                '<arithmetic_subexpression> # <POUND>'
-                "<size_op> <identifier> <integer> '.'"
-                '<digit> <mantissa> <floating_point>'
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                '<fraction> <number>'
+                '<arithmetic_subexpression>'
+                '<arithmetic_term> <digit> <double>'
+                '<floating_point> <fraction> <identifier>'
+                '<integer> <mantissa> <number> <size_op>'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E]'
             )
-        self._define(
-            ['left', 'op', 'right'],
-            []
-        )
 
     @tatsumasu('ArithDivide')
     @nomemo
@@ -7762,6 +7814,7 @@ class grammardefaultParser(Parser):
         self._closure(block4)
         self._arithmetic_factor_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'op', 'right'],
             []
@@ -7773,47 +7826,46 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._arithmetic_subexpression_()
                 self.name_last_node('sub')
-                self._define(
-                    ['sub'],
-                    []
-                )
             with self._option():
                 self._size_op_()
                 self.name_last_node('size')
-                self._define(
-                    ['size'],
-                    []
-                )
             with self._option():
                 self._identifier_()
                 self.name_last_node('id0')
-                self._define(
-                    ['id0'],
-                    []
-                )
             with self._option():
                 self._number_()
                 self.name_last_node('num')
-                self._define(
-                    ['num'],
-                    []
-                )
             self._error(
                 'expecting one of: '
-                "'(' <arithmetic_subexpression> # <POUND>"
-                '<size_op> <identifier_alone>'
-                '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
-                "<integer> '.' <digit> <mantissa>"
-                '<floating_point> <double>'
-                '[\\u00BC-\\u00BE\\u2150-\\u215E] <fraction>'
-                '\\d <number>'
+                "# ' '(' '.' <AND> <ARGMAX> <ARGMIN> <AS>"
+                '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                '<EDGES> <EDGESET> <EXP> <FACES>'
+                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                '<OTHERWISE> <PI> <POUND>'
+                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
+                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
+                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
+                '<TETS> <TETSET> <TUPLE> <VECTOR>'
+                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
+                '<arithmetic_subexpression> <digit>'
+                '<double> <floating_point> <fraction>'
+                '<identifier> <identifier_alone>'
+                '<identifier_with_subscript> <integer>'
+                '<mantissa> <number> <size_op> Mesh SOLVE'
+                'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Vv]ertex[Ss]et'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
+                'argmax argmin as edges exp faces for'
+                'from given if index initial int ln log'
+                'matrix max mesh min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tets tuple vector'
+                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
-        self._define(
-            ['sub', 'size', 'id0', 'num'],
-            []
-        )
 
     @tatsumasu('ArithSubexpression')
     def _arithmetic_subexpression_(self):  # noqa
@@ -7829,6 +7881,7 @@ class grammardefaultParser(Parser):
             self._hspace_()
         self._closure(block2)
         self._token(')')
+
         self._define(
             ['value'],
             []
@@ -7874,7 +7927,13 @@ class grammardefaultParser(Parser):
                     self._positive_closure(block9)
                     self._matrix_attribute_()
                     self.add_last_node_to_name('attr')
+
+                    self._define(
+                        [],
+                        ['attr']
+                    )
                 self._closure(block8)
+
                 self._define(
                     ['id1', 'id2'],
                     ['attr']
@@ -7922,19 +7981,21 @@ class grammardefaultParser(Parser):
                     self._positive_closure(block21)
                     self._matrix_attribute_()
                     self.add_last_node_to_name('attr')
+
+                    self._define(
+                        [],
+                        ['attr']
+                    )
                 self._closure(block20)
+
                 self._define(
-                    ['type', 'id1', 'id2'],
+                    ['id1', 'id2', 'type'],
                     ['attr']
                 )
             self._error(
                 'expecting one of: '
-                'matrix <MATRIX> [ℝℤ]'
+                '<MATRIX> [ℝℤ] matrix'
             )
-        self._define(
-            ['id1', 'id2', 'type'],
-            ['attr']
-        )
 
     @tatsumasu()
     def _matrix_attribute_(self):  # noqa
@@ -7962,6 +8023,7 @@ class grammardefaultParser(Parser):
                         self._hspace_()
                     self._closure(block4)
                     self._token(')')
+
                     self._define(
                         ['id1'],
                         []
@@ -7990,8 +8052,9 @@ class grammardefaultParser(Parser):
                         self._hspace_()
                     self._closure(block10)
                     self._token(')')
+
                     self._define(
-                        ['type', 'id1'],
+                        ['id1', 'type'],
                         []
                     )
                 with self._option():
@@ -8008,8 +8071,9 @@ class grammardefaultParser(Parser):
                     self._closure(block13)
                     self._dimension_()
                     self.name_last_node('id1')
+
                     self._define(
-                        ['type', 'id1'],
+                        ['id1', 'type'],
                         []
                     )
                 with self._option():
@@ -8017,8 +8081,9 @@ class grammardefaultParser(Parser):
                     self.name_last_node('type')
                     self._sup_integer_()
                     self.name_last_node('id1')
+
                     self._define(
-                        ['type', 'id1'],
+                        ['id1', 'type'],
                         []
                     )
                 self._error(
@@ -8033,7 +8098,13 @@ class grammardefaultParser(Parser):
             self._positive_closure(block18)
             self._matrix_attribute_()
             self.add_last_node_to_name('attr')
+
+            self._define(
+                [],
+                ['attr']
+            )
         self._closure(block17)
+
         self._define(
             ['id1', 'type'],
             ['attr']
@@ -8049,18 +8120,10 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._pattern('ℤ')
                 self.name_last_node('z')
-                self._define(
-                    ['z'],
-                    []
-                )
             self._error(
                 'expecting one of: '
-                'scalar <SCALAR> ℝ ℤ'
+                '<SCALAR> scalar ℝ ℤ'
             )
-        self._define(
-            ['z'],
-            []
-        )
 
     @tatsumasu('SetType')
     def _set_type_(self):  # noqa
@@ -8090,8 +8153,14 @@ class grammardefaultParser(Parser):
                     def block7():
                         self._hspace_()
                     self._closure(block7)
+
+                    self._define(
+                        [],
+                        ['type']
+                    )
                 self._closure(block4)
                 self._token('}')
+
                 self._define(
                     [],
                     ['type']
@@ -8121,8 +8190,9 @@ class grammardefaultParser(Parser):
                     self._hspace_()
                 self._closure(block13)
                 self._token('}')
+
                 self._define(
-                    ['type1', 'cnt'],
+                    ['cnt', 'type1'],
                     []
                 )
             with self._option():
@@ -8141,8 +8211,9 @@ class grammardefaultParser(Parser):
                     self._hspace_()
                 self._closure(block17)
                 self._token('}')
+
                 self._define(
-                    ['type2', 'cnt'],
+                    ['cnt', 'type2'],
                     []
                 )
             with self._option():
@@ -8170,8 +8241,14 @@ class grammardefaultParser(Parser):
                     def block24():
                         self._hspace_()
                     self._closure(block24)
+
+                    self._define(
+                        [],
+                        ['sub_types']
+                    )
                 self._closure(block21)
                 self._token('}')
+
                 self._define(
                     [],
                     ['sub_types']
@@ -8201,8 +8278,14 @@ class grammardefaultParser(Parser):
                     def block31():
                         self._hspace_()
                     self._closure(block31)
+
+                    self._define(
+                        [],
+                        ['homogeneous_types']
+                    )
                 self._positive_closure(block28)
                 self._token('}')
+
                 self._define(
                     [],
                     ['homogeneous_types']
@@ -8211,10 +8294,6 @@ class grammardefaultParser(Parser):
                 'expecting one of: '
                 "'{'"
             )
-        self._define(
-            ['type1', 'cnt', 'type2'],
-            ['type', 'sub_types', 'homogeneous_types']
-        )
 
     @tatsumasu('TupleType')
     @leftrec
@@ -8238,7 +8317,13 @@ class grammardefaultParser(Parser):
             def block5():
                 self._hspace_()
             self._closure(block5)
+
+            self._define(
+                [],
+                ['sub_types']
+            )
         self._positive_closure(block2)
+
         self._define(
             [],
             ['sub_types']
@@ -8254,57 +8339,29 @@ class grammardefaultParser(Parser):
             with self._option():
                 self._VERTEXSET_()
                 self.name_last_node('v')
-                self._define(
-                    ['v'],
-                    []
-                )
             with self._option():
                 self._EDGESET_()
                 self.name_last_node('e')
-                self._define(
-                    ['e'],
-                    []
-                )
             with self._option():
                 self._FACESET_()
                 self.name_last_node('f')
-                self._define(
-                    ['f'],
-                    []
-                )
             with self._option():
                 self._TETSET_()
                 self.name_last_node('t')
-                self._define(
-                    ['t'],
-                    []
-                )
             with self._option():
                 self._SIMPLICIALSET_()
                 self.name_last_node('s')
-                self._define(
-                    ['s'],
-                    []
-                )
             with self._option():
                 self._MESH_()
                 self.name_last_node('m')
-                self._define(
-                    ['m'],
-                    []
-                )
             self._error(
                 'expecting one of: '
-                '[Vv]ertex[Ss]et <VERTEXSET>'
-                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
-                '<FACESET> [Tt]et[Ss]et <TETSET>'
-                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH>'
+                '<EDGESET> <FACESET> <MESH>'
+                '<SIMPLICIALSET> <TETSET> <VERTEXSET>'
+                'Mesh [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Vv]ertex[Ss]et mesh'
             )
-        self._define(
-            ['v', 'e', 'f', 't', 's', 'm'],
-            []
-        )
 
     @tatsumasu()
     def _la_type_(self):  # noqa
@@ -8327,17 +8384,16 @@ class grammardefaultParser(Parser):
                 self._named_type_()
             self._error(
                 'expecting one of: '
-                'matrix <MATRIX> [ℝℤ] <matrix_type>'
-                'vector <VECTOR> <vector_type> scalar'
-                "<SCALAR> ℝ ℤ <scalar_type> '{'"
-                '<set_type> <params_type> <tuple_type>'
-                "'∅' <function_type> <identifier>"
-                '<mapping_type> [Vv]ertex[Ss]et'
-                '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
-                '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
-                '<TETSET> [Ss]implicial[Ss]et'
-                '<SIMPLICIALSET> mesh Mesh <MESH>'
-                '<named_type>'
+                "'{' '∅' <EDGESET> <FACESET> <MATRIX>"
+                '<MESH> <SCALAR> <SIMPLICIALSET> <TETSET>'
+                '<VECTOR> <VERTEXSET> <function_type>'
+                '<identifier> <mapping_type>'
+                '<matrix_type> <named_type> <params_type>'
+                '<scalar_type> <set_type> <tuple_type>'
+                '<vector_type> Mesh [Ee]dge[Ss]et'
+                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Vv]ertex[Ss]et [ℝℤ] matrix'
+                'mesh scalar vector ℝ ℤ'
             )
 
     @tatsumasu()
@@ -8356,10 +8412,11 @@ class grammardefaultParser(Parser):
                 self._tuple_type_()
             self._error(
                 'expecting one of: '
-                'matrix <MATRIX> [ℝℤ] <matrix_type>'
-                'vector <VECTOR> <vector_type> scalar'
-                "<SCALAR> ℝ ℤ <scalar_type> '{'"
-                '<set_type> <params_type> <tuple_type>'
+                "'{' <MATRIX> <SCALAR> <VECTOR>"
+                '<matrix_type> <params_type>'
+                '<scalar_type> <set_type> <tuple_type>'
+                '<vector_type> [ℝℤ] matrix scalar vector'
+                'ℝ ℤ'
             )
 
     @tatsumasu('FunctionType')
@@ -8384,18 +8441,20 @@ class grammardefaultParser(Parser):
                             self._closure(block5)
                             self._params_type_()
                             self.add_last_node_to_name('params')
+
+                            self._define(
+                                [],
+                                ['params', 'separators']
+                            )
                         self._closure(block2)
-                    self._define(
-                        [],
-                        ['params', 'separators']
-                    )
+
+                        self._define(
+                            [],
+                            ['params', 'separators']
+                        )
                 with self._option():
                     self._token('∅')
                     self.name_last_node('empty')
-                    self._define(
-                        ['empty'],
-                        []
-                    )
                 with self._option():
                     self._token('{')
 
@@ -8405,7 +8464,7 @@ class grammardefaultParser(Parser):
                     self._token('}')
                 self._error(
                     'expecting one of: '
-                    "<params_type> '∅' '{'"
+                    "'{' '∅' <params_type>"
                 )
 
         def block9():
@@ -8419,7 +8478,7 @@ class grammardefaultParser(Parser):
                     self._token('->')
                 self._error(
                     'expecting one of: '
-                    "'→' '->'"
+                    "'->' '→'"
                 )
 
         def block11():
@@ -8441,10 +8500,16 @@ class grammardefaultParser(Parser):
             self._closure(block16)
             self._params_type_()
             self.add_last_node_to_name('ret')
+
+            self._define(
+                [],
+                ['ret', 'ret_separators']
+            )
         self._closure(block13)
+
         self._define(
             ['empty'],
-            ['params', 'separators', 'ret', 'ret_separators']
+            ['params', 'ret', 'ret_separators', 'separators']
         )
 
     @tatsumasu('MappingType')
@@ -8465,7 +8530,7 @@ class grammardefaultParser(Parser):
                             self._token('->')
                         self._error(
                             'expecting one of: '
-                            "'→' '->'"
+                            "'->' '→'"
                         )
 
                 def block4():
@@ -8473,28 +8538,40 @@ class grammardefaultParser(Parser):
                 self._closure(block4)
                 self._params_type_()
                 self.name_last_node('dst')
+
                 self._define(
-                    ['src', 'dst'],
+                    ['dst', 'src'],
                     []
                 )
             with self._option():
                 self._identifier_()
                 self.name_last_node('s')
-                self._define(
-                    ['s'],
-                    []
-                )
             self._error(
                 'expecting one of: '
-                '<identifier_alone>'
-                '<identifier_with_subscript>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD> <identifier>'
+                "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                '<EDGES> <EDGESET> <EXP> <FACES>'
+                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                '<OTHERWISE> <PI> <POUND>'
+                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
+                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
+                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
+                '<TETS> <TETSET> <TUPLE> <VECTOR>'
+                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
+                '<identifier> <identifier_alone>'
+                '<identifier_with_subscript> Mesh SOLVE'
+                'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                'edges exp faces for from given if index'
+                'initial int ln log matrix max mesh min'
+                'or otherwise s.t. scalar sequence solve'
+                'sparse sqrt subject to sum tets tuple'
+                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
-        self._define(
-            ['src', 'dst', 's'],
-            []
-        )
 
     @tatsumasu('Integer')
     def _integer_(self):  # noqa
@@ -8503,10 +8580,6 @@ class grammardefaultParser(Parser):
             self._digit_()
         self._positive_closure(block1)
         self.name_last_node('value')
-        self._define(
-            ['value'],
-            []
-        )
 
     @tatsumasu('SupInteger')
     def _sup_integer_(self):  # noqa
@@ -8515,10 +8588,6 @@ class grammardefaultParser(Parser):
             self._pattern('[\\u2070\\u00B9\\u00B2\\u00B3\\u2074-\\u2079]')
         self._positive_closure(block1)
         self.name_last_node('value')
-        self._define(
-            ['value'],
-            []
-        )
 
     @tatsumasu('SubInteger')
     def _sub_integer_(self):  # noqa
@@ -8527,10 +8596,6 @@ class grammardefaultParser(Parser):
             self._pattern('[\\u2080-\\u2089]')
         self._positive_closure(block1)
         self.name_last_node('value')
-        self._define(
-            ['value'],
-            []
-        )
 
     @tatsumasu()
     def _digit_(self):  # noqa
@@ -8546,26 +8611,26 @@ class grammardefaultParser(Parser):
                 self._intersect_operator_()
             self._error(
                 'expecting one of: '
-                '<derivative> <partial> <divergence>'
-                '<gradient> <laplacian> <solver_operator>'
-                '<norm_operator> <power_operator>'
-                '<inner_product_operator>'
+                "'(' '.' '0' '1' '[' '{' '⎡' '𝟙'"
+                '<builtin_operators> <constant>'
+                '<cross_product_operator> <derivative>'
+                '<digit> <divergence> <double> <factor>'
+                '<floating_point> <fraction>'
                 '<frobenius_product_operator>'
-                '<hadamard_product_operator>'
-                '<cross_product_operator>'
-                '<kronecker_product_operator>'
-                '<set_operators> <sum_operator>'
-                '<integral_operator> <trans_operator>'
-                '<sqrt_operator> <function_operator>'
-                '<builtin_operators>'
-                '<pseudoinverse_operator> <operations>'
-                "<subexpression> '0' '1' '𝟙' [01\\u1D7D9]"
-                '<number_matrix> <identifier> <integer>'
-                "'.' <digit> <mantissa> <floating_point>"
-                '<double> [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                "<fraction> <number> '[' '⎡' <matrix> '('"
-                "<vector> '{' <set> <constant> <factor>"
-                '<union_operator> <intersect_operator>'
+                '<function_operator> <gradient>'
+                '<hadamard_product_operator> <identifier>'
+                '<inner_product_operator> <integer>'
+                '<integral_operator> <intersect_operator>'
+                '<kronecker_product_operator> <laplacian>'
+                '<mantissa> <matrix> <norm_operator>'
+                '<number> <number_matrix> <operations>'
+                '<partial> <power_operator>'
+                '<pseudoinverse_operator> <set>'
+                '<set_operators> <solver_operator>'
+                '<sqrt_operator> <subexpression>'
+                '<sum_operator> <trans_operator>'
+                '<union_operator> <vector> [01\\u1D7D9]'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E]'
             )
 
     @tatsumasu('Union')
@@ -8584,6 +8649,7 @@ class grammardefaultParser(Parser):
         self._closure(block2)
         self._factor_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'right'],
             []
@@ -8605,6 +8671,7 @@ class grammardefaultParser(Parser):
         self._closure(block2)
         self._factor_()
         self.name_last_node('right')
+
         self._define(
             ['left', 'right'],
             []
@@ -8650,25 +8717,23 @@ class grammardefaultParser(Parser):
                                 with self._group():
                                     self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                                 self.name_last_node('value')
-                                self._define(
-                                    ['value'],
-                                    []
-                                )
                             with self._option():
                                 self._token('`')
                                 self._pattern('[^`]*')
                                 self.name_last_node('id')
                                 self._token('`')
+
                                 self._define(
                                     ['id'],
                                     []
                                 )
                             self._error(
                                 'expecting one of: '
-                                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                                "'`' [A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*"
                             )
+
                     self._define(
-                        ['value', 'id'],
+                        ['id', 'value'],
                         []
                     )
                 with self._option():
@@ -8683,34 +8748,30 @@ class grammardefaultParser(Parser):
                         with self._group():
                             self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
-                    self._define(
-                        ['value'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
-                    "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                    '<KEYWORDS> where <WHERE> given <GIVEN>'
-                    'sum min <MIN> max <MAX> argmin <ARGMIN>'
-                    'argmax <ARGMAX> int <INT> if <IF>'
-                    'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
-                    'log <LOG> ln <LN> sqrt <SQRT> s.t.'
-                    'subject to <SUBJECT_TO> from <FROM> π'
-                    '<PI> ℝ ℤ scalar <SCALAR> vector <VECTOR>'
-                    'matrix <MATRIX> with <WITH> initial'
-                    '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                    '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
-                    "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                    '<AS> # <POUND> for <FOR> [Vv]ertex[Ss]et'
-                    '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
-                    '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
-                    '<TETSET> [Ss]implicial[Ss]et'
-                    '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
-                    '<SPARSE> index <INDEX> vertices'
-                    '<VERTICES> edges <EDGES> faces <FACES>'
-                    'tets <TETS> tuple <TUPLE> sequence'
-                    '<SEQUENCE> <BUILTIN_KEYWORDS>'
-                    '<PREFIX_KEYWORD>'
+                    "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                    '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                    '<EDGES> <EDGESET> <EXP> <FACES>'
+                    '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                    '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                    '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                    '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                    '<OTHERWISE> <PI> <POUND>'
+                    '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
+                    '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
+                    '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
+                    '<TETS> <TETSET> <TUPLE> <VECTOR>'
+                    '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
+                    'Mesh SOLVE Solve [Ee]dge[Ss]et'
+                    '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
+                    '[Tt]et[Ss]et [Vv]ertex[Ss]et [Δ] and'
+                    'argmax argmin as edges exp faces for'
+                    'from given if index initial int ln log'
+                    'matrix max mesh min or otherwise s.t.'
+                    'scalar sequence solve sparse sqrt'
+                    'subject to sum tets tuple vector'
+                    'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
                 )
             self._define(
                 ['const', 'id', 'value'],
@@ -8728,25 +8789,23 @@ class grammardefaultParser(Parser):
                                 with self._group():
                                     self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                                 self.name_last_node('value')
-                                self._define(
-                                    ['value'],
-                                    []
-                                )
                             with self._option():
                                 self._token('`')
                                 self._pattern('[^`]*')
                                 self.name_last_node('id')
                                 self._token('`')
+
                                 self._define(
                                     ['id'],
                                     []
                                 )
                             self._error(
                                 'expecting one of: '
-                                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
+                                "'`' [A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*"
                             )
+
                     self._define(
-                        ['value', 'id'],
+                        ['id', 'value'],
                         []
                     )
                 with self._option():
@@ -8755,39 +8814,31 @@ class grammardefaultParser(Parser):
                         with self._group():
                             self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
                     self.name_last_node('value')
-                    self._define(
-                        ['value'],
-                        []
-                    )
                 self._error(
                     'expecting one of: '
-                    "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                    '<KEYWORDS> where <WHERE> given <GIVEN>'
-                    'sum min <MIN> max <MAX> argmin <ARGMIN>'
-                    'argmax <ARGMAX> int <INT> if <IF>'
-                    'otherwise <OTHERWISE> ∈ <IN> exp <EXP>'
-                    'log <LOG> ln <LN> sqrt <SQRT> s.t.'
-                    'subject to <SUBJECT_TO> from <FROM> π'
-                    '<PI> ℝ ℤ scalar <SCALAR> vector <VECTOR>'
-                    'matrix <MATRIX> with <WITH> initial'
-                    '<INITIAL> and <AND> or <OR> [Δ] <DELTA>'
-                    '∇ <NABLA> 𝕕 <DERIVATIVE> solve Solve'
-                    "SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET> as"
-                    '<AS> # <POUND> for <FOR> [Vv]ertex[Ss]et'
-                    '<VERTEXSET> [Ee]dge[Ss]et <EDGESET>'
-                    '[Ff]ace[Ss]et <FACESET> [Tt]et[Ss]et'
-                    '<TETSET> [Ss]implicial[Ss]et'
-                    '<SIMPLICIALSET> mesh Mesh <MESH> sparse'
-                    '<SPARSE> index <INDEX> vertices'
-                    '<VERTICES> edges <EDGES> faces <FACES>'
-                    'tets <TETS> tuple <TUPLE> sequence'
-                    '<SEQUENCE> <BUILTIN_KEYWORDS>'
-                    '<PREFIX_KEYWORD>'
+                    "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                    '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                    '<EDGES> <EDGESET> <EXP> <FACES>'
+                    '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                    '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                    '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                    '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                    '<OTHERWISE> <PI> <POUND>'
+                    '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
+                    '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
+                    '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
+                    '<TETS> <TETSET> <TUPLE> <VECTOR>'
+                    '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
+                    'Mesh SOLVE Solve [Ee]dge[Ss]et'
+                    '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
+                    '[Tt]et[Ss]et [Vv]ertex[Ss]et [Δ] and'
+                    'argmax argmin as edges exp faces for'
+                    'from given if index initial int ln log'
+                    'matrix max mesh min or otherwise s.t.'
+                    'scalar sequence solve sparse sqrt'
+                    'subject to sum tets tuple vector'
+                    'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
                 )
-            self._define(
-                ['value', 'id'],
-                []
-            )
 
     @tatsumasu()
     def _identifier_(self):  # noqa
@@ -8798,30 +8849,29 @@ class grammardefaultParser(Parser):
                 self._identifier_alone_()
             self._error(
                 'expecting one of: '
+                "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                '<EDGES> <EDGESET> <EXP> <FACES>'
+                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                '<OTHERWISE> <PI> <POUND>'
+                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
+                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
+                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
+                '<TETS> <TETSET> <TUPLE> <VECTOR>'
+                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
                 '<identifier_alone>'
-                "[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}* '`'"
-                '<KEYWORDS> <PREFIX_KEYWORD>'
-                '<identifier_with_subscript> where'
-                '<WHERE> given <GIVEN> sum min <MIN> max'
-                '<MAX> argmin <ARGMIN> argmax <ARGMAX>'
-                'int <INT> if <IF> otherwise <OTHERWISE>'
-                '∈ <IN> exp <EXP> log <LOG> ln <LN> sqrt'
-                '<SQRT> s.t. subject to <SUBJECT_TO> from'
-                '<FROM> π <PI> ℝ ℤ scalar <SCALAR> vector'
-                '<VECTOR> matrix <MATRIX> with <WITH>'
-                'initial <INITIAL> and <AND> or <OR> [Δ]'
-                '<DELTA> ∇ <NABLA> 𝕕 <DERIVATIVE> solve'
-                "Solve SOLVE <SOLVE> ' <PRIME> ⊂ <SUBSET>"
-                'as <AS> # <POUND> for <FOR>'
-                '[Vv]ertex[Ss]et <VERTEXSET>'
-                '[Ee]dge[Ss]et <EDGESET> [Ff]ace[Ss]et'
-                '<FACESET> [Tt]et[Ss]et <TETSET>'
-                '[Ss]implicial[Ss]et <SIMPLICIALSET> mesh'
-                'Mesh <MESH> sparse <SPARSE> index'
-                '<INDEX> vertices <VERTICES> edges'
-                '<EDGES> faces <FACES> tets <TETS> tuple'
-                '<TUPLE> sequence <SEQUENCE>'
-                '<BUILTIN_KEYWORDS>'
+                '<identifier_with_subscript> Mesh SOLVE'
+                'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                'edges exp faces for from given if index'
+                'initial int ln log matrix max mesh min'
+                'or otherwise s.t. scalar sequence solve'
+                'sparse sqrt subject to sum tets tuple'
+                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu('Function')
@@ -8839,7 +8889,7 @@ class grammardefaultParser(Parser):
                             self._identifier_alone_()
                         self._error(
                             'expecting one of: '
-                            '<integer> <identifier_alone>'
+                            '<identifier_alone> <integer>'
                         )
                 self.add_last_node_to_name('subs')
 
@@ -8856,9 +8906,14 @@ class grammardefaultParser(Parser):
                                 self._identifier_alone_()
                             self._error(
                                 'expecting one of: '
-                                '<integer> <identifier_alone>'
+                                '<identifier_alone> <integer>'
                             )
                     self.add_last_node_to_name('subs')
+
+                    self._define(
+                        [],
+                        ['subs']
+                    )
                 self._closure(block4)
 
                 def block8():
@@ -8886,17 +8941,33 @@ class grammardefaultParser(Parser):
                             self._closure(block16)
                             self._expression_()
                             self.add_last_node_to_name('params')
+
+                            self._define(
+                                [],
+                                ['params', 'separators']
+                            )
                         self._closure(block13)
+
+                        self._define(
+                            [],
+                            ['params', 'separators']
+                        )
                     self._closure(block10)
 
                     def block18():
                         self._hspace_()
                     self._closure(block18)
                     self._token(')')
+
+                    self._define(
+                        ['p'],
+                        ['params', 'separators']
+                    )
                 self._closure(block8)
+
                 self._define(
                     ['name', 'p'],
-                    ['subs', 'params', 'separators']
+                    ['params', 'separators', 'subs']
                 )
             with self._option():
                 self._func_id_()
@@ -8925,13 +8996,24 @@ class grammardefaultParser(Parser):
                         self._closure(block27)
                         self._expression_()
                         self.add_last_node_to_name('params')
+
+                        self._define(
+                            [],
+                            ['params', 'separators']
+                        )
                     self._closure(block24)
+
+                    self._define(
+                        [],
+                        ['params', 'separators']
+                    )
                 self._closure(block21)
 
                 def block29():
                     self._hspace_()
                 self._closure(block29)
                 self._token(')')
+
                 self._define(
                     ['name', 'p'],
                     ['params', 'separators']
@@ -8967,6 +9049,11 @@ class grammardefaultParser(Parser):
                                 '<sub_integer> <unicode_subscript>'
                             )
                     self.add_last_node_to_name('subs')
+
+                    self._define(
+                        [],
+                        ['subs']
+                    )
                 self._closure(block33)
 
                 def block37():
@@ -8994,26 +9081,38 @@ class grammardefaultParser(Parser):
                             self._closure(block45)
                             self._expression_()
                             self.add_last_node_to_name('params')
+
+                            self._define(
+                                [],
+                                ['params', 'separators']
+                            )
                         self._closure(block42)
+
+                        self._define(
+                            [],
+                            ['params', 'separators']
+                        )
                     self._closure(block39)
 
                     def block47():
                         self._hspace_()
                     self._closure(block47)
                     self._token(')')
+
+                    self._define(
+                        ['p'],
+                        ['params', 'separators']
+                    )
                 self._closure(block37)
+
                 self._define(
                     ['name', 'p'],
-                    ['subs', 'params', 'separators']
+                    ['params', 'separators', 'subs']
                 )
             self._error(
                 'expecting one of: '
                 "'!!!' <func_id>"
             )
-        self._define(
-            ['name', 'p'],
-            ['subs', 'params', 'separators']
-        )
 
     @tatsumasu('LocalFunc')
     def _local_func_(self):  # noqa
@@ -9048,16 +9147,32 @@ class grammardefaultParser(Parser):
                                 self._closure(block10)
                                 self._identifier_alone_()
                                 self.add_last_node_to_name('params')
+
+                                self._define(
+                                    [],
+                                    ['params', 'separators']
+                                )
                             self._closure(block7)
+
+                            self._define(
+                                [],
+                                ['params', 'separators']
+                            )
                         self._closure(block4)
 
                         def block12():
                             self._hspace_()
                         self._closure(block12)
                         self._token(')')
+
+                        self._define(
+                            ['def_p'],
+                            ['params', 'separators']
+                        )
                     self._closure(block2)
+
                     self._define(
-                        ['name', 'def_p'],
+                        ['def_p', 'name'],
                         ['params', 'separators']
                     )
                 with self._option():
@@ -9089,16 +9204,32 @@ class grammardefaultParser(Parser):
                                 self._closure(block22)
                                 self._identifier_alone_()
                                 self.add_last_node_to_name('params')
+
+                                self._define(
+                                    [],
+                                    ['params', 'separators']
+                                )
                             self._closure(block19)
+
+                            self._define(
+                                [],
+                                ['params', 'separators']
+                            )
                         self._closure(block16)
 
                         def block24():
                             self._hspace_()
                         self._closure(block24)
                         self._token(']')
+
+                        self._define(
+                            ['def_s'],
+                            ['params', 'separators']
+                        )
                     self._closure(block14)
+
                     self._define(
-                        ['name', 'def_s'],
+                        ['def_s', 'name'],
                         ['params', 'separators']
                     )
                 with self._option():
@@ -9117,7 +9248,17 @@ class grammardefaultParser(Parser):
                             self._closure(block29)
                             self._identifier_alone_()
                             self.add_last_node_to_name('subs')
+
+                            self._define(
+                                [],
+                                ['subs']
+                            )
                         self._closure(block28)
+
+                        self._define(
+                            [],
+                            ['subs']
+                        )
                     self._closure(block26)
 
                     def block31():
@@ -9145,17 +9286,33 @@ class grammardefaultParser(Parser):
                                 self._closure(block39)
                                 self._identifier_alone_()
                                 self.add_last_node_to_name('params')
+
+                                self._define(
+                                    [],
+                                    ['params', 'separators']
+                                )
                             self._closure(block36)
+
+                            self._define(
+                                [],
+                                ['params', 'separators']
+                            )
                         self._closure(block33)
 
                         def block41():
                             self._hspace_()
                         self._closure(block41)
                         self._token(')')
+
+                        self._define(
+                            ['def_p'],
+                            ['params', 'separators']
+                        )
                     self._closure(block31)
+
                     self._define(
-                        ['name', 'def_p'],
-                        ['subs', 'params', 'separators']
+                        ['def_p', 'name'],
+                        ['params', 'separators', 'subs']
                     )
                 with self._option():
                     self._identifier_alone_()
@@ -9173,7 +9330,17 @@ class grammardefaultParser(Parser):
                             self._closure(block46)
                             self._identifier_alone_()
                             self.add_last_node_to_name('subs')
+
+                            self._define(
+                                [],
+                                ['subs']
+                            )
                         self._closure(block45)
+
+                        self._define(
+                            [],
+                            ['subs']
+                        )
                     self._closure(block43)
 
                     def block48():
@@ -9201,22 +9368,38 @@ class grammardefaultParser(Parser):
                                 self._closure(block56)
                                 self._identifier_alone_()
                                 self.add_last_node_to_name('params')
+
+                                self._define(
+                                    [],
+                                    ['params', 'separators']
+                                )
                             self._closure(block53)
+
+                            self._define(
+                                [],
+                                ['params', 'separators']
+                            )
                         self._closure(block50)
 
                         def block58():
                             self._hspace_()
                         self._closure(block58)
                         self._token(']')
+
+                        self._define(
+                            ['def_s'],
+                            ['params', 'separators']
+                        )
                     self._closure(block48)
+
                     self._define(
-                        ['name', 'def_s'],
-                        ['subs', 'params', 'separators']
+                        ['def_s', 'name'],
+                        ['params', 'separators', 'subs']
                     )
                 self._error(
                     'expecting one of: '
-                    '<identifier_with_unicode_subscript>'
                     '<identifier_alone>'
+                    '<identifier_with_unicode_subscript>'
                 )
 
         def block59():
@@ -9248,7 +9431,7 @@ class grammardefaultParser(Parser):
                     self._GIVEN_()
                 self._error(
                     'expecting one of: '
-                    '<WHERE> <GIVEN>'
+                    '<GIVEN> <WHERE>'
                 )
 
         def block66():
@@ -9269,6 +9452,11 @@ class grammardefaultParser(Parser):
             self._closure(block70)
             self._where_condition_()
             self.add_last_node_to_name('defs')
+
+            self._define(
+                [],
+                ['defs']
+            )
         self._closure(block68)
 
         def block72():
@@ -9289,10 +9477,16 @@ class grammardefaultParser(Parser):
             self._closure(block75)
             self._general_assign_()
             self.add_last_node_to_name('extra')
+
+            self._define(
+                [],
+                ['extra']
+            )
         self._closure(block72)
+
         self._define(
-            ['name', 'def_p', 'def_s', 'op'],
-            ['params', 'separators', 'subs', 'expr', 'defs', 'extra']
+            ['def_p', 'def_s', 'name', 'op'],
+            ['defs', 'expr', 'extra', 'params', 'separators', 'subs']
         )
 
 
@@ -10129,9 +10323,7 @@ class grammardefaultSemantics:
         return ast
 
 
-def main(filename, start=None, **kwargs):
-    if start is None:
-        start = 'start'
+def main(filename, **kwargs):
     if not filename or filename == '-':
         text = sys.stdin.read()
     else:
@@ -10140,7 +10332,6 @@ def main(filename, start=None, **kwargs):
     parser = grammardefaultParser()
     return parser.parse(
         text,
-        rule_name=start,
         filename=filename,
         **kwargs
     )
@@ -10184,7 +10375,7 @@ class grammardefaultModelBuilderSemantics(ModelBuilderSemantics):
             t for t in globals().values()
             if type(t) is type and issubclass(t, ModelBase)
         ] + (types or [])
-        super(grammardefaultModelBuilderSemantics, self).__init__(context=context, types=types)
+        super().__init__(context=context, types=types)
 
 
 @dataclass(eq=False)
@@ -10555,6 +10746,7 @@ class IdentifierSubscript(ModelBase):
 @dataclass(eq=False)
 class IdentifierAlone(ModelBase):
     value: Any = None
+    const: Any = None
 
 
 @dataclass(eq=False)
