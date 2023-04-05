@@ -20,6 +20,7 @@ from ..la_tools.la_msg import *
 from ..la_tools.config_manager import *
 from ..la_tools.la_helper import *
 from ..la_tools.parser_manager import ParserManager
+from ..la_tools.module_manager import CacheModuleManager
 from ..la_tools.babyheartdown import heartdown2lines
 import subprocess
 import threading
@@ -44,7 +45,6 @@ _id_pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*")
 _backtick_pattern = re.compile("`[^`]*`")
 _codegen_dict = {}
 _module_path = Path.home() / 'Downloads'
-
 
 class VarData(object):
     def __init__(self, params=None, lhs=None, ret=None):
@@ -228,13 +228,18 @@ def get_start_node(model):
     start_node = type_walker.walk(model, pre_walk=True)
     return type_walker, start_node
 
-def get_compiled_module(module_content, module_name, parser_type, class_only):
+def get_compiled_module(module_name, parser_type, class_only):
     # compile module content
     # Init parser
+    module_file = "{}/{}.ihla".format(_module_path, module_name)
+    cur_time = os.path.getmtime(Path(module_file))
+    module_content = read_from_file(module_file)
     parser = get_default_parser()
     new_model = parser.parse(module_content, parseinfo=True)
     tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model, parser_type, class_only=class_only)
     pre_frame = walk_model_frame(parser_type, tmp_type_walker, tmp_start_node, module_name)
+    # save
+    # CacheModuleManager.getInstance().save_compiled_module(tmp_type_walker, pre_frame, module_name, ParserTypeDict[parser_type], cur_time)
     return tmp_type_walker, pre_frame
 
 def get_new_parser(start_node, current_content, type_walker, skipped_module=False, parser_type=ParserTypeEnum.EIGEN, class_only=False):
@@ -324,10 +329,8 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
             try:
                 parse_info = module.module.parse_info
                 err_msg = "Invalid module:{}".format(module.module.get_name())
-                module_file = "{}/{}.ihla".format(_module_path, module.module.get_name())
-                module_content = read_from_file(module_file)
                 # get compiled content
-                tmp_type_walker, pre_frame = get_compiled_module(module_content, module.module.get_name(), parser_type, class_only)
+                tmp_type_walker, pre_frame = get_compiled_module(module.module.get_name(), parser_type, class_only)
                 name_list = []
                 r_name_list = []
                 par_list = []
