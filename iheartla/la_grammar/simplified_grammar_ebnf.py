@@ -30,8 +30,8 @@ func_id
     ;
 
 identifier_alone::IdentifierAlone
-    = !KEYWORDS(  value:(/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*/) | '`' id:/[^`]*/ '`')
-    | value:(PREFIX_KEYWORD (/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*/))
+    = !KEYWORDS(  value:(/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?:[A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*/) | '`' id:/[^`]*/ '`')
+    | value:(PREFIX_KEYWORD (/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?:[A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*/))
     ;
 
 identifier

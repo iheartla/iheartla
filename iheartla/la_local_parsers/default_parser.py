@@ -18,8 +18,7 @@ from tatsu.parsing import Parser
 from tatsu.parsing import tatsumasu
 from tatsu.parsing import leftrec, nomemo, isname # noqa
 from tatsu.infos import ParserConfig
-from tatsu.util import generic_main  # noqa
-import regex as re
+from tatsu.util import re, generic_main  # noqa
 
 
 KEYWORDS = {}  # type: ignore
@@ -1554,14 +1553,14 @@ class grammardefaultParser(Parser):
                 self._factor_()
                 self.name_last_node('left')
 
-                def block45():
+                def block2():
                     self._hspace_()
-                self._closure(block45)
+                self._closure(block2)
                 self._token('\\')
 
-                def block46():
+                def block3():
                     self._hspace_()
-                self._closure(block46)
+                self._closure(block3)
                 self._factor_()
                 self.name_last_node('right')
 
@@ -1573,9 +1572,9 @@ class grammardefaultParser(Parser):
                 self._factor_()
                 self.name_last_node('left')
 
-                def block49():
+                def block6():
                     self._hspace_()
-                self._closure(block49)
+                self._closure(block6)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -1588,9 +1587,9 @@ class grammardefaultParser(Parser):
                         )
                 self.name_last_node('p')
 
-                def block52():
+                def block9():
                     self._hspace_()
-                self._closure(block52)
+                self._closure(block9)
                 self._factor_()
                 self.name_last_node('right')
 
@@ -4825,7 +4824,7 @@ class grammardefaultParser(Parser):
                     with self._choice():
                         with self._option():
                             with self._group():
-                                self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
+                                self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?:[A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                             self.name_last_node('value')
                         with self._option():
                             self._token('`')
@@ -4839,8 +4838,8 @@ class grammardefaultParser(Parser):
                             )
                         self._error(
                             'expecting one of: '
-                            "'`' [A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A"
-                            '-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*'
+                            "'`' [A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?:"
+                            '[A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*'
                         )
 
                 self._define(
@@ -4851,7 +4850,7 @@ class grammardefaultParser(Parser):
                 with self._group():
                     self._PREFIX_KEYWORD_()
                     with self._group():
-                        self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
+                        self._pattern('[A-Za-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?:[A-Z0-9a-z_\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
                 self.name_last_node('value')
             self._error(
                 'expecting one of: '
