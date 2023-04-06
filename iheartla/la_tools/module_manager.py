@@ -54,15 +54,37 @@ class CacheModuleManager(object):
         return tmp_type_walker, pre_frame
     
     def save_compiled_module(self, type_walker, pre_frame, module_name, parser_type, timestamp):
-        data = {"walker": type_walker,
-                "frame": pre_frame}
+        data = {"walker": copy.deepcopy(type_walker),
+                "frame": copy.deepcopy(pre_frame)}
         data_file = Path(self.module_cache_dir + "/{}_{}_{}.pickle".format(module_name, parser_type, timestamp))
+        # check old cache
+        if module_name in self.cache_module_dict and parser_type == self.cache_module_dict[module_name].parser_type:
+            self.cache_module_dict[module_name].type_walker = copy.deepcopy(type_walker)
+            self.cache_module_dict[module_name].pre_frame = copy.deepcopy(pre_frame)
+            self.cache_module_dict[module_name].timestamp = timestamp
+            # remove
+            self.remove_old_cache(module_name, parser_type)
+        else:
+            # save to dict
+            self.cache_module_dict[module_name] = CacheModuleData(name=module_name, timestamp=timestamp, parser_type=parser_type, pre_frame=data["frame"], type_walker = data["walker"])
         # write data 
         try:
             with open(data_file, 'wb') as f:
                 pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
         except Exception as e:
             print("IO error:{}".format(e))
+
+    def remove_old_cache(self, old_module_name, old_parser_type):
+        rm_list = []
+        for f in listdir(self.module_cache_dir):
+            if self.valid_module_cache(f):
+                pure_name = f.replace(".pickle", "")
+                module_name, parser_type, timestamp = pure_name.split('_')
+                if module_name == old_module_name and old_parser_type == parser_type:
+                    rm_list.append(f)
+        # 
+        for f in rm_list:
+            os.remove(os.path.join(self.module_cache_dir, f))
     
     def load_cached_modules(self):  
         for f in listdir(self.module_cache_dir):
