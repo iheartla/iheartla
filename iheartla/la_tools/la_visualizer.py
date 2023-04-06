@@ -62,7 +62,11 @@ class LaVisualizer(object):
                 # e.g.: partial derivative
                 content = "".join(['' if isinstance(c, Node) else str(c) for c in child])
             else:
-                content = str(child)
+                if isinstance(child, tuple):
+                    # identifier in simplified grammar: due to tatsu regex update
+                    content = child[0].text
+                else:
+                    content = str(child)
             self.ps.node(name=str(self.index), label=str(k) + ":" + content)
             self.ps.edge(str(cur_index), str(self.index))
             self.index += 1
