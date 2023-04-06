@@ -258,3 +258,47 @@ class IRIterator(IRVisitor):
     ###################################################################
 
 
+class IRSumIndexVisitor(IRIterator):
+    __instance = None
+
+    @staticmethod
+    def getInstance():
+        if IRSumIndexVisitor.__instance is None:
+            IRSumIndexVisitor()
+        return IRSumIndexVisitor.__instance
+
+    def __init__(self):
+        super().__init__()
+        IRSumIndexVisitor.__instance = self
+        self.variable = ''      #  
+        self.sub_list = []      # subscripts
+
+    def get_sub_list(self, sym, la_type, node):
+        # return all the subscripts with regard to sym
+        self.reset()
+        self.la_type = la_type
+        self.variable = sym
+        self.visit(node)
+        return self.sub_list
+    
+    def reset(self):
+        self.variable = ''      
+        self.sub_list.clear()
+
+    def visit_matrix_index(self, node, **kwargs):
+        self.visit(node.main, **kwargs)
+        if node.row_index is not None:
+            self.visit(node.row_index, **kwargs)
+        else:
+            self.visit(node.col_index, **kwargs)
+
+    def visit_vector_index(self, node, **kwargs):
+        if node.main.get_main_id() == self.variable:
+            row = node.row_index.get_main_id()
+            if row not in self.sub_list:
+                self.sub_list.append(row)
+        self.visit(node.main, **kwargs)
+        self.visit(node.row_index, **kwargs)
+    
+
+    
