@@ -993,7 +993,8 @@ class CodeGenEigen(CodeGen):
 
     def visit_summation(self, node, **kwargs):
         self.sum_new_sym = self.generate_var_name('local_x')  # new
-        self.sum_index_list = ['i', 'j', 'k']
+        # self.sum_index_list = ['i', 'j', 'k']
+        self.sum_index_list = node.sum_index_list
         target_var = []
         self.push_scope(node.scope_name)
         expr_sign = '-' if node.sign else ''

@@ -888,6 +888,7 @@ class SummationNode(ExprNode):
         self.lower = None
         self.upper = None
         self.sign = None
+        self.sum_index_list = []  # variable subscripts used for sparse hessian
 
 
     def iter_mesh_ele(self):

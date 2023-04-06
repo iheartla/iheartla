@@ -9,6 +9,7 @@ from ..la_tools.la_package import *
 import regex as re
 from ..la_tools.la_helper import filter_subscript
 from .light_walker import SolverParamWalker
+from .ir_iterator import IRSumIndexVisitor
 ## Make the visualizer
 try: from ..la_tools.la_visualizer import LaVisualizer
 except ImportError:
@@ -256,6 +257,7 @@ class TypeWalker(NodeWalker):
         self.la_content = ''
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
         self.hessian_list = []  # save hessian definitions, try to check them in the end
+        self.hessian_sum_list = []  # summation for evaluating sparse hessian
         self.visiting_lhs = False
         self.visiting_solver_eq = False  # e.g: Ax = b
         self.cur_eq_type = EqTypeEnum.DEFAULT
@@ -849,15 +851,21 @@ class TypeWalker(NodeWalker):
     def check_sparse_hessian(self, stat_list):
         for hess in self.hessian_list:
             node = self.get_assign_node(hess.upper, stat_list)
+            # clear
+            self.hessian_sum_list.clear()
             need_sparse = self.check_assign_node(node)
             if need_sparse:
                 node.need_sparse_hessian = True
                 node.hessian_var = hess.lower
+                # handle summation subscripts
+                for sum in self.hessian_sum_list:
+                    sum.sum_index_list = IRSumIndexVisitor.getInstance().get_sub_list(hess.lower, self.get_sym_type(hess.lower), sum)
+                    print("cur sum list: {}".format(sum.sum_index_list))
             print(node)
 
     def check_assign_node(self, node):
         # check whether the current assignment consists of a list of summations
-        return False
+        # return False
         return self.check_expr_node(node.right[0])
     
     def check_expr_node(self, node):
@@ -870,6 +878,7 @@ class TypeWalker(NodeWalker):
         if factor.is_node(IRNodeType.Factor):
             if factor.op:
                 if factor.op.is_node(IRNodeType.Summation):
+                    self.hessian_sum_list.append(factor.op)
                     return True
             elif factor.sub:
                 return self.check_expr_node(factor.sub)
