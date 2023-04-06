@@ -233,13 +233,23 @@ def get_compiled_module(module_name, parser_type, class_only):
     # Init parser
     module_file = "{}/{}.ihla".format(_module_path, module_name)
     cur_time = os.path.getmtime(Path(module_file))
-    module_content = read_from_file(module_file)
-    parser = get_default_parser()
-    new_model = parser.parse(module_content, parseinfo=True)
-    tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model, parser_type, class_only=class_only)
-    pre_frame = walk_model_frame(parser_type, tmp_type_walker, tmp_start_node, module_name)
-    # save
-    # CacheModuleManager.getInstance().save_compiled_module(tmp_type_walker, pre_frame, module_name, ParserTypeDict[parser_type], cur_time)
+    tmp_type_walker = None
+    if CACHE_MODULE:
+        # check 
+        tmp_type_walker, pre_frame = CacheModuleManager.getInstance().get_compiled_module(module_name, ParserTypeDict[parser_type], cur_time)
+    if tmp_type_walker is None:
+        print("Not found, regenerate type walker")
+        # regenerate
+        module_content = read_from_file(module_file)
+        parser = get_default_parser()
+        new_model = parser.parse(module_content, parseinfo=True)
+        tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model, parser_type, class_only=class_only)
+        pre_frame = walk_model_frame(parser_type, tmp_type_walker, tmp_start_node, module_name)
+        if CACHE_MODULE:
+            # save
+            CacheModuleManager.getInstance().save_compiled_module(tmp_type_walker, pre_frame, module_name, ParserTypeDict[parser_type], cur_time)
+    else:
+        print("Saved module found: {}".format(module_name))
     return tmp_type_walker, pre_frame
 
 def get_new_parser(start_node, current_content, type_walker, skipped_module=False, parser_type=ParserTypeEnum.EIGEN, class_only=False):

@@ -42,9 +42,15 @@ class CacheModuleManager(object):
         self.load_cached_modules()
         CacheModuleManager.__instance = self
         
-    def get_compiled_module(module_name, parser_type, timestamp):
+    def get_compiled_module(self, module_name, parser_type, timestamp):
         tmp_type_walker = None
         pre_frame = None
+        if module_name in self.cache_module_dict:
+            if parser_type == self.cache_module_dict[module_name].parser_type:
+                print("current timestamp:{}, saved timestamp:{}".format(self.cache_module_dict[module_name].timestamp, timestamp))
+                if float(self.cache_module_dict[module_name].timestamp) >= timestamp:
+                    tmp_type_walker = self.cache_module_dict[module_name].type_walker
+                    pre_frame = self.cache_module_dict[module_name].pre_frame
         return tmp_type_walker, pre_frame
     
     def save_compiled_module(self, type_walker, pre_frame, module_name, parser_type, timestamp):
@@ -58,18 +64,20 @@ class CacheModuleManager(object):
         except Exception as e:
             print("IO error:{}".format(e))
     
-    def load_cached_modules(self):
+    def load_cached_modules(self):  
         for f in listdir(self.module_cache_dir):
             if self.valid_module_cache(f):
                 pure_name = f.replace(".pickle", "")
                 module_name, parser_type, timestamp = pure_name.split('_')
-                print("module_name:{}, parser:{}, timestamp:{}".format(module_name, parser_type, timestamp))
+                # print("module_name:{}, parser:{}, timestamp:{}".format(module_name, parser_type, timestamp))
                 try:
                     with open(Path(self.module_cache_dir + "/" + f), 'rb') as ff:
                         data_dict = pickle.load(ff)
                         self.cache_module_dict[module_name] = CacheModuleData(name=module_name, timestamp=timestamp, parser_type=parser_type, pre_frame=data_dict["frame"], type_walker = data_dict["walker"])
                 except Exception as e:
                     print("IO error:{}".format(e))
+        for k, v in self.cache_module_dict.items():
+            print("module_name:{}, parser:{}, timestamp:{}".format(k, v.parser_type, v.timestamp))
     
     def valid_module_cache(self, cache_file):
         return '.pickle' in cache_file and '_' in cache_file
