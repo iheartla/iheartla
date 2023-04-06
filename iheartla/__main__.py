@@ -1,7 +1,9 @@
 import regex
 import sys
 sys.modules["re"] = regex
+import tatsu
 import iheartla.la_tools.la_helper as la_helper
+from iheartla.la_tools.la_helper import *
 from iheartla.la_tools.la_helper import DEBUG_MODE
 from iheartla.la_tools.la_logger import LaLogger
 from iheartla.la_parser.parser import compile_la_content, ParserTypeEnumDefaults
@@ -41,6 +43,7 @@ def IHLA(content, ret=None, mapping={}):
 
 if __name__ == '__main__':
     LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
+    la_debug("tatsu version: {}".format(tatsu.__version__))
     arg_parser = argparse.ArgumentParser(description='I Heart LA')
     arg_parser.add_argument('-o', '--output', help='The output language', choices = ['numpy', 'eigen', 'latex','matlab'])
     # arg_parser.add_argument('-i', '--input', help='File name containing I heart LA source code')
