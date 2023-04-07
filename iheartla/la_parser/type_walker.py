@@ -295,6 +295,7 @@ class TypeWalker(NodeWalker):
         self.main_param = ParamsData()
         self.used_params = []
         self.der_vars = []   # variables in derivatives
+        self.der_defined_lhs_list = []   # symbol defined as gradient or hessian
         self.opt_syms = []
         self.expr_dict = {}        # lhs id -> symbols in current expr
         self.smooth_dict = {}
@@ -435,6 +436,7 @@ class TypeWalker(NodeWalker):
         self.main_param.reset()
         self.used_params.clear()
         self.der_vars.clear()
+        self.der_defined_lhs_list.clear()
         self.opt_syms.clear()
         self.expr_dict.clear()
         self.visiting_opt = False
@@ -928,6 +930,7 @@ class TypeWalker(NodeWalker):
         self.saved_extra_symtable = copy.deepcopy(self.extra_symtable)
         self.saved_used_params = copy.deepcopy(self.used_params)
         self.saved_der_vars = copy.deepcopy(self.der_vars)
+        self.saved_der_defined_lhs_list = copy.deepcopy(self.der_defined_lhs_list)
         self.saved_opt_syms = copy.deepcopy(self.opt_syms)
         self.saved_opt_dict = copy.deepcopy(self.opt_dict)
         # start from main scope
@@ -952,6 +955,7 @@ class TypeWalker(NodeWalker):
         self.opt_dict = self.saved_opt_dict
         self.used_params = self.saved_used_params
         self.der_vars = self.saved_der_vars
+        self.der_defined_lhs_list = self.saved_der_defined_lhs_list
         self.opt_syms = self.saved_opt_syms
         self.local_func_parsing = False
         self.is_param_block = False
@@ -2138,6 +2142,11 @@ class TypeWalker(NodeWalker):
                 else:
                     # make a list
                     rhs_type_list = [right_info.la_type]
+                # check rhs node type
+                if is_derivative_node(right_info.ir):
+                    self.assert_expr(len(node.left) == 1, get_err_msg_info(node.left[0].parseinfo, "Lhs can only be one identifier"))
+                    if id0 not in self.der_defined_lhs_list:
+                        self.der_defined_lhs_list.append(id0)
             right_type = rhs_type_list[cur_index]
             if len(self.lhs_subs) > 0:
                 for cur_s_index in range(len(self.lhs_subs)):

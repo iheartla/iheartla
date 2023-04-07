@@ -602,6 +602,7 @@ class IRVisitor(IRBaseVisitor):
         self.logger.info("used params:{}".format(self.used_params))
         self.logger.info("der vars:{}".format(self.der_vars))
         self.logger.info("optimized variables:{}".format(self.opt_syms))
+        self.logger.info("der_defined_lhs_list:{}".format(self.der_defined_lhs_list))
 
     def init_type(self, type_walker, func_name):
         self.main_param = type_walker.main_param
@@ -624,6 +625,7 @@ class IRVisitor(IRBaseVisitor):
         self.opt_dict = type_walker.opt_dict
         self.used_params = type_walker.used_params
         self.der_vars = type_walker.der_vars
+        self.der_defined_lhs_list = type_walker.der_defined_lhs_list
         self.der_vars_mapping.clear()
         for param in self.der_vars:
                 self.der_vars_mapping[param] = self.generate_var_name("new_{}".format(param))    # new variable with var type

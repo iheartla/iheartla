@@ -1556,3 +1556,16 @@ class FunctionNode(ExprNode):
                         return "{}&{}".format(self.name.get_main_id(), extra["param"])
             return self.name.get_main_id()
         return self.name.raw_text
+    
+
+def is_derivative_node(node):
+    # whether the current node is a gradient or hessian node
+    factor = node
+    if factor.is_node(IRNodeType.Subexpression):
+        factor = factor.value
+    if factor.is_node(IRNodeType.Expression):
+        factor = factor.value
+    if factor.is_node(IRNodeType.Factor):
+        if factor.op.is_node(IRNodeType.Gradient) or factor.op.is_node(IRNodeType.Derivative) or factor.op.is_node(IRNodeType.Partial):
+            return True
+    return False
