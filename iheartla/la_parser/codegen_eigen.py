@@ -324,7 +324,10 @@ class CodeGenEigen(CodeGen):
         for parameter in self.lhs_list:
             if parameter in self.symtable and self.get_sym_type(parameter) is not None:
                 # not local func
-                item_list.append("    {} {};".format(self.get_ctype(self.get_sym_type(parameter)), parameter))
+                omit = False
+                if parameter in self.der_defined_lhs_list:
+                    omit = True
+                item_list.append("    {} {};".format(self.get_ctype(self.get_sym_type(parameter), omit), parameter))
                 def_list.append("const {} & {}".format(self.get_ctype(self.get_sym_type(parameter), True), parameter))
                 # assign_list.append("{}({})".format(parameter, parameter))
         def_struct = ''
