@@ -83,8 +83,12 @@ class CodeGenEigen(CodeGen):
 
     def get_ctype(self, la_type, omit_template=False):
         cur_double_type = self.double_type    # used in current function only
+        cur_vectord_type = self.vectord_type
+        cur_matrixd_type = self.matrixd_type
         if omit_template:
             cur_double_type = "double"
+            cur_vectord_type = "Eigen::VectorXd"
+            cur_matrixd_type = "Eigen::MatrixXd"
         type_str = ""
         if la_type.is_sequence():
             type_str = "std::vector<{}>".format(self.get_ctype(la_type.element_type, omit_template))
@@ -105,7 +109,7 @@ class CodeGenEigen(CodeGen):
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::MatrixXi"
                     else:
-                        type_str = "{}".format(self.matrixd_type)
+                        type_str = "{}".format(cur_matrixd_type)
                 else:
                     if la_type.is_dim_constant() and la_type.rows != 0 and la_type.cols != 0:
                         if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
@@ -120,7 +124,7 @@ class CodeGenEigen(CodeGen):
                             elif isinstance(la_type.cols, int):
                                 type_str = "Eigen::Matrix<int, Eigen::Dynamic, {}>".format(la_type.cols)
                         else:
-                            type_str = "{}".format(self.matrixd_type)
+                            type_str = "{}".format(cur_matrixd_type)
                             if isinstance(la_type.rows, int):
                                 type_str = "Eigen::Matrix<{}, {}, Eigen::Dynamic>".format(cur_double_type, la_type.rows)
                             elif isinstance(la_type.cols, int):
@@ -142,7 +146,7 @@ class CodeGenEigen(CodeGen):
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::VectorXi"
                     else:
-                        type_str = "{}".format(self.vectord_type)
+                        type_str = "{}".format(cur_vectord_type)
                 else:
                     if la_type.is_dim_constant() and la_type.rows != 0:
                         if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
@@ -153,7 +157,7 @@ class CodeGenEigen(CodeGen):
                         if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                             type_str = "Eigen::VectorXi"
                         else:
-                            type_str = "{}".format(self.vectord_type)
+                            type_str = "{}".format(cur_vectord_type)
         elif la_type.is_scalar():
             if la_type.is_scalar() and la_type.is_int:
                 type_str = "int"
