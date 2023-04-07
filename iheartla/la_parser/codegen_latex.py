@@ -439,7 +439,7 @@ class CodeGenLatex(CodeGen):
     def visit_difference(self, node, **kwargs):
         sign = "-"
         if node.diff_format == DiffFormat.DiffSplit:
-            sign = "\\setminus"
+            sign = "\\smallsetminus"
         return self.visit(node.left, **kwargs) + sign + self.visit(node.right, **kwargs)
 
     def visit_summation(self, node, **kwargs):
@@ -850,7 +850,7 @@ class CodeGenLatex(CodeGen):
         right_info = self.visit(node.right, **kwargs)
         if node.pow:
             return left_info + '^{-1}' + right_info
-        return left_info + ' \setminus ' + right_info
+        return left_info + ' \\smallsetminus ' + right_info
 
     def visit_norm(self, node, **kwargs):
         if node.value.la_type.is_scalar() or node.value.la_type.is_set() :
