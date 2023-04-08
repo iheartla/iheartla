@@ -462,6 +462,7 @@ class AssignNode(StmtNode):
         self.unknown_id = None
         self.change_ele_only = False   # change an element inside a matrix/vector/sequence
         self.need_sparse_hessian = False   # whether we need a sparse hessian for the current assignment
+        self.new_hessian_name = ''         # new name
         self.hessian_var = ""              # variable in current hessian
 
     def get_lhs_list(self):
@@ -1397,7 +1398,7 @@ class HessianInfo(object):
      def __init__(self, upper=None, lower=None, ir_node=None):
          self.upper = upper
          self.lower = lower
-         self.ir_node = ir_node
+         self.ir_node = ir_node    # node ∂²y/∂s²
 
 
 class PartialNode(ExprNode):
@@ -1409,6 +1410,7 @@ class PartialNode(ExprNode):
         self.lorder_list = lorder_list
         self.order = order
         self.order_type = order_type
+        self.new_hessian_name = ''     # replace original content during visiting
 
 class SizeNode(ExprNode):
     def __init__(self, param=None, la_type=None, parse_info=None, raw_text=None):

@@ -859,10 +859,12 @@ class TypeWalker(NodeWalker):
             if need_sparse:
                 node.need_sparse_hessian = True
                 node.hessian_var = hess.lower
+                node.new_hessian_name = self.generate_var_name("hess")
+                hess.ir_node.new_hessian_name = node.new_hessian_name
                 # handle summation subscripts
                 for sum in self.hessian_sum_list:
                     sum.sum_index_list = IRSumIndexVisitor.getInstance().get_sub_list(hess.lower, self.get_sym_type(hess.lower), sum)
-                    print("cur sum list: {}".format(sum.sum_index_list))
+                    la_debug("cur sum list: {}, sym:{}".format(sum.sum_index_list, hess.lower))
                 # set sparse type
                 hess.ir_node.la_type.sparse = True
             print(node)
@@ -891,6 +893,7 @@ class TypeWalker(NodeWalker):
         return False
     
     def get_assign_node(self, lhs, stat_list):
+        # get assign node for a specific lhs symbol
         res = None
         for node in stat_list:
             if node.is_node(IRNodeType.Assignment):

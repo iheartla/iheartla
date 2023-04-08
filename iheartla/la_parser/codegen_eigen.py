@@ -1103,7 +1103,7 @@ class CodeGenEigen(CodeGen):
                 # 
                 new_objective_name = self.generate_var_name('objective')
             if self.sum_replace_var:
-                content.append(str("    var " + new_objective_name + " = " + expr_sign + exp_str + ';\n'))
+                content.append(str("    autodiff::var " + new_objective_name + " = " + expr_sign + exp_str + ';\n'))
                 content.append(str("    " + assign_id + " += " + new_objective_name + ';\n'))
             else:
                 content.append(str("    " + assign_id + " += " + expr_sign + exp_str + ';\n'))
@@ -2245,7 +2245,7 @@ class CodeGenEigen(CodeGen):
                             self.def_dict[node.left[cur_index].get_main_id()] = True
                         extra_def = ''
                         if node.need_sparse_hessian:
-                            hessian_name = self.generate_var_name("hess")
+                            hessian_name = node.new_hessian_name
                             extra_def += "    Eigen::SparseMatrix<double> {}({}.size(), {}.size());\n".format(hessian_name, node.hessian_var, node.hessian_var)
                             extra_def += "    std::vector<Eigen::Triplet<double>> {};\n".format(self.sum_hessian_triplet)
                         right_exp += '    ' + type_def + node.left[cur_index].get_main_id() + op + right_info.content + ';'
@@ -2428,12 +2428,16 @@ class CodeGenEigen(CodeGen):
     def visit_partial(self, node, **kwargs):
         content = ""
         if node.order_type == PartialOrderType.PartialHessian:
-            upper_info = self.visit(node.upper, **kwargs)
-            lower_info = self.visit(node.lower_list[0], **kwargs)
-            if node.lower_list[0].get_main_id() in self.der_vars_mapping:
-                content = "hessian({}, this->{})".format(upper_info.content, self.der_vars_mapping[node.lower_list[0].get_main_id()])
+            if node.la_type.sparse:
+                # sparse matrix
+                content = node.new_hessian_name
             else:
-                content = "hessian({}, {})".format(upper_info.content, lower_info.content)
+                upper_info = self.visit(node.upper, **kwargs)
+                lower_info = self.visit(node.lower_list[0], **kwargs)
+                if node.lower_list[0].get_main_id() in self.der_vars_mapping:
+                    content = "hessian({}, this->{})".format(upper_info.content, self.der_vars_mapping[node.lower_list[0].get_main_id()])
+                else:
+                    content = "hessian({}, {})".format(upper_info.content, lower_info.content)
         elif node.order_type == PartialOrderType.PartialNormal:
             upper_info = self.visit(node.upper, **kwargs)
             lower_info = self.visit(node.lower_list[0], **kwargs)
