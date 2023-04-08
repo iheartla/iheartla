@@ -11,11 +11,7 @@
 #include <algorithm> 
 #include "dec_util.h"
 #include "TriangleMesh.h"
-using Eigen::VectorXi;
-using Eigen::MatrixXi;
-// typedef Eigen::Matrix< int, Eigen::Dynamic, 1> Vector;
-// typedef Eigen::Matrix< int, 1, Eigen::Dynamic> RowVector;
-// typedef Eigen::Matrix< int, Eigen::Dynamic, Eigen::Dynamic> Matrix;
+
 TriangleMesh::TriangleMesh(){
 
 }
@@ -75,50 +71,6 @@ void TriangleMesh::init_mesh_indices(){
         this->Fi[i] = i;
     }
 }
-
-
-std::vector<int> TriangleMesh::nonzeros(Eigen::SparseMatrix<int> & target)const{
-    return nonzeros(target, true);
-}
-
-std::vector<int> TriangleMesh::nonzeros(Eigen::SparseMatrix<int> & target, bool is_row)const{
-    std::vector<int> result;
-    result.reserve(target.rows());  // reserve
-    for (int k=0; k<target.outerSize(); ++k){
-      for (SparseMatrix<int>::InnerIterator it(target,k); it; ++it) {
-        if (is_row)
-        {
-            result.push_back(it.row());
-        }
-        else{
-            result.push_back(it.col());
-        }
-      }
-    } 
-    return result;
-}
-std::vector<int> TriangleMesh::ValueSet(Eigen::SparseMatrix<int> &target, int value)const{
-    // return row indices for specific value
-    return ValueSet(target, value, true);
-}
-std::vector<int> TriangleMesh::ValueSet(Eigen::SparseMatrix<int> &target, int value, bool is_row)const{
-    std::vector<int> result;
-    for (int k=0; k<target.outerSize(); ++k){
-      for (SparseMatrix<int>::InnerIterator it(target,k); it; ++it) {
-        if (it.value() == value)
-        {
-            if (is_row)
-            {
-                result.push_back(it.row());
-            }
-            else{
-                result.push_back(it.col());
-            }
-        }
-      }
-    } 
-    return result;
-} 
 
 int TriangleMesh::get_edge_index(int i, int j, int &sign){
     if (i < j)
@@ -298,66 +250,6 @@ void TriangleMesh::build_boundary_mat1(){
     this->pos_bm1 = this->bm1.cwiseAbs();
     // std::cout<<"this->bm1:\n"<<this->bm1<<std::endl;
     // std::cout<<"this->pos_bm1:\n"<<this->pos_bm1<<std::endl;
-}
-
-int TriangleMesh::n_edges() const{
-    return this->E.rows();
-}
-int TriangleMesh::n_vertices() const{
-    return this->num_v;
-}
-int TriangleMesh::n_faces() const{
-    return this->F.rows();
-}
-int TriangleMesh::n_tets() const{
-    return this->T.rows();
-}
-SparseMatrix<int> TriangleMesh::vertices_to_vector(const std::vector<int>& vset) const{
-    SparseMatrix<int> v(this->num_v, 1);
-    std::vector<Eigen::Triplet<int> > tripletList; 
-    tripletList.reserve(this->num_v);
-    for (int idx : vset)
-    {
-        tripletList.push_back(Eigen::Triplet<int>(idx, 0, 1));
-    }
-    // std::cout<<"this->num_v:"<<this->num_v<<std::endl;
-    // std::cout<<"vset size:"<<vset.size()<<std::endl;
-    // std::cout<<"tripletList size:"<<tripletList.size()<<std::endl;
-    v.setFromTriplets(tripletList.begin(), tripletList.end());
-    return v;
-}
-SparseMatrix<int> TriangleMesh::edges_to_vector(const std::vector<int>& eset) const{
-    SparseMatrix<int> e(this->E.rows(), 1);
-    std::vector<Eigen::Triplet<int> > tripletList; 
-    tripletList.reserve(this->E.rows());
-    for (int idx : eset)
-    {
-        tripletList.push_back(Eigen::Triplet<int>(idx, 0, 1));
-    }
-    e.setFromTriplets(tripletList.begin(), tripletList.end());
-    return e;
-}
-SparseMatrix<int> TriangleMesh::faces_to_vector(const std::vector<int>& fset) const{
-    SparseMatrix<int> f(this->F.rows(), 1);
-    std::vector<Eigen::Triplet<int> > tripletList; 
-    tripletList.reserve(this->F.rows());
-    for (int idx : fset)
-    {
-        tripletList.push_back(Eigen::Triplet<int>(idx, 0, 1));
-    }
-    f.setFromTriplets(tripletList.begin(), tripletList.end());
-    return f;
-}
-SparseMatrix<int> TriangleMesh::tets_to_vector(const std::vector<int>& tset) const{
-    SparseMatrix<int> t(this->T.rows(), 1);
-    std::vector<Eigen::Triplet<int> > tripletList; 
-    tripletList.reserve(this->T.rows());
-    for (int idx : tset)
-    {
-        tripletList.push_back(Eigen::Triplet<int>(idx, 0, 1));
-    }
-    t.setFromTriplets(tripletList.begin(), tripletList.end());
-    return t;
 }
   
 std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> TriangleMesh::MeshSets() const{
