@@ -863,6 +863,8 @@ class TypeWalker(NodeWalker):
                 for sum in self.hessian_sum_list:
                     sum.sum_index_list = IRSumIndexVisitor.getInstance().get_sub_list(hess.lower, self.get_sym_type(hess.lower), sum)
                     print("cur sum list: {}".format(sum.sum_index_list))
+                # set sparse type
+                hess.ir_node.la_type.sparse = True
             print(node)
 
     def check_assign_node(self, node):
@@ -2821,7 +2823,7 @@ class TypeWalker(NodeWalker):
                 # hessian
                 ret_type = get_hessian_type(upper_info.la_type, lower_type_list[0])
                 ir_node.order_type = PartialOrderType.PartialHessian
-                self.hessian_list.append(HessianInfo(node.upper.text, lower_name_list[0]))
+                self.hessian_list.append(HessianInfo(node.upper.text, lower_name_list[0], ir_node))
             pass
         self.assert_expr(is_same_expr("+".join(lorder_value_list), uorder_value), get_err_msg_info(node.parseinfo,"Order doesn't match"))
         if node.f:

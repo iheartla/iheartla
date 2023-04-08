@@ -1394,9 +1394,10 @@ class DerivativeNode(ExprNode):
         
 class HessianInfo(object):
      # mark hessian definitions
-     def __init__(self, upper=None, lower=None):
+     def __init__(self, upper=None, lower=None, ir_node=None):
          self.upper = upper
          self.lower = lower
+         self.ir_node = ir_node
 
 
 class PartialNode(ExprNode):
