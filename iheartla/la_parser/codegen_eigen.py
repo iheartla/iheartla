@@ -1417,8 +1417,11 @@ class CodeGenEigen(CodeGen):
         left_info.pre_list += right_info.pre_list
         if node.left.la_type.is_matrix() and node.left.la_type.sparse:
             solver_name = self.generate_var_name("solver")
+            # pre_list.append(
+            #     "    Eigen::SparseQR <{}, Eigen::COLAMDOrdering<int> > {};\n".format(self.get_ctype(node.left.la_type, True),
+            #                                                                          solver_name))
             pre_list.append(
-                "    Eigen::SparseQR <{}, Eigen::COLAMDOrdering<int> > {};\n".format(self.get_ctype(node.left.la_type, True),
+                "    Eigen::SimplicialLLT <{}> {};\n".format(self.get_ctype(node.left.la_type, True),
                                                                                      solver_name))
             pre_list.append("    {}.compute({});\n".format(solver_name, left_info.content))
             left_info.content = "{}.solve({})".format(solver_name, right_info.content)
@@ -1429,7 +1432,7 @@ class CodeGenEigen(CodeGen):
             else:
                 left_info.content = "({}).colPivHouseholderQr().solve({})".format(left_info.content, right_info.content)
         left_info.pre_list += pre_list
-        return left_info
+        return left_info    
 
     def visit_multi_conditionals(self, node, **kwargs):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
