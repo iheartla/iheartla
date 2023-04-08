@@ -966,15 +966,15 @@ def get_hessian_type(upper_type, lower_type):
     ret_type = ScalarType()
     if upper_type.is_scalar():
         if lower_type.is_vector():
-            ret_type = MatrixType(rows=lower_type.rows, cols=lower_type.rows, element_type=ScalarType())
+            ret_type = MatrixType(rows=lower_type.rows, cols=lower_type.rows, element_type=ScalarType(), sparse=True)
         elif lower_type.is_sequence():
-            ret_type = MatrixType(rows=lower_type.size, cols=lower_type.size)
+            ret_type = MatrixType(rows=lower_type.size, cols=lower_type.size, sparse=True)
             if lower_type.element_type.is_scalar():
-                ret_type = MatrixType(rows=lower_type.size, cols=lower_type.size)
+                ret_type = MatrixType(rows=lower_type.size, cols=lower_type.size, sparse=True)
             elif lower_type.element_type.is_vector():
                 # ret_type = MatrixType(rows=lower_type.size, cols=lower_type.element_type.rows)
                 size = mul_dims(lower_type.size, lower_type.element_type.rows)
-                ret_type = MatrixType(rows=size, cols=size)
+                ret_type = MatrixType(rows=size, cols=size, sparse=True)
     return ret_type
 
 def make_function_type(params=[], ret=[]):

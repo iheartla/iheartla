@@ -1411,6 +1411,7 @@ class PartialNode(ExprNode):
         self.order = order
         self.order_type = order_type
         self.new_hessian_name = ''     # replace original content during visiting
+        self.need_sparse = False
 
 class SizeNode(ExprNode):
     def __init__(self, param=None, la_type=None, parse_info=None, raw_text=None):

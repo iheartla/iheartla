@@ -1418,7 +1418,7 @@ class CodeGenEigen(CodeGen):
         if node.left.la_type.is_matrix() and node.left.la_type.sparse:
             solver_name = self.generate_var_name("solver")
             pre_list.append(
-                "    Eigen::SparseQR <{}, Eigen::COLAMDOrdering<int> > {};\n".format(self.get_ctype(node.left.la_type),
+                "    Eigen::SparseQR <{}, Eigen::COLAMDOrdering<int> > {};\n".format(self.get_ctype(node.left.la_type, True),
                                                                                      solver_name))
             pre_list.append("    {}.compute({});\n".format(solver_name, left_info.content))
             left_info.content = "{}.solve({})".format(solver_name, right_info.content)
@@ -2428,16 +2428,16 @@ class CodeGenEigen(CodeGen):
     def visit_partial(self, node, **kwargs):
         content = ""
         if node.order_type == PartialOrderType.PartialHessian:
-            if node.la_type.sparse:
+            if node.need_sparse:
                 # sparse matrix
                 content = node.new_hessian_name
             else:
                 upper_info = self.visit(node.upper, **kwargs)
                 lower_info = self.visit(node.lower_list[0], **kwargs)
                 if node.lower_list[0].get_main_id() in self.der_vars_mapping:
-                    content = "hessian({}, this->{})".format(upper_info.content, self.der_vars_mapping[node.lower_list[0].get_main_id()])
+                    content = "hessian({}, this->{}).sparseView()".format(upper_info.content, self.der_vars_mapping[node.lower_list[0].get_main_id()])
                 else:
-                    content = "hessian({}, {})".format(upper_info.content, lower_info.content)
+                    content = "hessian({}, {}).sparseView()".format(upper_info.content, lower_info.content)
         elif node.order_type == PartialOrderType.PartialNormal:
             upper_info = self.visit(node.upper, **kwargs)
             lower_info = self.visit(node.lower_list[0], **kwargs)
