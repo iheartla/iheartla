@@ -137,6 +137,32 @@ RowVector permute_rvector(const RowVector &source){
     return source;
 }
 
+std::vector<int> permute_vector(const std::vector<int> &source){
+    if (source.size() > 0)
+    {
+        int min_index = 0;
+        int cur_val = source[0];
+        for (int i = 1; i < source.size(); ++i)
+        {
+            if (source[i]<cur_val)
+            {
+                cur_val = source[i];
+                min_index = i;
+            }
+        }
+        if (min_index != 0)
+        {
+            std::vector<int> res(source.size());
+            for (int i = 0; i < source.size(); ++i)
+            {
+                res[i] = source[(i+min_index)%source.size()];
+            }
+            return res;
+        }
+    }
+    return source;
+}
+
 Matrix remove_duplicate_rows(Matrix source){
     if (source.rows() == 0) {
         return source;

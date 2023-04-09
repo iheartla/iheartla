@@ -40,6 +40,8 @@ RowVector sort_rvector(RowVector &source);
 
 RowVector permute_rvector(const RowVector &source);
 
+std::vector<int> permute_vector(const std::vector<int> &source);
+
 Matrix remove_duplicate_rows(Matrix source);
 
 Matrix preprocess_matrix(const Matrix &source);
