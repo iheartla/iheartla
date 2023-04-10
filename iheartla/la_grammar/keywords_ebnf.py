@@ -76,6 +76,11 @@ FACESET = /[Ff]ace[Ss]et/;
 TETSET = /[Tt]et[Ss]et/;
 SIMPLICIALSET = /[Ss]implicial[Ss]et/;
 MESH = /mesh/ | /Mesh/;
+TRIANGLE = /[Tt]riangle/;
+POLYGON = /[P]olygon/;
+POINTCLOUD = /[P]oint [Cc]loud/;
+TETRAHEDRON = /[Tt]etrahedron/;
+POLYHEDRON = /[Pp]olyhedron/;
 INDEX = /index/;
 VERTICES = /vertices/;
 EDGES = /edges/;
@@ -127,6 +132,11 @@ BUILTIN_KEYWORDS
     | TETSET
     | SIMPLICIALSET
     | MESH
+    | TRIANGLE
+    | POLYGON
+    | POINTCLOUD
+    | TETRAHEDRON
+    | POLYHEDRON
     | SPARSE
     | INDEX
     | VERTICES

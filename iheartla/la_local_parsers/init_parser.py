@@ -438,6 +438,26 @@ class grammarinitParser(Parser):
             )
 
     @tatsumasu()
+    def _TRIANGLE_(self):  # noqa
+        self._pattern('[Tt]riangle')
+
+    @tatsumasu()
+    def _POLYGON_(self):  # noqa
+        self._pattern('[P]olygon')
+
+    @tatsumasu()
+    def _POINTCLOUD_(self):  # noqa
+        self._pattern('[P]oint [Cc]loud')
+
+    @tatsumasu()
+    def _TETRAHEDRON_(self):  # noqa
+        self._pattern('[Tt]etrahedron')
+
+    @tatsumasu()
+    def _POLYHEDRON_(self):  # noqa
+        self._pattern('[Pp]olyhedron')
+
+    @tatsumasu()
     def _INDEX_(self):  # noqa
         self._pattern('index')
 
@@ -553,6 +573,16 @@ class grammarinitParser(Parser):
             with self._option():
                 self._MESH_()
             with self._option():
+                self._TRIANGLE_()
+            with self._option():
+                self._POLYGON_()
+            with self._option():
+                self._POINTCLOUD_()
+            with self._option():
+                self._TETRAHEDRON_()
+            with self._option():
+                self._POLYHEDRON_()
+            with self._option():
                 self._SPARSE_()
             with self._option():
                 self._INDEX_()
@@ -575,14 +605,17 @@ class grammarinitParser(Parser):
                 '<FACES> <FACESET> <FOR> <FROM> <GIVEN>'
                 '<IF> <IN> <INDEX> <INITIAL> <INT> <LN>'
                 '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
-                '<NABLA> <OR> <OTHERWISE> <PI> <POUND>'
-                '<PRIME> <SCALAR> <SEQUENCE>'
+                '<NABLA> <OR> <OTHERWISE> <PI>'
+                '<POINTCLOUD> <POLYGON> <POLYHEDRON>'
+                '<POUND> <PRIME> <SCALAR> <SEQUENCE>'
                 '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
-                '<SUBJECT_TO> <SUBSET> <TETS> <TETSET>'
-                '<TUPLE> <VECTOR> <VERTEXSET> <VERTICES>'
-                '<WHERE> <WITH> Mesh SOLVE Solve'
-                '[Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
+                '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> Mesh SOLVE Solve [Ee]dge[Ss]et'
+                '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
+                '[Pp]olyhedron [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -3888,12 +3921,14 @@ class grammarinitParser(Parser):
                 '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
                 '<MESH> <MIN> <NABLA>'
                 '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
-                '<PI> <POUND> <PREFIX_KEYWORD> <PRIME>'
+                '<PI> <POINTCLOUD> <POLYGON> <POLYHEDRON>'
+                '<POUND> <PREFIX_KEYWORD> <PRIME>'
                 '<SCALAR> <SEQUENCE> <SIMPLICIALSET>'
                 '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
-                '<SUBSET> <TETS> <TETSET> <TUPLE>'
-                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
-                '<WITH> <builtin_operators> <constant>'
+                '<SUBSET> <TETRAHEDRON> <TETS> <TETSET>'
+                '<TRIANGLE> <TUPLE> <VECTOR> <VERTEXSET>'
+                '<VERTICES> <WHERE> <WITH>'
+                '<builtin_operators> <constant>'
                 '<cross_product_in_matrix_operator>'
                 '<digit> <double> <floating_point>'
                 '<fraction>'
@@ -3916,8 +3951,10 @@ class grammarinitParser(Parser):
                 '<subexpression> <sum_in_matrix_operator>'
                 '<trans_in_matrix_operator> <vector> Mesh'
                 'SOLVE Solve [01\\u1D7D9] [Ee]dge[Ss]et'
-                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Vv]ertex[Ss]et'
+                '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
+                '[Pp]olyhedron [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
                 'from given if index initial int ln log'
@@ -4056,12 +4093,14 @@ class grammarinitParser(Parser):
                 '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
                 '<MESH> <MIN> <NABLA>'
                 '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
-                '<PI> <POUND> <PREFIX_KEYWORD> <PRIME>'
+                '<PI> <POINTCLOUD> <POLYGON> <POLYHEDRON>'
+                '<POUND> <PREFIX_KEYWORD> <PRIME>'
                 '<SCALAR> <SEQUENCE> <SIMPLICIALSET>'
                 '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
-                '<SUBSET> <TETS> <TETSET> <TUPLE>'
-                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
-                '<WITH> <builtin_operators> <constant>'
+                '<SUBSET> <TETRAHEDRON> <TETS> <TETSET>'
+                '<TRIANGLE> <TUPLE> <VECTOR> <VERTEXSET>'
+                '<VERTICES> <WHERE> <WITH>'
+                '<builtin_operators> <constant>'
                 '<cross_product_in_matrix_operator>'
                 '<digit> <double> <factor_in_matrix>'
                 '<floating_point> <fraction>'
@@ -4084,8 +4123,10 @@ class grammarinitParser(Parser):
                 '<subexpression> <sum_in_matrix_operator>'
                 '<trans_in_matrix_operator> <vector> Mesh'
                 'SOLVE Solve [01\\u1D7D9] [Ee]dge[Ss]et'
-                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Vv]ertex[Ss]et'
+                '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
+                '[Pp]olyhedron [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
                 'from given if index initial int ln log'
@@ -4233,12 +4274,14 @@ class grammarinitParser(Parser):
                 '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
                 '<MESH> <MIN> <NABLA>'
                 '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
-                '<PI> <POUND> <PREFIX_KEYWORD> <PRIME>'
+                '<PI> <POINTCLOUD> <POLYGON> <POLYHEDRON>'
+                '<POUND> <PREFIX_KEYWORD> <PRIME>'
                 '<SCALAR> <SEQUENCE> <SIMPLICIALSET>'
                 '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
-                '<SUBSET> <TETS> <TETSET> <TUPLE>'
-                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
-                '<WITH> <builtin_operators> <constant>'
+                '<SUBSET> <TETRAHEDRON> <TETS> <TETSET>'
+                '<TRIANGLE> <TUPLE> <VECTOR> <VERTEXSET>'
+                '<VERTICES> <WHERE> <WITH>'
+                '<builtin_operators> <constant>'
                 '<cross_product_in_matrix_operator>'
                 '<digit> <double> <factor_in_matrix>'
                 '<floating_point> <fraction>'
@@ -4261,8 +4304,10 @@ class grammarinitParser(Parser):
                 '<subexpression> <sum_in_matrix_operator>'
                 '<trans_in_matrix_operator> <vector> Mesh'
                 'SOLVE Solve [01\\u1D7D9] [Ee]dge[Ss]et'
-                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Vv]ertex[Ss]et'
+                '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
+                '[Pp]olyhedron [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
                 'from given if index initial int ln log'
@@ -4615,15 +4660,18 @@ class grammarinitParser(Parser):
                 '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
                 '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
                 '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                '<OTHERWISE> <PI> <POUND>'
-                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
-                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
-                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
-                '<TETS> <TETSET> <TUPLE> <VECTOR>'
-                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
-                '<identifier_alone> Mesh SOLVE Solve'
-                '[Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
+                '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
+                '<PRIME> <SCALAR> <SEQUENCE>'
+                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
+                '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
+                '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> <identifier_alone> Mesh SOLVE'
+                'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[P]oint [Cc]loud [P]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -4765,21 +4813,23 @@ class grammarinitParser(Parser):
                 '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
                 '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
                 '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                '<OTHERWISE> <PI> <POUND>'
-                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
-                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
-                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
-                '<TETS> <TETSET> <TUPLE> <VECTOR>'
-                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
-                'Mesh SOLVE Solve [Ee]dge[Ss]et'
-                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Vv]ertex[Ss]et [Δ] and'
-                'argmax argmin as edges exp faces for'
-                'from given if index initial int ln log'
-                'matrix max mesh min or otherwise s.t.'
-                'scalar sequence solve sparse sqrt'
-                'subject to sum tets tuple vector'
-                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
+                '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
+                '<PRIME> <SCALAR> <SEQUENCE>'
+                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
+                '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
+                '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> Mesh SOLVE Solve [Ee]dge[Ss]et'
+                '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
+                '[Pp]olyhedron [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                'edges exp faces for from given if index'
+                'initial int ln log matrix max mesh min'
+                'or otherwise s.t. scalar sequence solve'
+                'sparse sqrt subject to sum tets tuple'
+                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -6500,12 +6550,14 @@ class grammarinitParser(Parser):
                 '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
                 '<MESH> <MIN> <NABLA>'
                 '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
-                '<PI> <POUND> <PREFIX_KEYWORD> <PRIME>'
+                '<PI> <POINTCLOUD> <POLYGON> <POLYHEDRON>'
+                '<POUND> <PREFIX_KEYWORD> <PRIME>'
                 '<SCALAR> <SEQUENCE> <SIMPLICIALSET>'
                 '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
-                '<SUBSET> <TETS> <TETSET> <TUPLE>'
-                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
-                '<WITH> <add_sub_operator> <addition>'
+                '<SUBSET> <TETRAHEDRON> <TETS> <TETSET>'
+                '<TRIANGLE> <TUPLE> <VECTOR> <VERTEXSET>'
+                '<VERTICES> <WHERE> <WITH>'
+                '<add_sub_operator> <addition>'
                 '<assignment> <destructure> <expression>'
                 '<identifier> <identifier_alone>'
                 '<identifier_with_multi_subscript>'
@@ -6513,14 +6565,15 @@ class grammarinitParser(Parser):
                 '<multi_cond_expr> <optimize_operator>'
                 '<right_hand_side> <subtraction> <term>'
                 'Mesh SOLVE Solve [Ee]dge[Ss]et'
-                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Vv]ertex[Ss]et [Δ] and'
-                'argmax argmin as edges exp faces for'
-                'from given if index initial int ln log'
-                'matrix max mesh min or otherwise s.t.'
-                'scalar sequence solve sparse sqrt'
-                'subject to sum tets tuple vector'
-                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
+                '[Pp]olyhedron [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                'edges exp faces for from given if index'
+                'initial int ln log matrix max mesh min'
+                'or otherwise s.t. scalar sequence solve'
+                'sparse sqrt subject to sum tets tuple'
+                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu('Expression')
@@ -6685,17 +6738,20 @@ class grammarinitParser(Parser):
                 '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
                 '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
                 '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                '<OTHERWISE> <PI> <POUND>'
-                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
-                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
-                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
-                '<TETS> <TETSET> <TUPLE> <VECTOR>'
-                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
-                '<identifier> <identifier_alone>'
+                '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
+                '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
+                '<PRIME> <SCALAR> <SEQUENCE>'
+                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
+                '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
+                '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> <identifier> <identifier_alone>'
                 '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[P]oint [Cc]loud [P]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -6720,16 +6776,20 @@ class grammarinitParser(Parser):
                 '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
                 '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
                 '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                '<OTHERWISE> <PI> <POUND>'
-                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
-                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
-                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
-                '<TETS> <TETSET> <TUPLE> <VECTOR>'
-                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
-                '<destructure> <general_assignment>'
-                '<identifier_alone> <left_hand_side> Mesh'
-                'SOLVE Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
+                '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
+                '<PRIME> <SCALAR> <SEQUENCE>'
+                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
+                '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
+                '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> <destructure>'
+                '<general_assignment> <identifier_alone>'
+                '<left_hand_side> Mesh SOLVE Solve'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et [P]oint'
+                '[Cc]loud [P]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -6833,23 +6893,26 @@ class grammarinitParser(Parser):
                 '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
                 '<MESH> <MIN> <NABLA>'
                 '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
-                '<PI> <POUND> <PREFIX_KEYWORD> <PRIME>'
+                '<PI> <POINTCLOUD> <POLYGON> <POLYHEDRON>'
+                '<POUND> <PREFIX_KEYWORD> <PRIME>'
                 '<SCALAR> <SEQUENCE> <SIMPLICIALSET>'
                 '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
-                '<SUBSET> <TETS> <TETSET> <TUPLE>'
-                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
-                '<WITH> <identifier> <identifier_alone>'
+                '<SUBSET> <TETRAHEDRON> <TETS> <TETSET>'
+                '<TRIANGLE> <TUPLE> <VECTOR> <VERTEXSET>'
+                '<VERTICES> <WHERE> <WITH> <identifier>'
+                '<identifier_alone>'
                 '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> <matrix>'
                 '<vector> Mesh SOLVE Solve [Ee]dge[Ss]et'
-                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Vv]ertex[Ss]et [Δ] and'
-                'argmax argmin as edges exp faces for'
-                'from given if index initial int ln log'
-                'matrix max mesh min or otherwise s.t.'
-                'scalar sequence solve sparse sqrt'
-                'subject to sum tets tuple vector'
-                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
+                '[Pp]olyhedron [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                'edges exp faces for from given if index'
+                'initial int ln log matrix max mesh min'
+                'or otherwise s.t. scalar sequence solve'
+                'sparse sqrt subject to sum tets tuple'
+                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -6928,19 +6991,20 @@ class grammarinitParser(Parser):
                 '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
                 '<MESH> <MIN> <NABLA>'
                 '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
-                '<PARTIAL> <PI> <POUND> <PREFIX_KEYWORD>'
+                '<PARTIAL> <PI> <POINTCLOUD> <POLYGON>'
+                '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
                 '<PRIME> <SCALAR> <SEQUENCE>'
                 '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
-                '<SUBJECT_TO> <SUBSET> <SUM> <TETS>'
-                '<TETSET> <TUPLE> <VECTOR> <VERTEXSET>'
-                '<VERTICES> <WHERE> <WITH>'
-                '<builtin_operators> <constant>'
-                '<cross_product_operator> <derivative>'
-                '<digit> <divergence> <double>'
-                '<element_convert_func> <exp_func>'
-                '<factor> <floating_point> <fraction>'
-                '<frobenius_product_operator> <func_id>'
-                '<function_operator> <gradient>'
+                '<SUBJECT_TO> <SUBSET> <SUM>'
+                '<TETRAHEDRON> <TETS> <TETSET> <TRIANGLE>'
+                '<TUPLE> <VECTOR> <VERTEXSET> <VERTICES>'
+                '<WHERE> <WITH> <builtin_operators>'
+                '<constant> <cross_product_operator>'
+                '<derivative> <digit> <divergence>'
+                '<double> <element_convert_func>'
+                '<exp_func> <factor> <floating_point>'
+                '<fraction> <frobenius_product_operator>'
+                '<func_id> <function_operator> <gradient>'
                 '<hadamard_product_operator> <identifier>'
                 '<identifier_alone>'
                 '<identifier_with_multi_subscript>'
@@ -6959,8 +7023,10 @@ class grammarinitParser(Parser):
                 '<subexpression> <sum_operator>'
                 '<trans_operator> <union_operator>'
                 '<vector> Mesh SOLVE Solve [01\\u1D7D9]'
-                '[Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et [P]oint'
+                '[Cc]loud [P]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
@@ -6991,18 +7057,21 @@ class grammarinitParser(Parser):
                 '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
                 '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
                 '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                '<OTHERWISE> <PI> <POUND>'
-                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
-                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
-                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
-                '<TETS> <TETSET> <TUPLE> <VECTOR>'
-                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
-                '<constant> <digit> <double>'
+                '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
+                '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
+                '<PRIME> <SCALAR> <SEQUENCE>'
+                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
+                '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
+                '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> <constant> <digit> <double>'
                 '<floating_point> <fraction>'
                 '<identifier_alone> <integer> <mantissa>'
                 '<number> <pi> <subexpression> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[P]oint [Cc]loud [P]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
@@ -7728,20 +7797,24 @@ class grammarinitParser(Parser):
                 '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
                 '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
                 '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                '<OTHERWISE> <PI> <POUND>'
-                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
-                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
-                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
-                '<TETS> <TETSET> <TUPLE> <VECTOR>'
-                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
-                '<arithmetic_subexpression> <digit>'
-                '<double> <floating_point> <fraction>'
-                '<identifier> <identifier_alone>'
+                '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
+                '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
+                '<PRIME> <SCALAR> <SEQUENCE>'
+                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
+                '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
+                '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> <arithmetic_subexpression>'
+                '<digit> <double> <floating_point>'
+                '<fraction> <identifier>'
+                '<identifier_alone>'
                 '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> <integer>'
                 '<mantissa> <number> <size_op> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[P]oint [Cc]loud [P]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
@@ -8237,15 +8310,43 @@ class grammarinitParser(Parser):
                 self._SIMPLICIALSET_()
                 self.name_last_node('s')
             with self._option():
-                self._MESH_()
+                self._mesh_type_()
                 self.name_last_node('m')
             self._error(
                 'expecting one of: '
-                '<EDGESET> <FACESET> <MESH>'
-                '<SIMPLICIALSET> <TETSET> <VERTEXSET>'
-                'Mesh [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '<EDGESET> <FACESET> <MESH> <POINTCLOUD>'
+                '<POLYGON> <POLYHEDRON> <SIMPLICIALSET>'
+                '<TETRAHEDRON> <TETSET> <TRIANGLE>'
+                '<VERTEXSET> <mesh_type> Mesh'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et [P]oint'
+                '[Cc]loud [P]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et mesh'
+            )
+
+    @tatsumasu()
+    def _mesh_type_(self):  # noqa
+        with self._choice():
+            with self._option():
+                self._MESH_()
+            with self._option():
+                self._TRIANGLE_()
+            with self._option():
+                self._POLYGON_()
+            with self._option():
+                self._POINTCLOUD_()
+            with self._option():
+                self._TETRAHEDRON_()
+            with self._option():
+                self._POLYHEDRON_()
+            self._error(
+                'expecting one of: '
+                '<MESH> <POINTCLOUD> <POLYGON>'
+                '<POLYHEDRON> <TETRAHEDRON> <TRIANGLE>'
+                'Mesh [P]oint [Cc]loud [P]olygon'
+                '[Pp]olyhedron [Tt]etrahedron [Tt]riangle'
+                'mesh'
             )
 
     @tatsumasu()
@@ -8270,15 +8371,20 @@ class grammarinitParser(Parser):
             self._error(
                 'expecting one of: '
                 "'{' '∅' <EDGESET> <FACESET> <MATRIX>"
-                '<MESH> <SCALAR> <SIMPLICIALSET> <TETSET>'
+                '<MESH> <POINTCLOUD> <POLYGON>'
+                '<POLYHEDRON> <SCALAR> <SIMPLICIALSET>'
+                '<TETRAHEDRON> <TETSET> <TRIANGLE>'
                 '<VECTOR> <VERTEXSET> <function_type>'
                 '<identifier> <mapping_type>'
-                '<matrix_type> <named_type> <params_type>'
-                '<scalar_type> <set_type> <tuple_type>'
-                '<vector_type> Mesh [Ee]dge[Ss]et'
-                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Vv]ertex[Ss]et [ℝℤ] matrix'
-                'mesh scalar vector ℝ ℤ'
+                '<matrix_type> <mesh_type> <named_type>'
+                '<params_type> <scalar_type> <set_type>'
+                '<tuple_type> <vector_type> Mesh'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et [P]oint'
+                '[Cc]loud [P]olygon [Pp]olyhedron'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
+                '[Vv]ertex[Ss]et [ℝℤ] matrix mesh scalar'
+                'vector ℝ ℤ'
             )
 
     @tatsumasu()
@@ -8440,17 +8546,20 @@ class grammarinitParser(Parser):
                 '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
                 '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
                 '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                '<OTHERWISE> <PI> <POUND>'
-                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
-                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
-                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
-                '<TETS> <TETSET> <TUPLE> <VECTOR>'
-                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
-                '<identifier> <identifier_alone>'
+                '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
+                '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
+                '<PRIME> <SCALAR> <SEQUENCE>'
+                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
+                '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
+                '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> <identifier> <identifier_alone>'
                 '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[P]oint [Cc]loud [P]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -8628,21 +8737,23 @@ class grammarinitParser(Parser):
                 '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
                 '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
                 '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                '<OTHERWISE> <PI> <POUND>'
-                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
-                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
-                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
-                '<TETS> <TETSET> <TUPLE> <VECTOR>'
-                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
-                'Mesh SOLVE Solve [Ee]dge[Ss]et'
-                '[Ff]ace[Ss]et [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Vv]ertex[Ss]et [Δ] and'
-                'argmax argmin as edges exp faces for'
-                'from given if index initial int ln log'
-                'matrix max mesh min or otherwise s.t.'
-                'scalar sequence solve sparse sqrt'
-                'subject to sum tets tuple vector'
-                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
+                '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
+                '<PRIME> <SCALAR> <SEQUENCE>'
+                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
+                '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
+                '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> Mesh SOLVE Solve [Ee]dge[Ss]et'
+                '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
+                '[Pp]olyhedron [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                'edges exp faces for from given if index'
+                'initial int ln log matrix max mesh min'
+                'or otherwise s.t. scalar sequence solve'
+                'sparse sqrt subject to sum tets tuple'
+                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -8663,17 +8774,20 @@ class grammarinitParser(Parser):
                 '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
                 '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
                 '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                '<OTHERWISE> <PI> <POUND>'
-                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
-                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
-                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
-                '<TETS> <TETSET> <TUPLE> <VECTOR>'
-                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
-                '<identifier_alone>'
+                '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
+                '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
+                '<PRIME> <SCALAR> <SEQUENCE>'
+                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
+                '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
+                '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> <identifier_alone>'
                 '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[P]oint [Cc]loud [P]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -9045,15 +9159,18 @@ class grammarinitParser(Parser):
                 '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
                 '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
                 '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                '<OTHERWISE> <PI> <POUND>'
-                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
-                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
-                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
-                '<TETS> <TETSET> <TUPLE> <VECTOR>'
-                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
-                '<func_id> <identifier_alone> Mesh SOLVE'
-                'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
+                '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
+                '<PRIME> <SCALAR> <SEQUENCE>'
+                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
+                '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
+                '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> <func_id> <identifier_alone> Mesh'
+                'SOLVE Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
+                '[P]oint [Cc]loud [P]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -9506,6 +9623,21 @@ class grammarinitSemantics:
         return ast
 
     def MESH(self, ast):  # noqa
+        return ast
+
+    def TRIANGLE(self, ast):  # noqa
+        return ast
+
+    def POLYGON(self, ast):  # noqa
+        return ast
+
+    def POINTCLOUD(self, ast):  # noqa
+        return ast
+
+    def TETRAHEDRON(self, ast):  # noqa
+        return ast
+
+    def POLYHEDRON(self, ast):  # noqa
         return ast
 
     def INDEX(self, ast):  # noqa
@@ -10055,6 +10187,9 @@ class grammarinitSemantics:
         return ast
 
     def named_type(self, ast):  # noqa
+        return ast
+
+    def mesh_type(self, ast):  # noqa
         return ast
 
     def la_type(self, ast):  # noqa

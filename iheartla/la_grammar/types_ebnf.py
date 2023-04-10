@@ -52,7 +52,17 @@ named_type::NamedType
     | f:FACESET
     | t:TETSET
     | s:SIMPLICIALSET
-    | m:MESH
+    | m:mesh_type
+    ;
+
+mesh_type
+    =
+    MESH
+    | TRIANGLE
+    | POLYGON
+    | POINTCLOUD
+    | TETRAHEDRON
+    | POLYHEDRON
     ;
     
 la_type
