@@ -41,24 +41,6 @@ void PointCloud::initialize(Eigen::MatrixXd &P, double distance){
 	this->build_boundary_mat1();
 }
 
-int PointCloud::get_edge_index(int i, int j){
-    if (i < j)
-    {
-        return this->map_e[std::make_tuple(i, j)];
-    }
-    return this->map_e[std::make_tuple(j, i)];
-} 
-
-int PointCloud::get_edge_index(int i, int j, int &sign){
-    if (i < j)
-    {
-        sign = 1;
-        return this->map_e[std::make_tuple(i, j)];
-    }
-    sign = -1;
-    return this->map_e[std::make_tuple(j, i)];
-}
-
 void PointCloud::init_indices(){
     this->Vi.resize(this->num_v);
     for (int i = 0; i < this->num_v; ++i){

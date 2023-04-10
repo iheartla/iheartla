@@ -20,8 +20,6 @@ public:
     void build_boundary_mat2(); // F -> E, size: |E|x|F|, boundary of triangles
     void build_boundary_mat1(); // E -> V, size: |V|x|E|, boundary of edges
     void build_nonboundary_edges();
-    int get_edge_index(int i, int j); 
-    int get_edge_index(int i, int j, int &sign);
     int get_face_index(int i, int j, int k, int &sign);
     int get_face_index(int i, int j, int k); 
     void init_mesh_indices();

@@ -21,6 +21,7 @@ public:
     int n_vertices() const;
     int n_faces() const;
     int n_tets() const;
+    
     std::vector<int> ValueSet(Eigen::SparseMatrix<int> &target, int value)const;
     std::vector<int> ValueSet(Eigen::SparseMatrix<int> &target, int value, bool is_row)const;
     // API
@@ -30,6 +31,9 @@ public:
     SparseMatrix<int> tets_to_vector(const std::vector<int>& tset) const;  
     std::vector<int> nonzeros(Eigen::SparseMatrix<int> &target)const;
     std::vector<int> nonzeros(Eigen::SparseMatrix<int> &target, bool is_row)const;
+    //
+    int get_edge_index(int i, int j); 
+    int get_edge_index(int i, int j, int &sign);
     // 
 // private:
     int num_v; 

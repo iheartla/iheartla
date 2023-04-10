@@ -12,8 +12,6 @@ public:
     PointCloud();
     void initialize(Eigen::MatrixXd &P, double distance=1.4); 
     void build_boundary_mat1(); // E -> V, size: |V|x|E|, boundary of edges 
-    int get_edge_index(int i, int j); 
-    int get_edge_index(int i, int j, int &sign); 
     void init_indices();
     //
     std::tuple<std::vector<int>, std::vector<int>> MeshSets() const;

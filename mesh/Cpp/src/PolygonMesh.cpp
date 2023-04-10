@@ -98,24 +98,6 @@ void PolygonMesh::build_boundary_mat1(){
     std::cout<<"this->bm1:\n"<<this->bm1<<std::endl;
     // std::cout<<"this->pos_bm1:\n"<<this->pos_bm1<<std::endl;
 }
-
-int PolygonMesh::get_edge_index(int i, int j, int &sign){
-    if (i < j)
-    {
-        sign = 1;
-        return this->map_e[std::make_tuple(i, j)];
-    }
-    sign = -1;
-    return this->map_e[std::make_tuple(j, i)];
-}
-
-int PolygonMesh::get_edge_index(int i, int j){
-    if (i < j)
-    {
-        return this->map_e[std::make_tuple(i, j)];
-    }
-    return this->map_e[std::make_tuple(j, i)];
-} 
   
 std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> PolygonMesh::MeshSets() const{
     return std::tuple<std::vector<int>, std::vector<int>, std::vector<int>>(this->Vi, this->Ei, this->Fi);

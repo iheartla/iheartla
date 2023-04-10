@@ -113,4 +113,21 @@ SparseMatrix<int> Connectivity::tets_to_vector(const std::vector<int>& tset) con
     t.setFromTriplets(tripletList.begin(), tripletList.end());
     return t;
 }
+
+int Connectivity::get_edge_index(int i, int j, int &sign){
+    if (i < j)
+    {
+        sign = 1;
+        return this->map_e[std::make_tuple(i, j)];
+    }
+    sign = -1;
+    return this->map_e[std::make_tuple(j, i)];
+}
+int Connectivity::get_edge_index(int i, int j){
+    if (i < j)
+    {
+        return this->map_e[std::make_tuple(i, j)];
+    }
+    return this->map_e[std::make_tuple(j, i)];
+} 
  

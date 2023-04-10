@@ -72,23 +72,6 @@ void TriangleMesh::init_mesh_indices(){
     }
 }
 
-int TriangleMesh::get_edge_index(int i, int j, int &sign){
-    if (i < j)
-    {
-        sign = 1;
-        return this->map_e[std::make_tuple(i, j)];
-    }
-    sign = -1;
-    return this->map_e[std::make_tuple(j, i)];
-}
-int TriangleMesh::get_edge_index(int i, int j){
-    if (i < j)
-    {
-        return this->map_e[std::make_tuple(i, j)];
-    }
-    return this->map_e[std::make_tuple(j, i)];
-} 
-
 int TriangleMesh::get_face_index(int i, int j, int k, int &sign){
     RowVector r(3); r << i, j, k;
     RowVector p = permute_rvector(r); // get sorted face
