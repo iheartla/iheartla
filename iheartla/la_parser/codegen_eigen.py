@@ -170,7 +170,7 @@ class CodeGenEigen(CodeGen):
         elif la_type.is_function():
             type_str = "std::function<{}({})>".format(self.get_ctype(la_type.ret[0], omit_template), self.get_func_params_str(la_type))
         elif la_type.is_mesh():
-            type_str = MESH_CLASS
+            type_str = MESH_MAPPING_DICT[la_type.cur_mesh]
         else:
             assert type_str != '', "Error, invalid type"
         return type_str
@@ -364,7 +364,9 @@ class CodeGenEigen(CodeGen):
                 if key in CLASS_PACKAGES:
                     class_name = key
                     if key == MESH_HELPER:
-                        self.code_frame.include += '#include "{}.h"\n'.format(MESH_CLASS)
+                        # self.code_frame.include += '#include "{}.h"\n'.format(MESH_CLASS)
+                        for cur_mesh in self.mesh_type_list:
+                            self.code_frame.include += '#include "{}.h"\n'.format(MESH_MAPPING_DICT[cur_mesh]) 
                         # self.code_frame.include += '#include "{}.h"\n'.format(MESH_HELPER)
                         class_name = MESH_HELPER
                     # item_list.append("    {} {};\n".format(class_name, module_data.instance_name))

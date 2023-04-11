@@ -264,6 +264,7 @@ class TypeWalker(NodeWalker):
         self.solved_func = []
         self.need_mutator = False   # whether the node tree needs to be changed: solver
         self.unknown_sym = []
+        self.mesh_type_list = []    # different mesh types in current file
         self.dyn_dim = False
         self.pre_walk = False
         # self.arith_dim_list = []
@@ -443,6 +444,7 @@ class TypeWalker(NodeWalker):
         self.visiting_lhs = False
         self.visiting_solver_eq = False
         self.solved_func.clear()
+        self.mesh_type_list.clear()
         self.need_mutator = False
         self.opt_key = ''
         self.omit_assert = False
@@ -1513,6 +1515,8 @@ class TypeWalker(NodeWalker):
             elif node.m.ph:
                 cur_mesh = MeshTypeEnum.POLYHEDRON
             la_type = MeshType(cur_mesh=cur_mesh)
+            if cur_mesh not in self.mesh_type_list:
+                self.mesh_type_list.append(cur_mesh)
         ir_node.la_type = la_type
         return ir_node
 

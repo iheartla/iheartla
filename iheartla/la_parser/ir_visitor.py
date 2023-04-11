@@ -410,6 +410,7 @@ class IRVisitor(IRBaseVisitor):
         self.opt_syms = []
         self.mesh_dict = {}
         self.duplicate_func_list = []    # overloaded func types incompatible in cpp
+        self.mesh_type_list = []    # different mesh types in current file
 
     def add_name_conventions(self, con_dict):
         for key, value in con_dict.items():
@@ -633,6 +634,7 @@ class IRVisitor(IRBaseVisitor):
         self.opt_syms = type_walker.opt_syms
         self.mesh_dict = type_walker.mesh_dict
         self.class_only = type_walker.class_only
+        self.mesh_type_list = type_walker.mesh_type_list
         if func_name is not None:
             self.func_name = func_name.replace(' ','')
         else:

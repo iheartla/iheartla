@@ -73,6 +73,17 @@ TI_SIZE = 'ti_size'
 #
 MESH_CLASS = 'TriangleMesh'
 MESH_HELPER = 'MeshConnectivity'
+TRIANGLE = "TriangleMesh"
+POLYGON = "PolygonMesh"
+TETRAHEDRON = "Tetrahedron"
+POINTCLOUD = "PointCloud"
+POLYHEDRON = "Polyhedron"
+MESH_MAPPING_DICT = {MeshTypeEnum.TRIANGLE: TRIANGLE,
+                MeshTypeEnum.POINTCLOUD: POINTCLOUD,
+                MeshTypeEnum.POLYGON: POLYGON,
+                MeshTypeEnum.TETRAHEDRON: TETRAHEDRON,
+                MeshTypeEnum.POLYHEDRON: POLYHEDRON
+                }
 # MeshHelper function
 NonZeros = 'NonZeros'
 ValueSet = 'ValueSet'
