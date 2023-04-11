@@ -8484,8 +8484,6 @@ class grammardefaultParser(Parser):
     def _la_type_(self):  # noqa
         with self._choice():
             with self._option():
-                self._named_type_()
-            with self._option():
                 self._function_type_()
             with self._option():
                 self._mapping_type_()
@@ -8499,6 +8497,8 @@ class grammardefaultParser(Parser):
                 self._tuple_type_()
             with self._option():
                 self._scalar_type_()
+            with self._option():
+                self._named_type_()
             self._error(
                 'expecting one of: '
                 "'{' '∅' <EDGESET> <FACESET> <MATRIX>"
@@ -8816,69 +8816,160 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
-        with self._choice():
-            with self._option():
-                with self._ifnot():
-                    self._KEYWORDS_()
-                with self._group():
-                    with self._choice():
-                        with self._option():
-                            with self._group():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
-                            self.name_last_node('value')
-                        with self._option():
-                            self._token('`')
-                            self._pattern('[^`]*')
-                            self.name_last_node('id')
-                            self._token('`')
-
-                            self._define(
-                                ['id'],
-                                []
-                            )
-                        self._error(
-                            'expecting one of: '
-                            "'`' [A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*"
-                        )
-
-                self._define(
-                    ['id', 'value'],
-                    []
-                )
-            with self._option():
-                with self._group():
-                    self._PREFIX_KEYWORD_()
+        if len(self.new_id_list) > 0:
+            with self._choice():
+                with self._option():
                     with self._group():
-                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
-                self.name_last_node('value')
-            self._error(
-                'expecting one of: '
-                "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
-                '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
-                '<EDGES> <EDGESET> <EXP> <FACES>'
-                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
-                '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
-                '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
-                '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
-                '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
-                '<PRIME> <SCALAR> <SEQUENCE>'
-                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
-                '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
-                '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
-                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
-                '<WITH> Mesh SOLVE Solve [Ee]dge[Ss]et'
-                '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
-                '[Pp]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
-                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
-                'edges exp faces for from given if index'
-                'initial int ln log matrix max mesh min'
-                'or otherwise s.t. scalar sequence solve'
-                'sparse sqrt subject to sum tets tuple'
-                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                        with self._choice():
+                            for new_id in self.new_id_list:
+                                with self._option():
+                                    self._pattern(new_id)
+                            self._error('no available options')
+                    self.name_last_node('const')
+                with self._option():
+                    with self._ifnot():
+                        with self._group():
+                            with self._choice():
+                                with self._option():
+                                    self._KEYWORDS_()
+                                for new_id in self.new_id_list:
+                                    with self._option():
+                                        self._pattern(new_id)
+                                self._error('no available options')
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                with self._group():
+                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                                self.name_last_node('value')
+                            with self._option():
+                                self._token('`')
+                                self._pattern('[^`]*')
+                                self.name_last_node('id')
+                                self._token('`')
+
+                                self._define(
+                                    ['id'],
+                                    []
+                                )
+                            self._error(
+                                'expecting one of: '
+                                "'`' [A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*"
+                            )
+
+                    self._define(
+                        ['id', 'value'],
+                        []
+                    )
+                with self._option():
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._PREFIX_KEYWORD_()
+                            for new_id in self.new_id_list:
+                                with self._option():
+                                    self._pattern(new_id)
+                            self._error('no available options')
+                        with self._group():
+                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                    self.name_last_node('value')
+                self._error(
+                    'expecting one of: '
+                    "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                    '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                    '<EDGES> <EDGESET> <EXP> <FACES>'
+                    '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                    '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                    '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                    '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                    '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
+                    '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
+                    '<PRIME> <SCALAR> <SEQUENCE>'
+                    '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
+                    '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
+                    '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
+                    '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                    '<WITH> Mesh SOLVE Solve [Ee]dge[Ss]et'
+                    '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
+                    '[Pp]olygon [Pp]olyhedron'
+                    '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                    '[Tt]etrahedron [Tt]riangle'
+                    '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                    'edges exp faces for from given if index'
+                    'initial int ln log matrix max mesh min'
+                    'or otherwise s.t. scalar sequence solve'
+                    'sparse sqrt subject to sum tets tuple'
+                    'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                )
+            self._define(
+                ['const', 'id', 'value'],
+                []
             )
+        else:
+            # default
+            with self._choice():
+                with self._option():
+                    with self._ifnot():
+                        self._KEYWORDS_()
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                with self._group():
+                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                                self.name_last_node('value')
+                            with self._option():
+                                self._token('`')
+                                self._pattern('[^`]*')
+                                self.name_last_node('id')
+                                self._token('`')
+
+                                self._define(
+                                    ['id'],
+                                    []
+                                )
+                            self._error(
+                                'expecting one of: '
+                                "'`' [A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*"
+                            )
+
+                    self._define(
+                        ['id', 'value'],
+                        []
+                    )
+                with self._option():
+                    with self._group():
+                        self._PREFIX_KEYWORD_()
+                        with self._group():
+                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                    self.name_last_node('value')
+                self._error(
+                    'expecting one of: '
+                    "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                    '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                    '<EDGES> <EDGESET> <EXP> <FACES>'
+                    '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                    '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                    '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                    '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                    '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
+                    '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
+                    '<PRIME> <SCALAR> <SEQUENCE>'
+                    '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
+                    '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
+                    '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
+                    '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                    '<WITH> Mesh SOLVE Solve [Ee]dge[Ss]et'
+                    '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
+                    '[Pp]olygon [Pp]olyhedron'
+                    '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                    '[Tt]etrahedron [Tt]riangle'
+                    '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                    'edges exp faces for from given if index'
+                    'initial int ln log matrix max mesh min'
+                    'or otherwise s.t. scalar sequence solve'
+                    'sparse sqrt subject to sum tets tuple'
+                    'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                )
 
     @tatsumasu()
     def _identifier_(self):  # noqa

@@ -8366,8 +8366,6 @@ class grammarinitParser(Parser):
     def _la_type_(self):  # noqa
         with self._choice():
             with self._option():
-                self._named_type_()
-            with self._option():
                 self._function_type_()
             with self._option():
                 self._mapping_type_()
@@ -8381,6 +8379,8 @@ class grammarinitParser(Parser):
                 self._tuple_type_()
             with self._option():
                 self._scalar_type_()
+            with self._option():
+                self._named_type_()
             self._error(
                 'expecting one of: '
                 "'{' '∅' <EDGESET> <FACESET> <MATRIX>"

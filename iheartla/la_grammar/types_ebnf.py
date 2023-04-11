@@ -67,7 +67,6 @@ mesh_type
     
 la_type
     =
-    | named_type
     | function_type
     | mapping_type
     | matrix_type
@@ -75,6 +74,7 @@ la_type
     | set_type
     | tuple_type
     | scalar_type
+    | named_type
     ;
 
 params_type

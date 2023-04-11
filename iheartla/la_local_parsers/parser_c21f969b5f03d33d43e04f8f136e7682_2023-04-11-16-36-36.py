@@ -8357,8 +8357,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
     def _la_type_(self):  # noqa
         with self._choice():
             with self._option():
-                self._named_type_()
-            with self._option():
                 self._function_type_()
             with self._option():
                 self._mapping_type_()
@@ -8372,6 +8370,8 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._tuple_type_()
             with self._option():
                 self._scalar_type_()
+            with self._option():
+                self._named_type_()
             self._error(
                 'expecting one of: '
                 "'{' '∅' <EDGESET> <FACESET> <MATRIX>"
