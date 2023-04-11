@@ -1501,7 +1501,18 @@ class TypeWalker(NodeWalker):
             la_type = SimplicialSetType()
         elif node.m:
             # init dims later
-            la_type = MeshType()
+            cur_mesh = MeshTypeEnum.DEFAULT
+            if node.m.tri:
+                cur_mesh = MeshTypeEnum.TRIANGLE
+            elif node.m.point:
+                cur_mesh = MeshTypeEnum.POINTCLOUD
+            elif node.m.poly:
+                cur_mesh = MeshTypeEnum.POLYGON
+            elif node.m.tet:
+                cur_mesh = MeshTypeEnum.TETRAHEDRON
+            elif node.m.ph:
+                cur_mesh = MeshTypeEnum.POLYHEDRON
+            la_type = MeshType(cur_mesh=cur_mesh)
         ir_node.la_type = la_type
         return ir_node
 

@@ -316,11 +316,21 @@ class TetType(ScalarType):
 
     def get_cpp_signature(self):
         return 'ℤ'
+    
+class MeshTypeEnum(Enum):
+    DEFAULT = 0
+    TRIANGLE = 1
+    POINTCLOUD = 2
+    POLYGON = 3
+    TETRAHEDRON = 4
+    POLYHEDRON = 5
+
 
 class MeshType(LaVarType):
-    def __init__(self, dim_dict=None, desc=None, owner=None):
+    def __init__(self, dim_dict=None, desc=None, owner=None, cur_mesh=MeshTypeEnum.TRIANGLE):
         LaVarType.__init__(self, VarTypeEnum.MESH, desc=desc, owner=owner)
         self.init_dims(dim_dict)
+        self.cur_mesh = cur_mesh
 
     def init_dims(self, dim_dict=None):
         self.vi_size = dim_dict['vi_size'] if dim_dict and 'vi_size' in dim_dict else 0

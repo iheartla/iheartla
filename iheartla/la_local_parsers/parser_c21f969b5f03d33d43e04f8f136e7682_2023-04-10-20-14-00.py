@@ -8322,16 +8322,22 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         with self._choice():
             with self._option():
                 self._MESH_()
+                self.name_last_node('m')
             with self._option():
                 self._TRIANGLE_()
+                self.name_last_node('tri')
             with self._option():
                 self._POLYGON_()
+                self.name_last_node('poly')
             with self._option():
                 self._POINTCLOUD_()
+                self.name_last_node('point')
             with self._option():
                 self._TETRAHEDRON_()
+                self.name_last_node('tet')
             with self._option():
                 self._POLYHEDRON_()
+                self.name_last_node('ph')
             self._error(
                 'expecting one of: '
                 '<MESH> <POINTCLOUD> <POLYGON>'
