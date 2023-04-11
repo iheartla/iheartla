@@ -544,11 +544,11 @@ class grammardefaultParser(Parser):
 
     @tatsumasu()
     def _POLYGON_(self):  # noqa
-        self._pattern('[P]olygon')
+        self._pattern('[Pp]olygon')
 
     @tatsumasu()
     def _POINTCLOUD_(self):  # noqa
-        self._pattern('[P]oint [Cc]loud')
+        self._pattern('[Pp]oint [Cc]loud')
 
     @tatsumasu()
     def _TETRAHEDRON_(self):  # noqa
@@ -714,9 +714,10 @@ class grammardefaultParser(Parser):
                 '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
                 '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
                 '<WITH> Mesh SOLVE Solve [Ee]dge[Ss]et'
-                '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
-                '[Pp]olyhedron [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
+                '[Pp]olygon [Pp]olyhedron'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -4050,9 +4051,10 @@ class grammardefaultParser(Parser):
                 '<subexpression> <sum_in_matrix_operator>'
                 '<trans_in_matrix_operator> <vector> Mesh'
                 'SOLVE Solve [01\\u1D7D9] [Ee]dge[Ss]et'
-                '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
-                '[Pp]olyhedron [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
+                '[Pp]olygon [Pp]olyhedron'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
@@ -4220,9 +4222,10 @@ class grammardefaultParser(Parser):
                 '<subexpression> <sum_in_matrix_operator>'
                 '<trans_in_matrix_operator> <vector> Mesh'
                 'SOLVE Solve [01\\u1D7D9] [Ee]dge[Ss]et'
-                '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
-                '[Pp]olyhedron [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
+                '[Pp]olygon [Pp]olyhedron'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
@@ -4400,9 +4403,10 @@ class grammardefaultParser(Parser):
                 '<subexpression> <sum_in_matrix_operator>'
                 '<trans_in_matrix_operator> <vector> Mesh'
                 'SOLVE Solve [01\\u1D7D9] [Ee]dge[Ss]et'
-                '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
-                '[Pp]olyhedron [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
+                '[Pp]olygon [Pp]olyhedron'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
@@ -4765,9 +4769,9 @@ class grammardefaultParser(Parser):
                 '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
                 '<WITH> <identifier_alone> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[P]oint [Cc]loud [P]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
+                '[Pp]oint [Cc]loud [Pp]olygon'
+                '[Pp]olyhedron [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -4917,9 +4921,10 @@ class grammardefaultParser(Parser):
                 '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
                 '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
                 '<WITH> Mesh SOLVE Solve [Ee]dge[Ss]et'
-                '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
-                '[Pp]olyhedron [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
+                '[Pp]olygon [Pp]olyhedron'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -6670,8 +6675,8 @@ class grammardefaultParser(Parser):
                 '<local_func> <multi_cond_expr>'
                 '<optimize_operator> <right_hand_side>'
                 '<subtraction> <term> Mesh SOLVE Solve'
-                '[Ee]dge[Ss]et [Ff]ace[Ss]et [P]oint'
-                '[Cc]loud [P]olygon [Pp]olyhedron'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et [Pp]oint'
+                '[Cc]loud [Pp]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
                 '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
@@ -6854,9 +6859,9 @@ class grammardefaultParser(Parser):
                 '<WITH> <identifier> <identifier_alone>'
                 '<identifier_with_subscript> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[P]oint [Cc]loud [P]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
+                '[Pp]oint [Cc]loud [Pp]olygon'
+                '[Pp]olyhedron [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -6891,8 +6896,8 @@ class grammardefaultParser(Parser):
                 '<WITH> <destructure>'
                 '<general_assignment> <identifier_alone>'
                 '<left_hand_side> Mesh SOLVE Solve'
-                '[Ee]dge[Ss]et [Ff]ace[Ss]et [P]oint'
-                '[Cc]loud [P]olygon [Pp]olyhedron'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et [Pp]oint'
+                '[Cc]loud [Pp]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
                 '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
@@ -7008,9 +7013,10 @@ class grammardefaultParser(Parser):
                 '<identifier_alone>'
                 '<identifier_with_subscript> <matrix>'
                 '<vector> Mesh SOLVE Solve [Ee]dge[Ss]et'
-                '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
-                '[Pp]olyhedron [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
+                '[Pp]olygon [Pp]olyhedron'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -7127,8 +7133,8 @@ class grammardefaultParser(Parser):
                 '<subexpression> <sum_operator>'
                 '<trans_operator> <union_operator>'
                 '<vector> Mesh SOLVE Solve [01\\u1D7D9]'
-                '[Ee]dge[Ss]et [Ff]ace[Ss]et [P]oint'
-                '[Cc]loud [P]olygon [Pp]olyhedron'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et [Pp]oint'
+                '[Cc]loud [Pp]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
                 '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et'
@@ -7173,9 +7179,9 @@ class grammardefaultParser(Parser):
                 '<identifier_alone> <integer> <mantissa>'
                 '<number> <pi> <subexpression> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[P]oint [Cc]loud [P]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
+                '[Pp]oint [Cc]loud [Pp]olygon'
+                '[Pp]olyhedron [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
@@ -7931,9 +7937,9 @@ class grammardefaultParser(Parser):
                 '<identifier_with_subscript> <integer>'
                 '<mantissa> <number> <size_op> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[P]oint [Cc]loud [P]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
+                '[Pp]oint [Cc]loud [Pp]olygon'
+                '[Pp]olyhedron [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
@@ -8437,8 +8443,8 @@ class grammardefaultParser(Parser):
                 '<POLYGON> <POLYHEDRON> <SIMPLICIALSET>'
                 '<TETRAHEDRON> <TETSET> <TRIANGLE>'
                 '<VERTEXSET> <mesh_type> Mesh'
-                '[Ee]dge[Ss]et [Ff]ace[Ss]et [P]oint'
-                '[Cc]loud [P]olygon [Pp]olyhedron'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et [Pp]oint'
+                '[Cc]loud [Pp]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
                 '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et mesh'
@@ -8469,7 +8475,7 @@ class grammardefaultParser(Parser):
                 'expecting one of: '
                 '<MESH> <POINTCLOUD> <POLYGON>'
                 '<POLYHEDRON> <TETRAHEDRON> <TRIANGLE>'
-                'Mesh [P]oint [Cc]loud [P]olygon'
+                'Mesh [Pp]oint [Cc]loud [Pp]olygon'
                 '[Pp]olyhedron [Tt]etrahedron [Tt]riangle'
                 'mesh'
             )
@@ -8477,6 +8483,8 @@ class grammardefaultParser(Parser):
     @tatsumasu()
     def _la_type_(self):  # noqa
         with self._choice():
+            with self._option():
+                self._named_type_()
             with self._option():
                 self._function_type_()
             with self._option():
@@ -8491,8 +8499,6 @@ class grammardefaultParser(Parser):
                 self._tuple_type_()
             with self._option():
                 self._scalar_type_()
-            with self._option():
-                self._named_type_()
             self._error(
                 'expecting one of: '
                 "'{' '∅' <EDGESET> <FACESET> <MATRIX>"
@@ -8504,8 +8510,8 @@ class grammardefaultParser(Parser):
                 '<matrix_type> <mesh_type> <named_type>'
                 '<params_type> <scalar_type> <set_type>'
                 '<tuple_type> <vector_type> Mesh'
-                '[Ee]dge[Ss]et [Ff]ace[Ss]et [P]oint'
-                '[Cc]loud [P]olygon [Pp]olyhedron'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et [Pp]oint'
+                '[Cc]loud [Pp]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
                 '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [ℝℤ] matrix mesh scalar'
@@ -8681,9 +8687,9 @@ class grammardefaultParser(Parser):
                 '<WITH> <identifier> <identifier_alone>'
                 '<identifier_with_subscript> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[P]oint [Cc]loud [P]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
+                '[Pp]oint [Cc]loud [Pp]olygon'
+                '[Pp]olyhedron [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -8810,158 +8816,69 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
-        if len(self.new_id_list) > 0:
-            with self._choice():
-                with self._option():
-                    with self._group():
-                        with self._choice():
-                            for new_id in self.new_id_list:
-                                with self._option():
-                                    self._pattern(new_id)
-                            self._error('no available options')
-                    self.name_last_node('const')
-                with self._option():
-                    with self._ifnot():
-                        with self._group():
-                            with self._choice():
-                                with self._option():
-                                    self._KEYWORDS_()
-                                for new_id in self.new_id_list:
-                                    with self._option():
-                                        self._pattern(new_id)
-                                self._error('no available options')
-                    with self._group():
-                        with self._choice():
-                            with self._option():
-                                with self._group():
-                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
-                                self.name_last_node('value')
-                            with self._option():
-                                self._token('`')
-                                self._pattern('[^`]*')
-                                self.name_last_node('id')
-                                self._token('`')
+        with self._choice():
+            with self._option():
+                with self._ifnot():
+                    self._KEYWORDS_()
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            with self._group():
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                            self.name_last_node('value')
+                        with self._option():
+                            self._token('`')
+                            self._pattern('[^`]*')
+                            self.name_last_node('id')
+                            self._token('`')
 
-                                self._define(
-                                    ['id'],
-                                    []
-                                )
-                            self._error(
-                                'expecting one of: '
-                                "'`' [A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*"
+                            self._define(
+                                ['id'],
+                                []
                             )
+                        self._error(
+                            'expecting one of: '
+                            "'`' [A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*"
+                        )
 
-                    self._define(
-                        ['id', 'value'],
-                        []
-                    )
-                with self._option():
-                    with self._group():
-                        with self._choice():
-                            with self._option():
-                                self._PREFIX_KEYWORD_()
-                            for new_id in self.new_id_list:
-                                with self._option():
-                                    self._pattern(new_id)
-                            self._error('no available options')
-                        with self._group():
-                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
-                    self.name_last_node('value')
-                self._error(
-                    'expecting one of: '
-                    "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
-                    '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
-                    '<EDGES> <EDGESET> <EXP> <FACES>'
-                    '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
-                    '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
-                    '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
-                    '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                    '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
-                    '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
-                    '<PRIME> <SCALAR> <SEQUENCE>'
-                    '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
-                    '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
-                    '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
-                    '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
-                    '<WITH> Mesh SOLVE Solve [Ee]dge[Ss]et'
-                    '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
-                    '[Pp]olyhedron [Ss]implicial[Ss]et'
-                    '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
-                    '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
-                    'edges exp faces for from given if index'
-                    'initial int ln log matrix max mesh min'
-                    'or otherwise s.t. scalar sequence solve'
-                    'sparse sqrt subject to sum tets tuple'
-                    'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                self._define(
+                    ['id', 'value'],
+                    []
                 )
-            self._define(
-                ['const', 'id', 'value'],
-                []
+            with self._option():
+                with self._group():
+                    self._PREFIX_KEYWORD_()
+                    with self._group():
+                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                self.name_last_node('value')
+            self._error(
+                'expecting one of: '
+                "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                '<EDGES> <EDGESET> <EXP> <FACES>'
+                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
+                '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
+                '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
+                '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
+                '<PRIME> <SCALAR> <SEQUENCE>'
+                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
+                '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
+                '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> Mesh SOLVE Solve [Ee]dge[Ss]et'
+                '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
+                '[Pp]olygon [Pp]olyhedron'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedron [Tt]riangle'
+                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                'edges exp faces for from given if index'
+                'initial int ln log matrix max mesh min'
+                'or otherwise s.t. scalar sequence solve'
+                'sparse sqrt subject to sum tets tuple'
+                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
-        else:
-            # default
-            with self._choice():
-                with self._option():
-                    with self._ifnot():
-                        self._KEYWORDS_()
-                    with self._group():
-                        with self._choice():
-                            with self._option():
-                                with self._group():
-                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
-                                self.name_last_node('value')
-                            with self._option():
-                                self._token('`')
-                                self._pattern('[^`]*')
-                                self.name_last_node('id')
-                                self._token('`')
-
-                                self._define(
-                                    ['id'],
-                                    []
-                                )
-                            self._error(
-                                'expecting one of: '
-                                "'`' [A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*"
-                            )
-
-                    self._define(
-                        ['id', 'value'],
-                        []
-                    )
-                with self._option():
-                    with self._group():
-                        self._PREFIX_KEYWORD_()
-                        with self._group():
-                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
-                    self.name_last_node('value')
-                self._error(
-                    'expecting one of: '
-                    "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
-                    '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
-                    '<EDGES> <EDGESET> <EXP> <FACES>'
-                    '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
-                    '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
-                    '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
-                    '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                    '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
-                    '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
-                    '<PRIME> <SCALAR> <SEQUENCE>'
-                    '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
-                    '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
-                    '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
-                    '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
-                    '<WITH> Mesh SOLVE Solve [Ee]dge[Ss]et'
-                    '[Ff]ace[Ss]et [P]oint [Cc]loud [P]olygon'
-                    '[Pp]olyhedron [Ss]implicial[Ss]et'
-                    '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
-                    '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
-                    'edges exp faces for from given if index'
-                    'initial int ln log matrix max mesh min'
-                    'or otherwise s.t. scalar sequence solve'
-                    'sparse sqrt subject to sum tets tuple'
-                    'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
-                )
 
     @tatsumasu()
     def _identifier_(self):  # noqa
@@ -8989,9 +8906,9 @@ class grammardefaultParser(Parser):
                 '<WITH> <identifier_alone>'
                 '<identifier_with_subscript> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[P]oint [Cc]loud [P]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
+                '[Pp]oint [Cc]loud [Pp]olygon'
+                '[Pp]olyhedron [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
