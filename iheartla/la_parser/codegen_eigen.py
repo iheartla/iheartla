@@ -824,9 +824,18 @@ class CodeGenEigen(CodeGen):
                 stats_content += cur_stats_content
         mesh_dim_list = []
         for mesh, data in self.mesh_dict.items():
-            mesh_dim_list.append("    int {} = {}.n_vertices();\n".format(data.la_type.vi_size, mesh))
-            mesh_dim_list.append("    int {} = {}.n_edges();\n".format(data.la_type.ei_size, mesh))
-            mesh_dim_list.append("    int {} = {}.n_faces();\n".format(data.la_type.fi_size, mesh))
+            if data.la_type.cur_mesh == MeshTypeEnum.TRIANGLE or data.la_type.cur_mesh == MeshTypeEnum.POLYGON:
+                mesh_dim_list.append("    int {} = {}.n_vertices();\n".format(data.la_type.vi_size, mesh))
+                mesh_dim_list.append("    int {} = {}.n_edges();\n".format(data.la_type.ei_size, mesh))
+                mesh_dim_list.append("    int {} = {}.n_faces();\n".format(data.la_type.fi_size, mesh))
+            elif data.la_type.cur_mesh == MeshTypeEnum.TETRAHEDRON or data.la_type.cur_mesh == MeshTypeEnum.POLYHEDRON:
+                mesh_dim_list.append("    int {} = {}.n_vertices();\n".format(data.la_type.vi_size, mesh))
+                mesh_dim_list.append("    int {} = {}.n_edges();\n".format(data.la_type.ei_size, mesh))
+                mesh_dim_list.append("    int {} = {}.n_faces();\n".format(data.la_type.fi_size, mesh))
+                mesh_dim_list.append("    int {} = {}.n_tets();\n".format(data.la_type.ti_size, mesh))
+            elif data.la_type.cur_mesh == MeshTypeEnum.POINTCLOUD:
+                mesh_dim_list.append("    int {} = {}.n_vertices();\n".format(data.la_type.vi_size, mesh))
+                mesh_dim_list.append("    int {} = {}.n_edges();\n".format(data.la_type.ei_size, mesh))
         # content += stats_content
         # content += '\n}\n'
         content = mesh_content + ''.join(mesh_dim_list) + content    # mesh content before dims checking
