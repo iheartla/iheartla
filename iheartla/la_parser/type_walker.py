@@ -1514,6 +1514,8 @@ class TypeWalker(NodeWalker):
                 cur_mesh = MeshTypeEnum.TETRAHEDRON
             elif node.m.ph:
                 cur_mesh = MeshTypeEnum.POLYHEDRON
+            elif node.m.m:
+                cur_mesh = MeshTypeEnum.TRIANGLE
             la_type = MeshType(cur_mesh=cur_mesh)
             if cur_mesh not in self.mesh_type_list:
                 self.mesh_type_list.append(cur_mesh)
