@@ -1570,6 +1570,6 @@ def is_derivative_node(node):
     if factor.is_node(IRNodeType.Expression):
         factor = factor.value
     if factor.is_node(IRNodeType.Factor):
-        if factor.op.is_node(IRNodeType.Gradient) or factor.op.is_node(IRNodeType.Derivative) or factor.op.is_node(IRNodeType.Partial):
+        if factor.op and (factor.op.is_node(IRNodeType.Gradient) or factor.op.is_node(IRNodeType.Derivative) or factor.op.is_node(IRNodeType.Partial)):
             return True
     return False

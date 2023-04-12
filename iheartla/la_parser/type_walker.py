@@ -2906,7 +2906,7 @@ class TypeWalker(NodeWalker):
             else:
                 # transpose
                 ir_node.t = node.t
-                if node.power.text == 'ᵀ':
+                if node.power and node.power.text == 'ᵀ':
                     ir_node.t = 'ᵀ'
                 self.assert_expr(base_info.la_type.is_matrix() or base_info.la_type.is_vector(), get_err_msg_info(base_info.ir.parse_info,"Transpose error. The base must be a matrix or vecotr"))
                 sparse = False
