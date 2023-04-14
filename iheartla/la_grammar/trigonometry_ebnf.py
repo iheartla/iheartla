@@ -161,4 +161,9 @@ inv_func::InvFunc
     = 
     INV '(' {hspace} param:expression {hspace} ')'
     ;
+
+svd_func::SvdFunc
+    =
+    SVD '(' {hspace} param:expression {hspace} ')'
+    ;
 """

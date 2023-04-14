@@ -486,6 +486,10 @@ class grammarinitParser(Parser):
         self._pattern('sequence')
 
     @tatsumasu()
+    def _SVD_(self):  # noqa
+        self._pattern('svd')
+
+    @tatsumasu()
     def _BUILTIN_KEYWORDS_(self):  # noqa
         with self._choice():
             with self._option():
@@ -6052,6 +6056,27 @@ class grammarinitParser(Parser):
             []
         )
 
+    @tatsumasu('SvdFunc')
+    def _svd_func_(self):  # noqa
+        self._SVD_()
+        self._token('(')
+
+        def block0():
+            self._hspace_()
+        self._closure(block0)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block2():
+            self._hspace_()
+        self._closure(block2)
+        self._token(')')
+
+        self._define(
+            ['param'],
+            []
+        )
+
     @tatsumasu()
     def _Directive_(self):  # noqa
         self._import_()
@@ -9675,6 +9700,9 @@ class grammarinitSemantics:
     def SEQUENCE(self, ast):  # noqa
         return ast
 
+    def SVD(self, ast):  # noqa
+        return ast
+
     def BUILTIN_KEYWORDS(self, ast):  # noqa
         return ast
 
@@ -10036,6 +10064,9 @@ class grammarinitSemantics:
         return ast
 
     def inv_func(self, ast):  # noqa
+        return ast
+
+    def svd_func(self, ast):  # noqa
         return ast
 
     def Directive(self, ast):  # noqa
@@ -10846,6 +10877,11 @@ class OrthFunc(ModelBase):
 
 @dataclass(eq=False)
 class InvFunc(ModelBase):
+    param: Any = None
+
+
+@dataclass(eq=False)
+class SvdFunc(ModelBase):
     param: Any = None
 
 

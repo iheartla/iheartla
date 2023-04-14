@@ -88,6 +88,7 @@ FACES = /faces/;
 TETS = /tets/;
 TUPLE = /tuple/;
 SEQUENCE = /sequence/;
+SVD = /svd/;
 """
 
 KEYWORDS = KEYS + r"""
