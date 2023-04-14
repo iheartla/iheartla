@@ -2820,6 +2820,13 @@ class CodeGenEigen(CodeGen):
                 content = 'orth'
             elif node.func_type == MathFuncType.MathFuncInv:
                 content = "({}).inverse()".format(params_content)
+            elif node.func_type == MathFuncType.MathFuncSVD:
+                svd_name = self.generate_var_name("svd")
+                pre_list.append("    Eigen::JacobiSVD<{}> {}({}, Eigen::ComputeFullU | Eigen::ComputeFullV);".format(self.get_ctype(node.param.la_type), svd_name, params_content))
+                cal_u = "{}.matrixU()".format(svd_name)
+                cal_sigma = "{}.singularValues()".format(svd_name)
+                cal_v = "{}.matrixV()".format(svd_name)
+                content = "{}({}, {}, {})".format(self.get_ctype(node.la_type, True), cal_u, cal_sigma, cal_v)
             elif node.func_type == MathFuncType.MathFuncMin or node.func_type == MathFuncType.MathFuncMax:
                 if node.remain_params and len(node.remain_params) > 0:
                     f_name = 'std::max'

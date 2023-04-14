@@ -4331,6 +4331,9 @@ class TypeWalker(NodeWalker):
                 self.assert_expr(param.la_type.is_set() or param.la_type.is_matrix() or param.la_type.is_vector() or param.la_type.is_sequence(), get_err_msg_info(param.parse_info,
                                                                              "Parameter must be valid matrix/vector/set/sequence type"))
                 ret_type = param.la_type.element_type
+        elif func_type == MathFuncType.MathFuncSVD:
+            self.assert_expr(param.la_type.is_matrix(), get_err_msg_info(param.parse_info, "Parameter must be valid matrix type"))
+            ret_type = TupleType(type_list=[MatrixType(rows=param.la_type.rows, cols=param.la_type.rows), VectorType(rows=param.la_type.cols), MatrixType(rows=param.la_type.cols, cols=param.la_type.cols)])
         tri_node = MathFuncNode(param, func_type, remain_list)
         node_info = NodeInfo(ret_type, symbols=symbols)
         tri_node.la_type = ret_type
@@ -4512,6 +4515,9 @@ class TypeWalker(NodeWalker):
         node_info = self.create_math_node_info(MathFuncType.MathFuncInverseVec, self.walk(node.param, **kwargs), [self.walk(node.origin, **kwargs)])
         node_info.ir.separator = node.separator
         return node_info
+    
+    def walk_SvdFunc(self, node, **kwargs):
+        return self.create_math_node_info(MathFuncType.MathFuncSVD, self.walk(node.param, **kwargs))
 
     def walk_DetFunc(self, node, **kwargs):
         return self.create_math_node_info(MathFuncType.MathFuncDet, self.walk(node.param, **kwargs))

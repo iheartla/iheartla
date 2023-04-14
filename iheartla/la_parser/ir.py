@@ -1467,6 +1467,7 @@ class MathFuncType(IntEnum):
     MathFuncMin = 30
     MathFuncMax = 31
     MathFuncInverseVec = 32
+    MathFuncSVD = 33
 
 
 class MathFuncNode(ExprNode):
