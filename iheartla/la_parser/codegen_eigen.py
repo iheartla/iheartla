@@ -2754,13 +2754,17 @@ class CodeGenEigen(CodeGen):
                 content = "({}).trace()".format(params_content)
             elif node.func_type == MathFuncType.MathFuncDiag:
                 if node.param.la_type.is_vector():
-                    content = "({}).asDiagonal()".format(params_content)
                     if len(node.remain_params) > 0:
+                        diag = self.generate_var_name('diag')
+                        pre_list.append("    Eigen::MatrixXd {} = ({}).asDiagonal();\n".format(diag, params_content))
                         remain_l = []
                         for remain in node.remain_params:
                             remain_info = self.visit(remain, **kwargs)
                             remain_l.append(remain_info.content)
-                        content += ".conservativeResize({})".format(",".join(remain_l))
+                        pre_list.append("    {}.conservativeResize({})\n".format(diag, ",".join(remain_l)))
+                        content = diag
+                    else:
+                        content = "({}).asDiagonal()".format(params_content)
                 else:
                     content = "({}).diagonal()".format(params_content)
             elif node.func_type == MathFuncType.MathFuncVec:
