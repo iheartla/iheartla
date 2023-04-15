@@ -2761,7 +2761,7 @@ class CodeGenEigen(CodeGen):
                         for remain in node.remain_params:
                             remain_info = self.visit(remain, **kwargs)
                             remain_l.append(remain_info.content)
-                        pre_list.append("    {}.conservativeResize({})\n".format(diag, ",".join(remain_l)))
+                        pre_list.append("    {}.conservativeResize({});\n".format(diag, ",".join(remain_l)))
                         content = diag
                     else:
                         content = "({}).asDiagonal()".format(params_content)
