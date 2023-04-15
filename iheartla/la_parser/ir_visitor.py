@@ -70,6 +70,7 @@ class IRBaseVisitor(object):
             IRNodeType.Gradient: "visit_gradient",
             IRNodeType.Laplace: "visit_laplace",
             IRNodeType.Partial: "visit_partial",
+            IRNodeType.Size: "visit_size",
             # matrix
             IRNodeType.Matrix: "visit_matrix",
             IRNodeType.MatrixRows: "visit_matrix_rows",
@@ -251,6 +252,9 @@ class IRBaseVisitor(object):
         pass
 
     def visit_partial(self, node, **kwargs):
+        pass
+
+    def visit_size(self, node, **kwargs):
         pass
 
     def visit_factor(self, node, **kwargs):

@@ -950,6 +950,9 @@ class CodeGenLatex(CodeGen):
     def visit_laplace(self, node, **kwargs):
         return "\\delta" + self.visit(node.value, **kwargs)
 
+    def visit_size(self, node, **kwargs):
+        return "\\#" + self.visit(node.param, **kwargs)
+
     def visit_optimize(self, node, **kwargs):
         assign_node = node.get_ancestor(IRNodeType.Assignment)
         category = ''

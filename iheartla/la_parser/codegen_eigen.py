@@ -2439,6 +2439,24 @@ class CodeGenEigen(CodeGen):
     def visit_laplace(self, node, **kwargs):
         return CodeNodeInfo("")
 
+    def visit_size(self, node, **kwargs):
+        param_info = self.visit(node.param, **kwargs)
+        pre_list = param_info.pre_list
+        if node.param.la_type.is_vector():
+            content = '{}.rows()'.format(param_info.content)
+        elif node.param.la_type.is_set():
+            content = '{}.size()'.format(param_info.content)
+        elif node.param.la_type.is_matrix():
+            content = '{}({}.rows(), {}.cols())'.format(self.get_ctype(node.la_type), param_info.content, param_info.content)
+        elif node.param.la_type.is_sequence():
+            if node.param.la_type.element_type.is_scalar():
+                content = '{}.size()'.format(param_info.content)
+            elif node.param.la_type.element_type.is_vector(): 
+                content = '{}({}.size(), {}[0].rows())'.format(self.get_ctype(node.la_type), param_info.content, param_info.content)
+            elif node.param.la_type.element_type.is_matrix(): 
+                content = '{}({}.size(), {}[0].rows(), {}[0].cols())'.format(self.get_ctype(node.la_type), param_info.content, param_info.content, param_info.content)
+        return CodeNodeInfo(content, pre_list=pre_list)
+
     def visit_partial(self, node, **kwargs):
         content = ""
         if node.order_type == PartialOrderType.PartialHessian:

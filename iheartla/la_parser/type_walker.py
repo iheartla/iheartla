@@ -2779,7 +2779,25 @@ class TypeWalker(NodeWalker):
             self.unofficial_method = True
             power_node.la_type = base.la_type
         return power_node
-
+    
+    def walk_SizeOp(self, node, **kwargs):
+        i_info = self.walk(node.i, **kwargs)
+        self.assert_expr(not i_info.la_type.is_scalar(), get_err_msg_info(node.i.parseinfo, "Invalid type"))
+        if i_info.la_type.is_vector() or i_info.la_type.is_set():
+            ret_type = ScalarType(is_int=True)
+        elif i_info.la_type.is_matrix():
+            ret_type = TupleType(type_list=[ScalarType(is_int=True), ScalarType(is_int=True)])
+        elif i_info.la_type.is_sequence():
+            if i_info.la_type.element_type.is_scalar():
+                ret_type = ScalarType(is_int=True)
+            elif i_info.la_type.element_type.is_vector():
+                ret_type = TupleType(type_list=[ScalarType(is_int=True), ScalarType(is_int=True)])
+            elif i_info.la_type.element_type.is_matrix():
+                ret_type = TupleType(type_list=[ScalarType(is_int=True), ScalarType(is_int=True), ScalarType(is_int=True)])
+        ir_node = SizeNode(param=i_info.ir)
+        ir_node.la_type = ret_type
+        return NodeInfo(ir_node.la_type, ir=ir_node)
+    
     def walk_Derivative(self, node, **kwargs):
         self.cur_eq_type |= EqTypeEnum.ODE
         upper_info = self.walk(node.upper, **kwargs)
