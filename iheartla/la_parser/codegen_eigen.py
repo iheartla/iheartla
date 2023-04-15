@@ -1274,7 +1274,8 @@ class CodeGenEigen(CodeGen):
                 # type declarations
                 # for lhs in et.left:
                 #     extra_list.append('        {} {};'.format(self.get_ctype(self.get_sym_type(lhs.get_main_id())), lhs.get_main_id()))
-                extra_list += [self.update_prelist_str([extra_info.content], '    ')]
+                # extra_list += [self.update_prelist_str(, '    ')] 
+                extra_list += [self.update_prelist_str(extra_info.pre_list + [extra_info.content], '    ')]
             extra_expr += '\n'.join(extra_list)
         if node.expr[0].is_node(IRNodeType.MultiConds):
             content += '        {} {}_ret;\n'.format(self.get_ctype(node.expr[0].la_type), name_info.content)
