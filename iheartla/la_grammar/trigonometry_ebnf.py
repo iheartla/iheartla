@@ -124,7 +124,7 @@ tr_func::TraceFunc
 
 diag_func::DiagFunc
     = 
-    DIAG '(' {hspace} param:expression {hspace} ')'
+    DIAG '(' {hspace} param:expression {{hspace} separator:params_separator {hspace} extra+:expression} {hspace} ')'
     ;
 
 vec_func::VecFunc

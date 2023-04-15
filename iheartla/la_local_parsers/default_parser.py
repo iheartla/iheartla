@@ -5987,13 +5987,33 @@ class grammardefaultParser(Parser):
         self.name_last_node('param')
 
         def block2():
-            self._hspace_()
+
+            def block3():
+                self._hspace_()
+            self._closure(block3)
+            self._params_separator_()
+            self.name_last_node('separator')
+
+            def block5():
+                self._hspace_()
+            self._closure(block5)
+            self._expression_()
+            self.add_last_node_to_name('extra')
+
+            self._define(
+                ['separator'],
+                ['extra']
+            )
         self._closure(block2)
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
         self._token(')')
 
         self._define(
-            ['param'],
-            []
+            ['param', 'separator'],
+            ['extra']
         )
 
     @tatsumasu('VecFunc')
@@ -11061,7 +11081,9 @@ class TraceFunc(ModelBase):
 
 @dataclass(eq=False)
 class DiagFunc(ModelBase):
+    extra: Any = None
     param: Any = None
+    separator: Any = None
 
 
 @dataclass(eq=False)
