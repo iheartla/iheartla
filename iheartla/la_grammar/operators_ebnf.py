@@ -2,6 +2,7 @@ OPERATORS = r"""
 # operators
 operations
     =
+    | size_op
     | derivative
     | partial
     | divergence

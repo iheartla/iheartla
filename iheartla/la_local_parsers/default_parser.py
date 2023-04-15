@@ -874,6 +874,8 @@ class grammardefaultParser(Parser):
     def _operations_(self):  # noqa
         with self._choice():
             with self._option():
+                self._size_op_()
+            with self._option():
                 self._derivative_()
             with self._option():
                 self._partial_()
@@ -917,9 +919,10 @@ class grammardefaultParser(Parser):
                 self._pseudoinverse_operator_()
             self._error(
                 'expecting one of: '
-                "'!!!' '<' '|' '||' '‖' '∪' '∫' '⟨'"
+                "# '!!!' '<' '|' '||' '‖' '∪' '∫' '⟨'"
                 '<DELTA> <DERIVATIVE> <INT> <NABLA>'
-                '<PARTIAL> <SUM> <builtin_operators>'
+                '<PARTIAL> <POUND> <SUM>'
+                '<builtin_operators>'
                 '<cross_product_operator> <derivative>'
                 '<divergence> <element_convert_func>'
                 '<exp_func> <factor>'
@@ -934,7 +937,7 @@ class grammardefaultParser(Parser):
                 '<power_operator>'
                 '<predefined_built_operators>'
                 '<pseudoinverse_operator> <set_operators>'
-                '<solver_operator> <sqrt_func>'
+                '<size_op> <solver_operator> <sqrt_func>'
                 '<sqrt_operator> <sum_operator>'
                 '<trans_operator> <union_operator> [Δ]'
                 'int sum ∂ ∇ ∑ √ 𝕕'
@@ -1580,10 +1583,11 @@ class grammardefaultParser(Parser):
                 '<number> <number_matrix> <operations>'
                 '<partial> <power_operator>'
                 '<pseudoinverse_operator> <set>'
-                '<set_operators> <solver_operator>'
-                '<sqrt_operator> <subexpression>'
-                '<sum_operator> <trans_operator> <vector>'
-                '[01\\u1D7D9] [\\u00BC-\\u00BE\\u2150-\\u215E]'
+                '<set_operators> <size_op>'
+                '<solver_operator> <sqrt_operator>'
+                '<subexpression> <sum_operator>'
+                '<trans_operator> <vector> [01\\u1D7D9]'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E]'
             )
 
     @tatsumasu('Solver')
@@ -1655,10 +1659,11 @@ class grammardefaultParser(Parser):
                 '<number> <number_matrix> <operations>'
                 '<partial> <power_operator>'
                 '<pseudoinverse_operator> <set>'
-                '<set_operators> <solver_operator>'
-                '<sqrt_operator> <subexpression>'
-                '<sum_operator> <trans_operator> <vector>'
-                '[01\\u1D7D9] [\\u00BC-\\u00BE\\u2150-\\u215E]'
+                '<set_operators> <size_op>'
+                '<solver_operator> <sqrt_operator>'
+                '<subexpression> <sum_operator>'
+                '<trans_operator> <vector> [01\\u1D7D9]'
+                '[\\u00BC-\\u00BE\\u2150-\\u215E]'
             )
 
     @tatsumasu('Summation')
@@ -7100,10 +7105,10 @@ class grammardefaultParser(Parser):
                 '<norm_operator> <number> <number_matrix>'
                 '<operations> <partial> <power_operator>'
                 '<pseudoinverse_operator> <set>'
-                '<set_operators> <solver_operator>'
-                '<sqrt_operator> <subexpression>'
-                '<sum_operator> <term> <trans_operator>'
-                '<vector> [01\\u1D7D9]'
+                '<set_operators> <size_op>'
+                '<solver_operator> <sqrt_operator>'
+                '<subexpression> <sum_operator> <term>'
+                '<trans_operator> <vector> [01\\u1D7D9]'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E]'
             )
 
@@ -7176,13 +7181,14 @@ class grammardefaultParser(Parser):
                 '<pi> <power_operator>'
                 '<predefined_built_operators>'
                 '<pseudoinverse_operator> <set>'
-                '<set_operators> <solver_operator>'
-                '<sqrt_func> <sqrt_operator>'
-                '<subexpression> <sum_operator>'
-                '<trans_operator> <union_operator>'
-                '<vector> Mesh SOLVE Solve [01\\u1D7D9]'
-                '[Ee]dge[Ss]et [Ff]ace[Ss]et [Pp]oint'
-                '[Cc]loud [Pp]olygon [Pp]olyhedron'
+                '<set_operators> <size_op>'
+                '<solver_operator> <sqrt_func>'
+                '<sqrt_operator> <subexpression>'
+                '<sum_operator> <trans_operator>'
+                '<union_operator> <vector> Mesh SOLVE'
+                'Solve [01\\u1D7D9] [Ee]dge[Ss]et'
+                '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
+                '[Pp]olygon [Pp]olyhedron'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
                 '[Tt]etrahedron [Tt]riangle'
                 '[Vv]ertex[Ss]et'
@@ -8799,10 +8805,11 @@ class grammardefaultParser(Parser):
                 '<number> <number_matrix> <operations>'
                 '<partial> <power_operator>'
                 '<pseudoinverse_operator> <set>'
-                '<set_operators> <solver_operator>'
-                '<sqrt_operator> <subexpression>'
-                '<sum_operator> <trans_operator>'
-                '<union_operator> <vector> [01\\u1D7D9]'
+                '<set_operators> <size_op>'
+                '<solver_operator> <sqrt_operator>'
+                '<subexpression> <sum_operator>'
+                '<trans_operator> <union_operator>'
+                '<vector> [01\\u1D7D9]'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E]'
             )
 
