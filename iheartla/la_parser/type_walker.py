@@ -2345,8 +2345,8 @@ class TypeWalker(NodeWalker):
                     # multiple return value
                     pass
                 return self.walk_Assignment(node, **kwargs)
-            rhs_info = self.walk(node.right[0], **kwargs)
-            pass
+            # rhs_info = self.walk(node.right[0], **kwargs)
+            return self.walk_Assignment(node, **kwargs)
 
     def walk_DeSolver(self, node, **kwargs):
         # print(node)
