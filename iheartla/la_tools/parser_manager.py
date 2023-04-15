@@ -39,6 +39,19 @@ class ParserManager(object):
             else:
                 self.init_parser = grammarinitParser(semantics=grammarinitModelBuilderSemantics())
                 self.default_parser = grammardefaultParser(semantics=grammardefaultModelBuilderSemantics())
+                # disable # as comment symbol 
+                # https://github.com/neogeny/TatSu/issues/293
+                # https://github.com/neogeny/TatSu/issues/249
+                init_parser_config = getattr(self.init_parser, "config", None)
+                if init_parser_config:
+                    # Work around BC break in Tatsu 5.7
+                    init_parser_config.comments_re = None
+                    init_parser_config.eol_comments_re = None
+                ast_parser_config = getattr(self.default_parser, "config", None)
+                if ast_parser_config:
+                    # Work around BC break in Tatsu 5.7
+                    ast_parser_config.comments_re = None
+                    ast_parser_config.eol_comments_re = None
                 # self.config_parser = grammarconfigParser(semantics=grammarconfigModelBuilderSemantics())
             ParserManager.__instance = self
 
