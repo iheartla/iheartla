@@ -2755,6 +2755,12 @@ class CodeGenEigen(CodeGen):
             elif node.func_type == MathFuncType.MathFuncDiag:
                 if node.param.la_type.is_vector():
                     content = "({}).asDiagonal()".format(params_content)
+                    if len(node.remain_params) > 0:
+                        remain_l = []
+                        for remain in node.remain_params:
+                            remain_info = self.visit(remain, **kwargs)
+                            remain_l.append(remain_info.content)
+                        content += ".conservativeResize({})".format(",".join(remain_l))
                 else:
                     content = "({}).diagonal()".format(params_content)
             elif node.func_type == MathFuncType.MathFuncVec:

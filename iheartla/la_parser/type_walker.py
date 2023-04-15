@@ -4270,8 +4270,16 @@ class TypeWalker(NodeWalker):
             self.assert_expr((param.la_type.is_matrix() and param.la_type.rows == param.la_type.cols) or param.la_type.is_vector(), get_err_msg_info(param.parse_info, "Parameter must be valid matrix or vector type"))
             if param.la_type.is_matrix():
                 ret_type = VectorType(rows=param.la_type.rows)
+                self.assert_expr(len(remains) == 0, get_err_msg_info(param.parse_info, "Invalid multiple parameters found"))
             else:
                 ret_type = MatrixType(rows=param.la_type.rows, cols=param.la_type.rows)
+                remain_list = []
+                if len(remains) > 0:
+                    self.assert_expr(len(remains) == 2, get_err_msg_info(param.parse_info, "Invalid multiple parameters found"))
+                    for r in remains:
+                        self.assert_expr(r.la_type.is_scalar(), get_err_msg_info(param.parse_info, "Invalid multiple parameters"))
+                        remain_list.append(r.ir)
+                    ret_type = MatrixType(dynamic=DynamicTypeEnum.DYN_ROW|DynamicTypeEnum.DYN_COL)
         elif func_type == MathFuncType.MathFuncVec:
             if param.la_type.is_matrix():
                 self.assert_expr(param.la_type.is_matrix(), get_err_msg_info(param.parse_info, "Parameter must be valid matrix type"))
@@ -4506,7 +4514,11 @@ class TypeWalker(NodeWalker):
         return node_info
 
     def walk_DiagFunc(self, node, **kwargs):
-        return self.create_math_node_info(MathFuncType.MathFuncDiag, self.walk(node.param, **kwargs))
+        extra_list = []
+        if node.extra:
+            for extra in node.extra:
+                extra_list.append(self.walk(extra, **kwargs))
+        return self.create_math_node_info(MathFuncType.MathFuncDiag, self.walk(node.param, **kwargs), extra_list)
 
     def walk_VecFunc(self, node, **kwargs):
         return self.create_math_node_info(MathFuncType.MathFuncVec, self.walk(node.param, **kwargs))
