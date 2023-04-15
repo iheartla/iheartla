@@ -2162,6 +2162,8 @@ class TypeWalker(NodeWalker):
                     if len(node.left) == len(right_info.la_type.type_list):
                         # unpack tuple type
                         rhs_type_list = right_info.la_type.type_list
+                    else:
+                        rhs_type_list = [right_info.la_type]
                 else:
                     # make a list
                     rhs_type_list = [right_info.la_type]
