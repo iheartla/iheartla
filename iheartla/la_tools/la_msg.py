@@ -181,8 +181,11 @@ class LaMsg(object):
 
 
 def get_err_msg_info(parse_info, error_msg):
-    line_info = get_line_info(parse_info)
-    return get_err_msg(line_info, line_info.col, error_msg)
+    if parse_info:
+        line_info = get_line_info(parse_info)
+        return get_err_msg(line_info, line_info.col, error_msg)
+    else:
+        return error_msg
 
 
 def get_err_msg(line_info, col, error_msg):

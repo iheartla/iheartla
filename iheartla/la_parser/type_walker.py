@@ -1601,51 +1601,19 @@ class TypeWalker(NodeWalker):
         ir_node.empty = node.empty
         ir_node.separators = node.separators
         params = []
-        template_symbols = {}
-        template_ret = []
         if node.params:
             for index in range(len(node.params)):
                 param_node = self.walk(node.params[index], **kwargs)
                 ir_node.params.append(param_node)
-                params.append(param_node.la_type)
-                if param_node.la_type.is_scalar():
-                    pass
-                elif param_node.la_type.is_vector():
-                    if isinstance(param_node.la_type.rows, str) and param_node.la_type.rows not in self.symtable:
-                        if param_node.la_type.rows not in template_symbols:
-                            template_symbols[param_node.la_type.rows] = index
-                elif param_node.la_type.is_matrix():
-                    if isinstance(param_node.la_type.rows, str) and param_node.la_type.rows not in self.symtable:
-                        if param_node.la_type.rows not in template_symbols:
-                            template_symbols[param_node.la_type.rows] = index
-                    if isinstance(param_node.la_type.cols, str) and param_node.la_type.cols not in self.symtable:
-                        if param_node.la_type.cols not in template_symbols:
-                            template_symbols[param_node.la_type.cols] = index
+                params.append(param_node.la_type) 
         ret_list = []
         for cur_index in range(len(node.ret)):
             ret_node = self.walk(node.ret[cur_index], **kwargs)
             ir_node.ret = ret_node
             ret = ret_node.la_type
-            ret_list.append(ret)
-            if ret.is_vector():
-                if isinstance(ret.rows, str):
-                    self.assert_expr(ret.rows in self.symtable or ret.rows in template_symbols, get_err_msg_info(ret_node.parse_info, "Vector as return value of function must have concrete dimension"))
-                    if ret.rows in template_symbols:
-                        if ret.rows not in template_ret:
-                            template_ret.append(ret.rows)
-            elif ret.is_matrix():
-                if isinstance(ret.rows, str):
-                    self.assert_expr(ret.rows in self.symtable or ret.rows in template_symbols, get_err_msg_info(ret_node.parse_info, "Matrix as return value of function must have concrete dimension"))
-                if ret.rows in template_symbols:
-                    if ret.rows not in template_ret:
-                        template_ret.append(ret.rows)
-                if isinstance(ret.cols, str):
-                    self.assert_expr(ret.cols in self.symtable or ret.cols in template_symbols, get_err_msg_info(ret_node.parse_info, "Matrix as return value of function must have concrete dimension"))
-                    if ret.cols in template_symbols:
-                        if ret.cols not in template_ret:
-                            template_ret.append(ret.cols)
-        self.logger.debug("template_symbols:{}, template_ret:{}".format(template_symbols, template_ret))
-        la_type = FunctionType(params=params, ret=ret_list, template_symbols=template_symbols, ret_symbols=template_ret)
+            ret_list.append(ret) 
+        la_type = FunctionType(params=params, ret=ret_list)
+        self.check_func_template(la_type, ret_node.parse_info)
         ir_node.la_type = la_type
         return ir_node
 
@@ -1985,6 +1953,7 @@ class TypeWalker(NodeWalker):
             ret_list.append(expr_info.ir.la_type)
             cur_symbols = cur_symbols.union(expr_info.symbols)
         ir_node.la_type = FunctionType(params=param_tps, ret=ret_list)
+        self.check_func_template(ir_node.la_type)
         self.add_sym_type(original_local_func_name, ir_node.la_type, get_err_msg(get_line_info(node.parseinfo),0,"Symbol {} has been defined".format(local_func_name)), is_main=True)
         if self.local_func_error:
             # error happened, revisit expr
@@ -2005,6 +1974,47 @@ class TypeWalker(NodeWalker):
         self.expr_dict[local_func_name] = list(ir_node.symbols) + [local_func_name]
         self.pop_scope()
         return NodeInfo(ir=ir_node)
+    
+    def check_func_template(self, func_type, parse_info=None):
+        # check whether the current local function
+        template_symbols = {}
+        template_ret = []
+        for index in range(len(func_type.params)):
+            if func_type.params[index].is_scalar():
+                pass
+            elif func_type.params[index].is_vector():
+                if isinstance(func_type.params[index].rows, str) and func_type.params[index].rows not in self.symtable:
+                    if func_type.params[index].rows not in template_symbols:
+                        template_symbols[func_type.params[index].rows] = index
+            elif func_type.params[index].is_matrix():
+                if isinstance(func_type.params[index].rows, str) and func_type.params[index].rows not in self.symtable:
+                    if func_type.params[index].rows not in template_symbols:
+                        template_symbols[func_type.params[index].rows] = index
+                if isinstance(func_type.params[index].cols, str) and func_type.params[index].cols not in self.symtable:
+                    if func_type.params[index].cols not in template_symbols:
+                        template_symbols[func_type.params[index].cols] = index
+        for cur_index in range(len(func_type.ret)):
+            ret = func_type.ret[cur_index]
+            if ret.is_vector():
+                if isinstance(ret.rows, str):
+                    self.assert_expr(ret.rows in self.symtable or ret.rows in template_symbols, get_err_msg_info(parse_info, "Vector as return value of function must have concrete dimension"))
+                    if ret.rows in template_symbols:
+                        if ret.rows not in template_ret:
+                            template_ret.append(ret.rows)
+            elif ret.is_matrix():
+                if isinstance(ret.rows, str):
+                    self.assert_expr(ret.rows in self.symtable or ret.rows in template_symbols, get_err_msg_info(parse_info, "Matrix as return value of function must have concrete dimension"))
+                if ret.rows in template_symbols:
+                    if ret.rows not in template_ret:
+                        template_ret.append(ret.rows)
+                if isinstance(ret.cols, str):
+                    self.assert_expr(ret.cols in self.symtable or ret.cols in template_symbols, get_err_msg_info(parse_info, "Matrix as return value of function must have concrete dimension"))
+                    if ret.cols in template_symbols:
+                        if ret.cols not in template_ret:
+                            template_ret.append(ret.cols)
+        self.logger.debug("template_symbols:{}, template_ret:{}".format(template_symbols, template_ret))
+        func_type.template_symbols = template_symbols
+        func_type.ret_symbols = template_ret
 
     def get_eq_node_info(self, node, **kwargs):
         self.unknown_sym.clear()
