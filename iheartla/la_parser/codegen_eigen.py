@@ -2218,6 +2218,11 @@ class CodeGenEigen(CodeGen):
                                                                                 "{}.at({})".format(var_ids[0], var_ids[1][0]))
 
                         ele_type = self.get_sym_type(sequence).element_type
+                        if self.is_main_scope():
+                            type_def = ""
+                        else:
+                            type_def = self.get_ctype(self.get_sym_type(node.left[cur_index].get_main_id())) + ' '
+                        content += '    ' + type_def + node.left[cur_index].get_main_id() + ';\n'
                         # definition
                         if self.get_sym_type(sequence).is_sequence():
                             right_exp += "    {} = {}".format(left_info.content, right_info.content)
