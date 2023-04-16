@@ -297,6 +297,8 @@ class TypeWalker(NodeWalker):
         self.used_params = []
         self.der_vars = []   # variables in derivatives
         self.der_defined_lhs_list = []   # symbol defined as gradient or hessian
+        self.lhs_on_der = []             # symbol defined with gradient or hessian
+        self.visiting_der = False        # whether current assign has gradient or hessian
         self.opt_syms = []
         self.expr_dict = {}        # lhs id -> symbols in current expr
         self.smooth_dict = {}
@@ -2114,6 +2116,7 @@ class TypeWalker(NodeWalker):
 
 
     def walk_Assignment(self, node, **kwargs):
+        self.visiting_der = False
         # ir
         if hasattr(node, 'lexpr') and node.lexpr:
             return self.get_eq_node_info(node, **kwargs)
@@ -2345,7 +2348,11 @@ class TypeWalker(NodeWalker):
                     self.get_cur_param_data().symtable[id0] = right_type
             assign_node.symbols = assign_node.symbols.union(right_info.symbols)
             self.expr_dict[id0_info.ir.get_main_id()] = list(right_info.symbols) + [id0_info.ir.get_main_id()]
+            if self.visiting_der:
+                if id0_info.ir.get_main_id() not in self.lhs_on_der:
+                    self.lhs_on_der.append(id0_info.ir.get_main_id())
         self.visiting_solver_eq = False
+        self.visiting_der = False
         return NodeInfo(None, ir=assign_node, symbols=assign_node.symbols)
 
     def walk_GeneralAssignment(self, node, **kwargs):
@@ -2816,6 +2823,7 @@ class TypeWalker(NodeWalker):
         return NodeInfo(ir_node.la_type, ir=ir_node)
     
     def walk_Derivative(self, node, **kwargs):
+        self.visiting_der = True
         self.cur_eq_type |= EqTypeEnum.ODE
         upper_info = self.walk(node.upper, **kwargs)
         lower_info = self.walk(node.lower, **kwargs)
@@ -2832,6 +2840,7 @@ class TypeWalker(NodeWalker):
         return NodeInfo(ir_node.la_type, ir=ir_node)
 
     def walk_Partial(self, node, **kwargs):
+        self.visiting_der = True
         self.has_derivative = True
         self.cur_eq_type &= EqTypeEnum.PDE
         upper_info = self.walk(node.upper, **kwargs)
@@ -2896,6 +2905,7 @@ class TypeWalker(NodeWalker):
         return NodeInfo(ir_node.la_type, ir=ir_node, symbols=value_info.symbols)
 
     def walk_Gradient(self, node, **kwargs):
+        self.visiting_der = True
         value_info = self.walk(node.value, **kwargs)
         # self.assert_expr(value_info.la_type.is_function(), get_err_msg_info(value_info.ir.parse_info,"Symbol {} isn't a function".format(node.value.text)))
         self.assert_expr(value_info.la_type.is_scalar() or value_info.la_type.is_vector(), get_err_msg_info(value_info.ir.parse_info,"Only support scalar or vector types"))

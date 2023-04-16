@@ -360,6 +360,7 @@ class IRVisitor(IRBaseVisitor):
         self.visiting_sum = False
         self.class_only = False
         self.lhs_list = []
+        self.lhs_on_der = [] # symbol defined with gradient or hessian
         self.module_list = []
         self.module_syms = {}
         self.builtin_module_dict = {}
@@ -608,6 +609,8 @@ class IRVisitor(IRBaseVisitor):
         self.logger.info("der vars:{}".format(self.der_vars))
         self.logger.info("optimized variables:{}".format(self.opt_syms))
         self.logger.info("der_defined_lhs_list:{}".format(self.der_defined_lhs_list))
+        self.logger.info("lhs_list:{}".format(self.lhs_list))
+        self.logger.info("lhs_on_der:{}".format(self.lhs_on_der))
 
     def init_type(self, type_walker, func_name):
         self.main_param = type_walker.main_param
@@ -631,6 +634,7 @@ class IRVisitor(IRBaseVisitor):
         self.used_params = type_walker.used_params
         self.der_vars = type_walker.der_vars
         self.der_defined_lhs_list = type_walker.der_defined_lhs_list
+        self.lhs_on_der = type_walker.lhs_on_der            # symbol defined with gradient or hessian
         self.der_vars_mapping.clear()
         for param in self.der_vars:
                 self.der_vars_mapping[param] = self.generate_var_name("new_{}".format(param))    # new variable with var type
