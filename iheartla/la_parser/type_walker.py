@@ -632,6 +632,9 @@ class TypeWalker(NodeWalker):
         else:
             if sym in self.func_data_dict[cur_scope].params_data.parameters:
                 is_param = True
+            if not is_param:
+                if sym in self.parameters:
+                    is_param = True
         return is_param
 
     def check_sym_existence(self, sym, msg, existed=True):
@@ -857,7 +860,9 @@ class TypeWalker(NodeWalker):
             node = self.get_assign_node(hess.upper, stat_list)
             # clear
             self.hessian_sum_list.clear()
-            need_sparse = self.check_assign_node(node)
+            need_sparse = False
+            if node:
+                need_sparse = self.check_assign_node(node)
             if need_sparse:
                 node.need_sparse_hessian = True
                 node.hessian_var = hess.lower
