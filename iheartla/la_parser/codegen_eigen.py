@@ -98,12 +98,12 @@ class CodeGenEigen(CodeGen):
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::SparseMatrix<int>"
                     else:
-                        type_str = "Eigen::SparseMatrix<{}>".format(cur_double_type)
+                        type_str = "Eigen::SparseMatrix<{}>".format("double")
                 else:
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
                         type_str = "Eigen::SparseMatrix<int>"
                     else:
-                        type_str = "Eigen::SparseMatrix<{}>".format(cur_double_type)
+                        type_str = "Eigen::SparseMatrix<{}>".format("double")
             else:
                 if la_type.is_dynamic():
                     if la_type.element_type is not None and la_type.element_type.is_scalar() and la_type.element_type.is_int:
