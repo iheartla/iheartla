@@ -66,6 +66,12 @@ class LaVisualizer(object):
                 if isinstance(child, tuple):
                     # identifier in simplified grammar: due to tatsu regex update
                     content = child[0].text
+                elif isinstance(child, dict):
+                    for k, v in child.items():
+                        if k != "parseinfo":
+                            children = getattr(child, k)
+                            content = str(children)
+                            break
                 else:
                     content = str(child)
             self.ps.node(name=str(self.index), label=str(k) + ":" + content)
