@@ -2415,7 +2415,41 @@ class CodeGenEigen(CodeGen):
             # only in main scope
             if sym in self.der_vars:
                 prefix = True
+        else:
+            # other domain
+            # if sym in self.der_vars:
+            #     prefix = True  
+            if sym in self.lhs_list:
+                prefix = True
+            elif self.local_func_parsing:
+                is_param = False
+                if self.local_func_name != '':
+                    for key, value in self.func_data_dict.items():
+                        if sym in value.params_data.parameters:
+                            is_param = True
+                            break
+                if not is_param and sym in self.used_params:
+                    prefix = True
+                if not is_param:
+                    if self.is_module_sym(sym):
+                        prefix = True
+            else:
+                # other domains such as summation
+                if self.is_module_sym(sym):
+                    prefix = True
+                if sym in self.der_vars:
+                    prefix = True  
         return prefix
+    
+    def is_module_sym(self, sym):
+        exist = False
+        if len(self.module_list) > 0:
+            for module in self.module_list:
+                if len(module.syms) > 0 and sym in module.syms:
+                    exist = True
+                    break
+        return exist
+    
     
     def visit_IdentifierAlone(self, node, **kwargs):
         if node.value:
