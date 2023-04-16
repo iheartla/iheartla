@@ -16,7 +16,7 @@ except ImportError:
     # if DEBUG_MODE:
     #     print( "Skipping visualizer." )
     class LaVisualizer(object):
-        def visualize(self, node): pass
+        def visualize(self, node, pre_walk=True): pass
 
 from .ir import *
 from .la_data import *
