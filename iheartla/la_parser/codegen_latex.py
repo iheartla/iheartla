@@ -1086,6 +1086,14 @@ class CodeGenLatex(CodeGen):
             content = node.func_name
         elif node.func_type == MathFuncType.MathFuncDiag:
             content = ' \mathop{\\text{diag}}'
+            if node.remain_params and len(node.remain_params) > 0:
+                # multi params
+                param_list = [param_info]
+                for remain in node.remain_params:
+                    remain_info = self.visit(remain, **kwargs)
+                    param_list.append(remain_info)
+                param_info = ', '.join(param_list)
+            return "{}\\left( {} \\right)".format(content, param_info)
         elif node.func_type == MathFuncType.MathFuncVec:
             content = ' \mathop{\\text{vec}}'
         elif node.func_type == MathFuncType.MathFuncInverseVec:
