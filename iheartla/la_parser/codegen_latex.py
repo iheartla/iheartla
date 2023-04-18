@@ -1107,6 +1107,8 @@ class CodeGenLatex(CodeGen):
             content = ' \mathop{\\text{orth}}'
         elif node.func_type == MathFuncType.MathFuncInv:
             content = ' \mathop{\\text{inv}}'
+        elif node.func_type == MathFuncType.MathFuncSVD:
+            content = ' \mathop{\\text{svd}}'
         elif node.func_type == MathFuncType.MathFuncMin or node.func_type == MathFuncType.MathFuncMax:
             content = ' \mathop{\\text{max}}'
             if node.func_type == MathFuncType.MathFuncMin:
