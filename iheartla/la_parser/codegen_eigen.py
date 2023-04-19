@@ -2898,7 +2898,7 @@ class CodeGenEigen(CodeGen):
                 content = "({}).inverse()".format(params_content)
             elif node.func_type == MathFuncType.MathFuncSVD:
                 svd_name = self.generate_var_name("svd")
-                pre_list.append("    Eigen::JacobiSVD<{}> {}(to_double({}), Eigen::ComputeFullU | Eigen::ComputeFullV);".format(self.get_ctype(node.param.la_type, True), svd_name, params_content))
+                pre_list.append("    Eigen::BDCSVD<{}> {}(to_double({}), Eigen::ComputeFullU | Eigen::ComputeFullV);".format(self.get_ctype(node.param.la_type, True), svd_name, params_content))
                 cal_u = "{}.matrixU()".format(svd_name)
                 cal_sigma = "{}.singularValues()".format(svd_name)
                 cal_v = "{}.matrixV()".format(svd_name)

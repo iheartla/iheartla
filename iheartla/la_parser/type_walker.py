@@ -4393,7 +4393,7 @@ class TypeWalker(NodeWalker):
         elif func_type == MathFuncType.MathFuncSVD:
             self.assert_expr(param.la_type.is_matrix(), get_err_msg_info(param.parse_info, "Parameter must be valid matrix type"))
             ret_type = TupleType(type_list=[MatrixType(rows=param.la_type.rows, cols=param.la_type.rows),
-                                            VectorType(dynamic=DynamicTypeEnum.DYN_ROW),
+                                            VectorType(rows=param.la_type.rows),
                                             MatrixType(rows=param.la_type.cols, cols=param.la_type.cols)])
         tri_node = MathFuncNode(param, func_type, remain_list)
         node_info = NodeInfo(ret_type, symbols=symbols)
