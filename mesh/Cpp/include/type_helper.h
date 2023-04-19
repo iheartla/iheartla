@@ -111,7 +111,7 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> to_double(Eigen::Matrix<double, Eigen::
 	return param;
 }
 
-Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> to_double(Eigen::Matrix<autodiff::var, Eigen::Dynamic, Eigen::Dynamic> &param){
+Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> to_double(const Eigen::Matrix<autodiff::var, Eigen::Dynamic, Eigen::Dynamic> &param){
 	Eigen::Matrix<double, Eigen::Dynamic, 1> ret(param.rows());
 	for (int i = 0; i < param.rows(); ++i)
 	{

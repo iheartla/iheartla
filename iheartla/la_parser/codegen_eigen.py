@@ -22,6 +22,7 @@ class CodeGenEigen(CodeGen):
         if self.need_mutator:
             self.pre_str += '#include <boost/numeric/odeint.hpp>\n'
             self.pre_str += 'using namespace boost::numeric::odeint;\n'
+        self.pre_str += '#include "type_helper.h"\n'
         self.code_frame.desc = '/*\n{}\n*/\n'''.format(self.la_content)
         self.code_frame.include = self.pre_str
         self.double_type = "DT"          # double type
@@ -331,8 +332,8 @@ class CodeGenEigen(CodeGen):
                 omit = False
                 if parameter in self.der_defined_lhs_list:
                     omit = True
-                if parameter in self.lhs_on_der:
-                    omit = True
+                # if parameter in self.lhs_on_der:
+                #     omit = True
                 item_list.append("    {} {};".format(self.get_ctype(self.get_sym_type(parameter), omit), parameter))
                 def_list.append("const {} & {}".format(self.get_ctype(self.get_sym_type(parameter), True), parameter))
                 # assign_list.append("{}({})".format(parameter, parameter))
@@ -1402,9 +1403,9 @@ class CodeGenEigen(CodeGen):
                 if node.base.la_type.is_matrix() and node.base.la_type.sparse:
                     solver_name = self.generate_var_name("solver")
                     identity_name = self.generate_var_name("I")
-                    pre_list.append("    Eigen::SparseQR <{}, Eigen::COLAMDOrdering<int> > {};\n".format(
+                    pre_list.append("    Eigen::SparseQR <to_double({}), Eigen::COLAMDOrdering<int> > {};\n".format(
                         self.get_ctype(node.base.la_type), solver_name))
-                    pre_list.append("    {}.compute({});\n".format(solver_name, base_info.content))
+                    pre_list.append("    {}.compute(to_double({}));\n".format(solver_name, base_info.content))
                     pre_list.append("    {} {}({}, {});\n".format(self.get_ctype(node.base.la_type), identity_name,
                                                                   node.base.la_type.rows, node.base.la_type.cols))
                     pre_list.append("    {}.setIdentity();\n".format(identity_name))
@@ -1444,7 +1445,7 @@ class CodeGenEigen(CodeGen):
                 left_info.content = "({}).colPivHouseholderQr().solve(({}).toDense())".format(left_info.content,
                                                                                             right_info.content)
             else:
-                left_info.content = "({}).colPivHouseholderQr().solve({})".format(left_info.content, right_info.content)
+                left_info.content = "(to_double({})).colPivHouseholderQr().solve(to_double({}))".format(left_info.content, right_info.content)
         left_info.pre_list += pre_list
         return left_info    
 
@@ -2816,7 +2817,7 @@ class CodeGenEigen(CodeGen):
                 if node.param.la_type.is_vector():
                     if len(node.remain_params) > 0:
                         diag = self.generate_var_name('diag')
-                        pre_list.append("    Eigen::MatrixXd {} = ({}).asDiagonal();\n".format(diag, params_content))
+                        pre_list.append("    {} {} = ({}).asDiagonal();\n".format(self.get_ctype(node.la_type), diag, params_content))
                         remain_l = []
                         for remain in node.remain_params:
                             remain_info = self.visit(remain, **kwargs)
@@ -2892,7 +2893,7 @@ class CodeGenEigen(CodeGen):
                 content = "({}).inverse()".format(params_content)
             elif node.func_type == MathFuncType.MathFuncSVD:
                 svd_name = self.generate_var_name("svd")
-                pre_list.append("    Eigen::JacobiSVD<{}> {}({}, Eigen::ComputeFullU | Eigen::ComputeFullV);".format(self.get_ctype(node.param.la_type), svd_name, params_content))
+                pre_list.append("    Eigen::JacobiSVD<{}> {}(to_double({}), Eigen::ComputeFullU | Eigen::ComputeFullV);".format(self.get_ctype(node.param.la_type, True), svd_name, params_content))
                 cal_u = "{}.matrixU()".format(svd_name)
                 cal_sigma = "{}.singularValues()".format(svd_name)
                 cal_v = "{}.matrixV()".format(svd_name)
