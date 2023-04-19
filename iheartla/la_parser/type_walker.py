@@ -3482,7 +3482,112 @@ class TypeWalker(NodeWalker):
                     cur_dict[main_sym] = right_sym_list
                 sub_sym_list[sub_index] = cur_dict
 
+    def walk_IdentifierWithExpr(self, node, **kwargs):
+        left_info = self.walk(node.left, **kwargs)
+        self.assert_expr(not self.is_param_block, get_err_msg_info(node.parseinfo, "Can only show up on the rhs"))
+        content_symbol = {}
+        if self.is_sym_existed(left_info.content):
+            if self.get_sym_type(left_info.content).is_sequence():
+                la_type = self.get_sym_type(left_info.content).element_type
+                ir_node = SequenceIndexNode(parse_info=node.parseinfo, raw_text=node.text)
+                ir_node.main = left_info.ir
+                main_index_info = self.walk(node.exp[0])
+                ir_node.main_index = main_index_info.ir
+                if len(node.exp) == 1:
+                    self.assert_expr(node.exp[0] != '*', get_err_msg(get_line_info(node.parseinfo),
+                                                                       get_line_info(node.parseinfo).text.find('*'),
+                                                                       "Can't use * as the index for a sequence"))
+                    la_type = self.get_sym_type(left_info.content).element_type
+                elif len(node.exp) == 2:
+                    self.assert_expr(self.get_sym_type(left_info.content).is_vector_seq(),
+                                     get_err_msg_info(left_info.ir.parse_info,
+                                                      "Two subscripts are used for sequence of vector"))
+                    self.assert_expr('*' not in node.exp, get_err_msg(get_line_info(node.parseinfo),
+                                                                        get_line_info(node.parseinfo).text.find(
+                                                                            '*'),
+                                                                        "* can't be used here"))
+                    main_index_info = self.walk(node.exp[0])
+                    row_index_info = self.walk(node.exp[1])
+                    ir_node.main_index = main_index_info.ir
+                    ir_node.row_index = row_index_info.ir
+                    la_type = self.get_sym_type(left_info.content).element_type.element_type
+                elif len(node.exp) == 3:
+                    self.assert_expr(self.get_sym_type(left_info.content).is_matrix_seq(),
+                                     get_err_msg_info(left_info.ir.parse_info,
+                                                      "Triple subscripts are only used for a sequence of matrix"))
+                    self.assert_expr(node.exp[0] != '*', get_err_msg(get_line_info(node.parseinfo),
+                                                                       get_line_info(node.parseinfo).text.find('*'),
+                                                                       "* can't be the first subscript here"))
+                    if '*' in node.exp:
+                        ir_node.slice_matrix = True
+                        if node.exp[1] == '*':
+                            self.assert_expr(node.exp[2] != '*', get_err_msg(get_line_info(node.parseinfo),
+                                                                               get_line_info(
+                                                                                   node.parseinfo).text.find('*'),
+                                                                               "Only one * is allowed as subscripts"))
+                            la_type = VectorType(rows=self.get_sym_type(left_info.content).element_type.rows)
+                            col_index_info = self.walk(node.exp[2])
+                            ir_node.col_index = col_index_info.ir
+                        else:
+                            la_type = MatrixType(rows=1,
+                                                 cols=self.get_sym_type(left_info.content).element_type.cols)
+                            row_index_info = self.walk(node.right[1])
+                            ir_node.row_index = row_index_info.ir
+                    else:
+                        row_index_info = self.walk(node.exp[1])
+                        col_index_info = self.walk(node.exp[2])
+                        ir_node.main_index = main_index_info.ir
+                        ir_node.row_index = row_index_info.ir
+                        ir_node.col_index = col_index_info.ir
+                        la_type = self.get_sym_type(left_info.content).element_type.element_type
+                ir_node.la_type = la_type
+                node_info = NodeInfo(la_type, content_symbol,
+                                {node.text},
+                                ir_node)
+            elif self.get_sym_type(left_info.content).is_matrix():
+                ir_node = MatrixIndexNode(parse_info=node.parseinfo, raw_text=node.text)
+                ir_node.main = left_info.ir
+                la_type = self.get_sym_type(left_info.content).element_type
+                if '*' in node.exp:
+                    if node.exp[0] == '*':
+                        self.assert_expr(node.exp[1] != '*', get_err_msg(get_line_info(node.parseinfo),
+                                                                           get_line_info(node.parseinfo).text.find(
+                                                                               '*'),
+                                                                           "Only one * is allowed as subscripts"))
+                        la_type = VectorType(rows=self.get_sym_type(left_info.content).rows)
+                        col_index_info = self.walk(node.exp[1])
+                        ir_node.col_index = col_index_info.ir
+                    else:
+                        la_type = VectorType(rows=self.get_sym_type(left_info.content).cols)
+                        row_index_info = self.walk(node.exp[0])
+                        ir_node.row_index = row_index_info.ir
+                else:
+                    row_index_info = self.walk(node.exp[0])
+                    col_index_info = self.walk(node.exp[1])
+                    ir_node.row_index = row_index_info.ir
+                    ir_node.col_index = col_index_info.ir
+                ir_node.la_type = la_type
+                node_info = NodeInfo(la_type, content_symbol, {node.text}, ir_node)
+            elif self.get_sym_type(left_info.content).is_vector():
+                self.assert_expr(len(node.exp) == 1, get_err_msg_info(left_info.ir.parse_info,
+                                                                        "Only one subscript is allowed"))
+                self.assert_expr(node.exp[0] != '*', get_err_msg(get_line_info(node.parseinfo),
+                                                                   get_line_info(node.parseinfo).text.find('*'),
+                                                                   "Subscript can't be *"))
+                index_info = self.walk(node.exp[0])
+                self.assert_expr(index_info.la_type.is_scalar(), get_err_msg_info(index_info.ir.parse_info,
+                                                                                  "Subscript must be scalar"))
+                ir_node = VectorIndexNode(parse_info=node.parseinfo, raw_text=node.text)
+                ir_node.main = left_info.ir
+                ir_node.row_index = index_info.ir
+                ir_node.la_type = self.get_sym_type(left_info.content).element_type
+                node_info = NodeInfo(self.get_sym_type(left_info.content).element_type, content_symbol, {node.text},
+                                     ir_node)
+        return node_info
+
     def walk_IdentifierSubscript(self, node, **kwargs):
+        if node.exp and len(node.exp) > 0:
+             return self.walk_IdentifierWithExpr(node, **kwargs)
         def get_right_list():
             # rhs only
             right_list = []
