@@ -35,7 +35,7 @@ Eigen::Matrix<autodiff::var, Eigen::Dynamic, 1> to_var(Eigen::Matrix<autodiff::v
 }
 
 Eigen::Matrix<autodiff::var, Eigen::Dynamic, Eigen::Dynamic> to_var(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &param){
-	Eigen::Matrix<autodiff::var, Eigen::Dynamic, 1> ret(param.rows());
+	Eigen::Matrix<autodiff::var, Eigen::Dynamic, Eigen::Dynamic> ret(param.rows(), param.cols());
 	for (int i = 0; i < param.rows(); ++i)
 	{
 		for (int j = 0; j < param.cols(); ++j)
@@ -112,7 +112,7 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> to_double(Eigen::Matrix<double, Eigen::
 }
 
 Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> to_double(const Eigen::Matrix<autodiff::var, Eigen::Dynamic, Eigen::Dynamic> &param){
-	Eigen::Matrix<double, Eigen::Dynamic, 1> ret(param.rows());
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> ret(param.rows(), param.cols());
 	for (int i = 0; i < param.rows(); ++i)
 	{
 		for (int j = 0; j < param.cols(); ++j)
