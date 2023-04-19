@@ -2236,9 +2236,14 @@ class CodeGenEigen(CodeGen):
                         else:
                             # vector
                             right_exp += "    {} = {}".format(left_info.content, right_info.content)
-                            content += "    {}.resize({});\n".format(sequence, self.get_sym_type(sequence).rows)
+                            if self.get_sym_type(sequence).is_dynamic_row():
+                                if node.left[0].is_node(IRNodeType.VectorIndex) and node.left[0].dependence:
+                                    size_str = "{}.rows()".format(node.left[0].dependence)
+                            else:
+                                size_str = self.get_sym_type(sequence).rows
+                            content += "    {}.resize({});\n".format(sequence, size_str)
                             content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
-                                                                                     self.get_sym_type(sequence).rows,
+                                                                                     size_str,
                                                                                      left_subs[0])
                         if right_info.pre_list:
                             content += self.update_prelist_str(right_info.pre_list, "    ")

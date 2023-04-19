@@ -1216,6 +1216,7 @@ class VectorIndexNode(IndexNode):
         super().__init__(IRNodeType.VectorIndex, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.main = None
         self.row_index = None
+        self.dependence = None   # whether the rows depend on other symbol: a_i = b_i
 
     def contain_subscript(self):
         return True

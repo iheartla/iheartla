@@ -2287,10 +2287,15 @@ class TypeWalker(NodeWalker):
                 elif len(left_subs) == 1:  # sequence or vector
                     cur_sub = left_subs[0]
                     sequence_type = True   # default type: sequence
+                    cur_dyn = DynamicTypeEnum.DYN_INVALID
+                    dependence = None
                     for cur_node in self.lhs_sub_dict[cur_sub]:  # all nodes containing the subscript
                         if self.get_sym_type(cur_node.get_main_id()).is_vector():
                             sequence_type = False
                             dim = self.get_sym_type(cur_node.get_main_id()).rows
+                            if self.get_sym_type(cur_node.get_main_id()).is_dynamic_row():
+                                cur_dyn = DynamicTypeEnum.DYN_ROW
+                                dependence = cur_node.get_main_id()
                             break
                         elif self.get_sym_type(cur_node.get_main_id()).is_sequence():
                             dim = self.get_sym_type(cur_node.get_main_id()).size
@@ -2318,8 +2323,9 @@ class TypeWalker(NodeWalker):
                         assign_node.left[cur_index] = seq_index_node
                     else:
                         # vector
-                        self.get_cur_param_data().symtable[sequence] = VectorType(rows=dim)
+                        self.get_cur_param_data().symtable[sequence] = VectorType(rows=dim, dynamic=cur_dyn)
                         vector_index_node = VectorIndexNode()
+                        vector_index_node.dependence = dependence
                         vector_index_node.main = self.walk(node.left[0].left, **kwargs).ir
                         vector_index_node.row_index = self.walk(node.left[0].right[0], **kwargs).ir
                         vector_index_node.set_parent(assign_node)
@@ -4386,7 +4392,9 @@ class TypeWalker(NodeWalker):
                 ret_type = param.la_type.element_type
         elif func_type == MathFuncType.MathFuncSVD:
             self.assert_expr(param.la_type.is_matrix(), get_err_msg_info(param.parse_info, "Parameter must be valid matrix type"))
-            ret_type = TupleType(type_list=[MatrixType(rows=param.la_type.rows, cols=param.la_type.rows), VectorType(rows=param.la_type.cols), MatrixType(rows=param.la_type.cols, cols=param.la_type.cols)])
+            ret_type = TupleType(type_list=[MatrixType(rows=param.la_type.rows, cols=param.la_type.rows),
+                                            VectorType(dynamic=DynamicTypeEnum.DYN_ROW),
+                                            MatrixType(rows=param.la_type.cols, cols=param.la_type.cols)])
         tri_node = MathFuncNode(param, func_type, remain_list)
         node_info = NodeInfo(ret_type, symbols=symbols)
         tri_node.la_type = ret_type
