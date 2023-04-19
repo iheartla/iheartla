@@ -3189,7 +3189,7 @@ class TypeWalker(NodeWalker):
                 if name_type.params[index].owner:
                     self.assert_expr(name_type.params[index].owner == param_info.ir.la_type.owner,
                                      get_err_msg_info(param_info.ir.parse_info,
-                                                      "Function error. Parameter comes from different mesh: function requires {} while param is {}".format(name_type.params[index].owner, param_info.ir.la_type.owner)))
+                                                      "Function error. Parameter comes from different mesh: function requires {} while param {} has {}".format(name_type.params[index].owner, param_info.ir.raw_text, param_info.ir.la_type.owner)))
                 if len(name_type.template_symbols) == 0:
                     self.assert_expr(name_type.params[index].is_same_type(param_info.ir.la_type, True), get_err_msg_info(param_info.ir.parse_info, "Function error. Parameter type mismatch: {} vs {}".format(name_type.params[index].get_signature(), param_info.ir.la_type.get_signature())))
                     continue
