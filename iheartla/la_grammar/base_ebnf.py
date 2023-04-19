@@ -28,6 +28,10 @@ identifier_with_subscript::IdentifierSubscript
     ( left:identifier_alone right+:(sub_integer|unicode_subscript) {
     (',' right+:'*')
     | ({','} right+:(sub_integer|unicode_subscript)) } )
+    |
+    (left:identifier_alone p:'_(' {hspace} exp+:('*' | expression) {
+    ({hspace} ',' {hspace} exp+:'*')
+    | ({hspace} ',' {hspace} exp+:expression) } {hspace} ')' )
     ;
     
 identifier_with_unicode_subscript::IdentifierSubscript

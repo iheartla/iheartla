@@ -4763,6 +4763,81 @@ class grammardefaultParser(Parser):
                         ['left'],
                         ['right']
                     )
+            with self._option():
+                with self._group():
+                    self._identifier_alone_()
+                    self.name_last_node('left')
+                    self._token('_(')
+                    self.name_last_node('p')
+
+                    def block31():
+                        self._hspace_()
+                    self._closure(block31)
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._token('*')
+                            with self._option():
+                                self._expression_()
+                            self._error(
+                                'expecting one of: '
+                                "'*' <expression>"
+                            )
+                    self.add_last_node_to_name('exp')
+
+                    def block34():
+                        with self._choice():
+                            with self._option():
+                                with self._group():
+
+                                    def block36():
+                                        self._hspace_()
+                                    self._closure(block36)
+                                    self._token(',')
+
+                                    def block37():
+                                        self._hspace_()
+                                    self._closure(block37)
+                                    self._token('*')
+                                    self.add_last_node_to_name('exp')
+
+                                    self._define(
+                                        [],
+                                        ['exp']
+                                    )
+                            with self._option():
+                                with self._group():
+
+                                    def block39():
+                                        self._hspace_()
+                                    self._closure(block39)
+                                    self._token(',')
+
+                                    def block40():
+                                        self._hspace_()
+                                    self._closure(block40)
+                                    self._expression_()
+                                    self.add_last_node_to_name('exp')
+
+                                    self._define(
+                                        [],
+                                        ['exp']
+                                    )
+                            self._error(
+                                'expecting one of: '
+                                "',' <hspace>"
+                            )
+                    self._closure(block34)
+
+                    def block42():
+                        self._hspace_()
+                    self._closure(block42)
+                    self._token(')')
+
+                    self._define(
+                        ['left', 'p'],
+                        ['exp']
+                    )
             self._error(
                 'expecting one of: '
                 "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
@@ -10951,6 +11026,7 @@ class Factor(ModelBase):
 
 @dataclass(eq=False)
 class IdentifierSubscript(ModelBase):
+    exp: Any = None
     left: Any = None
     p: Any = None
     right: Any = None
