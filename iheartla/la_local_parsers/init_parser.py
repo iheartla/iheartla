@@ -439,23 +439,31 @@ class grammarinitParser(Parser):
 
     @tatsumasu()
     def _TRIANGLE_(self):  # noqa
-        self._pattern('[Tt]riangle')
+        self._pattern('[Tt]riangle[Mm]esh')
 
     @tatsumasu()
     def _POLYGON_(self):  # noqa
-        self._pattern('[Pp]olygon')
+        self._pattern('[Pp]olygon[Mm]esh')
 
     @tatsumasu()
     def _POINTCLOUD_(self):  # noqa
-        self._pattern('[Pp]oint [Cc]loud')
+        with self._choice():
+            with self._option():
+                self._pattern('[Pp]oint [Cc]loud')
+            with self._option():
+                self._pattern('[Pp]oint[Cc]loud')
+            self._error(
+                'expecting one of: '
+                '[Pp]oint [Cc]loud [Pp]oint[Cc]loud'
+            )
 
     @tatsumasu()
     def _TETRAHEDRON_(self):  # noqa
-        self._pattern('[Tt]etrahedron')
+        self._pattern('[Tt]etrahedral[Mm]esh')
 
     @tatsumasu()
     def _POLYHEDRON_(self):  # noqa
-        self._pattern('[Pp]olyhedron')
+        self._pattern('[Pp]olyhedral[Mm]esh')
 
     @tatsumasu()
     def _INDEX_(self):  # noqa
@@ -618,15 +626,16 @@ class grammarinitParser(Parser):
                 '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
                 '<WITH> Mesh SOLVE Solve [Ee]dge[Ss]et'
                 '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
-                '[Pp]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
-                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
-                'edges exp faces for from given if index'
-                'initial int ln log matrix max mesh min'
-                'or otherwise s.t. scalar sequence solve'
-                'sparse sqrt subject to sum tets tuple'
-                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                '[Pp]oint[Cc]loud [Pp]olygon[Mm]esh'
+                '[Pp]olyhedral[Mm]esh [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedral[Mm]esh'
+                '[Tt]riangle[Mm]esh [Vv]ertex[Ss]et [Δ]'
+                'and argmax argmin as edges exp faces for'
+                'from given if index initial int ln log'
+                'matrix max mesh min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tets tuple vector'
+                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -3961,10 +3970,10 @@ class grammarinitParser(Parser):
                 '<trans_in_matrix_operator> <vector> Mesh'
                 'SOLVE Solve [01\\u1D7D9] [Ee]dge[Ss]et'
                 '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
-                '[Pp]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
-                '[Vv]ertex[Ss]et'
+                '[Pp]oint[Cc]loud [Pp]olygon[Mm]esh'
+                '[Pp]olyhedral[Mm]esh [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedral[Mm]esh'
+                '[Tt]riangle[Mm]esh [Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
                 'from given if index initial int ln log'
@@ -4134,10 +4143,10 @@ class grammarinitParser(Parser):
                 '<trans_in_matrix_operator> <vector> Mesh'
                 'SOLVE Solve [01\\u1D7D9] [Ee]dge[Ss]et'
                 '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
-                '[Pp]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
-                '[Vv]ertex[Ss]et'
+                '[Pp]oint[Cc]loud [Pp]olygon[Mm]esh'
+                '[Pp]olyhedral[Mm]esh [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedral[Mm]esh'
+                '[Tt]riangle[Mm]esh [Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
                 'from given if index initial int ln log'
@@ -4316,10 +4325,10 @@ class grammarinitParser(Parser):
                 '<trans_in_matrix_operator> <vector> Mesh'
                 'SOLVE Solve [01\\u1D7D9] [Ee]dge[Ss]et'
                 '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
-                '[Pp]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
-                '[Vv]ertex[Ss]et'
+                '[Pp]oint[Cc]loud [Pp]olygon[Mm]esh'
+                '[Pp]olyhedral[Mm]esh [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedral[Mm]esh'
+                '[Tt]riangle[Mm]esh [Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
                 'from given if index initial int ln log'
@@ -4756,9 +4765,10 @@ class grammarinitParser(Parser):
                 '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
                 '<WITH> <identifier_alone> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[Pp]oint [Cc]loud [Pp]olygon'
-                '[Pp]olyhedron [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Pp]oint [Cc]loud [Pp]oint[Cc]loud'
+                '[Pp]olygon[Mm]esh [Pp]olyhedral[Mm]esh'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedral[Mm]esh [Tt]riangle[Mm]esh'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -4909,15 +4919,16 @@ class grammarinitParser(Parser):
                 '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
                 '<WITH> Mesh SOLVE Solve [Ee]dge[Ss]et'
                 '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
-                '[Pp]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
-                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
-                'edges exp faces for from given if index'
-                'initial int ln log matrix max mesh min'
-                'or otherwise s.t. scalar sequence solve'
-                'sparse sqrt subject to sum tets tuple'
-                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                '[Pp]oint[Cc]loud [Pp]olygon[Mm]esh'
+                '[Pp]olyhedral[Mm]esh [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedral[Mm]esh'
+                '[Tt]riangle[Mm]esh [Vv]ertex[Ss]et [Δ]'
+                'and argmax argmin as edges exp faces for'
+                'from given if index initial int ln log'
+                'matrix max mesh min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tets tuple vector'
+                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -6695,15 +6706,16 @@ class grammarinitParser(Parser):
                 '<right_hand_side> <subtraction> <term>'
                 'Mesh SOLVE Solve [Ee]dge[Ss]et'
                 '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
-                '[Pp]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
-                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
-                'edges exp faces for from given if index'
-                'initial int ln log matrix max mesh min'
-                'or otherwise s.t. scalar sequence solve'
-                'sparse sqrt subject to sum tets tuple'
-                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                '[Pp]oint[Cc]loud [Pp]olygon[Mm]esh'
+                '[Pp]olyhedral[Mm]esh [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedral[Mm]esh'
+                '[Tt]riangle[Mm]esh [Vv]ertex[Ss]et [Δ]'
+                'and argmax argmin as edges exp faces for'
+                'from given if index initial int ln log'
+                'matrix max mesh min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tets tuple vector'
+                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu('Expression')
@@ -6879,9 +6891,10 @@ class grammarinitParser(Parser):
                 '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[Pp]oint [Cc]loud [Pp]olygon'
-                '[Pp]olyhedron [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Pp]oint [Cc]loud [Pp]oint[Cc]loud'
+                '[Pp]olygon[Mm]esh [Pp]olyhedral[Mm]esh'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedral[Mm]esh [Tt]riangle[Mm]esh'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -6917,9 +6930,10 @@ class grammarinitParser(Parser):
                 '<general_assignment> <identifier_alone>'
                 '<left_hand_side> Mesh SOLVE Solve'
                 '[Ee]dge[Ss]et [Ff]ace[Ss]et [Pp]oint'
-                '[Cc]loud [Pp]olygon [Pp]olyhedron'
+                '[Cc]loud [Pp]oint[Cc]loud'
+                '[Pp]olygon[Mm]esh [Pp]olyhedral[Mm]esh'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
+                '[Tt]etrahedral[Mm]esh [Tt]riangle[Mm]esh'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -7035,15 +7049,16 @@ class grammarinitParser(Parser):
                 '<identifier_with_subscript> <matrix>'
                 '<vector> Mesh SOLVE Solve [Ee]dge[Ss]et'
                 '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
-                '[Pp]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
-                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
-                'edges exp faces for from given if index'
-                'initial int ln log matrix max mesh min'
-                'or otherwise s.t. scalar sequence solve'
-                'sparse sqrt subject to sum tets tuple'
-                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                '[Pp]oint[Cc]loud [Pp]olygon[Mm]esh'
+                '[Pp]olyhedral[Mm]esh [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedral[Mm]esh'
+                '[Tt]riangle[Mm]esh [Vv]ertex[Ss]et [Δ]'
+                'and argmax argmin as edges exp faces for'
+                'from given if index initial int ln log'
+                'matrix max mesh min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tets tuple vector'
+                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -7156,10 +7171,10 @@ class grammarinitParser(Parser):
                 '<union_operator> <vector> Mesh SOLVE'
                 'Solve [01\\u1D7D9] [Ee]dge[Ss]et'
                 '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
-                '[Pp]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
-                '[Vv]ertex[Ss]et'
+                '[Pp]oint[Cc]loud [Pp]olygon[Mm]esh'
+                '[Pp]olyhedral[Mm]esh [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedral[Mm]esh'
+                '[Tt]riangle[Mm]esh [Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
                 'from given if index initial int ln log'
@@ -7201,9 +7216,10 @@ class grammarinitParser(Parser):
                 '<identifier_alone> <integer> <mantissa>'
                 '<number> <pi> <subexpression> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[Pp]oint [Cc]loud [Pp]olygon'
-                '[Pp]olyhedron [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Pp]oint [Cc]loud [Pp]oint[Cc]loud'
+                '[Pp]olygon[Mm]esh [Pp]olyhedral[Mm]esh'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedral[Mm]esh [Tt]riangle[Mm]esh'
                 '[Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
@@ -7944,9 +7960,10 @@ class grammarinitParser(Parser):
                 '<identifier_with_subscript> <integer>'
                 '<mantissa> <number> <size_op> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[Pp]oint [Cc]loud [Pp]olygon'
-                '[Pp]olyhedron [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Pp]oint [Cc]loud [Pp]oint[Cc]loud'
+                '[Pp]olygon[Mm]esh [Pp]olyhedral[Mm]esh'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedral[Mm]esh [Tt]riangle[Mm]esh'
                 '[Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
@@ -8451,9 +8468,10 @@ class grammarinitParser(Parser):
                 '<TETRAHEDRON> <TETSET> <TRIANGLE>'
                 '<VERTEXSET> <mesh_type> Mesh'
                 '[Ee]dge[Ss]et [Ff]ace[Ss]et [Pp]oint'
-                '[Cc]loud [Pp]olygon [Pp]olyhedron'
+                '[Cc]loud [Pp]oint[Cc]loud'
+                '[Pp]olygon[Mm]esh [Pp]olyhedral[Mm]esh'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
+                '[Tt]etrahedral[Mm]esh [Tt]riangle[Mm]esh'
                 '[Vv]ertex[Ss]et mesh'
             )
 
@@ -8482,8 +8500,9 @@ class grammarinitParser(Parser):
                 'expecting one of: '
                 '<MESH> <POINTCLOUD> <POLYGON>'
                 '<POLYHEDRON> <TETRAHEDRON> <TRIANGLE>'
-                'Mesh [Pp]oint [Cc]loud [Pp]olygon'
-                '[Pp]olyhedron [Tt]etrahedron [Tt]riangle'
+                'Mesh [Pp]oint [Cc]loud [Pp]oint[Cc]loud'
+                '[Pp]olygon[Mm]esh [Pp]olyhedral[Mm]esh'
+                '[Tt]etrahedral[Mm]esh [Tt]riangle[Mm]esh'
                 'mesh'
             )
 
@@ -8518,9 +8537,10 @@ class grammarinitParser(Parser):
                 '<params_type> <scalar_type> <set_type>'
                 '<tuple_type> <vector_type> Mesh'
                 '[Ee]dge[Ss]et [Ff]ace[Ss]et [Pp]oint'
-                '[Cc]loud [Pp]olygon [Pp]olyhedron'
+                '[Cc]loud [Pp]oint[Cc]loud'
+                '[Pp]olygon[Mm]esh [Pp]olyhedral[Mm]esh'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
+                '[Tt]etrahedral[Mm]esh [Tt]riangle[Mm]esh'
                 '[Vv]ertex[Ss]et [ℝℤ] matrix mesh scalar'
                 'vector ℝ ℤ'
             )
@@ -8695,9 +8715,10 @@ class grammarinitParser(Parser):
                 '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[Pp]oint [Cc]loud [Pp]olygon'
-                '[Pp]olyhedron [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Pp]oint [Cc]loud [Pp]oint[Cc]loud'
+                '[Pp]olygon[Mm]esh [Pp]olyhedral[Mm]esh'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedral[Mm]esh [Tt]riangle[Mm]esh'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -8885,15 +8906,16 @@ class grammarinitParser(Parser):
                 '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
                 '<WITH> Mesh SOLVE Solve [Ee]dge[Ss]et'
                 '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
-                '[Pp]olygon [Pp]olyhedron'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedron [Tt]riangle'
-                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
-                'edges exp faces for from given if index'
-                'initial int ln log matrix max mesh min'
-                'or otherwise s.t. scalar sequence solve'
-                'sparse sqrt subject to sum tets tuple'
-                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                '[Pp]oint[Cc]loud [Pp]olygon[Mm]esh'
+                '[Pp]olyhedral[Mm]esh [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedral[Mm]esh'
+                '[Tt]riangle[Mm]esh [Vv]ertex[Ss]et [Δ]'
+                'and argmax argmin as edges exp faces for'
+                'from given if index initial int ln log'
+                'matrix max mesh min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tets tuple vector'
+                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -8925,9 +8947,10 @@ class grammarinitParser(Parser):
                 '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> Mesh SOLVE'
                 'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[Pp]oint [Cc]loud [Pp]olygon'
-                '[Pp]olyhedron [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Pp]oint [Cc]loud [Pp]oint[Cc]loud'
+                '[Pp]olygon[Mm]esh [Pp]olyhedral[Mm]esh'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedral[Mm]esh [Tt]riangle[Mm]esh'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
@@ -9308,9 +9331,10 @@ class grammarinitParser(Parser):
                 '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
                 '<WITH> <func_id> <identifier_alone> Mesh'
                 'SOLVE Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[Pp]oint [Cc]loud [Pp]olygon'
-                '[Pp]olyhedron [Ss]implicial[Ss]et'
-                '[Tt]et[Ss]et [Tt]etrahedron [Tt]riangle'
+                '[Pp]oint [Cc]loud [Pp]oint[Cc]loud'
+                '[Pp]olygon[Mm]esh [Pp]olyhedral[Mm]esh'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedral[Mm]esh [Tt]riangle[Mm]esh'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
                 'initial int ln log matrix max mesh min'
