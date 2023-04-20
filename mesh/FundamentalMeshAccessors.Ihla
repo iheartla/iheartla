@@ -1,8 +1,8 @@
-MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, IndicatorVector  from MeshConnectivity
+ElementSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, IndicatorVector  from MeshConnectivity
 
-M ∈ mesh 
+M : TriangleMesh 
 
-V, E, F = MeshSets( M )
+V, E, F = ElementSets( M )
 `∂0`, `∂1` = BoundaryMatrices(M) 
 B0, B1 = UnsignedBoundaryMatrices(M)
 
