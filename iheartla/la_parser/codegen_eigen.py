@@ -2427,7 +2427,8 @@ class CodeGenEigen(CodeGen):
             # other domain
             # if sym in self.der_vars:
             #     prefix = True  
-            if sym in self.lhs_list:
+            if sym in self.lhs_list and sym not in self.get_cur_param_data().symtable:
+                # sym is not defined as local param
                 prefix = True
             elif self.local_func_parsing:
                 is_param = False
