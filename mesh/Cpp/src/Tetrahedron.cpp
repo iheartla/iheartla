@@ -149,7 +149,7 @@ void Tetrahedron::build_boundary_mat3(){
     // std::cout<<"this->pos_bm3:\n"<<this->pos_bm3<<std::endl;
 }
   
-std::tuple<std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>> Tetrahedron::MeshSets() const{
+std::tuple<std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>> Tetrahedron::ElementSets() const{
     return std::tuple<std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>>(this->Vi, this->Ei, this->Fi, this->Ti);
 }
 

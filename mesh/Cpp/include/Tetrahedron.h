@@ -19,7 +19,7 @@ public:
     int get_face_index(int i, int j, int k, int &sign);
     int get_face_index(int i, int j, int k); 
     void init_mesh_indices();
-    std::tuple<std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>> MeshSets() const;
+    std::tuple<std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>> ElementSets() const;
     std::tuple<Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > BoundaryMatrices() const;
     std::tuple<Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > UnsignedBoundaryMatrices() const;
 };
