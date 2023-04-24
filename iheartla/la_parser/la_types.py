@@ -941,7 +941,8 @@ def get_derivative_type(upper_type, lower_type):
         elif lower_type.is_vector():
             ret_type = VectorType(rows=lower_type.rows)
         elif lower_type.is_matrix():
-            ret_type = MatrixType(rows=lower_type.rows, cols=lower_type.cols)
+            # ret_type = MatrixType(rows=lower_type.rows, cols=lower_type.cols)
+            ret_type = VectorType(rows=mul_dims(lower_type.rows, lower_type.cols))
         elif lower_type.is_sequence():
             if lower_type.element_type.is_scalar():
                 ret_type = VectorType(rows=lower_type.size)
