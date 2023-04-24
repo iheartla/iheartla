@@ -463,6 +463,8 @@ class CodeGenEigen(CodeGen):
                 extra_param_name = self.der_vars_mapping[param]
                 # derived var
                 if param_type.is_vector():
+                    # init_list.append("    autodiff::ArrayXvar {};".format(extra_param_name))
+                    # assign_list.append("        this->{} = to_var({});\n".format(extra_param_name, param))
                     pass
                 elif param_type.is_sequence():
                     has_assigned = True
@@ -2475,6 +2477,10 @@ class CodeGenEigen(CodeGen):
         return CodeNodeInfo("")
 
     def visit_gradient(self, node, **kwargs):
+        if self.get_sym_type(node.sub.get_main_id()).is_vector():
+            var_name = node.sub.get_main_id()
+        else:
+            var_name = self.der_vars_mapping[node.sub.get_main_id()]
         content = ""
         if node.sub:
             value_info = self.visit(node.value, **kwargs)
@@ -2483,7 +2489,7 @@ class CodeGenEigen(CodeGen):
                 if node.la_type.is_scalar():
                     content = "derivatives({}, wrt(this->{}))[0]".format(value_info.content, self.der_vars_mapping[node.sub.get_main_id()])
                 else:
-                    content = "gradient({}, this->{})".format(value_info.content, self.der_vars_mapping[node.sub.get_main_id()])
+                    content = "gradient({}, this->{})".format(value_info.content, var_name)
             else:
                 if node.la_type.is_scalar():
                     content = "derivatives({}, wrt(this->{}))[0]".format(value_info.content, sub_info.content)
@@ -2526,13 +2532,17 @@ class CodeGenEigen(CodeGen):
                 else:
                     content = "hessian({}, {}).sparseView()".format(upper_info.content, lower_info.content)
         elif node.order_type == PartialOrderType.PartialNormal:
+            if self.get_sym_type(node.lower_list[0].get_main_id()).is_vector():
+                var_name = node.lower_list[0].get_main_id()
+            else:
+                var_name = self.der_vars_mapping[node.lower_list[0].get_main_id()]
             upper_info = self.visit(node.upper, **kwargs)
             lower_info = self.visit(node.lower_list[0], **kwargs)
             if node.lower_list[0].get_main_id() in self.der_vars_mapping:
                 if node.la_type.is_scalar():
                     content = "derivatives({}, wrt(this->{}))[0]".format(upper_info.content, self.der_vars_mapping[node.lower_list[0].get_main_id()])
                 else:
-                    content = "gradient({}, this->{})".format(upper_info.content, self.der_vars_mapping[node.lower_list[0].get_main_id()])
+                    content = "gradient({}, this->{})".format(upper_info.content, var_name)
             else:
                 if node.la_type.is_scalar():
                     content = "derivatives({}, wrt({}))[0]".format(upper_info.content, lower_info.content)
