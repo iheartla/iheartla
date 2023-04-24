@@ -2480,9 +2480,15 @@ class CodeGenEigen(CodeGen):
             value_info = self.visit(node.value, **kwargs)
             sub_info = self.visit(node.sub, **kwargs)
             if node.sub.get_main_id() in self.der_vars_mapping:
-                content = "gradient({}, this->{})".format(value_info.content, self.der_vars_mapping[node.sub.get_main_id()])
+                if node.la_type.is_scalar():
+                    content = "derivatives({}, wrt(this->{}))[0]".format(value_info.content, self.der_vars_mapping[node.sub.get_main_id()])
+                else:
+                    content = "gradient({}, this->{})".format(value_info.content, self.der_vars_mapping[node.sub.get_main_id()])
             else:
-                content = "gradient({}, {})".format(value_info.content, sub_info.content)
+                if node.la_type.is_scalar():
+                    content = "derivatives({}, wrt(this->{}))[0]".format(value_info.content, sub_info.content)
+                else:
+                    content = "gradient({}, {})".format(value_info.content, sub_info.content)
         return CodeNodeInfo(content)
 
     def visit_laplace(self, node, **kwargs):
@@ -2523,9 +2529,15 @@ class CodeGenEigen(CodeGen):
             upper_info = self.visit(node.upper, **kwargs)
             lower_info = self.visit(node.lower_list[0], **kwargs)
             if node.lower_list[0].get_main_id() in self.der_vars_mapping:
-                content = "gradient({}, this->{})".format(upper_info.content, self.der_vars_mapping[node.lower_list[0].get_main_id()])
+                if node.la_type.is_scalar():
+                    content = "derivatives({}, wrt(this->{}))[0]".format(upper_info.content, self.der_vars_mapping[node.lower_list[0].get_main_id()])
+                else:
+                    content = "gradient({}, this->{})".format(upper_info.content, self.der_vars_mapping[node.lower_list[0].get_main_id()])
             else:
-                content = "gradient({}, {})".format(upper_info.content, lower_info.content)
+                if node.la_type.is_scalar():
+                    content = "derivatives({}, wrt({}))[0]".format(upper_info.content, lower_info.content)
+                else:
+                    content = "gradient({}, {})".format(upper_info.content, lower_info.content)
         return CodeNodeInfo(content)
 
     def visit_first_order_ode(self, node, **kwargs):
