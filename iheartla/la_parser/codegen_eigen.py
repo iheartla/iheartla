@@ -466,6 +466,20 @@ class CodeGenEigen(CodeGen):
                     # init_list.append("    autodiff::ArrayXvar {};".format(extra_param_name))
                     # assign_list.append("        this->{} = to_var({});\n".format(extra_param_name, param))
                     pass
+                elif param_type.is_matrix():
+                    has_assigned = True
+                    init_list.append("    autodiff::ArrayXvar {};".format(extra_param_name))
+                    # Init ArrayXvar with original parameter
+                    # Init class param with ArrayXvar
+                    assign_list.append("        {}.resize({}*{});\n".format(extra_param_name, param_type.rows, param_type.cols))
+                    assign_list.append("        for (int i = 0; i < {}.rows(); ++i)\n".format(param))
+                    assign_list.append("        {\n")
+                    assign_list.append("            for (int j = 0; j < {}.cols(); ++j)\n".format(param))
+                    assign_list.append("            {\n")
+                    assign_list.append("                {}(i*{}.rows()+j) = {}(i, j);\n".format(extra_param_name, param, param))
+                    assign_list.append("                this->{}(i, j) = {}(i*{}.rows()+j);\n".format(param, extra_param_name, param))
+                    assign_list.append("            }\n")
+                    assign_list.append("        }\n")
                 elif param_type.is_sequence():
                     has_assigned = True
                     if param_type.element_type.is_scalar():
