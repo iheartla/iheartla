@@ -637,6 +637,9 @@ class IRVisitor(IRBaseVisitor):
         self.lhs_on_der = type_walker.lhs_on_der            # symbol defined with gradient or hessian
         self.der_vars_mapping.clear()
         for param in self.der_vars:
+            if self.get_sym_type(param).is_scalar():
+                self.der_vars_mapping[param] = param    
+            else:
                 self.der_vars_mapping[param] = self.generate_var_name("new_{}".format(param))    # new variable with var type
         self.builtin_module_dict = type_walker.builtin_module_dict
         self.opt_syms = type_walker.opt_syms
