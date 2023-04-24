@@ -5325,13 +5325,19 @@ class TypeWalker(NodeWalker):
             if left_type.is_integer_element() and not right_type.is_integer_element():
                 new_node = ToDoubleValueNode(parse_info=left_info.ir.parse_info, item=left_info.ir)
                 new_node.la_type = copy.deepcopy(left_type)
-                new_node.la_type.element_type.is_int = True
+                if new_node.la_type.element_type:
+                    new_node.la_type.element_type.is_int = True
+                else:
+                    new_node.la_type.is_int = True
                 left_info.ir = new_node
             else:
                 if not left_type.is_integer_element() and right_type.is_integer_element():
                     new_node = ToDoubleValueNode(parse_info=right_info.ir.parse_info, item=right_info.ir)
                     new_node.la_type = copy.deepcopy(right_type)
-                    new_node.la_type.element_type.is_int = True
+                    if new_node.la_type.element_type:
+                        new_node.la_type.element_type.is_int = True
+                    else:
+                        new_node.la_type.is_int = True
                     right_info.ir = new_node
         return ret_type, need_cast
 
