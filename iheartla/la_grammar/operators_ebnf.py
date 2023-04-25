@@ -103,10 +103,10 @@ sum_operator::Summation
     = 
     ((SUM | u:'∪') '_' sub:identifier_alone {hspace}+ sign:['-'] exp:term
     | (SUM | u:'∪') '_' sub:identifier_alone &'(' {hspace} sign:['-'] exp:term
-    | (SUM | u:'∪') '_(' {hspace} id:identifier_alone {hspace} 'for' {hspace} cond:if_condition {hspace} ')' {hspace}+ sign:['-'] exp:term
+    | (SUM | u:'∪') '_(' {hspace} id:identifier_alone {hspace} 'for' {hspace} cond:if_condition {hspace} ')' {hspace} sign:['-'] exp:term
     | (SUM | u:'∪') '_(' {hspace} id:identifier_alone {hspace} '=' {hspace} lower:expression {hspace}')^' upper:(identifier_alone|integer) {hspace}+ sign:['-'] exp:term
     | (SUM | u:'∪') '_(' {hspace} id:identifier_alone {hspace} '=' {hspace} lower:expression {hspace}')^(' {hspace} upper:expression {hspace}')' {hspace}+ sign:['-'] exp:term
-    | (SUM | u:'∪') '_(' {hspace} enum+:identifier_alone {{hspace} {','} {hspace} enum+:identifier_alone} {hspace} IN {hspace} range:(function_operator | builtin_operators | identifier_alone) {hspace} ')' {hspace}+ sign:['-'] exp:term
+    | (SUM | u:'∪') '_(' {hspace} enum+:identifier_alone {{hspace} {','} {hspace} enum+:identifier_alone} {hspace} IN {hspace} range:(function_operator | builtin_operators | identifier_alone) {hspace} ')' {hspace} sign:['-'] exp:term
     ) {[{hspace} line] {hspace} (WHERE | WITH ) {hspace} extra+:general_assign {{hspace} ',' {hspace} [line] {hspace} extra+:general_assign}}
     ;
 

@@ -1673,7 +1673,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
                     def block21():
                         self._hspace_()
-                    self._positive_closure(block21)
+                    self._closure(block21)
                     with self._optional():
                         self._token('-')
                     self.name_last_node('sign')
@@ -1876,7 +1876,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
                     def block65():
                         self._hspace_()
-                    self._positive_closure(block65)
+                    self._closure(block65)
                     with self._optional():
                         self._token('-')
                     self.name_last_node('sign')

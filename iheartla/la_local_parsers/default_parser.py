@@ -1777,7 +1777,7 @@ class grammardefaultParser(Parser):
 
                     def block21():
                         self._hspace_()
-                    self._positive_closure(block21)
+                    self._closure(block21)
                     with self._optional():
                         self._token('-')
                     self.name_last_node('sign')
@@ -1980,7 +1980,7 @@ class grammardefaultParser(Parser):
 
                     def block65():
                         self._hspace_()
-                    self._positive_closure(block65)
+                    self._closure(block65)
                     with self._optional():
                         self._token('-')
                     self.name_last_node('sign')
