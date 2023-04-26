@@ -29,7 +29,7 @@ public:
     MPoint data;
     MESH_KD_Tree_T tree;
     //
-    std::tuple<std::vector<int>, std::vector<int>> MeshSets() const;
+    std::tuple<std::vector<int>, std::vector<int>> ElementSets() const;
     Eigen::SparseMatrix<int> BoundaryMatrices() const;
     Eigen::SparseMatrix<int> UnsignedBoundaryMatrices() const;
     // 

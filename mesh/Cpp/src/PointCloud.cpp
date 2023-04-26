@@ -126,7 +126,7 @@ void PointCloud::build_boundary_mat1(){
     // std::cout<<"this->pos_bm1:\n"<<this->pos_bm1<<std::endl;
 }
 
-std::tuple<std::vector<int>, std::vector<int>> PointCloud::MeshSets() const{
+std::tuple<std::vector<int>, std::vector<int>> PointCloud::ElementSets() const{
     return std::tuple<std::vector<int>, std::vector<int>>(this->Vi, this->Ei);
 }
 
