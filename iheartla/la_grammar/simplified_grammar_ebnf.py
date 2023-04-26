@@ -26,7 +26,8 @@ SIMPLIFIED = "\n\n".join(SIMPLIFIED_LIST) + "\n\n"
 SIMPLIFIED += r"""
 func_id
     =
-    identifier_alone {'_' identifier_alone | unicode_subscript}
+    INVERSEVEC
+    | identifier_alone {'_' identifier_alone | unicode_subscript}
     ;
 
 identifier_alone::IdentifierAlone

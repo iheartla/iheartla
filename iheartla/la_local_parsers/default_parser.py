@@ -1612,14 +1612,14 @@ class grammardefaultParser(Parser):
                 self._factor_()
                 self.name_last_node('left')
 
-                def block45():
+                def block2():
                     self._hspace_()
-                self._closure(block45)
+                self._closure(block2)
                 self._token('\\')
 
-                def block46():
+                def block3():
                     self._hspace_()
-                self._closure(block46)
+                self._closure(block3)
                 self._factor_()
                 self.name_last_node('right')
 
@@ -1631,9 +1631,9 @@ class grammardefaultParser(Parser):
                 self._factor_()
                 self.name_last_node('left')
 
-                def block49():
+                def block6():
                     self._hspace_()
-                self._closure(block49)
+                self._closure(block6)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -1646,9 +1646,9 @@ class grammardefaultParser(Parser):
                         )
                 self.name_last_node('p')
 
-                def block52():
+                def block9():
                     self._hspace_()
-                self._closure(block52)
+                self._closure(block9)
                 self._factor_()
                 self.name_last_node('right')
 
@@ -6135,37 +6135,76 @@ class grammardefaultParser(Parser):
 
     @tatsumasu('InverseVecFunc')
     def _inversevec_func_(self):  # noqa
-        self._INVERSEVEC_()
-        self.name_last_node('name')
-        self._token('(')
+        with self._choice():
+            with self._option():
+                self._INVERSEVEC_()
+                self.name_last_node('name')
+                self._token('(')
 
-        def block1():
-            self._hspace_()
-        self._closure(block1)
-        self._expression_()
-        self.name_last_node('origin')
+                def block2():
+                    self._hspace_()
+                self._closure(block2)
+                self._expression_()
+                self.name_last_node('origin')
 
-        def block3():
-            self._hspace_()
-        self._closure(block3)
-        self._params_separator_()
-        self.name_last_node('separator')
+                def block4():
+                    self._hspace_()
+                self._closure(block4)
+                self._params_separator_()
+                self.name_last_node('separator')
 
-        def block5():
-            self._hspace_()
-        self._closure(block5)
-        self._expression_()
-        self.name_last_node('param')
+                def block6():
+                    self._hspace_()
+                self._closure(block6)
+                self._expression_()
+                self.name_last_node('param')
 
-        def block7():
-            self._hspace_()
-        self._closure(block7)
-        self._token(')')
+                def block8():
+                    self._hspace_()
+                self._closure(block8)
+                self._token(')')
 
-        self._define(
-            ['name', 'origin', 'param', 'separator'],
-            []
-        )
+                self._define(
+                    ['name', 'origin', 'param', 'separator'],
+                    []
+                )
+            with self._option():
+                self._INVERSEVEC_()
+                self.name_last_node('name')
+                self._token('_')
+                self.name_last_node('s')
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._integer_()
+                        with self._option():
+                            self._identifier_alone_()
+                        self._error(
+                            'expecting one of: '
+                            '<identifier_alone> <integer>'
+                        )
+                self.name_last_node('origin')
+                self._token('(')
+
+                def block13():
+                    self._hspace_()
+                self._closure(block13)
+                self._expression_()
+                self.name_last_node('param')
+
+                def block15():
+                    self._hspace_()
+                self._closure(block15)
+                self._token(')')
+
+                self._define(
+                    ['name', 'origin', 'param', 's'],
+                    []
+                )
+            self._error(
+                'expecting one of: '
+                '<INVERSEVEC> inversevec vec⁻¹'
+            )
 
     @tatsumasu('DetFunc')
     def _det_func_(self):  # noqa
@@ -11209,6 +11248,7 @@ class InverseVecFunc(ModelBase):
     name: Any = None
     origin: Any = None
     param: Any = None
+    s: Any = None
     separator: Any = None
 
 

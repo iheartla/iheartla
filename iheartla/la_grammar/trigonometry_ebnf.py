@@ -135,6 +135,7 @@ vec_func::VecFunc
 inversevec_func::InverseVecFunc
     =
     name:INVERSEVEC '(' {hspace} origin:expression {hspace} separator:params_separator {hspace} param:expression {hspace} ')'
+    | name:INVERSEVEC s:'_' origin:(integer|identifier_alone) '('{hspace} param:expression {hspace} ')'
     ;
 
 det_func::DetFunc

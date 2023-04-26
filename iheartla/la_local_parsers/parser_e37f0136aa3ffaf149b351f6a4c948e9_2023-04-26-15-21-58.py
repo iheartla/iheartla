@@ -833,8 +833,9 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             self._error(
                 'expecting one of: '
                 "# '<' '|' '||' '‖' '∪' '∫' '⟨' <DELTA>"
-                '<DERIVATIVE> <INT> <NABLA> <PARTIAL>'
-                '<POUND> <SUM> <builtin_operators>'
+                '<DERIVATIVE> <INT> <INVERSEVEC> <NABLA>'
+                '<PARTIAL> <POUND> <SUM>'
+                '<builtin_operators>'
                 '<cross_product_operator> <derivative>'
                 '<divergence> <element_convert_func>'
                 '<exp_func> <factor>'
@@ -853,7 +854,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<size_op> <solver_operator> <sqrt_func>'
                 '<sqrt_operator> <sum_operator>'
                 '<trans_operator> <union_operator> [Δ]'
-                'int sum ∂ ∇ ∑ √ 𝕕'
+                'int inversevec sum vec⁻¹ ∂ ∇ ∑ √ 𝕕'
             )
 
     @tatsumasu('Add')
@@ -4028,7 +4029,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
             self._error(
                 'expecting one of: '
                 "'(' '.' '0' '1' '<' '[' '{' '|' '||' '‖'"
-                "'∫' '⎡' '⟨' '𝟙' <INT> <SUM>"
+                "'∫' '⎡' '⟨' '𝟙' <INT> <INVERSEVEC> <SUM>"
                 '<builtin_operators> <constant>'
                 '<cross_product_in_matrix_operator>'
                 '<digit> <double> <element_convert_func>'
@@ -4052,7 +4053,7 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<subexpression> <sum_in_matrix_operator>'
                 '<trans_in_matrix_operator> <vector>'
                 '[01\\u1D7D9] [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                'int sum ∑ √'
+                'int inversevec sum vec⁻¹ ∑ √'
             )
 
     @tatsumasu('Power')
@@ -6038,37 +6039,76 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
 
     @tatsumasu('InverseVecFunc')
     def _inversevec_func_(self):  # noqa
-        self._INVERSEVEC_()
-        self.name_last_node('name')
-        self._token('(')
+        with self._choice():
+            with self._option():
+                self._INVERSEVEC_()
+                self.name_last_node('name')
+                self._token('(')
 
-        def block1():
-            self._hspace_()
-        self._closure(block1)
-        self._expression_()
-        self.name_last_node('origin')
+                def block2():
+                    self._hspace_()
+                self._closure(block2)
+                self._expression_()
+                self.name_last_node('origin')
 
-        def block3():
-            self._hspace_()
-        self._closure(block3)
-        self._params_separator_()
-        self.name_last_node('separator')
+                def block4():
+                    self._hspace_()
+                self._closure(block4)
+                self._params_separator_()
+                self.name_last_node('separator')
 
-        def block5():
-            self._hspace_()
-        self._closure(block5)
-        self._expression_()
-        self.name_last_node('param')
+                def block6():
+                    self._hspace_()
+                self._closure(block6)
+                self._expression_()
+                self.name_last_node('param')
 
-        def block7():
-            self._hspace_()
-        self._closure(block7)
-        self._token(')')
+                def block8():
+                    self._hspace_()
+                self._closure(block8)
+                self._token(')')
 
-        self._define(
-            ['name', 'origin', 'param', 'separator'],
-            []
-        )
+                self._define(
+                    ['name', 'origin', 'param', 'separator'],
+                    []
+                )
+            with self._option():
+                self._INVERSEVEC_()
+                self.name_last_node('name')
+                self._token('_')
+                self.name_last_node('s')
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._integer_()
+                        with self._option():
+                            self._identifier_alone_()
+                        self._error(
+                            'expecting one of: '
+                            '<identifier_alone> <integer>'
+                        )
+                self.name_last_node('origin')
+                self._token('(')
+
+                def block13():
+                    self._hspace_()
+                self._closure(block13)
+                self._expression_()
+                self.name_last_node('param')
+
+                def block15():
+                    self._hspace_()
+                self._closure(block15)
+                self._token(')')
+
+                self._define(
+                    ['name', 'origin', 'param', 's'],
+                    []
+                )
+            self._error(
+                'expecting one of: '
+                '<INVERSEVEC> inversevec vec⁻¹'
+            )
 
     @tatsumasu('DetFunc')
     def _det_func_(self):  # noqa
@@ -7143,8 +7183,8 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<DERIVATIVE> <EDGES> <EDGESET> <EXP>'
                 '<FACES> <FACESET> <FOR> <FROM> <GIVEN>'
                 '<IF> <IN> <INDEX> <INITIAL> <INT>'
-                '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
-                '<MESH> <MIN> <NABLA>'
+                '<INVERSEVEC> <KEYWORDS> <LN> <LOG>'
+                '<MATRIX> <MAX> <MESH> <MIN> <NABLA>'
                 '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
                 '<PARTIAL> <PI> <POINTCLOUD> <POLYGON>'
                 '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
@@ -7186,11 +7226,12 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '[Tt]riangle[Mm]esh [Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
-                'from given if index initial int ln log'
-                'matrix max mesh min or otherwise s.t.'
-                'scalar sequence solve sparse sqrt'
-                'subject to sum tets tuple vector'
-                'vertices where with π ℝ ℤ ∂ ∇ ∈ ∑ √ ⊂ 𝕕'
+                'from given if index initial int'
+                'inversevec ln log matrix max mesh min or'
+                'otherwise s.t. scalar sequence solve'
+                'sparse sqrt subject to sum tets tuple'
+                'vector vec⁻¹ vertices where with π ℝ ℤ ∂'
+                '∇ ∈ ∑ √ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -8843,20 +8884,55 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
 
     @tatsumasu()
     def _func_id_(self):  # noqa
-        self._identifier_alone_()
+        with self._choice():
+            with self._option():
+                self._INVERSEVEC_()
+            with self._option():
+                self._identifier_alone_()
 
-        def block0():
-            with self._choice():
-                with self._option():
-                    self._token('_')
-                    self._identifier_alone_()
-                with self._option():
-                    self._unicode_subscript_()
-                self._error(
-                    'expecting one of: '
-                    "'_' <unicode_subscript>"
-                )
-        self._closure(block0)
+                def block1():
+                    with self._choice():
+                        with self._option():
+                            self._token('_')
+                            self._identifier_alone_()
+                        with self._option():
+                            self._unicode_subscript_()
+                        self._error(
+                            'expecting one of: '
+                            "'_' <unicode_subscript>"
+                        )
+                self._closure(block1)
+            self._error(
+                'expecting one of: '
+                "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
+                '<EDGES> <EDGESET> <EXP> <FACES>'
+                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                '<INDEX> <INITIAL> <INT> <INVERSEVEC>'
+                '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
+                '<MESH> <MIN> <NABLA>'
+                '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
+                '<PI> <POINTCLOUD> <POLYGON> <POLYHEDRON>'
+                '<POUND> <PREFIX_KEYWORD> <PRIME>'
+                '<SCALAR> <SEQUENCE> <SIMPLICIALSET>'
+                '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
+                '<SUBSET> <TETRAHEDRON> <TETS> <TETSET>'
+                '<TRIANGLE> <TUPLE> <VECTOR> <VERTEXSET>'
+                '<VERTICES> <WHERE> <WITH>'
+                '<identifier_alone> Mesh SOLVE Solve'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et [Pp]oint'
+                '[Cc]loud [Pp]oint[Cc]loud'
+                '[Pp]olygon[Mm]esh [Pp]olyhedral[Mm]esh'
+                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
+                '[Tt]etrahedral[Mm]esh [Tt]riangle[Mm]esh'
+                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                'edges exp faces for from given if index'
+                'initial int inversevec ln log matrix max'
+                'mesh min or otherwise s.t. scalar'
+                'sequence solve sparse sqrt subject to'
+                'sum tets tuple vector vec⁻¹ vertices'
+                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+            )
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
@@ -9328,28 +9404,30 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                 '<BUILTIN_KEYWORDS> <DELTA> <DERIVATIVE>'
                 '<EDGES> <EDGESET> <EXP> <FACES>'
                 '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
-                '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
-                '<LOG> <MATRIX> <MAX> <MESH> <MIN>'
-                '<NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                '<OTHERWISE> <PI> <POINTCLOUD> <POLYGON>'
-                '<POLYHEDRON> <POUND> <PREFIX_KEYWORD>'
-                '<PRIME> <SCALAR> <SEQUENCE>'
-                '<SIMPLICIALSET> <SOLVE> <SPARSE> <SQRT>'
-                '<SUBJECT_TO> <SUBSET> <TETRAHEDRON>'
-                '<TETS> <TETSET> <TRIANGLE> <TUPLE>'
-                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
-                '<WITH> <func_id> <identifier_alone> Mesh'
-                'SOLVE Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[Pp]oint [Cc]loud [Pp]oint[Cc]loud'
+                '<INDEX> <INITIAL> <INT> <INVERSEVEC>'
+                '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
+                '<MESH> <MIN> <NABLA>'
+                '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
+                '<PI> <POINTCLOUD> <POLYGON> <POLYHEDRON>'
+                '<POUND> <PREFIX_KEYWORD> <PRIME>'
+                '<SCALAR> <SEQUENCE> <SIMPLICIALSET>'
+                '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
+                '<SUBSET> <TETRAHEDRON> <TETS> <TETSET>'
+                '<TRIANGLE> <TUPLE> <VECTOR> <VERTEXSET>'
+                '<VERTICES> <WHERE> <WITH> <func_id>'
+                '<identifier_alone> Mesh SOLVE Solve'
+                '[Ee]dge[Ss]et [Ff]ace[Ss]et [Pp]oint'
+                '[Cc]loud [Pp]oint[Cc]loud'
                 '[Pp]olygon[Mm]esh [Pp]olyhedral[Mm]esh'
                 '[Ss]implicial[Ss]et [Tt]et[Ss]et'
                 '[Tt]etrahedral[Mm]esh [Tt]riangle[Mm]esh'
                 '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
                 'edges exp faces for from given if index'
-                'initial int ln log matrix max mesh min'
-                'or otherwise s.t. scalar sequence solve'
-                'sparse sqrt subject to sum tets tuple'
-                'vector vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'initial int inversevec ln log matrix max'
+                'mesh min or otherwise s.t. scalar'
+                'sequence solve sparse sqrt subject to'
+                'sum tets tuple vector vec⁻¹ vertices'
+                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
 
     @tatsumasu('LocalFunc')
@@ -10990,6 +11068,7 @@ class InverseVecFunc(ModelBase):
     name: Any = None
     origin: Any = None
     param: Any = None
+    s: Any = None
     separator: Any = None
 
 
