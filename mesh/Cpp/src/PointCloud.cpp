@@ -5,40 +5,72 @@
 #include "dec_util.h"
 #include "PointCloud.h"
 
-PointCloud::PointCloud(){
 
+PointCloud::PointCloud(std::vector<Eigen::VectorXd>& P): data{P}, tree(3, data){
+    
 }
 
-PointCloud::PointCloud(Eigen::MatrixXd &P, double distance){
-    this->initialize(P, distance);
+// void PointCloud::initialize(Eigen::MatrixXd &P, double distance){
+// 	this->num_v = P.rows();
+// 	Eigen::MatrixXd dis = Eigen::MatrixXd::Zero(P.rows(), P.rows());
+// 	this->E.resize(2*P.rows(), 2);
+// 	int cnt = 0;
+// 	for (int i = 0; i < P.rows()-1; ++i)
+// 	{
+// 		for (int j = i+1; j < P.rows(); ++j)
+// 		{
+// 			dis(i, j) = (P.row(i)-P.row(j)).norm();
+// 			if (dis(i, j) < distance)
+// 			{
+// 				/* code */
+// 				this->E(cnt, 0) = i;
+// 				this->E(cnt, 1) = j;
+// 				this->map_e.insert(std::pair<key_e, int>(std::make_tuple(i, j), cnt));
+// 				cnt++;
+// 			}
+// 		}
+// 	}
+// 	std::cout<<"max distance:"<<dis.rowwise().maxCoeff().maxCoeff()<<", min distance:"<<dis.rowwise().minCoeff().minCoeff()<<std::endl;
+// 	std::cout<<"cnt:"<<cnt<<std::endl;
+// 	this->E.conservativeResize(cnt, 2); 
+// 	//
+// 	this->init_indices();
+// 	this->build_boundary_mat1();
+// }
+
+std::vector<size_t> PointCloud::kNearest(Eigen::VectorXd query, size_t k) {
+    if (k > data.points.size()) throw std::runtime_error("k is greater than number of points");
+    std::vector<size_t> outInds(k);
+    std::vector<double> outDistSq(k);
+    tree.knnSearch(&query[0], k, &outInds[0], &outDistSq[0]);
+    return outInds;
 }
 
-void PointCloud::initialize(Eigen::MatrixXd &P, double distance){
-	this->num_v = P.rows();
-	Eigen::MatrixXd dis = Eigen::MatrixXd::Zero(P.rows(), P.rows());
-	this->E.resize(2*P.rows(), 2);
-	int cnt = 0;
-	for (int i = 0; i < P.rows()-1; ++i)
-	{
-		for (int j = i+1; j < P.rows(); ++j)
-		{
-			dis(i, j) = (P.row(i)-P.row(j)).norm();
-			if (dis(i, j) < distance)
-			{
-				/* code */
-				this->E(cnt, 0) = i;
-				this->E(cnt, 1) = j;
-				this->map_e.insert(std::pair<key_e, int>(std::make_tuple(i, j), cnt));
-				cnt++;
-			}
-		}
-	}
-	std::cout<<"max distance:"<<dis.rowwise().maxCoeff().maxCoeff()<<", min distance:"<<dis.rowwise().minCoeff().minCoeff()<<std::endl;
-	std::cout<<"cnt:"<<cnt<<std::endl;
-	this->E.conservativeResize(cnt, 2); 
-	//
-	this->init_indices();
-	this->build_boundary_mat1();
+std::vector<size_t> PointCloud::kNearestNeighbors(size_t sourceInd, size_t k) {
+    if ((k + 1) > data.points.size()) throw std::runtime_error("k+1 is greater than number of points");
+
+    std::vector<size_t> outInds(k + 1);
+    std::vector<double> outDistSq(k + 1);
+    tree.knnSearch(&data.points[sourceInd](0), k + 1, &outInds[0], &outDistSq[0]);
+
+    // remove source from list
+    bool found = false;
+    for (size_t i = 0; i < outInds.size(); i++) {
+      if (outInds[i] == sourceInd) {
+        outInds.erase(outInds.begin() + i);
+        // outDistSq.erase(outDistSq.begin() + i);
+        found = true;
+        break;
+      }
+    }
+
+    // if the source didn't appear, just remove the last point
+    if (!found) {
+      outInds.pop_back();
+      outDistSq.pop_back();
+    }
+
+    return outInds;
 }
 
 void PointCloud::init_indices(){
