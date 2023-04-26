@@ -1097,13 +1097,14 @@ class CodeGenLatex(CodeGen):
         elif node.func_type == MathFuncType.MathFuncVec:
             content = ' \mathop{\\text{vec}}'
         elif node.func_type == MathFuncType.MathFuncInverseVec:
-            content = ' \mathop{\\text{inversevec}}'  
+            content = ' \mathop{\\text{' + node.func_name + '}}'  
             if node.remain_params and len(node.remain_params) > 0:
                 # multi params
-                param_list = [param_info]
+                param_list = []
                 for remain in node.remain_params:
                     remain_info = self.visit(remain, **kwargs)
                     param_list.append(remain_info)
+                param_list.append(param_info)
                 param_info = ', '.join(param_list)
         elif node.func_type == MathFuncType.MathFuncDet:
             content = ' \mathop{\\text{det}}'

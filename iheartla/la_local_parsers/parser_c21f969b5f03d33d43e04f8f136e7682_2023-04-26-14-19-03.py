@@ -109,7 +109,15 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu()
     def _INVERSEVEC_(self):  # noqa
-        self._pattern('inversevec')
+        with self._choice():
+            with self._option():
+                self._pattern('inversevec')
+            with self._option():
+                self._pattern('vec⁻¹')
+            self._error(
+                'expecting one of: '
+                'inversevec vec⁻¹'
+            )
 
     @tatsumasu()
     def _DIAG_(self):  # noqa
@@ -1503,14 +1511,14 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._factor_()
                 self.name_last_node('left')
 
-                def block2():
+                def block45():
                     self._hspace_()
-                self._closure(block2)
+                self._closure(block45)
                 self._token('\\')
 
-                def block3():
+                def block46():
                     self._hspace_()
-                self._closure(block3)
+                self._closure(block46)
                 self._factor_()
                 self.name_last_node('right')
 
@@ -1522,9 +1530,9 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 self._factor_()
                 self.name_last_node('left')
 
-                def block6():
+                def block49():
                     self._hspace_()
-                self._closure(block6)
+                self._closure(block49)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -1537,9 +1545,9 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         )
                 self.name_last_node('p')
 
-                def block9():
+                def block52():
                     self._hspace_()
-                self._closure(block9)
+                self._closure(block52)
                 self._factor_()
                 self.name_last_node('right')
 
@@ -6027,33 +6035,34 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
     @tatsumasu('InverseVecFunc')
     def _inversevec_func_(self):  # noqa
         self._INVERSEVEC_()
+        self.name_last_node('name')
         self._token('(')
 
-        def block0():
+        def block1():
             self._hspace_()
-        self._closure(block0)
-        self._expression_()
-        self.name_last_node('param')
-
-        def block2():
-            self._hspace_()
-        self._closure(block2)
-        self._params_separator_()
-        self.name_last_node('separator')
-
-        def block4():
-            self._hspace_()
-        self._closure(block4)
+        self._closure(block1)
         self._expression_()
         self.name_last_node('origin')
 
-        def block6():
+        def block3():
             self._hspace_()
-        self._closure(block6)
+        self._closure(block3)
+        self._params_separator_()
+        self.name_last_node('separator')
+
+        def block5():
+            self._hspace_()
+        self._closure(block5)
+        self._expression_()
+        self.name_last_node('param')
+
+        def block7():
+            self._hspace_()
+        self._closure(block7)
         self._token(')')
 
         self._define(
-            ['origin', 'param', 'separator'],
+            ['name', 'origin', 'param', 'separator'],
             []
         )
 
@@ -10969,6 +10978,7 @@ class VecFunc(ModelBase):
 
 @dataclass(eq=False)
 class InverseVecFunc(ModelBase):
+    name: Any = None
     origin: Any = None
     param: Any = None
     separator: Any = None

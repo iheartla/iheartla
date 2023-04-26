@@ -134,7 +134,7 @@ vec_func::VecFunc
 
 inversevec_func::InverseVecFunc
     =
-    INVERSEVEC '(' {hspace} param:expression {hspace} separator:params_separator {hspace} origin:expression {hspace} ')'
+    name:INVERSEVEC '(' {hspace} origin:expression {hspace} separator:params_separator {hspace} param:expression {hspace} ')'
     ;
 
 det_func::DetFunc

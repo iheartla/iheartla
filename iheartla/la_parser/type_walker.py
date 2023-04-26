@@ -4684,6 +4684,7 @@ class TypeWalker(NodeWalker):
     def walk_InverseVecFunc(self, node, **kwargs):
         node_info = self.create_math_node_info(MathFuncType.MathFuncInverseVec, self.walk(node.param, **kwargs), [self.walk(node.origin, **kwargs)])
         node_info.ir.separator = node.separator
+        node_info.ir.func_name = node.name
         return node_info
     
     def walk_SvdFunc(self, node, **kwargs):
