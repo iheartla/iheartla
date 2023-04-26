@@ -22,7 +22,7 @@ typedef nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<double,
 
 class PointCloud: public Connectivity {
 public:
-    PointCloud(std::vector<Eigen::VectorXd>& P);
+    PointCloud(std::vector<Eigen::VectorXd>& P, int k=10);
     void build_boundary_mat1(); // E -> V, size: |V|x|E|, boundary of edges 
     void init_indices();
     //

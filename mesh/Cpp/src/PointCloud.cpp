@@ -6,8 +6,32 @@
 #include "PointCloud.h"
 
 
-PointCloud::PointCloud(std::vector<Eigen::VectorXd>& P): data{P}, tree(3, data){
-    
+PointCloud::PointCloud(std::vector<Eigen::VectorXd>& P, int k): data{P}, tree(3, data){
+    tree.buildIndex();
+    this->num_v = P.size();
+    this->E.resize(k*P.size(), 2);
+    int cnt = 0;
+    for (int i = 0; i < P.size(); ++i)
+    {
+        std::vector<size_t> neighbors = kNearestNeighbors(i, k);
+        for (int j = 0; j < neighbors.size(); ++j)
+        { 
+            this->E(cnt, 0) = i;
+            this->E(cnt, 1) = neighbors[j]; 
+            cnt++;
+        }
+        /* code */
+    }
+    this->E = preprocess_matrix(this->E);
+    for (int i = 0; i < this->E.rows(); ++i)
+    {
+        this->map_e.insert(std::pair<key_e, int>(std::make_tuple(this->E(i, 0), this->E(i, 1)), i));
+        // std::cout<<"cur: "<<i<<", i: "<<E(i,0)<<", j:"<<E(i,1)<<std::endl;
+    }
+    // this->E.conservativeResize(cnt, 2); 
+    //  
+    this->init_indices();
+    this->build_boundary_mat1();
 }
 
 // void PointCloud::initialize(Eigen::MatrixXd &P, double distance){
@@ -98,7 +122,7 @@ void PointCloud::build_boundary_mat1(){
     }
     this->bm1.setFromTriplets(tripletList.begin(), tripletList.end());
     this->pos_bm1 = this->bm1.cwiseAbs();
-    std::cout<<"this->bm1:\n"<<this->bm1<<std::endl;
+    // std::cout<<"this->bm1:\n"<<this->bm1<<std::endl;
     // std::cout<<"this->pos_bm1:\n"<<this->pos_bm1<<std::endl;
 }
 
