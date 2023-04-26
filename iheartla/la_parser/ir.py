@@ -1479,6 +1479,7 @@ class MathFuncNode(ExprNode):
         self.func_type = func_type
         self.func_name = func_name
         self.separator = separator
+        self.sub = None
         if param is not None:
             self.parse_info = param.parse_info
 

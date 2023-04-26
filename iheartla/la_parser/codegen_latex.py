@@ -1104,8 +1104,12 @@ class CodeGenLatex(CodeGen):
                 for remain in node.remain_params:
                     remain_info = self.visit(remain, **kwargs)
                     param_list.append(remain_info)
-                param_list.append(param_info)
-                param_info = ', '.join(param_list)
+                if node.sub:
+                    content += '_{{{}}}'.format(', '.join(param_list))
+                    param_info = param_info
+                else:
+                    param_list.append(param_info)
+                    param_info = ', '.join(param_list)
         elif node.func_type == MathFuncType.MathFuncDet:
             content = ' \mathop{\\text{det}}'
         elif node.func_type == MathFuncType.MathFuncRank:
