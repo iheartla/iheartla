@@ -1,0 +1,27 @@
+ElementSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, IndicatorVector from MeshConnectivity
+
+M : TetrahedralMesh
+
+V, E, F, C = ElementSets( M )
+`∂0`, `∂1`, `∂2` = BoundaryMatrices(M) 
+B0, B1, B2 = UnsignedBoundaryMatrices(M)
+
+Vertices(S) = S₁ where S: SimplicialSet
+Edges(S)    = S₂ where S: SimplicialSet 
+Faces(S)    = S₃ where S: SimplicialSet
+Tets(S)    = S₄ where S: SimplicialSet
+ 
+Vertices(f) = vertexset(NonZeros(B0 B1 IndicatorVector({f}))) where f ∈ F
+Vertices(G) = vertexset(NonZeros(B0 B1 IndicatorVector(G))) where G ⊂ F
+Vertices(t) = vertexset(NonZeros(B0 B1 B2 IndicatorVector({t}))) where t ∈ C
+Vertices(J) = vertexset(NonZeros(B0 B1 B2 IndicatorVector(J))) where J ⊂ C
+Vertices(e) = vertexset(NonZeros(B0 IndicatorVector({e}))) where e ∈ E
+Vertices(H) = vertexset(NonZeros(B0 IndicatorVector(H))) where H ⊂ E
+ 
+Edges(v) = edgeset(NonZeros(B0ᵀ IndicatorVector({v}))) where v ∈ V
+Edges(f) = faceset(NonZeros(B1 IndicatorVector({f}))) where f ∈ F
+Edges(t) = faceset(NonZeros(B1 B2 IndicatorVector({t}))) where t ∈ C
+
+Faces(v) = faceset(NonZeros((B0 B1)ᵀ IndicatorVector({v}))) where v ∈ V
+Faces(e) = faceset(NonZeros(B1ᵀ IndicatorVector({e}))) where e ∈ E
+Faces(t) = faceset(NonZeros(B2 IndicatorVector({t}))) where t ∈ C
