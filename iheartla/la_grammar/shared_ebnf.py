@@ -33,7 +33,7 @@ attribute
     
 la_where_condition::WhereCondition
     = 
-    id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (':'| IN | subset:SUBSET) {hspace} type:la_type {{hspace} attrib:attribute} { {hspace} ':' {hspace} desc:description}
+    id+:identifier {{hspace} ',' {hspace} id+:identifier} {hspace} (belong:':'| belong:IN | subset:SUBSET) {hspace} type:la_type {{hspace} attrib:attribute} { {hspace} ':' {hspace} desc:description}
     ;
     
 de_where_condition::DeWhereCondition

@@ -262,6 +262,7 @@ class WhereConditionNode(StmtNode):
         self.type = None
         self.attrib = attrib
         self.desc = None
+        self.belong = None
 
     def get_type_dict(self):
         ret = {}

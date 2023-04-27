@@ -243,7 +243,10 @@ class CodeGenLatex(CodeGen):
     def visit_where_condition(self, node, **kwargs):
         id_list = [self.visit(id0, **kwargs) for id0 in node.id]
         type_content = self.visit(node.type, **kwargs)
-        belong = "\\in"
+        if node.belong:
+            belong = node.belong
+        else:
+            belong = "\\in"
         if node.type.is_node(IRNodeType.MappingType):
             if node.type.subset:
                 belong = "\\subset"

@@ -1389,6 +1389,7 @@ class TypeWalker(NodeWalker):
                         type_node.subset = True
                         type_node.la_type.subset = True
         ir_node.type = type_node
+        ir_node.belong = node.belong
         return ir_node
 
     def get_single_factor(self, ir_node):

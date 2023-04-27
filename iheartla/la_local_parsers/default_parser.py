@@ -6557,8 +6557,10 @@ class grammardefaultParser(Parser):
             with self._choice():
                 with self._option():
                     self._token(':')
+                    self.name_last_node('belong')
                 with self._option():
                     self._IN_()
+                    self.name_last_node('belong')
                 with self._option():
                     self._SUBSET_()
                     self.name_last_node('subset')
@@ -6567,17 +6569,17 @@ class grammardefaultParser(Parser):
                     "':' <IN> <SUBSET>"
                 )
 
-        def block8():
+        def block10():
             self._hspace_()
-        self._closure(block8)
+        self._closure(block10)
         self._la_type_()
         self.name_last_node('type')
 
-        def block10():
+        def block12():
 
-            def block11():
+            def block13():
                 self._hspace_()
-            self._closure(block11)
+            self._closure(block13)
             self._attribute_()
             self.name_last_node('attrib')
 
@@ -6585,18 +6587,18 @@ class grammardefaultParser(Parser):
                 ['attrib'],
                 []
             )
-        self._closure(block10)
+        self._closure(block12)
 
-        def block13():
+        def block15():
 
-            def block14():
+            def block16():
                 self._hspace_()
-            self._closure(block14)
+            self._closure(block16)
             self._token(':')
 
-            def block15():
+            def block17():
                 self._hspace_()
-            self._closure(block15)
+            self._closure(block17)
             self._description_()
             self.name_last_node('desc')
 
@@ -6604,10 +6606,10 @@ class grammardefaultParser(Parser):
                 ['desc'],
                 []
             )
-        self._closure(block13)
+        self._closure(block15)
 
         self._define(
-            ['attrib', 'desc', 'subset', 'type'],
+            ['attrib', 'belong', 'desc', 'subset', 'type'],
             ['id']
         )
 
@@ -11305,6 +11307,7 @@ class WhereConditions(ModelBase):
 @dataclass(eq=False)
 class WhereCondition(ModelBase):
     attrib: Any = None
+    belong: Any = None
     desc: Any = None
     id: Any = None
     subset: Any = None
