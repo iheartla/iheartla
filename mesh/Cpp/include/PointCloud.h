@@ -30,16 +30,13 @@ public:
   std::vector<size_t> kNearestNeighbors(size_t sourceInd, size_t k);
 };
 
+std::vector<std::vector<size_t>> GetPointNeighbors(std::vector<Eigen::VectorXd>& P, int k=10);
+
 
 class PointCloud: public Connectivity {
 public:
-    PointCloud(std::vector<Eigen::VectorXd>& P, int k=10);
-    PointCloud(const PointCloud& a){
-      this->num_v = a.num_v;
-      this->bm1 = a.bm1;
-      this->Vi = a.Vi;
-      this->Ei = a.Ei;
-    } 
+    PointCloud();
+    PointCloud(std::vector<Eigen::VectorXd>& P, std::vector<std::vector<size_t>> neighbors);
     void build_boundary_mat1(); // E -> V, size: |V|x|E|, boundary of edges 
     void init_indices();
     //
@@ -49,7 +46,6 @@ public:
     Eigen::SparseMatrix<int> UnsignedBoundaryMatrices() const;
     // 
     bool numerical_order;       // whether the indices are stored as numerical order in edges/faces
-    std::unique_ptr<PointCloudWrapper> impl;
 };
 
 

@@ -4,21 +4,35 @@
 #include <algorithm> 
 #include "dec_util.h"
 #include "PointCloud.h"
- 
-
-PointCloud::PointCloud(std::vector<Eigen::VectorXd>& P, int k){
+std::vector<std::vector<size_t>> GetPointNeighbors(std::vector<Eigen::VectorXd>& P, int k){
+    std::unique_ptr<PointCloudWrapper> impl;
     impl.reset(new PointCloudWrapper(P, k));
+    std::vector<std::vector<size_t>> neighbors(P.size());
+    for (int i = 0; i < P.size(); ++i)
+    {
+        neighbors[i] = impl->kNearestNeighbors(i, k);
+    }
+    return neighbors;
+}
+
+PointCloud::PointCloud(){}
+
+PointCloud::PointCloud(std::vector<Eigen::VectorXd>& P, std::vector<std::vector<size_t>> neighbors){
     this->num_v = P.size();
-    std::cout<<"this->num_v num_v is:"<<this->num_v<<std::endl;
-    this->E.resize(k*P.size(), 2);
+    int max_e = 0;
+    for (int i = 0; i < neighbors.size(); ++i)
+    {
+        max_e += neighbors[i].size();
+    }
+    // std::cout<<"this->num_v num_v is:"<<this->num_v<<std::endl;
+    this->E.resize(max_e, 2);
     int cnt = 0;
     for (int i = 0; i < P.size(); ++i)
     {
-        std::vector<size_t> neighbors = impl->kNearestNeighbors(i, k);
-        for (int j = 0; j < neighbors.size(); ++j)
+        for (int j = 0; j < neighbors[i].size(); ++j)
         { 
             this->E(cnt, 0) = i;
-            this->E(cnt, 1) = neighbors[j]; 
+            this->E(cnt, 1) = neighbors[i][j]; 
             cnt++;
         }
         /* code */
