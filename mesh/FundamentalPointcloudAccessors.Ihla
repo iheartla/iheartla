@@ -1,0 +1,15 @@
+ElementSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, IndicatorVector  from MeshConnectivity
+
+M ∈ PointCloud 
+
+V, E = ElementSets( M )
+`∂0` = BoundaryMatrices(M) 
+B0 = UnsignedBoundaryMatrices(M)
+
+Vertices(S) = S₁ where S: SimplicialSet
+Edges(S)    = S₂ where S: SimplicialSet 
+ 
+Vertices(e) = vertexset(NonZeros(B0 IndicatorVector({e}))) where e ∈ E
+Vertices(H) = vertexset(NonZeros(B0 IndicatorVector(H))) where H ⊂ E
+ 
+Edges(v) = edgeset(NonZeros(B0ᵀ IndicatorVector({v}))) where v ∈ V 

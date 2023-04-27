@@ -1,0 +1,13 @@
+ElementSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, IndicatorVector from MeshConnectivity
+Vertices, Edges from FundamentalPointcloudAccessors(M)
+M ∈ PointCloud 
+V, E = ElementSets( M )
+`∂0` = BoundaryMatrices(M) 
+B0 = UnsignedBoundaryMatrices(M)
+
+
+VertexOneRing(v) = vertexset(NonZeros(B0 B0ᵀ IndicatorVector({v}))) - {v} where v ∈ V
+VertexOneRing(v) = vertexset(NonZeros(B0 B0ᵀ IndicatorVector(v))) - v where v ⊂  V
+
+EdgeIndex(i, j) = eset_1 where i,j ∈ V,
+eset = edgeset(NonZeros(`∂0`ᵀ IndicatorVector({i}))) ∩ vertexset(NonZeros(`∂0`ᵀ IndicatorVector({j})))
