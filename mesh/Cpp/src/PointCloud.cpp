@@ -4,16 +4,17 @@
 #include <algorithm> 
 #include "dec_util.h"
 #include "PointCloud.h"
+ 
 
-
-PointCloud::PointCloud(std::vector<Eigen::VectorXd>& P, int k): data{P}, tree(3, data){
-    tree.buildIndex();
+PointCloud::PointCloud(std::vector<Eigen::VectorXd>& P, int k){
+    impl.reset(new PointCloudWrapper(P, k));
     this->num_v = P.size();
+    std::cout<<"this->num_v num_v is:"<<this->num_v<<std::endl;
     this->E.resize(k*P.size(), 2);
     int cnt = 0;
     for (int i = 0; i < P.size(); ++i)
     {
-        std::vector<size_t> neighbors = kNearestNeighbors(i, k);
+        std::vector<size_t> neighbors = impl->kNearestNeighbors(i, k);
         for (int j = 0; j < neighbors.size(); ++j)
         { 
             this->E(cnt, 0) = i;
@@ -62,7 +63,14 @@ PointCloud::PointCloud(std::vector<Eigen::VectorXd>& P, int k): data{P}, tree(3,
 // 	this->build_boundary_mat1();
 // }
 
-std::vector<size_t> PointCloud::kNearest(Eigen::VectorXd query, size_t k) {
+PointCloudWrapper::PointCloudWrapper(std::vector<Eigen::VectorXd>& P, int k)
+: data{P}, 
+tree(3, data){
+    tree.buildIndex();
+}
+PointCloudWrapper::~PointCloudWrapper(){}
+
+std::vector<size_t> PointCloudWrapper::kNearest(Eigen::VectorXd query, size_t k) {
     if (k > data.points.size()) throw std::runtime_error("k is greater than number of points");
     std::vector<size_t> outInds(k);
     std::vector<double> outDistSq(k);
@@ -70,7 +78,7 @@ std::vector<size_t> PointCloud::kNearest(Eigen::VectorXd query, size_t k) {
     return outInds;
 }
 
-std::vector<size_t> PointCloud::kNearestNeighbors(size_t sourceInd, size_t k) {
+std::vector<size_t> PointCloudWrapper::kNearestNeighbors(size_t sourceInd, size_t k) {
     if ((k + 1) > data.points.size()) throw std::runtime_error("k+1 is greater than number of points");
 
     std::vector<size_t> outInds(k + 1);
