@@ -1267,11 +1267,7 @@ class CodeGenEigen(CodeGen):
         param_list = []
         all_int = True
         for parameter in node.params:
-            param_info = self.visit(parameter, **kwargs)
-            param_list.append(
-                "        const {} & {}".format(self.get_ctype(self.get_cur_param_data().symtable[param_info.content]),
-                                               param_info.content))
-            if not self.get_cur_param_data().symtable[param_info.content].is_integer_element():
+            if not parameter.la_type.is_integer_element():
                 all_int = False
         if all_int or len(node.params) == 0:
             # no need to template, use double type
@@ -1284,6 +1280,11 @@ class CodeGenEigen(CodeGen):
             self.func_matrixd_type = 'Eigen::Matrix<REAL, Eigen::Dynamic, Eigen::Dynamic>'
             self.func_vectord_type = 'Eigen::Matrix<REAL, Eigen::Dynamic, 1>'
             content = "    template<typename {}>\n".format(self.func_double_type)
+        for parameter in node.params:
+            param_info = self.visit(parameter, **kwargs)
+            param_list.append(
+                "        const {} & {}".format(self.get_ctype(self.get_cur_param_data().symtable[param_info.content]),
+                                               param_info.content))
         output_name = name_info.content
         if output_name in self.duplicate_func_list:
             output_name = node.identity_name
@@ -1358,6 +1359,7 @@ class CodeGenEigen(CodeGen):
                 else:
                     if node.sub is None:
                         content = "({}).template lpNorm<{}>()".format(value, 2)
+                        # content = "({}).norm()".format(value)
                     else:
                         content = "({}).template lpNorm<{}>()".format(value, node.sub)
             elif node.norm_type == NormType.NormMax:
