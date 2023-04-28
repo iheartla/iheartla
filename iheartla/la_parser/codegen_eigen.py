@@ -2560,9 +2560,9 @@ class CodeGenEigen(CodeGen):
                 upper_info = self.visit(node.upper, **kwargs)
                 lower_info = self.visit(node.lower_list[0], **kwargs)
                 if node.lower_list[0].get_main_id() in self.der_vars_mapping:
-                    content = "hessian({}, this->{}).sparseView()".format(upper_info.content, self.der_vars_mapping[node.lower_list[0].get_main_id()])
+                    content = "hessian({}, this->{})".format(upper_info.content, self.der_vars_mapping[node.lower_list[0].get_main_id()])
                 else:
-                    content = "hessian({}, {}).sparseView()".format(upper_info.content, lower_info.content)
+                    content = "hessian({}, {})".format(upper_info.content, lower_info.content)
         elif node.order_type == PartialOrderType.PartialNormal:
             if self.get_sym_type(node.lower_list[0].get_main_id()).is_vector():
                 var_name = node.lower_list[0].get_main_id()
