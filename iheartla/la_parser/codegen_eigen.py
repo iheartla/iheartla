@@ -28,6 +28,9 @@ class CodeGenEigen(CodeGen):
         self.double_type = "DT"          # double type
         self.matrixd_type = "MatrixD"   # matrix double type
         self.vectord_type = "VectorD"   # vector double type
+        self.func_double_type = ''   # template used for functions
+        self.func_matrixd_type = ''
+        self.func_vectord_type = ''
         self.sum_replace_var = False
         self.sum_new_sym = ''
         self.sum_original_sym = ''
@@ -86,6 +89,10 @@ class CodeGenEigen(CodeGen):
         cur_double_type = self.double_type    # used in current function only
         cur_vectord_type = self.vectord_type
         cur_matrixd_type = self.matrixd_type
+        if self.local_func_parsing:
+            cur_double_type = self.func_double_type    
+            cur_vectord_type = self.func_vectord_type
+            cur_matrixd_type = self.func_matrixd_type
         if omit_template:
             cur_double_type = "double"
             cur_vectord_type = "Eigen::VectorXd"
@@ -1247,6 +1254,9 @@ class CodeGenEigen(CodeGen):
 
     def visit_local_func(self, node, **kwargs):
         self.local_func_parsing = True
+        self.func_double_type = "REAL"   # template used for functions
+        self.func_matrixd_type = 'Eigen::Matrix<REAL, Eigen::Dynamic, Eigen::Dynamic>'
+        self.func_vectord_type = 'Eigen::Matrix<REAL, Eigen::Dynamic, 1>'
         self.push_scope(node.scope_name)
         name_info = self.visit(node.name, **kwargs)
         self.local_func_name = node.identity_name  # function name when visiting expressions
@@ -1259,10 +1269,11 @@ class CodeGenEigen(CodeGen):
         output_name = name_info.content
         if output_name in self.duplicate_func_list:
             output_name = node.identity_name
+        content = "    template<typename {}>\n".format(self.func_double_type)
         if len(param_list) == 0:
-            content = "    {} {}()\n".format(self.get_ctype(node.expr[0].la_type), output_name)
+            content += "    {} {}()\n".format(self.get_ctype(node.expr[0].la_type), output_name)
         else:
-            content = "    {} {}(\n".format(self.get_ctype(node.expr[0].la_type), output_name)
+            content += "    {} {}(\n".format(self.get_ctype(node.expr[0].la_type), output_name)
             content += ",\n".join(param_list) + ')\n'
         content += '    {\n'
         # get dimension content
