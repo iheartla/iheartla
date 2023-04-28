@@ -299,7 +299,7 @@ class CodeGenEigen(CodeGen):
         return test_content
 
     def is_triangle_property(self, name):
-        is_property = false
+        is_property = False
         new_name = name
         if len(self.builtin_module_dict) > 0: # builtin module initialization
             for key, module_data in self.builtin_module_dict.items():
@@ -309,7 +309,7 @@ class CodeGenEigen(CodeGen):
                         if c_name in module_data.inverse_dict:
                             c_name = module_data.inverse_dict[c_name]
                         if c_name in PACKAGES_SYM_DICT[key]:
-                            is_property = true
+                            is_property = True
                             new_name = "{}.{}".format(module_data.instance_name, c_name)
         return is_property, new_name
 
@@ -394,7 +394,8 @@ class CodeGenEigen(CodeGen):
             original_dtype = "autodiff::var"
             original_mdtype = "Eigen::Matrix<autodiff::var, Eigen::Dynamic, Eigen::Dynamic>"
             original_vdtype = "Eigen::Matrix<autodiff::var, Eigen::Dynamic, 1>"
-        content = ["template<class {} = {}, class {} = {}, class {} = {}>".format(self.double_type, original_dtype, self.matrixd_type, original_mdtype, self.vectord_type, original_vdtype),
+        content = ["using {} = {};\nusing {} = {};\nusing {} = {};".format(self.double_type, original_dtype, self.matrixd_type, original_mdtype,
+                                                                                  self.vectord_type, original_vdtype),
                    "struct {} {{".format(self.get_result_type()),
                    "{}".format('\n'.join(item_list)),
                    init_content,
