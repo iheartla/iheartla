@@ -1261,22 +1261,32 @@ class CodeGenEigen(CodeGen):
 
     def visit_local_func(self, node, **kwargs):
         self.local_func_parsing = True
-        self.func_double_type = "REAL"   # template used for functions
-        self.func_matrixd_type = 'Eigen::Matrix<REAL, Eigen::Dynamic, Eigen::Dynamic>'
-        self.func_vectord_type = 'Eigen::Matrix<REAL, Eigen::Dynamic, 1>'
         self.push_scope(node.scope_name)
         name_info = self.visit(node.name, **kwargs)
         self.local_func_name = node.identity_name  # function name when visiting expressions
         param_list = []
+        all_int = True
         for parameter in node.params:
             param_info = self.visit(parameter, **kwargs)
             param_list.append(
                 "        const {} & {}".format(self.get_ctype(self.get_cur_param_data().symtable[param_info.content]),
                                                param_info.content))
+            if not self.get_cur_param_data().symtable[param_info.content].is_integer_element():
+                all_int = False
+        if all_int or len(node.params) == 0:
+            # no need to template, use double type
+            self.func_double_type = "double"
+            self.func_matrixd_type = "Eigen::MatrixXd"
+            self.func_vectord_type = "Eigen::VectorXd"
+            content = ""
+        else:
+            self.func_double_type = "REAL"   # template used for functions
+            self.func_matrixd_type = 'Eigen::Matrix<REAL, Eigen::Dynamic, Eigen::Dynamic>'
+            self.func_vectord_type = 'Eigen::Matrix<REAL, Eigen::Dynamic, 1>'
+            content = "    template<typename {}>\n".format(self.func_double_type)
         output_name = name_info.content
         if output_name in self.duplicate_func_list:
             output_name = node.identity_name
-        content = "    template<typename {}>\n".format(self.func_double_type)
         if len(param_list) == 0:
             content += "    {} {}()\n".format(self.get_ctype(node.expr[0].la_type), output_name)
         else:
