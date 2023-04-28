@@ -32,6 +32,16 @@ class CacheModuleManager(object):
         if CacheModuleManager.__instance is None:
             CacheModuleManager()
         return CacheModuleManager.__instance
+    
+    def reset_post(self):
+        self.post_str = ''
+    
+    def get_template_types(self):
+        double_type = "DT" + self.post_str          # double type
+        matrixd_type = "MatrixD" + self.post_str    # matrix double type
+        vectord_type = "VectorD" + self.post_str    # vector double type
+        self.post_str += "_"
+        return double_type, matrixd_type, vectord_type
 
     def __init__(self):
         if CacheModuleManager.__instance is not None:
@@ -40,6 +50,7 @@ class CacheModuleManager(object):
         self.init_cache()
         self.cache_module_dict = {}   # saved data
         self.load_cached_modules()
+        self.post_str = ''
         CacheModuleManager.__instance = self
         
     def get_compiled_module(self, module_name, parser_type, timestamp):

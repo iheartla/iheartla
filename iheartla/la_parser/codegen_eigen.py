@@ -25,9 +25,12 @@ class CodeGenEigen(CodeGen):
         self.pre_str += '#include "type_helper.h"\n'
         self.code_frame.desc = '/*\n{}\n*/\n'''.format(self.la_content)
         self.code_frame.include = self.pre_str
-        self.double_type = "DT"          # double type
-        self.matrixd_type = "MatrixD"   # matrix double type
-        self.vectord_type = "VectorD"   # vector double type
+        self.double_type = ""          # double type
+        self.matrixd_type = ""   # matrix double type
+        self.vectord_type = ""   # vector double type
+        # self.double_type = "DT"          # double type
+        # self.matrixd_type = "MatrixD"   # matrix double type
+        # self.vectord_type = "VectorD"   # vector double type
         self.func_double_type = ''   # template used for functions
         self.func_matrixd_type = ''
         self.func_vectord_type = ''
@@ -775,7 +778,11 @@ class CodeGenEigen(CodeGen):
                 self.duplicate_func_list.append(k)
                 print("duplicate: {}".format(k))
 
+    def set_template_types(self):
+        self.double_type, self.matrixd_type, self.vectord_type = CacheModuleManager.getInstance().get_template_types()
+
     def visit_block(self, node, **kwargs):
+        self.set_template_types()   # 
         self.check_overloading_types()
         #
         show_doc = False

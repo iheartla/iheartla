@@ -1,5 +1,6 @@
 from .ir_printer import *
 from ..la_geometry.geometry_helper import get_gp_func_impl
+from ..la_tools.module_manager import CacheModuleManager
 import copy
 
 
