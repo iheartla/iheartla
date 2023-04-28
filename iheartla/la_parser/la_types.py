@@ -510,6 +510,13 @@ class SetType(LaVarType):
         return len(self.type_list) == 1 and self.type_list[0].is_int_scalar()
 
     def is_integer_element(self):
+        if len(self.type_list) > 0:
+            all_int = True
+            for s_type in self.type_list:
+                if not s_type.is_integer_element():
+                    all_int = False
+                    break
+            return all_int
         for value in self.int_list:
             if not value:
                 return False
@@ -574,6 +581,14 @@ class TupleType(LaVarType):
 
     def get_signature(self):
         return 'tuple:' + ','.join([c_type.get_signature() for c_type in self.type_list])
+    
+    def is_integer_element(self):
+        all_int = True
+        for s_type in self.type_list:
+            if not s_type.is_integer_element():
+                all_int = False
+                break
+        return all_int
 
 class SimplicialSetType(TupleType):
     def __init__(self, desc=None, owner=None):
