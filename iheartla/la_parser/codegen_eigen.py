@@ -2237,6 +2237,7 @@ class CodeGenEigen(CodeGen):
                                                                                right_info.content)
                             content += "    }"
                         else:
+                            # L_ij
                             for right_var in type_info.symbols:
                                 if sub_strs in right_var:
                                     var_ids = self.get_all_ids(right_var)
@@ -2248,20 +2249,18 @@ class CodeGenEigen(CodeGen):
                             right_exp += "    {}({}-1, {}-1) = {}".format(node.left[cur_index].get_main_id(), left_subs[0], left_subs[1],
                                                                           right_info.content)
                             if self.get_sym_type(sequence).is_matrix():
+                                row_size = self.get_sym_type(sequence).rows  # row str
+                                if self.get_sym_type(sequence).is_dynamic_row():
+                                    row_size = self.get_assign_dim_str(node, left_subs[0])
+                                col_size = self.get_sym_type(sequence).cols  # col str
+                                if self.get_sym_type(sequence).is_dynamic_col():
+                                    col_size = self.get_assign_dim_str(node, left_subs[1])
                                 if node.op == '=':
                                     # declare
                                     if sequence not in self.declared_symbols:
-                                        content += "    {} = {}::Zero({}, {});\n".format(sequence, self.matrixd_type,
-                                                                                                      self.get_sym_type(
-                                                                                                          sequence).rows,
-                                                                                                      self.get_sym_type(
-                                                                                                          sequence).cols)
-                            content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
-                                                                                     self.get_sym_type(sequence).rows,
-                                                                                     left_subs[0])
-                            content += "        for( int {}=1; {}<={}; {}++){{\n".format(left_subs[1], left_subs[1],
-                                                                                         self.get_sym_type(sequence).cols,
-                                                                                         left_subs[1])
+                                        content += "    {} = {}::Zero({}, {});\n".format(sequence, self.matrixd_type, row_size, col_size)
+                            content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0], row_size, left_subs[0])
+                            content += "        for( int {}=1; {}<={}; {}++){{\n".format(left_subs[1], left_subs[1], col_size, left_subs[1])
                             if right_info.pre_list:
                                 content += self.update_prelist_str(right_info.pre_list, "        ")
                             content += "        " + right_exp + ";\n"
@@ -2341,6 +2340,29 @@ class CodeGenEigen(CodeGen):
                 la_remove_key(LHS, **kwargs)
                 self.declared_symbols.add(node.left[cur_index].get_main_id())
         return CodeNodeInfo(placeholder+content)
+    
+    def get_assign_dim_str(self, node, cur_sub):
+        # get correct dynamic dim str for assignment such as a_ij = b_ij
+        # no renaming for the target here
+        dim_str = ''
+        for cur_node in node.lhs_sub_dict[cur_sub]:  # all nodes containing the subscript
+            main_la_type = self.get_sym_type(cur_node.get_main_id())
+            if main_la_type.is_vector():
+                dim_str = "{}.rows()".format(cur_node.get_main_id())
+            elif main_la_type.is_sequence():
+                if cur_node.same_as_size_sym(cur_sub):
+                    dim_str = "{}.size()".format(cur_node.get_main_id())
+                elif cur_node.same_as_row_sym(cur_sub):
+                    dim_str = "{}[0].rows()".format(cur_node.get_main_id())
+                elif cur_node.same_as_col_sym(cur_sub):
+                    dim_str = "{}[0].cols()".format(cur_node.get_main_id())
+            elif main_la_type.is_matrix():
+                # matrix
+                dim_str = "{}.rows()".format(cur_node.get_main_id())
+                if cur_node.same_as_col_sym(cur_sub):
+                    dim_str = "{}.cols()".format(cur_node.get_main_id())
+            break
+        return dim_str
 
     def visit_if(self, node, **kwargs):
         ret_info = self.visit(node.cond)
