@@ -24,12 +24,9 @@ NextVerticeInFace(f, v) = vset_1 where v ∈ V, f ∈ F,
 eset = { e for e ∈ Edges(f) if `∂1`_e,f `∂0`_v,e = -1},
 vset = Vertices(eset) - {v}
 
-
 OrientedVertices(f) = tuple(vs_1, i, j)    where f ∈ F,
 vs = Vertices(f),
 i,j = NeighborVerticesInFace(f, vs_1)
-
-Diamond(e) = SimplicialSet(Vertices(e), {e}, Faces(e)) where e ∈ E
 
 OppositeVertices(e) = tuple(eset_1, eset_2) where e ∈ E,
 eset = Vertices(Faces(e)) \ Vertices(e)
