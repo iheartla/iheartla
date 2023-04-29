@@ -1715,10 +1715,11 @@ class CodeGenEigen(CodeGen):
                 pre_list += item_info.pre_list
             content = '    {} {}({{{}}});\n'.format(self.get_ctype(node.la_type), cur_m_id, ", ".join(ret))
             pre_list.append(content)
-        pre_list.append("    if({}.size() > 1){{\n".format(cur_m_id))
-        pre_list.append("        sort({}.begin(), {}.end());\n".format(cur_m_id, cur_m_id))
-        pre_list.append("        {}.erase(unique({}.begin(), {}.end() ), {}.end());\n".format(cur_m_id, cur_m_id, cur_m_id, cur_m_id))
-        pre_list.append("    }\n")
+        if node.la_type.type_list[0].is_scalar():
+            pre_list.append("    if({}.size() > 1){{\n".format(cur_m_id))
+            pre_list.append("        sort({}.begin(), {}.end());\n".format(cur_m_id, cur_m_id))
+            pre_list.append("        {}.erase(unique({}.begin(), {}.end() ), {}.end());\n".format(cur_m_id, cur_m_id, cur_m_id, cur_m_id))
+            pre_list.append("    }\n")
         self.pop_scope()
         return CodeNodeInfo(cur_m_id, pre_list=pre_list)
 
