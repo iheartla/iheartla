@@ -4838,6 +4838,10 @@ class TypeWalker(NodeWalker):
             if param_type_list[0].is_sequence():
                 # append new
                 ir_node.la_type = SequenceType(size=add_syms(param_type_list[0].size, len(param_type_list)-1), element_type=param_type_list[0].element_type, owner=param_type_list[0].owner)
+            elif param_type_list[0].is_set():
+                # set to sequence
+                set_size = param_type_list[0].size if param_type_list[0].size else param_type_list[0].length
+                ir_node.la_type = SequenceType(size=set_size, element_type=param_type_list[0].element_type, owner=param_type_list[0].owner)
             else:
                 ir_node.la_type = SequenceType(size=len(param_type_list), element_type=param_type_list[0], owner=param_type_list[0].owner)
             ir_node.name = node.se

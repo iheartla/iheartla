@@ -1435,9 +1435,13 @@ class CodeGenEigen(CodeGen):
                     pre_list.append("    {} {} = {};\n".format(self.get_ctype(node.la_type), seq_n, params[0]))
                     pre_list.append("    {}.reserve({}.size()+{});\n".format(seq_n, seq_n, len(node.params)-1))
                     pre_list += ["    {}.push_back({});".format(seq_n, p) for p in params[1:]]
+                    content = seq_n
+                elif node.params[0].la_type.is_set():
+                    # set is the same as sequence in Eigen backend
+                    content = params[0]
                 else:
                     pre_list.append("    {} {}{{{}}};\n".format(self.get_ctype(node.la_type), seq_n, ",".join(params)))
-                content = seq_n
+                    content = seq_n
         else:
             param_info = self.visit(node.params[0], **kwargs)
             pre_list += param_info.pre_list
