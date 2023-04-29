@@ -2267,24 +2267,33 @@ class TypeWalker(NodeWalker):
                                 value_var = self.generate_var_name("{}vals".format(sequence))
                         # cal dim
                         dim_list = []
-                        for cur_sub in left_subs:
+                        dynamic = DynamicTypeEnum.DYN_INVALID
+                        for cur_sub_index in range(len(left_subs)):
+                            cur_sub = left_subs[cur_sub_index]
                             for cur_node in self.lhs_sub_dict[cur_sub]:  # all nodes containing the subscript
-                                if self.get_sym_type(cur_node.get_main_id()).is_vector():
-                                    dim = self.get_sym_type(cur_node.get_main_id()).rows
-                                elif self.get_sym_type(cur_node.get_main_id()).is_sequence():
-                                    dim = self.get_sym_type(cur_node.get_main_id()).size
-                                    if cur_node.same_as_row_sym(cur_sub):
-                                        dim = self.get_sym_type(cur_node.get_main_id()).rows
+                                main_la_type = self.get_sym_type(cur_node.get_main_id())
+                                if main_la_type.is_vector():
+                                    dim = main_la_type.rows
+                                elif main_la_type.is_sequence():
+                                    dim = main_la_type.size
+                                    if cur_node.same_as_size_sym(cur_sub):
+                                        if main_la_type.is_dynamic_dim():
+                                            if cur_sub_index == 0:
+                                                dynamic = dynamic | DynamicTypeEnum.DYN_ROW
+                                            else:
+                                                dynamic = dynamic | DynamicTypeEnum.DYN_COL
+                                    elif cur_node.same_as_row_sym(cur_sub):
+                                        dim = main_la_type.element_type.rows
                                     elif cur_node.same_as_col_sym(cur_sub):
-                                        dim = self.get_sym_type(cur_node.get_main_id()).cols
-                                elif self.get_sym_type(cur_node.get_main_id()).is_matrix():
+                                        dim = main_la_type.element_type.cols
+                                elif main_la_type.is_matrix():
                                     # matrix
-                                    dim = self.get_sym_type(cur_node.get_main_id()).rows
+                                    dim = main_la_type.rows
                                     if cur_node.same_as_col_sym(cur_sub):
-                                        dim = self.get_sym_type(cur_node.get_main_id()).cols
+                                        dim = main_la_type.cols
                                 break
                             dim_list.append(dim)
-                        self.get_cur_param_data().symtable[sequence] = MatrixType(rows=dim_list[0], cols=dim_list[1], element_type=right_type, sparse=sparse, diagonal=sparse, index_var=index_var, value_var=value_var)
+                        self.get_cur_param_data().symtable[sequence] = MatrixType(rows=dim_list[0], cols=dim_list[1], element_type=right_type, sparse=sparse, diagonal=sparse, index_var=index_var, value_var=value_var, dynamic=dynamic)
                 elif len(left_subs) == 1:  # sequence or vector
                     cur_sub = left_subs[0]
                     sequence_type = True   # default type: sequence
@@ -4180,6 +4189,7 @@ class TypeWalker(NodeWalker):
         ir_node.scope_name = new_id
         self.assert_expr(len(node.exp) > 0, get_err_msg_info(node.parseinfo, "Empty set is not allowed."))
         f_type = None
+        dynamic = DynamicTypeEnum.DYN_INVALID
         if node.enum:
             ir_node.f = node.f
             ir_node.o = node.o
@@ -4203,6 +4213,7 @@ class TypeWalker(NodeWalker):
                 self.add_sym_type(enum.content, TupleType(type_list=range_info.la_type.type_list))
                 ir_node.use_tuple = True
             ir_node.enum_list = enum_list
+            dynamic = DynamicTypeEnum.DYN_DIM
         if node.cond:
             ir_node.cond = self.walk(node.cond, **kwargs).ir
         for c_index in range(len(node.exp)):
@@ -4222,7 +4233,7 @@ class TypeWalker(NodeWalker):
         elif f_type.is_tet_type():
             ir_node.la_type = TetSetType(owner=f_type.owner)
         else:
-            ir_node.la_type = SetType(size=1, int_list=[True], type_list=[f_type], element_type=f_type, index_type=f_type.index_type, owner=f_type.owner)
+            ir_node.la_type = SetType(size=1, int_list=[True], type_list=[f_type], element_type=f_type, index_type=f_type.index_type, owner=f_type.owner, dynamic=dynamic)
         ir_node.la_type.length = len(node.exp)
         node_info = NodeInfo(ir=ir_node, la_type=ir_node.la_type, symbols=symbols)
         self.pop_scope()
@@ -4840,8 +4851,9 @@ class TypeWalker(NodeWalker):
                 ir_node.la_type = SequenceType(size=add_syms(param_type_list[0].size, len(param_type_list)-1), element_type=param_type_list[0].element_type, owner=param_type_list[0].owner)
             elif param_type_list[0].is_set():
                 # set to sequence
+                dynamic = param_type_list[0].dynamic
                 set_size = param_type_list[0].size if param_type_list[0].size else param_type_list[0].length
-                ir_node.la_type = SequenceType(size=set_size, element_type=param_type_list[0].element_type, owner=param_type_list[0].owner)
+                ir_node.la_type = SequenceType(size=set_size, element_type=param_type_list[0].element_type, owner=param_type_list[0].owner, dynamic=dynamic)
             else:
                 ir_node.la_type = SequenceType(size=len(param_type_list), element_type=param_type_list[0], owner=param_type_list[0].owner)
             ir_node.name = node.se
