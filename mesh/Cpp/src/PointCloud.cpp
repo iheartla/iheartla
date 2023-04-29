@@ -11,7 +11,22 @@ std::vector<std::vector<size_t>> GetPointNeighbors(std::vector<Eigen::VectorXd>&
     for (int i = 0; i < P.size(); ++i)
     {
         neighbors[i] = impl->kNearestNeighbors(i, k);
+        // if (i == 0)
+        // {
+        //     for (int m = 0; m < neighbors[i].size(); ++m)
+        //     {
+        //         std::cout<<"v: "<<m<<", k neighbors: "<<neighbors[i][m]<<std::endl;
+        //     }
+        //     //
+        //     std::cout<<"radius neighbors"<<std::endl;
+        //     std::vector<size_t> nn = impl->radiusSearch(P[i]);
+        //     for (int m = 0; m < nn.size(); ++m)
+        //     {
+        //         std::cout<<"v: "<<m<<", radius neighbors:"<<nn[m]<<std::endl;
+        //     }
+        // }
     }
+
     return neighbors;
 }
 
@@ -88,7 +103,7 @@ std::vector<size_t> PointCloudWrapper::kNearest(Eigen::VectorXd query, size_t k)
     if (k > data.points.size()) throw std::runtime_error("k is greater than number of points");
     std::vector<size_t> outInds(k);
     std::vector<double> outDistSq(k);
-    tree.knnSearch(&query[0], k, &outInds[0], &outDistSq[0]);
+    tree.knnSearch(&query(0), k, &outInds[0], &outDistSq[0]);
     return outInds;
 }
 
@@ -118,6 +133,22 @@ std::vector<size_t> PointCloudWrapper::kNearestNeighbors(size_t sourceInd, size_
 
     return outInds;
 }
+
+std::vector<size_t> PointCloudWrapper::radiusSearch(Eigen::VectorXd query, double rad) {
+    // nanoflann wants a SQUARED raidus
+    double radSq = rad * rad;
+
+    std::vector<std::pair<size_t, double>> outPairs;
+    tree.radiusSearch(&query(0), radSq, outPairs, nanoflann::SearchParams());
+
+    // copy in to an array off indices
+    std::vector<size_t> outInds(outPairs.size());
+    for (size_t i = 0; i < outInds.size(); i++) {
+      outInds[i] = outPairs[i].first;
+    }
+
+    return outInds;
+  }
 
 void PointCloud::init_indices(){
     this->Vi.resize(this->num_v);

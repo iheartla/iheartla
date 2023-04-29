@@ -26,6 +26,7 @@ public:
   ~PointCloudWrapper();
   MPoint data;
   MESH_KD_Tree_T tree;
+  std::vector<size_t> radiusSearch(Eigen::VectorXd query, double rad=0.1);
   std::vector<size_t> kNearest(Eigen::VectorXd query, size_t k);
   std::vector<size_t> kNearestNeighbors(size_t sourceInd, size_t k);
 };
