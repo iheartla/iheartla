@@ -2258,7 +2258,11 @@ class CodeGenEigen(CodeGen):
                                 if node.op == '=':
                                     # declare
                                     if sequence not in self.declared_symbols:
-                                        content += "    {} = {}::Zero({}, {});\n".format(sequence, self.matrixd_type, row_size, col_size)
+                                        if self.is_main_scope():
+                                            type_def = ""
+                                        else:
+                                            type_def = self.get_ctype(self.get_sym_type(node.left[cur_index].get_main_id())) + " "
+                                        content += "    {} = {}::Zero({}, {});\n".format(type_def + sequence, self.matrixd_type, row_size, col_size)
                             content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0], row_size, left_subs[0])
                             content += "        for( int {}=1; {}<={}; {}++){{\n".format(left_subs[1], left_subs[1], col_size, left_subs[1])
                             if right_info.pre_list:
