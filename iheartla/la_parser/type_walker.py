@@ -4509,9 +4509,22 @@ class TypeWalker(NodeWalker):
                 ret_type = param.la_type.element_type
         elif func_type == MathFuncType.MathFuncSVD:
             self.assert_expr(param.la_type.is_matrix(), get_err_msg_info(param.parse_info, "Parameter must be valid matrix type"))
-            ret_type = TupleType(type_list=[MatrixType(rows=param.la_type.rows, cols=param.la_type.rows),
-                                            VectorType(rows=param.la_type.rows),
-                                            MatrixType(rows=param.la_type.cols, cols=param.la_type.cols)])
+            dynamic = DynamicTypeEnum.DYN_INVALID
+            u_type = MatrixType(rows=param.la_type.rows, cols=param.la_type.rows)
+            s_type = VectorType(rows=param.la_type.rows)
+            v_type = MatrixType(rows=param.la_type.cols, cols=param.la_type.cols)
+            if param.la_type.is_dynamic():
+                if param.la_type.is_dynamic_row() and param.la_type.is_dynamic_col():
+                    u_type.dynamic = DynamicTypeEnum.DYN_ROW | DynamicTypeEnum.DYN_COL
+                    s_type.dynamic = DynamicTypeEnum.DYN_ROW
+                    v_type.dynamic = DynamicTypeEnum.DYN_ROW | DynamicTypeEnum.DYN_COL
+                elif param.la_type.is_dynamic_row():
+                    u_type.dynamic = DynamicTypeEnum.DYN_ROW | DynamicTypeEnum.DYN_COL
+                    s_type.dynamic = DynamicTypeEnum.DYN_ROW
+                else:
+                    s_type.dynamic = DynamicTypeEnum.DYN_ROW
+                    v_type.dynamic = DynamicTypeEnum.DYN_ROW | DynamicTypeEnum.DYN_COL
+            ret_type = TupleType(type_list=[u_type, s_type, v_type])
         tri_node = MathFuncNode(param, func_type, remain_list)
         node_info = NodeInfo(ret_type, symbols=symbols)
         tri_node.la_type = ret_type
