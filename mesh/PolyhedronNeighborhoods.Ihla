@@ -1,0 +1,45 @@
+MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, IndicatorVector from MeshConnectivity
+Vertices, Edges, Faces from FundamentalMeshAccessors(M)
+M ∈ mesh 
+V, E, F = MeshSets( M )
+`∂0`, `∂1` = BoundaryMatrices(M) 
+B0, B1 = UnsignedBoundaryMatrices(M)
+
+
+VertexOneRing(v) = vertexset(NonZeros(B0 B0ᵀ IndicatorVector({v}))) - {v} where v ∈ V
+VertexOneRing(v) = vertexset(NonZeros(B0 B0ᵀ IndicatorVector(v))) - v where v ⊂  V
+
+EdgeIndex(i, j) = eset_1 where i,j ∈ V,
+eset = edgeset(NonZeros(`∂0`ᵀ IndicatorVector({i}))) ∩ vertexset(NonZeros(`∂0`ᵀ IndicatorVector({j})))
+
+NeighborVerticesInFace(f, v) = tuple(vset1_1, vset2_1) where v ∈ V, f ∈ F,
+es = edgeset(NonZeros(`∂1` IndicatorVector({f}))),
+nes = { s for s ∈ es if `∂0`_v,s != 0 },
+eset1 = { e for e ∈ nes if `∂1`_e,f `∂0`_v,e = -1},
+vset1 = vertexset(NonZeros(B0 IndicatorVector(eset1))) - {v},
+eset2 = { e for e ∈ nes if `∂1`_e,f `∂0`_v,e = 1 },
+vset2 = vertexset(NonZeros(B0 IndicatorVector(eset2))) - {v}
+
+NextVerticeInFace(f, v) = vset_1 where v ∈ V, f ∈ F,
+eset = { e for e ∈ Edges(f) if `∂1`_e,f `∂0`_v,e = -1},
+vset = Vertices(eset) - {v}
+
+
+OrientedVertices(f) = tuple(vs_1, i, j)    where f ∈ F,
+vs = Vertices(f),
+i,j = NeighborVerticesInFace(f, vs_1)
+
+Diamond(e) = SimplicialSet(Vertices(e), {e}, Faces(e)) where e ∈ E
+
+OppositeVertices(e) = tuple(eset_1, eset_2) where e ∈ E,
+eset = Vertices(Faces(e)) \ Vertices(e)
+
+FaceIndex(i,j,k) = fset_1  where i,j,k ∈ V,
+ufv = (B0 B1)ᵀ,
+iface = faceset(NonZeros(ufv  IndicatorVector({i}))),
+jface = faceset(NonZeros(ufv  IndicatorVector({j}))),
+kface = faceset(NonZeros(ufv IndicatorVector({k}))),
+fset = iface ∩ jface ∩ kface
+
+OrientedVertices(i,j,k) = NeighborVerticesInFace(f, i)  where i,j,k ∈ V,
+f = FaceIndex(i, j, k)
