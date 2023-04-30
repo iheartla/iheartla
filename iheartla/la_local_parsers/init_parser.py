@@ -8896,7 +8896,16 @@ class grammarinitParser(Parser):
                     with self._choice():
                         with self._option():
                             self._token('_')
-                            self._identifier_alone_()
+                            with self._group():
+                                with self._choice():
+                                    with self._option():
+                                        self._identifier_alone_()
+                                    with self._option():
+                                        self._integer_()
+                                    self._error(
+                                        'expecting one of: '
+                                        '<identifier_alone> <integer>'
+                                    )
                         with self._option():
                             self._unicode_subscript_()
                         self._error(
@@ -9058,10 +9067,13 @@ class grammarinitParser(Parser):
                     with self._option():
                         self._identifier_alone_()
                     with self._option():
+                        self._integer_()
+                    with self._option():
                         self._BUILTIN_KEYWORDS_()
                     self._error(
                         'expecting one of: '
                         '<BUILTIN_KEYWORDS> <identifier_alone>'
+                        '<integer>'
                     )
             self.add_last_node_to_name('right')
 

@@ -27,7 +27,7 @@ SIMPLIFIED += r"""
 func_id
     =
     INVERSEVEC
-    | identifier_alone {'_' identifier_alone | unicode_subscript}
+    | identifier_alone {'_' (identifier_alone | integer) | unicode_subscript}
     ;
 
 identifier_alone::IdentifierAlone
@@ -45,7 +45,7 @@ identifier
 # handle _ in identifier
 identifier_with_multi_subscript::IdentifierSubscript
     = 
-    left:identifier_alone {'_' right+:(identifier_alone | BUILTIN_KEYWORDS) }+ ({
+    left:identifier_alone {'_' right+:(identifier_alone | integer | BUILTIN_KEYWORDS) }+ ({
     (',' right+:'*')
     | ({','} right+:(integer | identifier_alone)) }
     |
