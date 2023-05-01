@@ -39,9 +39,26 @@ void PolygonMesh::initialize(std::vector<std::vector<int> > &T){
 	}
 	this->num_v = max_vertices + 1;
 	this->create_edges();
+    this->init_indices();
     // boundary mat
     this->build_boundary_mat1();
     this->build_boundary_mat2();
+}
+
+void PolygonMesh::init_indices(){
+    this->Vi.resize(this->num_v);
+    for (int i = 0; i < this->num_v; ++i){
+        this->Vi[i] = i;
+    }
+    this->Ei.resize(this->E.rows());
+    for (int i = 0; i < this->E.rows(); ++i){ 
+        this->Ei[i] = i;
+    }
+    this->Fi.resize(this->F.rows());
+    for (int i = 0; i < this->F.rows(); ++i){
+        this->Fi[i] = i;
+    }
+    std::cout<<"Total vertices:"<<this->num_v<<", edges:"<<this->E.rows()<<", faces:"<<this->F.rows()<<", tets:"<<this->T.rows()<<std::endl;
 }
 
 void PolygonMesh::create_edges(){
@@ -81,7 +98,7 @@ void PolygonMesh::build_boundary_mat2(){
     }
     this->bm2.setFromTriplets(tripletList.begin(), tripletList.end());
     this->pos_bm2 = this->bm2.cwiseAbs();
-    std::cout<<"this->bm2:\n"<<this->bm2<<std::endl;
+    // std::cout<<"this->bm2:\n"<<this->bm2<<std::endl;
     // std::cout<<"this->pos_bm2:\n"<<this->pos_bm2<<std::endl;
 }
 
@@ -95,7 +112,7 @@ void PolygonMesh::build_boundary_mat1(){
     }
     this->bm1.setFromTriplets(tripletList.begin(), tripletList.end());
     this->pos_bm1 = this->bm1.cwiseAbs();
-    std::cout<<"this->bm1:\n"<<this->bm1<<std::endl;
+    // std::cout<<"this->bm1:\n"<<this->bm1<<std::endl;
     // std::cout<<"this->pos_bm1:\n"<<this->pos_bm1<<std::endl;
 }
   
