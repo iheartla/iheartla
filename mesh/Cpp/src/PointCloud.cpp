@@ -159,10 +159,6 @@ void PointCloud::init_indices(){
     for (int i = 0; i < this->E.rows(); ++i){ 
         this->Ei[i] = i;
     }
-    this->Fi.resize(this->F.rows());
-    for (int i = 0; i < this->F.rows(); ++i){
-        this->Fi[i] = i;
-    }
 }
 
 void PointCloud::build_boundary_mat1(){
