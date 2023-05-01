@@ -99,7 +99,7 @@ void PolygonMesh::build_boundary_mat1(){
     // std::cout<<"this->pos_bm1:\n"<<this->pos_bm1<<std::endl;
 }
   
-std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> PolygonMesh::MeshSets() const{
+std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> PolygonMesh::ElementSets() const{
     return std::tuple<std::vector<int>, std::vector<int>, std::vector<int>>(this->Vi, this->Ei, this->Fi);
 }
 
