@@ -54,11 +54,11 @@ void PolygonMesh::init_indices(){
     for (int i = 0; i < this->E.rows(); ++i){ 
         this->Ei[i] = i;
     }
-    this->Fi.resize(this->F.rows());
-    for (int i = 0; i < this->F.rows(); ++i){
+    this->Fi.resize(this->Face.size());
+    for (int i = 0; i < this->F.size(); ++i){
         this->Fi[i] = i;
     }
-    std::cout<<"Total vertices:"<<this->num_v<<", edges:"<<this->E.rows()<<", faces:"<<this->F.rows()<<", tets:"<<this->T.rows()<<std::endl;
+    std::cout<<"Total vertices:"<<this->num_v<<", edges:"<<this->E.rows()<<", faces:"<<this->Fi.size()<<", max degree:"<<this->max_degree<<std::endl;
 }
 
 void PolygonMesh::create_edges(){
@@ -85,7 +85,7 @@ void PolygonMesh::create_edges(){
 void PolygonMesh::build_boundary_mat2(){
     this->bm2.resize(this->E.rows(), this->Face.size());
     std::vector<Eigen::Triplet<int> > tripletList;
-    tripletList.reserve(this->max_degree * this->F.rows());
+    tripletList.reserve(this->max_degree * this->F.size());
     int sign = 1;
     // The faces of a triangle +(f0,f1,f2)
     for(int i=0; i<this->Face.size(); i++){

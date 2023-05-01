@@ -60,7 +60,7 @@ int Connectivity::n_vertices() const{
     return this->num_v;
 }
 int Connectivity::n_faces() const{
-    return this->F.rows();
+    return this->Fi.size();
 }
 int Connectivity::n_tets() const{
     return this->T.rows();
@@ -68,6 +68,7 @@ int Connectivity::n_tets() const{
 
 SparseMatrix<int> Connectivity::vertices_to_vector(const std::vector<int>& vset) const{
     SparseMatrix<int> v(this->num_v, 1);
+    // std::cout<<"this->num_v is:"<<this->num_v<<std::endl;
     std::vector<Eigen::Triplet<int> > tripletList; 
     tripletList.reserve(this->num_v);
     for (int idx : vset)
