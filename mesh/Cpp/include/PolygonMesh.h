@@ -24,6 +24,7 @@ public:
     int get_face_index(int i, int j, int k); 
     void init_indices();
     //
+    SparseMatrix<int> faces_to_vector(const std::vector<int>& fset) const;
     std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> ElementSets() const;
     std::tuple<Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > BoundaryMatrices() const;
     std::tuple<Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > UnsignedBoundaryMatrices() const;

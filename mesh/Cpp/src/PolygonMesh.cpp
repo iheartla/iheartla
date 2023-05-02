@@ -55,7 +55,7 @@ void PolygonMesh::init_indices(){
         this->Ei[i] = i;
     }
     this->Fi.resize(this->Face.size());
-    for (int i = 0; i < this->F.size(); ++i){
+    for (int i = 0; i < this->Face.size(); ++i){
         this->Fi[i] = i;
     }
     std::cout<<"Total vertices:"<<this->num_v<<", edges:"<<this->E.rows()<<", faces:"<<this->Fi.size()<<", max degree:"<<this->max_degree<<std::endl;
@@ -85,7 +85,7 @@ void PolygonMesh::create_edges(){
 void PolygonMesh::build_boundary_mat2(){
     this->bm2.resize(this->E.rows(), this->Face.size());
     std::vector<Eigen::Triplet<int> > tripletList;
-    tripletList.reserve(this->max_degree * this->F.size());
+    tripletList.reserve(this->max_degree * this->Face.size());
     int sign = 1;
     // The faces of a triangle +(f0,f1,f2)
     for(int i=0; i<this->Face.size(); i++){
@@ -101,7 +101,17 @@ void PolygonMesh::build_boundary_mat2(){
     // std::cout<<"this->bm2:\n"<<this->bm2<<std::endl;
     // std::cout<<"this->pos_bm2:\n"<<this->pos_bm2<<std::endl;
 }
-
+SparseMatrix<int> PolygonMesh::faces_to_vector(const std::vector<int>& fset) const{
+    SparseMatrix<int> f(this->Face.size(), 1);
+    std::vector<Eigen::Triplet<int> > tripletList; 
+    tripletList.reserve(this->Face.size());
+    for (int idx : fset)
+    {
+        tripletList.push_back(Eigen::Triplet<int>(idx, 0, 1));
+    }
+    f.setFromTriplets(tripletList.begin(), tripletList.end());
+    return f;
+}
 void PolygonMesh::build_boundary_mat1(){
     this->bm1.resize(this->num_v, this->E.rows());
     std::vector<Eigen::Triplet<int> > tripletList;
