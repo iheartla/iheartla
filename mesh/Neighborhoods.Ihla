@@ -9,8 +9,8 @@ B0, B1 = UnsignedBoundaryMatrices(M)
 VertexOneRing(v) = vertexset(NonZeros(B0 B0ᵀ IndicatorVector({v}))) - {v} where v ∈ V
 VertexOneRing(v) = vertexset(NonZeros(B0 B0ᵀ IndicatorVector(v))) - v where v ⊂  V
 
-EdgeIndex(i, j) = eset_1 where i,j ∈ V,
-eset = edgeset(NonZeros(`∂0`ᵀ IndicatorVector({i}))) ∩ vertexset(NonZeros(`∂0`ᵀ IndicatorVector({j})))
+EdgeIndex(i, j) = eset_1  where i,j ∈ V,
+eset = Edges(i) ∩ Edges(j)
 
 NeighborVerticesInFace(f, v) = tuple(vset1_1, vset2_1) where v ∈ V, f ∈ F,
 es = edgeset(NonZeros(`∂1` IndicatorVector({f}))),
@@ -31,16 +31,26 @@ i,j = NeighborVerticesInFace(f, vs_1)
 
 Diamond(e) = SimplicialSet(Vertices(e), {e}, Faces(e)) where e ∈ E
 
-OppositeFaces(e) = tuple(firf_1, secf_2) where e ∈ E,
+OrientedOppositeFaces(i, j) = tuple(firf_1, secf_1) where i,j ∈ V,
+e = EdgeIndex(i, j),
+fset = Faces(e),
+firf = { f for f ∈ fset if `∂1`_e,f `∂0`_i,e == -1 },
+secf = fset - firf
+
+OppositeFaces(e) = tuple(firf_1, secf_1) where e ∈ E,
 fset = Faces(e),
 firf = { f for f ∈ fset if `∂1`_e,f == 1 },
 secf = { f for f ∈ fset if `∂1`_e,f == -1 }
 
-OppositeVertices(e) = tuple(firv_1, secv_2) where e ∈ E,
+OppositeVertices(e) = tuple(firv_1, secv_1) where e ∈ E,
 firf, secf = OppositeFaces(e),
 firv = Vertices(firf) \ Vertices(e),
 secv = Vertices(secf) \ Vertices(e)
 
+OppositeVertices(i, j) = tuple(firv_1, secv_1) where i,j ∈ V,
+firf, secf = OrientedOppositeFaces(i, j),
+firv = Vertices(firf) \ {i, j},
+secv = Vertices(secf) \ {i, j}
 
 FaceIndex(i,j,k) = fset_1  where i,j,k ∈ V,
 ufv = (B0 B1)ᵀ,
