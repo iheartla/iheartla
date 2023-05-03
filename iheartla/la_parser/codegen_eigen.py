@@ -1715,13 +1715,48 @@ class CodeGenEigen(CodeGen):
                 pre_list += item_info.pre_list
             content = '    {} {}({{{}}});\n'.format(self.get_ctype(node.la_type), cur_m_id, ", ".join(ret))
             pre_list.append(content)
+        pre_list.append("    if({}.size() > 1){{\n".format(cur_m_id))
         if node.la_type.type_list[0].is_scalar():
-            pre_list.append("    if({}.size() > 1){{\n".format(cur_m_id))
             pre_list.append("        sort({}.begin(), {}.end());\n".format(cur_m_id, cur_m_id))
-            pre_list.append("        {}.erase(unique({}.begin(), {}.end() ), {}.end());\n".format(cur_m_id, cur_m_id, cur_m_id, cur_m_id))
-            pre_list.append("    }\n")
+        else:
+            cmp_list = self.get_sort_cmp(node.la_type.type_list[0], "        ")
+            pre_list.append("        sort({}.begin(), {}.end(), {}\n".format(cur_m_id, cur_m_id, cmp_list[0]))
+            pre_list += cmp_list[1:-1]
+            pre_list.append("        {});\n".format(cmp_list[-1]))
+        pre_list.append("        {}.erase(unique({}.begin(), {}.end() ), {}.end());\n".format(cur_m_id, cur_m_id, cur_m_id, cur_m_id))
+        pre_list.append("    }\n")
         self.pop_scope()
         return CodeNodeInfo(cur_m_id, pre_list=pre_list)
+    
+    def get_sort_cmp(self, la_type, prefix=""):
+        # no prefix for the first and last line
+        content_list = []
+        type_str = self.get_ctype(la_type)
+        lhs = self.generate_var_name('lhs_')
+        rhs = self.generate_var_name('rhs_')
+        if la_type.is_matrix():
+            content_list.append("[](const {} &{}, const {} &{})\n".format(type_str, lhs, type_str, rhs))
+            content_list.append("{}{{\n".format(prefix))
+            content_list.append("{}    for (int i=0; i<{}.rows(); i++) {{\n".format(prefix, lhs))
+            content_list.append("{}        for (int j=0; j<{}.cols(); j++) {{\n".format(prefix, lhs))
+            content_list.append("{}            if ({}(i,j) > {}(i,j)) {{\n".format(prefix, lhs, rhs))
+            content_list.append("{}                return false;\n".format(prefix))
+            content_list.append("{}            }}\n".format(prefix))
+            content_list.append("{}        }}\n".format(prefix))
+            content_list.append("{}    }}\n".format(prefix))
+            content_list.append("{}    return true;\n".format(prefix))
+            content_list.append("}")
+        elif la_type.is_vector():
+            content_list.append("[](const {} &{}, const {} &{})\n".format(type_str, lhs, type_str, rhs))
+            content_list.append("{}{{\n".format(prefix))
+            content_list.append("{}    for (int i=0; i<{}.rows(); i++) {{\n".format(prefix, lhs))
+            content_list.append("{}        if ({}(i) > {}(i)) {{\n".format(prefix, lhs, rhs))
+            content_list.append("{}            return false;\n".format(prefix))
+            content_list.append("{}        }}\n".format(prefix))
+            content_list.append("{}    }}\n".format(prefix))
+            content_list.append("{}    return true;\n".format(prefix))
+            content_list.append("}")
+        return content_list
 
     def visit_matrix(self, node, **kwargs):
         content = "    "
