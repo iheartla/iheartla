@@ -9,8 +9,8 @@ B0, B1, B2 = UnsignedBoundaryMatrices(M)
 VertexOneRing(v) = vertexset(NonZeros(B0 B0ᵀ IndicatorVector({v}))) - {v} where v ∈ V
 VertexOneRing(v) = vertexset(NonZeros(B0 B0ᵀ IndicatorVector(v))) - v where v ⊂  V
 
-EdgeIndex(i, j) = eset_1 where i,j ∈ V,
-eset = edgeset(NonZeros(`∂0`ᵀ IndicatorVector({i}))) ∩ vertexset(NonZeros(`∂0`ᵀ IndicatorVector({j})))
+EdgeIndex(i, j) = eset_1  where i,j ∈ V,
+eset = Edges(i) ∩ Edges(j)
 
 NeighborVerticesInFace(f, v) = tuple(vset1_1, vset2_1) where v ∈ V, f ∈ F,
 es = edgeset(NonZeros(`∂1` IndicatorVector({f}))),
@@ -27,9 +27,6 @@ vset = Vertices(eset) - {v}
 OrientedVertices(f) = tuple(vs_1, i, j)    where f ∈ F,
 vs = Vertices(f),
 i,j = NeighborVerticesInFace(f, vs_1)
-
-OppositeVertices(e) = tuple(eset_1, eset_2) where e ∈ E,
-eset = Vertices(Faces(e)) \ Vertices(e)
 
 FaceIndex(i,j,k) = fset_1  where i,j,k ∈ V,
 ufv = (B0 B1)ᵀ,
