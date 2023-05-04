@@ -2829,7 +2829,7 @@ class CodeGenEigen(CodeGen):
         if node.la_type.is_scalar():
             node_info.content = "{}({})".format(self.get_cur_dtype(), node_info.content)
         else:
-            node_info.content = "({}).cast<{}>()".format(node_info.content, self.get_cur_dtype())
+            node_info.content = "({}).template cast<{}>()".format(node_info.content, self.get_cur_dtype())
         return node_info
 
     def visit_inner_product(self, node, **kwargs):
