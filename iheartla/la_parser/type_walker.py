@@ -2152,7 +2152,9 @@ class TypeWalker(NodeWalker):
                 pre_subs = []
                 for sub_index in range(len(left_subs)):
                     sub_sym = left_subs[sub_index]
-                    if isinstance(sub_sym, str) and not sub_sym.isnumeric():
+                    if sub_sym == '*':
+                        pass
+                    elif isinstance(sub_sym, str) and not sub_sym.isnumeric():
                         if not self.is_sym_existed(sub_sym):
                             known_subscript = False
                         self.lhs_subs.append(sub_sym)
@@ -2237,7 +2239,9 @@ class TypeWalker(NodeWalker):
                 left_ids = self.get_all_ids(id0)
                 left_subs = left_ids[1]
                 sequence = left_ids[0]    #y
-                self.assert_expr('*' not in left_subs, get_err_msg_info(node.parseinfo, "LHS can't have * as subscript"))
+                if '*' in left_subs:
+                    self.assert_expr(right_type.is_vector(), get_err_msg_info(node.parseinfo, "RHS must be vector type"))
+                # self.assert_expr('*' not in left_subs, get_err_msg_info(node.parseinfo, "LHS can't have * as subscript"))
                 if node.op != '=':
                     self.assert_expr(self.is_sym_existed(sequence), get_err_msg_info(id0_info.ir.parse_info,
                                                                            "{} hasn't been defined".format(sequence)))
@@ -2250,8 +2254,9 @@ class TypeWalker(NodeWalker):
                 if len(left_subs) == 2:  # matrix
                     if right_info.ir.node_type != IRNodeType.SparseMatrix:
                         self.assert_expr(sequence not in self.parameters, get_err_msg_info(id0_info.ir.parse_info, "{} is a parameter, can not be assigned".format(sequence)))
-                    if not (right_type.is_matrix() and right_type.sparse):
-                        self.assert_expr(right_type.is_scalar(), get_err_msg_info(right_info.ir.parse_info, "RHS has to be scalar"))
+                    if '*' not in left_subs:
+                        if not (right_type.is_matrix() and right_type.sparse):
+                            self.assert_expr(right_type.is_scalar(), get_err_msg_info(right_info.ir.parse_info, "RHS has to be scalar"))
                     if right_type is not None and right_type.is_matrix():
                         # sparse mat assign
                         if right_type.sparse:
@@ -2270,6 +2275,8 @@ class TypeWalker(NodeWalker):
                         dynamic = DynamicTypeEnum.DYN_INVALID
                         for cur_sub_index in range(len(left_subs)):
                             cur_sub = left_subs[cur_sub_index]
+                            if cur_sub == '*':
+                                continue
                             for cur_node in self.lhs_sub_dict[cur_sub]:  # all nodes containing the subscript
                                 main_la_type = self.get_sym_type(cur_node.get_main_id())
                                 if main_la_type.is_vector():
@@ -2293,7 +2300,14 @@ class TypeWalker(NodeWalker):
                                         dim = main_la_type.cols
                                 break
                             dim_list.append(dim)
-                        self.get_cur_param_data().symtable[sequence] = MatrixType(rows=dim_list[0], cols=dim_list[1], element_type=right_type, sparse=sparse, diagonal=sparse, index_var=index_var, value_var=value_var, dynamic=dynamic)
+                        if '*' in left_subs:
+                            # rhs is vector
+                            if left_subs[0] == '*':
+                                self.get_cur_param_data().symtable[sequence] = MatrixType(rows=right_type.rows, cols=dim_list[0], element_type=right_type, sparse=sparse, diagonal=sparse, index_var=index_var, value_var=value_var, dynamic=dynamic)
+                            else:
+                                self.get_cur_param_data().symtable[sequence] = MatrixType(rows=dim_list[0], cols=right_type.rows, element_type=right_type, sparse=sparse, diagonal=sparse, index_var=index_var, value_var=value_var, dynamic=dynamic)
+                        else:
+                            self.get_cur_param_data().symtable[sequence] = MatrixType(rows=dim_list[0], cols=dim_list[1], element_type=right_type, sparse=sparse, diagonal=sparse, index_var=index_var, value_var=value_var, dynamic=dynamic)
                 elif len(left_subs) == 1:  # sequence or vector
                     cur_sub = left_subs[0]
                     sequence_type = True   # default type: sequence
