@@ -2427,6 +2427,9 @@ class CodeGenEigen(CodeGen):
                 dim_str = "{}.rows()".format(cur_node.get_main_id())
                 if cur_node.same_as_col_sym(cur_sub):
                     dim_str = "{}.cols()".format(cur_node.get_main_id())
+            elif main_la_type.is_set():
+                # set
+                dim_str = "{}.size()".format(cur_node.get_main_id())
             break
         return dim_str
 
