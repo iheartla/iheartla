@@ -2198,9 +2198,9 @@ class TypeWalker(NodeWalker):
                 for cur_s_index in range(len(self.lhs_subs)):
                     cur_sym_dict = self.lhs_sym_list[cur_s_index]
                     if not self.is_sym_existed(self.get_main_id(id0)):
-                        self.assert_expr(len(cur_sym_dict) > 0, get_err_msg_info(node.left[0].right[cur_s_index].parseinfo, "Subscript hasn't been used on rhs"))
+                        self.assert_expr(len(cur_sym_dict) > 0, get_err_msg_info(node.left[0].parseinfo, "Subscript hasn't been used on rhs"))
                     # self.check_sum_subs(self.lhs_subs[cur_index], cur_sym_dict)
-                    self.assert_expr(self.check_sum_subs(self.lhs_subs[cur_s_index], cur_sym_dict), get_err_msg_info(node.left[0].right[cur_s_index].parseinfo,
+                    self.assert_expr(self.check_sum_subs(self.lhs_subs[cur_s_index], cur_sym_dict), get_err_msg_info(node.left[0].parseinfo,
                                                                                           "Subscript has inconsistent dimensions"))
             self.lhs_sym_list.clear()
             self.lhs_subs.clear()
