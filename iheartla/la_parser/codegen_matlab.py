@@ -1727,21 +1727,39 @@ class CodeGenMatlab(CodeGen):
                                 if sub_strs in right_var:
                                     var_ids = self.get_all_ids(right_var)
                                     right_info.content = right_info.content.replace(right_var, "{}({}, {})".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
-                            right_exp += "    {}({}, {}) = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
+                            if left_subs[0] == '*':
+                                right_exp += "    {}(:, {}) = {}".format(self.get_main_id(left_id), left_subs[1], right_info.content)
+                            elif left_subs[1] == '*':
+                                right_exp += "    {}({}, :) = {}".format(self.get_main_id(left_id), left_subs[0], right_info.content)
+                            else:
+                                right_exp += "    {}({}, {}) = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
                             if self.get_sym_type(sequence).is_matrix():
                                 if node.op == '=':
                                     # declare
                                     content += "    {} = zeros({}, {});\n".format(sequence,
                                                                                       self.get_sym_type(sequence).rows,
                                                                                       self.get_sym_type(sequence).cols)
-                            content += "    for {} = 1:{}\n".format(left_subs[0], self.get_sym_type(sequence).rows)
-                            content += "        for {} = 1:{}\n".format(left_subs[1], self.get_sym_type(sequence).cols)
-                            if right_info.pre_list:
-                                content += self.update_prelist_str(right_info.pre_list, "        ")
-                            content += "        " + right_exp + ';\n'
-                            content += "        end\n"
-                            content += "    end\n"
-                            # content += '\n'
+                            if left_subs[0] == '*':
+                                content += "    for {} = 1:{}\n".format(left_subs[1], self.get_sym_type(sequence).cols)
+                                if right_info.pre_list:
+                                    content += self.update_prelist_str(right_info.pre_list, "    ")
+                                content += "    " + right_exp + ';\n'
+                                content += "    end\n"
+                            elif left_subs[1] == '*':
+                                content += "    for {} = 1:{}\n".format(left_subs[0], self.get_sym_type(sequence).rows)
+                                if right_info.pre_list:
+                                    content += self.update_prelist_str(right_info.pre_list, "    ")
+                                content += "    " + right_exp + ';\n'
+                                content += "    end\n"
+                            else:
+                                content += "    for {} = 1:{}\n".format(left_subs[0], self.get_sym_type(sequence).rows)
+                                content += "        for {} = 1:{}\n".format(left_subs[1], self.get_sym_type(sequence).cols)
+                                if right_info.pre_list:
+                                    content += self.update_prelist_str(right_info.pre_list, "        ")
+                                content += "        " + right_exp + ';\n'
+                                content += "        end\n"
+                                content += "    end\n"
+                                # content += '\n'
                     elif len(left_subs) == 1: # sequence only
                         sequence = left_ids[0]  # y left_subs[0]
                         # replace sequence
