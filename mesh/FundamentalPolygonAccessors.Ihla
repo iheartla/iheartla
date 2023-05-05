@@ -1,0 +1,22 @@
+ElementSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, IndicatorVector  from MeshConnectivity
+
+M ∈ PolygonMesh 
+
+V, E, F = ElementSets( M )
+`∂0`, `∂1` = BoundaryMatrices(M) 
+B0, B1 = UnsignedBoundaryMatrices(M)
+
+Vertices(S) = S₁ where S: SimplicialSet
+Edges(S)    = S₂ where S: SimplicialSet
+Faces(S)    = S₃ where S: SimplicialSet
+ 
+Vertices(f) = vertexset(NonZeros(B0 B1 IndicatorVector({f}))) where f ∈ F
+Vertices(G) = vertexset(NonZeros(B0 B1 IndicatorVector(G))) where G ⊂ F
+Vertices(e) = vertexset(NonZeros(B0 IndicatorVector({e}))) where e ∈ E
+Vertices(H) = vertexset(NonZeros(B0 IndicatorVector(H))) where H ⊂ E
+ 
+Edges(v) = edgeset(NonZeros(B0ᵀ IndicatorVector({v}))) where v ∈ V
+Edges(f) = faceset(NonZeros(B1 IndicatorVector({f}))) where f ∈ F
+
+Faces(v) = faceset(NonZeros((B0 B1)ᵀ IndicatorVector({v}))) where v ∈ V
+Faces(e) = faceset(NonZeros(B1ᵀ IndicatorVector({e}))) where e ∈ E
