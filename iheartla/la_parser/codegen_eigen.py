@@ -2347,7 +2347,7 @@ class CodeGenEigen(CodeGen):
                             type_def = ""
                         else:
                             type_def = self.get_ctype(self.get_sym_type(node.left[cur_index].get_main_id())) + ' '
-                        content += '    ' + type_def + node.left[cur_index].get_main_id() + ';\n'
+                            content += '    ' + type_def + node.left[cur_index].get_main_id() + ';\n'
                         # definition
                         if self.get_sym_type(sequence).is_sequence():
                             right_exp += "    {} = {}".format(left_info.content, right_info.content)
