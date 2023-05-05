@@ -2290,7 +2290,12 @@ class CodeGenEigen(CodeGen):
                                                                                                                        0],
                                                                                                                    var_ids[1][
                                                                                                                        1]))
-                            right_exp += "    {}({}-1, {}-1) = {}".format(node.left[cur_index].get_main_id(), left_subs[0], left_subs[1],
+                            if left_subs[0] == '*':
+                                right_exp += "    {}.col({}-1) = {}".format(node.left[cur_index].get_main_id(), left_subs[1], right_info.content)
+                            elif left_subs[1] == '*':
+                                right_exp += "    {}.row({}-1) = {}".format(node.left[cur_index].get_main_id(), left_subs[0], right_info.content)
+                            else:
+                                right_exp += "    {}({}-1, {}-1) = {}".format(node.left[cur_index].get_main_id(), left_subs[0], left_subs[1],
                                                                           right_info.content)
                             if self.get_sym_type(sequence).is_matrix():
                                 row_size = self.get_sym_type(sequence).rows  # row str
@@ -2307,13 +2312,26 @@ class CodeGenEigen(CodeGen):
                                         else:
                                             type_def = self.get_ctype(self.get_sym_type(node.left[cur_index].get_main_id())) + " "
                                         content += "    {} = {}::Zero({}, {});\n".format(type_def + sequence, self.matrixd_type, row_size, col_size)
-                            content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0], row_size, left_subs[0])
-                            content += "        for( int {}=1; {}<={}; {}++){{\n".format(left_subs[1], left_subs[1], col_size, left_subs[1])
-                            if right_info.pre_list:
-                                content += self.update_prelist_str(right_info.pre_list, "        ")
-                            content += "        " + right_exp + ";\n"
-                            content += "        }\n"
-                            content += "    }\n"
+                            if left_subs[0] == '*':
+                                content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[1], left_subs[1], col_size, left_subs[1])
+                                if right_info.pre_list:
+                                    content += self.update_prelist_str(right_info.pre_list, "    ")
+                                content += "    " + right_exp + ";\n"
+                                content += "    }\n"
+                            elif left_subs[1] == '*':
+                                content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0], row_size, left_subs[0])
+                                if right_info.pre_list:
+                                    content += self.update_prelist_str(right_info.pre_list, "    ")
+                                content += "    " + right_exp + ";\n"
+                                content += "    }\n"
+                            else:
+                                content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0], row_size, left_subs[0])
+                                content += "        for( int {}=1; {}<={}; {}++){{\n".format(left_subs[1], left_subs[1], col_size, left_subs[1])
+                                if right_info.pre_list:
+                                    content += self.update_prelist_str(right_info.pre_list, "        ")
+                                content += "        " + right_exp + ";\n"
+                                content += "        }\n"
+                                content += "    }\n"
                             # content += '\n'
                     elif len(left_subs) == 1:  # sequence only
                         sequence = left_ids[0]  # y left_subs[0]
