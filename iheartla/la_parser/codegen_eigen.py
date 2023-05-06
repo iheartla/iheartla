@@ -1750,7 +1750,7 @@ class CodeGenEigen(CodeGen):
             content_list.append("{}            return true;\n".format(prefix))
             content_list.append("{}        }}\n".format(prefix))
             content_list.append("{}    }}\n".format(prefix))
-            content_list.append("{}    return true;\n".format(prefix))
+            content_list.append("{}    return false;\n".format(prefix))
             content_list.append("}")
         elif la_type.is_vector():
             content_list.append("[](const {} &{}, const {} &{})\n".format(type_str, lhs, type_str, rhs))
@@ -1764,7 +1764,7 @@ class CodeGenEigen(CodeGen):
             content_list.append("{}        }}\n".format(prefix))
             content_list.append("{}        return true;\n".format(prefix))
             content_list.append("{}    }}\n".format(prefix))
-            content_list.append("{}    return true;\n".format(prefix))
+            content_list.append("{}    return false;\n".format(prefix))
             content_list.append("}")
         return content_list
 
