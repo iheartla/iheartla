@@ -79,13 +79,13 @@ class CodeGenEigen(CodeGen):
             type_list.append(cur_type)
         return "std::tuple< {} >".format(", ".join(type_list)) if len(type_list) > 1 else type_list[0]
 
-    def get_func_params_str(self, la_type, name_required=False):
+    def get_func_params_str(self, la_type, name_required=False, omit_template=False):
         param_list = []
         for index in range(len(la_type.params)):
             name_str = ''
             if name_required:
                 name_str = " {}{}".format(self.param_name_test, index)
-            param_list.append(self.get_ctype(la_type.params[index]) + name_str)
+            param_list.append(self.get_ctype(la_type.params[index], omit_template) + name_str)
         return ', '.join(param_list)
     
     def get_cur_dtype(self):
@@ -185,7 +185,7 @@ class CodeGenEigen(CodeGen):
         elif la_type.is_tuple():
             type_str = self.get_tuple_str(la_type)
         elif la_type.is_function():
-            type_str = "std::function<{}({})>".format(self.get_ctype(la_type.ret[0], omit_template), self.get_func_params_str(la_type))
+            type_str = "std::function<{}({})>".format(self.get_ctype(la_type.ret[0], omit_template), self.get_func_params_str(la_type, omit_template=omit_template))
         elif la_type.is_mesh():
             type_str = MESH_MAPPING_DICT[la_type.cur_mesh]
         else:
