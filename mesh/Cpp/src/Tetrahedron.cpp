@@ -18,12 +18,10 @@ void Tetrahedron::initialize(const MatrixXi &T){
 }
 void Tetrahedron::initialize(MatrixXi &T){
     // std::cout<<"T:"<<T<<std::endl;
-    MatrixXi new_T = preprocess_matrix(T);
     this->numerical_order = true;
-    this->T = new_T;
-    // std::cout<<"this->T:\n"<<this->T<<std::endl;
     // tets, assume each row (tet) already has the positive orientation
-    this->T = new_T;
+    // for tets, just accept the input directly, no need to call preprocess_matrix!!!
+    this->T = T;
     Vector maxVal = this->T.rowwise().maxCoeff();
     this->num_v = maxVal.maxCoeff()+1;
     this->create_faces();
