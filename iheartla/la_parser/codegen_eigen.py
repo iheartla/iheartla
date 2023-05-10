@@ -3120,7 +3120,7 @@ class CodeGenEigen(CodeGen):
         return self.builtin_module_dict[MESH_HELPER].instance_name
 
     def visit_fraction(self, node, **kwargs):
-        return CodeNodeInfo("({}/{}({}))".format(node.numerator, self.get_cur_dtype(), node.denominator))
+        return CodeNodeInfo("({}/double({}))".format(node.numerator, node.denominator))
 
     def visit_constant(self, node, **kwargs):
         content = ''
