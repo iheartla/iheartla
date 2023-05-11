@@ -58,21 +58,34 @@ You can also run as a command-line compiler:
 
 You can find releases on the GitHub [release page](https://github.com/iheartla/iheartla/releases). The following instructions are for running from source.
 
-I❤️LA depends on Python 3.x (>= Python 3.10) and several modules. You can install the modules via `pip`:
+I❤️LA depends on Python 3.x (>= Python 3.9) and several modules.
+
+### Pip
+
+Install the modules via `pip`:
 
     python3 -m venv .venv
     # activate your virtual environment via something like: source .venv/bin/activate
     
-    pip3 install tatsu==5.7.3 regex appdirs wxpython PyMuPDF==1.18.7 sympy
+    pip3 install -r requirements.txt
+    ## or directly
+    pip3 install tatsu==5.8.3 regex appdirs wxpython PyMuPDF sympy
+    
     ## For development, also install:
     pip3 install graphviz cppyy numpy scipy pyinstaller
 
-or install the [Poetry](https://python-poetry.org/) dependency manager and run:
+(2023-05-10: There is a known bug with Python >= 3.10 and wxpython 4.2.0's PDF viewer. It will be fixed in the next release of wxpython. For now, either run on Python 3.9, live without PDF rendering, compile top-of-tree wxpython yourself, or change `/` to `//` in `wx/lib/pdfviewer/viewer.py:354`.)
+
+### Poetry
+
+Install the [Poetry](https://python-poetry.org/) dependency manager and run:
 
     poetry install --no-root --no-dev
     poetry shell
 
-or via [Anaconda](https://www.anaconda.com/products/individual) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
+## Conda
+
+Install [Anaconda](https://www.anaconda.com/products/individual) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
 Miniconda is faster to install. (On Windows, choose the 64-bit Python 3.x version. Launch the Anaconda shell from the Start menu and navigate to this directory.)
 Then:
 
@@ -85,6 +98,7 @@ To update an already created environment if the `environment.yml` file changes o
 If you are developing I❤️LA, the test suite needs a working C++ compiler and, optionally, the Graphviz graph visualization software (`brew install graphviz` if you're not using conda).
 
 In wxPython 4.2.0, the pdf viewer has a bug, and it won't work. You need to manually change `line 358/360` to make sure `self.Ypagepixels` is assigned as `int` in the source code (`python3.10/site-packages/wx/lib/pdfviewer/viewer.py`)
+
 ### Output Dependencies
 
 To use the code output for the various backends, you will need:
