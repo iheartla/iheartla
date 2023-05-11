@@ -74,7 +74,7 @@ Install the modules via `pip`:
     ## For development, also install:
     pip3 install graphviz cppyy numpy scipy pyinstaller
 
-(2023-05-10: There is a known bug with Python >= 3.10 and wxpython 4.2.0's PDF viewer. It will be fixed in the next release of wxpython. For now, either run on Python 3.9, live without PDF rendering, compile top-of-tree wxpython yourself, or change `/` to `//` in `wx/lib/pdfviewer/viewer.py:354`.)
+(2023-05-10: There is a known bug with Python >= 3.10 and wxPython 4.2.0's PDF viewer. It will be fixed in the next release of wxPython. For now, either run on Python 3.9, live without PDF rendering, compile top-of-tree wxPython yourself, or change `/` to `//` in `wx/lib/pdfviewer/viewer.py:354` (so that `self.Ypagepixels` is an `int`). The relevant commit is [here](https://github.com/wxWidgets/Phoenix/commit/aa4394773a8696444ce5d8a90273d67796e499d0).)
 
 ### Poetry
 
@@ -83,7 +83,7 @@ Install the [Poetry](https://python-poetry.org/) dependency manager and run:
     poetry install --no-root --no-dev
     poetry shell
 
-## Conda
+### Conda
 
 Install [Anaconda](https://www.anaconda.com/products/individual) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
 Miniconda is faster to install. (On Windows, choose the 64-bit Python 3.x version. Launch the Anaconda shell from the Start menu and navigate to this directory.)
@@ -97,9 +97,7 @@ To update an already created environment if the `environment.yml` file changes o
 
 If you are developing I❤️LA, the test suite needs a working C++ compiler and, optionally, the Graphviz graph visualization software (`brew install graphviz` if you're not using conda).
 
-In wxPython 4.2.0, the pdf viewer has a bug, and it won't work. You need to manually change `line 358/360` to make sure `self.Ypagepixels` is assigned as `int` in the source code (`python3.10/site-packages/wx/lib/pdfviewer/viewer.py`)
-
-### Output Dependencies
+## Output Dependencies
 
 To use the code output for the various backends, you will need:
 
@@ -109,11 +107,11 @@ To use the code output for the various backends, you will need:
 * C++: Eigen. Compilation differs on different platforms. On macOS with Homebrew eigen: `c++ -I/usr/local/eigen3 output.cpp -o output`
 * MATLAB: MATLAB or (untested) Octave
 
-### Unicode Fonts
+## Unicode Fonts
 
 `DejaVu Sans Mono` is a font with good Unicode support. Windows users should install it. You can download it [here](https://dejavu-fonts.github.io/Download.html). The I❤️LA GUI will use it if installed.
 
-### Packaging a release
+## Packaging a release
 
 To update the browser-based compiler, run `python3 setup.py sdist bdist_wheel` and then copy `dist/iheartla-0.0.1-py3-none-any.whl` to the `docs` directory.
 
