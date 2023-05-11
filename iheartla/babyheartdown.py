@@ -150,6 +150,6 @@ efg'''
 
 if __name__ == '__main__':
     import pytest
-    print( "Debug the following by running: python -m pytest --pdb flat_metrics.py" )
+    print( "Debug the following by running: python3 -m pytest --pdb babyheartdown.py" )
     import pytest
     pytest.main([__file__])
