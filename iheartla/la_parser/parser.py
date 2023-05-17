@@ -517,13 +517,13 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
         # other type
         if parser_type is None:
             parser_type = ParserTypeEnum.NUMPY
-        if ConfMgr.getInstance().has_de:
-            code_frame = walk_model(parser_type, type_walker, start_node, func_name, struct=True, class_only=CLASS_ONLY)
-            if parser_type == ParserTypeEnum.EIGEN:
-                code_frame.include += "#include <igl/readOFF.h>\n"
-            res = code_frame.desc + code_frame.include + code_frame.struct
-        else:
-            res = walk_model(parser_type, type_walker, start_node, func_name, class_only=CLASS_ONLY)
+        # if ConfMgr.getInstance().has_de:
+        #     code_frame = walk_model(parser_type, type_walker, start_node, func_name, struct=True, class_only=CLASS_ONLY)
+        #     if parser_type == ParserTypeEnum.EIGEN:
+        #         code_frame.include += "#include <igl/readOFF.h>\n"
+        #     res = code_frame.desc + code_frame.include + code_frame.struct
+        # else:
+        res = walk_model(parser_type, type_walker, start_node, func_name, class_only=CLASS_ONLY)
         return res, 0
     if DEBUG_MODE:
         result = get_parse_result(parser_type)
@@ -634,9 +634,9 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
     """
     # Alec: maybe this compile_la_file should just call compile_la_content after
     # reading the content?
-    ConfMgr.getInstance().set_source(la_file)
-    ConfMgr.getInstance().set_conf(conf_file)
-    ConfMgr.getInstance().parse()
+    # ConfMgr.getInstance().set_source(la_file)
+    # ConfMgr.getInstance().set_conf(conf_file)
+    # ConfMgr.getInstance().parse()
     if la_file == "-":
         content = "\n".join(sys.stdin.readlines())
         base_name = CLASS_NAME
@@ -673,7 +673,7 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
         # *.m with a main function called * and a sub function
         # generateRandomData. When called with no arguments (nargin == 0),
         # it will issue a warning and run with random data.
-        cur_contents = compile_la_content(content, list( type2suffix.vals() ), base_name, class_only=class_only)
+        cur_contents = compile_la_content(content, parser_type, base_name, class_only=class_only)
         for cur_type, cur_content in cur_contents.items():
             cur_file_name = Path(la_file).with_suffix(type2suffix[cur_type])
             write_output(cur_content, cur_file_name)
