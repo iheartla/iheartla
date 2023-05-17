@@ -24,7 +24,7 @@ start_time = None
 INPUT_HISTORY = "input_history"
 OUTPUT_CODE = "output_code"
 IMG_CODE = "."
-CLASS_NAME = "iheartmesh"   # class name for generated code
+CLASS_NAME = "heartlib"   # class name for generated code
 class ParserTypeEnum(Flag):
     INVALID = 0
     # DEFAULT = 15
