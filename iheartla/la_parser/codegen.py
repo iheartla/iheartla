@@ -5,10 +5,11 @@ import copy
 
 
 class CodeFrame(object):
-    def __init__(self, parse_type=None, desc='', include='', struct='', rand_data='', main=''):
+    def __init__(self, parse_type=None, desc='', include='', struct='', rand_data='', main='', namespace=''):
         self.parse_type = parse_type
         self.desc = desc            # comment for iheartla file
         self.include = include      # headers
+        self.namespace = namespace  # using namespace
         self.struct = struct        # return structure
         self.rand_data = rand_data  # random data
         self.main = main            # main function
@@ -23,11 +24,11 @@ class CodeFrame(object):
     def get_code(self):
         content = ''
         if self.parse_type == ParserTypeEnum.EIGEN:
-            content = self.desc + self.include + self.extra_include + self.get_extra_func_impl() + self.struct + '\n\n' + self.rand_data + '\n\n\n' + self.main
+            content = self.desc + self.include + self.extra_include + self.namespace + self.get_extra_func_impl() + self.struct + '\n\n' + self.rand_data + '\n\n\n' + self.main
         elif self.parse_type == ParserTypeEnum.NUMPY:
-            content = self.desc + self.include + self.extra_include + self.get_extra_func_impl() + self.struct + '\n\n' + self.rand_data + '\n\n\n' + self.main
+            content = self.desc + self.include + self.extra_include + self.namespace + self.get_extra_func_impl() + self.struct + '\n\n' + self.rand_data + '\n\n\n' + self.main
         elif self.parse_type == ParserTypeEnum.MATLAB:
-            content = self.extra_include + self.get_extra_func_impl() + self.struct  # struct already contains everything
+            content = self.extra_include + self.namespace + self.get_extra_func_impl() + self.struct  # struct already contains everything
         elif self.parse_type == ParserTypeEnum.LATEX:
             content = self.main
         elif self.parse_type == ParserTypeEnum.MATHJAX:

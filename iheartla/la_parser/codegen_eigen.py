@@ -23,6 +23,7 @@ class CodeGenEigen(CodeGen):
             self.pre_str += '#include <boost/numeric/odeint.hpp>\n'
             self.pre_str += 'using namespace boost::numeric::odeint;\n'
         self.pre_str += '#include "type_helper.h"\n'
+        self.code_frame.namespace = 'using namespace iheartmesh;\n'
         self.code_frame.desc = '/*\n{}\n*/\n'''.format(self.la_content)
         self.code_frame.include = self.pre_str
         self.double_type = ""          # double type
