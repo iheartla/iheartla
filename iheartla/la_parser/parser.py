@@ -75,7 +75,7 @@ def get_codegen(parser_type):
     return _codegen_dict[parser_type]
 
 
-def walk_model(parser_type, type_walker, node_info, func_name=None, struct=False, class_only=False):
+def walk_model(parser_type, type_walker, node_info, func_name=None, struct=False, class_only=CLASS_ONLY):
     gen = get_codegen(parser_type)
     #
     gen.init_type(type_walker, func_name)
@@ -256,7 +256,7 @@ def get_compiled_module(module_name, parser_type, class_only):
         print("Saved module found: {}".format(module_name))
     return tmp_type_walker, pre_frame
 
-def get_new_parser(start_node, current_content, type_walker, skipped_module=False, parser_type=ParserTypeEnum.EIGEN, class_only=False):
+def get_new_parser(start_node, current_content, type_walker, skipped_module=False, parser_type=ParserTypeEnum.EIGEN, class_only=CLASS_ONLY):
     """
     Get the new parser based on information from start_node
     :param start_node:
@@ -440,7 +440,7 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
     return parser, existed_syms_dict, module_list, dependent_modules, module_param_list, module_sym_list
 
 
-def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=None, type_walker=None, class_only=False):
+def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=None, type_walker=None, class_only=CLASS_ONLY):
     record("parse_ir_node")
     global _grammar_content
     current_content = _grammar_content
@@ -565,7 +565,7 @@ def compile_la_content(la_content,
                        struct=False,
                        get_json=False,
                        get_vars=False,
-                       class_only=False):
+                       class_only=CLASS_ONLY):
     set_source_name(func_name)
     if path:
         global _module_path
@@ -628,7 +628,7 @@ def compile_la_content(la_content,
 
 
 def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN | ParserTypeEnum.LATEX,
-                       class_only=False, conf_file=None):
+                       class_only=CLASS_ONLY, conf_file=None):
     """
     used for command line
     """
