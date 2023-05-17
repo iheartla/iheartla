@@ -121,6 +121,8 @@ class CodeGenLatex(CodeGen):
             content = '\\pi'
         elif node.c_type == ConstantType.ConstantE:
             content = 'e'
+        elif node.c_type == ConstantType.ConstantInf:
+            content = '\\infty'
         return content
 
     def visit_double(self, node, **kwargs):
