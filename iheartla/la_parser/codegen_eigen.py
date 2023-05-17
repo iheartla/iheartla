@@ -397,9 +397,10 @@ class CodeGenEigen(CodeGen):
             original_dtype = "autodiff::var"
             original_mdtype = "Eigen::Matrix<autodiff::var, Eigen::Dynamic, Eigen::Dynamic>"
             original_vdtype = "Eigen::Matrix<autodiff::var, Eigen::Dynamic, 1>"
-        content = ["using {} = {};\nusing {} = {};\nusing {} = {};".format(self.double_type, original_dtype, self.matrixd_type, original_mdtype,
-                                                                                  self.vectord_type, original_vdtype),
+        content = [
                    "struct {} {{".format(self.get_result_type()),
+                   "    using {} = {};\n    using {} = {};\n    using {} = {};".format(self.double_type, original_dtype, self.matrixd_type, original_mdtype,
+                                                                                  self.vectord_type, original_vdtype),
                    "{}".format('\n'.join(item_list)),
                    init_content,
                    self.local_func_def,
