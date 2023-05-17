@@ -9,11 +9,12 @@ namespace iheartmesh {
 
 std::vector<std::vector<size_t>> GetPointNeighbors(std::vector<Eigen::VectorXd>& P, int k){
     std::unique_ptr<PointCloudWrapper> impl;
-    impl.reset(new PointCloudWrapper(P, k));
+    impl.reset(new PointCloudWrapper(P));
     std::vector<std::vector<size_t>> neighbors(P.size());
     for (int i = 0; i < P.size(); ++i)
     {
         neighbors[i] = impl->kNearestNeighbors(i, k);
+        // std::cout<<"i: "<<i<<", neighbors: "<<neighbors[i].size()<<std::endl;
         // if (i == 0)
         // {
         //     for (int m = 0; m < neighbors[i].size(); ++m)
@@ -28,6 +29,19 @@ std::vector<std::vector<size_t>> GetPointNeighbors(std::vector<Eigen::VectorXd>&
         //         std::cout<<"v: "<<m<<", radius neighbors:"<<nn[m]<<std::endl;
         //     }
         // }
+    }
+
+    return neighbors;
+}
+
+
+std::vector<std::vector<size_t>> GetPointNeighbors(std::vector<Eigen::VectorXd>& P, double rad){
+    std::unique_ptr<PointCloudWrapper> impl;
+    impl.reset(new PointCloudWrapper(P));
+    std::vector<std::vector<size_t>> neighbors(P.size());
+    for (int i = 0; i < P.size(); ++i)
+    {
+        neighbors[i] = impl->radiusSearch(P[i], rad);
     }
 
     return neighbors;
@@ -55,7 +69,9 @@ PointCloud::PointCloud(std::vector<Eigen::VectorXd>& P, std::vector<std::vector<
         }
         /* code */
     }
+    // std::cout<<"this->E is:"<<this->E.rows()<<std::endl;
     this->E = preprocess_matrix(this->E);
+    // std::cout<<"processed this->E:"<<this->E.rows()<<std::endl;
     for (int i = 0; i < this->E.rows(); ++i)
     {
         this->map_e.insert(std::pair<key_e, int>(std::make_tuple(this->E(i, 0), this->E(i, 1)), i));
@@ -95,7 +111,7 @@ PointCloud::PointCloud(std::vector<Eigen::VectorXd>& P, std::vector<std::vector<
 // 	this->build_boundary_mat1();
 // }
 
-PointCloudWrapper::PointCloudWrapper(std::vector<Eigen::VectorXd>& P, int k)
+PointCloudWrapper::PointCloudWrapper(std::vector<Eigen::VectorXd>& P)
 : data{P}, 
 tree(3, data){
     tree.buildIndex();

@@ -23,7 +23,7 @@ typedef nanoflann::KDTreeSingleIndexAdaptor<nanoflann::L2_Simple_Adaptor<double,
 
 class PointCloudWrapper {
 public:
-  PointCloudWrapper(std::vector<Eigen::VectorXd>& P, int k=10);
+  PointCloudWrapper(std::vector<Eigen::VectorXd>& P);
   ~PointCloudWrapper();
   MPoint data;
   MESH_KD_Tree_T tree;
@@ -33,6 +33,7 @@ public:
 };
 
 std::vector<std::vector<size_t>> GetPointNeighbors(std::vector<Eigen::VectorXd>& P, int k=10);
+std::vector<std::vector<size_t>> GetPointNeighbors(std::vector<Eigen::VectorXd>& P, double rad=0.1);
 
 
 class PointCloud: public Connectivity {
