@@ -44,7 +44,8 @@ import io
 _id_pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*")
 _backtick_pattern = re.compile("`[^`]*`")
 _codegen_dict = {}
-_module_path = Path.home() / 'Downloads'
+_builtin_module_path = Path(__file__).parent.parent / 'mesh'    # default module path, fixed
+_module_path = Path(__file__).parent.parent / 'mesh'            # default module path, can be updated as the same directory of the source file
 
 class VarData(object):
     def __init__(self, params=None, lhs=None, ret=None):
@@ -231,7 +232,10 @@ def get_start_node(model):
 def get_compiled_module(module_name, parser_type, class_only):
     # compile module content
     # Init parser
-    module_file = "{}/{}.ihla".format(_module_path, module_name)
+    module_file = "{}/{}.ihla".format(_builtin_module_path, module_name)
+    if not Path(module_file).exists():
+        # if not in builtin directory, then find it from the input directory
+        module_file = "{}/{}.ihla".format(_module_path, module_name)
     cur_time = os.path.getmtime(Path(module_file))
     tmp_type_walker = None
     if CACHE_MODULE:
