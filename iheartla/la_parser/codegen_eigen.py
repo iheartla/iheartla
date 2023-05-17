@@ -3128,6 +3128,8 @@ class CodeGenEigen(CodeGen):
             content = 'M_PI'
         elif node.c_type == ConstantType.ConstantE:
             content = 'M_E'
+        elif node.c_type == ConstantType.ConstantInf:
+            content = 'INFINITY'
         return CodeNodeInfo(content)
 
     ###################################################################

@@ -112,6 +112,11 @@ pi::Pi
     /π/
     ;
 
+infinity::Infinity
+    = 
+    /∞/
+    ;
+
 e::E
     = 
     /e/

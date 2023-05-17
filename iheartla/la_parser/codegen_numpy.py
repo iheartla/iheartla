@@ -2228,6 +2228,8 @@ class CodeGenNumpy(CodeGen):
             content = 'np.pi'
         elif node.c_type == ConstantType.ConstantE:
             content = 'np.e'
+        elif node.c_type == ConstantType.ConstantInf:
+            content = 'np.inf'
         return CodeNodeInfo(content)
 
     ###################################################################

@@ -1352,6 +1352,7 @@ class ConstantType(Enum):
     ConstantInvalid = -1
     ConstantPi = 0
     ConstantE = 1
+    ConstantInf = 2
 
 
 class ConstantNode(ExprNode):

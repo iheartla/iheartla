@@ -4063,7 +4063,7 @@ class grammardefaultParser(Parser):
                 '<function_operator>'
                 '<hadamard_product_in_matrix_operator>'
                 '<identifier> <identifier_alone>'
-                '<identifier_with_subscript>'
+                '<identifier_with_subscript> <infinity>'
                 '<inner_product_operator> <integer>'
                 '<integral_operator>'
                 '<kronecker_product_in_matrix_operator>'
@@ -4088,7 +4088,7 @@ class grammardefaultParser(Parser):
                 'matrix max mesh min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tets tuple vector'
-                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'vertices where with π ℝ ℤ ∇ ∈ ∞ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -4234,7 +4234,7 @@ class grammardefaultParser(Parser):
                 '<function_operator>'
                 '<hadamard_product_in_matrix_operator>'
                 '<identifier> <identifier_alone>'
-                '<identifier_with_subscript>'
+                '<identifier_with_subscript> <infinity>'
                 '<inner_product_operator> <integer>'
                 '<integral_operator>'
                 '<kronecker_product_in_matrix_operator>'
@@ -4259,7 +4259,7 @@ class grammardefaultParser(Parser):
                 'matrix max mesh min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tets tuple vector'
-                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'vertices where with π ℝ ℤ ∇ ∈ ∞ ⊂ 𝕕'
             )
 
     @tatsumasu('FroProduct')
@@ -4415,7 +4415,7 @@ class grammardefaultParser(Parser):
                 '<function_operator>'
                 '<hadamard_product_in_matrix_operator>'
                 '<identifier> <identifier_alone>'
-                '<identifier_with_subscript>'
+                '<identifier_with_subscript> <infinity>'
                 '<inner_product_operator> <integer>'
                 '<integral_operator>'
                 '<kronecker_product_in_matrix_operator>'
@@ -4440,7 +4440,7 @@ class grammardefaultParser(Parser):
                 'matrix max mesh min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tets tuple vector'
-                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'vertices where with π ℝ ℤ ∇ ∈ ∞ ⊂ 𝕕'
             )
 
     @tatsumasu('Summation')
@@ -5095,6 +5095,10 @@ class grammardefaultParser(Parser):
     @tatsumasu('Pi')
     def _pi_(self):  # noqa
         self._pattern('π')
+
+    @tatsumasu('Infinity')
+    def _infinity_(self):  # noqa
+        self._pattern('∞')
 
     @tatsumasu('E')
     def _e_(self):  # noqa
@@ -7308,7 +7312,7 @@ class grammardefaultParser(Parser):
                 '<function_operator> <gradient>'
                 '<hadamard_product_operator> <identifier>'
                 '<identifier_alone>'
-                '<identifier_with_subscript>'
+                '<identifier_with_subscript> <infinity>'
                 '<inner_product_operator> <integer>'
                 '<integral_operator> <intersect_operator>'
                 '<kronecker_product_operator> <laplacian>'
@@ -7335,7 +7339,8 @@ class grammardefaultParser(Parser):
                 'matrix max mesh min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tets tuple vector'
-                'vertices where with π ℝ ℤ ∂ ∇ ∈ ∑ √ ⊂ 𝕕'
+                'vertices where with π ℝ ℤ ∂ ∇ ∈ ∑ √ ∞ ⊂'
+                '𝕕'
             )
 
     @tatsumasu()
@@ -7367,21 +7372,21 @@ class grammardefaultParser(Parser):
                 '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
                 '<WITH> <constant> <digit> <double>'
                 '<floating_point> <fraction>'
-                '<identifier_alone> <integer> <mantissa>'
-                '<number> <pi> <subexpression> Mesh SOLVE'
-                'Solve [Ee]dge[Ss]et [Ff]ace[Ss]et'
-                '[Pp]oint [Cc]loud [Pp]oint[Cc]loud'
-                '[Pp]olygon[Mm]esh [Pp]olyhedral[Mm]esh'
-                '[Ss]implicial[Ss]et [Tt]et[Ss]et'
-                '[Tt]etrahedral[Mm]esh [Tt]riangle[Mm]esh'
-                '[Vv]ertex[Ss]et'
+                '<identifier_alone> <infinity> <integer>'
+                '<mantissa> <number> <pi> <subexpression>'
+                'Mesh SOLVE Solve [Ee]dge[Ss]et'
+                '[Ff]ace[Ss]et [Pp]oint [Cc]loud'
+                '[Pp]oint[Cc]loud [Pp]olygon[Mm]esh'
+                '[Pp]olyhedral[Mm]esh [Ss]implicial[Ss]et'
+                '[Tt]et[Ss]et [Tt]etrahedral[Mm]esh'
+                '[Tt]riangle[Mm]esh [Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as edges exp faces for'
                 'from given if index initial int ln log'
                 'matrix max mesh min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tets tuple vector'
-                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'vertices where with π ℝ ℤ ∇ ∈ ∞ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -7391,10 +7396,20 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._pi_()
                 with self._option():
+                    self._infinity_()
+                with self._option():
                     self._e_()
                 self._error('no available options')
         else:
-            self._pi_()
+            with self._choice():
+                with self._option():
+                    self._pi_()
+                with self._option():
+                    self._infinity_()
+                self._error(
+                    'expecting one of: '
+                    '<infinity> <pi> π ∞'
+                )
 
     @tatsumasu()
     def _KEYWORDS_(self):  # noqa
@@ -10363,6 +10378,9 @@ class grammardefaultSemantics:
     def pi(self, ast):  # noqa
         return ast
 
+    def infinity(self, ast):  # noqa
+        return ast
+
     def e(self, ast):  # noqa
         return ast
 
@@ -11116,6 +11134,11 @@ class SizeOp(ModelBase):
 
 @dataclass(eq=False)
 class Pi(ModelBase):
+    pass
+
+
+@dataclass(eq=False)
+class Infinity(ModelBase):
     pass
 
 

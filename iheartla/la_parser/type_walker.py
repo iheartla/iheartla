@@ -3939,6 +3939,13 @@ class TypeWalker(NodeWalker):
         node_info.ir = ir_node
         return node_info
 
+    def walk_Infinity(self, node, **kwargs):
+        node_info = NodeInfo(ScalarType())
+        ir_node = ConstantNode(ConstantType.ConstantInf, parse_info=node.parseinfo, raw_text=node.text)
+        ir_node.la_type = node_info.la_type
+        node_info.ir = ir_node
+        return node_info
+
     def walk_E(self, node, **kwargs):
         node_info = NodeInfo(ScalarType())
         ir_node = ConstantNode(ConstantType.ConstantE, parse_info=node.parseinfo, raw_text=node.text)

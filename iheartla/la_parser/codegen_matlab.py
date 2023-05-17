@@ -2217,6 +2217,8 @@ class CodeGenMatlab(CodeGen):
             content = 'pi'
         elif node.c_type == ConstantType.ConstantE:
             content = 'exp(1)'
+        elif node.c_type == ConstantType.ConstantInf:
+            content = 'inf'
         return CodeNodeInfo(content)
 
     ###################################################################

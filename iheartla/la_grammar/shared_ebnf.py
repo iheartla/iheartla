@@ -165,6 +165,7 @@ sub_factor
 constant
     =
     pi
+    | infinity
     ;
 
 KEYWORDS

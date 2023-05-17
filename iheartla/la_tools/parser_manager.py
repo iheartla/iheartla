@@ -382,12 +382,22 @@ class ParserFileManager(object):
                 funcs_list.remove('e')
                 constant_original = r"""@tatsumasu()
     def _constant_(self):  # noqa
-        self._pi_()"""
+        with self._choice():
+            with self._option():
+                self._pi_()
+            with self._option():
+                self._infinity_()
+            self._error(
+                'expecting one of: '
+                '<infinity> <pi> π ∞'
+            )"""
                 constant_new = r"""@tatsumasu()
     def _constant_(self):  # noqa
         with self._choice():
             with self._option():
                 self._pi_()
+            with self._option():
+                self._infinity_()
             with self._option():
                 self._e_()
             self._error('no available options')"""
@@ -743,7 +753,15 @@ class ParserFileManager(object):
                 #
                 constant_original = r"""@tatsumasu()
     def _constant_(self):  # noqa
-        self._pi_()"""
+        with self._choice():
+            with self._option():
+                self._pi_()
+            with self._option():
+                self._infinity_()
+            self._error(
+                'expecting one of: '
+                '<infinity> <pi> π ∞'
+            )"""
                 constant_new = r"""@tatsumasu()
     def _constant_(self):  # noqa
         if self.const_e:
@@ -751,10 +769,20 @@ class ParserFileManager(object):
                 with self._option():
                     self._pi_()
                 with self._option():
+                    self._infinity_()
+                with self._option():
                     self._e_()
                 self._error('no available options')
         else:
-            self._pi_()"""
+            with self._choice():
+                with self._option():
+                    self._pi_()
+                with self._option():
+                    self._infinity_()
+                self._error(
+                    'expecting one of: '
+                    '<infinity> <pi> π ∞'
+                )"""
                 def_parser = def_parser.replace(constant_original, constant_new)
                 keywords_original = r"""@tatsumasu()
     def _KEYWORDS_(self):  # noqa
