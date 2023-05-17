@@ -110,7 +110,7 @@ void Tetrahedron::create_faces(){
         }
     }
     this->F = remove_duplicate_rows(sort_matrix(F));
-    std::cout<<"this->F:\n"<<this->F<<std::endl;
+    // std::cout<<"this->F:\n"<<this->F<<std::endl;
     // create the mapping
     for (int i=0; i<this->F.rows(); i++) {
         this->map_f.insert(std::pair<key_f, int>(std::make_tuple(this->F(i,0), this->F(i,1), this->F(i,2)), i));
