@@ -1,10 +1,11 @@
-#ifndef PolygonMesh_h
-#define PolygonMesh_h
+#pragma once
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <map>
-#include "simplicial_set.h"
 #include "Connectivity.h"
+
+namespace iheartmesh {
 
 class PolygonMesh: public Connectivity {
 public:
@@ -36,4 +37,4 @@ public:
     int max_degree;   // max vertices in a face
 };
 
-#endif
+}

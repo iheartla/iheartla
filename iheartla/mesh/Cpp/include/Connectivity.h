@@ -1,9 +1,11 @@
-#ifndef Connectivity_h
-#define Connectivity_h
+#pragma once
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <map>
-#include "simplicial_set.h"
+
+namespace iheartmesh {
+
 using Eigen::MatrixXi;
 using Eigen::VectorXi;
 using Eigen::SparseMatrix;
@@ -54,4 +56,4 @@ public:
     Eigen::SparseMatrix<int> pos_bm3; // |F|x|T|
 };
 
-#endif
+}

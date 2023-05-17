@@ -6,6 +6,8 @@
 #include "dec_util.h"
 #include "PolygonMesh.h"
 
+namespace iheartmesh {
+
 PolygonMesh::PolygonMesh(){
 
 }
@@ -136,4 +138,6 @@ std::tuple<Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > PolygonMesh::Bou
 
 std::tuple<Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > PolygonMesh::UnsignedBoundaryMatrices() const{
     return std::tuple< Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> >(this->pos_bm1, this->pos_bm2);
+}
+
 }

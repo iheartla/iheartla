@@ -5,6 +5,8 @@
 #include "dec_util.h"
 #include "Connectivity.h"
 
+namespace iheartmesh {
+
 Connectivity::Connectivity(){
 
 } 
@@ -131,4 +133,5 @@ int Connectivity::get_edge_index(int i, int j){
     }
     return this->map_e[std::make_tuple(j, i)];
 } 
- 
+
+}

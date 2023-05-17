@@ -4,13 +4,13 @@
 //
 //  Created by pressure on 10/31/22.
 //
-#pragma once
-
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include "dec_util.h"
 // using Eigen::Matrix;
 // using Eigen::Vector;
+
+namespace iheartmesh {
 
 typedef Eigen::Matrix< int, Eigen::Dynamic, 1> Vector;
 typedef Eigen::Matrix< int, 1, Eigen::Dynamic> RowVector;
@@ -208,4 +208,6 @@ void print_vec(const std::vector<int>& source){
         std::cout << source[i] << ", ";
     }
     std::cout << std::endl;
+}
+
 }

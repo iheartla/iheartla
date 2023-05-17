@@ -1,11 +1,12 @@
-#ifndef PointCloud_h
-#define PointCloud_h
+#pragma once
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <map>
-#include "simplicial_set.h"
 #include "Connectivity.h"
 #include "nanoflann.hpp"
+
+namespace iheartmesh {
 
 struct MPoint {
   std::vector<Eigen::VectorXd> points;
@@ -50,4 +51,4 @@ public:
 };
 
 
-#endif
+}

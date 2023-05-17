@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Eigen/Core>
 #include <Eigen/QR>
 #include <Eigen/Dense>
@@ -10,6 +11,9 @@
 #include <autodiff/reverse/var.hpp>
 #include <autodiff/reverse/var/eigen.hpp>
 #include <type_traits>
+
+namespace iheartmesh {
+
 using namespace autodiff;
 
 // double/var to var
@@ -185,4 +189,6 @@ DT to_dt(autodiff::var &param){
 		return to_var(param);
 	}
 	return to_double(param);
+}
+
 }

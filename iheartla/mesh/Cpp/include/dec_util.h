@@ -14,6 +14,8 @@
 // using Eigen::Matrix;
 // using Eigen::Vector;
 
+namespace iheartmesh {
+
 typedef Eigen::Matrix< int, Eigen::Dynamic, 1> Vector;
 typedef Eigen::Matrix< int, 1, Eigen::Dynamic> RowVector;
 typedef Eigen::Matrix< int, Eigen::Dynamic, Eigen::Dynamic> Matrix;
@@ -49,3 +51,5 @@ Matrix preprocess_matrix(const Matrix &source);
 void print_set(const std::set<int>& source);
 
 void print_vec(const std::vector<int>& source);
+
+}

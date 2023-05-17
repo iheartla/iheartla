@@ -5,13 +5,14 @@
 //  Created by pressure on 10/31/22.
 //
 
-#ifndef TriangleMesh_h
-#define TriangleMesh_h
+#pragma once
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <map>
-#include "simplicial_set.h"
 #include "Connectivity.h"
+
+namespace iheartmesh {
 
 class TriangleMesh: public Connectivity {
 public:
@@ -35,4 +36,4 @@ public:
     bool numerical_order;       // whether the indices are stored as numerical order in edges/faces
 };
 
-#endif /* TriangleMesh_h */
+}
