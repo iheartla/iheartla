@@ -43,8 +43,9 @@ class MidPanel(wx.Panel):
         self.cur_type = panel_type
         self.update_panel()
 
-    def get_content(self, panel_type):
-        return self.panel_dict[self.cur_type].GetValue()
+    def get_content(self, panel_type = None):
+        if panel_type is None: panel_type = self.cur_type
+        return self.panel_dict[panel_type].GetValue()
 
     def update_panel(self):
         self.py_ctrl.Hide()

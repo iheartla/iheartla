@@ -21,10 +21,8 @@ from ..la_tools.la_msg import *
 class FileType(Enum):
     INVALID = -1
     LA = 0
-    NUMPY = 1
-    EIGEN = 2
+    CODE = 1
     LATEX = 3
-
 
 class MainWindow(wx.Frame):
     def __init__(self, parent, title):
@@ -46,8 +44,7 @@ class MainWindow(wx.Frame):
         item_open = menu_file.Append(wx.ID_OPEN, "&Open LA file\tCTRL+O", " Open a file to edit")
         item_save_default_la = menu_file.Append(wx.NewId(), "&Save LA\tCTRL+S", " Save LA code")
         item_save_la = menu_file.Append(wx.NewId(), "&Save LA As...", " Save LA code to a file")
-        item_save_python = menu_file.Append(wx.NewId(), "&Save Numpy As...", " Save Numpy code to a file")
-        item_save_eigen = menu_file.Append(wx.NewId(), "&Save Eigen As...", " Save Eigen code to a file")
+        item_save_code = menu_file.Append(wx.NewId(), "&Save Code As...", " Save middle panel code to a file")
         item_save_tex = menu_file.Append(wx.NewId(), "&Save Latex As...", " Save Latex code to a file")
         item_about = menu_file.Append(wx.ID_ABOUT, "&About", " Information about this program")
         menu_run = wx.Menu()
@@ -88,8 +85,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnOpen, item_open)
         self.Bind(wx.EVT_MENU, self.OnSaveLADefault, item_save_default_la)
         self.Bind(wx.EVT_MENU, self.OnSaveLA, item_save_la)
-        self.Bind(wx.EVT_MENU, self.OnSavePython, item_save_python)
-        self.Bind(wx.EVT_MENU, self.OnSaveEigen, item_save_eigen)
+        self.Bind(wx.EVT_MENU, self.OnSaveCode, item_save_code)
         self.Bind(wx.EVT_MENU, self.OnSaveTex, item_save_tex)
         # Edit
         self.Bind(wx.EVT_MENU, self.OnUndo, self.undo_item)
@@ -321,11 +317,8 @@ E: { ℤ × ℤ }''')
     def OnSaveLA(self, e):
         self.save_content(FileType.LA)
 
-    def OnSavePython(self, e):
-        self.save_content(FileType.NUMPY)
-
-    def OnSaveEigen(self, e):
-        self.save_content(FileType.EIGEN)
+    def OnSaveCode(self, e):
+        self.save_content(FileType.CODE)
 
     def OnSaveTex(self, e):
         self.save_content(FileType.LATEX)
@@ -390,10 +383,8 @@ E: { ℤ × ℤ }''')
     def save_content(self, file_type):
         if file_type == FileType.LA:
             tips = "Save LA code"
-        elif file_type == FileType.EIGEN:
-            tips = "Save Eigen code"
-        elif file_type == FileType.NUMPY:
-            tips = "Save Numpy code"
+        elif file_type == FileType.CODE:
+            tips = "Save code from middle panel"
         elif file_type == FileType.LATEX:
             tips = "Save Latex code"
         with wx.FileDialog(self, tips,
