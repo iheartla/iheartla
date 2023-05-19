@@ -231,10 +231,10 @@ def get_start_node(model):
 def get_compiled_module(module_name, parser_type, class_only):
     # compile module content
     # Init parser
-    module_file = "{}/{}.ihla".format(_builtin_module_path, module_name)
+    module_file = "{}/{}.hlang".format(_builtin_module_path, module_name)
     if not Path(module_file).exists():
         # if not in builtin directory, then find it from the input directory
-        module_file = "{}/{}.ihla".format(_module_path, module_name)
+        module_file = "{}/{}.hlang".format(_module_path, module_name)
     cur_time = os.path.getmtime(Path(module_file))
     tmp_type_walker = None
     if CACHE_MODULE:
