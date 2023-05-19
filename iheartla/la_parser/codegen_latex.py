@@ -60,7 +60,7 @@ class CodeGenLatex(CodeGen):
         if '∂' in name:
             # "\mathit{∂}" is invalid
             return name
-        return "\\mathit{{{}}}".format(name)
+        return "\\mathit{{{}}}".format(name) if len(name) > 1 else name
 
     def convert_special_syms(self, param):
         special_list = ['_', '&', '^', '%', '$', '#', '{', '}']
@@ -416,7 +416,7 @@ class CodeGenLatex(CodeGen):
         if node.op == MulOpType.MulOpDot:
             return self.visit(node.left, **kwargs) + " \\cdot " + self.visit(node.right, **kwargs)
         else:
-            return self.visit(node.left, **kwargs) + " \\enspace " + self.visit(node.right, **kwargs)
+            return self.visit(node.left, **kwargs) + " " + self.visit(node.right, **kwargs)
 
     def visit_div(self, node, **kwargs):
         if node.op == DivOpType.DivOpSlash:
@@ -778,7 +778,7 @@ class CodeGenLatex(CodeGen):
         content = ', '.join(content_list)
         if node.enum_list and len(node.enum_list) > 0:
             kwargs['is_sub'] = True
-            sub = ','.join(["\\mathit{{{}}}".format(e) for e in node.enum_list])
+            sub = ','.join(["\\mathit{{{}}}".format(e) if len(e) > 1 else e for e in node.enum_list])
             del kwargs['is_sub']
             range = self.visit(node.range, **kwargs)
             sub += "\\in " + range
@@ -1146,5 +1146,6 @@ class CodeGenLatex(CodeGen):
             param_info = self.visit(param, **kwargs)
             params_content_list.append(param_info)
         content = node.func_name.replace('_', '\_')
-        content = "\\mathit{{{}}}({})".format(content, ', '.join(params_content_list))
+        fmtstring = "\\mathit{{{}}}({})" if len(content) > 1 else "{}({})"
+        content = fmtstring.format(content, ', '.join(params_content_list))
         return content
