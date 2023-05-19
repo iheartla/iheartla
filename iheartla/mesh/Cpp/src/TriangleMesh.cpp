@@ -1,10 +1,3 @@
-//
-//  TriangleMesh.cpp
-//  DEC
-//
-//  Created by pressure on 10/31/22.
-//
-
 #include <stdio.h>
 #include <iostream>
 #include <vector>

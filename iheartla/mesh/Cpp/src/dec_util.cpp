@@ -1,9 +1,3 @@
-//
-//  util.h
-//  DEC
-//
-//  Created by pressure on 10/31/22.
-//
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include "dec_util.h"
