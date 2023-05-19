@@ -1,10 +1,3 @@
-//
-//  TriangleMesh.h
-//  DEC
-//
-//  Created by pressure on 10/31/22.
-//
-
 #pragma once
 
 #include <Eigen/Dense>
