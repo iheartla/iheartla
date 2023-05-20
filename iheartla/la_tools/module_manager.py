@@ -52,32 +52,37 @@ class CacheModuleManager(object):
         self.load_cached_modules()
         self.post_str = ''
         CacheModuleManager.__instance = self
+
+    def get_key(self, module_name, parser_type):
+        return "key_{}_{}".format(module_name, parser_type)
         
     def get_compiled_module(self, module_name, parser_type, timestamp):
+        c_key = self.get_key(module_name, parser_type)
         tmp_type_walker = None
         pre_frame = None
-        if module_name in self.cache_module_dict:
-            if parser_type == self.cache_module_dict[module_name].parser_type:
-                print("current timestamp:{}, saved timestamp:{}".format(self.cache_module_dict[module_name].timestamp, timestamp))
-                if float(self.cache_module_dict[module_name].timestamp) >= timestamp:
-                    tmp_type_walker = self.cache_module_dict[module_name].type_walker
-                    pre_frame = self.cache_module_dict[module_name].pre_frame
+        if c_key in self.cache_module_dict:
+            if parser_type == self.cache_module_dict[c_key].parser_type:
+                print("current timestamp:{}, saved timestamp:{}".format(self.cache_module_dict[c_key].timestamp, timestamp))
+                if float(self.cache_module_dict[c_key].timestamp) >= timestamp:
+                    tmp_type_walker = self.cache_module_dict[c_key].type_walker
+                    pre_frame = self.cache_module_dict[c_key].pre_frame
         return tmp_type_walker, pre_frame
     
     def save_compiled_module(self, type_walker, pre_frame, module_name, parser_type, timestamp):
+        c_key = self.get_key(module_name, parser_type)
         data = {"walker": copy.deepcopy(type_walker),
                 "frame": copy.deepcopy(pre_frame)}
         data_file = Path(self.module_cache_dir + "/{}_{}_{}.pickle".format(module_name, parser_type, timestamp))
         # check old cache
-        if module_name in self.cache_module_dict and parser_type == self.cache_module_dict[module_name].parser_type:
-            self.cache_module_dict[module_name].type_walker = copy.deepcopy(type_walker)
-            self.cache_module_dict[module_name].pre_frame = copy.deepcopy(pre_frame)
-            self.cache_module_dict[module_name].timestamp = timestamp
+        if c_key in self.cache_module_dict and parser_type == self.cache_module_dict[c_key].parser_type:
+            self.cache_module_dict[c_key].type_walker = copy.deepcopy(type_walker)
+            self.cache_module_dict[c_key].pre_frame = copy.deepcopy(pre_frame)
+            self.cache_module_dict[c_key].timestamp = timestamp
             # remove
             self.remove_old_cache(module_name, parser_type)
         else:
             # save to dict
-            self.cache_module_dict[module_name] = CacheModuleData(name=module_name, timestamp=timestamp, parser_type=parser_type, pre_frame=data["frame"], type_walker = data["walker"])
+            self.cache_module_dict[c_key] = CacheModuleData(name=module_name, timestamp=timestamp, parser_type=parser_type, pre_frame=data["frame"], type_walker = data["walker"])
         # write data 
         try:
             with open(data_file, 'wb') as f:
@@ -102,11 +107,12 @@ class CacheModuleManager(object):
             if self.valid_module_cache(f):
                 pure_name = f.replace(".pickle", "")
                 module_name, parser_type, timestamp = pure_name.split('_')
+                c_key = self.get_key(module_name, parser_type)
                 # print("module_name:{}, parser:{}, timestamp:{}".format(module_name, parser_type, timestamp))
                 try:
                     with open(Path(self.module_cache_dir + "/" + f), 'rb') as ff:
                         data_dict = pickle.load(ff)
-                        self.cache_module_dict[module_name] = CacheModuleData(name=module_name, timestamp=timestamp, parser_type=parser_type, pre_frame=data_dict["frame"], type_walker = data_dict["walker"])
+                        self.cache_module_dict[c_key] = CacheModuleData(name=module_name, timestamp=timestamp, parser_type=parser_type, pre_frame=data_dict["frame"], type_walker = data_dict["walker"])
                 except Exception as e:
                     print("IO error:{}".format(e))
         for k, v in self.cache_module_dict.items():
