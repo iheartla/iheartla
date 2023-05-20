@@ -295,7 +295,10 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
                     # if name in PACKAGES_SYM_DICT[package]:
                     continue
                 # add func names only
-                key_names.append("{}_func".format(name)) # add correct imported syms
+                if name == 'vec⁻¹':
+                    key_names.append("inversevec_func") # add correct imported syms
+                else:
+                    key_names.append("{}_func".format(name)) # add correct imported syms
             for key, value in r_dict.items():
                 if key != value:
                     builtin_func_rdict[key] = value

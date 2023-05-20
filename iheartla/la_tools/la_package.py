@@ -138,7 +138,7 @@ BM3 = 'bm3'
 PACKAGES_FUNC_DICT = {'trigonometry': ['sin', 'asin', 'arcsin', 'cos', 'acos', 'arccos', 'tan', 'atan', 'arctan', 'atan2',
                                   'sinh', 'asinh', 'arsinh', 'cosh', 'acosh', 'arcosh', 'tanh', 'atanh', 'artanh',
                                   'cot', 'sec', 'csc'],
-                 'linearalgebra': ['trace', 'tr', 'diag', 'vec', 'inversevec', 'det', 'rank', 'null', 'orth', 'inv', 'svd'],
+                 'linearalgebra': ['trace', 'tr', 'diag', 'inversevec', 'vec⁻¹', 'vec', 'det', 'rank', 'null', 'orth', 'inv', 'svd'],
                  MESH_HELPER: [MeshSets, BoundaryMatrices, UnsignedBoundaryMatrices,
                                NonZeros, IndicatorVector, ValueSet]
                       }
