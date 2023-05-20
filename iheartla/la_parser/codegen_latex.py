@@ -924,9 +924,9 @@ class CodeGenLatex(CodeGen):
             cur_lower = self.visit(node.lower_list[cur_index], **kwargs)
             cur_lorder = self.visit(node.lorder_list[cur_index], **kwargs)
             if cur_lorder != '1':
-                lower_content += "\\partial" + "{{{}}}^{}".format(cur_lower, cur_lorder)
+                lower_content += "\\partial " + "{{{}}}^{}".format(cur_lower, cur_lorder)
             else:
-                lower_content += "\\partial" + cur_lower
+                lower_content += "\\partial " + cur_lower
         order = None
         if node.order:
             order = self.visit(node.order, **kwargs)
@@ -1102,7 +1102,10 @@ class CodeGenLatex(CodeGen):
         elif node.func_type == MathFuncType.MathFuncVec:
             content = ' \mathop{\\text{vec}}'
         elif node.func_type == MathFuncType.MathFuncInverseVec:
-            content = ' \mathop{\\text{' + node.func_name + '}}'  
+            f_name = node.func_name
+            # if '⁻¹' in f_name:
+            #     f_name = "{vec}^{-1}"
+            content = ' \\text{' + f_name + '}'  
             if node.remain_params and len(node.remain_params) > 0:
                 # multi params
                 param_list = []
