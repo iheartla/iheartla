@@ -658,7 +658,7 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
                 save_to_file(content, file_name)
         type2suffix = {
             ParserTypeEnum.NUMPY: ".py",
-            ParserTypeEnum.EIGEN: ".cpp",
+            ParserTypeEnum.EIGEN: ".h",
             ParserTypeEnum.LATEX: ".tex",
             ParserTypeEnum.MATHJAX: ".tex",
             ParserTypeEnum.MATLAB: ".m"
