@@ -34,7 +34,7 @@ def IHLA(content, ret=None, mapping={}):
                 found = True
                 break
         assert found, "Missing parameter {} for iheartla code".format(param)
-    lib_content = code_frame.include + code_frame.struct + '\n' + 'instance = iheartla({})'.format(','.join(var_data.params))
+    lib_content = code_frame.include + code_frame.namespace + code_frame.struct + '\n' + 'instance = iheartla({})'.format(','.join(var_data.params))
     exec(lib_content, globals(), loc)
     if ret is not None and ret in var_data.lhs:
         return getattr(loc['instance'], ret)
