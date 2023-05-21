@@ -44,12 +44,12 @@ def IHLA(content, ret=None, mapping={}):
 if __name__ == '__main__':
     LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
     la_debug("tatsu version: {}".format(tatsu.__version__))
-    arg_parser = argparse.ArgumentParser(description='I Heart LA')
+    arg_parser = argparse.ArgumentParser(description='The HeartLang Compiler')
     arg_parser.add_argument('-o', '--output', help='The output language', choices = ['numpy', 'eigen', 'latex','matlab'])
     # arg_parser.add_argument('-i', '--input', help='File name containing I heart LA source code')
     arg_parser.add_argument('--GUI', action='store_true', help='Launch the GUI editor')
     arg_parser.add_argument('--regenerate-grammar', action='store_true', help='Regenerate grammar files')
-    arg_parser.add_argument('input', nargs='*', help='The I Heart LA files to compile.')
+    arg_parser.add_argument('input', nargs='*', help='The HeartLang files to compile.')
     args = arg_parser.parse_args()
     if args.regenerate_grammar:
         la_helper.DEBUG_PARSER = True
