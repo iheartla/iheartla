@@ -934,7 +934,7 @@ class CodeGenLatex(CodeGen):
             if order:
                 content = "\\frac{\\partial^" + order + upper + "}{" + lower_content + "}"
             else:
-                content = "\\frac{\\partial" + upper + "}{" + lower_content + "}"
+                content = "\\frac{\\partial " + upper + "}{" + lower_content + "}"
         elif node.d_type == DerivativeType.DerivativeSFraction:
             if order:
                 content = "\\frac{\\partial^" + order + "}{" + lower_content + "}" + upper
