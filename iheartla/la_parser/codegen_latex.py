@@ -433,7 +433,7 @@ class CodeGenLatex(CodeGen):
             return self.visit(node.left, **kwargs) + "÷" + self.visit(node.right, **kwargs)
 
     def visit_union(self, node, **kwargs):
-        op = "\\cup"
+        op = " \\cup "
         if node.union_format == UnionFormat.UnionAdd:
             op = " + "
         return self.visit(node.left, **kwargs) + op + self.visit(node.right, **kwargs)
