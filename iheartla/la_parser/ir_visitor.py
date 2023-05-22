@@ -407,7 +407,7 @@ class IRVisitor(IRBaseVisitor):
             '𝟬': 'ss_bf_0', '𝟭': 'ss_bf_1', '𝟮': 'ss_bf_2', '𝟯': 'ss_bf_3', '𝟰': 'ss_bf_4', '𝟱': 'ss_bf_5', '𝟲': 'ss_bf_6', '𝟳': 'ss_bf_7', '𝟴': 'ss_bf_8', '𝟵': 'ss_bf_9',
             '𝟶': 'mono_0', '𝟷': 'mono_1', '𝟸': 'mono_2', '𝟹': 'mono_3', '𝟺': 'mono_4', '𝟻': 'mono_5', '𝟼': 'mono_6', '𝟽': 'mono_7', '𝟾': 'mono_8', '𝟿': 'mono_9'
             }
-        self.special_symbol_dict = {'∂':'dee'}  # Python and MATLAB can use some Unicode symbols, the symbols from this dict must be converted by all backends
+        self.special_symbol_dict = {'∂':'dee', '⁰':'0', '¹':'1', '²':'2', 'ᵀ':'T'}  # Python and MATLAB can use some Unicode symbols, the symbols from this dict must be converted by all backends
         self.declared_symbols = set()
         self.used_params = []
         self.der_vars = [] # variables in derivatives
@@ -744,7 +744,7 @@ class IRVisitor(IRBaseVisitor):
             if e in self.special_symbol_dict:
                 new_list.append(self.special_symbol_dict[e])
                 continue
-            if self.parse_type == ParserTypeEnum.NUMPY or self.parse_type == ParserTypeEnum.MATLAB:
+            if self.parse_type == ParserTypeEnum.NUMPY or self.parse_type == ParserTypeEnum.MATLAB or self.parse_type == ParserTypeEnum.EIGEN:
                 # make sure identifier is valid in numpy
                 if e.isnumeric() and e in self.uni_num_dict:
                     e = self.uni_num_dict[e]
