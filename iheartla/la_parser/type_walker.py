@@ -4546,9 +4546,9 @@ class TypeWalker(NodeWalker):
         elif func_type == MathFuncType.MathFuncSVD:
             self.assert_expr(param.la_type.is_matrix(), get_err_msg_info(param.parse_info, "Parameter must be valid matrix type"))
             dynamic = DynamicTypeEnum.DYN_INVALID
-            u_type = MatrixType(rows=param.la_type.rows, cols=param.la_type.rows)
-            s_type = VectorType(rows=param.la_type.rows)
-            v_type = MatrixType(rows=param.la_type.cols, cols=param.la_type.cols)
+            u_type = MatrixType(rows=param.la_type.rows, cols=param.la_type.rows,element_type=ScalarType(is_int=False))
+            s_type = VectorType(rows=param.la_type.rows,element_type=ScalarType(is_int=False))
+            v_type = MatrixType(rows=param.la_type.cols, cols=param.la_type.cols,element_type=ScalarType(is_int=False))
             if param.la_type.is_dynamic():
                 if param.la_type.is_dynamic_row() and param.la_type.is_dynamic_col():
                     u_type.dynamic = DynamicTypeEnum.DYN_ROW | DynamicTypeEnum.DYN_COL
