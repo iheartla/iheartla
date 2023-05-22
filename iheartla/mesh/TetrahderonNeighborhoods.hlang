@@ -3,25 +3,28 @@ Vertices, Edges, Faces from FundamentalTetrahedronAccessors(M)
 M : TetrahedralMesh
 
 V, E, F, C = ElementSets( M )
-`∂0`, `∂1`, `∂2` = BoundaryMatrices(M) 
-B0, B1, B2 = UnsignedBoundaryMatrices(M)
+`∂⁰`, `∂¹`, `∂²` = BoundaryMatrices(M) 
+`B⁰`, `B¹`, `B²` = UnsignedBoundaryMatrices(M)
+`B⁰ᵀ` = `B⁰`ᵀ
+`B¹ᵀ` = `B¹`ᵀ
+`B²ᵀ` = `B²`ᵀ
 
-VertexOneRing(v) = vertexset(NonZeros(B0 B0ᵀ IndicatorVector({v}))) - {v} where v ∈ V
-VertexOneRing(v) = vertexset(NonZeros(B0 B0ᵀ IndicatorVector(v))) - v where v ⊂  V
+VertexOneRing(v) = vertexset(NonZeros(`B⁰` (`B⁰ᵀ` IndicatorVector({v})))) - {v} where v ∈ V
+VertexOneRing(v) = vertexset(NonZeros(`B⁰` (`B⁰ᵀ` IndicatorVector(v)))) - v where v ⊂  V
 
 EdgeIndex(i, j) = eset_1  where i,j ∈ V,
 eset = Edges(i) ∩ Edges(j)
 
 NeighborVerticesInFace(f, v) = tuple(vset1_1, vset2_1) where v ∈ V, f ∈ F,
-es = edgeset(NonZeros(`∂1` IndicatorVector({f}))),
-nes = { s for s ∈ es if `∂0`_v,s != 0 },
-eset1 = { e for e ∈ nes if `∂1`_e,f `∂0`_v,e = -1},
-vset1 = vertexset(NonZeros(B0 IndicatorVector(eset1))) - {v},
-eset2 = { e for e ∈ nes if `∂1`_e,f `∂0`_v,e = 1 },
-vset2 = vertexset(NonZeros(B0 IndicatorVector(eset2))) - {v}
+es = edgeset(NonZeros(`∂¹` IndicatorVector({f}))),
+nes = { s for s ∈ es if `∂⁰`_v,s != 0 },
+eset1 = { e for e ∈ nes if `∂¹`_e,f `∂⁰`_v,e = -1},
+vset1 = vertexset(NonZeros(`B⁰` IndicatorVector(eset1))) - {v},
+eset2 = { e for e ∈ nes if `∂¹`_e,f `∂⁰`_v,e = 1 },
+vset2 = vertexset(NonZeros(`B⁰` IndicatorVector(eset2))) - {v}
 
 NextVerticeInFace(f, v) = vset_1 where v ∈ V, f ∈ F,
-eset = { e for e ∈ Edges(f) if `∂1`_e,f `∂0`_v,e = -1},
+eset = { e for e ∈ Edges(f) if `∂¹`_e,f `∂⁰`_v,e = -1},
 vset = Vertices(eset) - {v}
 
 OrientedVertices(f) = tuple(vs_1, i, j)    where f ∈ F,
@@ -30,13 +33,13 @@ i,j = NeighborVerticesInFace(f, vs_1)
 
 OrientedVertices(c) = tuple(l, i, j, k)    where c ∈ C,
 fset = Faces(c),
-pfset = { f for f ∈ fset if `∂2`_f,c == 1 },
+pfset = { f for f ∈ fset if `∂²`_f,c == 1 },
 i,j,k = OrientedVertices(pfset_1),
 remain = Vertices(c) - Vertices(pfset_1),
 l = remain_1
 
 FaceIndex(i,j,k) = fset_1  where i,j,k ∈ V,
-ufv = (B0 B1)ᵀ,
+ufv = `B¹ᵀ` `B⁰ᵀ`,
 iface = faceset(NonZeros(ufv  IndicatorVector({i}))),
 jface = faceset(NonZeros(ufv  IndicatorVector({j}))),
 kface = faceset(NonZeros(ufv IndicatorVector({k}))),

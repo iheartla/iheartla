@@ -3,20 +3,22 @@ ElementSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, IndicatorVect
 M : TriangleMesh 
 
 V, E, F = ElementSets( M )
-`∂0`, `∂1` = BoundaryMatrices(M) 
-B0, B1 = UnsignedBoundaryMatrices(M)
+`∂⁰`, `∂¹` = BoundaryMatrices(M) 
+`B⁰`, `B¹` = UnsignedBoundaryMatrices(M)
+`B⁰ᵀ` = `B⁰`ᵀ
+`B¹ᵀ` = `B¹`ᵀ
 
 Vertices(S) = S₁ where S: SimplicialSet
 Edges(S)    = S₂ where S: SimplicialSet 
 Faces(S)    = S₃ where S: SimplicialSet
  
-Vertices(f) = vertexset(NonZeros(B0 B1 IndicatorVector({f}))) where f ∈ F
-Vertices(G) = vertexset(NonZeros(B0 B1 IndicatorVector(G))) where G ⊂ F
-Vertices(e) = vertexset(NonZeros(B0 IndicatorVector({e}))) where e ∈ E
-Vertices(H) = vertexset(NonZeros(B0 IndicatorVector(H))) where H ⊂ E
+Vertices(f) = vertexset(NonZeros(`B⁰` (`B¹` IndicatorVector({f})))) where f ∈ F
+Vertices(G) = vertexset(NonZeros(`B⁰` (`B¹` IndicatorVector(G)))) where G ⊂ F
+Vertices(e) = vertexset(NonZeros(`B⁰` IndicatorVector({e}))) where e ∈ E
+Vertices(H) = vertexset(NonZeros(`B⁰` IndicatorVector(H))) where H ⊂ E
  
-Edges(v) = edgeset(NonZeros(B0ᵀ IndicatorVector({v}))) where v ∈ V
-Edges(f) = faceset(NonZeros(B1 IndicatorVector({f}))) where f ∈ F
+Edges(v) = edgeset(NonZeros(`B⁰ᵀ` IndicatorVector({v}))) where v ∈ V
+Edges(f) = faceset(NonZeros(`B¹` IndicatorVector({f}))) where f ∈ F
 
-Faces(v) = faceset(NonZeros((B0 B1)ᵀ IndicatorVector({v}))) where v ∈ V
-Faces(e) = faceset(NonZeros(B1ᵀ IndicatorVector({e}))) where e ∈ E
+Faces(v) = faceset(NonZeros(`B¹ᵀ` (`B⁰ᵀ` IndicatorVector({v})))) where v ∈ V
+Faces(e) = faceset(NonZeros(`B¹ᵀ` IndicatorVector({e}))) where e ∈ E
