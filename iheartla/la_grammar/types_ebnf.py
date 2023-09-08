@@ -57,12 +57,9 @@ named_type::NamedType
 
 mesh_type
     =
-    m:MESH
-    | tri:TRIANGLE
-    | poly:POLYGON
-    | point:POINTCLOUD
-    | tet:TETRAHEDRON
-    | ph:POLYHEDRON
+    e:EDGEMESH
+    | f:FACEMESH
+    | c:CELLMESH
     ;
     
 la_type
