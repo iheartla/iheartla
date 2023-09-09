@@ -866,16 +866,16 @@ class CodeGenEigen(CodeGen):
                 stats_content += cur_stats_content
         mesh_dim_list = []
         for mesh, data in self.mesh_dict.items():
-            if data.la_type.cur_mesh == MeshTypeEnum.TRIANGLE or data.la_type.cur_mesh == MeshTypeEnum.POLYGON:
+            if data.la_type.cur_mesh == MeshTypeEnum.FaceMesh:
                 mesh_dim_list.append("    int {} = {}.n_vertices();\n".format(data.la_type.vi_size, mesh))
                 mesh_dim_list.append("    int {} = {}.n_edges();\n".format(data.la_type.ei_size, mesh))
                 mesh_dim_list.append("    int {} = {}.n_faces();\n".format(data.la_type.fi_size, mesh))
-            elif data.la_type.cur_mesh == MeshTypeEnum.TETRAHEDRON or data.la_type.cur_mesh == MeshTypeEnum.POLYHEDRON:
+            elif data.la_type.cur_mesh == MeshTypeEnum.CellMesh:
                 mesh_dim_list.append("    int {} = {}.n_vertices();\n".format(data.la_type.vi_size, mesh))
                 mesh_dim_list.append("    int {} = {}.n_edges();\n".format(data.la_type.ei_size, mesh))
                 mesh_dim_list.append("    int {} = {}.n_faces();\n".format(data.la_type.fi_size, mesh))
                 mesh_dim_list.append("    int {} = {}.n_tets();\n".format(data.la_type.ti_size, mesh))
-            elif data.la_type.cur_mesh == MeshTypeEnum.POINTCLOUD:
+            elif data.la_type.cur_mesh == MeshTypeEnum.EdgeMesh:
                 mesh_dim_list.append("    int {} = {}.n_vertices();\n".format(data.la_type.vi_size, mesh))
                 mesh_dim_list.append("    int {} = {}.n_edges();\n".format(data.la_type.ei_size, mesh))
         # content += stats_content

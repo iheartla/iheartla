@@ -73,16 +73,13 @@ TI_SIZE = 'ti_size'
 #
 MESH_CLASS = 'TriangleMesh'
 MESH_HELPER = 'MeshConnectivity'
-TRIANGLE = "TriangleMesh"
-POLYGON = "PolygonMesh"
-TETRAHEDRON = "Tetrahedron"
-POINTCLOUD = "PointCloud"
-POLYHEDRON = "Polyhedron"
-MESH_MAPPING_DICT = {MeshTypeEnum.TRIANGLE: TRIANGLE,
-                MeshTypeEnum.POINTCLOUD: POINTCLOUD,
-                MeshTypeEnum.POLYGON: POLYGON,
-                MeshTypeEnum.TETRAHEDRON: TETRAHEDRON,
-                MeshTypeEnum.POLYHEDRON: POLYHEDRON
+EdgeMesh = "EdgeMesh"
+FaceMesh = "FaceMesh"
+CellMesh = "CellMesh"
+MESH_MAPPING_DICT = {
+                MeshTypeEnum.EdgeMesh: EdgeMesh,
+                MeshTypeEnum.FaceMesh: FaceMesh,
+                MeshTypeEnum.CellMesh: CellMesh
                 }
 # MeshHelper function
 NonZeros = 'NonZeros'
@@ -372,25 +369,25 @@ def get_sym_type_from_pkg(sym, pkg, mesh_type=None):
                                                '{}_2'.format(IndicatorVector),
                                                '{}_3'.format(IndicatorVector)])
                     elif sym == MeshSets:
-                        if mesh_type.cur_mesh == MeshTypeEnum.TRIANGLE or mesh_type.cur_mesh == MeshTypeEnum.POLYGON:
+                        if mesh_type.cur_mesh == MeshTypeEnum.FaceMesh:
                             ret = make_function_type([MeshType()], [VertexSetType(length=mesh_type.vi_size, owner=mesh_type.owner), EdgeSetType(length=mesh_type.ei_size, owner=mesh_type.owner), FaceSetType(length=mesh_type.fi_size, owner=mesh_type.owner)])
-                        elif mesh_type.cur_mesh == MeshTypeEnum.TETRAHEDRON or mesh_type.cur_mesh == MeshTypeEnum.POLYHEDRON:
+                        elif mesh_type.cur_mesh == MeshTypeEnum.CellMesh:
                             ret = make_function_type([MeshType()], [VertexSetType(length=mesh_type.vi_size, owner=mesh_type.owner), EdgeSetType(length=mesh_type.ei_size, owner=mesh_type.owner), FaceSetType(length=mesh_type.fi_size, owner=mesh_type.owner), TetSetType(length=mesh_type.ti_size, owner=mesh_type.owner)])
-                        elif mesh_type.cur_mesh == MeshTypeEnum.POINTCLOUD:
+                        elif mesh_type.cur_mesh == MeshTypeEnum.EdgeMesh:
                             ret = make_function_type([MeshType()], [VertexSetType(length=mesh_type.vi_size, owner=mesh_type.owner), EdgeSetType(length=mesh_type.ei_size, owner=mesh_type.owner)])
                     elif sym == BoundaryMatrices:
-                        if mesh_type.cur_mesh == MeshTypeEnum.TRIANGLE or mesh_type.cur_mesh == MeshTypeEnum.POLYGON:
+                        if mesh_type.cur_mesh == MeshTypeEnum.FaceMesh:
                             ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner), MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner)])
-                        elif mesh_type.cur_mesh == MeshTypeEnum.TETRAHEDRON or mesh_type.cur_mesh == MeshTypeEnum.POLYHEDRON:
+                        elif mesh_type.cur_mesh == MeshTypeEnum.CellMesh:
                             ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner), MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner), MatrixType(rows=mesh_type.fi_size, cols=mesh_type.ti_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner)])
-                        elif mesh_type.cur_mesh == MeshTypeEnum.POINTCLOUD:
+                        elif mesh_type.cur_mesh == MeshTypeEnum.EdgeMesh:
                             ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner)])
                     elif sym == UnsignedBoundaryMatrices:
-                        if mesh_type.cur_mesh == MeshTypeEnum.TRIANGLE or mesh_type.cur_mesh == MeshTypeEnum.POLYGON:
+                        if mesh_type.cur_mesh == MeshTypeEnum.FaceMesh:
                             ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner), MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner)])
-                        elif mesh_type.cur_mesh == MeshTypeEnum.TETRAHEDRON or mesh_type.cur_mesh == MeshTypeEnum.POLYHEDRON:
+                        elif mesh_type.cur_mesh == MeshTypeEnum.CellMesh:
                             ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner), MatrixType(rows=mesh_type.ei_size, cols=mesh_type.fi_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner), MatrixType(rows=mesh_type.fi_size, cols=mesh_type.ti_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner)])
-                        elif mesh_type.cur_mesh == MeshTypeEnum.POINTCLOUD:
+                        elif mesh_type.cur_mesh == MeshTypeEnum.EdgeMesh:
                             ret = make_function_type([MeshType()], [MatrixType(rows=mesh_type.vi_size, cols=mesh_type.ei_size, sparse=True, element_type=ScalarType(is_int=True), owner=mesh_type.owner)])
                 else:
                     ret = MESH_HELPER_SYM_TYPE[sym]

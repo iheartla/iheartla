@@ -1512,18 +1512,12 @@ class TypeWalker(NodeWalker):
         elif node.m:
             # init dims later
             cur_mesh = MeshTypeEnum.DEFAULT
-            if node.m.tri:
-                cur_mesh = MeshTypeEnum.TRIANGLE
-            elif node.m.point:
-                cur_mesh = MeshTypeEnum.POINTCLOUD
-            elif node.m.poly:
-                cur_mesh = MeshTypeEnum.POLYGON
-            elif node.m.tet:
-                cur_mesh = MeshTypeEnum.TETRAHEDRON
-            elif node.m.ph:
-                cur_mesh = MeshTypeEnum.POLYHEDRON
-            elif node.m.m:
-                cur_mesh = MeshTypeEnum.TRIANGLE
+            if node.m.e:
+                cur_mesh = MeshTypeEnum.EdgeMesh
+            elif node.m.f:
+                cur_mesh = MeshTypeEnum.FaceMesh
+            elif node.m.c:
+                cur_mesh = MeshTypeEnum.CellMesh
             la_type = MeshType(cur_mesh=cur_mesh)
             if cur_mesh not in self.mesh_type_list:
                 self.mesh_type_list.append(cur_mesh)

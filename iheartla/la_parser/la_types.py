@@ -324,6 +324,9 @@ class MeshTypeEnum(Enum):
     POLYGON = 3
     TETRAHEDRON = 4
     POLYHEDRON = 5
+    EdgeMesh = 6
+    FaceMesh = 7
+    CellMesh = 8
 
 
 class MeshType(LaVarType):
