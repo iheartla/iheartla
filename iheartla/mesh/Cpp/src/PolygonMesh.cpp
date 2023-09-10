@@ -41,26 +41,10 @@ void PolygonMesh::initialize(std::vector<std::vector<int> > &T){
 	}
 	this->num_v = max_vertices + 1;
 	this->create_edges();
-    this->init_indices();
+    // this->init_indices();
     // boundary mat
     this->build_boundary_mat1();
     this->build_boundary_mat2();
-}
-
-void PolygonMesh::init_indices(){
-    this->Vi.resize(this->num_v);
-    for (int i = 0; i < this->num_v; ++i){
-        this->Vi[i] = i;
-    }
-    this->Ei.resize(this->E.rows());
-    for (int i = 0; i < this->E.rows(); ++i){ 
-        this->Ei[i] = i;
-    }
-    this->Fi.resize(this->Face.size());
-    for (int i = 0; i < this->Face.size(); ++i){
-        this->Fi[i] = i;
-    }
-    std::cout<<"Total vertices:"<<this->num_v<<", edges:"<<this->E.rows()<<", faces:"<<this->Fi.size()<<", max degree:"<<this->max_degree<<std::endl;
 }
 
 void PolygonMesh::create_edges(){
@@ -99,21 +83,11 @@ void PolygonMesh::build_boundary_mat2(){
     	}
     }
     this->bm2.setFromTriplets(tripletList.begin(), tripletList.end());
-    this->pos_bm2 = this->bm2.cwiseAbs();
+    // this->pos_bm2 = this->bm2.cwiseAbs();
     // std::cout<<"this->bm2:\n"<<this->bm2<<std::endl;
     // std::cout<<"this->pos_bm2:\n"<<this->pos_bm2<<std::endl;
 }
-SparseMatrix<int> PolygonMesh::faces_to_vector(const std::vector<int>& fset) const{
-    SparseMatrix<int> f(this->Face.size(), 1);
-    std::vector<Eigen::Triplet<int> > tripletList; 
-    tripletList.reserve(this->Face.size());
-    for (int idx : fset)
-    {
-        tripletList.push_back(Eigen::Triplet<int>(idx, 0, 1));
-    }
-    f.setFromTriplets(tripletList.begin(), tripletList.end());
-    return f;
-}
+
 void PolygonMesh::build_boundary_mat1(){
     this->bm1.resize(this->num_v, this->E.rows());
     std::vector<Eigen::Triplet<int> > tripletList;
@@ -123,21 +97,9 @@ void PolygonMesh::build_boundary_mat1(){
         tripletList.push_back(Eigen::Triplet<int>(this->E(i,1), i, 1));
     }
     this->bm1.setFromTriplets(tripletList.begin(), tripletList.end());
-    this->pos_bm1 = this->bm1.cwiseAbs();
+    // this->pos_bm1 = this->bm1.cwiseAbs();
     // std::cout<<"this->bm1:\n"<<this->bm1<<std::endl;
     // std::cout<<"this->pos_bm1:\n"<<this->pos_bm1<<std::endl;
-}
-  
-std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> PolygonMesh::ElementSets() const{
-    return std::tuple<std::vector<int>, std::vector<int>, std::vector<int>>(this->Vi, this->Ei, this->Fi);
-}
-
-std::tuple<Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > PolygonMesh::BoundaryMatrices() const{
-    return std::tuple< Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> >(this->bm1, this->bm2);
-}
-
-std::tuple<Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > PolygonMesh::UnsignedBoundaryMatrices() const{
-    return std::tuple< Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> >(this->pos_bm1, this->pos_bm2);
 }
 
 }

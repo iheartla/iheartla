@@ -47,25 +47,10 @@ void TriangleMesh::initialize(MatrixXi &T){
         this->build_boundary_mat1();
         this->build_boundary_mat2();
     }
-    this->init_mesh_indices();
+    // this->init_mesh_indices();
     std::cout<<"Total vertices:"<<this->num_v<<", edges:"<<this->E.rows()<<", faces:"<<this->F.rows()<<", tets:"<<this->T.rows()<<std::endl;
 }
 
-
-void TriangleMesh::init_mesh_indices(){
-    this->Vi.resize(this->num_v);
-    for (int i = 0; i < this->num_v; ++i){
-        this->Vi[i] = i;
-    }
-    this->Ei.resize(this->E.rows());
-    for (int i = 0; i < this->E.rows(); ++i){ 
-        this->Ei[i] = i;
-    }
-    this->Fi.resize(this->F.rows());
-    for (int i = 0; i < this->F.rows(); ++i){
-        this->Fi[i] = i;
-    }
-}
 
 int TriangleMesh::get_face_index(int i, int j, int k, int &sign){
     RowVector r(3); r << i, j, k;
@@ -185,7 +170,7 @@ void TriangleMesh::build_boundary_mat3(){
         // tripletList.push_back(Eigen::Triplet<int>(this->map_f[std::make_tuple(this->T(i,1), this->T(i,2), this->T(i,3))], i, 1));
     }
     this->bm3.setFromTriplets(tripletList.begin(), tripletList.end());
-    this->pos_bm3 = this->bm3.cwiseAbs();
+    // this->pos_bm3 = this->bm3.cwiseAbs();
     // std::cout<<"this->bm3:\n"<<this->bm3<<std::endl;
     // std::cout<<"this->pos_bm3:\n"<<this->pos_bm3<<std::endl;
 }
@@ -211,7 +196,7 @@ void TriangleMesh::build_boundary_mat2(){
         // tripletList.push_back(Eigen::Triplet<int>(this->map_e[std::make_tuple(this->F(i,1), this->F(i,2))], i, 1));
     }
     this->bm2.setFromTriplets(tripletList.begin(), tripletList.end());
-    this->pos_bm2 = this->bm2.cwiseAbs();
+    // this->pos_bm2 = this->bm2.cwiseAbs();
     // std::cout<<"this->bm2:\n"<<this->bm2<<std::endl;
     // std::cout<<"this->pos_bm2:\n"<<this->pos_bm2<<std::endl;
 }
@@ -225,21 +210,9 @@ void TriangleMesh::build_boundary_mat1(){
         tripletList.push_back(Eigen::Triplet<int>(this->E(i,1), i, 1));
     }
     this->bm1.setFromTriplets(tripletList.begin(), tripletList.end());
-    this->pos_bm1 = this->bm1.cwiseAbs();
+    // this->pos_bm1 = this->bm1.cwiseAbs();
     // std::cout<<"this->bm1:\n"<<this->bm1<<std::endl;
     // std::cout<<"this->pos_bm1:\n"<<this->pos_bm1<<std::endl;
-}
-  
-std::tuple<std::vector<int>, std::vector<int>, std::vector<int>> TriangleMesh::ElementSets() const{
-    return std::tuple<std::vector<int>, std::vector<int>, std::vector<int>>(this->Vi, this->Ei, this->Fi);
-}
-
-std::tuple<Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > TriangleMesh::BoundaryMatrices() const{
-    return std::tuple< Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> >(this->bm1, this->bm2);
-}
-
-std::tuple<Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > TriangleMesh::UnsignedBoundaryMatrices() const{
-    return std::tuple< Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> >(this->pos_bm1, this->pos_bm2);
 }
 
 }

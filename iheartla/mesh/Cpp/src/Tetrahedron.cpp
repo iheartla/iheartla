@@ -32,29 +32,10 @@ void Tetrahedron::initialize(MatrixXi &T){
     this->build_boundary_mat1();
     this->build_boundary_mat2();
     this->build_boundary_mat3();
-    this->init_mesh_indices();
+    // this->init_mesh_indices();
     std::cout<<"Total vertices:"<<this->num_v<<", edges:"<<this->E.rows()<<", faces:"<<this->F.rows()<<", tets:"<<this->T.rows()<<std::endl;
 }
 
-
-void Tetrahedron::init_mesh_indices(){
-    this->Vi.resize(this->num_v);
-    for (int i = 0; i < this->num_v; ++i){
-        this->Vi[i] = i;
-    }
-    this->Ei.resize(this->E.rows());
-    for (int i = 0; i < this->E.rows(); ++i){ 
-        this->Ei[i] = i;
-    }
-    this->Fi.resize(this->F.rows());
-    for (int i = 0; i < this->F.rows(); ++i){
-        this->Fi[i] = i;
-    }
-    this->Ti.resize(this->T.rows());
-    for (int i = 0; i < this->T.rows(); ++i){
-        this->Ti[i] = i;
-    }
-}
 
 int Tetrahedron::get_face_index(int i, int j, int k, int &sign){
     RowVector r(3); r << i, j, k;
@@ -144,21 +125,10 @@ void Tetrahedron::build_boundary_mat3(){
         // tripletList.push_back(Eigen::Triplet<int>(this->map_f[std::make_tuple(this->T(i,1), this->T(i,2), this->T(i,3))], i, 1));
     }
     this->bm3.setFromTriplets(tripletList.begin(), tripletList.end());
-    this->pos_bm3 = this->bm3.cwiseAbs();
+    // this->pos_bm3 = this->bm3.cwiseAbs();
     // std::cout<<"this->bm3:\n"<<this->bm3<<std::endl;
     // std::cout<<"this->pos_bm3:\n"<<this->pos_bm3<<std::endl;
 }
   
-std::tuple<std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>> Tetrahedron::ElementSets() const{
-    return std::tuple<std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>>(this->Vi, this->Ei, this->Fi, this->Ti);
-}
-
-std::tuple< Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > Tetrahedron::BoundaryMatrices() const{
-    return std::tuple< Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> >(this->bm1, this->bm2, this->bm3);
-}
-
-std::tuple< Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > Tetrahedron::UnsignedBoundaryMatrices() const{
-    return std::tuple< Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> >(this->pos_bm1, this->pos_bm2, this->pos_bm3);
-}
 
 }

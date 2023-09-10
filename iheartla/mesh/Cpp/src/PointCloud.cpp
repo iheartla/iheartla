@@ -79,7 +79,7 @@ PointCloud::PointCloud(std::vector<Eigen::VectorXd>& P, std::vector<std::vector<
     }
     // this->E.conservativeResize(cnt, 2); 
     //  
-    this->init_indices();
+    // this->init_indices();
     this->build_boundary_mat1();
 }
 
@@ -169,16 +169,6 @@ std::vector<size_t> PointCloudWrapper::radiusSearch(Eigen::VectorXd query, doubl
     return outInds;
   }
 
-void PointCloud::init_indices(){
-    this->Vi.resize(this->num_v);
-    for (int i = 0; i < this->num_v; ++i){
-        this->Vi[i] = i;
-    }
-    this->Ei.resize(this->E.rows());
-    for (int i = 0; i < this->E.rows(); ++i){ 
-        this->Ei[i] = i;
-    }
-}
 
 void PointCloud::build_boundary_mat1(){
     this->bm1.resize(this->num_v, this->E.rows());
@@ -189,21 +179,9 @@ void PointCloud::build_boundary_mat1(){
         tripletList.push_back(Eigen::Triplet<int>(this->E(i,1), i, 1));
     }
     this->bm1.setFromTriplets(tripletList.begin(), tripletList.end());
-    this->pos_bm1 = this->bm1.cwiseAbs();
+    // this->pos_bm1 = this->bm1.cwiseAbs();
     // std::cout<<"this->bm1:\n"<<this->bm1<<std::endl;
     // std::cout<<"this->pos_bm1:\n"<<this->pos_bm1<<std::endl;
-}
-
-std::tuple<std::vector<int>, std::vector<int>> PointCloud::ElementSets() const{
-    return std::tuple<std::vector<int>, std::vector<int>>(this->Vi, this->Ei);
-}
-
-Eigen::SparseMatrix<int> PointCloud::BoundaryMatrices() const{
-    return this->bm1;
-}
-
-Eigen::SparseMatrix<int> PointCloud::UnsignedBoundaryMatrices() const{
-    return this->pos_bm1;
 }
 
 }

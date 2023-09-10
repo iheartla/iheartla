@@ -41,12 +41,7 @@ public:
     PointCloud();
     PointCloud(std::vector<Eigen::VectorXd>& P, std::vector<std::vector<size_t>> neighbors);
     void build_boundary_mat1(); // E -> V, size: |V|x|E|, boundary of edges 
-    void init_indices();
     //
-
-    std::tuple<std::vector<int>, std::vector<int>> ElementSets() const;
-    Eigen::SparseMatrix<int> BoundaryMatrices() const;
-    Eigen::SparseMatrix<int> UnsignedBoundaryMatrices() const;
     // 
     bool numerical_order;       // whether the indices are stored as numerical order in edges/faces
 };
