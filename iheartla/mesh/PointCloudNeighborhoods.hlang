@@ -1,6 +1,6 @@
 ElementSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, IndicatorVector from MeshConnectivity
 Vertices, Edges from FundamentalPointCloudAccessors(M)
-M ∈ PointCloud 
+M ∈ EdgeMesh 
 V, E = ElementSets( M )
 `∂⁰` = BoundaryMatrices(M) 
 `∂⁰ᵀ` = `∂⁰`ᵀ
