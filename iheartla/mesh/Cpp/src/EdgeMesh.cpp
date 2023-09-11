@@ -10,7 +10,7 @@ namespace iheartmesh {
 EdgeMesh::EdgeMesh(){
     
 } 
-EdgeMesh::EdgeMesh(Eigen::SparseMatrix<int>& bm1){
+EdgeMesh::EdgeMesh(const Eigen::SparseMatrix<int>& bm1){
     this->bm1 = bm1;
     this->pos_bm1 = this->bm1.cwiseAbs();
     this->Vi.resize(this->bm1.rows());

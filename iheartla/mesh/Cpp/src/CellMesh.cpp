@@ -10,7 +10,7 @@ namespace iheartmesh {
 CellMesh::CellMesh(){
     
 } 
-CellMesh::CellMesh(Eigen::SparseMatrix<int>& bm1, Eigen::SparseMatrix<int>& bm2, Eigen::SparseMatrix<int>& bm3){
+CellMesh::CellMesh(const Eigen::SparseMatrix<int>& bm1, const Eigen::SparseMatrix<int>& bm2, const Eigen::SparseMatrix<int>& bm3){
     this->bm1 = bm1;
     this->pos_bm1 = this->bm1.cwiseAbs();
     this->bm2 = bm2;

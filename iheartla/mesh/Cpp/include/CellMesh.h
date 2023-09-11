@@ -10,7 +10,7 @@ namespace iheartmesh {
 class CellMesh {
 public:
     CellMesh();
-    CellMesh(Eigen::SparseMatrix<int>& bm1, Eigen::SparseMatrix<int>& bm2, Eigen::SparseMatrix<int>& bm3);
+    CellMesh(const Eigen::SparseMatrix<int>& bm1, const Eigen::SparseMatrix<int>& bm2, const Eigen::SparseMatrix<int>& bm3);
 
     // API
     int n_edges() const;

@@ -10,7 +10,7 @@ namespace iheartmesh {
 class FaceMesh {
 public:
     FaceMesh();
-    FaceMesh(Eigen::SparseMatrix<int>& bm1, Eigen::SparseMatrix<int>& bm2);
+    FaceMesh(const Eigen::SparseMatrix<int>& bm1, const Eigen::SparseMatrix<int>& bm2);
 
     int n_edges() const;
     int n_vertices() const;

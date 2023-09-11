@@ -10,7 +10,7 @@ namespace iheartmesh {
 class EdgeMesh {
 public:
     EdgeMesh();
-    EdgeMesh(Eigen::SparseMatrix<int>& bm1);
+    EdgeMesh(const Eigen::SparseMatrix<int>& bm1);
 
     int n_edges() const;
     int n_vertices() const;
