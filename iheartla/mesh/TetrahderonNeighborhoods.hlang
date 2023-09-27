@@ -33,7 +33,7 @@ i,j = NeighborVerticesInFace(f, vs_1)
 
 OrientedVertices(c) = tuple(l, i, j, k)    where c ∈ C,
 fset = Faces(c),
-pfset = { f for f ∈ fset if `∂²`_f,c == 1 },
+pfset = { f for f ∈ fset if `∂²`_f,c = 1 },
 i,j,k = OrientedVertices(pfset_1),
 remain = Vertices(c) - Vertices(pfset_1),
 l = remain_1

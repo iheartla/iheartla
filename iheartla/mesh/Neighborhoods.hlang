@@ -35,13 +35,13 @@ Diamond(e) = SimplicialSet(Vertices(e), {e}, Faces(e)) where e ∈ E
 OrientedOppositeFaces(i, j) = tuple(firf_1, secf_1) where i,j ∈ V,
 e = EdgeIndex(i, j),
 fset = Faces(e),
-firf = { f for f ∈ fset if `∂¹`_e,f `∂⁰`_i,e == -1 },
+firf = { f for f ∈ fset if `∂¹`_e,f `∂⁰`_i,e = -1 },
 secf = fset - firf
 
 OppositeFaces(e) = tuple(firf_1, secf_1) where e ∈ E,
 fset = Faces(e),
-firf = { f for f ∈ fset if `∂¹`_e,f == 1 },
-secf = { f for f ∈ fset if `∂¹`_e,f == -1 }
+firf = { f for f ∈ fset if `∂¹`_e,f = 1 },
+secf = { f for f ∈ fset if `∂¹`_e,f = -1 }
 
 OppositeVertices(e) = tuple(firv_1, secv_1) where e ∈ E,
 firf, secf = OppositeFaces(e),
