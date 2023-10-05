@@ -210,6 +210,14 @@ class CodeGen(IRPrinter):
         else:
             if node.func_type == GPType.NonZeros:
                 content = "{}({})".format(self.get_builtin_func_name(content), ', '.join(params_content_list))
+            elif node.func_type == GPType.IndicatorVector:
+                indicator_dim_dict = {
+                    VERTICES_TO_VECTOR: 'n_vertices()',
+                    EDGES_TO_VECTOR: 'n_edges()',
+                    FACES_TO_VECTOR: 'n_faces()',
+                    TETS_TO_VECTOR: 'n_tets()'
+                }
+                content = "indicator({}, {}.{})".format(', '.join(params_content_list), self.get_mesh_str(node.params[0].la_type.owner), indicator_dim_dict[self.get_builtin_func_name(content)])
             else:
                 # mesh is still necessary
                 content = "{}.{}({})".format(self.get_mesh_str(node.params[0].la_type.owner), self.get_builtin_func_name(content), ', '.join(params_content_list))

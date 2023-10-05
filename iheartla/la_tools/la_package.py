@@ -105,6 +105,7 @@ GET_ADJACENT_FACES_F = 'get_adjacent_faces_f'
 VERTICES_TO_VECTOR = 'vertices_to_vector'
 EDGES_TO_VECTOR = 'edges_to_vector'
 FACES_TO_VECTOR = 'faces_to_vector'
+TETS_TO_VECTOR = 'tets_to_vector'
 VECTOR_TO_VERTICES = 'vector_to_vertices'
 VECTOR_TO_EDGES = 'vector_to_edges'
 VECTOR_TO_FACES = 'vector_to_faces'
@@ -296,10 +297,10 @@ NonZeros:'nonzeros',
         '{}_1'.format(NonZeros): '{}_1'.format(NonZeros),
         '{}_2'.format(NonZeros): '{}_2'.format(NonZeros),
         '{}_3'.format(NonZeros): '{}_3'.format(NonZeros),
-        '{}_0'.format(IndicatorVector): 'vertices_to_vector',
-        '{}_1'.format(IndicatorVector): 'edges_to_vector',
-        '{}_2'.format(IndicatorVector): 'faces_to_vector',
-        '{}_3'.format(IndicatorVector): 'tets_to_vector',
+        '{}_0'.format(IndicatorVector): VERTICES_TO_VECTOR,
+        '{}_1'.format(IndicatorVector): EDGES_TO_VECTOR,
+        '{}_2'.format(IndicatorVector): FACES_TO_VECTOR,
+        '{}_3'.format(IndicatorVector): TETS_TO_VECTOR,
 ValueSet:'ValueSet',
     },
     ParserTypeEnum.NUMPY : {
@@ -308,10 +309,10 @@ NonZeros:'nonzeros',
         '{}_1'.format(NonZeros): '{}_1'.format(NonZeros),
         '{}_2'.format(NonZeros): '{}_2'.format(NonZeros),
         '{}_3'.format(NonZeros): '{}_3'.format(NonZeros),
-        '{}_0'.format(IndicatorVector): 'vertices_to_vector',
-        '{}_1'.format(IndicatorVector): 'edges_to_vector',
-        '{}_2'.format(IndicatorVector): 'faces_to_vector',
-        '{}_3'.format(IndicatorVector): 'tets_to_vector',
+        '{}_0'.format(IndicatorVector): VERTICES_TO_VECTOR,
+        '{}_1'.format(IndicatorVector): EDGES_TO_VECTOR,
+        '{}_2'.format(IndicatorVector): FACES_TO_VECTOR,
+        '{}_3'.format(IndicatorVector): TETS_TO_VECTOR,
     },
     ParserTypeEnum.MATLAB : {
 NonZeros:'NonZeros',
@@ -319,10 +320,10 @@ NonZeros:'NonZeros',
         '{}_1'.format(NonZeros): '{}_1'.format(NonZeros),
         '{}_2'.format(NonZeros): '{}_2'.format(NonZeros),
         '{}_3'.format(NonZeros): '{}_3'.format(NonZeros),
-        '{}_0'.format(IndicatorVector): 'vertices_to_vector',
-        '{}_1'.format(IndicatorVector): 'edges_to_vector',
-        '{}_2'.format(IndicatorVector): 'faces_to_vector',
-        '{}_3'.format(IndicatorVector): 'tets_to_vector',
+        '{}_0'.format(IndicatorVector): VERTICES_TO_VECTOR,
+        '{}_1'.format(IndicatorVector): EDGES_TO_VECTOR,
+        '{}_2'.format(IndicatorVector): FACES_TO_VECTOR,
+        '{}_3'.format(IndicatorVector): TETS_TO_VECTOR,
     },
 }
 
