@@ -12,7 +12,7 @@ V, E, F, C = ElementSets( M )
 Vertices(S) = S₁ where S: SimplicialSet
 Edges(S)    = S₂ where S: SimplicialSet 
 Faces(S)    = S₃ where S: SimplicialSet
-Tets(S)    = S₄ where S: SimplicialSet
+Cells(S)    = S₄ where S: SimplicialSet
  
 Vertices(f) = vertexset(NonZeros(`B⁰` (`B¹` IndicatorVector({f})))) where f ∈ F
 Vertices(G) = vertexset(NonZeros(`B⁰` (`B¹` IndicatorVector(G)))) where G ⊂ F
