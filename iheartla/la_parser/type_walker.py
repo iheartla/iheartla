@@ -4904,8 +4904,20 @@ class TypeWalker(NodeWalker):
             ir_node.to_type = EleConvertType.EleToSimplicialSet
             ir_node.la_type = SimplicialSetType()
             ir_node.name = node.s
-            self.assert_expr(len(param_node_list) == 3 and param_type_list[0].is_set() and param_type_list[1].is_set() and param_type_list[2].is_set(),
-                             get_err_msg_info(node.parseinfo, "Function error. Can't find function with current parameter types."))
+            self.assert_expr(len(param_node_list) > 0,
+                             get_err_msg_info(node.parseinfo, "Function error. No parameters."))
+            if len(param_node_list) == 1:
+                self.assert_expr(param_type_list[0].is_vertex_set(),
+                                 get_err_msg_info(node.parseinfo, "Function error. Can't find function with current parameter types."))
+            elif len(param_node_list) == 2:
+                self.assert_expr(param_type_list[0].is_vertex_set() and param_type_list[1].is_edge_set(),
+                                 get_err_msg_info(node.parseinfo, "Function error. Can't find function with current parameter types."))
+            elif len(param_node_list) == 3:
+                self.assert_expr(param_type_list[0].is_vertex_set() and param_type_list[1].is_edge_set() and param_type_list[2].is_face_set(),
+                                 get_err_msg_info(node.parseinfo, "Function error. Can't find function with current parameter types."))
+            elif len(param_node_list) == 4:
+                self.assert_expr(param_type_list[0].is_vertex_set() and param_type_list[1].is_edge_set() and param_type_list[2].is_face_set() and param_type_list[3].is_tet_set(),
+                                 get_err_msg_info(node.parseinfo, "Function error. Can't find function with current parameter types."))
         return NodeInfo(ir_node.la_type, ir=ir_node)
 
     def walk_ArithExpression(self, node, **kwargs):

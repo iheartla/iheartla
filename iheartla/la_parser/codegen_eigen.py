@@ -1423,10 +1423,34 @@ class CodeGenEigen(CodeGen):
                 pre_list += param_info.pre_list
                 type_list.append(self.get_ctype(param.la_type))
             if node.to_type == EleConvertType.EleToSimplicialSet or node.to_type == EleConvertType.EleToTuple:
-                if node.to_type == EleConvertType.EleToSimplicialSet and len(node.params) == 3:
+                if node.to_type == EleConvertType.EleToSimplicialSet and len(node.params) == 1:
+                    # add extra empty edge, face and tet set
+                    extra_e = self.generate_var_name("edgeset")
+                    pre_list.append("    {} {};".format(self.get_ctype(node.params[-1].la_type), extra_e))
+                    extra_f = self.generate_var_name("faceset")
+                    pre_list.append("    {} {};".format(self.get_ctype(node.params[-1].la_type), extra_f))
+                    extra_n = self.generate_var_name("tetset")
+                    pre_list.append("    {} {};".format(self.get_ctype(node.params[-1].la_type), extra_n))
+                    type_list.append(type_list[-1])
+                    type_list.append(type_list[-1])
+                    type_list.append(type_list[-1])
+                    params.append(extra_e)
+                    params.append(extra_f)
+                    params.append(extra_n)
+                elif node.to_type == EleConvertType.EleToSimplicialSet and len(node.params) == 2:
+                    # add extra empty face and tet set
+                    extra_f = self.generate_var_name("faceset")
+                    pre_list.append("    {} {};".format(self.get_ctype(node.params[-1].la_type), extra_f))
+                    extra_n = self.generate_var_name("tetset")
+                    pre_list.append("    {} {};".format(self.get_ctype(node.params[-1].la_type), extra_n))
+                    type_list.append(type_list[-1])
+                    type_list.append(type_list[-1])
+                    params.append(extra_f)
+                    params.append(extra_n)
+                elif node.to_type == EleConvertType.EleToSimplicialSet and len(node.params) == 3:
                     # add extra empty tet set
                     extra_n = self.generate_var_name("tetset")
-                    pre_list.append("{} {};".format(self.get_ctype(node.params[-1].la_type), extra_n))
+                    pre_list.append("    {} {};".format(self.get_ctype(node.params[-1].la_type), extra_n))
                     type_list.append(type_list[-1])
                     params.append(extra_n)
                 content = "std::tuple<{} >{{ {} }}".format(",".join(type_list), ",".join(params))
