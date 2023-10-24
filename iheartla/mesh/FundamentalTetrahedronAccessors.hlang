@@ -9,10 +9,10 @@ V, E, F, C = ElementSets( M )
 `B¹ᵀ` = `B¹`ᵀ
 `B²ᵀ` = `B²`ᵀ
 
-Vertices(S) = S₁ where S: SimplicialSet
-Edges(S)    = S₂ where S: SimplicialSet 
-Faces(S)    = S₃ where S: SimplicialSet
-Cells(S)    = S₄ where S: SimplicialSet
+Vertices(S) = S₁ where S: CellularSet
+Edges(S)    = S₂ where S: CellularSet 
+Faces(S)    = S₃ where S: CellularSet
+Cells(S)    = S₄ where S: CellularSet
  
 Vertices(f) = vertexset(NonZeros(`B⁰` (`B¹` IndicatorVector({f})))) where f ∈ F
 Vertices(G) = vertexset(NonZeros(`B⁰` (`B¹` IndicatorVector(G)))) where G ⊂ F

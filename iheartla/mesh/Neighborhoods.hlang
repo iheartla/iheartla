@@ -30,7 +30,7 @@ OrientedVertices(f) = tuple(vs_1, i, j)    where f ∈ F,
 vs = Vertices(f),
 i,j = NeighborVerticesInFace(f, vs_1)
 
-Diamond(e) = SimplicialSet(Vertices(e), {e}, Faces(e)) where e ∈ E
+Diamond(e) = CellularSet(Vertices(e), {e}, Faces(e)) where e ∈ E
 
 OrientedOppositeFaces(i, j) = tuple(firf_1, secf_1) where i,j ∈ V,
 e = EdgeIndex(i, j),

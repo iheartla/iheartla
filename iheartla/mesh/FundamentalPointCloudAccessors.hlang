@@ -7,8 +7,8 @@ V, E = ElementSets( M )
 `B⁰` = UnsignedBoundaryMatrices(M)
 `B⁰ᵀ` = `B⁰`ᵀ
 
-Vertices(S) = S₁ where S: SimplicialSet
-Edges(S)    = S₂ where S: SimplicialSet 
+Vertices(S) = S₁ where S: CellularSet
+Edges(S)    = S₂ where S: CellularSet 
  
 Vertices(e) = vertexset(NonZeros(`B⁰` IndicatorVector({e}))) where e ∈ E
 Vertices(H) = vertexset(NonZeros(`B⁰` IndicatorVector(H))) where H ⊂ E
