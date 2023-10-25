@@ -58,4 +58,16 @@ std::set<int> ValueSet(Eigen::SparseMatrix<int> target, int value, bool is_row){
     return result;
 }
 
+SparseMatrix<int> indicator(const std::vector<int>& ele_set, int size){
+    SparseMatrix<int> f(size, 1);
+    std::vector<Eigen::Triplet<int> > tripletList; 
+    tripletList.reserve(size);
+    for (int idx : ele_set)
+    {
+        tripletList.push_back(Eigen::Triplet<int>(idx, 0, 1));
+    }
+    f.setFromTriplets(tripletList.begin(), tripletList.end());
+    return f;
+}
+
 }

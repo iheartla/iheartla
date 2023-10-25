@@ -21,5 +21,5 @@ std::vector<int> nonzeros(Eigen::SparseMatrix<int> target);
 std::vector<int> nonzeros(Eigen::SparseMatrix<int> target, bool is_row);
 std::set<int> ValueSet(Eigen::SparseMatrix<int> target, int value);
 std::set<int> ValueSet(Eigen::SparseMatrix<int> target, int value, bool is_row);
-
+Eigen::SparseMatrix<int> indicator(const std::vector<int>& ele_set, int size);
 }
