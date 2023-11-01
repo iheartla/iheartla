@@ -4,7 +4,7 @@ from .la_package import *
 if not DEBUG_PARSER:
     from ..la_local_parsers.init_parser import grammarinitParser, grammarinitModelBuilderSemantics
     from ..la_local_parsers.default_parser import grammardefaultParser, grammardefaultModelBuilderSemantics
-    # from ..la_local_parsers.config_parser import grammarconfigParser, grammarconfigModelBuilderSemantics
+    from ..la_local_parsers.config_parser import grammarconfigParser, grammarconfigModelBuilderSemantics
 import pickle
 import tatsu
 import time
@@ -52,7 +52,7 @@ class ParserManager(object):
                     # Work around BC break in Tatsu 5.7
                     ast_parser_config.comments_re = None
                     ast_parser_config.eol_comments_re = None
-                # self.config_parser = grammarconfigParser(semantics=grammarconfigModelBuilderSemantics())
+                self.config_parser = grammarconfigParser(semantics=grammarconfigModelBuilderSemantics())
             ParserManager.__instance = self
 
     def get_parser(self, key, grammar, extra_dict={}):
@@ -61,8 +61,8 @@ class ParserManager(object):
         else:
             if key == 'init':
                 return self.init_parser
-            # elif key == 'config':
-            #     return self.config_parser
+            elif key == 'config':
+                return self.config_parser
             self.modify_default_parser(extra_dict)
             return self.default_parser
 
@@ -437,10 +437,10 @@ class ParserFileManager(object):
                 init_parser = read_from_file(la_local_parsers / f)
                 init_parser = init_parser.replace(self.init_hash_value, 'init')
                 save_to_file(init_parser, os.path.join(la_local_parsers, 'init_parser.py'))
-            # if self.config_hash_value in f:
-            #     config_parser = read_from_file(la_local_parsers / f)
-            #     config_parser = config_parser.replace(self.config_hash_value, 'config')
-            #     save_to_file(config_parser, os.path.join(la_local_parsers, 'config_parser.py'))
+            if self.config_hash_value in f:
+                config_parser = read_from_file(la_local_parsers / f)
+                config_parser = config_parser.replace(self.config_hash_value, 'config')
+                save_to_file(config_parser, os.path.join(la_local_parsers, 'config_parser.py'))
             if self.default_hash_value in f:
                 def_parser = read_from_file(la_local_parsers / f)
                 def_parser = def_parser.replace(self.default_hash_value, 'default')
@@ -850,7 +850,7 @@ def recreate_local_parser_cache():
     iheartla.la_parser.parser.create_parser()
 
     print('## Re-creating config parser.')
-    # PM.create_config_parser()
+    PM.create_config_parser()
 
     print('## Waiting for them to be saved.')
     for thread in PM.parser_file_manager.save_threads: thread.join()

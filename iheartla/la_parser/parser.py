@@ -510,9 +510,20 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
     def get_parse_result(parser_type):
         parser = get_default_parser()
         #
+        # parse de
         model = parser.parse(content, parseinfo=True)
         # type walker
-        type_walker, start_node = parse_ir_node(content, model, parser_type, class_only=CLASS_ONLY)
+        type_walker = get_type_walker()
+        start_node = type_walker.walk(model, pre_walk=True)
+        new_parser, _, _, _, _, _ = get_new_parser(start_node, content, type_walker, True)
+        model = new_parser.parse(content, parseinfo=True)
+        #
+        new_content = parse_de_content(model, content)
+        print("new_content:\n{}".format(new_content))
+        #
+        model = parser.parse(new_content, parseinfo=True)
+        # type walker
+        type_walker, start_node = parse_ir_node(new_content, model, parser_type, class_only=CLASS_ONLY)
         # parsing Latex at the same time
         latex_thread = threading.Thread(target=generate_latex_code, args=(type_walker, start_node, frame,))
         latex_thread.start()

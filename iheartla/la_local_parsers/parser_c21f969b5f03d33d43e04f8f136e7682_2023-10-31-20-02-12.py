@@ -6363,7 +6363,16 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
 
     @tatsumasu()
     def _where_condition_(self):  # noqa
-        self._la_where_condition_()
+        with self._choice():
+            with self._option():
+                self._la_where_condition_()
+            with self._option():
+                self._de_where_condition_()
+            self._error(
+                'expecting one of: '
+                '<de_where_condition> <identifier>'
+                '<la_where_condition>'
+            )
 
     @tatsumasu()
     def _attribute_(self):  # noqa
@@ -6792,6 +6801,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         )
 
     @tatsumasu('Assignment')
+    @nomemo
     def _assignment_(self):  # noqa
         with self._choice():
             with self._option():
@@ -6872,9 +6882,104 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     ['op'],
                     ['left', 'right']
                 )
+            with self._option():
+
+                def block19():
+                    self._SOLVE_()
+                    self._token('_(')
+
+                    def block20():
+                        self._hspace_()
+                    self._closure(block20)
+                    self._where_condition_terse_()
+                    self.add_last_node_to_name('v')
+
+                    def block22():
+                        self._hspace_()
+                    self._closure(block22)
+
+                    def block23():
+                        self._token(',')
+
+                        def block24():
+                            self._hspace_()
+                        self._closure(block24)
+                        self._where_condition_terse_()
+                        self.add_last_node_to_name('v')
+
+                        def block26():
+                            self._hspace_()
+                        self._closure(block26)
+
+                        self._define(
+                            [],
+                            ['v']
+                        )
+                    self._closure(block23)
+                    self._token(')')
+
+                    def block27():
+                        self._hspace_()
+                    self._closure(block27)
+
+                    self._define(
+                        [],
+                        ['v']
+                    )
+                self._closure(block19)
+                self._expression_()
+                self.add_last_node_to_name('lexpr')
+
+                def block29():
+                    self._hspace_()
+                self._closure(block29)
+                self._token('=')
+                self.name_last_node('op')
+
+                def block31():
+                    self._hspace_()
+                self._closure(block31)
+                self._expression_()
+                self.add_last_node_to_name('rexpr')
+
+                def block33():
+
+                    def block34():
+                        self._hspace_()
+                    self._closure(block34)
+                    self._token(';')
+
+                    def block35():
+                        self._hspace_()
+                    self._closure(block35)
+                    self._expression_()
+                    self.add_last_node_to_name('lexpr')
+
+                    def block37():
+                        self._hspace_()
+                    self._closure(block37)
+                    self._token('=')
+                    self.name_last_node('op')
+
+                    def block39():
+                        self._hspace_()
+                    self._closure(block39)
+                    self._expression_()
+                    self.add_last_node_to_name('rexpr')
+
+                    self._define(
+                        ['op'],
+                        ['lexpr', 'rexpr']
+                    )
+                self._closure(block33)
+
+                self._define(
+                    ['op'],
+                    ['lexpr', 'rexpr', 'v']
+                )
             self._error(
                 'expecting one of: '
-                "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                "# ' '-' <AND> <ARGMAX> <ARGMIN> <AS>"
                 '<BUILTIN_KEYWORDS> <CELLMESH> <DELTA>'
                 '<DERIVATIVE> <EDGEMESH> <EDGES>'
                 '<EDGESET> <EXP> <FACEMESH> <FACES>'
@@ -6887,9 +6992,12 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
                 '<SUBSET> <TETS> <TETSET> <TUPLE>'
                 '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
-                '<WITH> <identifier> <identifier_alone>'
-                '<identifier_with_subscript> SOLVE Solve'
-                '[Cc]ell[Mm]esh [Cc]ell[Ss]et'
+                '<WITH> <add_sub_operator> <addition>'
+                '<division> <expression> <factor>'
+                '<identifier> <identifier_alone>'
+                '<identifier_with_subscript>'
+                '<multiplication> <subtraction> <term>'
+                'SOLVE Solve [Cc]ell[Mm]esh [Cc]ell[Ss]et'
                 '[Cc]ellular[Ss]et [Ee]dge[Mm]esh'
                 '[Ee]dge[Ss]et [Ff]ace[Mm]esh'
                 '[Ff]ace[Ss]et [Vv]ertex[Ss]et [Δ] and'
@@ -6995,7 +7103,6 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             )
 
     @tatsumasu()
-    @nomemo
     def _right_hand_side_(self):  # noqa
         with self._choice():
             with self._option():
@@ -9001,30 +9108,43 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
             with self._option():
                 self._func_id_()
                 self.name_last_node('name')
-                self._token('(')
-                self.name_last_node('p')
 
-                def block21():
+                def block20():
+                    self._PRIME_()
+                    self.add_last_node_to_name('order')
+                self._positive_closure(block20)
 
-                    def block22():
-                        self._hspace_()
-                    self._closure(block22)
-                    self._expression_()
-                    self.add_last_node_to_name('params')
+                def block22():
+                    self._token('(')
+                    self.name_last_node('p')
 
                     def block24():
 
                         def block25():
                             self._hspace_()
                         self._closure(block25)
-                        self._params_separator_()
-                        self.add_last_node_to_name('separators')
-
-                        def block27():
-                            self._hspace_()
-                        self._closure(block27)
                         self._expression_()
                         self.add_last_node_to_name('params')
+
+                        def block27():
+
+                            def block28():
+                                self._hspace_()
+                            self._closure(block28)
+                            self._params_separator_()
+                            self.add_last_node_to_name('separators')
+
+                            def block30():
+                                self._hspace_()
+                            self._closure(block30)
+                            self._expression_()
+                            self.add_last_node_to_name('params')
+
+                            self._define(
+                                [],
+                                ['params', 'separators']
+                            )
+                        self._closure(block27)
 
                         self._define(
                             [],
@@ -9032,20 +9152,20 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         )
                     self._closure(block24)
 
+                    def block32():
+                        self._hspace_()
+                    self._closure(block32)
+                    self._token(')')
+
                     self._define(
-                        [],
+                        ['p'],
                         ['params', 'separators']
                     )
-                self._closure(block21)
-
-                def block29():
-                    self._hspace_()
-                self._closure(block29)
-                self._token(')')
+                self._closure(block22)
 
                 self._define(
                     ['name', 'p'],
-                    ['params', 'separators']
+                    ['order', 'params', 'separators']
                 )
             with self._option():
                 self._func_id_()
@@ -9053,37 +9173,15 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 with self._group():
                     with self._choice():
                         with self._option():
-                            self._sub_integer_()
+                            self._UDDOT_()
+                            self.name_last_node('d')
                         with self._option():
-                            self._unicode_subscript_()
+                            self._UDOT_()
+                            self.name_last_node('s')
                         self._error(
                             'expecting one of: '
-                            '<sub_integer> <unicode_subscript>'
+                            '<UDDOT> <UDOT>'
                         )
-                self.add_last_node_to_name('subs')
-
-                def block33():
-
-                    def block34():
-                        self._token(',')
-                    self._closure(block34)
-                    with self._group():
-                        with self._choice():
-                            with self._option():
-                                self._sub_integer_()
-                            with self._option():
-                                self._unicode_subscript_()
-                            self._error(
-                                'expecting one of: '
-                                '<sub_integer> <unicode_subscript>'
-                            )
-                    self.add_last_node_to_name('subs')
-
-                    self._define(
-                        [],
-                        ['subs']
-                    )
-                self._closure(block33)
 
                 def block37():
                     self._token('(')
@@ -9133,6 +9231,146 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         ['params', 'separators']
                     )
                 self._closure(block37)
+
+                self._define(
+                    ['d', 'name', 'p', 's'],
+                    ['params', 'separators']
+                )
+            with self._option():
+                self._func_id_()
+                self.name_last_node('name')
+                self._token('(')
+                self.name_last_node('p')
+
+                def block50():
+
+                    def block51():
+                        self._hspace_()
+                    self._closure(block51)
+                    self._expression_()
+                    self.add_last_node_to_name('params')
+
+                    def block53():
+
+                        def block54():
+                            self._hspace_()
+                        self._closure(block54)
+                        self._params_separator_()
+                        self.add_last_node_to_name('separators')
+
+                        def block56():
+                            self._hspace_()
+                        self._closure(block56)
+                        self._expression_()
+                        self.add_last_node_to_name('params')
+
+                        self._define(
+                            [],
+                            ['params', 'separators']
+                        )
+                    self._closure(block53)
+
+                    self._define(
+                        [],
+                        ['params', 'separators']
+                    )
+                self._closure(block50)
+
+                def block58():
+                    self._hspace_()
+                self._closure(block58)
+                self._token(')')
+
+                self._define(
+                    ['name', 'p'],
+                    ['params', 'separators']
+                )
+            with self._option():
+                self._func_id_()
+                self.name_last_node('name')
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            self._sub_integer_()
+                        with self._option():
+                            self._unicode_subscript_()
+                        self._error(
+                            'expecting one of: '
+                            '<sub_integer> <unicode_subscript>'
+                        )
+                self.add_last_node_to_name('subs')
+
+                def block62():
+
+                    def block63():
+                        self._token(',')
+                    self._closure(block63)
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._sub_integer_()
+                            with self._option():
+                                self._unicode_subscript_()
+                            self._error(
+                                'expecting one of: '
+                                '<sub_integer> <unicode_subscript>'
+                            )
+                    self.add_last_node_to_name('subs')
+
+                    self._define(
+                        [],
+                        ['subs']
+                    )
+                self._closure(block62)
+
+                def block66():
+                    self._token('(')
+                    self.name_last_node('p')
+
+                    def block68():
+
+                        def block69():
+                            self._hspace_()
+                        self._closure(block69)
+                        self._expression_()
+                        self.add_last_node_to_name('params')
+
+                        def block71():
+
+                            def block72():
+                                self._hspace_()
+                            self._closure(block72)
+                            self._params_separator_()
+                            self.add_last_node_to_name('separators')
+
+                            def block74():
+                                self._hspace_()
+                            self._closure(block74)
+                            self._expression_()
+                            self.add_last_node_to_name('params')
+
+                            self._define(
+                                [],
+                                ['params', 'separators']
+                            )
+                        self._closure(block71)
+
+                        self._define(
+                            [],
+                            ['params', 'separators']
+                        )
+                    self._closure(block68)
+
+                    def block76():
+                        self._hspace_()
+                    self._closure(block76)
+                    self._token(')')
+
+                    self._define(
+                        ['p'],
+                        ['params', 'separators']
+                    )
+                self._closure(block66)
 
                 self._define(
                     ['name', 'p'],
@@ -11042,8 +11280,11 @@ class Destructure(ModelBase):
 @dataclass(eq=False)
 class Assignment(ModelBase):
     left: Any = None
+    lexpr: Any = None
     op: Any = None
+    rexpr: Any = None
     right: Any = None
+    v: Any = None
 
 
 @dataclass(eq=False)
@@ -11269,9 +11510,12 @@ class Intersection(ModelBase):
 
 @dataclass(eq=False)
 class Function(ModelBase):
+    d: Any = None
     name: Any = None
+    order: Any = None
     p: Any = None
     params: Any = None
+    s: Any = None
     separators: Any = None
     subs: Any = None
 

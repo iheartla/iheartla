@@ -3140,17 +3140,17 @@ class TypeWalker(NodeWalker):
         ir_node.name = name_info.ir
         if node.p:
             ir_node.def_type =LocalFuncDefType.LocalFuncDefParenthesis
-        # if node.order:
-        #     ir_node.order = len(node.order)
-        #     self.cur_eq_type |= EqTypeEnum.ODE
-        # elif node.d:
-        #     ir_node.order = 2
-        #     ir_node.order_mode = OrderFormat.OrderDot
-        #     self.cur_eq_type |= EqTypeEnum.ODE
-        # elif node.s:
-        #     ir_node.order = 1
-        #     ir_node.order_mode = OrderFormat.OrderDot
-        #     self.cur_eq_type |= EqTypeEnum.ODE
+        if node.order:
+            ir_node.order = len(node.order)
+            self.cur_eq_type |= EqTypeEnum.ODE
+        elif node.d:
+            ir_node.order = 2
+            ir_node.order_mode = OrderFormat.OrderDot
+            self.cur_eq_type |= EqTypeEnum.ODE
+        elif node.s:
+            ir_node.order = 1
+            ir_node.order_mode = OrderFormat.OrderDot
+            self.cur_eq_type |= EqTypeEnum.ODE
         if name_type.is_function():
             omitted = False # whether size is omitted when checking func types
             # function type is already specified in where block

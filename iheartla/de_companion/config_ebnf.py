@@ -42,8 +42,13 @@ identifier
     = identifier_with_subscript
     | identifier_alone
     ;
+    
+# used inside identifier_with_subscript rule
+expression
+    = identifier
+    ;
 """
-CONFIG = START + KEYS + BASE + ARITHMETIC + TYPES + NUMBER
+CONFIG = START + KEYWORDS + BASE + ARITHMETIC + TYPES + NUMBER
 
 CONFIG += r""" 
 

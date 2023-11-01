@@ -23,7 +23,7 @@ where_conditions::WhereConditions
 where_condition
     =
     la_where_condition
-    #| de_where_condition
+    | de_where_condition
     ;
     
 attribute
@@ -97,8 +97,8 @@ assignment::Assignment
     =
     left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'=' {hspace} right+:right_hand_side
     | left+:identifier {{hspace} ',' {hspace} left+:identifier} {hspace} op:'+=' {hspace} right+:right_hand_side 
-    #| {SOLVE '_(' {hspace} v+:where_condition_terse {hspace} {',' {hspace} v+:where_condition_terse {hspace}} ')' {hspace}} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression 
-    #{{hspace} ';' {hspace} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression }
+    | {SOLVE '_(' {hspace} v+:where_condition_terse {hspace} {',' {hspace} v+:where_condition_terse {hspace}} ')' {hspace}} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression 
+    {{hspace} ';' {hspace} lexpr+:expression {hspace} op:'=' {hspace} rexpr+:expression }
     ;
 
 general_assign
