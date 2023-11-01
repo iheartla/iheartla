@@ -8985,7 +8985,23 @@ class grammarinitParser(Parser):
                     with self._choice():
                         with self._option():
                             with self._group():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?:[A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
+                                with self._choice():
+                                    with self._option():
+                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*)*')
+                                    with self._option():
+                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
+                                    self._error(
+                                        'expecting one of: '
+                                        '[A-Za-'
+                                        'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
+                                        '{M}*([A-Z0-9a-'
+                                        'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
+                                        '{M}*)* [A-Za-'
+                                        'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
+                                        '07])([A-Z0-9a-'
+                                        'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
+                                        '07]))*'
+                                    )
                             self.name_last_node('value')
                         with self._option():
                             self._token('`')
@@ -9000,8 +9016,14 @@ class grammarinitParser(Parser):
                         self._error(
                             'expecting one of: '
                             "'`' [A-Za-"
-                            'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?:[A-Z0-9a-'
-                            'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*'
+                            'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
+                            '{M}*([A-Z0-9a-'
+                            'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
+                            '{M}*)* [A-Za-'
+                            'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
+                            '07])([A-Z0-9a-'
+                            'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
+                            '07]))*'
                         )
 
                 self._define(
@@ -9012,7 +9034,23 @@ class grammarinitParser(Parser):
                 with self._group():
                     self._PREFIX_KEYWORD_()
                     with self._group():
-                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?:[A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*')
+                        with self._choice():
+                            with self._option():
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*)*')
+                            with self._option():
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
+                            self._error(
+                                'expecting one of: '
+                                '[A-Za-'
+                                'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
+                                '{M}*([A-Z0-9a-'
+                                'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
+                                '{M}*)* [A-Za-'
+                                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
+                                '07])([A-Z0-9a-'
+                                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
+                                '07]))*'
+                            )
                 self.name_last_node('value')
             self._error(
                 'expecting one of: '
