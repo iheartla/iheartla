@@ -8987,18 +8987,18 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                             with self._group():
                                 with self._choice():
                                     with self._option():
-                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*)*')
+                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*(?:[A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*)*')
                                     with self._option():
-                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
+                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])(?:[A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
                                     self._error(
                                         'expecting one of: '
                                         '[A-Za-'
                                         'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
-                                        '{M}*([A-Z0-9a-'
+                                        '{M}*(?:[A-Z0-9a-'
                                         'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
                                         '{M}*)* [A-Za-'
                                         'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
-                                        '07])([A-Z0-9a-'
+                                        '07])(?:[A-Z0-9a-'
                                         'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
                                         '07]))*'
                                     )
@@ -9017,11 +9017,11 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                             'expecting one of: '
                             "'`' [A-Za-"
                             'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
-                            '{M}*([A-Z0-9a-'
+                            '{M}*(?:[A-Z0-9a-'
                             'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
                             '{M}*)* [A-Za-'
                             'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
-                            '07])([A-Z0-9a-'
+                            '07])(?:[A-Z0-9a-'
                             'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
                             '07]))*'
                         )
@@ -9036,18 +9036,18 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                     with self._group():
                         with self._choice():
                             with self._option():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*)*')
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*(?:[A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*)*')
                             with self._option():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])(?:[A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
                             self._error(
                                 'expecting one of: '
                                 '[A-Za-'
                                 'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
-                                '{M}*([A-Z0-9a-'
+                                '{M}*(?:[A-Z0-9a-'
                                 'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
                                 '{M}*)* [A-Za-'
                                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
-                                '07])([A-Z0-9a-'
+                                '07])(?:[A-Z0-9a-'
                                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
                                 '07]))*'
                             )

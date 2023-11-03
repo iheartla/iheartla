@@ -30,9 +30,10 @@ func_id
     | identifier_alone {'_' (identifier_alone | integer) | unicode_subscript}
     ;
 
+# be careful on ?: inside the parenthesis
 identifier_alone::IdentifierAlone
-    = !KEYWORDS(  value:(/[A-Za-z\p{Ll}\p{Lu}\p{Lo}](?![\u0308\u0307])\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}](?![\u0308\u0307])\p{M}*)*/|/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?=[\u0308\u0307])([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?=[\u0308\u0307]))*/) | '`' id:/[^`]*/ '`')
-    | value:(PREFIX_KEYWORD (/[A-Za-z\p{Ll}\p{Lu}\p{Lo}](?![\u0308\u0307])\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}](?![\u0308\u0307])\p{M}*)*/|/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?=[\u0308\u0307])([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?=[\u0308\u0307]))*/))
+    = !KEYWORDS(  value:(/[A-Za-z\p{Ll}\p{Lu}\p{Lo}](?![\u0308\u0307])\p{M}*(?:[A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}](?![\u0308\u0307])\p{M}*)*/|/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?=[\u0308\u0307])(?:[A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?=[\u0308\u0307]))*/) | '`' id:/[^`]*/ '`')
+    | value:(PREFIX_KEYWORD (/[A-Za-z\p{Ll}\p{Lu}\p{Lo}](?![\u0308\u0307])\p{M}*(?:[A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}](?![\u0308\u0307])\p{M}*)*/|/[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?=[\u0308\u0307])(?:[A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*(?=[\u0308\u0307]))*/))
     ;
 
 identifier
