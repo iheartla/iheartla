@@ -515,7 +515,7 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
         # type walker
         type_walker = get_type_walker()
         start_node = type_walker.walk(model, pre_walk=True)
-        new_parser, _, _, _, _, _ = get_new_parser(start_node, content, type_walker, True)
+        new_parser, _, _, _, _, _ = get_new_parser(start_node, content, type_walker, False)
         model = new_parser.parse(content, parseinfo=True)
         #
         new_content = parse_de_content(model, content)
