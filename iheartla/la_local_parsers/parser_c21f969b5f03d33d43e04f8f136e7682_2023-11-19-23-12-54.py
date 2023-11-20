@@ -24,7 +24,7 @@ from tatsu.util import re, generic_main  # noqa
 KEYWORDS = {}  # type: ignore
 
 
-class grammar44a4c831a6badf1b5cbfdd0f644a9247Buffer(Buffer):
+class grammarc21f969b5f03d33d43e04f8f136e7682Buffer(Buffer):
     def __init__(self, text, /, config: ParserConfig = None, **settings):
         config = ParserConfig.new(
             config,
@@ -41,7 +41,7 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Buffer(Buffer):
         super().__init__(text, config=config)
 
 
-class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
+class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
     def __init__(self, /, config: ParserConfig = None, **settings):
         config = ParserConfig.new(
             config,
@@ -796,8 +796,8 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 self._pseudoinverse_operator_()
             self._error(
                 'expecting one of: '
-                "# '<' '|' '||' '‖' '∪' '∫' '⟨' <DELTA>"
-                '<DERIVATIVE> <INT> <INVERSEVEC> <NABLA>'
+                "# '!!!' '<' '|' '||' '‖' '∪' '∫' '⟨'"
+                '<DELTA> <DERIVATIVE> <INT> <NABLA>'
                 '<PARTIAL> <POUND> <SUM>'
                 '<builtin_operators>'
                 '<cross_product_operator> <derivative>'
@@ -806,7 +806,6 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 '<frobenius_product_operator> <func_id>'
                 '<function_operator> <gradient>'
                 '<hadamard_product_operator>'
-                '<identifier_alone>'
                 '<inner_product_operator>'
                 '<integral_operator> <intersect_operator>'
                 '<kronecker_product_operator> <laplacian>'
@@ -818,7 +817,7 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 '<size_op> <solver_operator> <sqrt_func>'
                 '<sqrt_operator> <sum_operator>'
                 '<trans_operator> <union_operator> [Δ]'
-                'int inversevec sum vec⁻¹ ∂ ∇ ∑ √ 𝕕'
+                'int sum ∂ ∇ ∑ √ 𝕕'
             )
 
     @tatsumasu('Add')
@@ -3927,7 +3926,6 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 '<function_operator>'
                 '<hadamard_product_in_matrix_operator>'
                 '<identifier> <identifier_alone>'
-                '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> <infinity>'
                 '<inner_product_operator> <integer>'
                 '<integral_operator>'
@@ -3991,8 +3989,8 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 self._pseudoinverse_in_matrix_operator_()
             self._error(
                 'expecting one of: '
-                "'(' '.' '0' '1' '<' '[' '{' '|' '||' '‖'"
-                "'∫' '⎡' '⟨' '𝟙' <INT> <INVERSEVEC> <SUM>"
+                "'!!!' '(' '.' '0' '1' '<' '[' '{' '|'"
+                "'||' '‖' '∫' '⎡' '⟨' '𝟙' <INT> <SUM>"
                 '<builtin_operators> <constant>'
                 '<cross_product_in_matrix_operator>'
                 '<digit> <double> <element_convert_func>'
@@ -4001,9 +3999,8 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 '<frobenius_product_in_matrix_operator>'
                 '<func_id> <function_operator>'
                 '<hadamard_product_in_matrix_operator>'
-                '<identifier> <identifier_alone>'
-                '<inner_product_operator> <integer>'
-                '<integral_operator>'
+                '<identifier> <inner_product_operator>'
+                '<integer> <integral_operator>'
                 '<kronecker_product_in_matrix_operator>'
                 '<ln_func> <log_func> <mantissa> <matrix>'
                 '<minmax_func> <norm_operator> <number>'
@@ -4016,7 +4013,7 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 '<subexpression> <sum_in_matrix_operator>'
                 '<trans_in_matrix_operator> <vector>'
                 '[01\\u1D7D9] [\\u00BC-\\u00BE\\u2150-\\u215E]'
-                'int inversevec sum vec⁻¹ ∑ √'
+                'int sum ∑ √'
             )
 
     @tatsumasu('Power')
@@ -4098,7 +4095,6 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 '<function_operator>'
                 '<hadamard_product_in_matrix_operator>'
                 '<identifier> <identifier_alone>'
-                '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> <infinity>'
                 '<inner_product_operator> <integer>'
                 '<integral_operator>'
@@ -4278,7 +4274,6 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 '<function_operator>'
                 '<hadamard_product_in_matrix_operator>'
                 '<identifier> <identifier_alone>'
-                '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> <infinity>'
                 '<inner_product_operator> <integer>'
                 '<integral_operator>'
@@ -4596,7 +4591,7 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                             )
                     self.add_last_node_to_name('right')
 
-                    def block23():
+                    def block1():
                         with self._choice():
                             with self._option():
                                 with self._group():
@@ -4611,9 +4606,9 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                             with self._option():
                                 with self._group():
 
-                                    def block26():
+                                    def block4():
                                         self._token(',')
-                                    self._closure(block26)
+                                    self._closure(block4)
                                     with self._group():
                                         with self._choice():
                                             with self._option():
@@ -4634,7 +4629,7 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                                 'expecting one of: '
                                 "',' <sub_integer> <unicode_subscript>"
                             )
-                    self._closure(block23)
+                    self._closure(block1)
 
                     self._define(
                         ['left'],
@@ -4647,9 +4642,9 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                     self._token('_(')
                     self.name_last_node('p')
 
-                    def block31():
+                    def block9():
                         self._hspace_()
-                    self._closure(block31)
+                    self._closure(block9)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -4662,19 +4657,19 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                             )
                     self.add_last_node_to_name('exp')
 
-                    def block34():
+                    def block1():
                         with self._choice():
                             with self._option():
                                 with self._group():
 
-                                    def block36():
+                                    def block1():
                                         self._hspace_()
-                                    self._closure(block36)
+                                    self._closure(block1)
                                     self._token(',')
 
-                                    def block37():
+                                    def block2():
                                         self._hspace_()
-                                    self._closure(block37)
+                                    self._closure(block2)
                                     self._token('*')
                                     self.add_last_node_to_name('exp')
 
@@ -4685,14 +4680,14 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                             with self._option():
                                 with self._group():
 
-                                    def block39():
+                                    def block4():
                                         self._hspace_()
-                                    self._closure(block39)
+                                    self._closure(block4)
                                     self._token(',')
 
-                                    def block40():
+                                    def block5():
                                         self._hspace_()
-                                    self._closure(block40)
+                                    self._closure(block5)
                                     self._expression_()
                                     self.add_last_node_to_name('exp')
 
@@ -4704,11 +4699,11 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                                 'expecting one of: '
                                 "',' <hspace>"
                             )
-                    self._closure(block34)
+                    self._closure(block1)
 
-                    def block42():
+                    def block7():
                         self._hspace_()
-                    self._closure(block42)
+                    self._closure(block7)
                     self._token(')')
 
                     self._define(
@@ -4759,7 +4754,7 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 )
         self.add_last_node_to_name('right')
 
-        def block3():
+        def block1():
             with self._choice():
                 with self._option():
                     with self._group():
@@ -4774,9 +4769,9 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 with self._option():
                     with self._group():
 
-                        def block6():
+                        def block16():
                             self._token(',')
-                        self._closure(block6)
+                        self._closure(block16)
                         with self._group():
                             with self._choice():
                                 with self._option():
@@ -4797,7 +4792,7 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                     'expecting one of: '
                     "',' <sub_integer> <unicode_subscript>"
                 )
-        self._closure(block3)
+        self._closure(block1)
 
         self._define(
             ['left'],
@@ -6717,11 +6712,11 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 '<WITH> <add_sub_operator> <addition>'
                 '<assignment> <destructure> <expression>'
                 '<identifier> <identifier_alone>'
-                '<identifier_with_multi_subscript>'
-                '<identifier_with_subscript> <local_func>'
-                '<multi_cond_expr> <optimize_operator>'
-                '<right_hand_side> <subtraction> <term>'
-                'SOLVE Solve [Cc]ell[Mm]esh [Cc]ell[Ss]et'
+                '<identifier_with_unicode_subscript>'
+                '<local_func> <multi_cond_expr>'
+                '<optimize_operator> <right_hand_side>'
+                '<subtraction> <term> SOLVE Solve'
+                '[Cc]ell[Mm]esh [Cc]ell[Ss]et'
                 '[Cc]ellular[Ss]et [Ee]dge[Mm]esh'
                 '[Ee]dge[Ss]et [Ff]ace[Mm]esh'
                 '[Ff]ace[Ss]et [Vv]ertex[Ss]et [Δ] and'
@@ -7000,7 +6995,6 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 '<WITH> <add_sub_operator> <addition>'
                 '<division> <expression> <factor>'
                 '<identifier> <identifier_alone>'
-                '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript>'
                 '<multiplication> <subtraction> <term>'
                 'SOLVE Solve [Cc]ell[Mm]esh [Cc]ell[Ss]et'
@@ -7152,7 +7146,6 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 '<SUBSET> <TETS> <TETSET> <TUPLE>'
                 '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
                 '<WITH> <identifier> <identifier_alone>'
-                '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> <matrix>'
                 '<vector> SOLVE Solve [Cc]ell[Mm]esh'
                 '[Cc]ell[Ss]et [Cc]ellular[Ss]et'
@@ -7233,15 +7226,15 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 self.name_last_node('c')
             self._error(
                 'expecting one of: '
-                "# ' '(' '.' '0' '1' '<' '[' '{' '|' '||'"
-                "'‖' '∪' '∫' '⎡' '⟨' '𝟙' <AND> <ARGMAX>"
-                '<ARGMIN> <AS> <BUILTIN_KEYWORDS>'
-                '<CELLMESH> <DELTA> <DERIVATIVE>'
-                '<EDGEMESH> <EDGES> <EDGESET> <EXP>'
-                '<FACEMESH> <FACES> <FACESET> <FOR>'
-                '<FROM> <GIVEN> <IF> <IN> <INDEX>'
-                '<INITIAL> <INT> <INVERSEVEC> <KEYWORDS>'
-                '<LN> <LOG> <MATRIX> <MAX> <MIN> <NABLA>'
+                "# ' '!!!' '(' '.' '0' '1' '<' '[' '{'"
+                "'|' '||' '‖' '∪' '∫' '⎡' '⟨' '𝟙' <AND>"
+                '<ARGMAX> <ARGMIN> <AS>'
+                '<BUILTIN_KEYWORDS> <CELLMESH> <DELTA>'
+                '<DERIVATIVE> <EDGEMESH> <EDGES>'
+                '<EDGESET> <EXP> <FACEMESH> <FACES>'
+                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                '<LOG> <MATRIX> <MAX> <MIN> <NABLA>'
                 '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
                 '<PARTIAL> <PI> <POUND> <PREFIX_KEYWORD>'
                 '<PRIME> <SCALAR> <SEQUENCE>'
@@ -7258,7 +7251,6 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 '<function_operator> <gradient>'
                 '<hadamard_product_operator> <identifier>'
                 '<identifier_alone>'
-                '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> <infinity>'
                 '<inner_product_operator> <integer>'
                 '<integral_operator> <intersect_operator>'
@@ -7280,12 +7272,11 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 '[Ff]ace[Ss]et [Vv]ertex[Ss]et'
                 '[\\u00BC-\\u00BE\\u2150-\\u215E] [Δ] \\d and'
                 'argmax argmin as cells edges exp faces'
-                'for from given if index initial int'
-                'inversevec ln log matrix max min or'
-                'otherwise s.t. scalar sequence solve'
-                'sparse sqrt subject to sum tuple vector'
-                'vec⁻¹ vertices where with π ℝ ℤ ∂ ∇ ∈ ∑'
-                '√ ∞ ⊂ 𝕕'
+                'for from given if index initial int ln'
+                'log matrix max min or otherwise s.t.'
+                'scalar sequence solve sparse sqrt'
+                'subject to sum tuple vector vertices'
+                'where with π ℝ ℤ ∂ ∇ ∈ ∑ √ ∞ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -8019,9 +8010,9 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 )
         self.name_last_node('op')
 
-        def block4():
+        def block5():
             self._hspace_()
-        self._closure(block4)
+        self._closure(block5)
         self._arithmetic_factor_()
         self.name_last_node('right')
 
@@ -8064,7 +8055,6 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 '<digit> <double> <floating_point>'
                 '<fraction> <identifier>'
                 '<identifier_alone>'
-                '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> <integer>'
                 '<mantissa> <number> <size_op> SOLVE'
                 'Solve [Cc]ell[Mm]esh [Cc]ell[Ss]et'
@@ -8664,17 +8654,17 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                         self._params_type_()
                         self.add_last_node_to_name('params')
 
-                        def block2():
+                        def block7():
 
-                            def block3():
+                            def block8():
                                 self._hspace_()
-                            self._closure(block3)
+                            self._closure(block8)
                             self._params_separator_()
                             self.add_last_node_to_name('separators')
 
-                            def block5():
+                            def block10():
                                 self._hspace_()
-                            self._closure(block5)
+                            self._closure(block10)
                             self._params_type_()
                             self.add_last_node_to_name('params')
 
@@ -8682,7 +8672,7 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                                 [],
                                 ['params', 'separators']
                             )
-                        self._closure(block2)
+                        self._closure(block7)
 
                         self._define(
                             [],
@@ -8694,18 +8684,18 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 with self._option():
                     self._token('{')
 
-                    def block8():
+                    def block13():
                         self._hspace_()
-                    self._closure(block8)
+                    self._closure(block13)
                     self._token('}')
                 self._error(
                     'expecting one of: '
                     "'{' '∅' <params_type>"
                 )
 
-        def block9():
+        def block14():
             self._hspace_()
-        self._closure(block9)
+        self._closure(block14)
         with self._group():
             with self._choice():
                 with self._option():
@@ -8717,23 +8707,23 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                     "'->' '→'"
                 )
 
-        def block11():
+        def block16():
             self._hspace_()
-        self._closure(block11)
+        self._closure(block16)
         self._params_type_()
         self.add_last_node_to_name('ret')
 
-        def block13():
+        def block18():
 
-            def block14():
+            def block19():
                 self._hspace_()
-            self._closure(block14)
+            self._closure(block19)
             self._params_separator_()
             self.add_last_node_to_name('ret_separators')
 
-            def block16():
+            def block21():
                 self._hspace_()
-            self._closure(block16)
+            self._closure(block21)
             self._params_type_()
             self.add_last_node_to_name('ret')
 
@@ -8741,7 +8731,7 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 [],
                 ['ret', 'ret_separators']
             )
-        self._closure(block13)
+        self._closure(block18)
 
         self._define(
             ['empty'],
@@ -8798,7 +8788,6 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 '<SUBSET> <TETS> <TETSET> <TUPLE>'
                 '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
                 '<WITH> <identifier> <identifier_alone>'
-                '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> SOLVE Solve'
                 '[Cc]ell[Mm]esh [Cc]ell[Ss]et'
                 '[Cc]ellular[Ss]et [Ee]dge[Mm]esh'
@@ -8919,61 +8908,7 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
 
     @tatsumasu()
     def _func_id_(self):  # noqa
-        with self._choice():
-            with self._option():
-                self._INVERSEVEC_()
-            with self._option():
-                self._identifier_alone_()
-
-                def block1():
-                    with self._choice():
-                        with self._option():
-                            self._token('_')
-                            with self._group():
-                                with self._choice():
-                                    with self._option():
-                                        self._identifier_alone_()
-                                    with self._option():
-                                        self._integer_()
-                                    self._error(
-                                        'expecting one of: '
-                                        '<identifier_alone> <integer>'
-                                    )
-                        with self._option():
-                            self._unicode_subscript_()
-                        self._error(
-                            'expecting one of: '
-                            "'_' <unicode_subscript>"
-                        )
-                self._closure(block1)
-            self._error(
-                'expecting one of: '
-                "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
-                '<BUILTIN_KEYWORDS> <CELLMESH> <DELTA>'
-                '<DERIVATIVE> <EDGEMESH> <EDGES>'
-                '<EDGESET> <EXP> <FACEMESH> <FACES>'
-                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
-                '<INDEX> <INITIAL> <INT> <INVERSEVEC>'
-                '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
-                '<MIN> <NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                '<OTHERWISE> <PI> <POUND>'
-                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
-                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
-                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
-                '<TETS> <TETSET> <TUPLE> <VECTOR>'
-                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
-                '<identifier_alone> SOLVE Solve'
-                '[Cc]ell[Mm]esh [Cc]ell[Ss]et'
-                '[Cc]ellular[Ss]et [Ee]dge[Mm]esh'
-                '[Ee]dge[Ss]et [Ff]ace[Mm]esh'
-                '[Ff]ace[Ss]et [Vv]ertex[Ss]et [Δ] and'
-                'argmax argmin as cells edges exp faces'
-                'for from given if index initial int'
-                'inversevec ln log matrix max min or'
-                'otherwise s.t. scalar sequence solve'
-                'sparse sqrt subject to sum tuple vector'
-                'vec⁻¹ vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
-            )
+        self._token('!!!')
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
@@ -8987,20 +8922,16 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                             with self._group():
                                 with self._choice():
                                     with self._option():
-                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*(?:[A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*)*')
+                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*')
                                     with self._option():
-                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])(?:[A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
+                                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
                                     self._error(
                                         'expecting one of: '
                                         '[A-Za-'
                                         'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
-                                        '{M}*(?:[A-Z0-9a-'
-                                        'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
-                                        '{M}*)* [A-Za-'
+                                        '{M}* [A-Za-'
                                         'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
-                                        '07])(?:[A-Z0-9a-'
-                                        'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
-                                        '07]))*'
+                                        '07])'
                                     )
                             self.name_last_node('value')
                         with self._option():
@@ -9017,13 +8948,9 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                             'expecting one of: '
                             "'`' [A-Za-"
                             'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
-                            '{M}*(?:[A-Z0-9a-'
-                            'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
-                            '{M}*)* [A-Za-'
+                            '{M}* [A-Za-'
                             'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
-                            '07])(?:[A-Z0-9a-'
-                            'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
-                            '07]))*'
+                            '07])'
                         )
 
                 self._define(
@@ -9036,20 +8963,16 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                     with self._group():
                         with self._choice():
                             with self._option():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*(?:[A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*)*')
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p{M}*')
                             with self._option():
-                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])(?:[A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307]))*')
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u0307])')
                             self._error(
                                 'expecting one of: '
                                 '[A-Za-'
                                 'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
-                                '{M}*(?:[A-Z0-9a-'
-                                'z\\p{Ll}\\p{Lu}\\p{Lo}](?![\\u0308\\u0307])\\p'
-                                '{M}*)* [A-Za-'
+                                '{M}* [A-Za-'
                                 'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
-                                '07])(?:[A-Z0-9a-'
-                                'z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*(?=[\\u0308\\u03'
-                                '07]))*'
+                                '07])'
                             )
                 self.name_last_node('value')
             self._error(
@@ -9083,8 +9006,6 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
     def _identifier_(self):  # noqa
         with self._choice():
             with self._option():
-                self._identifier_with_multi_subscript_()
-            with self._option():
                 self._identifier_with_subscript_()
             with self._option():
                 self._identifier_alone_()
@@ -9104,7 +9025,6 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 '<SUBSET> <TETS> <TETSET> <TUPLE>'
                 '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
                 '<WITH> <identifier_alone>'
-                '<identifier_with_multi_subscript>'
                 '<identifier_with_subscript> SOLVE Solve'
                 '[Cc]ell[Mm]esh [Cc]ell[Ss]et'
                 '[Cc]ellular[Ss]et [Ee]dge[Mm]esh'
@@ -9117,128 +9037,6 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 'subject to sum tuple vector vertices'
                 'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
             )
-
-    @tatsumasu('IdentifierSubscript')
-    def _identifier_with_multi_subscript_(self):  # noqa
-        self._identifier_alone_()
-        self.name_last_node('left')
-
-        def block1():
-            self._token('_')
-            with self._group():
-                with self._choice():
-                    with self._option():
-                        self._identifier_alone_()
-                    with self._option():
-                        self._integer_()
-                    with self._option():
-                        self._BUILTIN_KEYWORDS_()
-                    self._error(
-                        'expecting one of: '
-                        '<BUILTIN_KEYWORDS> <identifier_alone>'
-                        '<integer>'
-                    )
-            self.add_last_node_to_name('right')
-
-            self._define(
-                [],
-                ['right']
-            )
-        self._positive_closure(block1)
-        with self._group():
-            with self._choice():
-                with self._option():
-
-                    def block5():
-                        with self._choice():
-                            with self._option():
-                                with self._group():
-                                    self._token(',')
-                                    self._token('*')
-                                    self.add_last_node_to_name('right')
-
-                                    self._define(
-                                        [],
-                                        ['right']
-                                    )
-                            with self._option():
-                                with self._group():
-
-                                    def block8():
-                                        self._token(',')
-                                    self._closure(block8)
-                                    with self._group():
-                                        with self._choice():
-                                            with self._option():
-                                                self._integer_()
-                                            with self._option():
-                                                self._identifier_alone_()
-                                            self._error(
-                                                'expecting one of: '
-                                                '<identifier_alone> <integer>'
-                                            )
-                                    self.add_last_node_to_name('right')
-
-                                    self._define(
-                                        [],
-                                        ['right']
-                                    )
-                            self._error(
-                                'expecting one of: '
-                                "',' <identifier_alone> <integer>"
-                            )
-                    self._closure(block5)
-                with self._option():
-
-                    def block11():
-                        with self._choice():
-                            with self._option():
-                                with self._group():
-                                    self._token(',')
-                                    self._token('*')
-                                    self.add_last_node_to_name('right')
-
-                                    self._define(
-                                        [],
-                                        ['right']
-                                    )
-                            with self._option():
-                                with self._group():
-
-                                    def block14():
-                                        self._token(',')
-                                    self._closure(block14)
-                                    with self._group():
-                                        with self._choice():
-                                            with self._option():
-                                                self._sub_integer_()
-                                            with self._option():
-                                                self._unicode_subscript_()
-                                            self._error(
-                                                'expecting one of: '
-                                                '<sub_integer> <unicode_subscript>'
-                                            )
-                                    self.add_last_node_to_name('right')
-
-                                    self._define(
-                                        [],
-                                        ['right']
-                                    )
-                            self._error(
-                                'expecting one of: '
-                                "',' <sub_integer> <unicode_subscript>"
-                            )
-                    self._closure(block11)
-                self._error(
-                    'expecting one of: '
-                    "',' <identifier_alone> <integer>"
-                    '<sub_integer> <unicode_subscript>'
-                )
-
-        self._define(
-            ['left'],
-            ['right']
-        )
 
     @tatsumasu('Function')
     def _function_operator_(self):  # noqa
@@ -9608,31 +9406,7 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 )
             self._error(
                 'expecting one of: '
-                "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
-                '<BUILTIN_KEYWORDS> <CELLMESH> <DELTA>'
-                '<DERIVATIVE> <EDGEMESH> <EDGES>'
-                '<EDGESET> <EXP> <FACEMESH> <FACES>'
-                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
-                '<INDEX> <INITIAL> <INT> <INVERSEVEC>'
-                '<KEYWORDS> <LN> <LOG> <MATRIX> <MAX>'
-                '<MIN> <NABLA> <NOT_PREFIX_KEYWORD> <OR>'
-                '<OTHERWISE> <PI> <POUND>'
-                '<PREFIX_KEYWORD> <PRIME> <SCALAR>'
-                '<SEQUENCE> <SIMPLICIALSET> <SOLVE>'
-                '<SPARSE> <SQRT> <SUBJECT_TO> <SUBSET>'
-                '<TETS> <TETSET> <TUPLE> <VECTOR>'
-                '<VERTEXSET> <VERTICES> <WHERE> <WITH>'
-                '<func_id> <identifier_alone> SOLVE Solve'
-                '[Cc]ell[Mm]esh [Cc]ell[Ss]et'
-                '[Cc]ellular[Ss]et [Ee]dge[Mm]esh'
-                '[Ee]dge[Ss]et [Ff]ace[Mm]esh'
-                '[Ff]ace[Ss]et [Vv]ertex[Ss]et [Δ] and'
-                'argmax argmin as cells edges exp faces'
-                'for from given if index initial int'
-                'inversevec ln log matrix max min or'
-                'otherwise s.t. scalar sequence solve'
-                'sparse sqrt subject to sum tuple vector'
-                'vec⁻¹ vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                "'!!!' <func_id>"
             )
 
     @tatsumasu('LocalFunc')
@@ -9640,7 +9414,7 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
         with self._group():
             with self._choice():
                 with self._option():
-                    self._identifier_()
+                    self._identifier_with_unicode_subscript_()
                     self.name_last_node('name')
 
                     def block2():
@@ -9697,7 +9471,7 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                         ['params', 'separators']
                     )
                 with self._option():
-                    self._identifier_()
+                    self._identifier_with_unicode_subscript_()
                     self.name_last_node('name')
 
                     def block14():
@@ -9753,32 +9527,197 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                         ['def_s', 'name'],
                         ['params', 'separators']
                     )
+                with self._option():
+                    self._identifier_alone_()
+                    self.name_last_node('name')
+
+                    def block26():
+                        self._token('_')
+                        self._identifier_alone_()
+                        self.add_last_node_to_name('subs')
+
+                        def block28():
+
+                            def block29():
+                                self._token(',')
+                            self._closure(block29)
+                            self._identifier_alone_()
+                            self.add_last_node_to_name('subs')
+
+                            self._define(
+                                [],
+                                ['subs']
+                            )
+                        self._closure(block28)
+
+                        self._define(
+                            [],
+                            ['subs']
+                        )
+                    self._closure(block26)
+
+                    def block31():
+                        self._pattern('\\(')
+                        self.name_last_node('def_p')
+
+                        def block33():
+
+                            def block34():
+                                self._hspace_()
+                            self._closure(block34)
+                            self._identifier_alone_()
+                            self.add_last_node_to_name('params')
+
+                            def block36():
+
+                                def block37():
+                                    self._hspace_()
+                                self._closure(block37)
+                                self._params_separator_()
+                                self.add_last_node_to_name('separators')
+
+                                def block39():
+                                    self._hspace_()
+                                self._closure(block39)
+                                self._identifier_alone_()
+                                self.add_last_node_to_name('params')
+
+                                self._define(
+                                    [],
+                                    ['params', 'separators']
+                                )
+                            self._closure(block36)
+
+                            self._define(
+                                [],
+                                ['params', 'separators']
+                            )
+                        self._closure(block33)
+
+                        def block41():
+                            self._hspace_()
+                        self._closure(block41)
+                        self._token(')')
+
+                        self._define(
+                            ['def_p'],
+                            ['params', 'separators']
+                        )
+                    self._closure(block31)
+
+                    self._define(
+                        ['def_p', 'name'],
+                        ['params', 'separators', 'subs']
+                    )
+                with self._option():
+                    self._identifier_alone_()
+                    self.name_last_node('name')
+
+                    def block43():
+                        self._token('_')
+                        self._identifier_alone_()
+                        self.add_last_node_to_name('subs')
+
+                        def block45():
+
+                            def block46():
+                                self._token(',')
+                            self._closure(block46)
+                            self._identifier_alone_()
+                            self.add_last_node_to_name('subs')
+
+                            self._define(
+                                [],
+                                ['subs']
+                            )
+                        self._closure(block45)
+
+                        self._define(
+                            [],
+                            ['subs']
+                        )
+                    self._closure(block43)
+
+                    def block48():
+                        self._pattern('\\[')
+                        self.name_last_node('def_s')
+
+                        def block50():
+
+                            def block51():
+                                self._hspace_()
+                            self._closure(block51)
+                            self._identifier_alone_()
+                            self.add_last_node_to_name('params')
+
+                            def block53():
+
+                                def block54():
+                                    self._hspace_()
+                                self._closure(block54)
+                                self._params_separator_()
+                                self.add_last_node_to_name('separators')
+
+                                def block56():
+                                    self._hspace_()
+                                self._closure(block56)
+                                self._identifier_alone_()
+                                self.add_last_node_to_name('params')
+
+                                self._define(
+                                    [],
+                                    ['params', 'separators']
+                                )
+                            self._closure(block53)
+
+                            self._define(
+                                [],
+                                ['params', 'separators']
+                            )
+                        self._closure(block50)
+
+                        def block58():
+                            self._hspace_()
+                        self._closure(block58)
+                        self._token(']')
+
+                        self._define(
+                            ['def_s'],
+                            ['params', 'separators']
+                        )
+                    self._closure(block48)
+
+                    self._define(
+                        ['def_s', 'name'],
+                        ['params', 'separators', 'subs']
+                    )
                 self._error(
                     'expecting one of: '
-                    '<identifier>'
+                    '<identifier_alone>'
+                    '<identifier_with_unicode_subscript>'
                 )
 
-        def block25():
+        def block59():
             self._hspace_()
-        self._closure(block25)
+        self._closure(block59)
         self._token('=')
         self.name_last_node('op')
 
-        def block27():
+        def block61():
             self._hspace_()
-        self._closure(block27)
+        self._closure(block61)
         self._right_hand_side_()
         self.add_last_node_to_name('expr')
         with self._optional():
 
-            def block29():
+            def block63():
                 self._hspace_()
-            self._closure(block29)
+            self._closure(block63)
             self._line_()
 
-        def block30():
+        def block64():
             self._hspace_()
-        self._closure(block30)
+        self._closure(block64)
         with self._group():
             with self._choice():
                 with self._option():
@@ -9790,22 +9729,22 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                     '<GIVEN> <WHERE>'
                 )
 
-        def block32():
+        def block1():
             self._hspace_()
-        self._closure(block32)
+        self._closure(block1)
         self._where_condition_()
         self.add_last_node_to_name('defs')
 
-        def block34():
+        def block3():
 
-            def block35():
+            def block4():
                 self._hspace_()
-            self._closure(block35)
+            self._closure(block4)
             self._token(',')
 
-            def block36():
+            def block5():
                 self._hspace_()
-            self._closure(block36)
+            self._closure(block5)
             self._where_condition_()
             self.add_last_node_to_name('defs')
 
@@ -9813,24 +9752,24 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 [],
                 ['defs']
             )
-        self._closure(block34)
+        self._closure(block3)
 
-        def block38():
+        def block7():
 
-            def block39():
+            def block8():
                 self._hspace_()
-            self._closure(block39)
+            self._closure(block8)
             self._token(',')
 
-            def block40():
+            def block9():
                 self._hspace_()
-            self._closure(block40)
+            self._closure(block9)
             with self._optional():
                 self._line_()
 
-            def block41():
+            def block10():
                 self._hspace_()
-            self._closure(block41)
+            self._closure(block10)
             self._general_assign_()
             self.add_last_node_to_name('extra')
 
@@ -9838,15 +9777,15 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Parser(Parser):
                 [],
                 ['extra']
             )
-        self._closure(block38)
+        self._closure(block7)
 
         self._define(
             ['def_p', 'def_s', 'name', 'op'],
-            ['defs', 'expr', 'extra', 'params', 'separators']
+            ['defs', 'expr', 'extra', 'params', 'separators', 'subs']
         )
 
 
-class grammar44a4c831a6badf1b5cbfdd0f644a9247Semantics:
+class grammarc21f969b5f03d33d43e04f8f136e7682Semantics:
     def start(self, ast):  # noqa
         return ast
 
@@ -10690,9 +10629,6 @@ class grammar44a4c831a6badf1b5cbfdd0f644a9247Semantics:
     def identifier(self, ast):  # noqa
         return ast
 
-    def identifier_with_multi_subscript(self, ast):  # noqa
-        return ast
-
     def function_operator(self, ast):  # noqa
         return ast
 
@@ -10706,7 +10642,7 @@ def main(filename, **kwargs):
     else:
         with open(filename) as f:
             text = f.read()
-    parser = grammar44a4c831a6badf1b5cbfdd0f644a9247Parser()
+    parser = grammarc21f969b5f03d33d43e04f8f136e7682Parser()
     return parser.parse(
         text,
         filename=filename,
@@ -10718,7 +10654,7 @@ if __name__ == '__main__':
     import json
     from tatsu.util import asjson
 
-    ast = generic_main(main, grammar44a4c831a6badf1b5cbfdd0f644a9247Parser, name='grammar44a4c831a6badf1b5cbfdd0f644a9247')
+    ast = generic_main(main, grammarc21f969b5f03d33d43e04f8f136e7682Parser, name='grammarc21f969b5f03d33d43e04f8f136e7682')
     data = asjson(ast)
     print(json.dumps(data, indent=2))
 #!/usr/bin/env python
@@ -10746,7 +10682,7 @@ class ModelBase(Node):
     pass
 
 
-class grammar44a4c831a6badf1b5cbfdd0f644a9247ModelBuilderSemantics(ModelBuilderSemantics):
+class grammarc21f969b5f03d33d43e04f8f136e7682ModelBuilderSemantics(ModelBuilderSemantics):
     def __init__(self, context=None, types=None):
         types = [
             t for t in globals().values()
@@ -11623,3 +11559,4 @@ class LocalFunc(ModelBase):
     op: Any = None
     params: Any = None
     separators: Any = None
+    subs: Any = None

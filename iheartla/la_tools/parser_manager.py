@@ -465,11 +465,13 @@ class ParserFileManager(object):
             #     save_to_file(config_parser, os.path.join(la_local_parsers, 'config_parser.py'))
             if self.default_hash_value in f or self.de_default_hash_value in f:
                 if self.default_hash_value in f:
+                    pre_name = self.default_hash_value
                     c_name = 'default'
                 else:
+                    pre_name = self.de_default_hash_value
                     c_name = 'de_default'
                 def_parser = read_from_file(la_local_parsers / f)
-                def_parser = def_parser.replace(self.default_hash_value, c_name)
+                def_parser = def_parser.replace(pre_name, c_name)
                 # extra elements
                 original_class = r"""def __init__(self, /, config: ParserConfig = None, **settings):
         config = ParserConfig.new(

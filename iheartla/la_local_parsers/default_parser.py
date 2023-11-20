@@ -4692,7 +4692,7 @@ class grammardefaultParser(Parser):
                             )
                     self.add_last_node_to_name('right')
 
-                    def block23():
+                    def block1():
                         with self._choice():
                             with self._option():
                                 with self._group():
@@ -4707,9 +4707,9 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 with self._group():
 
-                                    def block26():
+                                    def block4():
                                         self._token(',')
-                                    self._closure(block26)
+                                    self._closure(block4)
                                     with self._group():
                                         with self._choice():
                                             with self._option():
@@ -4730,7 +4730,7 @@ class grammardefaultParser(Parser):
                                 'expecting one of: '
                                 "',' <sub_integer> <unicode_subscript>"
                             )
-                    self._closure(block23)
+                    self._closure(block1)
 
                     self._define(
                         ['left'],
@@ -4743,9 +4743,9 @@ class grammardefaultParser(Parser):
                     self._token('_(')
                     self.name_last_node('p')
 
-                    def block31():
+                    def block9():
                         self._hspace_()
-                    self._closure(block31)
+                    self._closure(block9)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -4758,19 +4758,19 @@ class grammardefaultParser(Parser):
                             )
                     self.add_last_node_to_name('exp')
 
-                    def block34():
+                    def block1():
                         with self._choice():
                             with self._option():
                                 with self._group():
 
-                                    def block36():
+                                    def block1():
                                         self._hspace_()
-                                    self._closure(block36)
+                                    self._closure(block1)
                                     self._token(',')
 
-                                    def block37():
+                                    def block2():
                                         self._hspace_()
-                                    self._closure(block37)
+                                    self._closure(block2)
                                     self._token('*')
                                     self.add_last_node_to_name('exp')
 
@@ -4781,14 +4781,14 @@ class grammardefaultParser(Parser):
                             with self._option():
                                 with self._group():
 
-                                    def block39():
+                                    def block4():
                                         self._hspace_()
-                                    self._closure(block39)
+                                    self._closure(block4)
                                     self._token(',')
 
-                                    def block40():
+                                    def block5():
                                         self._hspace_()
-                                    self._closure(block40)
+                                    self._closure(block5)
                                     self._expression_()
                                     self.add_last_node_to_name('exp')
 
@@ -4800,11 +4800,11 @@ class grammardefaultParser(Parser):
                                 'expecting one of: '
                                 "',' <hspace>"
                             )
-                    self._closure(block34)
+                    self._closure(block1)
 
-                    def block42():
+                    def block7():
                         self._hspace_()
-                    self._closure(block42)
+                    self._closure(block7)
                     self._token(')')
 
                     self._define(
@@ -4855,7 +4855,7 @@ class grammardefaultParser(Parser):
                 )
         self.add_last_node_to_name('right')
 
-        def block3():
+        def block1():
             with self._choice():
                 with self._option():
                     with self._group():
@@ -4870,9 +4870,9 @@ class grammardefaultParser(Parser):
                 with self._option():
                     with self._group():
 
-                        def block6():
+                        def block16():
                             self._token(',')
-                        self._closure(block6)
+                        self._closure(block16)
                         with self._group():
                             with self._choice():
                                 with self._option():
@@ -4893,7 +4893,7 @@ class grammardefaultParser(Parser):
                     'expecting one of: '
                     "',' <sub_integer> <unicode_subscript>"
                 )
-        self._closure(block3)
+        self._closure(block1)
 
         self._define(
             ['left'],
@@ -8139,9 +8139,9 @@ class grammardefaultParser(Parser):
                 )
         self.name_last_node('op')
 
-        def block4():
+        def block5():
             self._hspace_()
-        self._closure(block4)
+        self._closure(block5)
         self._arithmetic_factor_()
         self.name_last_node('right')
 
@@ -8783,17 +8783,17 @@ class grammardefaultParser(Parser):
                         self._params_type_()
                         self.add_last_node_to_name('params')
 
-                        def block2():
+                        def block7():
 
-                            def block3():
+                            def block8():
                                 self._hspace_()
-                            self._closure(block3)
+                            self._closure(block8)
                             self._params_separator_()
                             self.add_last_node_to_name('separators')
 
-                            def block5():
+                            def block10():
                                 self._hspace_()
-                            self._closure(block5)
+                            self._closure(block10)
                             self._params_type_()
                             self.add_last_node_to_name('params')
 
@@ -8801,7 +8801,7 @@ class grammardefaultParser(Parser):
                                 [],
                                 ['params', 'separators']
                             )
-                        self._closure(block2)
+                        self._closure(block7)
 
                         self._define(
                             [],
@@ -8813,18 +8813,18 @@ class grammardefaultParser(Parser):
                 with self._option():
                     self._token('{')
 
-                    def block8():
+                    def block13():
                         self._hspace_()
-                    self._closure(block8)
+                    self._closure(block13)
                     self._token('}')
                 self._error(
                     'expecting one of: '
                     "'{' '∅' <params_type>"
                 )
 
-        def block9():
+        def block14():
             self._hspace_()
-        self._closure(block9)
+        self._closure(block14)
         with self._group():
             with self._choice():
                 with self._option():
@@ -8836,23 +8836,23 @@ class grammardefaultParser(Parser):
                     "'->' '→'"
                 )
 
-        def block11():
+        def block16():
             self._hspace_()
-        self._closure(block11)
+        self._closure(block16)
         self._params_type_()
         self.add_last_node_to_name('ret')
 
-        def block13():
+        def block18():
 
-            def block14():
+            def block19():
                 self._hspace_()
-            self._closure(block14)
+            self._closure(block19)
             self._params_separator_()
             self.add_last_node_to_name('ret_separators')
 
-            def block16():
+            def block21():
                 self._hspace_()
-            self._closure(block16)
+            self._closure(block21)
             self._params_type_()
             self.add_last_node_to_name('ret')
 
@@ -8860,7 +8860,7 @@ class grammardefaultParser(Parser):
                 [],
                 ['ret', 'ret_separators']
             )
-        self._closure(block13)
+        self._closure(block18)
 
         self._define(
             ['empty'],
@@ -9979,22 +9979,22 @@ class grammardefaultParser(Parser):
                     '<GIVEN> <WHERE>'
                 )
 
-        def block66():
+        def block1():
             self._hspace_()
-        self._closure(block66)
+        self._closure(block1)
         self._where_condition_()
         self.add_last_node_to_name('defs')
 
-        def block68():
+        def block3():
 
-            def block69():
+            def block4():
                 self._hspace_()
-            self._closure(block69)
+            self._closure(block4)
             self._token(',')
 
-            def block70():
+            def block5():
                 self._hspace_()
-            self._closure(block70)
+            self._closure(block5)
             self._where_condition_()
             self.add_last_node_to_name('defs')
 
@@ -10002,24 +10002,24 @@ class grammardefaultParser(Parser):
                 [],
                 ['defs']
             )
-        self._closure(block68)
+        self._closure(block3)
 
-        def block72():
+        def block7():
 
-            def block73():
+            def block8():
                 self._hspace_()
-            self._closure(block73)
+            self._closure(block8)
             self._token(',')
 
-            def block74():
+            def block9():
                 self._hspace_()
-            self._closure(block74)
+            self._closure(block9)
             with self._optional():
                 self._line_()
 
-            def block75():
+            def block10():
                 self._hspace_()
-            self._closure(block75)
+            self._closure(block10)
             self._general_assign_()
             self.add_last_node_to_name('extra')
 
@@ -10027,7 +10027,7 @@ class grammardefaultParser(Parser):
                 [],
                 ['extra']
             )
-        self._closure(block72)
+        self._closure(block7)
 
         self._define(
             ['def_p', 'def_s', 'name', 'op'],

@@ -2721,25 +2721,25 @@ class grammarde_initParser(Parser):
                 )
         self._token('(')
 
-        def block12():
+        def block23():
 
-            def block13():
+            def block24():
                 self._hspace_()
-            self._closure(block13)
+            self._closure(block24)
             self._expression_()
             self.add_last_node_to_name('params')
 
-            def block15():
+            def block26():
 
-                def block16():
+                def block27():
                     self._hspace_()
-                self._closure(block16)
+                self._closure(block27)
                 self._params_separator_()
                 self.add_last_node_to_name('separators')
 
-                def block18():
+                def block29():
                     self._hspace_()
-                self._closure(block18)
+                self._closure(block29)
                 self._expression_()
                 self.add_last_node_to_name('params')
 
@@ -2747,17 +2747,17 @@ class grammarde_initParser(Parser):
                     [],
                     ['params', 'separators']
                 )
-            self._closure(block15)
+            self._closure(block26)
 
             self._define(
                 [],
                 ['params', 'separators']
             )
-        self._closure(block12)
+        self._closure(block23)
 
-        def block20():
+        def block31():
             self._hspace_()
-        self._closure(block20)
+        self._closure(block31)
         self._token(')')
 
         self._define(
@@ -2802,23 +2802,23 @@ class grammarde_initParser(Parser):
                 )
         self._token('(')
 
-        def block3():
+        def block5():
             self._hspace_()
-        self._closure(block3)
+        self._closure(block5)
         self._expression_()
         self.add_last_node_to_name('params')
 
-        def block5():
-
-            def block6():
-                self._hspace_()
-            self._closure(block6)
-            self._params_separator_()
-            self.add_last_node_to_name('separators')
+        def block7():
 
             def block8():
                 self._hspace_()
             self._closure(block8)
+            self._params_separator_()
+            self.add_last_node_to_name('separators')
+
+            def block10():
+                self._hspace_()
+            self._closure(block10)
             self._expression_()
             self.add_last_node_to_name('params')
 
@@ -2826,11 +2826,11 @@ class grammarde_initParser(Parser):
                 [],
                 ['params', 'separators']
             )
-        self._closure(block5)
+        self._closure(block7)
 
-        def block10():
+        def block12():
             self._hspace_()
-        self._closure(block10)
+        self._closure(block12)
         self._token(')')
 
         self._define(
@@ -2958,15 +2958,15 @@ class grammarde_initParser(Parser):
             with self._option():
                 self._token('[')
 
-                def block1():
-                    self._hspace_()
-                self._closure(block1)
-                self._rows_()
-                self.name_last_node('value')
-
                 def block3():
                     self._hspace_()
                 self._closure(block3)
+                self._rows_()
+                self.name_last_node('value')
+
+                def block5():
+                    self._hspace_()
+                self._closure(block5)
                 self._token(']')
 
                 self._define(
@@ -2976,15 +2976,15 @@ class grammarde_initParser(Parser):
             with self._option():
                 self._token('⎡')
 
-                def block4():
-                    self._hspace_()
-                self._closure(block4)
-                self._rows_()
-                self.name_last_node('value')
-
                 def block6():
                     self._hspace_()
                 self._closure(block6)
+                self._rows_()
+                self.name_last_node('value')
+
+                def block8():
+                    self._hspace_()
+                self._closure(block8)
                 self._token('⎦')
 
                 self._define(
@@ -3041,22 +3041,22 @@ class grammarde_initParser(Parser):
             with self._option():
                 self._token('{')
 
-                def block1():
+                def block3():
                     self._hspace_()
-                self._closure(block1)
+                self._closure(block3)
                 self._expression_()
                 self.add_last_node_to_name('exp')
 
-                def block3():
+                def block5():
 
-                    def block4():
+                    def block6():
                         self._hspace_()
-                    self._closure(block4)
+                    self._closure(block6)
                     self._token(',')
 
-                    def block5():
+                    def block7():
                         self._hspace_()
-                    self._closure(block5)
+                    self._closure(block7)
                     self._expression_()
                     self.add_last_node_to_name('exp')
 
@@ -3064,11 +3064,11 @@ class grammarde_initParser(Parser):
                         [],
                         ['exp']
                     )
-                self._closure(block3)
+                self._closure(block5)
 
-                def block7():
+                def block9():
                     self._hspace_()
-                self._closure(block7)
+                self._closure(block9)
                 self._token('}')
 
                 self._define(
@@ -3078,15 +3078,15 @@ class grammarde_initParser(Parser):
             with self._option():
                 self._token('{')
 
-                def block8():
-                    self._hspace_()
-                self._closure(block8)
-                self._expression_()
-                self.add_last_node_to_name('exp')
-
                 def block10():
                     self._hspace_()
                 self._closure(block10)
+                self._expression_()
+                self.add_last_node_to_name('exp')
+
+                def block12():
+                    self._hspace_()
+                self._closure(block12)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -3099,25 +3099,25 @@ class grammarde_initParser(Parser):
                         )
                 self.name_last_node('f')
 
-                def block13():
+                def block19():
                     self._hspace_()
-                self._closure(block13)
+                self._closure(block19)
                 self._identifier_alone_()
                 self.add_last_node_to_name('enum')
 
-                def block15():
+                def block21():
 
-                    def block16():
+                    def block22():
                         self._hspace_()
-                    self._closure(block16)
+                    self._closure(block22)
 
-                    def block17():
+                    def block23():
                         self._token(',')
-                    self._closure(block17)
+                    self._closure(block23)
 
-                    def block18():
+                    def block24():
                         self._hspace_()
-                    self._closure(block18)
+                    self._closure(block24)
                     self._identifier_alone_()
                     self.add_last_node_to_name('enum')
 
@@ -3125,16 +3125,16 @@ class grammarde_initParser(Parser):
                         [],
                         ['enum']
                     )
-                self._closure(block15)
+                self._closure(block21)
 
-                def block20():
+                def block26():
                     self._hspace_()
-                self._closure(block20)
+                self._closure(block26)
                 self._IN_()
 
-                def block21():
+                def block27():
                     self._hspace_()
-                self._closure(block21)
+                self._closure(block27)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -3150,28 +3150,28 @@ class grammarde_initParser(Parser):
                         )
                 self.name_last_node('range')
 
-                def block24():
+                def block1():
                     self._hspace_()
-                self._closure(block24)
+                self._closure(block1)
 
-                def block25():
+                def block2():
                     self._IF_()
 
-                    def block26():
+                    def block3():
                         self._hspace_()
-                    self._closure(block26)
+                    self._closure(block3)
                     self._if_condition_()
                     self.name_last_node('cond')
 
-                    def block28():
+                    def block5():
                         self._hspace_()
-                    self._closure(block28)
+                    self._closure(block5)
 
                     self._define(
                         ['cond'],
                         []
                     )
-                self._closure(block25)
+                self._closure(block2)
                 self._token('}')
 
                 self._define(
@@ -3181,37 +3181,37 @@ class grammarde_initParser(Parser):
             with self._option():
                 self._token('{')
 
-                def block29():
+                def block6():
                     self._hspace_()
-                self._closure(block29)
+                self._closure(block6)
                 self._expression_()
                 self.add_last_node_to_name('exp')
 
-                def block31():
+                def block8():
                     self._hspace_()
-                self._closure(block31)
+                self._closure(block8)
                 self._pattern('\\|')
                 self.name_last_node('o')
 
-                def block33():
+                def block10():
                     self._hspace_()
-                self._closure(block33)
+                self._closure(block10)
                 self._identifier_alone_()
                 self.add_last_node_to_name('enum')
 
-                def block35():
+                def block12():
 
-                    def block36():
+                    def block13():
                         self._hspace_()
-                    self._closure(block36)
+                    self._closure(block13)
 
-                    def block37():
+                    def block14():
                         self._token(',')
-                    self._closure(block37)
+                    self._closure(block14)
 
-                    def block38():
+                    def block15():
                         self._hspace_()
-                    self._closure(block38)
+                    self._closure(block15)
                     self._identifier_alone_()
                     self.add_last_node_to_name('enum')
 
@@ -3219,16 +3219,16 @@ class grammarde_initParser(Parser):
                         [],
                         ['enum']
                     )
-                self._closure(block35)
+                self._closure(block12)
 
-                def block40():
+                def block17():
                     self._hspace_()
-                self._closure(block40)
+                self._closure(block17)
                 self._IN_()
 
-                def block41():
+                def block18():
                     self._hspace_()
-                self._closure(block41)
+                self._closure(block18)
                 with self._group():
                     with self._choice():
                         with self._option():
@@ -3244,28 +3244,28 @@ class grammarde_initParser(Parser):
                         )
                 self.name_last_node('range')
 
-                def block44():
+                def block21():
                     self._hspace_()
-                self._closure(block44)
+                self._closure(block21)
 
-                def block45():
+                def block22():
                     self._token(',')
 
-                    def block46():
+                    def block23():
                         self._hspace_()
-                    self._closure(block46)
+                    self._closure(block23)
                     self._if_condition_()
                     self.name_last_node('cond')
 
-                    def block48():
+                    def block25():
                         self._hspace_()
-                    self._closure(block48)
+                    self._closure(block25)
 
                     self._define(
                         ['cond'],
                         []
                     )
-                self._closure(block45)
+                self._closure(block22)
                 self._token('}')
 
                 self._define(

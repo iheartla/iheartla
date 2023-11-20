@@ -24,7 +24,7 @@ from tatsu.util import re, generic_main  # noqa
 KEYWORDS = {}  # type: ignore
 
 
-class grammar7a750bdd016681707e05be0c4e86747eBuffer(Buffer):
+class grammarde_defaultBuffer(Buffer):
     def __init__(self, text, /, config: ParserConfig = None, **settings):
         config = ParserConfig.new(
             config,
@@ -41,7 +41,7 @@ class grammar7a750bdd016681707e05be0c4e86747eBuffer(Buffer):
         super().__init__(text, config=config)
 
 
-class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
+class grammarde_defaultParser(Parser):
     def __init__(self, /, config: ParserConfig = None, **settings):
         config = ParserConfig.new(
             config,
@@ -1064,9 +1064,9 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                 )
         self.name_last_node('op')
 
-        def block4():
+        def block1():
             self._hspace_()
-        self._closure(block4)
+        self._closure(block1)
         self._factor_()
         self.name_last_node('right')
 
@@ -1208,9 +1208,9 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                             "'^' <sup_integer>"
                         )
 
-                def block22():
+                def block7():
                     self._hspace_()
-                self._positive_closure(block22)
+                self._positive_closure(block7)
                 self._factor_()
                 self.name_last_node('upper')
 
@@ -1260,7 +1260,7 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                 self._token('/')
                 self.name_last_node('f')
 
-                def block8():
+                def block4():
                     self._PARTIAL_()
                     self._identifier_()
                     self.add_last_node_to_name('lower')
@@ -1296,7 +1296,7 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                         [],
                         ['lorder', 'lower']
                     )
-                self._positive_closure(block8)
+                self._positive_closure(block4)
                 self.name_last_node('l')
 
                 self._define(
@@ -1335,7 +1335,7 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                 self._token('/')
                 self.name_last_node('s')
 
-                def block20():
+                def block16():
                     self._PARTIAL_()
                     self._identifier_()
                     self.add_last_node_to_name('lower')
@@ -1371,12 +1371,12 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                         [],
                         ['lorder', 'lower']
                     )
-                self._positive_closure(block20)
+                self._positive_closure(block16)
                 self.name_last_node('l')
 
-                def block26():
+                def block22():
                     self._hspace_()
-                self._positive_closure(block26)
+                self._positive_closure(block22)
                 self._factor_()
                 self.name_last_node('upper')
 
@@ -1942,14 +1942,14 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                             )
                     self.name_last_node('range')
 
-                    def block64():
+                    def block1():
                         self._hspace_()
-                    self._closure(block64)
+                    self._closure(block1)
                     self._token(')')
 
-                    def block65():
+                    def block2():
                         self._hspace_()
-                    self._closure(block65)
+                    self._closure(block2)
                     with self._optional():
                         self._token('-')
                     self.name_last_node('sign')
@@ -1965,17 +1965,17 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                     "'∪' <SUM>"
                 )
 
-        def block68():
+        def block5():
             with self._optional():
 
-                def block69():
+                def block6():
                     self._hspace_()
-                self._closure(block69)
+                self._closure(block6)
                 self._line_()
 
-            def block70():
+            def block7():
                 self._hspace_()
-            self._closure(block70)
+            self._closure(block7)
             with self._group():
                 with self._choice():
                     with self._option():
@@ -1987,28 +1987,28 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                         '<WHERE> <WITH>'
                     )
 
-            def block72():
+            def block9():
                 self._hspace_()
-            self._closure(block72)
+            self._closure(block9)
             self._general_assign_()
             self.add_last_node_to_name('extra')
 
-            def block74():
+            def block11():
 
-                def block75():
+                def block12():
                     self._hspace_()
-                self._closure(block75)
+                self._closure(block12)
                 self._token(',')
 
-                def block76():
+                def block13():
                     self._hspace_()
-                self._closure(block76)
+                self._closure(block13)
                 with self._optional():
                     self._line_()
 
-                def block77():
+                def block14():
                     self._hspace_()
-                self._closure(block77)
+                self._closure(block14)
                 self._general_assign_()
                 self.add_last_node_to_name('extra')
 
@@ -2016,13 +2016,13 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                     [],
                     ['extra']
                 )
-            self._closure(block74)
+            self._closure(block11)
 
             self._define(
                 [],
                 ['extra']
             )
-        self._closure(block68)
+        self._closure(block5)
 
         self._define(
             ['cond', 'exp', 'id', 'lower', 'range', 'sign', 'sub', 'u', 'upper'],
@@ -2241,14 +2241,14 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                         self._sub_factor_()
                         self.name_last_node('lower')
 
+                        def block3():
+                            self._hspace_()
+                        self._closure(block3)
+                        self._token('^')
+
                         def block4():
                             self._hspace_()
                         self._closure(block4)
-                        self._token('^')
-
-                        def block5():
-                            self._hspace_()
-                        self._closure(block5)
                         self._sub_factor_()
                         self.name_last_node('upper')
 
@@ -2261,15 +2261,15 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                     '<domain> <sub_factor>'
                 )
 
-        def block7():
+        def block6():
             self._hspace_()
-        self._closure(block7)
+        self._closure(block6)
         self._expression_()
         self.name_last_node('exp')
 
-        def block9():
+        def block8():
             self._hspace_()
-        self._closure(block9)
+        self._closure(block8)
         self._DERIVATIVE_()
         self._identifier_alone_()
         self.name_last_node('id')
@@ -4567,7 +4567,7 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                             )
                     self.add_last_node_to_name('right')
 
-                    def block4():
+                    def block1():
                         with self._choice():
                             with self._option():
                                 with self._group():
@@ -4582,9 +4582,9 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                             with self._option():
                                 with self._group():
 
-                                    def block7():
+                                    def block4():
                                         self._token(',')
-                                    self._closure(block7)
+                                    self._closure(block4)
                                     with self._group():
                                         with self._choice():
                                             with self._option():
@@ -4605,7 +4605,7 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                                 'expecting one of: '
                                 "',' <identifier_alone> <integer>"
                             )
-                    self._closure(block4)
+                    self._closure(block1)
 
                     self._define(
                         ['left'],
@@ -4631,7 +4631,7 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                             )
                     self.add_last_node_to_name('right')
 
-                    def block14():
+                    def block11():
                         with self._choice():
                             with self._option():
                                 with self._group():
@@ -4646,9 +4646,9 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                             with self._option():
                                 with self._group():
 
-                                    def block17():
+                                    def block14():
                                         self._token(',')
-                                    self._closure(block17)
+                                    self._closure(block14)
                                     with self._group():
                                         with self._choice():
                                             with self._option():
@@ -4669,7 +4669,7 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                                 'expecting one of: '
                                 "',' <identifier_alone> <integer>"
                             )
-                    self._closure(block14)
+                    self._closure(block11)
                     self._token(')')
 
                     self._define(
@@ -4692,7 +4692,7 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                             )
                     self.add_last_node_to_name('right')
 
-                    def block23():
+                    def block20():
                         with self._choice():
                             with self._option():
                                 with self._group():
@@ -4707,9 +4707,9 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                             with self._option():
                                 with self._group():
 
-                                    def block26():
+                                    def block23():
                                         self._token(',')
-                                    self._closure(block26)
+                                    self._closure(block23)
                                     with self._group():
                                         with self._choice():
                                             with self._option():
@@ -4730,7 +4730,7 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                                 'expecting one of: '
                                 "',' <sub_integer> <unicode_subscript>"
                             )
-                    self._closure(block23)
+                    self._closure(block20)
 
                     self._define(
                         ['left'],
@@ -4743,9 +4743,9 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                     self._token('_(')
                     self.name_last_node('p')
 
-                    def block31():
+                    def block28():
                         self._hspace_()
-                    self._closure(block31)
+                    self._closure(block28)
                     with self._group():
                         with self._choice():
                             with self._option():
@@ -4758,8 +4758,26 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                             )
                     self.add_last_node_to_name('exp')
 
-                    def block34():
+                    def block31():
                         with self._choice():
+                            with self._option():
+                                with self._group():
+
+                                    def block33():
+                                        self._hspace_()
+                                    self._closure(block33)
+                                    self._token(',')
+
+                                    def block34():
+                                        self._hspace_()
+                                    self._closure(block34)
+                                    self._token('*')
+                                    self.add_last_node_to_name('exp')
+
+                                    self._define(
+                                        [],
+                                        ['exp']
+                                    )
                             with self._option():
                                 with self._group():
 
@@ -4771,24 +4789,6 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                                     def block37():
                                         self._hspace_()
                                     self._closure(block37)
-                                    self._token('*')
-                                    self.add_last_node_to_name('exp')
-
-                                    self._define(
-                                        [],
-                                        ['exp']
-                                    )
-                            with self._option():
-                                with self._group():
-
-                                    def block39():
-                                        self._hspace_()
-                                    self._closure(block39)
-                                    self._token(',')
-
-                                    def block40():
-                                        self._hspace_()
-                                    self._closure(block40)
                                     self._expression_()
                                     self.add_last_node_to_name('exp')
 
@@ -4800,11 +4800,11 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                                 'expecting one of: '
                                 "',' <hspace>"
                             )
-                    self._closure(block34)
+                    self._closure(block31)
 
-                    def block42():
+                    def block39():
                         self._hspace_()
-                    self._closure(block42)
+                    self._closure(block39)
                     self._token(')')
 
                     self._define(
@@ -6919,16 +6919,16 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                 self._identifier_()
                 self.add_last_node_to_name('left')
 
-                def block2():
-
-                    def block3():
-                        self._hspace_()
-                    self._closure(block3)
-                    self._token(',')
+                def block3():
 
                     def block4():
                         self._hspace_()
                     self._closure(block4)
+                    self._token(',')
+
+                    def block5():
+                        self._hspace_()
+                    self._closure(block5)
                     self._identifier_()
                     self.add_last_node_to_name('left')
 
@@ -6936,17 +6936,17 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                         [],
                         ['left']
                     )
-                self._closure(block2)
+                self._closure(block3)
 
-                def block6():
+                def block7():
                     self._hspace_()
-                self._closure(block6)
+                self._closure(block7)
                 self._token('=')
                 self.name_last_node('op')
 
-                def block8():
+                def block9():
                     self._hspace_()
-                self._closure(block8)
+                self._closure(block9)
                 self._right_hand_side_()
                 self.add_last_node_to_name('right')
 
@@ -6958,16 +6958,16 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                 self._identifier_()
                 self.add_last_node_to_name('left')
 
-                def block11():
-
-                    def block12():
-                        self._hspace_()
-                    self._closure(block12)
-                    self._token(',')
+                def block12():
 
                     def block13():
                         self._hspace_()
                     self._closure(block13)
+                    self._token(',')
+
+                    def block14():
+                        self._hspace_()
+                    self._closure(block14)
                     self._identifier_()
                     self.add_last_node_to_name('left')
 
@@ -6975,17 +6975,17 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                         [],
                         ['left']
                     )
-                self._closure(block11)
+                self._closure(block12)
 
-                def block15():
+                def block16():
                     self._hspace_()
-                self._closure(block15)
+                self._closure(block16)
                 self._token('+=')
                 self.name_last_node('op')
 
-                def block17():
+                def block18():
                     self._hspace_()
-                self._closure(block17)
+                self._closure(block18)
                 self._right_hand_side_()
                 self.add_last_node_to_name('right')
 
@@ -6995,86 +6995,86 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                 )
             with self._option():
 
-                def block19():
+                def block20():
                     self._SOLVE_()
                     self._token('_(')
 
-                    def block20():
+                    def block21():
                         self._hspace_()
-                    self._closure(block20)
+                    self._closure(block21)
                     self._where_condition_terse_()
                     self.add_last_node_to_name('v')
 
-                    def block22():
-                        self._hspace_()
-                    self._closure(block22)
-
                     def block23():
+                        self._hspace_()
+                    self._closure(block23)
+
+                    def block24():
                         self._token(',')
 
-                        def block24():
+                        def block25():
                             self._hspace_()
-                        self._closure(block24)
+                        self._closure(block25)
                         self._where_condition_terse_()
                         self.add_last_node_to_name('v')
 
-                        def block26():
+                        def block27():
                             self._hspace_()
-                        self._closure(block26)
+                        self._closure(block27)
 
                         self._define(
                             [],
                             ['v']
                         )
-                    self._closure(block23)
+                    self._closure(block24)
                     self._token(')')
 
-                    def block27():
+                    def block28():
                         self._hspace_()
-                    self._closure(block27)
+                    self._closure(block28)
 
                     self._define(
                         [],
                         ['v']
                     )
-                self._closure(block19)
+                self._closure(block20)
                 self._expression_()
                 self.add_last_node_to_name('lexpr')
 
-                def block29():
+                def block30():
                     self._hspace_()
-                self._closure(block29)
+                self._closure(block30)
                 self._token('=')
                 self.name_last_node('op')
 
-                def block31():
+                def block32():
                     self._hspace_()
-                self._closure(block31)
+                self._closure(block32)
                 self._expression_()
                 self.add_last_node_to_name('rexpr')
 
-                def block33():
-
-                    def block34():
-                        self._hspace_()
-                    self._closure(block34)
-                    self._token(';')
+                def block34():
 
                     def block35():
                         self._hspace_()
                     self._closure(block35)
+                    self._token(';')
+
+                    def block36():
+                        self._hspace_()
+                    self._closure(block36)
                     self._expression_()
                     self.add_last_node_to_name('lexpr')
 
-                    def block37():
+                    def block38():
                         self._hspace_()
-                    self._closure(block37)
+                    self._closure(block38)
                     self._token('=')
                     self.name_last_node('op')
 
-                    def block39():
+                    def block40():
                         self._hspace_()
-                    self._closure(block39)
+                    self._closure(block40)
                     self._expression_()
                     self.add_last_node_to_name('rexpr')
 
@@ -7082,7 +7082,7 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
                         ['op'],
                         ['lexpr', 'rexpr']
                     )
-                self._closure(block33)
+                self._closure(block34)
 
                 self._define(
                     ['op'],
@@ -10035,7 +10035,7 @@ class grammar7a750bdd016681707e05be0c4e86747eParser(Parser):
         )
 
 
-class grammar7a750bdd016681707e05be0c4e86747eSemantics:
+class grammarde_defaultSemantics:
     def start(self, ast):  # noqa
         return ast
 
@@ -10892,7 +10892,7 @@ def main(filename, **kwargs):
     else:
         with open(filename) as f:
             text = f.read()
-    parser = grammar7a750bdd016681707e05be0c4e86747eParser()
+    parser = grammarde_defaultParser()
     return parser.parse(
         text,
         filename=filename,
@@ -10904,7 +10904,7 @@ if __name__ == '__main__':
     import json
     from tatsu.util import asjson
 
-    ast = generic_main(main, grammar7a750bdd016681707e05be0c4e86747eParser, name='grammar7a750bdd016681707e05be0c4e86747e')
+    ast = generic_main(main, grammarde_defaultParser, name='grammarde_default')
     data = asjson(ast)
     print(json.dumps(data, indent=2))
 #!/usr/bin/env python
@@ -10932,7 +10932,7 @@ class ModelBase(Node):
     pass
 
 
-class grammar7a750bdd016681707e05be0c4e86747eModelBuilderSemantics(ModelBuilderSemantics):
+class grammarde_defaultModelBuilderSemantics(ModelBuilderSemantics):
     def __init__(self, context=None, types=None):
         types = [
             t for t in globals().values()
