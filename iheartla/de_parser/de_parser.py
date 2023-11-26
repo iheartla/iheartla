@@ -59,8 +59,7 @@ def get_codegen():
 def walk_model(type_walker, node_info):
     gen = get_codegen()
     gen.init_type(type_walker)
-    code_frame = gen.visit_code(node_info)
-    return code_frame.get_code()
+    return gen.visit(node_info).content
 
 if getattr(sys, 'frozen', False):
     # We are running in a bundle.
@@ -297,28 +296,29 @@ def parse_de_content(content):
         type_walker, start_node = parse_ir_node(content, model)
         #
         res = walk_model(type_walker, start_node)
-        return res, 0
-    try:
-        result = get_parse_result(content)
-    except FailedParse as e:
-        tex = LaMsg.getInstance().get_parse_error(e)
-        log_la("FailedParse:" + str(e))
-        result = (tex, 1)
-    except FailedCut as e:
-        tex = "FailedCut: {}".format(str(e))
-        result = (tex, 1)
-    except AssertionError as e:
-        tex = "{}".format(e.args[0])
-        result = (tex, 1)
-    except Exception as e:
-        tex = "{}: {}".format(type(e).__name__, str(e))
-        result = (tex, 1)
-    except:
-        tex = str(sys.exc_info()[0])
-        result = (tex, 1)
-    finally:
-        if result[1] != 0:
-            print(result[0])
+        return res
+    result = get_parse_result(content)
+    # try:
+    #     result = get_parse_result(content)
+    # except FailedParse as e:
+    #     tex = LaMsg.getInstance().get_parse_error(e)
+    #     log_la("FailedParse:" + str(e))
+    #     result = (tex, 1)
+    # except FailedCut as e:
+    #     tex = "FailedCut: {}".format(str(e))
+    #     result = (tex, 1)
+    # except AssertionError as e:
+    #     tex = "{}".format(e.args[0])
+    #     result = (tex, 1)
+    # except Exception as e:
+    #     tex = "{}: {}".format(type(e).__name__, str(e))
+    #     result = (tex, 1)
+    # except:
+    #     tex = str(sys.exc_info()[0])
+    #     result = (tex, 1)
+    # finally:
+    #     if result[1] != 0:
+    #         print(result[0])
     return result
 
 

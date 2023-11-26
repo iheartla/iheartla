@@ -1,92 +1,66 @@
 from .de_ir_printer import *
-from ..la_geometry.geometry_helper import get_gp_func_impl
-from ..la_tools.module_manager import CacheModuleManager
 import copy
-
-
-class CodeFrame(object):
-    def __init__(self, parse_type=None, desc='', include='', struct='', rand_data='', main='', namespace=''):
-        self.parse_type = parse_type
-        self.desc = desc            # comment for iheartla file
-        self.include = include      # headers
-        self.namespace = namespace  # using namespace
-        self.struct = struct        # return structure
-        self.rand_data = rand_data  # random data
-        self.main = main            # main function
-        self.expr = ''              # expression content in tex
-        self.expr_dict = {}         # raw content : MathML code
-        self.pre_str = ''
-        self.post_str = ''
-        self.pre_block = ''
-        self.extra_include = ''     # gp modules
-        self.extra_funcs = []       # builtin gp functions
-
-    def get_code(self):
-        content = ''
-        if self.parse_type == ParserTypeEnum.EIGEN:
-            content = self.desc + self.include + self.extra_include + self.namespace + self.get_extra_func_impl() + self.struct + '\n\n' + self.rand_data + '\n\n\n' + self.main
-        elif self.parse_type == ParserTypeEnum.NUMPY:
-            content = self.desc + self.include + self.extra_include + self.namespace + self.get_extra_func_impl() + self.struct + '\n\n' + self.rand_data + '\n\n\n' + self.main
-        elif self.parse_type == ParserTypeEnum.MATLAB:
-            content = self.extra_include + self.namespace + self.get_extra_func_impl() + self.struct  # struct already contains everything
-        elif self.parse_type == ParserTypeEnum.LATEX:
-            content = self.main
-        elif self.parse_type == ParserTypeEnum.MATHJAX:
-            content = self.main
-        elif self.parse_type == ParserTypeEnum.MACROMATHJAX:
-            content = self.main
-        elif self.parse_type == ParserTypeEnum.MATHML:
-            content = self.main
-        return content
-
-    def get_extra_func_impl(self):
-        return ''.join([get_gp_func_impl(func, la_type=self.parse_type) for func in self.extra_funcs])
-
-
-    def get_mathjax_content(self):
-        return self.pre_str + self.expr + self.post_str
-
-    def reset(self):
-        self.desc = ''
-        self.include = ''
-        self.struct = ''
-        self.main = ''
-        self.rand_data = ''
-        self.expr = ''
-        self.pre_str = ''
-        self.post_str = ''
-        self.expr_dict.clear()
-        self.extra_include = ''
-        self.extra_funcs.clear()
-
-
-class CodeModule(object):
-    def __init__(self, frame=None, name=CLASS_NAME, syms=None, r_syms=None, params=None, func_sig_dict=None):
-        self.frame = frame   # code frame
-        self.name = name     # module name
-        self.syms = syms     # imported symbols
-        self.r_syms = r_syms   # imported symbols (renamed)
-        self.params = params # parameters
-        self.func_sig_dict = func_sig_dict # function signature -> identity local function name
 
 
 class DCodeGen(DIRPrinter):
     def __init__(self, parse_type=None):
         super().__init__(parse_type=parse_type)
-        self.code_frame = CodeFrame(parse_type)
 
-    def init_type(self, type_walker, func_name):
-        self.code_frame.reset()
-        super().init_type(type_walker, func_name)
-
-    def visit_code(self, node, **kwargs):
-        self.module_list = node.module_list
-        self.module_syms = node.module_syms
-        self.content = self.pre_str + self.visit(node) + self.post_str
-        return copy.deepcopy(self.code_frame)
+    def init_type(self, type_walker):
+        super().init_type(type_walker)
 
     def visit_start(self, node, **kwargs):
-        return self.visit(node.stat, **kwargs)
+        content = ''
+        for vblock in node.vblock:
+            content += self.visit(vblock, **kwargs).content
+        # self.visit(node.stat, **kwargs)
+        return CodeNodeInfo(content)
+
+    def visit_block(self, node, **kwargs):
+        ret = []
+        pre_list = []
+        for stmt in node.stmts:
+            stmt_info = self.visit(stmt, **kwargs)
+            ret.append(stmt_info.content)
+            pre_list += stmt_info.pre_list
+        return CodeNodeInfo('\n'.join(ret), pre_list)
+
+    def visit_where_conditions(self, node, **kwargs):
+        ret = []
+        for val in node.value:
+            ret.append(self.visit(val, **kwargs).content + " \\n")
+        return CodeNodeInfo(''.join(ret))
+
+    def visit_where_condition(self, node, **kwargs):
+        id_list = [self.visit(id0, **kwargs) for id0 in node.id]
+        type_content = self.visit(node.type, **kwargs)
+        if node.belong:
+            belong = node.belong
+        else:
+            belong = "\\in"
+        if node.type.is_node(IRNodeType.MappingType):
+            if node.type.subset:
+                belong = "\\subset"
+        content = "{} & {} {}".format(','.join(id_list), belong, type_content)
+        if node.attrib:
+            content += " ,\\text{{ {}}}".format(node.attrib)
+        if node.desc:
+            content += " \\text{{ {}}}".format(node.desc)
+        return CodeNodeInfo(content)
+
+    def visit_assignment(self, node, **kwargs):
+        content = ''
+        lhs_list = []
+        for cur_index in range(len(node.left)):
+            lhs_list.append(self.visit(node.left[cur_index], **kwargs).content)
+        if node.right[0].node_type == IRNodeType.Optimize:
+            content = self.visit(node.right[0], **kwargs).content
+        else:
+            rhs_list = []
+            for cur_index in range(len(node.right)):
+                rhs_list.append(self.visit(node.right[cur_index], **kwargs).content)
+            content = ','.join(lhs_list) + " = " + ','.join(rhs_list)
+        return CodeNodeInfo(content)
 
     def visit_add(self, node, **kwargs):
         left_info = self.visit(node.left, **kwargs)
@@ -125,6 +99,11 @@ class DCodeGen(DIRPrinter):
         content = "{}({})".format(name_info.content, ', '.join(params))
         return CodeNodeInfo(content, pre_list)
 
+    def visit_matrix(self, node, **kwargs):
+        res = self.visit(node.value, **kwargs)
+        res.content = "[{}]".format(res.content)
+        return res
+
     def visit_matrix_rows(self, node, **kwargs):
         ret = []
         pre_list = []
@@ -136,7 +115,7 @@ class DCodeGen(DIRPrinter):
             r_info = self.visit(node.r, **kwargs)
             ret.append(r_info.content)
             pre_list += r_info.pre_list
-        return CodeNodeInfo(ret, pre_list)
+        return CodeNodeInfo('\n'.join(ret), pre_list)
 
     def visit_matrix_row(self, node, **kwargs):
         ret = []
@@ -149,7 +128,7 @@ class DCodeGen(DIRPrinter):
             exp_info = self.visit(node.exp, **kwargs)
             ret.append(exp_info.content)
             pre_list += exp_info.pre_list
-        return CodeNodeInfo(ret, pre_list)
+        return CodeNodeInfo(', '.join(ret), pre_list)
 
     def visit_matrix_row_commas(self, node, **kwargs):
         ret = []
@@ -193,8 +172,6 @@ class DCodeGen(DIRPrinter):
         return mesh
 
     def visit_gp_func(self, node, **kwargs):
-        if node.func_name not in self.code_frame.extra_funcs:
-            self.code_frame.extra_funcs.append(node.func_name)
         params_content_list = []
         pre_list = []
         for param in node.params:
@@ -222,3 +199,14 @@ class DCodeGen(DIRPrinter):
                 # mesh is still necessary
                 content = "{}.{}({})".format(self.get_mesh_str(node.params[0].la_type.owner), self.get_builtin_func_name(content), ', '.join(params_content_list))
         return CodeNodeInfo(content, pre_list=pre_list)
+
+    def visit_IdentifierAlone(self, node, **kwargs):
+        if node.value:
+            value = node.value
+        else:
+            value = '`' + node.id + '`'
+        return CodeNodeInfo(value)
+
+    def visit_id(self, node, **kwargs):
+        content = node.raw_text
+        return CodeNodeInfo(content)

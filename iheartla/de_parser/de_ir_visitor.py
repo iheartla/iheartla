@@ -612,7 +612,7 @@ class DIRVisitor(DIRBaseVisitor):
         self.logger.info("lhs_list:{}".format(self.lhs_list))
         self.logger.info("lhs_on_der:{}".format(self.lhs_on_der))
 
-    def init_type(self, type_walker, func_name):
+    def init_type(self, type_walker):
         self.main_param = type_walker.main_param
         # self.symtable = self.main_param.symtable
         # self.parameters = self.main_param.parameters
@@ -646,10 +646,7 @@ class DIRVisitor(DIRBaseVisitor):
         self.mesh_dict = type_walker.mesh_dict
         self.class_only = type_walker.class_only
         self.mesh_type_list = type_walker.mesh_type_list
-        if func_name is not None:
-            self.func_name = func_name.replace(' ','')
-        else:
-            self.func_name = CLASS_NAME
+        self.func_name = CLASS_NAME
         # self.print_symbols()
         self.declared_symbols.clear()
         self.local_func_def = ''

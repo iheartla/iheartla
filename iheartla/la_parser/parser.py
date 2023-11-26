@@ -13,7 +13,7 @@ from .codegen_macromathjax import CodeGenMacroMathjax
 from .codegen_mathml import CodeGenMathML
 from .codegen_matlab import CodeGenMatlab
 from .type_walker import *
-from ..de_companion.de_helper import *
+# from ..de_companion.de_helper import *
 from .ir_mutator import *
 from .ir_visitor import *
 from ..la_tools.la_msg import *
@@ -26,6 +26,7 @@ import subprocess
 import threading
 import regex as re
 from ..la_grammar import *
+from ..de_parser.de_parser import parse_de_content
 
 ## We don't need wx to run in command-line mode. This makes it optional.
 try:
@@ -509,16 +510,8 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
     record("parse_and_translate")
     def get_parse_result(parser_type):
         parser = get_default_parser()
-        #
-        # parse de
-        model = parser.parse(content, parseinfo=True)
-        # type walker
-        type_walker = get_type_walker()
-        start_node = type_walker.walk(model, pre_walk=True)
-        new_parser, _, _, _, _, _ = get_new_parser(start_node, content, type_walker, False)
-        model = new_parser.parse(content, parseinfo=True)
-        #
-        new_content = parse_de_content(model, content)
+        # de
+        new_content = parse_de_content(content)
         print("new_content:\n{}".format(new_content))
         #
         model = parser.parse(new_content, parseinfo=True)

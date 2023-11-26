@@ -57,23 +57,18 @@ class DeLightWalker(LightWalker):
         return la_type
 
     def walk_MappingType(self, node, **kwargs):
-        params = []
-        template_symbols = {}
-        template_ret = []
-        if node.params:
-            for index in range(len(node.params)):
-                param_node = self.walk(node.params[index], **kwargs)
-                params.append(param_node)
-        ret_list = []
-        if node.ret:
-            for cur_index in range(len(node.ret)):
-                ret_node = self.walk(node.ret[cur_index], **kwargs)
-                ret_list.append(ret_node)
-        elif node.ret_type:
-            for cur_index in range(len(node.ret_type)):
-                ret_type = self.walk(node.ret_type[cur_index], **kwargs)
-                ret_list.append(ret_type)
-        la_type = MappingType(params=params, ret=ret_list, template_symbols=template_symbols, ret_symbols=template_ret)
+        if node.src:
+            src_info = self.walk(node.src, **kwargs)
+            dst_node = self.walk(node.dst, **kwargs)
+            dst_type = dst_node.la_type
+            assert dst_type.is_scalar() or dst_type.is_vector() or dst_type.is_matrix(), get_err_msg_info(node.parseinfo, "Invalid mapping type")
+            ir_node = MappingTypeNode(src=src_info.ir, dst=dst_node, parse_info=node.parseinfo, raw_text=node.text)
+            ir_node.src = src_info.ir
+            ir_node.dst = dst_node
+            la_type = MappingType(src=src_info.ir.get_main_id(), dst=dst_node.la_type)
+        else:
+            sym_info = self.walk(node.s, **kwargs)
+            la_type = MappingType(ele_set=sym_info)
         return la_type
 
     def walk_DeSolver(self, node, **kwargs):
