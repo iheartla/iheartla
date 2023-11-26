@@ -70,6 +70,7 @@ class ParserManager(object):
             elif key == 'de_init':
                 return self.de_init_parser
             elif key == 'de_default':
+                self.modify_default_parser(extra_dict, is_de=True)
                 return self.de_default_parser
             self.modify_default_parser(extra_dict)
             return self.default_parser
@@ -94,27 +95,30 @@ class ParserManager(object):
         if DEBUG_PARSER:
             self.parser_file_manager.reload()
 
-    def modify_default_parser(self, extra_dict):
-        self.default_parser.new_id_list = []
-        self.default_parser.new_func_list = []
-        self.default_parser.builtin_list = []
-        self.default_parser.conversion_dict = {}
-        self.default_parser.const_e = False
+    def modify_default_parser(self, extra_dict, is_de=False):
+        cur_default_parser = self.default_parser
+        if is_de:
+            cur_default_parser = self.de_default_parser
+        cur_default_parser.new_id_list = []
+        cur_default_parser.new_func_list = []
+        cur_default_parser.builtin_list = []
+        cur_default_parser.conversion_dict = {}
+        cur_default_parser.const_e = False
         if "ids" in extra_dict:
-            self.default_parser.new_id_list = extra_dict["ids"]
+            cur_default_parser.new_id_list = extra_dict["ids"]
             la_debug("Modify default parser, ids:{}".format(extra_dict["ids"]))
         if 'funcs' in extra_dict:
-            self.default_parser.new_func_list = extra_dict["funcs"]
+            cur_default_parser.new_func_list = extra_dict["funcs"]
             la_debug("Modify default parser, funcs:{}".format(extra_dict["funcs"]))
         if 'pkg' in extra_dict:
             funcs_list = extra_dict["pkg"]
             if 'e' in funcs_list:
-                self.default_parser.const_e = True
+                cur_default_parser.const_e = True
                 funcs_list.remove('e')
-            self.default_parser.builtin_list = funcs_list
+            cur_default_parser.builtin_list = funcs_list
             la_debug("Modify default parser, pkg:{}".format(extra_dict["pkg"]))
         if 'rename' in extra_dict:
-            self.default_parser.conversion_dict = extra_dict["rename"]
+            cur_default_parser.conversion_dict = extra_dict["rename"]
             la_debug("Modify default parser, rename:{}".format(extra_dict["rename"]))
 
 
@@ -141,6 +145,10 @@ class ParserFileManager(object):
                     default_file = open(grammar_dir / f)
                     self.default_parser_content = default_file.read()
                     default_file.close()
+                elif hash_value == self.de_default_hash_value:
+                    de_default_file = open(grammar_dir / f)
+                    self.de_default_parser_content = de_default_file.read()
+                    de_default_file.close()
         self.save_threads = []
         # create the user's cache directory (pickle)
         self.cache_dir = os.path.join(user_cache_dir(), self.module_dir)
