@@ -16,7 +16,7 @@ except ImportError:
     # if DEBUG_MODE:
     #     print( "Skipping visualizer." )
     class LaVisualizer(object):
-        def visualize(self, node, pre_walk=True): pass
+        def visualize(self, node, pre_walk=True, source=''): pass
 
 from .ir import *
 from .la_data import *
@@ -679,7 +679,7 @@ class TypeWalker(NodeWalker):
         self.pre_walk = True if 'pre_walk' in kwargs else False
         self.scope_list = ['global']
         # self.symtable.clear()
-        self.visualizer.visualize(node, self.pre_walk)  # visualize
+        self.visualizer.visualize(node, self.pre_walk, 'mesh')  # visualize
         ir_node = StartNode(parse_info=node.parseinfo, raw_text=node.text)
         # if node.directive:
         #     for directive in node.directive:

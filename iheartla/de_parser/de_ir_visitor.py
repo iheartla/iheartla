@@ -3,6 +3,7 @@ from ..la_parser.la_data import *
 from ..la_tools.la_logger import *
 from ..la_tools.la_helper import *
 from ..la_tools.la_package import *
+from ..de_tools.de_helper import *
 import unicodedata
 
 

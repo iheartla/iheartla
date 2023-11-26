@@ -11,7 +11,7 @@ class LaVisualizer(object):
         self.queue = []
         self.cnt = 0
 
-    def visualize(self, node, pre_walk=True):
+    def visualize(self, node, pre_walk=True, source=''):
         self.reset()
         self.node = node
         self.ps = Digraph(name='pet-shop', node_attr={'shape': 'plaintext', 'fontsize': '12', 'height': '.1'}, edge_attr={'arrowsize': '.5', 'minlen': '1'})
@@ -43,8 +43,8 @@ class LaVisualizer(object):
                             self.handleChild(children, cur_index, k)
         src = Source(self.ps.source)
         self.cnt += 1
-        pre = "_PRE" if pre_walk else ""
-        src.render("AST{}_{}".format(pre, self.cnt), view=False)
+        pre = "pre" if pre_walk else ""
+        src.render("{}_{}".format(source, pre), view=False)
 
     def handleChild(self, child, cur_index, k):
         if isinstance(child, Node):
