@@ -510,11 +510,13 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
     record("parse_and_translate")
     def get_parse_result(parser_type):
         parser = get_default_parser()
-        # de
-        new_content = parse_de_content(content)
-        print("new_content:\n{}".format(new_content))
-        #
-        model = parser.parse(new_content, parseinfo=True)
+        if ENABLE_DE:
+            # de
+            new_content = parse_de_content(content)
+            print("new_content:\n{}".format(new_content))#
+            model = parser.parse(new_content, parseinfo=True)
+        else:
+            model = parser.parse(content, parseinfo=True)
         # type walker
         type_walker, start_node = parse_ir_node(new_content, model, parser_type, class_only=CLASS_ONLY)
         # parsing Latex at the same time
