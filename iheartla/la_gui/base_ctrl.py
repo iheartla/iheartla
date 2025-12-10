@@ -19,7 +19,10 @@ class BaseTextControl(wx.stc.StyledTextCtrl):
         # change "Ctrl-Y" to "Ctrl-Shift-Z"
         self.CmdKeyClear(89, wx.stc.STC_SCMOD_CTRL)
         self.CmdKeyAssign(90, wx.stc.STC_SCMOD_SHIFT | wx.stc.STC_SCMOD_CTRL, wx.stc.STC_CMD_REDO)
-        self.text_font = wx.Font(14, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, faceName=u'Monaco')
+        fontname = getBestFont()
+        if fontname is None:
+            fontname = u'Monaco'
+        self.text_font = wx.Font(14, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, faceName=fontname)
         self.SetFont(self.text_font)
         self.fonts = "face:{},size:{}".format(self.text_font.GetFaceName(), self.text_font.GetPointSize())
 
@@ -31,10 +34,7 @@ class BaseTextControl(wx.stc.StyledTextCtrl):
         self.SetMarginType(1, wx.stc.STC_MARGIN_NUMBER)
         self.SetWindowStyle(self.GetWindowStyle() | wx.DOUBLE_BORDER)
         
-        fontname = getBestFont()
-        if fontname is None: fontname = self.text_font.GetFaceName()
-        
-        self.StyleSetSpec(wx.stc.STC_STYLE_DEFAULT, f"size:15,face:{fontname}")
+        self.StyleSetSpec(wx.stc.STC_STYLE_DEFAULT, f"size:15,face:{self.text_font.GetFaceName()}")
         self.SetWrapMode(wx.stc.STC_WRAP_WORD)
         self.SetMarginLeft(0)
 
