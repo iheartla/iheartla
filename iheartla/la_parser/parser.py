@@ -30,6 +30,7 @@ from .type_walker import *
 from .ir import *
 from .ir_visitor import *
 from ..la_tools.la_msg import *
+from ..la_tools import la_helper as _la_helper
 from ..la_tools.la_helper import *
 from ..la_tools.parser_manager import ParserManager
 import subprocess
@@ -250,7 +251,7 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
         for package in package_name_dict:
             name_list = package_name_dict[package]
             if 'e' in name_list:
-                if DEBUG_PARSER:
+                if _la_helper.DEBUG_PARSER:
                     current_content = current_content.replace("pi;", "pi|e;")
                     current_content = current_content.replace("BUILTIN_KEYWORDS;", "BUILTIN_KEYWORDS|e;")
                 name_list.remove('e')
@@ -261,7 +262,7 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
         package_name_list += key_names
         if len(key_names) > 0:
             # add new rules
-            if DEBUG_PARSER:
+            if _la_helper.DEBUG_PARSER:
                 keyword_index = current_content.find('predefined_built_operators;')
                 current_content = current_content[:keyword_index] + '|'.join(key_names) + '|' + current_content[
                                                                                                 keyword_index:]
@@ -344,7 +345,7 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
         keys_rule = "/" + "/|/".join(multi_list) + "/"
         log_la("keys_rule:" + keys_rule)
         parse_key += "keys_rule:{};".format(keys_rule)
-        if DEBUG_PARSER:
+        if _la_helper.DEBUG_PARSER:
             current_content = current_content.replace("= !KEYWORDS(",
                                                       "= const:({}) | (!(KEYWORDS | {} )".format(keys_rule, keys_rule))
     if len(func_dict.keys()) > 0:
@@ -359,7 +360,7 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
         func_rule = "/" + "/|/".join(key_list) + "/"
         extra_dict['funcs'] = key_list
         log_la("func_rule:" + func_rule)
-        if DEBUG_PARSER:
+        if _la_helper.DEBUG_PARSER:
             current_content = current_content.replace("func_id='!!!';", "func_id={};".format(func_rule))
         parse_key += "func symbol:{}, func sig:{}".format(','.join(func_dict.keys()), ";".join(func_dict.values()))
     # get new parser

@@ -2482,7 +2482,12 @@ class TypeWalker(NodeWalker):
         elif node.id:
             value = '`' + node.id + '`'
         else:
-            value = node.const
+            if hasattr(node, 'const') and node.const:
+                value = node.const
+            elif node.parseinfo is not None and hasattr(node.parseinfo, 'token'):
+                value = node.parseinfo.token
+            else:
+                value = ''
         value = self.filter_symbol(value)
         #
         ir_node = IdNode(value, parse_info=node.parseinfo)
