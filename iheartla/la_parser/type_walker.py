@@ -3652,6 +3652,7 @@ class TypeWalker(NodeWalker):
                                                                                         "Invalid identity matrix"))
                 ir_node = NumMatrixNode(parse_info=node.parseinfo, raw_text=node.text)
                 if isinstance(right_sym_list[0], str):
+                    line_info = get_line_info(node.parseinfo)
                     self.assert_expr(self.is_sym_existed(right_sym_list[0]), get_err_msg(line_info, line_info.text.index('_{}'.format(right_sym_list[0])) + 1,"{} unknown".format(right_sym_list[0])))
                 ir_node.la_type = MatrixType(rows=right_sym_list[0], cols=right_sym_list[0])
                 ir_node.id = left_info.ir
