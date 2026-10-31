@@ -1,25 +1,37 @@
-[tool.poetry]
-name = "linear_algebra"
-version = "0.1.0"
-description = "I heart LA"
-authors = ["Yong Li <pressure36@gmail.com>"]
+[project]
+name = "iheartla"
+version = "0.0.1"
+description = "I❤️LA: Compilable Markdown for Linear Algebra"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Yong Li", email = "pressure36@gmail.com" }]
+requires-python = ">=3.10"
+dependencies = [
+    # The generated parsers in la_local_parsers need TatSu's regex-based
+    # matching, which TatSu dropped after 5.7.3 (5.7.3 is yanked on PyPI but
+    # installs fine when pinned exactly).
+    "tatsu==5.7.3",
+    "regex",
+    "sympy",
+    "appdirs",
+]
 
-[tool.poetry.dependencies]
-python = "^3.7"
-tatsu = "^4.4"
-wxpython = "^4.1.0"
-PyMuPDF = "^1.17.0"
-graphviz = "^0.14"
-regex = "^2020.7.14"
-appdirs = "^1.4.4"
-sympy = "^1.8"
+[project.optional-dependencies]
+gui = ["wxpython", "PyMuPDF"]
+viz = ["graphviz"]
+test = ["numpy", "scipy", "cppyy"]
 
-[tool.poetry.dev-dependencies]
-cppyy = "^1.7.1"
-numpy = "^1.21.0"
-scipy = "^1.5.2"
-pyinstaller = "^4.0"
+[project.urls]
+Homepage = "https://github.com/iheartla/iheartla"
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["iheartla*"]
+
+[tool.setuptools.package-data]
+# built-in I❤️MESH modules (.hlang) are read at compile time; the C++/MATLAB/Python
+# support files are what generated code includes
+iheartla = ["mesh/**/*", "pygments/*"]

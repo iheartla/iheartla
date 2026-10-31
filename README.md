@@ -38,7 +38,7 @@ For more, see the [wiki](https://github.com/pressureless/linear_algebra/wiki) or
 
 ## Running
 
-The easiest way to run is in the web browser. You can use the [hosted version](https://iheartla.github.io/iheartla/) (no installation needed) or `cd web` and then `python3 -m http.server`.
+The easiest way to run is in the web browser. You can use the [hosted version](https://iheartla.github.io/iheartla/) (no installation needed) or `cd docs` and then `python3 -m http.server`.
 
 The following instructions describe running the Python code directly.
 
@@ -58,30 +58,34 @@ You can also run as a command-line compiler:
 
 You can find releases on the GitHub [release page](https://github.com/iheartla/iheartla/releases). The following instructions are for running from source.
 
-I❤️LA depends on Python 3.x (>= Python 3.9) and several modules.
+I❤️LA depends on Python 3.x (>= Python 3.10) and several modules, listed in `pyproject.toml`. The parsers require exactly TatSu 5.7.3; it is marked as yanked on PyPI, but pinned installs work (uv prints a warning).
+
+### uv
+
+Install [uv](https://docs.astral.sh/uv/) and run:
+
+    uv run python -m iheartla --help
+    
+    ## with the GUI
+    uv run --extra gui python -m iheartla
+    
+    ## For development, also install the test suite's dependencies
+    ## (see .github/workflows/test.yml for the C++ setup the tests need):
+    uv sync --extra test --extra viz
 
 ### Pip
-
-Install the modules via `pip`:
 
     python3 -m venv .venv
     # activate your virtual environment via something like: source .venv/bin/activate
     
-    pip3 install -r requirements.txt
-    ## or directly
-    pip3 install tatsu==5.8.3 regex appdirs wxpython PyMuPDF sympy
+    pip3 install -e .
+    ## or, with the GUI
+    pip3 install -e '.[gui]'
     
     ## For development, also install:
-    pip3 install graphviz cppyy numpy scipy pyinstaller
+    pip3 install -e '.[gui,viz,test]' pyinstaller
 
 (2023-05-10: There is a known bug with Python >= 3.10 and wxPython 4.2.0's PDF viewer. It will be fixed in the next release of wxPython. For now, either run on Python 3.9, live without PDF rendering, compile top-of-tree wxPython yourself, or change `/` to `//` in `wx/lib/pdfviewer/viewer.py:354` (so that `self.Ypagepixels` is an `int`). The relevant commit is [here](https://github.com/wxWidgets/Phoenix/commit/aa4394773a8696444ce5d8a90273d67796e499d0).)
-
-### Poetry
-
-Install the [Poetry](https://python-poetry.org/) dependency manager and run:
-
-    poetry install --no-root --no-dev
-    poetry shell
 
 ### Conda
 
