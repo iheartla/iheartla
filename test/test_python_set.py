@@ -27,3 +27,76 @@ class TestSet(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_set_not_in(self):
+        # ∉ must negate the membership test, for both a set parameter and a set-valued call
+        la_str = """L_i,j = { α_ij if j ∉ N(i)
+        M_i,j = { α_ij if j ∉ S
+        where
+        L: ℝ^(n×n)
+        M: ℝ^(n×n)
+        α: ℝ^(n×n)
+        N: ℤ -> {ℤ}
+        S: {ℤ}
+        """
+        func_info = self.gen_func_info(la_str)
+        α = np.array([[1., 2, 3], [4, 7, 6], [5, 3, 2]])
+        def N(p0):
+            if p0 == 1:
+                return [2]
+            elif p0 == 2:
+                return [1]
+            return [1, 2]
+        S = [2]
+        L = α.copy()
+        L[0, 1] = L[1, 0] = L[2, 0] = L[2, 1] = 0
+        M = α.copy()
+        M[:, 1] = 0
+        res = func_info.numpy_func(α, N, S)
+        self.assertDMatrixEqual(res.L.toarray(), L)
+        self.assertDMatrixEqual(res.M.toarray(), M)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 3, 3> α;",
+                     "    α << 1, 2, 3, 4, 7, 6, 5, 3, 2;",
+                     "    std::function<std::vector<int >(int)> N = [](int p)->std::vector<int >{",
+                     "        if(p == 1) return {2};",
+                     "        if(p == 2) return {1};",
+                     "        return {1, 2};",
+                     "    };",
+                     "    std::vector<int > S = {2};",
+                     "    Eigen::Matrix<double, 3, 3> L = α;",
+                     "    L(0, 1) = 0; L(1, 0) = 0; L(2, 0) = 0; L(2, 1) = 0;",
+                     "    Eigen::Matrix<double, 3, 3> M = α;",
+                     "    M.col(1).setZero();",
+                     "    auto r = {}(α, N, S);".format(func_info.eig_func_name),
+                     "    return Eigen::MatrixXd(r.L).isApprox(L) && Eigen::MatrixXd(r.M).isApprox(M);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_union_sequence_call(self):
+        # union over a set of the sets returned by a function
+        la_str = """A = ∪_(i ∈ T) N(i)
+        where
+        N: ℤ -> {ℤ}
+        T: {ℤ}
+        """
+        func_info = self.gen_func_info(la_str)
+        def N(p0):
+            return [p0, p0 + 10]
+        T = [1, 3]
+        self.assertEqual(sorted(func_info.numpy_func(N, T).A), [1, 3, 11, 13])
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::function<std::vector<int >(int)> N = [](int p)->std::vector<int >{",
+                     "        return {p, p + 10};",
+                     "    };",
+                     "    std::vector<int > T = {1, 3};",
+                     "    std::vector<int > A = {}(N, T).A;".format(func_info.eig_func_name),
+                     "    return A == std::vector<int >({1, 3, 11, 13});",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())

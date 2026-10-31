@@ -945,6 +945,13 @@ class CodeGenEigen(CodeGen):
         content = []
         exp_info = self.visit(node.exp)
         exp_str = exp_info.content
+        if node.exp.node_type != IRNodeType.Id:
+            # Bind the set expression once per iteration: std::set_union takes begin() and end(),
+            # which must come from the same object, but a call such as N(i) returns a new temporary each time.
+            exp_bind = self.generate_var_name("set")
+            exp_info.pre_list = list(exp_info.pre_list) + ["    const {}& {} = {};\n".format(
+                self.get_ctype(node.exp.la_type), exp_bind, exp_str)]
+            exp_str = exp_bind
         assign_id_type = self.get_sym_type(assign_id)
         # set declaration
         tmp_id = self.generate_var_name("tmp")
@@ -988,7 +995,7 @@ class CodeGenEigen(CodeGen):
                     extra_info = self.visit(et, **kwargs)
                     content += [self.update_prelist_str([extra_info.content], '    ')]
             content.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
-            assign_id, assign_id, exp_str, exp_str, assign_id))
+            assign_id, assign_id, exp_str, exp_str, tmp_id))
             content.append("    {}.assign({}.begin(), {}.end());\n".format(assign_id, tmp_id, tmp_id))
             content.append("    {}.clear();\n".format(tmp_id))
             # content.append("    sort({}.begin(), {}.end());\n".format(assign_id, assign_id))
@@ -2555,6 +2562,7 @@ class CodeGenEigen(CodeGen):
         item_list = []
         pre_list = []
         right_info = self.visit(node.set, **kwargs)
+        pre_list += right_info.pre_list
         if node.set.la_type.index_type:
             for item in node.items:
                 item_info = self.visit(item, **kwargs)
@@ -2562,6 +2570,7 @@ class CodeGenEigen(CodeGen):
                 if not item.la_type.index_type:
                     item_content = "{}-1".format(item_info.content)
                 item_list.append(item_content)
+                pre_list += item_info.pre_list
         else:
             for item in node.items:
                 item_info = self.visit(item, **kwargs)
@@ -2570,11 +2579,16 @@ class CodeGenEigen(CodeGen):
                 else:
                     item_content = "{}+1".format(item_info.content)
                 item_list.append(item_content)
-        # content = '{}.find({}({})) == {}.end()'.format(right_info.content,
-        #                                                self.get_set_item_str(self.get_sym_type(right_info.content)),
-        #                                                ', '.join(item_list), right_info.content)
-        content = 'std::binary_search({}.begin(), {}.end(), {}({}))'.format(right_info.content, right_info.content,
-                                                       self.get_set_item_str(self.get_sym_type(right_info.content)),
+                pre_list += item_info.pre_list
+        set_content = right_info.content
+        if node.set.node_type != IRNodeType.Id:
+            # As in visit_in: bind a set expression (e.g. a call N(i) that returns a temporary)
+            # once, so that begin() and end() refer to the same object.
+            set_content = self.generate_var_name('set')
+            pre_list.append('const {}& {} = {};\n'.format(self.get_ctype(node.set.la_type), set_content, right_info.content))
+        # The element type comes from the set node's type: the set need not be a symbol.
+        content = '!std::binary_search({}.begin(), {}.end(), {}({}))'.format(set_content, set_content,
+                                                       self.get_set_item_str(node.set.la_type),
                                                        ', '.join(item_list))
         return CodeNodeInfo(content=content, pre_list=pre_list)
 

@@ -872,17 +872,24 @@ class CodeGenNumpy(CodeGen):
         exp_info = self.visit(node.exp)
         exp_str = exp_info.content
         assign_id_type = self.get_sym_type(assign_id)
-        content.append("{} = {{}}\n".format(assign_id))
+        # an empty frozenset ({} would be a dict, which frozenset.union rejects)
+        content.append("{} = frozenset()\n".format(assign_id))
         if node.enum_list:
             range_info = self.visit(node.range, **kwargs)
             index_name = self.generate_var_name('tuple')
             content.append('for {} in {}:\n'.format(index_name, range_info.content))
-            extra_content = ''
-            for i in range(len(node.enum_list)):
-                if node.range.la_type.index_type:
-                    content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+            # index sets store 0-based values; non-index sets store the values themselves
+            extra_content = ' + 1' if node.range.la_type.index_type else ''
+            if len(node.enum_list) == 1:
+                if node.use_tuple:
+                    # one name for a whole tuple element (as in the Eigen backend)
+                    content.append('    {} = {}\n'.format(node.enum_list[0], index_name))
                 else:
-                    content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+                    # a set of scalars: each element is a number, not a tuple
+                    content.append('    {} = {}{}\n'.format(node.enum_list[0], index_name, extra_content))
+            else:
+                for i in range(len(node.enum_list)):
+                    content.append('    {} = {}[{}]{}\n'.format(node.enum_list[i], index_name, i, extra_content))
             exp_pre_list = []
             if exp_info.pre_list:  # catch pre_list
                 list_content = "".join(exp_info.pre_list)
