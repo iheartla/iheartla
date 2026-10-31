@@ -49,7 +49,8 @@ class CacheModuleManager(object):
         self.module_cache_dir = os.path.join(user_cache_dir(), "iheartmesh_modules")    # local cache folder
         self.init_cache()
         self.cache_module_dict = {}   # saved data
-        self.load_cached_modules()
+        if CACHE_MODULE:  # off: the cache files are never used, and old ones may not unpickle
+            self.load_cached_modules()
         self.post_str = ''
         CacheModuleManager.__instance = self
 

@@ -623,7 +623,7 @@ def compile_la_content(la_content,
             # dependent modules
             for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.MATLAB, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,  ParserTypeEnum.MATHML, ParserTypeEnum.MACROMATHJAX]:
                 if parser_type & cur_type:
-                    type_walker, start_node = parse_ir_node(la_content, model, cur_type)
+                    type_walker, start_node = parse_ir_node(la_content, model, cur_type, class_only=class_only)
                     if get_vars and var_data == '':
                         var_data = VarData(type_walker.parameters, type_walker.lhs_list, type_walker.ret_symbol)
                     cur_content = walk_model(cur_type, type_walker, start_node, func_name, struct, class_only=class_only)
@@ -633,7 +633,7 @@ def compile_la_content(la_content,
         else:
             # free
             record("compile_la_content, free")
-            type_walker, start_node = parse_ir_node(la_content, model, parser_type=ParserTypeEnum.EIGEN, start_node=start_node, type_walker=type_walker)
+            type_walker, start_node = parse_ir_node(la_content, model, parser_type=ParserTypeEnum.EIGEN, start_node=start_node, type_walker=type_walker, class_only=class_only)
             for cur_type in [ParserTypeEnum.NUMPY, ParserTypeEnum.EIGEN, ParserTypeEnum.MATLAB, ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX,  ParserTypeEnum.MATHML, ParserTypeEnum.MACROMATHJAX]:
                 if parser_type & cur_type:
                     if get_vars and var_data == '':
