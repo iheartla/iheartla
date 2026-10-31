@@ -1,6 +1,9 @@
 //! (stub, to be ported)
 
+#![allow(unused_imports)]
 use super::*;
+use crate::helper::ParseInfo;
+use crate::types::T;
 
 impl TypeWalker {
     pub(super) fn walk_LocalFunc(&mut self, _node: &Val, _kw: &Kwargs) -> WResult<NodeInfo> {
@@ -29,5 +32,12 @@ impl TypeWalker {
     }
     pub(super) fn walk_Integral(&mut self, _node: &Val, _kw: &Kwargs) -> WResult<NodeInfo> {
         Err(WalkError::Other("not ported: walk_Integral".into()))
+    }
+}
+
+impl TypeWalker {
+    /// `check_func_template(func_type, parse_info)`
+    pub(super) fn check_func_template(&mut self, _ft: &T, _pi: Option<ParseInfo>) -> WResult<()> {
+        Err(WalkError::Other("not ported: check_func_template".into()))
     }
 }

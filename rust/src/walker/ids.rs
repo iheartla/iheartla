@@ -1,6 +1,9 @@
 //! (stub, to be ported)
 
+#![allow(unused_imports)]
 use super::*;
+use crate::helper::ParseInfo;
+use crate::types::T;
 
 impl TypeWalker {
     pub(super) fn walk_Function(&mut self, _node: &Val, _kw: &Kwargs) -> WResult<NodeInfo> {
@@ -59,5 +62,17 @@ impl TypeWalker {
     }
     pub(super) fn walk_Float(&mut self, _node: &Val, _kw: &Kwargs) -> WResult<String> {
         Err(WalkError::Other("not ported: walk_Float".into()))
+    }
+}
+
+impl TypeWalker {
+    /// `create_id_node_info(left_content, right_content, parse_info)`
+    pub(super) fn create_id_node_info(&mut self, _left: &str, _right: Vec<String>, _pi: Option<ParseInfo>) -> NodeInfo {
+        panic!("not ported: create_id_node_info")
+    }
+
+    /// `update_sub_sym_lists(main_sym, right_sym_list)`
+    pub(super) fn update_sub_sym_lists(&mut self, _main: &str, _right: &[String]) {
+        panic!("not ported: update_sub_sym_lists")
     }
 }

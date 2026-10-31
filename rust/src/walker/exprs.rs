@@ -1,6 +1,9 @@
 //! (stub, to be ported)
 
+#![allow(unused_imports)]
 use super::*;
+use crate::helper::ParseInfo;
+use crate::types::T;
 
 impl TypeWalker {
     pub(super) fn walk_Expression(&mut self, _node: &Val, _kw: &Kwargs) -> WResult<NodeInfo> {
@@ -83,5 +86,24 @@ impl TypeWalker {
     }
     pub(super) fn walk_Squareroot(&mut self, _node: &Val, _kw: &Kwargs) -> WResult<NodeInfo> {
         Err(WalkError::Other("not ported: walk_Squareroot".into()))
+    }
+}
+
+impl TypeWalker {
+    /// `make_mul_info(left_info, right_info, op, parse_info, raw_text)`
+    pub(super) fn make_mul_info(
+        &mut self,
+        _left: NodeInfo,
+        _right: NodeInfo,
+        _op: crate::ir::MulOpType,
+        _parse_info: Option<ParseInfo>,
+        _raw_text: Option<String>,
+    ) -> WResult<NodeInfo> {
+        Err(WalkError::Other("not ported: make_mul_info".into()))
+    }
+
+    /// `create_power_node(base, power)`
+    pub(super) fn create_power_node(&mut self, _base: &N, _power: &N) -> WResult<N> {
+        Err(WalkError::Other("not ported: create_power_node".into()))
     }
 }

@@ -640,6 +640,24 @@ impl VisitorBase {
 }
 
 pub mod names;
+pub mod numpy;
+pub mod eigen;
+pub mod matlab;
+pub mod latex;
+pub mod mathjax;
+pub mod macromathjax;
+
+/// A code generator for a backend.
+pub fn new_backend(kind: Kind) -> Box<dyn Backend> {
+    match kind {
+        Kind::Numpy => Box::new(numpy::CodeGenNumpy::new()),
+        Kind::Eigen => Box::new(eigen::CodeGenEigen::new()),
+        Kind::Matlab => Box::new(matlab::CodeGenMatlab::new()),
+        Kind::Latex => Box::new(latex::CodeGenLatex::new()),
+        Kind::Mathjax => Box::new(mathjax::CodeGenMathjax::new()),
+        Kind::MacroMathjax => Box::new(macromathjax::CodeGenMacroMathjax::new()),
+    }
+}
 
 /// A code generator. `visit` dispatches on the node type; the default
 /// methods are those of the Python base classes.
@@ -760,173 +778,62 @@ pub trait Backend {
 
     // -- IRBaseVisitor / IRVisitor / CodeGen defaults ------------------------
 
-    fn visit_id(&mut self, node: &N, _kw: &Kw) -> CodeNodeInfo {
-        CodeNodeInfo::new(node.get_name())
+    fn visit_id(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
+        super_visit_id(self, node, kw)
     }
-    fn visit_double(&mut self, node: &N, _kw: &Kw) -> CodeNodeInfo {
-        CodeNodeInfo::new(node.str_value())
+    fn visit_double(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
+        super_visit_double(self, node, kw)
     }
-    fn visit_fraction(&mut self, node: &N, _kw: &Kw) -> CodeNodeInfo {
-        CodeNodeInfo::new(format!("({}/{})", node.numerator(), node.denominator()))
+    fn visit_fraction(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
+        super_visit_fraction(self, node, kw)
     }
-    fn visit_integer(&mut self, node: &N, _kw: &Kw) -> CodeNodeInfo {
-        let v = node.int_value();
-        CodeNodeInfo::new(if v < 0 { format!("({v})") } else { v.to_string() })
+    fn visit_integer(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
+        super_visit_integer(self, node, kw)
     }
     fn visit_factor(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
-        let n = node.borrow();
-        let child = n
-            .id
-            .clone()
-            .or(n.num.clone())
-            .or(n.sub.clone())
-            .or(n.m.clone())
-            .or(n.v.clone())
-            .or(n.s.clone())
-            .or(n.nm.clone())
-            .or(n.op.clone())
-            .or(n.c.clone());
-        drop(n);
-        match child {
-            Some(c) => self.visit(&c, kw),
-            None => CodeNodeInfo::default(),
-        }
+        super_visit_factor(self, node, kw)
     }
     fn visit_expression(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
-        let mut info = self.visit(&node.value().unwrap(), kw);
-        if node.sign().is_some() {
-            info.content = Content::Str(format!("-{}", info.s()));
-        }
-        info
+        super_visit_expression(self, node, kw)
     }
     fn visit_sub_expr(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
-        let mut info = self.visit(&node.value().unwrap(), kw);
-        info.content = Content::Str(format!("({})", info.s()));
-        info
+        super_visit_sub_expr(self, node, kw)
     }
     fn visit_start(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
-        self.visit(&node.stat().unwrap(), kw)
+        super_visit_start(self, node, kw)
     }
     fn visit_add(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
-        let mut l = self.visit(&node.left().unwrap(), kw);
-        let r = self.visit(&node.right().unwrap(), kw);
-        l.content = Content::Str(format!("{} + {}", l.s(), r.s()));
-        l.pre_list.extend(r.pre_list);
-        l
+        super_visit_add(self, node, kw)
     }
     fn visit_sub(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
-        let mut l = self.visit(&node.left().unwrap(), kw);
-        let r = self.visit(&node.right().unwrap(), kw);
-        l.content = Content::Str(format!("{} - {}", l.s(), r.s()));
-        l.pre_list.extend(r.pre_list);
-        l
+        super_visit_sub(self, node, kw)
     }
     fn visit_function(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
-        let name = self.visit(&node.name().unwrap(), kw);
-        let mut pre = Vec::new();
-        let mut params = Vec::new();
-        for p in node.params() {
-            let i = self.visit(&p, kw);
-            params.push(i.s());
-            pre.extend(i.pre_list);
-        }
-        CodeNodeInfo::with(format!("{}({})", name.s(), params.join(", ")), pre)
+        super_visit_function(self, node, kw)
     }
     fn visit_matrix_rows(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
-        let mut ret = Vec::new();
-        let mut pre = Vec::new();
-        if let Some(rs) = node.rs() {
-            let i = self.visit(&rs, kw);
-            ret.extend(i.content.list());
-            pre.extend(i.pre_list);
-        }
-        if let Some(r) = node.r_node() {
-            let i = self.visit(&r, kw);
-            ret.push(i.content);
-            pre.extend(i.pre_list);
-        }
-        CodeNodeInfo::list(ret, pre)
+        super_visit_matrix_rows(self, node, kw)
     }
     fn visit_matrix_row(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
-        let mut ret = Vec::new();
-        let mut pre = Vec::new();
-        if let Some(rc) = node.rc() {
-            let i = self.visit(&rc, kw);
-            ret.extend(i.content.list());
-            pre.extend(i.pre_list);
-        }
-        if let Some(e) = node.exp() {
-            let i = self.visit(&e, kw);
-            ret.push(i.content);
-            pre.extend(i.pre_list);
-        }
-        CodeNodeInfo::list(ret, pre)
+        super_visit_matrix_row(self, node, kw)
     }
     fn visit_matrix_row_commas(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
-        let mut ret = Vec::new();
-        let mut pre = Vec::new();
-        if let Some(v) = node.value() {
-            let i = self.visit(&v, kw);
-            ret.extend(i.content.list());
-            pre.extend(i.pre_list);
-        }
-        if let Some(e) = node.exp() {
-            let i = self.visit(&e, kw);
-            ret.push(i.content);
-            pre.extend(i.pre_list);
-        }
-        CodeNodeInfo::list(ret, pre)
+        super_visit_matrix_row_commas(self, node, kw)
     }
     fn visit_exp_in_matrix(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
-        let mut info = self.visit(&node.value().unwrap(), kw);
-        if node.sign().is_some() {
-            info.content = Content::Str(format!("-{}", info.s()));
-        }
-        info
+        super_visit_exp_in_matrix(self, node, kw)
     }
     fn visit_to_matrix(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
-        self.visit(&node.item().unwrap(), kw)
+        super_visit_to_matrix(self, node, kw)
     }
     fn visit_to_double(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
-        self.visit(&node.item().unwrap(), kw)
+        super_visit_to_double(self, node, kw)
     }
     fn get_mesh_str(&self, mesh: &str) -> String {
         mesh.to_string()
     }
     fn visit_gp_func(&mut self, node: &N, kw: &Kw) -> CodeNodeInfo {
-        let fname = node.func_name().unwrap_or_default();
-        if !self.base().code_frame.extra_funcs.contains(&fname) {
-            self.base_mut().code_frame.extra_funcs.push(fname);
-        }
-        let mut contents = Vec::new();
-        let mut pre = Vec::new();
-        let params = node.params();
-        for p in &params {
-            let i = self.visit(p, kw);
-            contents.push(i.s());
-            pre.extend(i.pre_list);
-        }
-        let b = self.base();
-        let name = b.convert_overloaded_name(&node.identity_name().unwrap_or_default());
-        let content = if params[0].la_type().is_mesh() {
-            format!("{}.{}({})", self.get_mesh_str(&contents[0]), b.get_builtin_func_name(&name), contents[1..].join(", "))
-        } else if node.gp_type() == GPType::NonZeros {
-            format!("{}({})", b.get_builtin_func_name(&name), contents.join(", "))
-        } else if node.gp_type() == GPType::IndicatorVector {
-            let dim = match b.get_builtin_func_name(&name).as_str() {
-                packages::VERTICES_TO_VECTOR => "n_vertices()",
-                packages::EDGES_TO_VECTOR => "n_edges()",
-                packages::FACES_TO_VECTOR => "n_faces()",
-                packages::TETS_TO_VECTOR => "n_tets()",
-                other => panic!("KeyError: {other}"),
-            };
-            let owner = params[0].la_type().owner().unwrap_or_else(|| "None".into());
-            format!("indicator({}, {}.{})", contents.join(", "), self.get_mesh_str(&owner), dim)
-        } else {
-            let owner = params[0].la_type().owner().unwrap_or_else(|| "None".into());
-            format!("{}.{}({})", self.get_mesh_str(&owner), b.get_builtin_func_name(&name), contents.join(", "))
-        };
-        CodeNodeInfo::with(content, pre)
+        super_visit_gp_func(self, node, kw)
     }
 
     // methods that IRBaseVisitor defines as `pass` (returning None)
@@ -1050,4 +957,205 @@ impl Kw {
     pub fn remove(&mut self, k: &str) {
         self.map.shift_remove(k);
     }
+}
+
+/// The base-class `visit_id` (call from an override for `super().visit_id(...)`).
+pub fn super_visit_id<B: Backend + ?Sized>(b: &mut B, node: &N, _kw: &Kw) -> CodeNodeInfo {
+    CodeNodeInfo::new(node.get_name())
+}
+
+/// The base-class `visit_double` (call from an override for `super().visit_double(...)`).
+pub fn super_visit_double<B: Backend + ?Sized>(b: &mut B, node: &N, _kw: &Kw) -> CodeNodeInfo {
+    CodeNodeInfo::new(node.str_value())
+}
+
+/// The base-class `visit_fraction` (call from an override for `super().visit_fraction(...)`).
+pub fn super_visit_fraction<B: Backend + ?Sized>(b: &mut B, node: &N, _kw: &Kw) -> CodeNodeInfo {
+    CodeNodeInfo::new(format!("({}/{})", node.numerator(), node.denominator()))
+}
+
+/// The base-class `visit_integer` (call from an override for `super().visit_integer(...)`).
+pub fn super_visit_integer<B: Backend + ?Sized>(b: &mut B, node: &N, _kw: &Kw) -> CodeNodeInfo {
+    let v = node.int_value();
+    CodeNodeInfo::new(if v < 0 { format!("({v})") } else { v.to_string() })
+}
+
+/// The base-class `visit_factor` (call from an override for `super().visit_factor(...)`).
+pub fn super_visit_factor<B: Backend + ?Sized>(b: &mut B, node: &N, kw: &Kw) -> CodeNodeInfo {
+    let n = node.borrow();
+    let child = n
+        .id
+        .clone()
+        .or(n.num.clone())
+        .or(n.sub.clone())
+        .or(n.m.clone())
+        .or(n.v.clone())
+        .or(n.s.clone())
+        .or(n.nm.clone())
+        .or(n.op.clone())
+        .or(n.c.clone());
+    drop(n);
+    match child {
+        Some(c) => b.visit(&c, kw),
+        None => CodeNodeInfo::default(),
+    }
+}
+
+/// The base-class `visit_expression` (call from an override for `super().visit_expression(...)`).
+pub fn super_visit_expression<B: Backend + ?Sized>(b: &mut B, node: &N, kw: &Kw) -> CodeNodeInfo {
+    let mut info = b.visit(&node.value().unwrap(), kw);
+    if node.sign().is_some() {
+        info.content = Content::Str(format!("-{}", info.s()));
+    }
+    info
+}
+
+/// The base-class `visit_sub_expr` (call from an override for `super().visit_sub_expr(...)`).
+pub fn super_visit_sub_expr<B: Backend + ?Sized>(b: &mut B, node: &N, kw: &Kw) -> CodeNodeInfo {
+    let mut info = b.visit(&node.value().unwrap(), kw);
+    info.content = Content::Str(format!("({})", info.s()));
+    info
+}
+
+/// The base-class `visit_start` (call from an override for `super().visit_start(...)`).
+pub fn super_visit_start<B: Backend + ?Sized>(b: &mut B, node: &N, kw: &Kw) -> CodeNodeInfo {
+    b.visit(&node.stat().unwrap(), kw)
+}
+
+/// The base-class `visit_add` (call from an override for `super().visit_add(...)`).
+pub fn super_visit_add<B: Backend + ?Sized>(b: &mut B, node: &N, kw: &Kw) -> CodeNodeInfo {
+    let mut l = b.visit(&node.left().unwrap(), kw);
+    let r = b.visit(&node.right().unwrap(), kw);
+    l.content = Content::Str(format!("{} + {}", l.s(), r.s()));
+    l.pre_list.extend(r.pre_list);
+    l
+}
+
+/// The base-class `visit_sub` (call from an override for `super().visit_sub(...)`).
+pub fn super_visit_sub<B: Backend + ?Sized>(b: &mut B, node: &N, kw: &Kw) -> CodeNodeInfo {
+    let mut l = b.visit(&node.left().unwrap(), kw);
+    let r = b.visit(&node.right().unwrap(), kw);
+    l.content = Content::Str(format!("{} - {}", l.s(), r.s()));
+    l.pre_list.extend(r.pre_list);
+    l
+}
+
+/// The base-class `visit_function` (call from an override for `super().visit_function(...)`).
+pub fn super_visit_function<B: Backend + ?Sized>(b: &mut B, node: &N, kw: &Kw) -> CodeNodeInfo {
+    let name = b.visit(&node.name().unwrap(), kw);
+    let mut pre = Vec::new();
+    let mut params = Vec::new();
+    for p in node.params() {
+        let i = b.visit(&p, kw);
+        params.push(i.s());
+        pre.extend(i.pre_list);
+    }
+    CodeNodeInfo::with(format!("{}({})", name.s(), params.join(", ")), pre)
+}
+
+/// The base-class `visit_matrix_rows` (call from an override for `super().visit_matrix_rows(...)`).
+pub fn super_visit_matrix_rows<B: Backend + ?Sized>(b: &mut B, node: &N, kw: &Kw) -> CodeNodeInfo {
+    let mut ret = Vec::new();
+    let mut pre = Vec::new();
+    if let Some(rs) = node.rs() {
+        let i = b.visit(&rs, kw);
+        ret.extend(i.content.list());
+        pre.extend(i.pre_list);
+    }
+    if let Some(r) = node.r_node() {
+        let i = b.visit(&r, kw);
+        ret.push(i.content);
+        pre.extend(i.pre_list);
+    }
+    CodeNodeInfo::list(ret, pre)
+}
+
+/// The base-class `visit_matrix_row` (call from an override for `super().visit_matrix_row(...)`).
+pub fn super_visit_matrix_row<B: Backend + ?Sized>(b: &mut B, node: &N, kw: &Kw) -> CodeNodeInfo {
+    let mut ret = Vec::new();
+    let mut pre = Vec::new();
+    if let Some(rc) = node.rc() {
+        let i = b.visit(&rc, kw);
+        ret.extend(i.content.list());
+        pre.extend(i.pre_list);
+    }
+    if let Some(e) = node.exp() {
+        let i = b.visit(&e, kw);
+        ret.push(i.content);
+        pre.extend(i.pre_list);
+    }
+    CodeNodeInfo::list(ret, pre)
+}
+
+/// The base-class `visit_matrix_row_commas` (call from an override for `super().visit_matrix_row_commas(...)`).
+pub fn super_visit_matrix_row_commas<B: Backend + ?Sized>(b: &mut B, node: &N, kw: &Kw) -> CodeNodeInfo {
+    let mut ret = Vec::new();
+    let mut pre = Vec::new();
+    if let Some(v) = node.value() {
+        let i = b.visit(&v, kw);
+        ret.extend(i.content.list());
+        pre.extend(i.pre_list);
+    }
+    if let Some(e) = node.exp() {
+        let i = b.visit(&e, kw);
+        ret.push(i.content);
+        pre.extend(i.pre_list);
+    }
+    CodeNodeInfo::list(ret, pre)
+}
+
+/// The base-class `visit_exp_in_matrix` (call from an override for `super().visit_exp_in_matrix(...)`).
+pub fn super_visit_exp_in_matrix<B: Backend + ?Sized>(b: &mut B, node: &N, kw: &Kw) -> CodeNodeInfo {
+    let mut info = b.visit(&node.value().unwrap(), kw);
+    if node.sign().is_some() {
+        info.content = Content::Str(format!("-{}", info.s()));
+    }
+    info
+}
+
+/// The base-class `visit_to_matrix` (call from an override for `super().visit_to_matrix(...)`).
+pub fn super_visit_to_matrix<B: Backend + ?Sized>(b: &mut B, node: &N, kw: &Kw) -> CodeNodeInfo {
+    b.visit(&node.item().unwrap(), kw)
+}
+
+/// The base-class `visit_to_double` (call from an override for `super().visit_to_double(...)`).
+pub fn super_visit_to_double<B: Backend + ?Sized>(b: &mut B, node: &N, kw: &Kw) -> CodeNodeInfo {
+    b.visit(&node.item().unwrap(), kw)
+}
+
+/// The base-class `visit_gp_func` (call from an override for `super().visit_gp_func(...)`).
+pub fn super_visit_gp_func<B: Backend + ?Sized>(b: &mut B, node: &N, kw: &Kw) -> CodeNodeInfo {
+    let fname = node.func_name().unwrap_or_default();
+    if !b.base().code_frame.extra_funcs.contains(&fname) {
+        b.base_mut().code_frame.extra_funcs.push(fname);
+    }
+    let mut contents = Vec::new();
+    let mut pre = Vec::new();
+    let params = node.params();
+    for p in &params {
+        let i = b.visit(p, kw);
+        contents.push(i.s());
+        pre.extend(i.pre_list);
+    }
+    let vb = b.base();
+    let name = vb.convert_overloaded_name(&node.identity_name().unwrap_or_default());
+    let content = if params[0].la_type().is_mesh() {
+        format!("{}.{}({})", b.get_mesh_str(&contents[0]), vb.get_builtin_func_name(&name), contents[1..].join(", "))
+    } else if node.gp_type() == GPType::NonZeros {
+        format!("{}({})", vb.get_builtin_func_name(&name), contents.join(", "))
+    } else if node.gp_type() == GPType::IndicatorVector {
+        let dim = match vb.get_builtin_func_name(&name).as_str() {
+            packages::VERTICES_TO_VECTOR => "n_vertices()",
+            packages::EDGES_TO_VECTOR => "n_edges()",
+            packages::FACES_TO_VECTOR => "n_faces()",
+            packages::TETS_TO_VECTOR => "n_tets()",
+            other => panic!("KeyError: {other}"),
+        };
+        let owner = params[0].la_type().owner().unwrap_or_else(|| "None".into());
+        format!("indicator({}, {}.{})", contents.join(", "), b.get_mesh_str(&owner), dim)
+    } else {
+        let owner = params[0].la_type().owner().unwrap_or_else(|| "None".into());
+        format!("{}.{}({})", b.get_mesh_str(&owner), vb.get_builtin_func_name(&name), contents.join(", "))
+    };
+    CodeNodeInfo::with(content, pre)
 }

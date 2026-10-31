@@ -1,6 +1,9 @@
 //! (stub, to be ported)
 
+#![allow(unused_imports)]
 use super::*;
+use crate::helper::ParseInfo;
+use crate::types::T;
 
 impl TypeWalker {
     pub(super) fn walk_Start(&mut self, _node: &Val, _kw: &Kwargs) -> WResult<N> {
