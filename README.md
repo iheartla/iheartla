@@ -46,10 +46,6 @@ To run the desktop GUI:
 
     python3 -m iheartla
 
-or, if installed via conda,
-
-    pythonw -m iheartla
-
 You can also run as a command-line compiler:
 
     python3 -m iheartla --help
@@ -58,7 +54,7 @@ You can also run as a command-line compiler:
 
 You can find releases on the GitHub [release page](https://github.com/iheartla/iheartla/releases). The following instructions are for running from source.
 
-I❤️LA depends on Python 3.x (>= Python 3.10) and several modules, listed in `pyproject.toml`. The parsers require exactly TatSu 5.7.3; it is marked as yanked on PyPI, but pinned installs work (uv prints a warning).
+I❤️LA depends on Python 3.x (>= Python 3.9) and several modules, listed in `pyproject.toml`. The grammar needs the third-party `regex` module, which `import iheartla` substitutes for `re` so that TatSu (5.8.3 through 5.14) uses it.
 
 ### uv
 
@@ -87,19 +83,7 @@ Install [uv](https://docs.astral.sh/uv/) and run:
 
 (2023-05-10: There is a known bug with Python >= 3.10 and wxPython 4.2.0's PDF viewer. It will be fixed in the next release of wxPython. For now, either run on Python 3.9, live without PDF rendering, compile top-of-tree wxPython yourself, or change `/` to `//` in `wx/lib/pdfviewer/viewer.py:354` (so that `self.Ypagepixels` is an `int`). The relevant commit is [here](https://github.com/wxWidgets/Phoenix/commit/aa4394773a8696444ce5d8a90273d67796e499d0).)
 
-### Conda
-
-Install [Anaconda](https://www.anaconda.com/products/individual) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
-Miniconda is faster to install. (On Windows, choose the 64-bit Python 3.x version. Launch the Anaconda shell from the Start menu and navigate to this directory.)
-Then:
-
-    conda env create -f environment-{cli,gui,dev}.yml
-    conda activate iheartla-{cli,gui,dev}
-
-Choose `environment-{cli,gui,dev}.yml` according to whether you only want the command line (`cli`), also the GUI (`gui`), or also the development test suite (`dev`).
-To update an already created environment if the `environment.yml` file changes or to change environments, activate and then run `conda env update --file environment-{cli,gui,dev}.yml --prune`.
-
-If you are developing I❤️LA, the test suite needs a working C++ compiler and, optionally, the Graphviz graph visualization software (`brew install graphviz` if you're not using conda).
+If you are developing I❤️LA, the test suite needs a working C++ compiler and, optionally, the Graphviz graph visualization software (e.g., `brew install graphviz`).
 
 ## Output Dependencies
 

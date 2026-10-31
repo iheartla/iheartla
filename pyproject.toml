@@ -5,12 +5,11 @@ description = "I❤️LA: Compilable Markdown for Linear Algebra"
 readme = "README.md"
 license = "MIT"
 authors = [{ name = "Yong Li", email = "pressure36@gmail.com" }]
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 dependencies = [
-    # The generated parsers in la_local_parsers need TatSu's regex-based
-    # matching, which TatSu dropped after 5.7.3 (5.7.3 is yanked on PyPI but
-    # installs fine when pinned exactly).
-    "tatsu==5.7.3",
+    # The grammar needs the `regex` module; iheartla/__init__.py makes TatSu
+    # use it. TatSu 5.15 removed exceptions iheartla imports (FailedCut).
+    "tatsu>=5.8.3,<5.15",
     "regex",
     "sympy",
     "appdirs",

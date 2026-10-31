@@ -1,4 +1,4 @@
-TatSu==5.7.3
+TatSu>=5.8.3,<5.15
 wxpython
 appdirs
 regex

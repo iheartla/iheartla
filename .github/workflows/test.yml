@@ -25,7 +25,7 @@ jobs:
       - run: sh test/fetch_deps.sh
       - run: python -m pip install --upgrade pip
       - run: pip install setuptools attrdict
-      - run: pip install wheel pyinstaller regex tatsu==5.7.3 wxpython PyMuPDF sympy appdirs cppyy numpy scipy
+      - run: pip install wheel pyinstaller regex "tatsu>=5.8.3,<5.15" wxpython PyMuPDF sympy appdirs cppyy numpy scipy
       # The cppyy-cling 6.32.8 macOS arm64 wheel links against MacPorts' /opt/local/lib/libzstd.1.dylib.
       # Point it at Homebrew's zstd instead (no-op if the wheel doesn't reference that path).
       - name: Fix cppyy-cling libzstd path
