@@ -92,3 +92,9 @@ pub fn compile_numpy(src: &str, class_name: &str) -> Result<String, String> {
     let prog = check_source(src)?;
     Ok(back::numpy::generate(&prog, class_name))
 }
+
+/// Compile to C++/Eigen code.
+pub fn compile_eigen(src: &str, struct_name: &str) -> Result<String, String> {
+    let prog = check_source(src)?;
+    Ok(back::eigen::generate(&prog, struct_name))
+}

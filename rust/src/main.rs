@@ -167,6 +167,7 @@ fn main() {
             let name = opt("--name", "heartlib");
             let result = match backend.as_str() {
                 "numpy" => iheartla::compile_numpy(&text, &name),
+                "eigen" => iheartla::compile_eigen(&text, &name),
                 other => Err(format!("unknown backend {other}")),
             };
             match result {

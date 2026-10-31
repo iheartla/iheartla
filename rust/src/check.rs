@@ -1156,6 +1156,18 @@ impl<'a> Checker<'a> {
                 }
             }
         }
+        // I is square: it sizes a block row or column that nothing else does
+        for (i, row) in items.iter().enumerate() {
+            for (j, e) in row.iter().enumerate() {
+                if matches!(&*e.kind, ExprKind::Var(n) if n == "I") && e.ty.is_scalar() {
+                    match (&heights[i], &widths[j]) {
+                        (Some(h), None) => widths[j] = Some(h.clone()),
+                        (None, Some(w)) => heights[i] = Some(w.clone()),
+                        _ => {}
+                    }
+                }
+            }
+        }
         let heights: Vec<Dim> = heights.into_iter().map(|h| h.unwrap_or(Dim::Int(1))).collect();
         let widths: Vec<Dim> = widths.into_iter().map(|w| w.unwrap_or(Dim::Int(1))).collect();
         // give scalar 0/1 items and I the size of their block
