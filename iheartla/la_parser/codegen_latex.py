@@ -9,6 +9,7 @@ class CodeGenLatex(CodeGen):
     def init_type(self, type_walker, func_name):
         super().init_type(type_walker, func_name)
         self.local_func_parsing = False
+        self.align_local_stmt = False
         self.uni_convert_dict = {'ᵢ': '\\textsubscript{i}', 'ⱼ': '\\textsubscript{j}', 'ᵣ': '\\textsubscript{r}',
                                  'ᵤ': '\\textsubscript{u}', 'ᵥ': '\\textsubscript{v}', '𝟙': '\\mathbb{ 1 }',
                                  '𝐚': '\\textbf{a}', '𝐛': '\\textbf{b}', '𝐜': '\\textbf{c}', '𝐝': '\\textbf{d}', '𝐞': '\\textbf{e}',

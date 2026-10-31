@@ -435,7 +435,8 @@ class DestructuringNode(StmtNode):
         super().__init__(IRNodeType.Destructuring, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.left = left   # IdNode 
         self.right = right
-        self.op = op 
+        self.op = op
+        self.symbols = set()  # same as AssignNode; the MacroMathJax backend visits both alike
         self.cur_type = cur_type
         self.la_list = None
 

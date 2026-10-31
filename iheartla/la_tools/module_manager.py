@@ -70,8 +70,14 @@ class CacheModuleManager(object):
     
     def save_compiled_module(self, type_walker, pre_frame, module_name, parser_type, timestamp):
         c_key = self.get_key(module_name, parser_type)
-        data = {"walker": copy.deepcopy(type_walker),
-                "frame": copy.deepcopy(pre_frame)}
+        try:
+            data = {"walker": copy.deepcopy(type_walker),
+                    "frame": copy.deepcopy(pre_frame)}
+        except Exception as e:
+            # Caching is only an optimization. The walker can hold TatSu objects
+            # (e.g., a FailedParse) that can't be deep-copied; skip the cache then.
+            print("Module cache skipped for {}: {}".format(module_name, e))
+            return
         data_file = Path(self.module_cache_dir + "/{}_{}_{}.pickle".format(module_name, parser_type, timestamp))
         # check old cache
         if c_key in self.cache_module_dict and parser_type == self.cache_module_dict[c_key].parser_type:
