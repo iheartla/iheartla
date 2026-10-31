@@ -19,7 +19,8 @@ for t in targets:
 from tatsu.exceptions import FailedParse
 from iheartla.la_tools.la_msg import LaMsg
 try:
-    result = compile_la_content(source_code, parser_type)
+    # class_only=False: also emit generateRandomData() and main(), which the CLI omits by default
+    result = compile_la_content(source_code, parser_type, class_only=False)
     code = result if isinstance(result, str) else [result[t] for t in targets]
 except FailedParse as e:      # syntax error, with line, column, and a caret
     code = LaMsg.getInstance().get_parse_error(e)
