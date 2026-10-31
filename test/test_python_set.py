@@ -19,8 +19,8 @@ class TestSet(BasePythonTest):
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
-                     "    std::set<int > a = {}().a;".format(func_info.eig_func_name),
-                     "    if(a.find(1) != a.end() && a.find(2) != a.end() && a.find(3) != a.end()){",
+                     "    std::vector<int > a = {}().a;".format(func_info.eig_func_name),
+                     "    if(std::binary_search(a.begin(), a.end(), 1) && std::binary_search(a.begin(), a.end(), 2) && std::binary_search(a.begin(), a.end(), 3)){",
                      "        return true;",
                      "    }",
                      "    return false;",

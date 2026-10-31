@@ -191,10 +191,7 @@ class TestExtraFunction(BasePythonTest):
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
-                     "    std::set<int > a1;"
-                     "    a1.insert(1);"
-                     "    a1.insert(2);"
-                     "    a1.insert(3);"
+                     "    std::vector<int > a1 = {1, 2, 3};",
                      "    int B = {}(a1).a;".format(func_info.eig_func_name),
                      "    return ((B - 2) == 0);",
                      "}"]

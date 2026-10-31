@@ -212,7 +212,7 @@ class TestGallery(BasePythonTest):
                       [7, 0, 0, 8, 0, 0, 9, 0, 0],
                       [0, 7, 0, 0, 8, 0, 0, 9, 0],
                       [0, 0, 7, 0, 0, 8, 0, 0, 9]])
-        self.assertDMatrixApproximateEqual(func_info.numpy_func(A).partial_differential_2I5_solidus_partial_differential_f2, B)
+        self.assertDMatrixApproximateEqual(func_info.numpy_func(A).dee2I5_solidus_dee_f2, B)
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
@@ -228,7 +228,7 @@ class TestGallery(BasePythonTest):
                      "    7, 0, 0, 8, 0, 0, 9, 0, 0,"
                      "    0, 7, 0, 0, 8, 0, 0, 9, 0,"
                      "    0, 0, 7, 0, 0, 8, 0, 0, 9;",
-                     "    Eigen::Matrix<double, 9, 9> C = {}(A).partial_differential_²I₅_solidus_partial_differential_f²;".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 9, 9> C = {}(A).dee2I5_solidus_dee_f2;".format(func_info.eig_func_name),
                      "    return ((2*B - C).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -310,9 +310,7 @@ class TestGallery(BasePythonTest):
                      "    std::vector<double> α;",
                      "    α.push_back(10);",
                      "    α.push_back(2);",
-                     "    std::set<int > N1;",
-                     "    N1.insert(1);",
-                     "    N1.insert(2);",
+                     "    std::vector<int > N1 = {1, 2};",
                      "    std::function<Eigen::Matrix<double, 3, 1>(Eigen::Matrix<double, 3, 3>)> n;",
                      "    n = [](Eigen::Matrix<double, 3, 3> t)->Eigen::Matrix<double, 3, 1>{",
                      "        return t.row(0);",
@@ -400,7 +398,7 @@ class TestGallery(BasePythonTest):
                      "    V << 10, 2, 2, 1, 3, 1, 7, 4, 8;",
                      "    Eigen::Matrix<double, 3, 3> B;",
                      "    B << 1.41421356, 4.94974747, -2.82842712, 2.82842712, 8.48528137, -2.82842712, -5.65685425, 5.65685425, -39.59797975;",
-                     "    Eigen::Matrix<double, 3, 3> C = {}(U, V).T₁;".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 3, 3> C = {}(U, V).T1;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() < {});".format(self.eps),
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
@@ -935,17 +933,17 @@ class TestGallery(BasePythonTest):
                      "    α << 1, 2, 3, 4, 7, 6, 5, 3, 2;",
                      "    Eigen::Matrix<double, 3, 3> β;",
                      "    β << 2, 5, 4, 3, 5, 6, 9, 3, 2;",
-                     "    std::function<std::set<int >(int)> N = [](int p)->std::set<int >{",
-                     "        std::set<int > tmp;",
+                     "    std::function<std::vector<int >(int)> N = [](int p)->std::vector<int >{",
+                     "        std::vector<int > tmp;",
                      "        if(p == 1){",
-                     "            tmp.insert(2);",
+                     "            tmp.push_back(2);",
                      "        }",
                      "        else if(p == 2){",
-                     "            tmp.insert(1);",
+                     "            tmp.push_back(1);",
                      "        }",
                      "        else{",
-                     "            tmp.insert(1);",
-                     "            tmp.insert(2);",
+                     "            tmp.push_back(1);",
+                     "            tmp.push_back(2);",
                      "        }",
                      "        return tmp;",
                      "    };",
@@ -986,26 +984,28 @@ class TestGallery(BasePythonTest):
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
                      "    Eigen::Matrix<double, 4, 4> w;",
                      "    w << -6, 9, -1, -11, 17, 14, 0, 0, 6, -2, 11, 0, 2, -9, -2, -9;",
-                     "    std::set< std::tuple< int, int > > E;",
-                     "    E.insert(std::make_tuple(0, 1));",
-                     "    E.insert(std::make_tuple(0, 2));",
-                     "    E.insert(std::make_tuple(1, 2));",
-                     "    E.insert(std::make_tuple(2, 0));",
-                     "    E.insert(std::make_tuple(3, 0));",
-                     "    E.insert(std::make_tuple(3, 1));",
-                     "    E.insert(std::make_tuple(3, 2));",
-                     "    std::set< std::tuple< int, int > > F;",
-                     "    F.insert(std::make_tuple(0, 1));",
-                     "    F.insert(std::make_tuple(0, 2));",
-                     "    F.insert(std::make_tuple(1, 2));",
-                     "    F.insert(std::make_tuple(2, 0));",
-                     "    F.insert(std::make_tuple(3, 0));",
-                     "    F.insert(std::make_tuple(3, 1));",
-                     "    F.insert(std::make_tuple(3, 2));",
-                     "    F.insert(std::make_tuple(0, 0));",
-                     "    F.insert(std::make_tuple(1, 1));",
-                     "    F.insert(std::make_tuple(2, 2));",
-                     "    F.insert(std::make_tuple(3, 3));",
+                     "    std::vector< std::tuple< int, int > > E;",
+                     "    E.push_back(std::make_tuple(0, 1));",
+                     "    E.push_back(std::make_tuple(0, 2));",
+                     "    E.push_back(std::make_tuple(1, 2));",
+                     "    E.push_back(std::make_tuple(2, 0));",
+                     "    E.push_back(std::make_tuple(3, 0));",
+                     "    E.push_back(std::make_tuple(3, 1));",
+                     "    E.push_back(std::make_tuple(3, 2));",
+                     "    std::sort(E.begin(), E.end());",
+                     "    std::vector< std::tuple< int, int > > F;",
+                     "    F.push_back(std::make_tuple(0, 1));",
+                     "    F.push_back(std::make_tuple(0, 2));",
+                     "    F.push_back(std::make_tuple(1, 2));",
+                     "    F.push_back(std::make_tuple(2, 0));",
+                     "    F.push_back(std::make_tuple(3, 0));",
+                     "    F.push_back(std::make_tuple(3, 1));",
+                     "    F.push_back(std::make_tuple(3, 2));",
+                     "    F.push_back(std::make_tuple(0, 0));",
+                     "    F.push_back(std::make_tuple(1, 1));",
+                     "    F.push_back(std::make_tuple(2, 2));",
+                     "    F.push_back(std::make_tuple(3, 3));",
+                     "    std::sort(F.begin(), F.end());",
                      "    std::vector<Eigen::Triplet<double> > t1;",
                      "    t1.push_back(Eigen::Triplet<double>(0, 1, 9));",
                      "    t1.push_back(Eigen::Triplet<double>(0, 2, -1));",
@@ -1027,7 +1027,7 @@ class TestGallery(BasePythonTest):
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
     def test_integral(self):
-        la_str = """`H(p)` = 1/(2π)int_[0, 2π] `kₙ`(φ, p) ∂φ
+        la_str = """`H(p)` = 1/(2π)int_[0, 2π] `kₙ`(φ, p) 𝕕φ
         where 
         p: ℝ^3 : point on the surface
         `kₙ`: ℝ,ℝ^3->ℝ : normal curvature
