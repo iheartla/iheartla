@@ -1,8 +1,16 @@
 //! I❤️LA compiler.
 
+pub mod codegen;
+pub mod dims;
 pub mod grammar;
+pub mod helper;
+pub mod ir;
+pub mod ir_iterator;
+pub mod packages;
 pub mod peg;
 pub mod pnode;
+pub mod types;
+pub mod walker;
 
 /// Map byte offsets in `text` to character offsets (Python string indices).
 pub fn char_offsets(text: &str) -> Vec<usize> {
